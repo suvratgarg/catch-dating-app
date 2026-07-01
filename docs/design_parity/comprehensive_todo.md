@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_comprehensive_todo
-version: 0.2.268
+version: 0.2.269
 updated: 2026-07-01
 owner: product_design_parity
 status: active
@@ -27,17 +27,17 @@ ledgers as the source of truth when counts differ:
 - Screen priority spread: 18 P1, 12 P2, and 5 P3 contracted screens.
 - Contracted screen states: 619.
 - Contracted screen sections: 241.
-- Screen registry migration gaps: 44 open, 15 blocked, and 80 closed. These are
+- Screen registry migration gaps: 43 open, 15 blocked, and 81 closed. These are
   product migration gaps in `design/screens/catch.screens.json`, not
   validation failures.
 - Contracted section states: 1,110.
 - Open screen-contract validation gaps: 0.
 - Design parity matrix: 12 feature groups, 36 screens, 621 matrix states, and
-  60 open matrix gaps across screen-state, lint-candidate, and preview-plan
+  59 open matrix gaps across screen-state, lint-candidate, and preview-plan
   queues.
-- Matrix state status spread: 521 captured, 30 implemented, 6 planned, and
-  64 tested.
-- Capture coverage registry: 545 capture ids across 37 captured route entries,
+- Matrix state status spread: 528 captured, 25 implemented, 6 planned, and
+  62 tested.
+- Capture coverage registry: 555 capture ids across 37 captured route entries,
   5 alias route entries, 0 planned route entries, and 6 excluded route entries.
 - Component contracts: 56 reusable primitive/composite contracts with 349
   contract states.
@@ -680,7 +680,7 @@ from those ledgers rather than hand-editing counts.
 | P1 | `screen.profile.public` | 14 | 6 | 1 | None | `DS-PROFILE-PUBLIC-002` | `PublicProfileScreenState` owns target-profile branches, initial fallback, viewer context projection, safety action availability, retry intent, and report/block mutation mode. Selected report reason, report success snackbar, and block failure snackbar now have focused widget-test proof; continue visual parity for top chrome/insight copy/profile sections. |
 | P1 | `screen.profile.self` | 16 | 8 | 1 | None | `DS-PROFILE-SELF-002` | SelfProfileScreenState, SelfProfileEditTabState, SelfProfilePhotoActionController, and SelfProfileInlineEditPatchFactory now own the route, row descriptor, photo intent, and patch seams; continue only remaining capture and advisory pixel work. |
 | P2 | `screen.auth.phone_entry` | 8 | 4 | 1 | `auth-handoff` | `DS-AUTH-001`, `DS-AUTH-002`, `DS-AUTH-003` | Widgetbook now covers phone entry, OTP cooldown, send/verify/resend pending and failure, text scale, and reduced motion; export/capture OTP, validation, mutation, resend, text-scale, and reduced-motion references next. |
-| P2 | `screen.calendar.home` | 10 | 5 | 0 | Blocked: no standalone Calendar Home source; only `CalendarPrimitive.html`/`DateRangePicker` | `DS-CALENDAR-002`, `DS-CALENDAR-004` blocked | CalendarHomeState and CalendarAgendaSectionState own summary/header/agenda/state adapters, and Widgetbook covers route/component, accessibility, and dark-theme states; continue deterministic captures and reference export once a canonical screen source exists. |
+| P2 | `screen.calendar.home` | 10 | 5 | 0 | Blocked: no standalone Calendar Home source; only `CalendarPrimitive.html`/`DateRangePicker` | `DS-CALENDAR-004` blocked | CalendarHomeState and CalendarAgendaSectionState own summary/header/agenda/state adapters. Widgetbook and deterministic captures cover planned events, loading, provider error, empty, club-name loading/error, expanded month, selected day, text-scale, reduced-motion, and paired light/dark states; reference export waits on a canonical Calendar Home source. |
 | P2 | `screen.event.recap` | 10 | 5 | 2 | Blocked: no standalone Event Recap source | `DS-EVENT-RECAP-004` blocked | EventRecapScreenState owns async branch mapping, attendee/profile rows, selected ids, hero/window copy, retry intents, and open-deck intent data. Widgetbook and deterministic captures cover loading, error, missing, empty roster, partial profile, selected tile, text-scale, reduced-motion, and paired light/dark states; reference export waits on a canonical recap source. |
 | P2 | `screen.filters.preferences` | 11 | 5 | 2 | None | None | FiltersPreferencesState owns saved defaults, draft values, dirty state, reset/apply availability, pending state, and save request fields. Widgetbook and deterministic captures now cover loading, profile error, missing profile, dirty edit, reset, save pending/error, text scale, reduced motion, and light/dark; continue only visual parity/reference-specific variants. |
 | P2 | `screen.host.club.create` | 17 | 6 | 1 | None | `DS-HOST-CLUB-CREATE-001`, `DS-HOST-CLUB-CREATE-002`, `DS-HOST-CLUB-CREATE-003`, `DS-HOST-CLUB-CREATE-004` | Widgetbook and route captures now cover the create wizard, validation, picked media, draft restore, save-draft pending/error, submit pending/error, offline submit failure, accessibility, and theme states. HostClubCreateState owns footer labels/enabled state, media/edit-scaffold enabled state, mutation error copy, and typed primary/save-draft intents; continue references plus draft-load retry, validation, media-value, and route-callback adapter ownership. |
@@ -1265,9 +1265,11 @@ tests, captures, Widgetbook, and audit receipts.
 - [ ] `TODO-P2-001` Start/Auth/Onboarding: add Widgetbook/capture states for
   reel variants, phone/OTP flows, validation, resend cooldown, onboarding
   steps, photo gates, upload mutations, flow-entry modes, and design refs.
-- [ ] `TODO-P2-002` Calendar/Saved Events/Filters/Event Recap: add
-  Widgetbook/capture states for provider waves, empty/error/offline states,
-  draft/selection state, save mutations, partial lookup failures, and adapters.
+- [ ] `TODO-P2-002` Calendar/Saved Events/Filters/Event Recap: Calendar,
+  Filters, and Event Recap now have Widgetbook/capture states for provider
+  waves, empty/error states, selection/draft state, mutation/partial lookup
+  failures, accessibility, and theme variants. Continue Saved Events route
+  capture expansion and any blocked reference exports.
 - [ ] `TODO-P2-003` Host create/edit club, edit event, host settings, and host
   profile: add Widgetbook/capture states for form validation, image
   replacement, unauthorized/missing resources, payouts/admin placeholders,
@@ -1584,12 +1586,12 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
 
 ### P2 secondary_consumer_surfaces
 
-- [ ] `calendar.home` (10 state follow-ups, 1 open gap)
-  - implemented: `uid_missing`, `events_loading`, `events_error`, `club_names_loading_error`, `text_scale_2`, `reduced_motion`
-  - tested: `empty_calendar`, `expanded_month_header`, `event_detail_navigation`
-  - captured: `planned_events`
+- [ ] `calendar.home` (10 state follow-ups, 1 blocked gap)
+  - implemented: `uid_missing`
+  - tested: `event_detail_navigation`
+  - captured: `events_loading`, `events_error`, `club_names_loading_error`, `empty_calendar`, `expanded_month_header`, `planned_events`, `text_scale_2`, `reduced_motion`
   - DP-CALENDAR-001: Closed by Calendar Widgetbook states covering collapsed/expanded header, stats, agenda rows, loading, empty, provider error, club-name loading/error, text scale, reduced motion, and dark theme variants under the canonical `screen.calendar.home` contract id.
-  - DP-CALENDAR-002: Add deterministic Calendar captures for loading, empty, provider error, club-name loading/error, expanded month, selected-day scroll, text scale, reduced motion, and light/dark.
+  - DP-CALENDAR-002: Closed by deterministic Calendar captures for loading, empty, provider error, club-name loading/error, expanded month, selected day, text scale, reduced motion, and paired light/dark output.
   - DP-CALENDAR-003: Closed by CalendarHomeState and CalendarAgendaSectionState owning event summary, selected date, header mode, club-id lookup input, agenda row display, and empty/loading/error section state while CalendarScreen retains provider waves, retry invalidation, scroll behavior, and route navigation.
 - [ ] `saved_events.list` (9 state follow-ups, 3 open gaps)
   - planned: `text_scale_2`, `light_dark`

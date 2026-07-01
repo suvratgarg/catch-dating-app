@@ -42,9 +42,19 @@
       "status": "captured",
       "priority": "P2",
       "captureIds": [
-        "calendar_planned_events"
+        "calendar_planned_events",
+        "calendar_loading",
+        "calendar_events_error",
+        "calendar_empty",
+        "calendar_club_names_loading",
+        "calendar_club_names_error",
+        "calendar_expanded_month",
+        "calendar_selected_day",
+        "calendar_text_scale_2",
+        "calendar_reduced_motion",
+        "calendar_light_dark"
       ],
-      "reason": "Current-user calendar fixture with booked and saved events."
+      "reason": "Calendar captures now cover planned booked/saved events, loading, provider error, empty state, club-name loading/error, expanded month, selected day, text scale 2.0, reduced motion, and paired light/dark output."
     },
     {
       "routeId": "calendarEventDetailScreen",

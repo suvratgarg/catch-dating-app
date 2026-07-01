@@ -19,6 +19,7 @@ import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_sliver_h
 import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_share_card.dart';
 import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
+import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
@@ -1663,6 +1664,42 @@ final _captureClubsRepository = club_test.FakeClubsRepository()
   ..clubsById[_memberDiscoveryClubs[0].id] = _memberDiscoveryClubs[0]
   ..clubsById[_memberDiscoveryClubs[1].id] = _memberDiscoveryClubs[1]
   ..clubsById[_memberDiscoveryClubs[2].id] = _memberDiscoveryClubs[2];
+
+List<Object> _calendarProviderOverrides({
+  AsyncValue<String?> uid = const AsyncData<String?>(_captureViewerUid),
+  AsyncValue<List<Event>>? signedUpEvents,
+  AsyncValue<List<Event>>? savedEvents,
+  AsyncValue<Map<String, String>>? clubNames,
+}) {
+  final effectiveSignedUpEvents =
+      signedUpEvents ?? AsyncData<List<Event>>(_dashboardSignedUpEvents);
+  final effectiveSavedEvents =
+      savedEvents ?? AsyncData<List<Event>>(_dashboardSavedEvents);
+  final clubNameQuery = ClubNameLookupQuery([
+    for (final event in _asyncDataList(effectiveSignedUpEvents)) event.clubId,
+    for (final event in _asyncDataList(effectiveSavedEvents)) event.clubId,
+  ]);
+
+  return <Object>[
+    uidProvider.overrideWithValue(uid),
+    watchSignedUpEventsProvider(
+      _captureViewerUid,
+    ).overrideWithValue(effectiveSignedUpEvents),
+    watchSavedEventDetailsForUserProvider(
+      _captureViewerUid,
+    ).overrideWithValue(effectiveSavedEvents),
+    clubsRepositoryProvider.overrideWith((ref) => _captureClubsRepository),
+    if (clubNames != null)
+      clubNameLookupProvider(clubNameQuery).overrideWithValue(clubNames),
+  ];
+}
+
+List<T> _asyncDataList<T>(AsyncValue<List<T>> value) {
+  return switch (value) {
+    AsyncData<List<T>>(:final value) => value,
+    _ => <T>[],
+  };
+}
 
 final _clubDetailClub = _captureFixtures.captureClub(
   id: 'club-detail-member',
@@ -7731,17 +7768,101 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'calendar_planned_events',
     routeIds: const <String>['calendarScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: [
-      uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
-      watchSignedUpEventsProvider(
-        _captureViewerUid,
-      ).overrideWithValue(AsyncData(_dashboardSignedUpEvents)),
-      watchSavedEventDetailsForUserProvider(
-        _captureViewerUid,
-      ).overrideWithValue(AsyncData(_dashboardSavedEvents)),
-      clubsRepositoryProvider.overrideWith((ref) => _captureClubsRepository),
-    ],
-    builder: (context) => const CalendarScreen(),
+    providerOverrides: _calendarProviderOverrides(),
+    builder: (context) => CalendarScreen(referenceNow: _captureNow),
+  ),
+  ScreenCaptureEntry(
+    id: 'calendar_loading',
+    routeIds: const <String>['calendarScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _calendarProviderOverrides(
+      signedUpEvents: const AsyncLoading<List<Event>>(),
+    ),
+    builder: (context) => CalendarScreen(referenceNow: _captureNow),
+  ),
+  ScreenCaptureEntry(
+    id: 'calendar_events_error',
+    routeIds: const <String>['calendarScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _calendarProviderOverrides(
+      signedUpEvents: AsyncError<List<Event>>(
+        StateError('Capture Calendar events failed'),
+        StackTrace.empty,
+      ),
+    ),
+    builder: (context) => CalendarScreen(referenceNow: _captureNow),
+  ),
+  ScreenCaptureEntry(
+    id: 'calendar_empty',
+    routeIds: const <String>['calendarScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _calendarProviderOverrides(
+      signedUpEvents: const AsyncData<List<Event>>([]),
+      savedEvents: const AsyncData<List<Event>>([]),
+    ),
+    builder: (context) => CalendarScreen(referenceNow: _captureNow),
+  ),
+  ScreenCaptureEntry(
+    id: 'calendar_club_names_loading',
+    routeIds: const <String>['calendarScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _calendarProviderOverrides(
+      clubNames: const AsyncLoading<Map<String, String>>(),
+    ),
+    builder: (context) => CalendarScreen(referenceNow: _captureNow),
+  ),
+  ScreenCaptureEntry(
+    id: 'calendar_club_names_error',
+    routeIds: const <String>['calendarScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _calendarProviderOverrides(
+      clubNames: AsyncError<Map<String, String>>(
+        StateError('Capture Calendar club names failed'),
+        StackTrace.empty,
+      ),
+    ),
+    builder: (context) => CalendarScreen(referenceNow: _captureNow),
+  ),
+  ScreenCaptureEntry(
+    id: 'calendar_expanded_month',
+    routeIds: const <String>['calendarScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _calendarProviderOverrides(),
+    builder: (context) =>
+        CalendarScreen(referenceNow: _captureNow, initialExpanded: true),
+  ),
+  ScreenCaptureEntry(
+    id: 'calendar_selected_day',
+    routeIds: const <String>['calendarScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _calendarProviderOverrides(),
+    builder: (context) => CalendarScreen(
+      referenceNow: _captureNow,
+      initialSelectedDate: _dashboardSavedEvents.first.startTime,
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'calendar_text_scale_2',
+    routeIds: const <String>['calendarScreen'],
+    device: CaptureDevice.reviewTall,
+    textScale: 2,
+    providerOverrides: _calendarProviderOverrides(),
+    builder: (context) => CalendarScreen(referenceNow: _captureNow),
+  ),
+  ScreenCaptureEntry(
+    id: 'calendar_reduced_motion',
+    routeIds: const <String>['calendarScreen'],
+    device: CaptureDevice.reviewTall,
+    disableAnimations: true,
+    providerOverrides: _calendarProviderOverrides(),
+    builder: (context) => CalendarScreen(referenceNow: _captureNow),
+  ),
+  ScreenCaptureEntry(
+    id: 'calendar_light_dark',
+    routeIds: const <String>['calendarScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _calendarProviderOverrides(),
+    builder: (context) => CalendarScreen(referenceNow: _captureNow),
   ),
   ScreenCaptureEntry(
     id: 'saved_events_list',

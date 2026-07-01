@@ -16118,6 +16118,56 @@
           "id": "calendar_planned_events",
           "status": "captured",
           "notes": "Current-user calendar fixture with booked and saved events."
+        },
+        {
+          "id": "calendar_loading",
+          "status": "captured",
+          "notes": "Route loading skeleton with Calendar top bar, pinned date header, stats strip, and agenda placeholders."
+        },
+        {
+          "id": "calendar_events_error",
+          "status": "captured",
+          "notes": "Signed-up/saved event provider error branch with event retry copy."
+        },
+        {
+          "id": "calendar_empty",
+          "status": "captured",
+          "notes": "Empty calendar branch for no signed-up or saved events."
+        },
+        {
+          "id": "calendar_club_names_loading",
+          "status": "captured",
+          "notes": "Agenda skeleton while club-name lookup resolves after events load."
+        },
+        {
+          "id": "calendar_club_names_error",
+          "status": "captured",
+          "notes": "Club-name lookup error branch inside the agenda section."
+        },
+        {
+          "id": "calendar_expanded_month",
+          "status": "captured",
+          "notes": "Real route seeded with the expanded month date header."
+        },
+        {
+          "id": "calendar_selected_day",
+          "status": "captured",
+          "notes": "Real route seeded with a selected event day for deterministic agenda focus."
+        },
+        {
+          "id": "calendar_text_scale_2",
+          "status": "captured",
+          "notes": "Text scale 2.0 route capture for header, stats, date controls, agenda rows, and state surfaces."
+        },
+        {
+          "id": "calendar_reduced_motion",
+          "status": "captured",
+          "notes": "Reduced-motion route capture for header, stats, and agenda review."
+        },
+        {
+          "id": "calendar_light_dark",
+          "status": "captured",
+          "notes": "Explicit planned-events baseline for paired light/dark output."
         }
       ],
       "states": [
@@ -16131,19 +16181,25 @@
         {
           "id": "events_loading",
           "kind": "loading",
-          "status": "implemented",
+          "status": "captured",
           "source": "signedUpEvents or savedEvents loading renders a Calendar-shaped skeleton under the Calendar top bar with pinned date-header, stats-strip, and agenda-row placeholders.",
+          "captureIds": [
+            "calendar_loading"
+          ],
           "tests": [
             "test/calendar/calendar_screen_test.dart"
           ],
-          "nextAction": "Add deterministic loading capture with header chrome."
+          "nextAction": "Compare loading skeleton hierarchy against a future Calendar Home loading reference if design adds one."
         },
         {
           "id": "events_error",
           "kind": "error",
-          "status": "implemented",
+          "status": "captured",
           "source": "signedUpEvents or savedEvents errors render CatchErrorState.fromError with AppErrorContext.event and retry invalidation.",
-          "nextAction": "Add error/offline captures for signed-up and saved-event provider failures."
+          "captureIds": [
+            "calendar_events_error"
+          ],
+          "nextAction": "Compare provider-error copy against a future Calendar Home error reference if design adds one."
         },
         {
           "id": "planned_events",
@@ -16151,7 +16207,8 @@
           "status": "captured",
           "source": "calendar_planned_events renders booked and saved event rows with JOINED/SAVED treatment and stats.",
           "captureIds": [
-            "calendar_planned_events"
+            "calendar_planned_events",
+            "calendar_light_dark"
           ],
           "tests": [
             "test/calendar/calendar_screen_test.dart"
@@ -16161,29 +16218,40 @@
         {
           "id": "empty_calendar",
           "kind": "empty",
-          "status": "tested",
+          "status": "captured",
           "source": "No signed-up or saved events render the No planned events yet CatchEmptyState.",
+          "captureIds": [
+            "calendar_empty"
+          ],
           "tests": [
             "test/calendar/calendar_screen_test.dart"
           ],
-          "nextAction": "Add empty-state route capture."
+          "nextAction": "Compare empty-calendar copy against a future Calendar Home empty reference if design adds one."
         },
         {
           "id": "club_names_loading_error",
           "kind": "loading",
-          "status": "implemented",
+          "status": "captured",
           "source": "When event rows exist, clubNameLookupProvider controls a secondary loading/error state before the agenda list renders.",
-          "nextAction": "Add captures for club-name loading and club-name lookup error states."
+          "captureIds": [
+            "calendar_club_names_loading",
+            "calendar_club_names_error"
+          ],
+          "nextAction": "Compare agenda secondary loading/error treatment against future references if design adds them."
         },
         {
           "id": "expanded_month_header",
           "kind": "populated",
-          "status": "tested",
+          "status": "captured",
           "source": "Drag and selection interactions toggle the week strip/month grid date header and preserve selected-date agenda scroll.",
+          "captureIds": [
+            "calendar_expanded_month",
+            "calendar_selected_day"
+          ],
           "tests": [
             "test/calendar/calendar_screen_test.dart"
           ],
-          "nextAction": "Add Widgetbook/capture states for collapsed week, expanded month, Today action, and selected event day."
+          "nextAction": "Expanded month and selected-day route states are now seeded for deterministic captures."
         },
         {
           "id": "event_detail_navigation",
@@ -16198,16 +16266,22 @@
         {
           "id": "text_scale_2",
           "kind": "accessibility",
-          "status": "implemented",
+          "status": "captured",
           "source": "Widgetbook CalendarScreen states include text-scale 2.0 review for header, stats, date controls, agenda rows, and state surfaces.",
-          "nextAction": "Add deterministic text-scale route capture for header, stats, week/month grid, agenda rows, and empty/error states."
+          "captureIds": [
+            "calendar_text_scale_2"
+          ],
+          "nextAction": "Compare text-scale layout against a future Calendar Home accessibility reference if design adds one."
         },
         {
           "id": "reduced_motion",
           "kind": "accessibility",
-          "status": "implemented",
+          "status": "captured",
           "source": "Widgetbook CalendarScreen states include reduced-motion review; selected-day scroll animation still uses CatchMotion.calendarScroll at runtime.",
-          "nextAction": "Add deterministic reduced-motion route capture or disable animated scroll in deterministic fixtures."
+          "captureIds": [
+            "calendar_reduced_motion"
+          ],
+          "nextAction": "Reduced-motion route capture is now registered; selected-day captures use seeded initial state instead of animated scroll."
         }
       ],
       "composition": {
@@ -16346,8 +16420,8 @@
         },
         {
           "id": "DS-CALENDAR-002",
-          "status": "open",
-          "nextAction": "Add deterministic Calendar captures for loading, empty, provider error, club-name loading/error, expanded month, selected-day scroll, text scale, reduced motion, and light/dark."
+          "status": "closed",
+          "nextAction": "Closed by deterministic Calendar captures for loading, empty, provider error, club-name loading/error, expanded month, selected day, text scale, reduced motion, and paired light/dark output."
         },
         {
           "id": "DS-CALENDAR-003",

@@ -9127,7 +9127,17 @@
             "catch.badge"
           ],
           "captureIds": [
-            "calendar_planned_events"
+            "calendar_planned_events",
+            "calendar_loading",
+            "calendar_events_error",
+            "calendar_empty",
+            "calendar_club_names_loading",
+            "calendar_club_names_error",
+            "calendar_expanded_month",
+            "calendar_selected_day",
+            "calendar_text_scale_2",
+            "calendar_reduced_motion",
+            "calendar_light_dark"
           ],
           "designRefs": [
             {
@@ -9154,7 +9164,10 @@
             {
               "id": "events_loading",
               "kind": "loading",
-              "status": "implemented",
+              "status": "captured",
+              "captureIds": [
+                "calendar_loading"
+              ],
               "notes": "signedUpEvents or savedEvents loading renders a Calendar-shaped skeleton under the Calendar top bar with pinned date-header, stats-strip, and agenda-row placeholders.",
               "tests": [
                 "test/calendar/calendar_screen_test.dart"
@@ -9163,7 +9176,10 @@
             {
               "id": "events_error",
               "kind": "error",
-              "status": "implemented",
+              "status": "captured",
+              "captureIds": [
+                "calendar_events_error"
+              ],
               "notes": "signedUpEvents or savedEvents errors render CatchErrorState.fromError with AppErrorContext.event and retry invalidation."
             },
             {
@@ -9171,7 +9187,8 @@
               "kind": "populated",
               "status": "captured",
               "captureIds": [
-                "calendar_planned_events"
+                "calendar_planned_events",
+                "calendar_light_dark"
               ],
               "tests": [
                 "test/calendar/calendar_screen_test.dart"
@@ -9181,7 +9198,10 @@
             {
               "id": "empty_calendar",
               "kind": "empty",
-              "status": "tested",
+              "status": "captured",
+              "captureIds": [
+                "calendar_empty"
+              ],
               "tests": [
                 "test/calendar/calendar_screen_test.dart"
               ],
@@ -9190,13 +9210,21 @@
             {
               "id": "club_names_loading_error",
               "kind": "loading",
-              "status": "implemented",
+              "status": "captured",
+              "captureIds": [
+                "calendar_club_names_loading",
+                "calendar_club_names_error"
+              ],
               "notes": "When event rows exist, clubNameLookupProvider controls a secondary loading/error state before the agenda list renders."
             },
             {
               "id": "expanded_month_header",
               "kind": "populated",
-              "status": "tested",
+              "status": "captured",
+              "captureIds": [
+                "calendar_expanded_month",
+                "calendar_selected_day"
+              ],
               "tests": [
                 "test/calendar/calendar_screen_test.dart"
               ],
@@ -9214,14 +9242,20 @@
             {
               "id": "text_scale_2",
               "kind": "accessibility",
-              "status": "implemented",
-              "notes": "Widgetbook CalendarScreen states include text-scale 2.0 review; deterministic route capture remains open."
+              "status": "captured",
+              "captureIds": [
+                "calendar_text_scale_2"
+              ],
+              "notes": "Widgetbook CalendarScreen states and deterministic route captures include text-scale 2.0 review."
             },
             {
               "id": "reduced_motion",
               "kind": "accessibility",
-              "status": "implemented",
-              "notes": "Widgetbook CalendarScreen states include reduced-motion review; deterministic route capture remains open and selected-day scroll animation still uses CatchMotion.calendarScroll."
+              "status": "captured",
+              "captureIds": [
+                "calendar_reduced_motion"
+              ],
+              "notes": "Widgetbook CalendarScreen states and deterministic route captures include reduced-motion review; selected-day captures use seeded initial state."
             }
           ],
           "gaps": [
@@ -9232,8 +9266,8 @@
             },
             {
               "id": "DP-CALENDAR-002",
-              "status": "open",
-              "nextAction": "Add deterministic Calendar captures for loading, empty, provider error, club-name loading/error, expanded month, selected-day scroll, text scale, reduced motion, and light/dark."
+              "status": "closed",
+              "nextAction": "Closed by deterministic Calendar captures for loading, empty, provider error, club-name loading/error, expanded month, selected day, text scale, reduced motion, and paired light/dark output."
             },
             {
               "id": "DP-CALENDAR-003",

@@ -25,9 +25,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class CalendarScreen extends ConsumerStatefulWidget {
-  const CalendarScreen({super.key, this.referenceNow});
+  const CalendarScreen({
+    super.key,
+    this.referenceNow,
+    this.initialSelectedDate,
+    this.initialExpanded = false,
+  });
 
   final DateTime? referenceNow;
+  final DateTime? initialSelectedDate;
+  final bool initialExpanded;
 
   @override
   ConsumerState<CalendarScreen> createState() => _CalendarScreenState();
@@ -39,7 +46,16 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   final Map<DateTime, GlobalKey> _daySectionKeys = {};
 
   DateTime? _selectedDate;
-  bool _calendarExpanded = false;
+  late bool _calendarExpanded;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedDate = widget.initialSelectedDate == null
+        ? null
+        : DateUtils.dateOnly(widget.initialSelectedDate!);
+    _calendarExpanded = widget.initialExpanded;
+  }
 
   @override
   Widget build(BuildContext context) {

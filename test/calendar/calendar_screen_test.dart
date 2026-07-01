@@ -79,6 +79,50 @@ void main() {
       expect(find.text(event.title), findsNothing);
     });
 
+    testWidgets('seeds expanded month and selected date', (tester) async {
+      final now = DateTime(2026, 6, 1, 9);
+      final event = buildEvent(
+        id: 'seeded-calendar-event',
+        startTime: DateTime(2026, 6, 4, 7),
+        meetingPoint: 'Seeded Start',
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            uidProvider.overrideWithValue(const AsyncData<String?>('runner-1')),
+            watchSignedUpEventsProvider(
+              'runner-1',
+            ).overrideWithValue(AsyncData<List<Event>>([event])),
+            watchSavedEventDetailsForUserProvider(
+              'runner-1',
+            ).overrideWithValue(const AsyncData<List<Event>>([])),
+            clubNameLookupProvider(
+              ClubNameLookupQuery([event.clubId]),
+            ).overrideWithValue(
+              const AsyncData<Map<String, String>>({'club-1': 'Stride Social'}),
+            ),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: CalendarScreen(
+              referenceNow: now,
+              initialSelectedDate: event.startTime,
+              initialExpanded: true,
+            ),
+          ),
+        ),
+      );
+      await pumpFeatureUi(tester);
+
+      expect(find.text('June 2026'), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey<String>('calendar-month-day-2026-06-04')),
+        findsOneWidget,
+      );
+      expect(find.text(event.title), findsOneWidget);
+    });
+
     testWidgets(
       'shows the empty calendar when the user has no planned events',
       (tester) async {
