@@ -10223,7 +10223,7 @@
               "id": "text_scale_2",
               "kind": "accessibility",
               "status": "captured",
-              "notes": "No text-scale 2.0 Event Location Map capture exists yet.",
+              "notes": "event_location_map_text_scale_2 captures the Event Location Map route at TextScaler 2.0.",
               "previewIds": [
                 "EventLocationMapRouteScreen/Route states",
                 "EventLocationMapScreen/Map states"
