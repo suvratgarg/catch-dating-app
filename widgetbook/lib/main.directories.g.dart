@@ -2488,6 +2488,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'EventCompactDatePill',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Compact date pill',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventCompactDatePillState,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'EventDateRailCard',
             useCases: [
               _widgetbook.WidgetbookUseCase(

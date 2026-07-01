@@ -1729,6 +1729,18 @@ Widget eventCompactRowState(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Compact date pill',
+  type: EventCompactDatePill,
+  path: '[Events]/Tiles',
+)
+Widget eventCompactDatePillState(BuildContext context) {
+  return EventCompactDatePill(
+    date: _event.startTime,
+    accent: CatchTokens.of(context).accent,
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Date rail card',
   type: EventDateRailCard,
   path: '[Events]/Tiles',

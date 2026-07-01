@@ -5,8 +5,8 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_capacity_presenter.dart';
 import 'package:flutter/material.dart';
@@ -65,7 +65,7 @@ class EventCompactRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _EventCompactDatePill(
+          EventCompactDatePill(
             date: event.startTime,
             accent: visual.accent,
           ),
@@ -119,8 +119,12 @@ class EventCompactRow extends StatelessWidget {
   }
 }
 
-class _EventCompactDatePill extends StatelessWidget {
-  const _EventCompactDatePill({required this.date, required this.accent});
+class EventCompactDatePill extends StatelessWidget {
+  const EventCompactDatePill({
+    super.key,
+    required this.date,
+    required this.accent,
+  });
 
   final DateTime date;
   final Color accent;
