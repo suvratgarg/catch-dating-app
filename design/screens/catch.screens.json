@@ -4428,7 +4428,7 @@
           "id": "text_scale_2",
           "kind": "accessibility",
           "status": "captured",
-          "source": "No tall text-scale Catches hub capture exists yet.",
+          "source": "swipe_hub_text_scale_2 captures the Catches hub route at TextScaler 2.0.",
           "nextAction": "Review large-text Catches hub after adapter extraction.",
           "previewIds": [
             "SwipeHubScreen/Hub route states",
@@ -4442,7 +4442,7 @@
           "id": "reduced_motion",
           "kind": "accessibility",
           "status": "captured",
-          "source": "No reduced-motion Catches hub capture exists yet.",
+          "source": "swipe_hub_reduced_motion captures the Catches hub route with MediaQuery.disableAnimations enabled.",
           "nextAction": "Keep reduced-motion hub capture registered while adding motion-specific masks.",
           "previewIds": [
             "SwipeHubScreen/Hub route states"
@@ -5050,7 +5050,7 @@
           "id": "text_scale_2",
           "kind": "accessibility",
           "status": "captured",
-          "source": "No tall text-scale Catches deck capture exists yet.",
+          "source": "swipe_event_text_scale_2 captures the event-specific Catches deck at TextScaler 2.0.",
           "nextAction": "Review large-text deck capture for profile surface and action overlay overlap.",
           "previewIds": [
             "SwipeScreen/Event deck route states"
@@ -5063,7 +5063,7 @@
           "id": "reduced_motion",
           "kind": "accessibility",
           "status": "captured",
-          "source": "No reduced-motion Catches deck capture exists yet.",
+          "source": "swipe_event_reduced_motion captures the event-specific Catches deck with MediaQuery.disableAnimations enabled.",
           "nextAction": "Keep reduced-motion deck capture registered while adding motion-specific masks.",
           "previewIds": [
             "SwipeScreen/Event deck route states"
@@ -5076,7 +5076,7 @@
           "id": "light_dark",
           "kind": "theme",
           "status": "captured",
-          "source": "No paired light/dark Catches deck capture exists yet.",
+          "source": "post_run_catch_window emits paired light/dark artifacts through the capture harness for the baseline event deck.",
           "nextAction": "Use paired baseline captures for light/dark deck review.",
           "previewIds": [
             "SwipeScreen/Event deck route states"
