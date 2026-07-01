@@ -76,13 +76,13 @@ class CatchJourneySteps extends StatelessWidget {
                       children: [
                         Text(
                           steps[i].title,
-                          style: CatchTextStyles.titleS(context),
+                          style: CatchTextStyles.fieldRowTitle(context),
                         ),
                         if (steps[i].body != null) ...[
                           const SizedBox(height: CatchSpacing.micro3),
                           Text(
                             steps[i].body!,
-                            style: CatchTextStyles.bodyS(context),
+                            style: CatchTextStyles.supporting(context),
                           ),
                         ],
                       ],

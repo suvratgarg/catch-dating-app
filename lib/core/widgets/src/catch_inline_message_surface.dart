@@ -70,7 +70,7 @@ class CatchInlineMessageSurface extends StatelessWidget {
                 ],
                 Text(
                   message,
-                  style: messageStyle ?? CatchTextStyles.bodyS(context),
+                  style: messageStyle ?? CatchTextStyles.supporting(context),
                 ),
               ],
             ),

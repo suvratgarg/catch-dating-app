@@ -791,7 +791,7 @@ class _CatchFieldState extends State<CatchField> {
       ),
       content: Text(
         _title ?? '',
-        style: CatchTextStyles.titleS(
+        style: CatchTextStyles.fieldRowTitle(
           context,
           color: _toneColor(t, primaryFallback: t.primary),
         ),
@@ -1090,7 +1090,7 @@ class _CatchFieldState extends State<CatchField> {
     final effectiveValueStyle =
         valueStyle ??
         (labelEmphasized
-            ? CatchTextStyles.bodyS(context, color: t.ink3)
+            ? CatchTextStyles.supporting(context, color: t.ink3)
             : CatchTextStyles.fieldRowTitle(
                 context,
                 color: valueIsPlaceholder
@@ -1246,7 +1246,10 @@ class _CatchFieldState extends State<CatchField> {
                       if (widget.leadingUnit != null) ...[
                         Text(
                           widget.leadingUnit!,
-                          style: CatchTextStyles.titleS(context, color: t.ink2),
+                          style: CatchTextStyles.fieldRowTitle(
+                            context,
+                            color: t.ink2,
+                          ),
                         ),
                         const SizedBox(width: CatchSpacing.s1),
                       ],
@@ -1950,7 +1953,7 @@ class _CatchFieldTrailing extends StatelessWidget {
             textAlign: TextAlign.right,
             maxLines: maxLines,
             overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.bodyS(context, color: t.ink),
+            style: CatchTextStyles.supporting(context, color: t.ink),
           ),
         );
       },
