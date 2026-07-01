@@ -13,6 +13,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/external_event.dart';
 import 'package:catch_dating_app/events/domain/viewer_event_availability.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
@@ -191,6 +192,19 @@ final _feedItems = [
     distanceFromUserKm: 4.8,
   ),
 ];
+
+final _externalFeedItem = ExploreExternalEventItem(
+  event: _externalEvent(
+    id: 'widgetbook-external-jazz-supper',
+    title: 'Jazz supper table',
+    startTime: DateTime(2026, 6, 25, 20),
+    meetingPoint: 'Blue room terrace',
+    activityKind: ActivityKind.dinner,
+    priceDisplayText: 'Rs 1,800',
+    sourcePlatform: 'luma',
+  ),
+  distanceFromUserKm: 2.4,
+);
 
 @widgetbook.UseCase(
   name: 'Screen states',
@@ -764,6 +778,268 @@ Widget exploreEventsSectionStates(BuildContext context) {
             feed: const AsyncData(ExploreFeedViewModel(items: [])),
             child: const _ExploreEventsSliverPreview(),
           ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'This week states',
+  type: ThisWeekRecommendationsSection,
+  path: '[Explore]/Sections',
+)
+Widget thisWeekRecommendationsSectionStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ThisWeekRecommendationsSection',
+    catalogId: 'section.explore.feed.this_week',
+    children: [
+      _StateCard(
+        label: 'ticket strip',
+        child: _ExploreScope(
+          child: AbsorbPointer(
+            child: ThisWeekRecommendationsSection(
+              items: _feedItems.take(3).toList(),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Event row states',
+  type: ExploreFeedEventRow,
+  path: '[Explore]/Rows',
+)
+Widget exploreFeedEventRowStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreFeedEventRow',
+    catalogId: 'row.explore.feed.event',
+    children: [
+      _StateCard(
+        label: 'open event',
+        child: _ExploreScope(
+          child: AbsorbPointer(child: ExploreFeedEventRow(item: _feedItems[1])),
+        ),
+      ),
+      _StateCard(
+        label: 'joined club recommendation',
+        child: _ExploreScope(
+          child: AbsorbPointer(
+            child: ExploreFeedEventRow(
+              item: _feedItems.first,
+              analyticsSource: 'widgetbook_joined',
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'External event row states',
+  type: ExploreExternalEventRow,
+  path: '[Explore]/Rows',
+)
+Widget exploreExternalEventRowStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreExternalEventRow',
+    catalogId: 'row.explore.feed.external_event',
+    children: [
+      _StateCard(
+        label: 'source link available',
+        child: _ExploreScope(
+          child: AbsorbPointer(
+            child: ExploreExternalEventRow(item: _externalFeedItem),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'missing source link',
+        child: _ExploreScope(
+          child: AbsorbPointer(
+            child: ExploreExternalEventRow(
+              item: ExploreExternalEventItem(
+                event: _externalFeedItem.event.copyWith(externalLinks: []),
+                distanceFromUserKm: null,
+              ),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Club polaroid states',
+  type: ExploreClubPolaroidCard,
+  path: '[Explore]/Cards',
+)
+Widget exploreClubPolaroidCardStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreClubPolaroidCard',
+    catalogId: 'card.explore.feed.club_polaroid',
+    children: [
+      _StateCard(
+        label: 'image-backed club',
+        child: AbsorbPointer(child: ExploreClubPolaroidCard(club: _clubs[1])),
+      ),
+      _StateCard(
+        label: 'fallback artwork',
+        child: AbsorbPointer(
+          child: ExploreClubPolaroidCard(
+            club: _clubs[2].copyWith(imageUrl: null),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Club row states',
+  type: ExploreFeedClubRow,
+  path: '[Explore]/Rows',
+)
+Widget exploreFeedClubRowStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreFeedClubRow',
+    catalogId: 'row.explore.feed.club',
+    children: [
+      _StateCard(
+        label: 'compact club',
+        child: AbsorbPointer(child: ExploreFeedClubRow(club: _clubs[0])),
+      ),
+      _StateCard(
+        label: 'host unknown',
+        child: AbsorbPointer(child: ExploreFeedClubRow(club: _clubs[2])),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Club cover states',
+  type: ExploreClubCover,
+  path: '[Explore]/Cards',
+)
+Widget exploreClubCoverStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreClubCover',
+    catalogId: 'card.explore.feed.club_cover',
+    children: [
+      _StateCard(
+        label: 'graded image',
+        child: SizedBox(
+          width: 260,
+          height: 260,
+          child: ExploreClubCover(club: _clubs[0]),
+        ),
+      ),
+      _StateCard(
+        label: 'compact fallback',
+        child: SizedBox.square(
+          dimension: 96,
+          child: ExploreClubCover(
+            club: _clubs[2].copyWith(imageUrl: null),
+            compact: true,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Club tags states',
+  type: ExploreClubTags,
+  path: '[Explore]/Cards',
+)
+Widget exploreClubTagsStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreClubTags',
+    catalogId: 'card.explore.feed.club_tags',
+    children: [
+      _StateCard(
+        label: 'visible tags',
+        child: ExploreClubTags(
+          state: ExploreClubCardState.from(_clubs[0], isSynthetic: false),
+        ),
+      ),
+      _StateCard(
+        label: 'member fallback',
+        child: ExploreClubTags(
+          state: ExploreClubCardState.from(
+            _clubs[0].copyWith(tags: []),
+            isSynthetic: false,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Dark pill states',
+  type: ExploreDarkPill,
+  path: '[Explore]/Cards',
+)
+Widget exploreDarkPillStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'ExploreDarkPill',
+    catalogId: 'card.explore.feed.dark_pill',
+    children: [
+      _StateCard(label: 'default', child: ExploreDarkPill('412 members')),
+      _StateCard(
+        label: 'compact action',
+        child: ExploreDarkPill('View club', compact: true),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Mono label states',
+  type: ExploreMonoLabel,
+  path: '[Explore]/Cards',
+)
+Widget exploreMonoLabelStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+  return _CatalogScreen(
+    title: 'ExploreMonoLabel',
+    catalogId: 'card.explore.feed.mono_label',
+    children: [
+      _StateCard(
+        label: 'result count',
+        child: ExploreMonoLabel('10 PLANS - JUN 24-30', color: t.ink3),
+      ),
+      _StateCard(
+        label: 'accent row kicker',
+        child: ExploreMonoLabel('CLUB TO KNOW', color: t.accent),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Loading sliver states',
+  type: ExploreEventsLoadingSliver,
+  path: '[Explore]/Sections',
+)
+Widget exploreEventsLoadingSliverStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'ExploreEventsLoadingSliver',
+    catalogId: 'section.explore.feed.loading',
+    children: [
+      _StateCard(
+        label: 'bounded skeleton',
+        child: _SliverFrame(
+          height: 240,
+          child: CustomScrollView(slivers: [ExploreEventsLoadingSliver()]),
         ),
       ),
     ],
@@ -1579,6 +1855,51 @@ ExploreEventItem _item({
     ),
     distanceFromUserKm: distanceFromUserKm,
     isJoinedClubMember: isJoinedClubMember,
+  );
+}
+
+ExternalEvent _externalEvent({
+  required String id,
+  required String title,
+  required DateTime startTime,
+  required String meetingPoint,
+  required ActivityKind activityKind,
+  required String priceDisplayText,
+  required String sourcePlatform,
+}) {
+  return ExternalEvent(
+    id: id,
+    canonicalHostId: 'widgetbook-external-host',
+    compatibilityClubId: _clubs[1].id,
+    title: title,
+    description:
+        'A reviewed external plan shown as read-only supply in Explore with outbound booking only.',
+    startTime: startTime,
+    endTime: startTime.add(const Duration(hours: 2)),
+    timezone: 'Asia/Kolkata',
+    meetingPoint: meetingPoint,
+    locationDetails: 'Hosted outside Catch; confirm final details on source.',
+    photoUrl: _clubs[1].imageUrl,
+    latitude: _mumbai.latitude + 0.03,
+    longitude: _mumbai.longitude + 0.03,
+    activityKind: activityKind,
+    interactionModel: activityKind.defaultInteractionModel,
+    priceDisplayText: priceDisplayText,
+    parsedPriceInPaise: 180000,
+    status: 'active',
+    publicationStatus: 'public',
+    citySlug: _mumbai.name,
+    sourcePlatform: sourcePlatform,
+    externalLinks: [
+      ExternalEventLink(
+        platform: sourcePlatform,
+        url: 'https://example.com/events/$id',
+        linkType: 'booking',
+        sourceEventKey: id,
+        candidateId: 'candidate-$id',
+        primary: true,
+      ),
+    ],
   );
 }
 

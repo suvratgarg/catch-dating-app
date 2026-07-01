@@ -25,16 +25,16 @@
     },
     "byDecision": {
       "keep-canonical-contract": 121,
-      "keep-public-cataloged": 739,
+      "keep-public-cataloged": 749,
       "keep-widget-state": 101,
-      "review-catalog-coverage": 103
+      "review-catalog-coverage": 93
     },
     "byCatalogStatus": {
-      "cataloged": 668,
+      "cataloged": 678,
       "contracted": 121,
       "not-applicable": 101,
       "route-covered": 71,
-      "uncataloged": 103
+      "uncataloged": 93
     }
   },
   "widgets": [
@@ -15566,23 +15566,19 @@
       "role": "feature-adapter",
       "canonicalFamily": "feature.explore.explore_club_cover",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "public-widget-missing-widgetbook"
-      ]
+      "flags": []
     },
     {
       "name": "ExploreClubPolaroidCard",
@@ -15593,24 +15589,21 @@
       "role": "composition",
       "canonicalFamily": "catch.explore_club_polaroid_card",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
       "flags": [
         "primitive-imports-provider-layer",
-        "primitive-imports-routing-layer",
-        "public-widget-missing-widgetbook"
+        "primitive-imports-routing-layer"
       ]
     },
     {
@@ -15622,23 +15615,19 @@
       "role": "feature-adapter",
       "canonicalFamily": "feature.explore.explore_club_tags",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "public-widget-missing-widgetbook"
-      ]
+      "flags": []
     },
     {
       "name": "ExploreDarkPill",
@@ -15649,23 +15638,19 @@
       "role": "feature-adapter",
       "canonicalFamily": "feature.explore.explore_dark_pill",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "public-widget-missing-widgetbook"
-      ]
+      "flags": []
     },
     {
       "name": "ExploreEventsEmptySliver",
@@ -15699,23 +15684,19 @@
       "role": "feature-adapter",
       "canonicalFamily": "feature.explore.explore_events_loading_sliver",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "public-widget-missing-widgetbook"
-      ]
+      "flags": []
     },
     {
       "name": "ExploreEventsSection",
@@ -15752,24 +15733,21 @@
       "role": "composition",
       "canonicalFamily": "catch.explore_external_event_row",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
       "flags": [
         "primitive-imports-provider-layer",
-        "primitive-imports-routing-layer",
-        "public-widget-missing-widgetbook"
+        "primitive-imports-routing-layer"
       ]
     },
     {
@@ -15781,24 +15759,21 @@
       "role": "composition",
       "canonicalFamily": "catch.explore_feed_club_row",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
       "flags": [
         "primitive-imports-provider-layer",
-        "primitive-imports-routing-layer",
-        "public-widget-missing-widgetbook"
+        "primitive-imports-routing-layer"
       ]
     },
     {
@@ -15810,24 +15785,21 @@
       "role": "composition",
       "canonicalFamily": "catch.explore_feed_event_row",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
       "flags": [
         "primitive-imports-provider-layer",
-        "primitive-imports-routing-layer",
-        "public-widget-missing-widgetbook"
+        "primitive-imports-routing-layer"
       ]
     },
     {
@@ -15839,23 +15811,19 @@
       "role": "feature-adapter",
       "canonicalFamily": "feature.explore.explore_mono_label",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "public-widget-missing-widgetbook"
-      ]
+      "flags": []
     },
     {
       "name": "ThisWeekRecommendationsSection",
@@ -15866,24 +15834,21 @@
       "role": "composition",
       "canonicalFamily": "catch.this_week_recommendations_section",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
       "flags": [
         "primitive-imports-provider-layer",
-        "primitive-imports-routing-layer",
-        "public-widget-missing-widgetbook"
+        "primitive-imports-routing-layer"
       ]
     },
     {
