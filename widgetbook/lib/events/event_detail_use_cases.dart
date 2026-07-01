@@ -1805,6 +1805,57 @@ Widget eventActionCardState(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Action card header',
+  type: EventActionCardHeader,
+  path: '[Events]/Tiles',
+)
+Widget eventActionCardHeaderState(BuildContext context) {
+  return Padding(
+    padding: CatchInsets.contentDense,
+    child: EventActionCardHeader(
+      indexLabel: '1 / 3',
+      badges: [
+        EventActionCardBadge(
+          label: 'Booked',
+          tone: CatchBadgeTone.success,
+          icon: CatchIcons.checkCircleRounded,
+        ),
+        EventActionCardBadge(
+          label: 'Host pick',
+          tone: CatchBadgeTone.brand,
+        ),
+      ],
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Action card actions',
+  type: EventActionCardActions,
+  path: '[Events]/Tiles',
+)
+Widget eventActionCardActionsState(BuildContext context) {
+  return Padding(
+    padding: CatchInsets.contentDense,
+    child: EventActionCardActions(
+      actions: [
+        EventActionCardAction(
+          label: 'Open event',
+          icon: CatchIcons.calendarMonthOutlined,
+          onPressed: _noop,
+          variant: CatchButtonVariant.primary,
+        ),
+        EventActionCardAction(
+          label: 'Add to calendar',
+          icon: CatchIcons.eventAvailableOutlined,
+          onPressed: _noop,
+        ),
+      ],
+    ),
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Compact row',
   type: EventCompactRow,
   path: '[Events]/Tiles',

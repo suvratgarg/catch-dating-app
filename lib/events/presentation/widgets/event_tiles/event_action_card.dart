@@ -93,7 +93,7 @@ class EventActionCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _EventActionCardHeader(badges: badges, indexLabel: indexLabel),
+                EventActionCardHeader(badges: badges, indexLabel: indexLabel),
                 if (headerAccessory != null) ...[gapH10, headerAccessory!],
                 gapH12,
                 Text(
@@ -120,7 +120,7 @@ class EventActionCard extends StatelessWidget {
                 ],
                 if (actions.isNotEmpty) ...[
                   gapH16,
-                  _EventActionCardActions(actions: actions),
+                  EventActionCardActions(actions: actions),
                 ],
               ],
             ),
@@ -167,8 +167,9 @@ class EventActionCardAction {
   final Color? accentColor;
 }
 
-class _EventActionCardHeader extends StatelessWidget {
-  const _EventActionCardHeader({
+class EventActionCardHeader extends StatelessWidget {
+  const EventActionCardHeader({
+    super.key,
     required this.badges,
     required this.indexLabel,
   });
@@ -205,8 +206,8 @@ class _EventActionCardHeader extends StatelessWidget {
   }
 }
 
-class _EventActionCardActions extends StatelessWidget {
-  const _EventActionCardActions({required this.actions});
+class EventActionCardActions extends StatelessWidget {
+  const EventActionCardActions({super.key, required this.actions});
 
   final List<EventActionCardAction> actions;
 

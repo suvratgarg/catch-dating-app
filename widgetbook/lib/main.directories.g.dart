@@ -2488,6 +2488,26 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'EventActionCardHeader',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Action card header',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventActionCardHeaderState,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventActionCardActions',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Action card actions',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventActionCardActionsState,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'EventAgendaTile',
             useCases: [
               _widgetbook.WidgetbookUseCase(

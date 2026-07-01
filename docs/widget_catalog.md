@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.499
+version: 2.5.500
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.500
+
+- Promoted `EventActionCardHeader` and `EventActionCardActions` as public
+  cataloged renderers for `EventActionCard`, with exact Widgetbook coverage.
+  The classification scanner's private widget review count drops by two without
+  changing event action card composition.
 
 ### 2.5.499
 
@@ -5577,6 +5584,8 @@ Generated 2026-05-06.
 | `SavedEventsClubNamesErrorSliver` | `lib/events/presentation/saved_events_screen.dart:182` | Sliver-shaped club-name lookup error renderer for Saved Events. Keeps club-name provider failures inside the agenda scroll surface through `CatchSliverErrorState.fromError` while the route owns provider invalidation. |
 | `EventTileData` | `lib/events/presentation/widgets/event_tiles/event_tile_data.dart:19` | Shared display model for event tile variants. Wraps an `Event` plus relationship status, optional club name, recommendation reason, and carousel position label, and exposes `EventCapacityPresenter`-backed copy for capacity labels. |
 | `EventActionCard` | `lib/events/presentation/widgets/event_tiles/event_action_card.dart:11` | Shared full-width lifecycle/action event card. Renders status badges, optional carousel position/accessory, title/subtitle, structured `CatchMetaDotRow` lines, and full-width action buttons for attendee focus and host-operation cards without owning routing or mutations. |
+| `EventActionCardHeader` | `lib/events/presentation/widgets/event_tiles/event_action_card.dart:170` | Public header renderer used by `EventActionCard`. Lays out action-card badges plus optional index label without owning event state or actions. |
+| `EventActionCardActions` | `lib/events/presentation/widgets/event_tiles/event_action_card.dart:209` | Public action-stack renderer used by `EventActionCard`. Maps typed `EventActionCardAction` inputs into full-width Catch buttons, preserving loading, semantics, variant, accent, key, and callback behavior. |
 | `EventCompactRow` | `lib/events/presentation/widgets/event_tiles/event_compact_row.dart:14` | Dense tappable event row with date pill, event title, location subtitle, shared meta row, optional status badge, and chevron. Used where an event needs to be represented inside compact activity/notification surfaces. |
 | `EventCompactDatePill` | `lib/events/presentation/widgets/event_tiles/event_compact_row.dart:122` | Public fixed-size month/day pill renderer used by `EventCompactRow`. Receives a caller-provided accent color, applies the shared compact date-pill dimensions, and owns only the visual month/day treatment. |
 | `EventDateMarker` | `lib/events/presentation/widgets/event_tiles/event_date_marker.dart:9` | Shared calendar week/month day marker with selected, today, disabled, and has-event-dot states. Calendar date cells use this instead of local one-off day widgets. |
