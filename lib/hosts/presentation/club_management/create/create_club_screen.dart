@@ -139,6 +139,33 @@ class HostClubCreateMediaState {
 }
 
 @immutable
+class HostClubCreateFieldDisplayState {
+  const HostClubCreateFieldDisplayState({
+    required this.detailsEnabled,
+    required this.selectedCity,
+    required this.rawCityName,
+    required this.currencyCode,
+  });
+
+  factory HostClubCreateFieldDisplayState.resolve({
+    required bool mediaOnly,
+    required String? selectedCityName,
+  }) {
+    return HostClubCreateFieldDisplayState(
+      detailsEnabled: !mediaOnly,
+      selectedCity: cityOptionByName(selectedCityName),
+      rawCityName: selectedCityName,
+      currencyCode: currencyCodeForCityName(selectedCityName),
+    );
+  }
+
+  final bool detailsEnabled;
+  final CityOption? selectedCity;
+  final String? rawCityName;
+  final String currencyCode;
+}
+
+@immutable
 class HostClubEditValidationState {
   const HostClubEditValidationState({
     required this.shouldShowErrors,
@@ -317,6 +344,7 @@ class HostClubCreateState {
     required this.footer,
     required this.editScaffold,
     required this.media,
+    required this.fields,
     required this.editValidation,
     required this.mutationError,
   });
@@ -333,6 +361,7 @@ class HostClubCreateState {
   final HostClubCreateFooterState footer;
   final HostClubEditScaffoldState? editScaffold;
   final HostClubCreateMediaState media;
+  final HostClubCreateFieldDisplayState fields;
   final HostClubEditValidationState editValidation;
   final String? mutationError;
 
@@ -393,6 +422,10 @@ class HostClubCreateState {
       clubPhotoPreviews: clubPhotoPreviews,
       profileImage: profileImage,
     );
+    final fields = HostClubCreateFieldDisplayState.resolve(
+      mediaOnly: mediaOnly,
+      selectedCityName: selectedCity,
+    );
     final editValidation = HostClubEditValidationState.resolve(
       editSubmitAttempted: editSubmitAttempted,
       formAutovalidateMode: formAutovalidateMode,
@@ -420,6 +453,7 @@ class HostClubCreateState {
             )
           : null,
       media: media,
+      fields: fields,
       editValidation: editValidation,
       mutationError: mutationError,
     );
@@ -915,15 +949,15 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
         autovalidateMode: screenState.editValidation.autovalidateMode,
         editIdentityHasError: screenState.editValidation.identityHasError,
         nameController: _nameController,
-        selectedCity: cityOptionByName(_selectedCity),
-        rawCityName: _selectedCity,
+        selectedCity: screenState.fields.selectedCity,
+        rawCityName: screenState.fields.rawCityName,
         areaController: _areaController,
         descriptionController: _descriptionController,
         instagramController: _instagramController,
         phoneController: _phoneController,
         emailController: _emailController,
         hostDefaults: _hostDefaults,
-        currencyCode: currencyCodeForCityName(_selectedCity),
+        currencyCode: screenState.fields.currencyCode,
         onBack: _back,
         onPickProfileImage: _pickProfileImage,
         onPickClubPhotos: _pickClubPhotos,
@@ -959,12 +993,12 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                     formKey: _basicsFormKey,
                     autovalidateMode: widget.formAutovalidateMode,
                     nameController: _nameController,
-                    selectedCity: cityOptionByName(_selectedCity),
+                    selectedCity: screenState.fields.selectedCity,
                     onCityChanged: (city) => setState(() {
                       _selectedCity = city?.effectiveMarketId;
                     }),
                     areaController: _areaController,
-                    detailsEnabled: !screenState.mediaOnly,
+                    detailsEnabled: screenState.fields.detailsEnabled,
                     clubPhotoPreviews: screenState.media.clubPhotoPreviews,
                     existingImageUrl: screenState.media.existingCoverImageUrl,
                     profileImageBytes: screenState.media.profileImageBytes,
@@ -994,7 +1028,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                     ClubHostDefaultsStep(
                       formKey: _defaultsFormKey,
                       defaults: _hostDefaults,
-                      currencyCode: currencyCodeForCityName(_selectedCity),
+                      currencyCode: screenState.fields.currencyCode,
                       onChanged: (defaults) =>
                           setState(() => _hostDefaults = defaults),
                     ),

@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_flow.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_screen.dart';
@@ -74,6 +75,7 @@ void main() {
       submitPending: false,
       saveDraftPending: true,
       mutationError: null,
+      selectedCity: club.location,
     );
     expect(ownerEdit.title, 'Host defaults');
     expect(ownerEdit.subtitle, 'Sea Face Social');
@@ -90,6 +92,10 @@ void main() {
     expect(ownerEdit.editScaffold?.mediaEnabled, isTrue);
     expect(ownerEdit.editScaffold?.cityPickerEnabled, isTrue);
     expect(ownerEdit.editScaffold?.footer.primaryLabel, 'Save changes');
+    expect(ownerEdit.fields.detailsEnabled, isTrue);
+    expect(ownerEdit.fields.selectedCity, cityOptionByName('Mumbai'));
+    expect(ownerEdit.fields.rawCityName, 'Mumbai');
+    expect(ownerEdit.fields.currencyCode, 'INR');
     expect(ownerEdit.media.enabled, isTrue);
     expect(ownerEdit.media.clubPhotoPreviews, isEmpty);
     expect(ownerEdit.media.existingCoverImageUrl, club.imageUrl);
@@ -126,6 +132,7 @@ void main() {
       submitPending: true,
       saveDraftPending: false,
       mutationError: null,
+      selectedCity: club.location,
     );
     expect(mediaOnly.showEditScaffold, isFalse);
     expect(mediaOnly.editScaffold, isNull);
@@ -138,7 +145,28 @@ void main() {
     expect(mediaOnly.footer.primaryEnabled, isFalse);
     expect(mediaOnly.footer.primaryIntent, HostClubCreatePrimaryIntent.submit);
     expect(mediaOnly.footer.saveDraftIntent, isNull);
+    expect(mediaOnly.fields.detailsEnabled, isFalse);
+    expect(mediaOnly.fields.selectedCity, cityOptionByName('Mumbai'));
     expect(mediaOnly.media.enabled, isFalse);
+  });
+
+  test('HostClubCreateState maps city field display state from market id', () {
+    final state = HostClubCreateState.resolve(
+      isEditing: false,
+      mediaOnly: false,
+      currentStep: 0,
+      activeSteps: steps,
+      initialClub: null,
+      submitPending: false,
+      saveDraftPending: false,
+      mutationError: null,
+      selectedCity: 'in-mh-mumbai',
+    );
+
+    expect(state.fields.detailsEnabled, isTrue);
+    expect(state.fields.selectedCity?.label, 'Mumbai');
+    expect(state.fields.rawCityName, 'in-mh-mumbai');
+    expect(state.fields.currencyCode, 'INR');
   });
 
   test('HostClubCreateState maps selected media display state', () {
