@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.screens.schema.json",
   "version": 1,
-  "updated": "2026-07-01",
+  "updated": "2026-07-02",
   "sourceOfTruth": {
     "purpose": "Screen contracts connect route state, controller ownership, section composition, captures, and design references.",
     "tokens": "Foundation values remain in design/tokens/catch.tokens.json.",
@@ -7268,7 +7268,7 @@
             ],
             "flutter": {
               "file": "lib/user_profile/presentation/widgets/profile_info_section.dart",
-              "symbol": "profileInfoSection"
+              "symbol": "ProfileInfoSection"
             },
             "currentOwner": "ProfileTabSliverBody",
             "targetOwner": "provider-free profile info section list",
@@ -7367,7 +7367,7 @@
             ],
             "flutter": {
               "file": "lib/user_profile/presentation/profile_screen.dart",
-              "symbol": "_profileUnavailableBody"
+              "symbol": "ProfileUnavailableBody"
             },
             "currentOwner": "ProfileScreen",
             "targetOwner": "provider-free empty/access section",
@@ -22052,9 +22052,9 @@
             ],
             "flutter": {
               "file": "lib/reviews/presentation/reviews_history_screen.dart",
-              "symbol": "reviewsHistoryList"
+              "symbol": "ReviewsHistoryList"
             },
-            "currentOwner": "provider-free _ReviewsHistoryList",
+            "currentOwner": "provider-free ReviewsHistoryList",
             "targetOwner": "provider-free reviews history list",
             "dependencies": [
               "catch.surface"
@@ -22108,9 +22108,9 @@
             ],
             "flutter": {
               "file": "lib/reviews/presentation/reviews_history_screen.dart",
-              "symbol": "reviewsHistoryEmpty"
+              "symbol": "ReviewsHistoryEmptyState"
             },
-            "currentOwner": "_ReviewsHistoryEmpty",
+            "currentOwner": "ReviewsHistoryEmptyState",
             "targetOwner": "provider-free reviews history empty state",
             "dependencies": [
               "catch.surface"
@@ -23254,9 +23254,9 @@
             ],
             "flutter": {
               "file": "lib/payments/presentation/payment_history_screen.dart",
-              "symbol": "paymentHistoryList"
+              "symbol": "PaymentHistoryList"
             },
-            "currentOwner": "_PaymentList + paymentHistoryViewModelProvider",
+            "currentOwner": "PaymentHistoryList + paymentHistoryViewModelProvider",
             "targetOwner": "provider-free payment history list",
             "dependencies": [
               "catch.surface"
