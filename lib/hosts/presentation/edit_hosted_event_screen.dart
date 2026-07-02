@@ -52,6 +52,130 @@ abstract final class EditHostedEventKeys {
   static const saveButton = ValueKey('edit-hosted-event-save-button');
 }
 
+@immutable
+class HostEventEditSaveRequest {
+  const HostEventEditSaveRequest({
+    required this.nextEvent,
+    required this.includePolicy,
+    required this.inviteCode,
+  });
+
+  final Event nextEvent;
+  final bool includePolicy;
+  final String? inviteCode;
+
+  factory HostEventEditSaveRequest.fromForm({
+    required Event event,
+    required bool scheduleLocked,
+    required bool policyLocked,
+    required DateTime selectedStartDateTime,
+    required int durationMinutes,
+    required LocationCoordinate startingPoint,
+    required String meetingPoint,
+    required String? meetingLocationAddress,
+    required String? meetingLocationPlaceId,
+    required String locationDetails,
+    required String distanceText,
+    required PaceLevel selectedPace,
+    required String description,
+    required String capacityText,
+    required String priceText,
+    required EventAdmissionPreset admissionPreset,
+    required bool cohortCapsEnabled,
+    required bool dynamicPricingEnabled,
+    required String minAgeText,
+    required String maxAgeText,
+    required String maxMenText,
+    required String maxWomenText,
+    required String dynamicPricingStepText,
+    required String dynamicPricingMaxText,
+    required EventCancellationPolicyId cancellationPolicyId,
+    required String inviteCodeText,
+  }) {
+    final distanceKm = event.eventFormat.activityKind.isDistanceBased
+        ? double.parse(distanceText.trim())
+        : event.distanceKm;
+    final startTime = scheduleLocked ? event.startTime : selectedStartDateTime;
+    final endTime = scheduleLocked
+        ? event.endTime
+        : startTime.add(CatchBusinessRules.eventDuration(durationMinutes));
+    final meetingLocation = EventMeetingLocation(
+      name: meetingPoint.trim(),
+      address: meetingLocationAddress,
+      placeId: meetingLocationPlaceId,
+      latitude: startingPoint.latitude,
+      longitude: startingPoint.longitude,
+      notes: _trimToNull(locationDetails),
+    ).normalized();
+    final includePolicy = !policyLocked;
+    final eventPolicyDefaults = includePolicy
+        ? EventPolicyDefaults(
+            admissionPreset: _admissionDefaultPresetFromSelected(
+              admissionPreset,
+              cohortCapsEnabled: cohortCapsEnabled,
+            ),
+            minAge: int.tryParse(minAgeText.trim()) ?? 0,
+            maxAge: int.tryParse(maxAgeText.trim()) ?? 99,
+            maxMen: int.tryParse(maxMenText.trim()),
+            maxWomen: int.tryParse(maxWomenText.trim()),
+            dynamicPricingEnabled: dynamicPricingEnabled,
+            dynamicPricingStepInPaise: _currencyTextValueInMinorUnits(
+              dynamicPricingStepText,
+              currencyCode: event.currency,
+            ),
+            dynamicPricingMaxInPaise: _currencyTextValueInMinorUnits(
+              dynamicPricingMaxText,
+              currencyCode: event.currency,
+            ),
+            cancellationPolicyId: cancellationPolicyId,
+          )
+        : null;
+    final capacityLimit = includePolicy
+        ? int.parse(capacityText.trim())
+        : event.capacityLimit;
+    final priceInPaise = includePolicy
+        ? _currencyTextValueInMinorUnits(
+            priceText,
+            currencyCode: event.currency,
+          )!
+        : event.priceInPaise;
+    final eventPolicy = includePolicy
+        ? _eventPolicyForDefaults(
+            defaults: eventPolicyDefaults!,
+            admissionPreset: admissionPreset,
+            capacityLimit: capacityLimit,
+            basePriceInPaise: priceInPaise,
+            inviteCodeHint: _inviteCodeHint(inviteCodeText),
+          )
+        : event.eventPolicy;
+
+    return HostEventEditSaveRequest(
+      nextEvent: event.copyWith(
+        startTime: startTime,
+        endTime: endTime,
+        meetingPoint: meetingLocation.name,
+        meetingLocation: meetingLocation,
+        startingPointLat: meetingLocation.latitude,
+        startingPointLng: meetingLocation.longitude,
+        locationDetails: meetingLocation.notes,
+        distanceKm: distanceKm,
+        pace: event.eventFormat.activityKind.isDistanceBased
+            ? selectedPace
+            : event.pace,
+        description: description.trim(),
+        capacityLimit: capacityLimit,
+        priceInPaise: priceInPaise,
+        constraints: includePolicy
+            ? eventPolicyDefaults!.toConstraints()
+            : event.constraints,
+        eventPolicy: eventPolicy,
+      ),
+      includePolicy: includePolicy,
+      inviteCode: _trimToNull(inviteCodeText),
+    );
+  }
+}
+
 class EditHostedEventRouteScreen extends ConsumerWidget {
   const EditHostedEventRouteScreen({
     super.key,
@@ -688,55 +812,33 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
       return;
     }
 
-    final distanceKm = widget.event.eventFormat.activityKind.isDistanceBased
-        ? double.parse(_distanceController.text.trim())
-        : widget.event.distanceKm;
-    final startTime = screenState.scheduleLocked
-        ? widget.event.startTime
-        : _selectedStartDateTime;
-    final endTime = screenState.scheduleLocked
-        ? widget.event.endTime
-        : startTime.add(CatchBusinessRules.eventDuration(_durationMinutes));
-    final meetingLocation = EventMeetingLocation(
-      name: _meetingPointController.text.trim(),
-      address: _meetingLocationAddress,
-      placeId: _meetingLocationPlaceId,
-      latitude: _startingPoint!.latitude,
-      longitude: _startingPoint!.longitude,
-      notes: _trimToNull(_locationDetailsController.text),
-    ).normalized();
-    final includePolicy = !screenState.policyLocked;
-    final eventPolicyDefaults = includePolicy ? _eventPolicyDefaults : null;
-    final eventPolicy = includePolicy
-        ? _eventPolicyForDefaults(eventPolicyDefaults!)
-        : widget.event.eventPolicy;
-
-    final nextEvent = widget.event.copyWith(
-      startTime: startTime,
-      endTime: endTime,
-      meetingPoint: meetingLocation.name,
-      meetingLocation: meetingLocation,
-      startingPointLat: meetingLocation.latitude,
-      startingPointLng: meetingLocation.longitude,
-      locationDetails: meetingLocation.notes,
-      distanceKm: distanceKm,
-      pace: widget.event.eventFormat.activityKind.isDistanceBased
-          ? _selectedPace
-          : widget.event.pace,
-      description: _descriptionController.text.trim(),
-      capacityLimit: includePolicy
-          ? int.parse(_capacityController.text.trim())
-          : widget.event.capacityLimit,
-      priceInPaise: includePolicy
-          ? _currencyControllerValueInMinorUnits(
-              _priceController,
-              currencyCode: widget.event.currency,
-            )!
-          : widget.event.priceInPaise,
-      constraints: includePolicy
-          ? eventPolicyDefaults!.toConstraints()
-          : widget.event.constraints,
-      eventPolicy: eventPolicy,
+    final request = HostEventEditSaveRequest.fromForm(
+      event: widget.event,
+      scheduleLocked: screenState.scheduleLocked,
+      policyLocked: screenState.policyLocked,
+      selectedStartDateTime: _selectedStartDateTime,
+      durationMinutes: _durationMinutes,
+      startingPoint: _startingPoint!,
+      meetingPoint: _meetingPointController.text,
+      meetingLocationAddress: _meetingLocationAddress,
+      meetingLocationPlaceId: _meetingLocationPlaceId,
+      locationDetails: _locationDetailsController.text,
+      distanceText: _distanceController.text,
+      selectedPace: _selectedPace,
+      description: _descriptionController.text,
+      capacityText: _capacityController.text,
+      priceText: _priceController.text,
+      admissionPreset: _selectedAdmissionPreset,
+      cohortCapsEnabled: _cohortCapsEnabled,
+      dynamicPricingEnabled: _dynamicPricingEnabled,
+      minAgeText: _minAgeController.text,
+      maxAgeText: _maxAgeController.text,
+      maxMenText: _maxMenController.text,
+      maxWomenText: _maxWomenController.text,
+      dynamicPricingStepText: _dynamicPricingStepController.text,
+      dynamicPricingMaxText: _dynamicPricingMaxController.text,
+      cancellationPolicyId: _selectedCancellationPolicyId,
+      inviteCodeText: _inviteCodeController.text,
     );
 
     unawaited(
@@ -744,9 +846,9 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
         await tx
             .get(hostEventBookingControllerProvider.notifier)
             .updateHostedEvent(
-              event: nextEvent,
-              includePolicy: includePolicy,
-              inviteCode: _trimToNull(_inviteCodeController.text),
+              event: request.nextEvent,
+              includePolicy: request.includePolicy,
+              inviteCode: request.inviteCode,
             );
         ref.invalidate(watchEventProvider(widget.event.id));
         ref.invalidate(watchEventParticipationRosterProvider(widget.event.id));
@@ -757,53 +859,6 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
         }
       }),
     );
-  }
-
-  EventPolicyDefaults get _eventPolicyDefaults => EventPolicyDefaults(
-    admissionPreset: _admissionDefaultPresetFromSelected(
-      _selectedAdmissionPreset,
-      cohortCapsEnabled: _cohortCapsEnabled,
-    ),
-    minAge: int.tryParse(_minAgeController.text.trim()) ?? 0,
-    maxAge: int.tryParse(_maxAgeController.text.trim()) ?? 99,
-    maxMen: int.tryParse(_maxMenController.text.trim()),
-    maxWomen: int.tryParse(_maxWomenController.text.trim()),
-    dynamicPricingEnabled: _dynamicPricingEnabled,
-    dynamicPricingStepInPaise: _currencyControllerValueInMinorUnits(
-      _dynamicPricingStepController,
-      currencyCode: widget.event.currency,
-    ),
-    dynamicPricingMaxInPaise: _currencyControllerValueInMinorUnits(
-      _dynamicPricingMaxController,
-      currencyCode: widget.event.currency,
-    ),
-    cancellationPolicyId: _selectedCancellationPolicyId,
-  );
-
-  EventPolicyBundle _eventPolicyForDefaults(EventPolicyDefaults defaults) {
-    final capacityLimit = int.parse(_capacityController.text.trim());
-    final basePriceInPaise = _currencyControllerValueInMinorUnits(
-      _priceController,
-      currencyCode: widget.event.currency,
-    )!;
-    if (_selectedAdmissionPreset == EventAdmissionPreset.requestToJoin) {
-      return EventPolicyBundle.requestToJoinEvent(
-        capacityLimit: capacityLimit,
-        basePriceInPaise: basePriceInPaise,
-        cancellationPolicy: defaults.cancellationPolicy,
-      );
-    }
-    return defaults.toEventPolicyBundle(
-      capacityLimit: capacityLimit,
-      basePriceInPaise: basePriceInPaise,
-      inviteCodeHint: _inviteCodeHint,
-    );
-  }
-
-  String? get _inviteCodeHint {
-    final code = _inviteCodeController.text.trim();
-    if (code.length <= 4) return code.isEmpty ? null : code;
-    return '${code.substring(0, 2)}...${code.substring(code.length - 2)}';
   }
 }
 
@@ -1385,13 +1440,37 @@ EventAdmissionDefaultPreset _admissionDefaultPresetFromSelected(
 String _minorUnitsText(int? value, {required String currencyCode}) =>
     minorCurrencyAmountInputText(value, currencyCode: currencyCode);
 
-int? _currencyControllerValueInMinorUnits(
-  TextEditingController controller, {
+int? _currencyTextValueInMinorUnits(
+  String value, {
   required String currencyCode,
-}) => parseMajorCurrencyAmountToMinorUnits(
-  controller.text,
-  currencyCode: currencyCode,
-);
+}) => parseMajorCurrencyAmountToMinorUnits(value, currencyCode: currencyCode);
+
+EventPolicyBundle _eventPolicyForDefaults({
+  required EventPolicyDefaults defaults,
+  required EventAdmissionPreset admissionPreset,
+  required int capacityLimit,
+  required int basePriceInPaise,
+  required String? inviteCodeHint,
+}) {
+  if (admissionPreset == EventAdmissionPreset.requestToJoin) {
+    return EventPolicyBundle.requestToJoinEvent(
+      capacityLimit: capacityLimit,
+      basePriceInPaise: basePriceInPaise,
+      cancellationPolicy: defaults.cancellationPolicy,
+    );
+  }
+  return defaults.toEventPolicyBundle(
+    capacityLimit: capacityLimit,
+    basePriceInPaise: basePriceInPaise,
+    inviteCodeHint: inviteCodeHint,
+  );
+}
+
+String? _inviteCodeHint(String value) {
+  final code = value.trim();
+  if (code.length <= 4) return code.isEmpty ? null : code;
+  return '${code.substring(0, 2)}...${code.substring(code.length - 2)}';
+}
 
 String? _moneyRequiredValidator(String? value, {required String currencyCode}) {
   if (value == null || value.trim().isEmpty) return 'Required';

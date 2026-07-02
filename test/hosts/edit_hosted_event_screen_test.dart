@@ -1,12 +1,15 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
+import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_edit_screen_state.dart';
+import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -147,6 +150,121 @@ void main() {
     expect(disabled.footer.isEnabled, isFalse);
     expect(disabled.scheduleLocked, isTrue);
     expect(disabled.policyLocked, isTrue);
+  });
+
+  test('HostEventEditSaveRequest builds unlocked save payload', () {
+    final start = DateTime(2026, 5, 22, 7);
+    final event = buildEvent(
+      startTime: start,
+      endTime: start.add(const Duration(hours: 1)),
+      meetingPoint: 'Old gate',
+      startingPointLat: 19.076,
+      startingPointLng: 72.8777,
+      description: 'Old description',
+    );
+    final nextStart = DateTime(2026, 5, 23, 8, 30);
+
+    final request = HostEventEditSaveRequest.fromForm(
+      event: event,
+      scheduleLocked: false,
+      policyLocked: false,
+      selectedStartDateTime: nextStart,
+      durationMinutes: 75,
+      startingPoint: const LocationCoordinate(19.08, 72.88),
+      meetingPoint: ' New gate ',
+      meetingLocationAddress: ' Bandstand ',
+      meetingLocationPlaceId: ' place-1 ',
+      locationDetails: ' Blue gate ',
+      distanceText: '7.5',
+      selectedPace: PaceLevel.fast,
+      description: ' Updated route notes ',
+      capacityText: '30',
+      priceText: '250',
+      admissionPreset: EventAdmissionPreset.inviteOnly,
+      cohortCapsEnabled: false,
+      dynamicPricingEnabled: false,
+      minAgeText: '24',
+      maxAgeText: '40',
+      maxMenText: '',
+      maxWomenText: '',
+      dynamicPricingStepText: '',
+      dynamicPricingMaxText: '',
+      cancellationPolicyId: EventCancellationPolicyId.flexible,
+      inviteCodeText: ' SOCIAL2026 ',
+    );
+
+    expect(request.includePolicy, isTrue);
+    expect(request.inviteCode, 'SOCIAL2026');
+    expect(request.nextEvent.startTime, nextStart);
+    expect(
+      request.nextEvent.endTime,
+      nextStart.add(const Duration(minutes: 75)),
+    );
+    expect(request.nextEvent.meetingPoint, 'New gate');
+    expect(request.nextEvent.meetingLocation?.address, 'Bandstand');
+    expect(request.nextEvent.meetingLocation?.placeId, 'place-1');
+    expect(request.nextEvent.locationDetails, 'Blue gate');
+    expect(request.nextEvent.distanceKm, 7.5);
+    expect(request.nextEvent.pace, PaceLevel.fast);
+    expect(request.nextEvent.description, 'Updated route notes');
+    expect(request.nextEvent.capacityLimit, 30);
+    expect(request.nextEvent.constraints.minAge, 24);
+    expect(request.nextEvent.constraints.maxAge, 40);
+    expect(request.nextEvent.effectiveEventPolicy.usesInviteOnly, isTrue);
+  });
+
+  test('HostEventEditSaveRequest preserves locked schedule and policy', () {
+    final start = DateTime(2026, 5, 22, 7);
+    final event = buildEvent(
+      startTime: start,
+      endTime: start.add(const Duration(hours: 1)),
+      meetingPoint: 'Old gate',
+      startingPointLat: 19.076,
+      startingPointLng: 72.8777,
+      description: 'Old description',
+      capacityLimit: 18,
+      priceInPaise: 50000,
+    );
+
+    final request = HostEventEditSaveRequest.fromForm(
+      event: event,
+      scheduleLocked: true,
+      policyLocked: true,
+      selectedStartDateTime: DateTime(2026, 5, 23, 8),
+      durationMinutes: 90,
+      startingPoint: const LocationCoordinate(19.08, 72.88),
+      meetingPoint: 'New gate',
+      meetingLocationAddress: null,
+      meetingLocationPlaceId: null,
+      locationDetails: '',
+      distanceText: '9',
+      selectedPace: PaceLevel.competitive,
+      description: 'Updated route notes',
+      capacityText: '40',
+      priceText: '900',
+      admissionPreset: EventAdmissionPreset.openCapacity,
+      cohortCapsEnabled: true,
+      dynamicPricingEnabled: true,
+      minAgeText: '30',
+      maxAgeText: '44',
+      maxMenText: '10',
+      maxWomenText: '10',
+      dynamicPricingStepText: '250',
+      dynamicPricingMaxText: '1500',
+      cancellationPolicyId: EventCancellationPolicyId.strict,
+      inviteCodeText: 'LOCKED',
+    );
+
+    expect(request.includePolicy, isFalse);
+    expect(request.inviteCode, 'LOCKED');
+    expect(request.nextEvent.startTime, event.startTime);
+    expect(request.nextEvent.endTime, event.endTime);
+    expect(request.nextEvent.capacityLimit, event.capacityLimit);
+    expect(request.nextEvent.priceInPaise, event.priceInPaise);
+    expect(request.nextEvent.eventPolicy, event.eventPolicy);
+    expect(request.nextEvent.constraints, event.constraints);
+    expect(request.nextEvent.meetingPoint, 'New gate');
+    expect(request.nextEvent.description, 'Updated route notes');
   });
 
   testWidgets('saves host-editable event details through updateEvent', (

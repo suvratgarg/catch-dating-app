@@ -19261,7 +19261,7 @@
             "symbol": "EventRepository"
           }
         ],
-        "notes": "EditHostedEventRouteScreen resolves uid, club, and event, handles loading/error/not-found/unauthorized route states, and delegates loaded state to EditHostedEventScreen. HostEventEditScreenState now owns loaded editability, schedule/policy lock derivation, save footer enabled/loading state, save error exposure, success/missing-location feedback copy, and pop-on-success policy. EditHostedEventScreen still owns local form controllers, location picker, invite/private-access loading, validation, EventBookingController.updateHostedEventMutation execution, and Navigator/snackbar side effects."
+        "notes": "EditHostedEventRouteScreen resolves uid, club, and event, handles loading/error/not-found/unauthorized route states, and delegates loaded state to EditHostedEventScreen. HostEventEditScreenState now owns loaded editability, schedule/policy lock derivation, save footer enabled/loading state, save error exposure, success/missing-location feedback copy, and pop-on-success policy. HostEventEditSaveRequest owns validated save payload construction. EditHostedEventScreen still owns local form controllers, location picker, invite/private-access loading, validation, EventBookingController.updateHostedEventMutation execution, and Navigator/snackbar side effects."
       },
       "designRefs": [
         {
@@ -19751,7 +19751,7 @@
               "submit_error",
               "success_pop"
             ],
-            "migration": "HostEventEditScreenState now owns save enabled/loading/error input, feedback copy, and pop-on-success policy while EditHostedEventFooter renders the CatchButton dock. Continue moving save request construction and typed callbacks out of the route widget."
+            "migration": "HostEventEditScreenState now owns save enabled/loading/error input, feedback copy, and pop-on-success policy while HostEventEditSaveRequest owns validated save payload construction and EditHostedEventFooter renders the CatchButton dock. Continue moving typed callbacks out of the route widget."
           }
         ]
       },
@@ -19769,7 +19769,7 @@
         {
           "id": "DS-HOST-EVENT-EDIT-003",
           "status": "open",
-          "nextAction": "HostEventEditScreenState now owns loaded editability, schedule/policy locks, save footer state, save error input, feedback copy, and pop-on-success policy. Remaining adapter work is private-access loading/data, validation, selected-location, field display values, save request construction, and typed callbacks so the screen no longer owns form-side effects."
+          "nextAction": "HostEventEditScreenState now owns loaded editability, schedule/policy locks, save footer state, save error input, feedback copy, and pop-on-success policy, and HostEventEditSaveRequest owns validated save payload construction. Remaining adapter work is private-access loading/data, validation, selected-location, field display values, and typed callbacks so the screen no longer owns form-side effects."
         },
         {
           "id": "DS-HOST-EVENT-EDIT-004",
