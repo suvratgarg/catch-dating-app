@@ -331,13 +331,10 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final uid = ref.watch(uidProvider).asData?.value;
+    final uidAsync = ref.watch(uidProvider);
+    final uid = uidAsync.asData?.value;
     final eventAsync = ref.watch(watchEventProvider(eventId));
     final event = eventAsync.asData?.value ?? initialEvent;
-    final profileAsync = ref.watch(watchUserProfileProvider);
-    final participationAsync = uid == null
-        ? const AsyncData<EventParticipation?>(null)
-        : ref.watch(watchEventParticipationProvider(eventId, uid));
     final planAsync = ref.watch(watchEventSuccessPlanProvider(eventId));
     // Wave 1: core event, profile, participation, and plan load together.
     if (eventAsync.isLoading && event == null) {
@@ -356,12 +353,26 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
         message: 'This event is no longer available.',
       );
     }
+    if (uidAsync.isLoading) {
+      return const CompanionLoading();
+    }
+    if (uidAsync.hasError) {
+      return CompanionError(
+        error: uidAsync.error!,
+        errorContext: AppErrorContext.auth,
+        onRetry: () => ref.invalidate(uidProvider),
+      );
+    }
     if (uid == null) {
       return const CompanionMessage(
         title: 'Sign in required',
         message: 'Sign in to open your event companion.',
       );
     }
+    final profileAsync = ref.watch(watchUserProfileProvider);
+    final participationAsync = ref.watch(
+      watchEventParticipationProvider(eventId, uid),
+    );
     if (profileAsync.isLoading ||
         participationAsync.isLoading ||
         planAsync.isLoading) {

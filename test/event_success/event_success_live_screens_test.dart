@@ -2053,6 +2053,77 @@ void main() {
     },
   );
 
+  testWidgets('companion route shows loading while uid resolves', (
+    tester,
+  ) async {
+    final event = buildEvent(id: 'event-uid-loading-companion');
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWithValue(const AsyncLoading<String?>()),
+          watchEventProvider(
+            event.id,
+          ).overrideWithValue(AsyncData<Event?>(event)),
+          watchEventSuccessPlanProvider(event.id).overrideWithValue(
+            AsyncData(
+              EventSuccessPlan.defaultForEvent(event, now: event.startTime),
+            ),
+          ),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: EventSuccessCompanionRouteScreen(
+            clubId: event.clubId,
+            eventId: event.id,
+          ),
+        ),
+      ),
+    );
+
+    await tester.pump();
+
+    expect(find.text('Event companion'), findsOneWidget);
+    expect(find.byType(EventSuccessCompanionLoadingBody), findsOneWidget);
+    expect(find.text('Sign in required'), findsNothing);
+  });
+
+  testWidgets('companion route shows auth errors before signed-out copy', (
+    tester,
+  ) async {
+    final event = buildEvent(id: 'event-uid-error-companion');
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWithValue(
+            AsyncError<String?>(Exception('auth failed'), StackTrace.empty),
+          ),
+          watchEventProvider(
+            event.id,
+          ).overrideWithValue(AsyncData<Event?>(event)),
+          watchEventSuccessPlanProvider(event.id).overrideWithValue(
+            AsyncData(
+              EventSuccessPlan.defaultForEvent(event, now: event.startTime),
+            ),
+          ),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: EventSuccessCompanionRouteScreen(
+            clubId: event.clubId,
+            eventId: event.id,
+          ),
+        ),
+      ),
+    );
+
+    await tester.pump();
+
+    expect(find.text('Sign in problem'), findsOneWidget);
+    expect(find.text('Sign in required'), findsNothing);
+  });
+
   testWidgets(
     'companion screen shows post-event openers and feedback after attendance',
     (tester) async {
