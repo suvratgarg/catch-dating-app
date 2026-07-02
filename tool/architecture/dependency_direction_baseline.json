@@ -15,11 +15,6 @@
     },
     {
       "rule": "crossFeaturePresentationImport",
-      "path": "lib/clubs/presentation/detail/widgets/club_schedule_section.dart",
-      "import": "package:catch_dating_app/events/presentation/widgets/event_agenda_list.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
       "path": "lib/dashboard/presentation/widgets/dashboard_full.dart",
       "import": "package:catch_dating_app/clubs/presentation/discovery/widgets/club_avatar_rail.dart"
     },
