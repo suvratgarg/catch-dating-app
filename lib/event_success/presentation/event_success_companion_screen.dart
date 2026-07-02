@@ -312,6 +312,12 @@ class CompanionMessage extends StatelessWidget {
   }
 }
 
+Future<void> _noopFuture() async {}
+Future<void> _noopSaveCompatibilityAnswers(List<String> answerIds) async {}
+void _noopIncludeChange(bool include) {}
+Future<void> _noopSaveWingmanRequest(PublicProfile target, String note) async {}
+Future<void> _noopSubmitFeedback(EventSuccessFeedback feedback) async {}
+
 class EventSuccessCompanionRouteScreen extends ConsumerWidget {
   const EventSuccessCompanionRouteScreen({
     super.key,
@@ -649,6 +655,28 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
         : ref.watch(
             eventSuccessAssignmentPeerProfilesProvider(rotationPeerUidsKey),
           );
+    final compatibilityMutation = ref.watch(
+      EventSuccessController.compatibilityResponseMutation,
+    );
+    final feedbackMutation = ref.watch(EventSuccessController.feedbackMutation);
+    final wingmanRequestMutation = ref.watch(
+      EventSuccessController.wingmanRequestMutation,
+    );
+    final firstHelloStartMutation = ref.watch(
+      EventSuccessController.firstHelloStartMutation,
+    );
+    final firstHelloCompleteMutation = ref.watch(
+      EventSuccessController.firstHelloCompleteMutation,
+    );
+    final selfCheckInMutation = ref.watch(
+      EventBookingController.selfCheckInMutation,
+    );
+    final microPodsOptOutMutation = ref.watch(
+      EventSuccessController.microPodsOptOutMutation,
+    );
+    final guidedRotationsOptOutMutation = ref.watch(
+      EventSuccessController.guidedRotationsOptOutMutation,
+    );
 
     // Surface companion action failures (feedback, wingman, opt-outs, first
     // hello, match clues). These run as fire-and-forget mutations from the
@@ -675,6 +703,28 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
         guidedRotationsOptedOut: guidedRotationsOptedOut,
         arrivalMission: activeArrivalMission,
         now: referenceNow,
+        compatibilityActionState: CompatibilityQuestionnaireActionState(
+          isSaving: compatibilityMutation.isPending,
+          error: compatibilityMutation.hasError
+              ? (compatibilityMutation as MutationError).error
+              : null,
+        ),
+        firstHelloActionState: FirstHelloActionState(
+          startPending: firstHelloStartMutation.isPending,
+          completePending: firstHelloCompleteMutation.isPending,
+          skipPending: selfCheckInMutation.isPending,
+        ),
+        selfCheckInActionState: SelfCheckInActionState(
+          isCheckingIn: selfCheckInMutation.isPending,
+        ),
+        isSavingMicroPodsOptOut: microPodsOptOutMutation.isPending,
+        isSavingGuidedRotationsOptOut: guidedRotationsOptOutMutation.isPending,
+        wingmanActionState: WingmanRequestActionState(
+          isSaving: wingmanRequestMutation.isPending,
+        ),
+        feedbackActionState: EventSuccessFeedbackActionState(
+          isSaving: feedbackMutation.isPending,
+        ),
         onStartArrivalMission: () async {
           await EventSuccessController.firstHelloStartMutation.run(
             ref,
@@ -756,6 +806,11 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
                 .selfCheckIn(eventId: event.id),
           );
         },
+        onPlayLiveEffect: (kind) =>
+            ref.read(eventSuccessLiveEffectsControllerProvider).play(kind),
+        onPlayAmbientBed: (bed) => ref
+            .read(eventSuccessLiveEffectsControllerProvider)
+            .playAmbientBed(bed),
       ),
     );
   }
@@ -880,7 +935,7 @@ class EventSuccessCompanionScreenState {
       '${runtime.plan.activeRevealRoundIndex}';
 }
 
-class EventSuccessCompanionScreen extends ConsumerStatefulWidget {
+class EventSuccessCompanionScreen extends StatefulWidget {
   const EventSuccessCompanionScreen({
     super.key,
     required this.event,
@@ -901,6 +956,14 @@ class EventSuccessCompanionScreen extends ConsumerStatefulWidget {
     this.guidedRotationsOptedOut = false,
     this.arrivalMission,
     this.now,
+    this.compatibilityActionState =
+        const CompatibilityQuestionnaireActionState(),
+    this.firstHelloActionState = const FirstHelloActionState(),
+    this.selfCheckInActionState = const SelfCheckInActionState(),
+    this.isSavingMicroPodsOptOut = false,
+    this.isSavingGuidedRotationsOptOut = false,
+    this.wingmanActionState = const WingmanRequestActionState(),
+    this.feedbackActionState = const EventSuccessFeedbackActionState(),
     this.onSaveCompatibilityAnswers,
     this.onStartArrivalMission,
     this.onCompleteArrivalMission,
@@ -911,6 +974,8 @@ class EventSuccessCompanionScreen extends ConsumerStatefulWidget {
     this.onWithdrawWingmanRequest,
     this.onSubmitFeedback,
     this.onSelfCheckIn,
+    this.onPlayLiveEffect,
+    this.onPlayAmbientBed,
   });
 
   final Event event;
@@ -931,6 +996,13 @@ class EventSuccessCompanionScreen extends ConsumerStatefulWidget {
   final bool guidedRotationsOptedOut;
   final EventSuccessArrivalMission? arrivalMission;
   final DateTime? now;
+  final CompatibilityQuestionnaireActionState compatibilityActionState;
+  final FirstHelloActionState firstHelloActionState;
+  final SelfCheckInActionState selfCheckInActionState;
+  final bool isSavingMicroPodsOptOut;
+  final bool isSavingGuidedRotationsOptOut;
+  final WingmanRequestActionState wingmanActionState;
+  final EventSuccessFeedbackActionState feedbackActionState;
   final Future<void> Function(List<String> answerIds)?
   onSaveCompatibilityAnswers;
   final Future<void> Function()? onStartArrivalMission;
@@ -947,14 +1019,17 @@ class EventSuccessCompanionScreen extends ConsumerStatefulWidget {
   final Future<void> Function()? onWithdrawWingmanRequest;
   final Future<void> Function(EventSuccessFeedback feedback)? onSubmitFeedback;
   final Future<void> Function()? onSelfCheckIn;
+  final Future<void> Function(EventSuccessLiveEffectKind kind)?
+  onPlayLiveEffect;
+  final Future<void> Function(EventSuccessAmbientBed bed)? onPlayAmbientBed;
 
   @override
-  ConsumerState<EventSuccessCompanionScreen> createState() =>
+  State<EventSuccessCompanionScreen> createState() =>
       _EventSuccessCompanionScreenState();
 }
 
 class _EventSuccessCompanionScreenState
-    extends ConsumerState<EventSuccessCompanionScreen> {
+    extends State<EventSuccessCompanionScreen> {
   String? _lastEffectKey;
 
   @override
@@ -976,82 +1051,25 @@ class _EventSuccessCompanionScreenState
     final runtime = screenState.runtime;
     final attendeeMoment = screenState.attendeeMoment;
     final momentPresentation = screenState.presentation;
-    final compatibilityMutation = ref.watch(
-      EventSuccessController.compatibilityResponseMutation,
-    );
-    final feedbackMutation = ref.watch(EventSuccessController.feedbackMutation);
-    final wingmanRequestMutation = ref.watch(
-      EventSuccessController.wingmanRequestMutation,
-    );
-    final compatibilityActionState = CompatibilityQuestionnaireActionState(
-      isSaving: compatibilityMutation.isPending,
-      error: compatibilityMutation.hasError
-          ? (compatibilityMutation as MutationError).error
-          : null,
-    );
-    final firstHelloStartMutation = ref.watch(
-      EventSuccessController.firstHelloStartMutation,
-    );
-    final firstHelloCompleteMutation = ref.watch(
-      EventSuccessController.firstHelloCompleteMutation,
-    );
-    final selfCheckInMutation = ref.watch(
-      EventBookingController.selfCheckInMutation,
-    );
-    final firstHelloActionState = FirstHelloActionState(
-      startPending: firstHelloStartMutation.isPending,
-      completePending: firstHelloCompleteMutation.isPending,
-      skipPending: selfCheckInMutation.isPending,
-    );
-    final selfCheckInActionState = SelfCheckInActionState(
-      isCheckingIn: selfCheckInMutation.isPending,
-    );
-    final microPodsOptOutMutation = ref.watch(
-      EventSuccessController.microPodsOptOutMutation,
-    );
-    final guidedRotationsOptOutMutation = ref.watch(
-      EventSuccessController.guidedRotationsOptOutMutation,
-    );
+    final compatibilityActionState = widget.compatibilityActionState;
+    final firstHelloActionState = widget.firstHelloActionState;
+    final selfCheckInActionState = widget.selfCheckInActionState;
     final microPodsActionState = AssignmentOptOutActionState(
       optedOut: widget.microPodsOptedOut,
-      isSaving: microPodsOptOutMutation.isPending,
+      isSaving: widget.isSavingMicroPodsOptOut,
     );
     final guidedRotationsActionState = AssignmentOptOutActionState(
       optedOut: widget.guidedRotationsOptedOut,
-      isSaving: guidedRotationsOptOutMutation.isPending,
+      isSaving: widget.isSavingGuidedRotationsOptOut,
     );
-    final wingmanActionState = WingmanRequestActionState(
-      isSaving: wingmanRequestMutation.isPending,
-    );
-    final feedbackActionState = EventSuccessFeedbackActionState(
-      isSaving: feedbackMutation.isPending,
-    );
+    final wingmanActionState = widget.wingmanActionState;
+    final feedbackActionState = widget.feedbackActionState;
     void setMicroPodsIncluded(bool include) {
-      final override = widget.onSetMicroPodsIncluded;
-      if (override != null) {
-        override(include);
-        return;
-      }
-      EventSuccessController.microPodsOptOutMutation.run(
-        ref,
-        (tx) => tx
-            .get(eventSuccessControllerProvider.notifier)
-            .setMicroPodsOptOut(event: event, optedOut: !include),
-      );
+      (widget.onSetMicroPodsIncluded ?? _noopIncludeChange)(include);
     }
 
     void setGuidedRotationsIncluded(bool include) {
-      final override = widget.onSetGuidedRotationsIncluded;
-      if (override != null) {
-        override(include);
-        return;
-      }
-      EventSuccessController.guidedRotationsOptOutMutation.run(
-        ref,
-        (tx) => tx
-            .get(eventSuccessControllerProvider.notifier)
-            .setGuidedRotationsOptOut(event: event, optedOut: !include),
-      );
+      (widget.onSetGuidedRotationsIncluded ?? _noopIncludeChange)(include);
     }
 
     _playMomentEffectOnce(screenState);
@@ -1079,8 +1097,7 @@ class _EventSuccessCompanionScreenState
         SelfCheckInCard(
           event: event,
           actionState: selfCheckInActionState,
-          onSelfCheckIn:
-              widget.onSelfCheckIn ?? () => _defaultSelfCheckIn(event),
+          onSelfCheckIn: widget.onSelfCheckIn ?? _noopFuture,
         ),
         momentKey: screenState.transitionKey('self-check-in'),
       );
@@ -1093,9 +1110,7 @@ class _EventSuccessCompanionScreenState
           onStart: widget.onStartArrivalMission,
           onComplete: widget.onCompleteArrivalMission,
           onSkip: widget.onSkipArrivalMission,
-          onPlayCompleteEffect: () => ref
-              .read(eventSuccessLiveEffectsControllerProvider)
-              .play(EventSuccessLiveEffectKind.guideComplete),
+          onPlayCompleteEffect: _playCompleteGuideEffect,
         ),
         momentKey: screenState.transitionKey('first-hello'),
       );
@@ -1121,18 +1136,7 @@ class _EventSuccessCompanionScreenState
           actionState: compatibilityActionState,
           onSaveAnswers:
               widget.onSaveCompatibilityAnswers ??
-              (answerIds) async {
-                await EventSuccessController.compatibilityResponseMutation.run(
-                  ref,
-                  (tx) => tx
-                      .get(eventSuccessControllerProvider.notifier)
-                      .saveCompatibilityResponse(
-                        event: event,
-                        answerIds: answerIds,
-                        questionnaireConfig: plan.questionnaireConfig,
-                      ),
-                );
-              },
+              _noopSaveCompatibilityAnswers,
         ),
         momentKey: screenState.transitionKey('questionnaire'),
       );
@@ -1258,30 +1262,8 @@ class _EventSuccessCompanionScreenState
           candidates: screenState.wingmanCandidates,
           existingRequest: widget.wingmanRequest,
           actionState: wingmanActionState,
-          onSaveRequest:
-              widget.onSaveWingmanRequest ??
-              (target, note) async {
-                await EventSuccessController.wingmanRequestMutation.run(
-                  ref,
-                  (tx) => tx
-                      .get(eventSuccessControllerProvider.notifier)
-                      .saveWingmanRequest(
-                        event: event,
-                        target: target,
-                        note: note,
-                      ),
-                );
-              },
-          onWithdrawRequest:
-              widget.onWithdrawWingmanRequest ??
-              () async {
-                await EventSuccessController.wingmanRequestMutation.run(
-                  ref,
-                  (tx) => tx
-                      .get(eventSuccessControllerProvider.notifier)
-                      .withdrawWingmanRequest(event: event),
-                );
-              },
+          onSaveRequest: widget.onSaveWingmanRequest ?? _noopSaveWingmanRequest,
+          onWithdrawRequest: widget.onWithdrawWingmanRequest ?? _noopFuture,
         ),
         momentKey: screenState.transitionKey('wingman'),
       );
@@ -1293,16 +1275,7 @@ class _EventSuccessCompanionScreenState
           userProfile: widget.userProfile,
           existingFeedback: widget.existingFeedback,
           actionState: feedbackActionState,
-          onSubmitFeedback:
-              widget.onSubmitFeedback ??
-              (feedback) async {
-                await EventSuccessController.feedbackMutation.run(
-                  ref,
-                  (tx) => tx
-                      .get(eventSuccessControllerProvider.notifier)
-                      .submitFeedback(feedback),
-                );
-              },
+          onSubmitFeedback: widget.onSubmitFeedback ?? _noopSubmitFeedback,
         ),
         momentKey: screenState.transitionKey('feedback'),
       );
@@ -1322,7 +1295,7 @@ class _EventSuccessCompanionScreenState
         showSelfCheckIn: attendeeMoment.showSelfCheckIn,
         eventEnded: screenState.eventEnded,
         selfCheckInActionState: selfCheckInActionState,
-        onSelfCheckIn: widget.onSelfCheckIn ?? () => _defaultSelfCheckIn(event),
+        onSelfCheckIn: widget.onSelfCheckIn ?? _noopFuture,
       );
     }
 
@@ -1341,18 +1314,10 @@ class _EventSuccessCompanionScreenState
     );
   }
 
-  Future<void> _defaultSelfCheckIn(Event event) async {
-    unawaited(
-      ref
-          .read(eventSuccessLiveEffectsControllerProvider)
-          .play(EventSuccessLiveEffectKind.liveEntry),
-    );
-    await EventBookingController.selfCheckInMutation.run(
-      ref,
-      (tx) => tx
-          .get(eventBookingControllerProvider.notifier)
-          .selfCheckIn(eventId: event.id),
-    );
+  Future<void> Function()? get _playCompleteGuideEffect {
+    final onPlayLiveEffect = widget.onPlayLiveEffect;
+    if (onPlayLiveEffect == null) return null;
+    return () => onPlayLiveEffect(EventSuccessLiveEffectKind.guideComplete);
   }
 
   void _playMomentEffectOnce(EventSuccessCompanionScreenState screenState) {
@@ -1362,12 +1327,17 @@ class _EventSuccessCompanionScreenState
     final bed = screenState.presentation.ambientBed;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      final controller = ref.read(eventSuccessLiveEffectsControllerProvider);
       // Switch the ambient bed first so the one-shot lands over the new
       // soundscape, not the previous moment's bed.
-      unawaited(controller.playAmbientBed(bed));
+      final onPlayAmbientBed = widget.onPlayAmbientBed;
+      if (onPlayAmbientBed != null) {
+        unawaited(onPlayAmbientBed(bed));
+      }
       if (effect != null) {
-        unawaited(controller.play(effect));
+        final onPlayLiveEffect = widget.onPlayLiveEffect;
+        if (onPlayLiveEffect != null) {
+          unawaited(onPlayLiveEffect(effect));
+        }
       }
     });
   }

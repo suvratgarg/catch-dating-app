@@ -1465,6 +1465,18 @@ void main() {
                     ),
                   ],
                   now: start.add(const Duration(hours: 1)),
+                  onSaveWingmanRequest: (target, note) async {
+                    await EventSuccessController.wingmanRequestMutation.run(
+                      ref,
+                      (tx) => tx
+                          .get(eventSuccessControllerProvider.notifier)
+                          .saveWingmanRequest(
+                            event: event,
+                            target: target,
+                            note: note,
+                          ),
+                    );
+                  },
                 ),
               );
             },
@@ -1807,6 +1819,19 @@ void main() {
                 ),
                 wingmanRequestCandidates: const [],
                 now: start.add(const Duration(minutes: 30)),
+                onSaveCompatibilityAnswers: (answerIds) async {
+                  await EventSuccessController.compatibilityResponseMutation
+                      .run(
+                        ref,
+                        (tx) => tx
+                            .get(eventSuccessControllerProvider.notifier)
+                            .saveCompatibilityResponse(
+                              event: event,
+                              answerIds: answerIds,
+                              questionnaireConfig: plan.questionnaireConfig,
+                            ),
+                      );
+                },
               ),
             );
           },
@@ -2057,6 +2082,14 @@ void main() {
                     ),
                   ],
                   now: start.add(const Duration(hours: 2)),
+                  onSubmitFeedback: (feedback) async {
+                    await EventSuccessController.feedbackMutation.run(
+                      ref,
+                      (tx) => tx
+                          .get(eventSuccessControllerProvider.notifier)
+                          .submitFeedback(feedback),
+                    );
+                  },
                 ),
               );
             },
@@ -2501,6 +2534,7 @@ void main() {
               ),
             ],
             now: start.subtract(const Duration(hours: 1)),
+            onPlayLiveEffect: effects.play,
           ),
         ),
       ),

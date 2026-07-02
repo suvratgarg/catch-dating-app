@@ -728,6 +728,13 @@ class ManualQaSideBySide extends StatelessWidget {
                     onSaveCompatibilityAnswers: onCompatibilityAnswersSaved,
                     onCompleteArrivalMission: onFirstHelloCompleted,
                     onSkipArrivalMission: onFirstHelloSkipped,
+                    onSetMicroPodsIncluded: (include) =>
+                        onMicroPodsOptOutChanged(!include),
+                    onSetGuidedRotationsIncluded: (include) =>
+                        onGuidedRotationsOptOutChanged(!include),
+                    onSelfCheckIn: () async {
+                      onToggleAttendance(data.participation.uid);
+                    },
                   ),
                 ),
               ),
