@@ -6312,6 +6312,14 @@ Generated 2026-05-06.
 
 ## Reviews
 
+### ConsumerWidget
+
+| Widget | File | Purpose |
+|---|---|---|
+| `ReviewsHistoryScreen` | `lib/reviews/presentation/reviews_history_screen.dart:25` | Profile-owned review history route registered as `screen.reviews.history`. Watches `uidProvider`, owns signed-out route state, and delegates loaded profile/review provider waves to `ReviewsHistoryProfileGate`. |
+| `ReviewsHistoryProfileGate` | `lib/reviews/presentation/reviews_history_screen.dart:55` | Provider adapter for the profile wave inside `screen.reviews.history`. Watches `watchUserProfileProvider`, owns profile retry/error/loading states, and passes the loaded user into `ReviewsHistoryReviewsGate`. |
+| `ReviewsHistoryReviewsGate` | `lib/reviews/presentation/reviews_history_screen.dart:80` | Provider adapter for the reviews and event-context waves inside `screen.reviews.history`. Watches `watchReviewsByUserProvider` plus batched `watchEventsByIdsProvider`, builds `ReviewsHistoryState`, and passes retry/edit callbacks into provider-free history body/list rows. |
+
 ### ConsumerStatefulWidget
 
 | Widget | File | Purpose |
@@ -6326,7 +6334,6 @@ Generated 2026-05-06.
 | `EventReviewsSection` | `lib/reviews/presentation/reviews_section.dart:44` | Event-scoped reviews with write/edit CTA for attended participants. Uses the same compact inline empty-state primitive as club reviews; this is the only page-level review section that should open `WriteReviewSheet`. |
 | `ReviewsPreviewSection` | `lib/reviews/presentation/reviews_section.dart:121` | Shared read-only preview list: header, aggregate rating, compact/stacked empty-state configuration, top-N review cards, and optional see-all sheet. Callers supply edit callbacks only when the parent surface is event-scoped. |
 | `ReviewsHistoryState` | `lib/reviews/presentation/reviews_history_state.dart:7` | Reviews History display seam. Owns signed-out/loading/error/empty/content selection, event-context labels, edit availability, retry targets, and provider-free `ReviewsHistoryRow` data. |
-| `ReviewsHistoryScreen` | `lib/reviews/presentation/reviews_history_screen.dart:21` | Profile-owned review history route registered as `screen.reviews.history`. Watches uid/profile/review/event providers at the route edge, builds `ReviewsHistoryState`, composes provider-free body/list/row widgets, and opens the shared edit review sheet through typed row callbacks. |
 | `ReviewCard` | `lib/reviews/presentation/reviews_section.dart:226` | Single tokenized review surface with reviewer avatar/name, star rating, optional comment, and optional edit action for the current user's own review. |
 | `StarRating` | `lib/reviews/presentation/star_rating.dart:5` | Read-only token-colored 5-star display. Clamps rating values into the valid visual range. |
 | `StarRatingPicker` | `lib/reviews/presentation/star_rating.dart:31` | Semantic/tappable 5-star picker. Supports caller-provided keys for stable widget tests and exposes tooltip/semantics labels per rating. |

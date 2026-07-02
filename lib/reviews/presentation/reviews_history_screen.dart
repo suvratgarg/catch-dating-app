@@ -45,81 +45,89 @@ class ReviewsHistoryScreen extends ConsumerWidget {
               message: 'Your past event reviews will appear here.',
             );
           }
-          return reviewsHistoryProfileGate(uid: uid);
+          return ReviewsHistoryProfileGate(uid: uid);
         },
       ),
     );
   }
 }
 
-Widget reviewsHistoryProfileGate({required String uid}) {
-  return Consumer(
-    builder: (context, ref, _) {
-      final userAsync = ref.watch(watchUserProfileProvider);
+class ReviewsHistoryProfileGate extends ConsumerWidget {
+  const ReviewsHistoryProfileGate({super.key, required this.uid});
 
-      return CatchAsyncValueView(
-        value: userAsync,
-        loadingBuilder: (_) => reviewsHistorySkeleton(),
-        errorBuilder: (_, _, _) => CatchErrorState(
-          title: 'Reviews unavailable',
-          message: 'Could not load your profile.',
-          onRetry: () => ref.invalidate(watchUserProfileProvider),
-        ),
-        builder: (context, user) {
-          if (user == null) return reviewsHistorySkeleton();
-          return reviewsHistoryReviewsGate(uid: uid, user: user);
-        },
-      );
-    },
-  );
+  final String uid;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userAsync = ref.watch(watchUserProfileProvider);
+
+    return CatchAsyncValueView(
+      value: userAsync,
+      loadingBuilder: (_) => reviewsHistorySkeleton(),
+      errorBuilder: (_, _, _) => CatchErrorState(
+        title: 'Reviews unavailable',
+        message: 'Could not load your profile.',
+        onRetry: () => ref.invalidate(watchUserProfileProvider),
+      ),
+      builder: (context, user) {
+        if (user == null) return reviewsHistorySkeleton();
+        return ReviewsHistoryReviewsGate(uid: uid, user: user);
+      },
+    );
+  }
 }
 
-Widget reviewsHistoryReviewsGate({
-  required String uid,
-  required UserProfile user,
-}) {
-  return Consumer(
-    builder: (context, ref, _) {
-      final reviewsAsync = ref.watch(watchReviewsByUserProvider(uid));
-      final reviews = reviewsAsync.asData?.value;
-      AsyncValue<List<Event>> eventsAsync = const AsyncData<List<Event>>([]);
-      if (reviews != null && reviews.isNotEmpty) {
-        final eventIds = ReviewsHistoryState.eventIdsFor(reviews);
-        if (eventIds.isNotEmpty) {
-          eventsAsync = ref.watch(
-            watchEventsByIdsProvider(EventsByIdQuery(eventIds)),
-          );
-        }
-      }
-      void onRetryReviews() => ref.invalidate(watchReviewsByUserProvider(uid));
+class ReviewsHistoryReviewsGate extends ConsumerWidget {
+  const ReviewsHistoryReviewsGate({
+    super.key,
+    required this.uid,
+    required this.user,
+  });
 
-      return CatchAsyncValueView<List<Review>>(
-        value: reviewsAsync,
-        loadingBuilder: (_) => reviewsHistorySkeleton(),
-        errorBuilder: (_, _, _) => CatchErrorState(
-          title: 'Reviews unavailable',
-          message: 'Could not load your reviews.',
-          onRetry: onRetryReviews,
-        ),
-        builder: (context, reviews) {
-          final state = ReviewsHistoryState.fromAsync(
-            uid: uid,
-            user: AsyncData(user),
-            reviews: AsyncData(reviews),
-            events: eventsAsync,
-          );
-          return reviewsHistoryBody(
-            state: state,
-            onRetryProfile: () => ref.invalidate(watchUserProfileProvider),
-            onRetryReviews: onRetryReviews,
-            onEditReview: state is ReviewsHistoryContent
-                ? (row) => _showEditReviewSheet(context, state, row)
-                : null,
-          );
-        },
-      );
-    },
-  );
+  final String uid;
+  final UserProfile user;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final reviewsAsync = ref.watch(watchReviewsByUserProvider(uid));
+    final reviews = reviewsAsync.asData?.value;
+    AsyncValue<List<Event>> eventsAsync = const AsyncData<List<Event>>([]);
+    if (reviews != null && reviews.isNotEmpty) {
+      final eventIds = ReviewsHistoryState.eventIdsFor(reviews);
+      if (eventIds.isNotEmpty) {
+        eventsAsync = ref.watch(
+          watchEventsByIdsProvider(EventsByIdQuery(eventIds)),
+        );
+      }
+    }
+    void onRetryReviews() => ref.invalidate(watchReviewsByUserProvider(uid));
+
+    return CatchAsyncValueView<List<Review>>(
+      value: reviewsAsync,
+      loadingBuilder: (_) => reviewsHistorySkeleton(),
+      errorBuilder: (_, _, _) => CatchErrorState(
+        title: 'Reviews unavailable',
+        message: 'Could not load your reviews.',
+        onRetry: onRetryReviews,
+      ),
+      builder: (context, reviews) {
+        final state = ReviewsHistoryState.fromAsync(
+          uid: uid,
+          user: AsyncData(user),
+          reviews: AsyncData(reviews),
+          events: eventsAsync,
+        );
+        return reviewsHistoryBody(
+          state: state,
+          onRetryProfile: () => ref.invalidate(watchUserProfileProvider),
+          onRetryReviews: onRetryReviews,
+          onEditReview: state is ReviewsHistoryContent
+              ? (row) => _showEditReviewSheet(context, state, row)
+              : null,
+        );
+      },
+    );
+  }
 }
 
 Widget reviewsHistoryBody({

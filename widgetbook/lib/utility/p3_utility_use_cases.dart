@@ -1859,6 +1859,73 @@ Widget reviewsHistoryScreenStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Profile provider states',
+  type: ReviewsHistoryProfileGate,
+  path: '[P3 utility surfaces]/Reviews history',
+)
+Widget reviewsHistoryProfileGateStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'ReviewsHistoryProfileGate',
+    contractId: 'screen.reviews.history.profile_gate',
+    children: [
+      _StateCard(
+        label: 'loaded',
+        child: _DeviceFrame(
+          child: _ReviewsScope(
+            reviewsStream: Stream.value(_reviews),
+            eventsStream: Stream.value([_event]),
+            child: const ReviewsHistoryProfileGate(uid: _viewerUid),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'profile loading',
+        child: _DeviceFrame(
+          child: _ReviewsScope(
+            profileStream: _loadingStream<UserProfile?>(),
+            reviewsStream: Stream.value(_reviews),
+            child: const ReviewsHistoryProfileGate(uid: _viewerUid),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Reviews provider states',
+  type: ReviewsHistoryReviewsGate,
+  path: '[P3 utility surfaces]/Reviews history',
+)
+Widget reviewsHistoryReviewsGateStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'ReviewsHistoryReviewsGate',
+    contractId: 'screen.reviews.history.reviews_gate',
+    children: [
+      _StateCard(
+        label: 'loaded',
+        child: _DeviceFrame(
+          child: _ReviewsScope(
+            reviewsStream: Stream.value(_reviews),
+            eventsStream: Stream.value([_event]),
+            child: ReviewsHistoryReviewsGate(uid: _viewerUid, user: _viewer),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'reviews loading',
+        child: _DeviceFrame(
+          child: _ReviewsScope(
+            reviewsStream: _loadingStream<List<Review>>(),
+            child: ReviewsHistoryReviewsGate(uid: _viewerUid, user: _viewer),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'History row states',
   type: ReviewHistoryItem,
   path: '[P3 utility surfaces]/Reviews history',

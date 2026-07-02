@@ -10,26 +10,26 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1070,
-    "widgetClasses": 970,
+    "total": 1072,
+    "widgetClasses": 972,
     "stateClasses": 100,
-    "publicClasses": 970,
+    "publicClasses": 972,
     "privateClasses": 100,
     "byRole": {
       "atom": 37,
       "composition": 280,
       "feature-adapter": 307,
       "pattern": 14,
-      "screen": 332,
+      "screen": 334,
       "widget-state": 100
     },
     "byDecision": {
       "keep-canonical-contract": 121,
-      "keep-public-cataloged": 849,
+      "keep-public-cataloged": 851,
       "keep-widget-state": 100
     },
     "byCatalogStatus": {
-      "cataloged": 777,
+      "cataloged": 779,
       "contracted": 121,
       "not-applicable": 100,
       "route-covered": 72
@@ -21610,6 +21610,52 @@
       "visibility": "public",
       "role": "screen",
       "canonicalFamily": "screen.review_history_item",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "ReviewsHistoryProfileGate",
+      "file": "lib/reviews/presentation/reviews_history_screen.dart",
+      "classKind": "widget",
+      "baseClass": "ConsumerWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.reviews_history_profile_gate",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "ReviewsHistoryReviewsGate",
+      "file": "lib/reviews/presentation/reviews_history_screen.dart",
+      "classKind": "widget",
+      "baseClass": "ConsumerWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.reviews_history_reviews_gate",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,
