@@ -210,7 +210,7 @@ class SelfProfileTabBody extends StatelessWidget {
           onRetry: onRetry,
         );
       case SelfProfileRouteStatus.unavailable:
-        return _profileUnavailableBody();
+        return const ProfileUnavailableBody();
       case SelfProfileRouteStatus.ready:
         final user = state.user!;
         final previewProfile = state.previewProfile!;
@@ -279,14 +279,19 @@ class ProfileTabScrollView extends StatelessWidget {
   }
 }
 
-Widget _profileUnavailableBody() {
-  return Center(
-    child: CatchEmptyState(
-      icon: CatchIcons.personOffOutlined,
-      title: 'Profile not available',
-      message: 'Finish onboarding or sign in again to load your profile.',
-    ),
-  );
+class ProfileUnavailableBody extends StatelessWidget {
+  const ProfileUnavailableBody({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: CatchEmptyState(
+        icon: CatchIcons.personOffOutlined,
+        title: 'Profile not available',
+        message: 'Finish onboarding or sign in again to load your profile.',
+      ),
+    );
+  }
 }
 
 class PreviewTabSkeletonSliverBody extends StatelessWidget {

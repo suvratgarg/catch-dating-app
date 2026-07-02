@@ -9510,6 +9510,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'ProfileUnavailableBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Profile unavailable body',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .profileUnavailableBodyState,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'PublicProfileScreenBody',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(

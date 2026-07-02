@@ -10,26 +10,26 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1088,
-    "widgetClasses": 988,
+    "total": 1089,
+    "widgetClasses": 989,
     "stateClasses": 100,
-    "publicClasses": 988,
+    "publicClasses": 989,
     "privateClasses": 100,
     "byRole": {
       "atom": 37,
       "composition": 281,
       "feature-adapter": 308,
       "pattern": 14,
-      "screen": 348,
+      "screen": 349,
       "widget-state": 100
     },
     "byDecision": {
       "keep-canonical-contract": 121,
-      "keep-public-cataloged": 867,
+      "keep-public-cataloged": 868,
       "keep-widget-state": 100
     },
     "byCatalogStatus": {
-      "cataloged": 795,
+      "cataloged": 796,
       "contracted": 121,
       "not-applicable": 100,
       "route-covered": 72
@@ -24503,6 +24503,29 @@
       "canonicalFamily": "screen.profile_tab_scroll_view",
       "publicApi": true,
       "catalogStatus": "route-covered",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "ProfileUnavailableBody",
+      "file": "lib/user_profile/presentation/profile_screen.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.profile_unavailable_body",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
