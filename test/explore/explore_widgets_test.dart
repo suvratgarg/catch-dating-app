@@ -3002,7 +3002,9 @@ void main() {
                 home: Scaffold(
                   body: CustomScrollView(
                     slivers: buildExploreMapSheetLeadSlivers(
-                      ref: ref,
+                      feedAsync: ref.watch(exploreFeedViewModelProvider),
+                      onRetry: () =>
+                          ref.invalidate(exploreFeedViewModelProvider),
                       selectedEventId: spotlight.id,
                       cameraCenter: null,
                       filters: const ExploreFilterSelection(),
@@ -3093,7 +3095,9 @@ void main() {
                 home: Scaffold(
                   body: CustomScrollView(
                     slivers: buildExploreMapSheetLeadSlivers(
-                      ref: ref,
+                      feedAsync: ref.watch(exploreFeedViewModelProvider),
+                      onRetry: () =>
+                          ref.invalidate(exploreFeedViewModelProvider),
                       selectedEventId: null,
                       cameraCenter: null,
                       filters: const ExploreFilterSelection(),
@@ -3171,7 +3175,9 @@ void main() {
                       home: Scaffold(
                         body: CustomScrollView(
                           slivers: buildExploreMapSheetLeadSlivers(
-                            ref: ref,
+                            feedAsync: ref.watch(exploreFeedViewModelProvider),
+                            onRetry: () =>
+                                ref.invalidate(exploreFeedViewModelProvider),
                             selectedEventId: null,
                             cameraCenter: cameraCenter,
                             filters: const ExploreFilterSelection(),

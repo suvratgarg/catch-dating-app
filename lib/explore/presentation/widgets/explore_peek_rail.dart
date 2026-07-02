@@ -40,7 +40,8 @@ enum ExploreMapSheetLeadMode { collapsedSummary, selectedEvent, nearbyRail }
 /// shared ticket card unless the selected event is the feed spotlight, and the
 /// unselected half/full sheet keeps the nearby ticket rail.
 List<Widget> buildExploreMapSheetLeadSlivers({
-  required WidgetRef ref,
+  required AsyncValue<ExploreFeedViewModel> feedAsync,
+  required VoidCallback onRetry,
   required String? selectedEventId,
   required LocationCoordinate? cameraCenter,
   required ExploreFilterSelection filters,
@@ -49,7 +50,6 @@ List<Widget> buildExploreMapSheetLeadSlivers({
   required ValueChanged<Event> onEventTapped,
   required VoidCallback onSeeAll,
 }) {
-  final feedAsync = ref.watch(exploreFeedViewModelProvider);
   if (feedAsync case AsyncData(:final value)
       when value.isEmpty &&
           leadMode != ExploreMapSheetLeadMode.collapsedSummary) {
@@ -74,7 +74,7 @@ List<Widget> buildExploreMapSheetLeadSlivers({
           child: CatchInlineErrorState.fromError(
             error,
             context: AppErrorContext.event,
-            onRetry: () => ref.invalidate(exploreFeedViewModelProvider),
+            onRetry: onRetry,
             compact: true,
           ),
         ),
@@ -270,7 +270,7 @@ class ExploreSelectedEventLead extends ConsumerWidget {
               heroTag: eventSpotlightHeroTag(event.id, source),
               onTap: () => _openEvent(
                 context,
-                ref,
+                ref.read(appAnalyticsProvider),
                 item,
                 source,
                 presentationMode: EventDetailPresentationMode.spotlightDark,
@@ -285,7 +285,7 @@ class ExploreSelectedEventLead extends ConsumerWidget {
               heroTag: eventTicketHeroTag(event.id, source),
               onTap: () => _openEvent(
                 context,
-                ref,
+                ref.read(appAnalyticsProvider),
                 item,
                 source,
                 presentationMode: EventDetailPresentationMode.ticket,
@@ -513,13 +513,13 @@ class _ExplorePeekRailContentState
   void _handleTap(BuildContext context, ExploreEventItem item) {
     final isSelected = item.event.id == widget.selectedEventId;
     if (!isSelected) {
-      _logMapEventSelected(ref, item, 'peek_rail');
+      _logMapEventSelected(ref.read(appAnalyticsProvider), item, 'peek_rail');
       widget.onEventTapped(item.event);
       return;
     }
     _openEvent(
       context,
-      ref,
+      ref.read(appAnalyticsProvider),
       item,
       'peek_rail',
       presentationMode: EventDetailPresentationMode.ticket,
@@ -588,30 +588,30 @@ String? _ticketStatusLabel(ExploreEventItem item) {
   return item.distanceFromUserLabel ?? item.availabilityLabel;
 }
 
-void _logMapEventSelected(WidgetRef ref, ExploreEventItem item, String source) {
-  ref
-      .read(appAnalyticsProvider)
-      .logEvent(
-        AnalyticsEvents.exploreMapEventSelected,
-        parameters: _analyticsParameters(item, source),
-      );
+void _logMapEventSelected(
+  AppAnalytics analytics,
+  ExploreEventItem item,
+  String source,
+) {
+  analytics.logEvent(
+    AnalyticsEvents.exploreMapEventSelected,
+    parameters: _analyticsParameters(item, source),
+  );
 }
 
 void _openEvent(
   BuildContext context,
-  WidgetRef ref,
+  AppAnalytics analytics,
   ExploreEventItem item,
   String source, {
   required EventDetailPresentationMode presentationMode,
   required EventDetailRouteTransition transition,
   required Object heroTag,
 }) {
-  ref
-      .read(appAnalyticsProvider)
-      .logEvent(
-        AnalyticsEvents.exploreEventOpened,
-        parameters: _analyticsParameters(item, source),
-      );
+  analytics.logEvent(
+    AnalyticsEvents.exploreEventOpened,
+    parameters: _analyticsParameters(item, source),
+  );
   context.pushNamed(
     Routes.eventDetailScreen.name,
     pathParameters: {'clubId': item.event.clubId, 'eventId': item.event.id},

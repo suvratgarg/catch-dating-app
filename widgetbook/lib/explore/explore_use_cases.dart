@@ -2257,7 +2257,8 @@ class _MapSheetLeadPreview extends ConsumerWidget {
     return CustomScrollView(
       physics: const NeverScrollableScrollPhysics(),
       slivers: buildExploreMapSheetLeadSlivers(
-        ref: ref,
+        feedAsync: ref.watch(exploreFeedViewModelProvider),
+        onRetry: () => ref.invalidate(exploreFeedViewModelProvider),
         selectedEventId: selectedEventId,
         cameraCenter: null,
         filters: ref.watch(exploreFiltersProvider),

@@ -55,6 +55,94 @@ class HostTeamManagementSection extends ConsumerWidget {
       transferMutation,
     ]);
 
+    Future<void> showAddHostSheet() async {
+      final added = await showModalBottomSheet<bool>(
+        context: context,
+        isScrollControlled: true,
+        useSafeArea: true,
+        builder: (_) => HostTeamAddHostSheet(
+          clubId: club.id,
+          actionState: HostTeamAddHostActionState(
+            isSaving: addMutation.isPending,
+            errorMessage: addMutation.hasError
+                ? mutationErrorMessage(
+                    addMutation,
+                    context: AppErrorContext.club,
+                  )
+                : null,
+          ),
+          onAddHost: (phone) async {
+            try {
+              await HostTeamManagementController.addHostMutation.run(
+                ref,
+                (tx) => tx
+                    .get(hostTeamManagementControllerProvider.notifier)
+                    .addHostByPhone(clubId: club.id, phoneNumber: phone),
+              );
+            } catch (error, stackTrace) {
+              ref
+                  .read(errorLoggerProvider)
+                  .logError(
+                    error,
+                    stackTrace,
+                    reason:
+                        'HostTeamManagementSection._showAddHostSheet failed',
+                  );
+              rethrow;
+            }
+          },
+        ),
+      );
+      if (added == true && context.mounted) {
+        showCatchSnackBar(context, 'Host added.');
+      }
+    }
+
+    Future<void> confirmHostAction(
+      HostTeamHostAction action,
+      ClubHostProfile host,
+    ) async {
+      final confirmation = HostTeamHostActionConfirmation(
+        action: action,
+        host: host,
+      );
+      final confirmed = await showHostTeamHostActionDialog(
+        context: context,
+        confirmation: confirmation,
+      );
+      if (confirmed != true) return;
+
+      try {
+        switch (action) {
+          case HostTeamHostAction.remove:
+            await HostTeamManagementController.removeHostMutation.run(
+              ref,
+              (tx) => tx
+                  .get(hostTeamManagementControllerProvider.notifier)
+                  .removeHost(clubId: club.id, uid: host.uid),
+            );
+          case HostTeamHostAction.transferOwnership:
+            await HostTeamManagementController.transferOwnershipMutation.run(
+              ref,
+              (tx) => tx
+                  .get(hostTeamManagementControllerProvider.notifier)
+                  .transferOwnership(clubId: club.id, uid: host.uid),
+            );
+        }
+      } catch (error, stackTrace) {
+        ref
+            .read(errorLoggerProvider)
+            .logError(
+              error,
+              stackTrace,
+              reason: 'HostTeamManagementSection._confirmHostAction failed',
+            );
+        return;
+      }
+      if (!context.mounted) return;
+      showCatchSnackBar(context, confirmation.successMessage);
+    }
+
     return CatchSurface(
       borderColor: t.line,
       padding: CatchInsets.tileContentCompact,
@@ -69,7 +157,7 @@ class HostTeamManagementSection extends ConsumerWidget {
                 child: CatchIconButton(
                   onTap: actionPending
                       ? null
-                      : () => unawaited(_showAddHostSheet(context, ref)),
+                      : () => unawaited(showAddHostSheet()),
                   child: Icon(
                     CatchIcons.personAddAlt1Rounded,
                     size: CatchIcon.md,
@@ -93,122 +181,17 @@ class HostTeamManagementSection extends ConsumerWidget {
             HostTeamOwnerHostRow(
               host: host,
               canManage: host.uid != currentUid && !actionPending,
-              onTransfer: () => unawaited(_confirmTransfer(context, ref, host)),
-              onRemove: () => unawaited(_confirmRemove(context, ref, host)),
+              onTransfer: () => unawaited(
+                confirmHostAction(HostTeamHostAction.transferOwnership, host),
+              ),
+              onRemove: () =>
+                  unawaited(confirmHostAction(HostTeamHostAction.remove, host)),
             ),
             if (host != hosts.last) gapH10,
           ],
         ],
       ),
     );
-  }
-
-  Future<void> _showAddHostSheet(BuildContext context, WidgetRef ref) async {
-    final addMutation = ref.read(HostTeamManagementController.addHostMutation);
-    final added = await showModalBottomSheet<bool>(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      builder: (_) => HostTeamAddHostSheet(
-        clubId: club.id,
-        actionState: HostTeamAddHostActionState(
-          isSaving: addMutation.isPending,
-          errorMessage: addMutation.hasError
-              ? mutationErrorMessage(addMutation, context: AppErrorContext.club)
-              : null,
-        ),
-        onAddHost: (phone) async {
-          try {
-            await HostTeamManagementController.addHostMutation.run(
-              ref,
-              (tx) => tx
-                  .get(hostTeamManagementControllerProvider.notifier)
-                  .addHostByPhone(clubId: club.id, phoneNumber: phone),
-            );
-          } catch (error, stackTrace) {
-            ref
-                .read(errorLoggerProvider)
-                .logError(
-                  error,
-                  stackTrace,
-                  reason: 'HostTeamManagementSection._showAddHostSheet failed',
-                );
-            rethrow;
-          }
-        },
-      ),
-    );
-    if (added == true && context.mounted) {
-      showCatchSnackBar(context, 'Host added.');
-    }
-  }
-
-  Future<void> _confirmRemove(
-    BuildContext context,
-    WidgetRef ref,
-    ClubHostProfile host,
-  ) {
-    return _confirmHostAction(context, ref, HostTeamHostAction.remove, host);
-  }
-
-  Future<void> _confirmTransfer(
-    BuildContext context,
-    WidgetRef ref,
-    ClubHostProfile host,
-  ) {
-    return _confirmHostAction(
-      context,
-      ref,
-      HostTeamHostAction.transferOwnership,
-      host,
-    );
-  }
-
-  Future<void> _confirmHostAction(
-    BuildContext context,
-    WidgetRef ref,
-    HostTeamHostAction action,
-    ClubHostProfile host,
-  ) async {
-    final confirmation = HostTeamHostActionConfirmation(
-      action: action,
-      host: host,
-    );
-    final confirmed = await showHostTeamHostActionDialog(
-      context: context,
-      confirmation: confirmation,
-    );
-    if (confirmed != true) return;
-
-    try {
-      switch (action) {
-        case HostTeamHostAction.remove:
-          await HostTeamManagementController.removeHostMutation.run(
-            ref,
-            (tx) => tx
-                .get(hostTeamManagementControllerProvider.notifier)
-                .removeHost(clubId: club.id, uid: host.uid),
-          );
-        case HostTeamHostAction.transferOwnership:
-          await HostTeamManagementController.transferOwnershipMutation.run(
-            ref,
-            (tx) => tx
-                .get(hostTeamManagementControllerProvider.notifier)
-                .transferOwnership(clubId: club.id, uid: host.uid),
-          );
-      }
-    } catch (error, stackTrace) {
-      ref
-          .read(errorLoggerProvider)
-          .logError(
-            error,
-            stackTrace,
-            reason: 'HostTeamManagementSection._confirmHostAction failed',
-          );
-      return;
-    }
-    if (!context.mounted) return;
-    showCatchSnackBar(context, confirmation.successMessage);
   }
 }
 

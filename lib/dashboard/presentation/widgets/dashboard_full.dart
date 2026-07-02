@@ -156,7 +156,7 @@ class _DashboardFullSliverBodyState
                         ? (checkInMutation as MutationError).error
                         : null,
                   ),
-                  actions: _buildEventFocusActions(context, ref),
+                  actions: _buildEventFocusActions(context),
                 ),
               DashboardStrideSection(
                 section: widget.viewModel.weeklyActivitySection,
@@ -173,7 +173,6 @@ class _DashboardFullSliverBodyState
               QuickActions(actions: _buildQuickActions(context)),
               if (widget.followedClubIds.isNotEmpty) _buildFollowedClubsRail(),
               ..._buildRecommendedEventsSection(
-                ref: ref,
                 recommendationsSection: widget.viewModel.recommendationsSection,
               ),
             ],
@@ -209,17 +208,14 @@ class _DashboardFullSliverBodyState
         : const SizedBox.shrink();
   }
 
-  EventFocusActions _buildEventFocusActions(
-    BuildContext context,
-    WidgetRef ref,
-  ) {
+  EventFocusActions _buildEventFocusActions(BuildContext context) {
     return EventFocusActions(
       onViewEvent: (event) => _openEvent(context, event),
-      onCheckIn: (event) => _checkIn(context, ref, event),
+      onCheckIn: (event) => _checkIn(context, event),
       onOpenSwipe: (event) => _openSwipe(context, event),
       onWriteReview: (event) => _writeReview(context, event),
-      onOpenDirections: (event) => _openDirections(ref, event),
-      onAddToCalendar: (event) => _addToCalendar(ref, event),
+      onOpenDirections: _openDirections,
+      onAddToCalendar: _addToCalendar,
       onResetCheckInError: () =>
           DashboardEventFocusController(ref: ref).resetSelfCheckInError(),
     );
@@ -240,7 +236,7 @@ class _DashboardFullSliverBodyState
     );
   }
 
-  void _openDirections(WidgetRef ref, Event event) {
+  void _openDirections(Event event) {
     unawaited(
       ref
           .read(externalLinkControllerProvider)
@@ -248,7 +244,7 @@ class _DashboardFullSliverBodyState
     );
   }
 
-  void _addToCalendar(WidgetRef ref, Event event) {
+  void _addToCalendar(Event event) {
     unawaited(ref.read(eventCalendarControllerProvider).addToCalendar(event));
   }
 
@@ -268,7 +264,7 @@ class _DashboardFullSliverBodyState
     );
   }
 
-  void _checkIn(BuildContext context, WidgetRef ref, Event event) {
+  void _checkIn(BuildContext context, Event event) {
     final controller = DashboardEventFocusController(ref: ref);
     unawaited(
       DashboardEventFocusController.selfCheckInMutation
@@ -341,7 +337,6 @@ class _DashboardFullSliverBodyState
   }
 
   List<Widget> _buildRecommendedEventsSection({
-    required WidgetRef ref,
     required DashboardSectionModel<List<DashboardEventRecommendation>>
     recommendationsSection,
   }) {

@@ -73,15 +73,7 @@
     },
     {
       "rule": "widgetRefParameter",
-      "path": "lib/dashboard/presentation/widgets/dashboard_full.dart"
-    },
-    {
-      "rule": "widgetRefParameter",
       "path": "lib/event_success/presentation/event_success_host_screen.dart"
-    },
-    {
-      "rule": "widgetRefParameter",
-      "path": "lib/explore/presentation/widgets/explore_peek_rail.dart"
     },
     {
       "rule": "widgetRefParameter",
@@ -94,10 +86,6 @@
     {
       "rule": "widgetRefParameter",
       "path": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart"
-    },
-    {
-      "rule": "widgetRefParameter",
-      "path": "lib/hosts/presentation/widgets/host_team_management_section.dart"
     }
   ]
 }
