@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.537
+version: 2.5.538
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.538
+
+- Cataloged the remaining profile review queue directly: Insights sliver body,
+  Photos section, info row full-bleed frame, chip placeholder, and height
+  stepper leaves. Also corrected stale profile inline-editor catalog paths now
+  that the barrel file only re-exports split implementations.
 
 ### 2.5.537
 
@@ -5664,25 +5671,31 @@ Generated 2026-05-06.
 | `UserAnalyticsInlineStat` | `lib/user_analytics/presentation/user_analytics_panel.dart:630` | Inline numeric stat used by the trend panel. Renders a large numeric value with a supporting label below it. |
 | `SelfProfileTabBody` | `lib/user_profile/presentation/profile_screen.dart:161` | Provider-free self-profile branch renderer for loading, error, unavailable, and ready states inside `ProfileScreen`'s `NestedScrollView.body`. Receives the route-owned `TabController`, preview scroll controller, preview bridge callbacks, and retry callback explicitly. Loading preserves the tab shell with Edit skeleton, Preview skeleton, and Insights body; ready renders Edit, Preview, and Insights through sliver-aware tab scroll views. Widgetbook mounts it inside a `NestedScrollView` preview so the `SliverOverlapInjector` contract is exercised. |
 | `ProfileTabScrollView` | `lib/user_profile/presentation/profile_screen.dart:250` | Shared tab scroll wrapper used by `SelfProfileTabBody`. Installs `CatchPagerFocusBoundary`, starts each tab with the `NestedScrollView` overlap injector, and then appends the tab slivers. |
+| `ProfileInsightsTabSliverBody` | `lib/user_profile/presentation/widgets/profile_insights_tab.dart:7` | Sliver-native Profile Insights body. Applies the canonical profile tab padding and max-width constraint before embedding `UserAnalyticsPanel`, leaving analytics provider loading/error/empty/report ownership inside the panel. |
 | `PreviewTab` | `lib/user_profile/presentation/widgets/preview_tab.dart:5` | Preview tab showing how the user's profile looks to others by rendering the shared handoff `ProfileSurface`, with owner-provided scroll controller, physics, bottom padding, and leading-overscroll callback when mounted inside ProfileScreen. |
 | `ProfileTitle` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:24` | Self-profile scroll-away title row. Renders the `Your profile` heading, screen-title spacing, page background, and settings action while the surrounding `ProfileSliverHeader` owns sliver placement. |
 | `ProfileTabBar` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:51` | Self-profile pinned tab selector. Receives the route-owned 3-tab `TabController` and maps Edit, Preview, and Insights to the shared `CatchOptionGroup` with bottom hairline chrome. |
 | `ProfileSettingsButton` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:84` | Self-profile settings icon action. Uses `CatchTopBarIconAction` with the settings glyph and routes to `screen.settings.account` through the surrounding `GoRouter` context. |
+| `ProfilePhotosSection` | `lib/user_profile/presentation/widgets/profile_tab.dart:553` | Edit Profile Photos section. Receives `SelfProfilePhotoGridState`, renders the divided Photos heading/count, and delegates slot tap, delete, and reorder behavior to parent callbacks while `PhotoGrid` owns slot layout. |
+| `ProfileInfoRowFrame` | `lib/user_profile/presentation/widgets/profile_info_section.dart:98` | Optional full-bleed row wrapper used by grouped profile info sections. It lets field-row tap/focus highlights stretch to the viewport edge when the parent section needs full-width row chrome without moving row behavior into the section builder. |
 | `ProfilePhotosSkeletonSection` | `lib/user_profile/presentation/widgets/profile_tab_skeleton.dart:60` | Edit Profile loading photo section. Reuses `CatchSection.divided`, the production maximum profile-photo count, and the 3-column portrait grid geometry so the Photos section reserves the same slot rhythm while uploads/profile data resolve. |
 | `ProfileInfoSkeletonSection` | `lib/user_profile/presentation/widgets/profile_tab_skeleton.dart:89` | Edit Profile loading info section. Receives title and row count from `ProfileTabSkeletonSliverBody`, renders section chrome through `CatchSection.divided`, and inserts the same muted dividers between `ProfileInfoSkeletonTile` rows as the ready profile sections. |
 | `ProfileInfoSkeletonTile` | `lib/user_profile/presentation/widgets/profile_tab_skeleton.dart:129` | Single Edit Profile loading row placeholder. Preserves the profile field-row icon, two-line text, and trailing affordance geometry with tokenized `CatchSkeleton` blocks. |
-| `ProfileInlineTextValue` | `lib/user_profile/presentation/widgets/profile_inline_editors.dart:299` | Prompt row value wrapper that renders the collapsed display value directly and composes active prompt-answer editing through `CatchField.input`. Supports multiline prompt editing, length limiting, blank-line normalization, autofocus, and shared underline input chrome without profile-local text-field implementation. |
+| `ProfileChipPlaceholder` | `lib/user_profile/presentation/widgets/inline_editor_choice.dart:415` | Text placeholder used by nullable profile choice rows when no chip is selected. Renders the add-affordance prefix and muted answer color without owning selection state or option lists. |
+| `ProfileHeightStepperControls` | `lib/user_profile/presentation/widgets/inline_editor_height.dart:106` | Compact pair of bounded height increment/decrement controls. Derives disabled edge states from profile height limits and delegates value changes to the row-owned height editor. |
+| `ProfileHeightStepButton` | `lib/user_profile/presentation/widgets/inline_editor_height.dart:141` | Circular height step tap target used by `ProfileHeightStepperControls`. Owns tooltip, raised circular Material chrome, icon sizing, and disabled icon opacity without knowing the current height value. |
+| `ProfileInlineTextValue` | `lib/user_profile/presentation/widgets/inline_editor_text.dart:158` | Prompt row value wrapper that renders the collapsed display value directly and composes active prompt-answer editing through `CatchField.input`. Supports multiline prompt editing, length limiting, blank-line normalization, autofocus, and shared underline input chrome without profile-local text-field implementation. |
 
 ### StatefulWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `ProfileDirectTextEntryField` | `lib/user_profile/presentation/widgets/profile_inline_editors.dart:77` | Direct editable profile text row built on `CatchField.input`. Owns the text controller, validation/save error display, blur/submit save behavior, keyboard/autofill settings, trimming, and field patch conversion for simple Edit Profile text rows. Empty rows keep the shared collapsed field contract until focus, with the offstage editable retained so first focus expands without triggering the horizontal pager. |
-| `ProfileInlinePromptEntryEditor` | `lib/user_profile/presentation/widgets/profile_inline_editors.dart:385` | Row-owned profile-prompt editor. Combines the inline prompt answer text primitive with a `CatchField.select` catalog picker, filters out prompt IDs used by sibling prompt rows, and saves ordered `profilePrompts` patches so prompt slots stay unique. |
-| `ProfileInlineHeightEditor` | `lib/user_profile/presentation/widgets/profile_inline_editors.dart:642` | Inline bounded height editor using bounded plus-minus controls and the shared inline editor panel. |
-| `ProfileInlineSingleChoiceEntryEditor<T>` | `lib/user_profile/presentation/widgets/profile_inline_editors.dart:533` | Row-owned nullable single-choice editor. Selected value renders in the row slot, available alternatives render below, and `Cancel`/`Done` owns commit/discard. |
-| `ProfileInlineMultiChoiceEntryEditor<T>` | `lib/user_profile/presentation/widgets/profile_inline_editors.dart:656` | Row-owned multi-choice editor. Selected chips stay in the row slot with check icons, available alternatives render below, and optional fields allow deselecting row chips. |
-| `ProfileInlineRangeEditor` | `lib/user_profile/presentation/widgets/profile_inline_editors.dart:912` | Inline range editor using `CatchRangeSlider`, local draft range state, endpoint labels for slider bounds, and the shared inline editor panel. The row owns the selected range display, so the editor does not repeat it above the slider. |
+| `ProfileDirectTextEntryField` | `lib/user_profile/presentation/widgets/inline_editor_text.dart:16` | Direct editable profile text row built on `CatchField.input`. Owns the text controller, validation/save error display, blur/submit save behavior, keyboard/autofill settings, trimming, and field patch conversion for simple Edit Profile text rows. Empty rows keep the shared collapsed field contract until focus, with the offstage editable retained so first focus expands without triggering the horizontal pager. |
+| `ProfileInlinePromptEntryEditor` | `lib/user_profile/presentation/widgets/inline_editor_prompt.dart:17` | Row-owned profile-prompt editor. Combines the inline prompt answer text primitive with a `CatchField.select` catalog picker, filters out prompt IDs used by sibling prompt rows, and saves ordered `profilePrompts` patches so prompt slots stay unique. |
+| `ProfileInlineHeightEditor` | `lib/user_profile/presentation/widgets/inline_editor_height.dart:14` | Inline bounded height editor using bounded plus-minus controls and the shared inline editor panel. |
+| `ProfileInlineSingleChoiceEntryEditor<T>` | `lib/user_profile/presentation/widgets/inline_editor_choice.dart:18` | Row-owned nullable single-choice editor. Selected value renders in the row slot, available alternatives render below, and `Cancel`/`Done` owns commit/discard. |
+| `ProfileInlineMultiChoiceEntryEditor<T>` | `lib/user_profile/presentation/widgets/inline_editor_choice.dart:159` | Row-owned multi-choice editor. Selected chips stay in the row slot with check icons, available alternatives render below, and optional fields allow deselecting row chips. |
+| `ProfileInlineRangeEditor` | `lib/user_profile/presentation/widgets/inline_editor_range.dart:11` | Inline range editor using `CatchRangeSlider`, local draft range state, endpoint labels for slider bounds, and the shared inline editor panel. The row owns the selected range display, so the editor does not repeat it above the slider. |
 
 ---
 

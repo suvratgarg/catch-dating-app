@@ -25,16 +25,14 @@
     },
     "byDecision": {
       "keep-canonical-contract": 121,
-      "keep-public-cataloged": 836,
-      "keep-widget-state": 101,
-      "review-catalog-coverage": 6
+      "keep-public-cataloged": 842,
+      "keep-widget-state": 101
     },
     "byCatalogStatus": {
-      "cataloged": 765,
+      "cataloged": 771,
       "contracted": 121,
       "not-applicable": 101,
-      "route-covered": 71,
-      "uncataloged": 6
+      "route-covered": 71
     }
   },
   "widgets": [
@@ -24030,23 +24028,19 @@
       "role": "feature-adapter",
       "canonicalFamily": "feature.user_profile.profile_chip_placeholder",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "public-widget-missing-widgetbook"
-      ]
+      "flags": []
     },
     {
       "name": "_ProfileInlineHeightEditorState",
@@ -24080,23 +24074,19 @@
       "role": "feature-adapter",
       "canonicalFamily": "feature.user_profile.profile_height_step_button",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "public-widget-missing-widgetbook"
-      ]
+      "flags": []
     },
     {
       "name": "ProfileHeightStepperControls",
@@ -24107,23 +24097,19 @@
       "role": "feature-adapter",
       "canonicalFamily": "feature.user_profile.profile_height_stepper_controls",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "public-widget-missing-widgetbook"
-      ]
+      "flags": []
     },
     {
       "name": "ProfileInlineHeightEditor",
@@ -24341,23 +24327,19 @@
       "role": "feature-adapter",
       "canonicalFamily": "feature.user_profile.profile_info_row_frame",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "public-widget-missing-widgetbook"
-      ]
+      "flags": []
     },
     {
       "name": "ProfileInsightsTabSliverBody",
@@ -24368,23 +24350,19 @@
       "role": "composition",
       "canonicalFamily": "catch.profile_insights_tab_sliver_body",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "public-widget-missing-widgetbook"
-      ]
+      "flags": []
     },
     {
       "name": "ProfileSettingsButton",
@@ -24629,23 +24607,20 @@
       "role": "composition",
       "canonicalFamily": "catch.profile_photos_section",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
       "flags": [
-        "primitive-imports-provider-layer",
-        "public-widget-missing-widgetbook"
+        "primitive-imports-provider-layer"
       ]
     },
     {

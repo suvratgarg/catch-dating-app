@@ -9125,12 +9125,42 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Inline Editors',
             children: [
               _widgetbook.WidgetbookComponent(
+                name: 'ProfileChipPlaceholder',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Chip placeholder states',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .profileChipPlaceholderStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'ProfileDirectTextEntryField',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Direct text entry states',
                     builder: _widgetbook_workspace_profiles_profile_use_cases
                         .profileDirectTextEntryFieldStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProfileHeightStepButton',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Height step button states',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .profileHeightStepButtonStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProfileHeightStepperControls',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Height stepper control states',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .profileHeightStepperControlsStates,
                   ),
                 ],
               ),
@@ -9290,6 +9320,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'ProfileInfoRowFrame',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Info row frame states',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .profileInfoRowFrameStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'ProfileInfoSkeletonSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -9306,6 +9346,26 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Info skeleton tile states',
                     builder: _widgetbook_workspace_profiles_profile_use_cases
                         .profileInfoSkeletonTileStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProfileInsightsTabSliverBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Insights sliver body states',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .profileInsightsTabSliverBodyStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProfilePhotosSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Photo section states',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .profilePhotosSectionStates,
                   ),
                 ],
               ),

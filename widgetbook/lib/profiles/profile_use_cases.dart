@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
 import 'package:catch_dating_app/labs/design_fixtures/profile_surface_fixtures.dart';
@@ -26,10 +27,16 @@ import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_edit_tab_state.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_screen_state.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor_choice.dart'
+    show ProfileChipPlaceholder;
+import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor_height.dart'
+    show ProfileHeightStepButton, ProfileHeightStepperControls;
 import 'package:catch_dating_app/user_profile/presentation/widgets/preview_tab.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_info_section.dart'
-    show profileTabBodyPadding;
+    show ProfileInfoRowFrame, profileTabBodyPadding;
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_insights_tab.dart'
+    show ProfileInsightsTabSliverBody;
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_sliver_header.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
 import 'package:flutter/material.dart';
@@ -194,6 +201,27 @@ Widget profileScreenSelfTabBodyStates(BuildContext context) {
               saveMutationPending: false,
             ),
           ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Insights sliver body states',
+  type: ProfileInsightsTabSliverBody,
+  path: '[P1 product surfaces]/Profiles/Sections',
+)
+Widget profileInsightsTabSliverBodyStates(BuildContext context) {
+  return const _ProfileCatalog(
+    title: 'ProfileInsightsTabSliverBody',
+    contractId: 'screen.profile.insights_tab.sliver_body',
+    children: [
+      _StateCard(
+        label: 'analytics body',
+        child: _SectionFrame(
+          height: 760,
+          child: CustomScrollView(slivers: [ProfileInsightsTabSliverBody()]),
         ),
       ),
     ],
@@ -437,6 +465,61 @@ Widget profileTabContentStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Photo section states',
+  type: ProfilePhotosSection,
+  path: '[P1 product surfaces]/Profiles/Sections',
+)
+Widget profilePhotosSectionStates(BuildContext context) {
+  final completeState = SelfProfilePhotoGridState.fromProfile(
+    user: _viewer,
+    uploadState: (loadingIndices: <int>{}, uploadError: null),
+  );
+  final loadingState = SelfProfilePhotoGridState.fromProfile(
+    user: _incompleteViewer,
+    uploadState: (loadingIndices: <int>{1}, uploadError: null),
+  );
+
+  return _ProfileCatalog(
+    title: 'ProfilePhotosSection',
+    contractId: 'screen.profile.edit_tab.photos_section',
+    children: [
+      _StateCard(
+        label: 'complete grid',
+        child: _SectionFrame(
+          height: 360,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfilePhotosSection(
+              first: true,
+              state: completeState,
+              onSlotTapped: (_) {},
+              onDeletePhoto: (_) {},
+              onReorderPhoto: (_, _) {},
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'upload pending',
+        child: _SectionFrame(
+          height: 360,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfilePhotosSection(
+              first: false,
+              state: loadingState,
+              onSlotTapped: (_) {},
+              onDeletePhoto: (_) {},
+              onReorderPhoto: (_, _) {},
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Field row states',
   type: ProfileFieldRow,
   path: '[P1 product surfaces]/Profiles/Sections',
@@ -461,6 +544,52 @@ Widget profileFieldRowStates(BuildContext context) {
         child: _SectionFrame(
           height: CatchLayout.maxContentWidth,
           child: _ProfileFieldRowCatalog(rows: rows),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Info row frame states',
+  type: ProfileInfoRowFrame,
+  path: '[P1 product surfaces]/Profiles/Sections',
+)
+Widget profileInfoRowFrameStates(BuildContext context) {
+  return _ProfileCatalog(
+    title: 'ProfileInfoRowFrame',
+    contractId: 'screen.profile.edit_tab.info_row_frame',
+    children: [
+      _StateCard(
+        label: 'standard and full bleed',
+        child: _SectionFrame(
+          height: 220,
+          child: ListView(
+            padding: CatchInsets.content,
+            children: [
+              ProfileInfoRowFrame(
+                fullBleed: false,
+                child: CatchSurface(
+                  padding: CatchInsets.content,
+                  child: Text(
+                    'Standard row frame',
+                    style: CatchTextStyles.labelL(context),
+                  ),
+                ),
+              ),
+              gapH12,
+              ProfileInfoRowFrame(
+                fullBleed: true,
+                child: CatchSurface(
+                  padding: CatchInsets.content,
+                  child: Text(
+                    'Full-bleed row frame',
+                    style: CatchTextStyles.labelL(context),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     ],
@@ -796,6 +925,86 @@ Widget profileInlineHeightEditorStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Height stepper control states',
+  type: ProfileHeightStepperControls,
+  path: '[P1 product surfaces]/Profiles/Inline Editors',
+)
+Widget profileHeightStepperControlsStates(BuildContext context) {
+  return _ProfileCatalog(
+    title: 'ProfileHeightStepperControls',
+    contractId: 'screen.profile.inline.height_stepper_controls',
+    children: [
+      _StateCard(
+        label: 'enabled',
+        child: _SectionFrame(
+          height: 120,
+          child: Center(
+            child: ProfileHeightStepperControls(
+              value: 172,
+              enabled: true,
+              onChanged: (_) {},
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'disabled',
+        child: _SectionFrame(
+          height: 120,
+          child: Center(
+            child: ProfileHeightStepperControls(
+              value: 172,
+              enabled: false,
+              onChanged: (_) {},
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Height step button states',
+  type: ProfileHeightStepButton,
+  path: '[P1 product surfaces]/Profiles/Inline Editors',
+)
+Widget profileHeightStepButtonStates(BuildContext context) {
+  return _ProfileCatalog(
+    title: 'ProfileHeightStepButton',
+    contractId: 'screen.profile.inline.height_step_button',
+    children: [
+      _StateCard(
+        label: 'enabled and disabled',
+        child: _SectionFrame(
+          height: 120,
+          child: Center(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ProfileHeightStepButton(
+                  tooltip: 'Decrease height',
+                  icon: CatchIcons.removeRounded,
+                  enabled: true,
+                  onPressed: () {},
+                ),
+                gapW8,
+                ProfileHeightStepButton(
+                  tooltip: 'Increase height',
+                  icon: CatchIcons.addRounded,
+                  enabled: false,
+                  onPressed: () {},
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Inline single choice editor states',
   type: ProfileInlineRelationshipGoalChoiceEntryEditor,
   path: '[P1 product surfaces]/Profiles/Inline Editors',
@@ -831,6 +1040,43 @@ Widget profileInlineMultiChoiceEntryEditorStates(BuildContext context) {
         child: _SectionFrame(
           height: 260,
           child: const ProfileInlineLanguageMultiChoiceEntryEditor(),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Chip placeholder states',
+  type: ProfileChipPlaceholder,
+  path: '[P1 product surfaces]/Profiles/Inline Editors',
+)
+Widget profileChipPlaceholderStates(BuildContext context) {
+  return const _ProfileCatalog(
+    title: 'ProfileChipPlaceholder',
+    contractId: 'screen.profile.inline.chip_placeholder',
+    children: [
+      _StateCard(
+        label: 'empty and filled',
+        child: _SectionFrame(
+          height: 140,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ProfileChipPlaceholder(
+                  value: 'Add languages',
+                  isAddAffordance: true,
+                ),
+                gapH12,
+                ProfileChipPlaceholder(
+                  value: 'English, Hindi',
+                  isAddAffordance: false,
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     ],
