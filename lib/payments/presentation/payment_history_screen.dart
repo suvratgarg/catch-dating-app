@@ -45,57 +45,71 @@ class PaymentHistoryScreen extends ConsumerWidget {
               message: 'Sign in again to view payment history.',
             );
           }
-          return paymentHistoryList(userId: uid);
+          return PaymentHistoryListController(userId: uid);
         },
       ),
     );
   }
 }
 
-Widget paymentHistoryList({required String userId}) {
-  return Consumer(
-    builder: (context, ref, _) {
-      final paymentHistoryAsync = ref.watch(
-        paymentHistoryViewModelProvider(userId),
-      );
+class PaymentHistoryListController extends ConsumerWidget {
+  const PaymentHistoryListController({super.key, required this.userId});
 
-      return CatchAsyncValueView<PaymentHistoryViewModel>(
-        value: paymentHistoryAsync,
-        loadingBuilder: (_) => paymentHistorySkeleton(),
-        errorContext: AppErrorContext.payments,
-        onRetry: () => ref.invalidate(watchPaymentsForUserProvider(userId)),
-        builder: (context, paymentHistory) {
-          if (paymentHistory.isEmpty) {
-            return paymentHistoryEmpty(
-              icon: CatchIcons.receiptLongOutlined,
-              title: 'No payments yet',
-              message: 'Event bookings and refunds will appear here.',
-            );
-          }
-          return ListView.separated(
-            padding: CatchInsets.listBody,
-            itemCount: paymentHistory.rows.length,
-            separatorBuilder: (context, _) => Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                  maxWidth: CatchLayout.maxContentWidth,
-                ),
-                child: Divider(color: CatchTokens.of(context).line, height: 1),
-              ),
-            ),
-            itemBuilder: (context, index) => Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                  maxWidth: CatchLayout.maxContentWidth,
-                ),
-                child: PaymentHistoryTile(row: paymentHistory.rows[index]),
-              ),
-            ),
-          );
-        },
+  final String userId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final paymentHistoryAsync = ref.watch(
+      paymentHistoryViewModelProvider(userId),
+    );
+
+    return CatchAsyncValueView<PaymentHistoryViewModel>(
+      value: paymentHistoryAsync,
+      loadingBuilder: (_) => paymentHistorySkeleton(),
+      errorContext: AppErrorContext.payments,
+      onRetry: () => ref.invalidate(watchPaymentsForUserProvider(userId)),
+      builder: (context, paymentHistory) =>
+          PaymentHistoryList(paymentHistory: paymentHistory),
+    );
+  }
+}
+
+class PaymentHistoryList extends StatelessWidget {
+  const PaymentHistoryList({super.key, required this.paymentHistory});
+
+  final PaymentHistoryViewModel paymentHistory;
+
+  @override
+  Widget build(BuildContext context) {
+    if (paymentHistory.isEmpty) {
+      return paymentHistoryEmpty(
+        icon: CatchIcons.receiptLongOutlined,
+        title: 'No payments yet',
+        message: 'Event bookings and refunds will appear here.',
       );
-    },
-  );
+    }
+
+    return ListView.separated(
+      padding: CatchInsets.listBody,
+      itemCount: paymentHistory.rows.length,
+      separatorBuilder: (context, _) => Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            maxWidth: CatchLayout.maxContentWidth,
+          ),
+          child: Divider(color: CatchTokens.of(context).line, height: 1),
+        ),
+      ),
+      itemBuilder: (context, index) => Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            maxWidth: CatchLayout.maxContentWidth,
+          ),
+          child: PaymentHistoryTile(row: paymentHistory.rows[index]),
+        ),
+      ),
+    );
+  }
 }
 
 Widget paymentHistorySkeleton() {

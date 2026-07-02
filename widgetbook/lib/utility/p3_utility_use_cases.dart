@@ -2370,9 +2370,72 @@ Widget paymentHistoryScreenStates(BuildContext context) {
         label: 'event title missing',
         child: _DeviceFrame(
           child: _PaymentScope(
+            payments: _payments.take(1).toList(),
             paymentsStream: Stream.value(_payments.take(1).toList()),
             eventsById: const {},
             child: const PaymentHistoryScreen(),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Provider states',
+  type: PaymentHistoryListController,
+  path: '[P3 utility surfaces]/Payment history',
+)
+Widget paymentHistoryListControllerStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'PaymentHistoryListController',
+    contractId: 'screen.payments.history.provider-list',
+    children: [
+      _StateCard(
+        label: 'loaded',
+        child: _DeviceFrame(
+          child: _PaymentScope(
+            paymentsStream: Stream.value(_payments),
+            child: const PaymentHistoryListController(userId: _viewerUid),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'payments loading',
+        child: _DeviceFrame(
+          child: _PaymentScope(
+            paymentsStream: _loadingStream<List<Payment>>(),
+            child: const PaymentHistoryListController(userId: _viewerUid),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'List states',
+  type: PaymentHistoryList,
+  path: '[P3 utility surfaces]/Payment history',
+)
+Widget paymentHistoryListStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'PaymentHistoryList',
+    contractId: 'screen.payments.history.list',
+    children: [
+      _StateCard(
+        label: 'empty',
+        child: const _DeviceFrame(
+          child: PaymentHistoryList(
+            paymentHistory: PaymentHistoryViewModel(rows: []),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'status variants',
+        child: _DeviceFrame(
+          child: PaymentHistoryList(
+            paymentHistory: _paymentHistoryViewModel(_payments),
           ),
         ),
       ),
@@ -3339,6 +3402,7 @@ class _PaymentScope extends StatelessWidget {
   const _PaymentScope({
     required this.child,
     this.uidStream,
+    this.payments,
     this.paymentsStream,
     this.paymentsByPaymentId,
     this.eventsById,
@@ -3346,13 +3410,27 @@ class _PaymentScope extends StatelessWidget {
 
   final Widget child;
   final Stream<String?>? uidStream;
+  final List<Payment>? payments;
   final Stream<List<Payment>>? paymentsStream;
   final Map<String, Payment?>? paymentsByPaymentId;
   final Map<String, Event>? eventsById;
 
   @override
   Widget build(BuildContext context) {
-    final payments = _payments;
+    final payments = this.payments ?? _payments;
+    final eventIds = {for (final payment in payments) payment.eventId};
+    final batchedEvents = eventsById == null
+        ? [
+            for (final payment in payments)
+              _utilityEvent(
+                id: payment.eventId,
+                meetingPoint: _eventTitleForPayment(payment),
+                notes: 'Receipt context',
+                latitude: 19.0676,
+                longitude: 72.8227,
+              ),
+          ]
+        : eventsById!.values.toList(growable: false);
     final paymentsById =
         paymentsByPaymentId ??
         {for (final payment in payments) payment.paymentId: payment};
@@ -3375,7 +3453,11 @@ class _PaymentScope extends StatelessWidget {
         ),
         watchPaymentsForUserProvider(
           _viewerUid,
-        ).overrideWith((ref) => paymentsStream ?? Stream.value(_payments)),
+        ).overrideWith((ref) => paymentsStream ?? Stream.value(payments)),
+        if (eventIds.isNotEmpty)
+          watchEventsByIdsProvider(
+            EventsByIdQuery(eventIds),
+          ).overrideWith((ref) => Stream.value(batchedEvents)),
         watchClubProvider(
           _event.clubId,
         ).overrideWith((ref) => Stream<Club?>.value(null)),
@@ -3607,6 +3689,18 @@ Event _utilityEvent({
 
 String _eventTitleForPayment(Payment payment) =>
     UtilitySurfaceFixtures.eventTitleForPayment(payment);
+
+PaymentHistoryViewModel _paymentHistoryViewModel(Iterable<Payment> payments) {
+  return PaymentHistoryViewModel(
+    rows: [
+      for (final payment in payments)
+        PaymentHistoryRow(
+          payment: payment,
+          eventTitle: _eventTitleForPayment(payment),
+        ),
+    ],
+  );
+}
 
 PaymentConfirmationData _confirmationData(Payment payment, {Uri? checkoutUrl}) {
   return PaymentConfirmationData(

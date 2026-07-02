@@ -10361,6 +10361,26 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Payment history',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'PaymentHistoryList',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'List states',
+                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                    .paymentHistoryListStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'PaymentHistoryListController',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Provider states',
+                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                    .paymentHistoryListControllerStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'PaymentHistoryScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(

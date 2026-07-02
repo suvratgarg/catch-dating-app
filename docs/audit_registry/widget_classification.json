@@ -10,26 +10,26 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1068,
-    "widgetClasses": 968,
+    "total": 1070,
+    "widgetClasses": 970,
     "stateClasses": 100,
-    "publicClasses": 968,
+    "publicClasses": 970,
     "privateClasses": 100,
     "byRole": {
       "atom": 37,
       "composition": 280,
       "feature-adapter": 307,
       "pattern": 14,
-      "screen": 330,
+      "screen": 332,
       "widget-state": 100
     },
     "byDecision": {
       "keep-canonical-contract": 121,
-      "keep-public-cataloged": 847,
+      "keep-public-cataloged": 849,
       "keep-widget-state": 100
     },
     "byCatalogStatus": {
-      "cataloged": 775,
+      "cataloged": 777,
       "contracted": 121,
       "not-applicable": 100,
       "route-covered": 72
@@ -21357,6 +21357,52 @@
       "visibility": "public",
       "role": "screen",
       "canonicalFamily": "screen.payment_referral_banner_controller",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "PaymentHistoryList",
+      "file": "lib/payments/presentation/payment_history_screen.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.payment_history_list",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "PaymentHistoryListController",
+      "file": "lib/payments/presentation/payment_history_screen.dart",
+      "classKind": "widget",
+      "baseClass": "ConsumerWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.payment_history_list_controller",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,
