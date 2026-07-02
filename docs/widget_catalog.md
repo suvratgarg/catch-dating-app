@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.528
+version: 2.5.529
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.529
+
+- Cataloged the Profile edit-tab skeleton leaf renderers directly: photo grid
+  skeleton section, info skeleton section, and individual info skeleton row.
+  This keeps loading-state geometry reviewable below the full sliver skeleton
+  dispatcher.
 
 ### 2.5.528
 
@@ -5597,6 +5604,9 @@ Generated 2026-05-06.
 | `ProfileTitle` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:24` | Self-profile scroll-away title row. Renders the `Your profile` heading, screen-title spacing, page background, and settings action while the surrounding `ProfileSliverHeader` owns sliver placement. |
 | `ProfileTabBar` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:51` | Self-profile pinned tab selector. Receives the route-owned 3-tab `TabController` and maps Edit, Preview, and Insights to the shared `CatchOptionGroup` with bottom hairline chrome. |
 | `ProfileSettingsButton` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:84` | Self-profile settings icon action. Uses `CatchTopBarIconAction` with the settings glyph and routes to `screen.settings.account` through the surrounding `GoRouter` context. |
+| `ProfilePhotosSkeletonSection` | `lib/user_profile/presentation/widgets/profile_tab_skeleton.dart:60` | Edit Profile loading photo section. Reuses `CatchSection.divided`, the production maximum profile-photo count, and the 3-column portrait grid geometry so the Photos section reserves the same slot rhythm while uploads/profile data resolve. |
+| `ProfileInfoSkeletonSection` | `lib/user_profile/presentation/widgets/profile_tab_skeleton.dart:89` | Edit Profile loading info section. Receives title and row count from `ProfileTabSkeletonSliverBody`, renders section chrome through `CatchSection.divided`, and inserts the same muted dividers between `ProfileInfoSkeletonTile` rows as the ready profile sections. |
+| `ProfileInfoSkeletonTile` | `lib/user_profile/presentation/widgets/profile_tab_skeleton.dart:129` | Single Edit Profile loading row placeholder. Preserves the profile field-row icon, two-line text, and trailing affordance geometry with tokenized `CatchSkeleton` blocks. |
 | `ProfileInlineTextValue` | `lib/user_profile/presentation/widgets/profile_inline_editors.dart:299` | Prompt row value wrapper that renders the collapsed display value directly and composes active prompt-answer editing through `CatchField.input`. Supports multiline prompt editing, length limiting, blank-line normalization, autofocus, and shared underline input chrome without profile-local text-field implementation. |
 
 ### StatefulWidget

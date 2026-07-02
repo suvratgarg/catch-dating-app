@@ -8993,6 +8993,36 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'ProfileInfoSkeletonSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Info skeleton section states',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .profileInfoSkeletonSectionStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProfileInfoSkeletonTile',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Info skeleton tile states',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .profileInfoSkeletonTileStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProfilePhotosSkeletonSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Photo skeleton section states',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .profilePhotosSkeletonSectionStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'ProfilePromptEntry',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(

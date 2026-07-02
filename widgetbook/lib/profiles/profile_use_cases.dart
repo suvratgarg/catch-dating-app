@@ -595,6 +595,88 @@ Widget profileTabSkeletonSliverBodyStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Photo skeleton section states',
+  type: ProfilePhotosSkeletonSection,
+  path: '[P1 product surfaces]/Profiles/Sections',
+)
+Widget profilePhotosSkeletonSectionStates(BuildContext context) {
+  return const _ProfileCatalog(
+    title: 'ProfilePhotosSkeletonSection',
+    contractId: 'screen.profile.edit_tab.skeleton.photos',
+    children: [
+      _StateCard(
+        label: 'loading photo grid',
+        child: _SectionFrame(
+          height: 360,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfilePhotosSkeletonSection(),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Info skeleton section states',
+  type: ProfileInfoSkeletonSection,
+  path: '[P1 product surfaces]/Profiles/Sections',
+)
+Widget profileInfoSkeletonSectionStates(BuildContext context) {
+  return const _ProfileCatalog(
+    title: 'ProfileInfoSkeletonSection',
+    contractId: 'screen.profile.edit_tab.skeleton.info_section',
+    children: [
+      _StateCard(
+        label: 'single row',
+        child: _SectionFrame(
+          height: 176,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfileInfoSkeletonSection(title: 'About you', rows: 1),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'divided rows',
+        child: _SectionFrame(
+          height: 320,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfileInfoSkeletonSection(title: 'Lifestyle', rows: 4),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Info skeleton tile states',
+  type: ProfileInfoSkeletonTile,
+  path: '[P1 product surfaces]/Profiles/Sections',
+)
+Widget profileInfoSkeletonTileStates(BuildContext context) {
+  return const _ProfileCatalog(
+    title: 'ProfileInfoSkeletonTile',
+    contractId: 'screen.profile.edit_tab.skeleton.info_tile',
+    children: [
+      _StateCard(
+        label: 'row placeholder',
+        child: _SectionFrame(
+          height: 120,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfileInfoSkeletonTile(),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Inline text value states',
   type: ProfileInlineTextValue,
   path: '[P1 product surfaces]/Profiles/Inline Editors',
