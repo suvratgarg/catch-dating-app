@@ -123,6 +123,15 @@ class HostEventParticipantsPanel extends ConsumerWidget {
         final revenueExportMutation = ref.watch(
           HostEventManageController.shareRevenueReportMutation,
         );
+        final bulkOfferError = bulkOfferMutation.hasError
+            ? (bulkOfferMutation as MutationError).error
+            : null;
+        final opsReportError = opsExportMutation.hasError
+            ? (opsExportMutation as MutationError).error
+            : null;
+        final revenueReportError = revenueExportMutation.hasError
+            ? (revenueExportMutation as MutationError).error
+            : null;
         final mutationState = HostParticipantsMutationDisplayState.resolve(
           markAttendancePendingIds: _pendingMutationIds(
             ref,
@@ -198,7 +207,7 @@ class HostEventParticipantsPanel extends ConsumerWidget {
             ),
           ),
           createWaitlistOfferError:
-              _mutationError(bulkOfferMutation) ??
+              bulkOfferError ??
               _firstMutationErrorForIds(
                 ref,
                 participantIds,
@@ -209,8 +218,8 @@ class HostEventParticipantsPanel extends ConsumerWidget {
                   ),
                 ),
               ),
-          opsReportError: _mutationError(opsExportMutation),
-          revenueReportError: _mutationError(revenueExportMutation),
+          opsReportError: opsReportError,
+          revenueReportError: revenueReportError,
         );
 
         final profileIds = viewModel.profileIds;
