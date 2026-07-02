@@ -14,10 +14,9 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/locations/data/places_repository.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
-import 'package:catch_dating_app/locations/shared/google_maps_coordinate_adapter.dart';
+import 'package:catch_dating_app/locations/shared/catch_google_map.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 
 class LocationPickerScreen extends ConsumerStatefulWidget {
   const LocationPickerScreen({
@@ -86,7 +85,7 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
   String? _selectedLabel;
   String? _selectedAddress;
   String? _selectedPlaceId;
-  gmaps.GoogleMapController? _mapController;
+  CatchGoogleMapController? _mapController;
   Timer? _searchDebounce;
   String _sessionToken = _newSessionToken();
   var _suggestions = <PlaceAutocompleteSuggestion>[];
@@ -132,30 +131,22 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
     final hasInitialCameraHint =
         widget.initialLocation != null || widget.initialCenter != null;
     final mapLayer = widget.usePlatformMapView
-        ? gmaps.GoogleMap(
-            initialCameraPosition: gmaps.CameraPosition(
-              target: initialCameraTarget.toGoogleMapsLatLng(),
-              zoom: hasInitialCameraHint ? 15 : 12,
-            ),
+        ? CatchGoogleMap(
+            initialCenter: initialCameraTarget,
+            initialZoom: hasInitialCameraHint ? 15 : 12,
             markers: {
               if (_selected != null)
-                gmaps.Marker(
-                  markerId: const gmaps.MarkerId('selected-starting-point'),
-                  position: _selected!.toGoogleMapsLatLng(),
-                  icon: gmaps.BitmapDescriptor.defaultMarkerWithHue(
-                    gmaps.BitmapDescriptor.hueOrange,
-                  ),
+                CatchMapMarker(
+                  id: 'selected-starting-point',
+                  position: _selected!,
+                  hue: CatchMapMarkerHue.orange,
                 ),
             },
-            myLocationButtonEnabled: false,
-            mapToolbarEnabled: false,
-            zoomControlsEnabled: false,
-            compassEnabled: false,
             mapType: widget.loadMapTiles
-                ? gmaps.MapType.normal
-                : gmaps.MapType.none,
+                ? CatchMapType.normal
+                : CatchMapType.none,
             onMapCreated: (controller) => _mapController = controller,
-            onTap: (point) => _setSelectedPoint(point.toLocationCoordinate()),
+            onTap: _setSelectedPoint,
           )
         : ColoredBox(color: t.bg);
 
@@ -318,12 +309,7 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
         address: place.formattedAddress,
         placeId: place.placeId,
       );
-      await _mapController?.animateCamera(
-        gmaps.CameraUpdate.newLatLngZoom(
-          place.location.toGoogleMapsLatLng(),
-          16,
-        ),
-      );
+      await _mapController?.animateTo(place.location, zoom: 16);
     } catch (error) {
       if (!mounted) return;
       setState(() {
