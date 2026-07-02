@@ -2066,10 +2066,27 @@ void main() {
     );
 
     expect(find.text('Developer details'), findsOneWidget);
+    expect(find.byType(CatchFrameworkErrorDebugDetails), findsOneWidget);
     expect(find.byType(ExpansionTile), findsNothing);
     await tester.tap(find.text('Developer details'));
     await pumpFeatureUi(tester);
     expect(find.textContaining('Bad state: boom'), findsOneWidget);
+  });
+
+  testWidgets('CatchFrameworkErrorDebugDetails renders expanded details', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const CatchFrameworkErrorDebugDetails(
+          details: 'debug exception details',
+          initiallyExpanded: true,
+        ),
+      ),
+    );
+
+    expect(find.text('Developer details'), findsOneWidget);
+    expect(find.text('debug exception details'), findsOneWidget);
   });
 
   testWidgets('CatchErrorState renders retry UI without debug details', (

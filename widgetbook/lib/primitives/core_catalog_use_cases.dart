@@ -1450,6 +1450,33 @@ Widget catchFrameworkErrorViewCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
+  type: CatchFrameworkErrorDebugDetails,
+  path: '[Core catalog]/Feedback',
+)
+Widget catchFrameworkErrorDebugDetailsCatalogStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'CatchFrameworkErrorDebugDetails',
+    catalogId: 'core.widgets.catch_framework_error_debug_details',
+    children: [
+      _StateCard(
+        label: 'collapsed',
+        child: CatchFrameworkErrorDebugDetails(
+          details: 'StateError: Widgetbook sample framework failure',
+        ),
+      ),
+      _StateCard(
+        label: 'expanded',
+        child: CatchFrameworkErrorDebugDetails(
+          details: 'StateError: Widgetbook sample framework failure',
+          initiallyExpanded: true,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
   type: CatchNoticeHost,
   path: '[Core catalog]/Feedback',
 )
