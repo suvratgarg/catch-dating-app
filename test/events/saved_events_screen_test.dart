@@ -2,6 +2,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/saved_events_screen.dart';
@@ -65,6 +66,35 @@ void main() {
   });
 
   group('SavedEventsScreen', () {
+    testWidgets('shows loading while the auth session resolves', (
+      tester,
+    ) async {
+      await _pumpSavedEvents(
+        tester,
+        uid: const AsyncLoading<String?>(),
+        savedEvents: const [],
+        child: const SavedEventsScreen(),
+      );
+
+      expect(find.byType(CatchSkeleton), findsWidgets);
+      expect(find.text('No saved events yet'), findsNothing);
+    });
+
+    testWidgets('shows an auth error when the session fails to load', (
+      tester,
+    ) async {
+      await _pumpSavedEvents(
+        tester,
+        uid: AsyncError<String?>(Exception('auth failed'), StackTrace.empty),
+        savedEvents: const [],
+        child: const SavedEventsScreen(),
+      );
+
+      expect(find.text('Sign in problem'), findsOneWidget);
+      expect(find.text('Try again'), findsOneWidget);
+      expect(find.text('No saved events yet'), findsNothing);
+    });
+
     testWidgets('shows an empty state when there are no saved events', (
       tester,
     ) async {
@@ -155,6 +185,7 @@ void main() {
 
 Future<void> _pumpSavedEvents(
   WidgetTester tester, {
+  AsyncValue<String?> uid = const AsyncData<String?>('runner-1'),
   required List<Event> savedEvents,
   required Widget child,
 }) async {
@@ -165,7 +196,7 @@ Future<void> _pumpSavedEvents(
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
-        uidProvider.overrideWithValue(const AsyncData<String?>('runner-1')),
+        uidProvider.overrideWithValue(uid),
         clubsRepositoryProvider.overrideWith(
           (ref) =>
               club_test.FakeClubsRepository()

@@ -26,65 +26,81 @@ class SavedEventsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
-    final uid = ref.watch(uidProvider).asData?.value;
-    final savedEventsAsync = uid == null
-        ? const AsyncData(<Event>[])
-        : ref.watch(watchSavedEventDetailsForUserProvider(uid));
+    final uidAsync = ref.watch(uidProvider);
 
     return Scaffold(
       backgroundColor: t.bg,
       appBar: const CatchTopBar(title: 'Saved events'),
       body: SafeArea(
-        child: CatchAsyncValueView<List<Event>>(
-          value: savedEventsAsync,
-          loadingBuilder: (_) => const SavedEventsLoading(),
-          errorBuilder: (_, error, _) => SavedEventsError(
-            error: error,
-            onRetry: uid == null
-                ? null
-                : () => ref.invalidate(
-                    watchSavedEventDetailsForUserProvider(uid),
-                  ),
-          ),
-          builder: (context, events) {
-            if (events.isEmpty) {
-              return const SavedEventsMessage(
-                title: 'No saved events yet',
-                message: 'Save events you want to revisit before booking.',
+        child: Builder(
+          builder: (context) {
+            if (uidAsync.isLoading) return const SavedEventsLoading();
+            if (uidAsync.hasError) {
+              return CatchErrorState.fromError(
+                uidAsync.error!,
+                context: AppErrorContext.auth,
+                onRetry: () => ref.invalidate(uidProvider),
               );
             }
 
-            final now = referenceNow ?? DateTime.now();
-            final savedEventsState = SavedEventsListState.from(
-              events,
-              now: now,
-            );
-            final clubNamesAsync = ref.watch(
-              clubNameLookupProvider(
-                ClubNameLookupQuery(savedEventsState.clubIds),
-              ),
-            );
+            final uid = uidAsync.asData?.value;
+            final savedEventsAsync = uid == null
+                ? const AsyncData(<Event>[])
+                : ref.watch(watchSavedEventDetailsForUserProvider(uid));
 
-            return CustomScrollView(
-              slivers: [
-                const SavedEventsHeaderSliver(),
-                CatchAsyncValueSliver<Map<String, String>>(
-                  value: clubNamesAsync,
-                  sliverLoadingBuilder: (_) =>
-                      const EventAgendaSliverSkeleton(),
-                  sliverErrorBuilder: (_, error, _) =>
-                      SavedEventsClubNamesErrorSliver(
-                        error: error,
-                        onRetry: () => ref.invalidate(clubNameLookupProvider),
+            return CatchAsyncValueView<List<Event>>(
+              value: savedEventsAsync,
+              loadingBuilder: (_) => const SavedEventsLoading(),
+              errorBuilder: (_, error, _) => SavedEventsError(
+                error: error,
+                onRetry: uid == null
+                    ? null
+                    : () => ref.invalidate(
+                        watchSavedEventDetailsForUserProvider(uid),
                       ),
-                  builder: (context, clubNames) => SavedEventsAgendaSliver(
-                    state: savedEventsState,
-                    clubNames: clubNames,
-                    onEventSelected: (event) =>
-                        _openEventDetail(context, event),
+              ),
+              builder: (context, events) {
+                if (events.isEmpty) {
+                  return const SavedEventsMessage(
+                    title: 'No saved events yet',
+                    message: 'Save events you want to revisit before booking.',
+                  );
+                }
+
+                final now = referenceNow ?? DateTime.now();
+                final savedEventsState = SavedEventsListState.from(
+                  events,
+                  now: now,
+                );
+                final clubNamesAsync = ref.watch(
+                  clubNameLookupProvider(
+                    ClubNameLookupQuery(savedEventsState.clubIds),
                   ),
-                ),
-              ],
+                );
+
+                return CustomScrollView(
+                  slivers: [
+                    const SavedEventsHeaderSliver(),
+                    CatchAsyncValueSliver<Map<String, String>>(
+                      value: clubNamesAsync,
+                      sliverLoadingBuilder: (_) =>
+                          const EventAgendaSliverSkeleton(),
+                      sliverErrorBuilder: (_, error, _) =>
+                          SavedEventsClubNamesErrorSliver(
+                            error: error,
+                            onRetry: () =>
+                                ref.invalidate(clubNameLookupProvider),
+                          ),
+                      builder: (context, clubNames) => SavedEventsAgendaSliver(
+                        state: savedEventsState,
+                        clubNames: clubNames,
+                        onEventSelected: (event) =>
+                            _openEventDetail(context, event),
+                      ),
+                    ),
+                  ],
+                );
+              },
             );
           },
         ),

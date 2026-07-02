@@ -61,13 +61,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final uid = ref.watch(uidProvider).asData?.value;
-    final signedUpEventsAsync = uid == null
-        ? const AsyncData(<Event>[])
-        : ref.watch(watchSignedUpEventsProvider(uid));
-    final savedEventsAsync = uid == null
-        ? const AsyncData(<Event>[])
-        : ref.watch(watchSavedEventDetailsForUserProvider(uid));
+    final uidAsync = ref.watch(uidProvider);
 
     return Scaffold(
       backgroundColor: t.bg,
@@ -75,6 +69,24 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       body: SafeArea(
         child: Builder(
           builder: (context) {
+            if (uidAsync.isLoading) {
+              return const CalendarLoadingScreen();
+            }
+            if (uidAsync.hasError) {
+              return CatchErrorState.fromError(
+                uidAsync.error!,
+                context: AppErrorContext.auth,
+                onRetry: () => ref.invalidate(uidProvider),
+              );
+            }
+            final uid = uidAsync.asData?.value;
+            final signedUpEventsAsync = uid == null
+                ? const AsyncData(<Event>[])
+                : ref.watch(watchSignedUpEventsProvider(uid));
+            final savedEventsAsync = uid == null
+                ? const AsyncData(<Event>[])
+                : ref.watch(watchSavedEventDetailsForUserProvider(uid));
+
             if (signedUpEventsAsync.isLoading || savedEventsAsync.isLoading) {
               return const CalendarLoadingScreen();
             }

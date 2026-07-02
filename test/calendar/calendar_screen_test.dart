@@ -29,6 +29,34 @@ import '../test_pump_helpers.dart';
 
 void main() {
   group('CalendarScreen', () {
+    testWidgets('shows loading while the auth session resolves', (
+      tester,
+    ) async {
+      await _pumpCalendar(
+        tester,
+        uid: const AsyncLoading<String?>(),
+        overrides: const [],
+      );
+
+      expect(find.byType(CatchSkeleton), findsWidgets);
+      expect(find.text('Calendar'), findsOneWidget);
+      expect(find.text('No planned events yet'), findsNothing);
+    });
+
+    testWidgets('shows an auth error when the session fails to load', (
+      tester,
+    ) async {
+      await _pumpCalendar(
+        tester,
+        uid: AsyncError<String?>(Exception('auth failed'), StackTrace.empty),
+        overrides: const [],
+      );
+
+      expect(find.text('Sign in problem'), findsOneWidget);
+      expect(find.text('Try again'), findsOneWidget);
+      expect(find.text('No planned events yet'), findsNothing);
+    });
+
     testWidgets('shows a loading state while booked events are loading', (
       tester,
     ) async {
@@ -740,13 +768,14 @@ void main() {
 
 Future<void> _pumpCalendar(
   WidgetTester tester, {
+  AsyncValue<String?> uid = const AsyncData<String?>('runner-1'),
   required Iterable overrides,
   List<Event> savedEvents = const [],
 }) async {
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
-        uidProvider.overrideWithValue(const AsyncData<String?>('runner-1')),
+        uidProvider.overrideWithValue(uid),
         clubsRepositoryProvider.overrideWith(
           (ref) =>
               club_test.FakeClubsRepository()
