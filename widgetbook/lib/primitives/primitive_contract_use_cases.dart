@@ -5804,6 +5804,229 @@ Widget catchPersonRowChatPreviewContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
+  type: CatchPersonChatLayout,
+  path: '[Core primitives]/Product composites',
+)
+Widget catchPersonChatLayoutContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'CatchPersonChatLayout',
+    contractId: 'catch.person_row.chat_layout',
+    states: const ['default', 'context', 'typing', 'unread', 'long-copy'],
+    children: const [
+      _StateCard(
+        label: 'default',
+        child: SizedBox(
+          width: 280,
+          child: CatchPersonChatLayout(
+            data: CatchPersonRowData(
+              name: 'Isha Mehta',
+              lastMessage: 'See you by the host stand.',
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'context',
+        child: SizedBox(
+          width: 280,
+          child: CatchPersonChatLayout(
+            data: CatchPersonRowData(
+              name: 'Isha Mehta',
+              contextLine: 'Sundowner 5K',
+              lastMessage: 'See you by the host stand.',
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'typing',
+        child: SizedBox(
+          width: 280,
+          child: CatchPersonChatLayout(
+            data: CatchPersonRowData(
+              name: 'Isha Mehta',
+              lastMessage: 'Draft message',
+              isTyping: true,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'unread',
+        child: SizedBox(
+          width: 280,
+          child: CatchPersonChatLayout(
+            data: CatchPersonRowData(
+              name: 'Isha Mehta',
+              lastMessage: 'I just joined the event.',
+              unreadCount: 2,
+              isFresh: true,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'long-copy',
+        child: SizedBox(
+          width: 280,
+          child: CatchPersonChatLayout(
+            data: CatchPersonRowData(
+              name: 'A very long display name that should ellipsize',
+              lastMessage:
+                  'This is a very long latest message preview that should truncate cleanly inside the inbox row.',
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchPersonChatTrailing,
+  path: '[Core primitives]/Product composites',
+)
+Widget catchPersonChatTrailingContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'CatchPersonChatTrailing',
+    contractId: 'catch.person_row.chat_trailing',
+    states: const ['timestamp', 'unread', 'new-dot'],
+    children: const [
+      _StateCard(
+        label: 'timestamp',
+        child: CatchPersonChatTrailing(
+          data: CatchPersonRowData(
+            name: 'Isha Mehta',
+            lastMessage: 'See you there.',
+            timestamp: '9m',
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'unread',
+        child: CatchPersonChatTrailing(
+          data: CatchPersonRowData(
+            name: 'Isha Mehta',
+            lastMessage: 'I just joined the event.',
+            timestamp: '1h',
+            unreadCount: 2,
+            isFresh: true,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'new-dot',
+        child: CatchPersonChatTrailing(
+          data: CatchPersonRowData(
+            name: 'Isha Mehta',
+            lastMessage: 'You matched!',
+            timestamp: '2m',
+            showFreshDot: true,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchPersonUnreadCountPill,
+  path: '[Core primitives]/Product composites',
+)
+Widget catchPersonUnreadCountPillContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'CatchPersonUnreadCountPill',
+    contractId: 'catch.person_row.unread_count_pill',
+    states: const ['single', 'many', 'capped'],
+    children: const [
+      _StateCard(label: 'single', child: CatchPersonUnreadCountPill(count: 1)),
+      _StateCard(label: 'many', child: CatchPersonUnreadCountPill(count: 12)),
+      _StateCard(
+        label: 'capped',
+        child: CatchPersonUnreadCountPill(count: 118),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchPersonNewMatchDot,
+  path: '[Core primitives]/Product composites',
+)
+Widget catchPersonNewMatchDotContractStates(BuildContext context) {
+  return const _ContractScreen(
+    title: 'CatchPersonNewMatchDot',
+    contractId: 'catch.person_row.new_match_dot',
+    states: ['default'],
+    children: [
+      _StateCard(
+        label: 'default',
+        child: Padding(
+          padding: EdgeInsets.all(24),
+          child: CatchPersonNewMatchDot(),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchPersonRosterLayout,
+  path: '[Core primitives]/Product composites',
+)
+Widget catchPersonRosterLayoutContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'CatchPersonRosterLayout',
+    contractId: 'catch.person_row.roster_layout',
+    states: const ['meta', 'context', 'long-copy'],
+    children: const [
+      _StateCard(
+        label: 'meta',
+        child: SizedBox(
+          width: 280,
+          child: CatchPersonRosterLayout(
+            data: CatchPersonRowData(name: 'Aanya Rao', metaLine: '5:20 /km'),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'context',
+        child: SizedBox(
+          width: 280,
+          child: CatchPersonRosterLayout(
+            data: CatchPersonRowData(
+              name: 'Aanya Rao',
+              metaLine: '5:20 /km',
+              contextLine: 'Sundowner 5K',
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'long-copy',
+        child: SizedBox(
+          width: 280,
+          child: CatchPersonRosterLayout(
+            data: CatchPersonRowData(
+              name: 'A very long roster name that should ellipsize',
+              metaLine:
+                  'A very long roster metadata line that should truncate inside the row.',
+              contextLine:
+                  'A very long event context that should stay inside the available width.',
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
   type: NotificationRow,
   path: '[Core primitives]/Product composites',
 )

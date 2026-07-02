@@ -10,14 +10,14 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1143,
-    "widgetClasses": 1039,
+    "total": 1148,
+    "widgetClasses": 1044,
     "stateClasses": 104,
-    "publicClasses": 1037,
+    "publicClasses": 1042,
     "privateClasses": 106,
     "byRole": {
-      "atom": 45,
-      "composition": 308,
+      "atom": 47,
+      "composition": 311,
       "feature-adapter": 318,
       "pattern": 14,
       "screen": 354,
@@ -28,11 +28,11 @@
       "keep-public-cataloged": 880,
       "keep-widget-state": 104,
       "review-catalog-coverage": 5,
-      "review-promote-or-consolidate": 27,
+      "review-promote-or-consolidate": 32,
       "review-promote-or-inline": 2
     },
     "byCatalogStatus": {
-      "cataloged": 834,
+      "cataloged": 839,
       "contracted": 125,
       "not-applicable": 104,
       "route-covered": 72,
@@ -4724,6 +4724,114 @@
       "flags": []
     },
     {
+      "name": "CatchPersonChatLayout",
+      "file": "lib/core/widgets/catch_person_row.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.person_chat_layout",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract"
+      ]
+    },
+    {
+      "name": "CatchPersonChatTrailing",
+      "file": "lib/core/widgets/catch_person_row.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.person_chat_trailing",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract"
+      ]
+    },
+    {
+      "name": "CatchPersonNewMatchDot",
+      "file": "lib/core/widgets/catch_person_row.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "atom",
+      "canonicalFamily": "catch.person_new_match_dot",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "tokens-and-primitives",
+      "stateOwnership": "local-ui-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "internal-only",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract"
+      ]
+    },
+    {
+      "name": "CatchPersonRosterLayout",
+      "file": "lib/core/widgets/catch_person_row.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.person_roster_layout",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract"
+      ]
+    },
+    {
       "name": "CatchPersonRow",
       "file": "lib/core/widgets/catch_person_row.dart",
       "classKind": "widget",
@@ -4745,6 +4853,33 @@
         "mergeIntoCanonical"
       ],
       "flags": []
+    },
+    {
+      "name": "CatchPersonUnreadCountPill",
+      "file": "lib/core/widgets/catch_person_row.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "atom",
+      "canonicalFamily": "catch.person_unread_count_pill",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "tokens-and-primitives",
+      "stateOwnership": "local-ui-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "internal-only",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract"
+      ]
     },
     {
       "name": "CatchPrivacyBadge",

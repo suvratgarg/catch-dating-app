@@ -34,6 +34,9 @@ void main() {
     expect(find.text('Taylor'), findsOneWidget);
     expect(find.text('You matched!'), findsOneWidget);
     expect(find.byType(CatchPersonAvatar), findsOneWidget);
+    expect(find.byType(CatchPersonChatLayout), findsOneWidget);
+    expect(find.byType(CatchPersonChatTrailing), findsOneWidget);
+    expect(find.byType(CatchPersonNewMatchDot), findsOneWidget);
     expect(
       tester
           .widget<CatchPersonAvatar>(find.byType(CatchPersonAvatar))
@@ -80,6 +83,9 @@ void main() {
 
     expect(avatar.borderWidth, CatchStroke.underline);
     expect(avatar.borderColor, tokens.primary);
+    expect(find.byType(CatchPersonChatLayout), findsOneWidget);
+    expect(find.byType(CatchPersonChatTrailing), findsOneWidget);
+    expect(find.byType(CatchPersonUnreadCountPill), findsOneWidget);
     expect(find.text('1'), findsOneWidget);
     expect(
       find.byWidgetPredicate(
@@ -88,5 +94,33 @@ void main() {
       ),
       findsOneWidget,
     );
+  });
+
+  testWidgets('renders roster layout when no chat preview is supplied', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: const Scaffold(
+          body: CatchPersonRow(
+            data: CatchPersonRowData(
+              name: 'Taylor',
+              metaLine: '5:20 /km',
+              contextLine: 'Sundowner 5K',
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.byType(CatchPersonRosterLayout), findsOneWidget);
+    expect(find.byType(CatchPersonChatLayout), findsNothing);
+    expect(find.text('Taylor'), findsOneWidget);
+    expect(find.text('5:20 /km'), findsOneWidget);
+    expect(find.text('Sundowner 5K'), findsOneWidget);
   });
 }
