@@ -10,13 +10,13 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1160,
-    "widgetClasses": 1055,
+    "total": 1161,
+    "widgetClasses": 1056,
     "stateClasses": 105,
-    "publicClasses": 1053,
+    "publicClasses": 1054,
     "privateClasses": 107,
     "byRole": {
-      "atom": 53,
+      "atom": 54,
       "composition": 316,
       "feature-adapter": 318,
       "pattern": 14,
@@ -24,7 +24,7 @@
       "widget-state": 105
     },
     "byDecision": {
-      "keep-canonical-contract": 158,
+      "keep-canonical-contract": 159,
       "keep-public-cataloged": 880,
       "keep-widget-state": 105,
       "review-catalog-coverage": 5,
@@ -33,7 +33,7 @@
     },
     "byCatalogStatus": {
       "cataloged": 817,
-      "contracted": 158,
+      "contracted": 159,
       "not-applicable": 105,
       "route-covered": 72,
       "uncataloged": 8
@@ -5437,6 +5437,29 @@
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "keep-canonical-contract",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "CatchSegmentButton",
+      "file": "lib/core/widgets/catch_segmented_control.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "atom",
+      "canonicalFamily": "catch.segmented_control",
+      "publicApi": true,
+      "catalogStatus": "contracted",
+      "contractId": "catch.segmented_control.button",
+      "allowedDependencyLevel": "tokens-and-primitives",
+      "stateOwnership": "local-ui-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "internal-only",
       "actionOwnership": "callbacks-only",
       "decision": "keep-canonical-contract",
       "remediationOptions": [

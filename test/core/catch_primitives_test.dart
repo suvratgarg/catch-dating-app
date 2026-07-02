@@ -910,12 +910,35 @@ void main() {
       tester.getSize(find.byType(CatchSegmentedControl<String>)).width,
       360,
     );
+    expect(find.byType(CatchSegmentButton<String>), findsNWidgets(3));
     expect(find.byIcon(CatchIcons.tuneRounded), findsOneWidget);
     expect(find.text('Setup'), findsOneWidget);
 
     await tester.tap(find.text('Live'));
     await tester.pump();
     expect(selected, 'live');
+  });
+
+  testWidgets('CatchSegmentButton renders selected label and tap', (
+    tester,
+  ) async {
+    var tapped = false;
+
+    await tester.pumpWidget(
+      _wrap(
+        CatchSegmentButton<String>(
+          segment: const CatchSegment(value: 'agenda', label: 'Agenda'),
+          selected: true,
+          expanded: false,
+          style: CatchSegmentedControlStyle.filled,
+          onTap: () => tapped = true,
+        ),
+      ),
+    );
+
+    expect(find.text('Agenda'), findsOneWidget);
+    await tester.tap(find.text('Agenda'));
+    expect(tapped, isTrue);
   });
 
   testWidgets('CatchChipField single select keeps a selected chip selected', (

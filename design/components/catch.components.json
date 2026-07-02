@@ -3465,7 +3465,20 @@
           "CatchTextStyles.sectionTitle",
           "CatchIcon.control"
         ],
-        "goldens": []
+        "goldens": [],
+        "members": [
+          {
+            "id": "catch.segmented_control.button",
+            "symbol": "CatchSegmentButton",
+            "file": "lib/core/widgets/catch_segmented_control.dart",
+            "summary": "Direct segmented-control button renderer used for each selectable segment.",
+            "states": [
+              "selected",
+              "unselected",
+              "expanded-surface"
+            ]
+          }
+        ]
       },
       "handoff": {
         "allowedChildren": [],

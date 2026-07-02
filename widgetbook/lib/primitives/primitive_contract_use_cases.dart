@@ -2209,6 +2209,62 @@ Widget catchSegmentedControlContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
+  type: CatchSegmentButton,
+  path: '[Core primitives]/Selection',
+)
+Widget catchSegmentButtonContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'CatchSegmentButton',
+    contractId: 'catch.segmented_control.button',
+    states: const ['selected', 'unselected', 'expanded-surface'],
+    children: [
+      _StateCard(
+        label: 'selected',
+        child: CatchSegmentButton<String>(
+          segment: const CatchSegment(value: 'day', label: 'Day'),
+          selected: true,
+          expanded: false,
+          style: CatchSegmentedControlStyle.filled,
+          onTap: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'unselected',
+        child: CatchSegmentButton<String>(
+          segment: const CatchSegment(value: 'agenda', label: 'Agenda'),
+          selected: false,
+          expanded: false,
+          style: CatchSegmentedControlStyle.filled,
+          onTap: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'expanded-surface',
+        child: SizedBox(
+          width: 260,
+          child: Row(
+            children: [
+              CatchSegmentButton<String>(
+                segment: CatchSegment(
+                  value: 'grid',
+                  label: 'Grid',
+                  icon: CatchIcons.gridViewRounded,
+                ),
+                selected: true,
+                expanded: true,
+                style: CatchSegmentedControlStyle.surface,
+                onTap: _noop,
+              ),
+            ],
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
   type: CatchSurface,
   path: '[Core primitives]/Surfaces',
 )
