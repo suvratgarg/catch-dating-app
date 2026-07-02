@@ -187,14 +187,10 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     final viewportHeight = scrollable?.position.viewportDimension;
     if (viewportHeight == null || viewportHeight <= 0) return 0.18;
 
-    return ((_calendarDateHeaderHeightFor(
-                  context,
-                  expanded: _calendarExpanded,
-                ) +
-                CatchSpacing.s2) /
-            viewportHeight)
-        .clamp(0.12, 0.32)
-        .toDouble();
+    return _CalendarDateHeaderLayout.from(context).agendaRevealAlignment(
+      expanded: _calendarExpanded,
+      viewportHeight: viewportHeight,
+    );
   }
 
   bool _handleCalendarScrollNotification(ScrollNotification notification) {
@@ -340,34 +336,41 @@ EventTileStatus _eventTileStatusFor(CalendarAgendaEventStatus status) {
   };
 }
 
-double _calendarDateHeaderHeightFor(
-  BuildContext context, {
-  required bool expanded,
-}) {
-  final scaler = MediaQuery.textScalerOf(context);
-  final monthHeight =
-      scaler.scale(CatchLayout.calendarHeaderTitleFontSize) *
-      CatchLayout.calendarHeaderTitleLineHeight;
-  final titleRowHeight = monthHeight < CatchLayout.calendarHeaderTitleMinHeight
-      ? CatchLayout.calendarHeaderTitleMinHeight
-      : monthHeight;
-  final weekdayHeight =
-      scaler.scale(CatchLayout.calendarWeekdayFontSize) *
-      CatchLayout.calendarWeekdayLineHeight;
-  final dateHeight =
-      scaler.scale(CatchLayout.calendarDateFontSize) *
-      CatchLayout.calendarDateLineHeight;
-  final weekStripHeight =
-      CatchLayout.calendarWeekStripVerticalInsetTotal +
-      weekdayHeight +
-      CatchSpacing.micro2 +
-      dateHeight +
-      CatchSpacing.s1 +
-      CatchLayout.calendarWeekStripBottomInset;
-  if (expanded) {
-    final monthWeekdayHeight =
-        scaler.scale(CatchLayout.calendarMonthWeekdayFontSize) *
-        CatchLayout.calendarMonthWeekdayLineHeight;
+class _CalendarDateHeaderLayout {
+  const _CalendarDateHeaderLayout({required this.textScaler});
+
+  factory _CalendarDateHeaderLayout.from(BuildContext context) {
+    return _CalendarDateHeaderLayout(
+      textScaler: MediaQuery.textScalerOf(context),
+    );
+  }
+
+  final TextScaler textScaler;
+
+  double extentFor({required bool expanded}) {
+    return expanded ? expandedExtent : collapsedExtent;
+  }
+
+  double agendaRevealAlignment({
+    required bool expanded,
+    required double viewportHeight,
+  }) {
+    if (viewportHeight <= 0) return 0.18;
+    return ((extentFor(expanded: expanded) + CatchSpacing.s2) / viewportHeight)
+        .clamp(0.12, 0.32)
+        .toDouble();
+  }
+
+  double get collapsedExtent {
+    return CatchSpacing.s2 +
+        titleRowHeight +
+        CatchSpacing.micro14 +
+        weekStripHeight +
+        CatchSpacing.s3 +
+        CatchSpacing.micro2;
+  }
+
+  double get expandedExtent {
     return CatchSpacing.s2 +
         titleRowHeight +
         CatchSpacing.s4 +
@@ -379,12 +382,41 @@ double _calendarDateHeaderHeightFor(
         CatchSpacing.micro2;
   }
 
-  return CatchSpacing.s2 +
-      titleRowHeight +
-      CatchSpacing.micro14 +
-      weekStripHeight +
-      CatchSpacing.s3 +
-      CatchSpacing.micro2;
+  double get titleRowHeight {
+    final monthHeight =
+        textScaler.scale(CatchLayout.calendarHeaderTitleFontSize) *
+        CatchLayout.calendarHeaderTitleLineHeight;
+    return monthHeight < CatchLayout.calendarHeaderTitleMinHeight
+        ? CatchLayout.calendarHeaderTitleMinHeight
+        : monthHeight;
+  }
+
+  double get weekStripHeight {
+    final weekdayHeight =
+        textScaler.scale(CatchLayout.calendarWeekdayFontSize) *
+        CatchLayout.calendarWeekdayLineHeight;
+    final dateHeight =
+        textScaler.scale(CatchLayout.calendarDateFontSize) *
+        CatchLayout.calendarDateLineHeight;
+    return CatchLayout.calendarWeekStripVerticalInsetTotal +
+        weekdayHeight +
+        CatchSpacing.micro2 +
+        dateHeight +
+        CatchSpacing.s1 +
+        CatchLayout.calendarWeekStripBottomInset;
+  }
+
+  double get monthWeekdayHeight {
+    return textScaler.scale(CatchLayout.calendarMonthWeekdayFontSize) *
+        CatchLayout.calendarMonthWeekdayLineHeight;
+  }
+}
+
+double _calendarDateHeaderHeightFor(
+  BuildContext context, {
+  required bool expanded,
+}) {
+  return _CalendarDateHeaderLayout.from(context).extentFor(expanded: expanded);
 }
 
 class CalendarDateHeader extends StatelessWidget {
