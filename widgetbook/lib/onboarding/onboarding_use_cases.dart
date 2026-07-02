@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/labs/design_fixtures/profile_surface_fixtures.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
@@ -11,7 +12,9 @@ import 'package:catch_dating_app/onboarding/presentation/pages/photos_page.dart'
 import 'package:catch_dating_app/onboarding/presentation/pages/profile_prompts_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/running_prefs_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
+import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_layout.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -67,6 +70,50 @@ Widget onboardingTopBarState(BuildContext context) {
           profileCompletionOnly: true,
           runPreferencesOnly: false,
           onBack: null,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Step layout states',
+  type: OnboardingStepLayout,
+  path: '[P1 product surfaces]/Onboarding',
+)
+Widget onboardingStepLayoutStates(BuildContext context) {
+  return const _OnboardingCatalog(
+    title: 'OnboardingStepLayout',
+    children: [
+      _StateCard(
+        label: 'body only',
+        child: _DeviceFrame(
+          child: OnboardingStepLayout(
+            children: [
+              Text('Tell us enough to make your first plan feel natural.'),
+              SizedBox(height: 16),
+              Text('Use the shared onboarding body rhythm and max width.'),
+            ],
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'sticky footer',
+        child: _DeviceFrame(
+          child: OnboardingStepLayout(
+            footer: Row(
+              children: [
+                Expanded(child: Text('2 / 3 prompts answered')),
+                SizedBox(width: 12),
+                CatchButton(label: 'Continue', onPressed: null),
+              ],
+            ),
+            children: [
+              Text('Complete the visible fields before continuing.'),
+              SizedBox(height: 16),
+              Text('The bottom dock stays outside the scroll owner.'),
+            ],
+          ),
         ),
       ),
     ],
@@ -376,6 +423,45 @@ Widget profilePromptsPageStates(BuildContext context) {
           child: _OnboardingScope(
             child: ProfilePromptsPage(profileCompletionOnly: true),
           ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Prompt field states',
+  type: PromptField,
+  path: '[P1 product surfaces]/Onboarding/Pages',
+)
+Widget promptFieldStates(BuildContext context) {
+  final answeredController = TextEditingController(
+    text: 'A walk where phones disappear and the coffee after runs long.',
+  );
+  final emptyController = TextEditingController();
+  final promptIds = defaultProfilePromptIds.take(3).toList(growable: false);
+
+  return _OnboardingCatalog(
+    title: 'PromptField',
+    children: [
+      _StateCard(
+        label: 'answered',
+        child: PromptField(
+          definition: profilePromptDefinition(promptIds[0]),
+          controller: answeredController,
+          availablePromptIds: promptIds,
+          selectedPromptId: promptIds[0],
+          onPromptChanged: (_) {},
+        ),
+      ),
+      _StateCard(
+        label: 'empty',
+        child: PromptField(
+          definition: profilePromptDefinition(promptIds[1]),
+          controller: emptyController,
+          availablePromptIds: promptIds,
+          selectedPromptId: promptIds[1],
+          onPromptChanged: (_) {},
         ),
       ),
     ],

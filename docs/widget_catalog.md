@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.534
+version: 2.5.535
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.535
+
+- Cataloged the onboarding form/layout leaves `OnboardingStepLayout` and
+  `PromptField` directly in Widgetbook. Page-level onboarding coverage remains
+  intact, while the shared scroll-body/sticky-footer shell and prompt card
+  renderer now have their own review states.
 
 ### 2.5.534
 
@@ -5671,10 +5678,12 @@ Generated 2026-05-06.
 |---|---|---|
 | `OnboardingScreen` | `lib/onboarding/presentation/onboarding_screen.dart:17` | Multi-step onboarding shell registered as `screen.onboarding.flow`. Initializes the correct entry point for full, profile-completion-only, and run-preferences-only flows, owns back-step boundaries, renders the shared top bar, and delegates body composition to step pages pending an `OnboardingFlowState` adapter. |
 | `OnboardingTopBar` | `lib/onboarding/presentation/onboarding_screen.dart:143` | Public onboarding progress/header adapter used by `OnboardingScreen`. Converts `OnboardingStep` plus profile-completion/run-preference flow flags into `CatchStepHeader` copy and progress state while the route owns navigation. |
+| `OnboardingStepLayout` | `lib/onboarding/presentation/widgets/onboarding_step_layout.dart:5` | Shared onboarding page layout. Owns the scroll body, max-width content constraint, optional sticky `CatchBottomDock` footer, and safe-area handoff so individual onboarding pages supply fields/footer controls without redefining body chrome. |
 | `NameDobPage` | `lib/onboarding/presentation/pages/name_dob_page.dart:13` | Handoff Name + DOB step: headline/subtitle, FIRST NAME / LAST NAME / DATE OF BIRTH / verified PHONE fields, date picker, private-last-name and birth-year helper copy, and sticky Continue footer through `CatchBottomDock`. |
 | `GenderInterestPage` | `lib/onboarding/presentation/pages/gender_interest_page.dart:13` | Handoff Gender step using uppercase section labels, `ChipField` selections, validation, stable semantic chip keys, and sticky Continue footer. |
 | `InstagramPage` | `lib/onboarding/presentation/pages/instagram_page.dart:10` | Handoff Instagram step with verification/privacy copy, HANDLE field, sticky Continue action, and secondary Skip for now action that advances without saving a handle. |
 | `ProfilePromptsPage` | `lib/onboarding/presentation/pages/profile_prompts_page.dart:20` | Handoff Prompts step: three prompt cards, duplicate-prompt filtering through `CatchField.select`, inline answer fields, footer progress label, and disabled Continue until all prompt slots are answered. |
+| `PromptField` | `lib/onboarding/presentation/pages/profile_prompts_page.dart:199` | Provider-free prompt card used by `ProfilePromptsPage`. Receives the active prompt definition, text controller, available prompt ids, selected id, and prompt-change callback, then renders the prompt selector and multiline answer field with count helper and length limiting while the page owns duplicate filtering and submission. |
 | `RunningPrefsPage` | `lib/onboarding/presentation/pages/running_prefs_page.dart:19` | Handoff Running prefs step: TYPICAL PACE range panel on `CatchSurface`, `CatchRangeSlider`, favorite distance/reason/time chip groups, and sticky Save/Continue booking footer. |
 
 ### StatefulWidget

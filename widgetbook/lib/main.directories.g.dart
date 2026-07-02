@@ -8909,6 +8909,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'OnboardingStepLayout',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Step layout states',
+                builder: _widgetbook_workspace_onboarding_onboarding_use_cases
+                    .onboardingStepLayoutStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'OnboardingTopBar',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -8973,6 +8983,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_onboarding_onboarding_use_cases
                             .profilePromptsPageStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'PromptField',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Prompt field states',
+                    builder:
+                        _widgetbook_workspace_onboarding_onboarding_use_cases
+                            .promptFieldStates,
                   ),
                 ],
               ),
