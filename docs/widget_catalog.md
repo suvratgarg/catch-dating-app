@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.525
+version: 2.5.526
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.526
+
+- Cataloged the Explore list empty and loading renderers directly: list empty
+  state, directory skeleton stack, and single directory skeleton card. This
+  keeps the club-directory fallback states reviewable below the provider-backed
+  `ExploreList` sliver dispatcher.
 
 ### 2.5.525
 
@@ -5706,6 +5713,9 @@ Generated 2026-05-06.
 |---|---|---|
 | `ClubDetailScreen` | `lib/clubs/presentation/detail/club_detail_screen.dart:34` | Club detail screen shared by consumer Club Detail and the host `screen.host.club.detail` route. Fetches the club, current user profile, active membership edge, upcoming events, and reviews, then resolves `HostClubDetailScreenState` before composing loading, error, not-found, initial fallback, or public-preview content. Join/leave mutations stay in `ClubMembershipController`; host app role suppresses the consumer membership dock through explicit adapter state. The screen owns retry execution, share, contact, host profile/message, and schedule route side effects before passing callbacks into the shared body. |
 | `ExploreList` | `lib/explore/presentation/widgets/explore_list.dart:14` | Sliver state-dispatch widget for the Explore tab's club directory state. Renders directory-card skeletons, error, city-empty, search-empty, filter-empty, and data slivers from `ExploreViewModel`, which partitions joined/discover clubs from active membership edges, and owns join-mutation feedback. |
+| `ExploreListEmptyState` | `lib/explore/presentation/widgets/explore_list.dart:70` | Provider-aware Explore list empty-state adapter. Selects city-empty, search-empty, filter-empty, or combined search/filter-empty copy from explicit city/search/filter inputs, while clear actions still route through the Explore provider seam. |
+| `ClubDirectorySkeletonList` | `lib/explore/presentation/widgets/explore_list.dart:125` | Explore club-directory loading stack. Renders three stable `ClubDirectorySkeletonCard` rows with shared vertical spacing so the provider-backed `ExploreList` loading branch keeps directory page rhythm. |
+| `ClubDirectorySkeletonCard` | `lib/explore/presentation/widgets/explore_list.dart:142` | Single Explore club-directory skeleton card. Uses `CatchSurface`, `CatchSkeleton`, and named `CatchLayout` skeleton dimensions for image, title, subtitle, chips, divider, footer avatar, and action placeholders. |
 | `ExploreFilterRail` | `lib/explore/presentation/widgets/explore_filter_rail.dart:18` | Handoff Explore scope/filter rail. Renders the visible time scopes (Tonight, Weekend, This week, Anytime) as whole text labels in a horizontally safe lane, keeps the filter glyph pinned to the right with an active-count badge, and never ellipsizes the labels. Secondary distance/joined filters stay in a tokenized `CatchBottomSheetScaffold` with handoff `SelectChip` choices. The rail stays backed by `exploreFiltersProvider` and can receive transparent/opaque background colors from the floating map chrome. |
 | `ExploreFilterSheet` | `lib/explore/presentation/widgets/explore_filter_rail.dart:60` | Public Explore filter-sheet content opened by `ExploreFilterRail` and rendered directly in Widgetbook. It keeps distance and joined-club controls on the same `exploreFiltersProvider` seam as the rail and uses `CatchBottomSheetScaffold`, `CatchButton`, and `CatchSelectChip` instead of a feature-local sheet shell. |
 | `ClubMembershipDock` | `lib/clubs/presentation/detail/widgets/catch_club_dock.dart:270` | Consumer club detail membership dock. Calls `ClubMembershipController` for join/leave/notification actions and renders through the canonical `CatchClubDock` primitive. |
