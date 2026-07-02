@@ -15,6 +15,7 @@ export 'domain/event_success_structure.dart';
 export 'domain/event_success_wingman_request.dart';
 export 'presentation/event_success_companion_screen.dart';
 export 'presentation/event_success_controller.dart';
+export 'presentation/event_success_defaults_panel.dart';
 export 'presentation/event_success_event_preview_screen.dart';
 export 'presentation/event_success_host_screen.dart';
 export 'presentation/event_success_lab_screen.dart';

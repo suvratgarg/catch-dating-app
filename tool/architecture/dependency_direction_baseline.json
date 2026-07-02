@@ -5,16 +5,6 @@
   "allowedFindings": [
     {
       "rule": "crossFeaturePresentationImport",
-      "path": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
-      "import": "package:catch_dating_app/events/presentation/widgets/who_is_going.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
-      "import": "package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
       "path": "lib/events/presentation/event_map_screen.dart",
       "import": "package:catch_dating_app/explore/presentation/explore_view_model.dart"
     },
@@ -22,21 +12,6 @@
       "rule": "crossFeaturePresentationImport",
       "path": "lib/explore/presentation/widgets/explore_list.dart",
       "import": "package:catch_dating_app/clubs/presentation/detail/club_membership_controller.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/hosts/presentation/club_management/create/widgets/club_event_success_defaults_step.dart",
-      "import": "package:catch_dating_app/event_success/presentation/event_success_defaults_panel.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/hosts/presentation/event_management/widgets/event_success_step.dart",
-      "import": "package:catch_dating_app/event_success/presentation/event_success_defaults_panel.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
-      "import": "package:catch_dating_app/events/presentation/widgets/who_is_going.dart"
     },
     {
       "rule": "presentationPluginImport",

@@ -4,7 +4,8 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_defaults_panel.dart';
+import 'package:catch_dating_app/event_success/event_success.dart'
+    show EventSuccessDefaultsPanel;
 import 'package:flutter/material.dart';
 
 class EventSuccessStep extends StatelessWidget {

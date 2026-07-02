@@ -61,6 +61,7 @@ export 'presentation/widgets/event_detail_social_section.dart';
 export 'presentation/widgets/event_hype_avatar_stack.dart';
 export 'presentation/widgets/event_photo_header.dart';
 export 'presentation/widgets/event_pins_map.dart';
+export 'presentation/widgets/who_is_going.dart';
 export 'shared/event_share_card.dart';
 export 'presentation/widgets/event_stats_grid.dart';
 export 'package:catch_dating_app/core/widgets/event_ticket_surface.dart';
