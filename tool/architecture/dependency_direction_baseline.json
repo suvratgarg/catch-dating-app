@@ -117,11 +117,6 @@
       "rule": "crossFeaturePresentationImport",
       "path": "lib/payments/presentation/payment_confirmation_screen.dart",
       "import": "package:catch_dating_app/events/presentation/event_joined_celebration_screen.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/user_profile/presentation/widgets/profile_insights_tab.dart",
-      "import": "package:catch_dating_app/user_analytics/presentation/user_analytics_panel.dart"
     }
   ]
 }

@@ -10,7 +10,7 @@ import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/user_analytics/data/user_analytics_repository.dart';
-import 'package:catch_dating_app/user_analytics/presentation/user_analytics_copy.dart';
+import 'package:catch_dating_app/user_analytics/shared/user_analytics_copy.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -72,8 +72,7 @@ class _UserAnalyticsPanelState extends ConsumerState<UserAnalyticsPanel> {
               context: AppErrorContext.profile,
               onRetry: () => ref.invalidate(userAnalyticsProvider(query)),
             ),
-            data: (report) =>
-                UserAnalyticsReportView(report: report),
+            data: (report) => UserAnalyticsReportView(report: report),
           ),
         ],
       ),
@@ -228,7 +227,8 @@ class UserAnalyticsReportSkeleton extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       for (var index = 0; index < 12; index++) ...[
-                        if (index > 0) const SizedBox(width: CatchSpacing.micro6),
+                        if (index > 0)
+                          const SizedBox(width: CatchSpacing.micro6),
                         Expanded(
                           child: Align(
                             alignment: Alignment.bottomCenter,
@@ -570,7 +570,8 @@ class UserAnalyticsDataQualityPanel extends StatelessWidget {
         child: Column(
           children: [
             for (final row in rows) ...[
-              if (row != rows.first) Divider(color: CatchTokens.of(context).line),
+              if (row != rows.first)
+                Divider(color: CatchTokens.of(context).line),
               UserAnalyticsDataQualityRow(row: row),
             ],
           ],
