@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
+import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
@@ -13,11 +14,14 @@ import 'package:catch_dating_app/onboarding/presentation/pages/photos_page.dart'
 import 'package:catch_dating_app/onboarding/presentation/pages/profile_prompts_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/running_prefs_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
+import 'package:catch_dating_app/routing/go_router.dart' as app_router;
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 
 import '../events/events_test_helpers.dart';
 import 'onboarding_test_helpers.dart';
@@ -95,6 +99,53 @@ void main() {
           AnalyticsEvents.welcomeSplashShown,
           AnalyticsEvents.welcomeSplashSkipped,
         ]),
+      );
+    });
+
+    testWidgets('see whats on routes through the named Explore route', (
+      tester,
+    ) async {
+      final reporter = _FakeAnalyticsReporter();
+      final container = createOnboardingTestContainer(
+        appAnalytics: AppAnalytics(reporter: reporter, shouldCollect: true),
+      );
+      addTearDown(container.dispose);
+      final router = GoRouter(
+        initialLocation: app_router.Routes.startScreen.path,
+        routes: [
+          GoRoute(
+            path: app_router.Routes.startScreen.path,
+            builder: (_, _) => const WelcomePage(playIntro: false),
+          ),
+          GoRoute(
+            path: app_router.Routes.exploreScreen.path,
+            name: app_router.Routes.exploreScreen.name,
+            builder: (_, _) => const Scaffold(body: Text('Explore route')),
+          ),
+        ],
+      );
+      addTearDown(router.dispose);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp.router(
+            theme: AppTheme.light,
+            routerConfig: router,
+          ),
+        ),
+      );
+      await pumpOnboardingUi(tester);
+
+      await tester.tap(find.widgetWithText(CatchButton, 'See what\'s on'));
+      await tester.pump();
+      await tester.pump();
+
+      expect(router.routeInformationProvider.value.uri.path, '/clubs');
+      expect(find.text('Explore route'), findsOneWidget);
+      expect(
+        reporter.events.map((event) => event.name),
+        contains(AnalyticsEvents.welcomeCtaTapped),
       );
     });
   });

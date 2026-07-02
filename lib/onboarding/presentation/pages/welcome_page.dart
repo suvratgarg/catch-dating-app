@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_fonts.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/routing/go_router.dart' as app_router;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -206,7 +207,9 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
                           },
                           onExplore: () {
                             _logCta('see_whats_on');
-                            context.go('/clubs');
+                            context.goNamed(
+                              app_router.Routes.exploreScreen.name,
+                            );
                           },
                         ),
                       ),
