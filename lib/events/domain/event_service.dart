@@ -19,11 +19,10 @@ class EventService {
   static EventEligibility eligibilityFor(
     Event event,
     UserProfile user, {
-    DateTime? now,
+    required DateTime now,
     bool hasValidInvite = false,
   }) {
-    final referenceNow = now ?? DateTime.now();
-    if (!event.isUpcomingAt(referenceNow)) return const EventPast();
+    if (!event.isUpcomingAt(now)) return const EventPast();
     if (user.age < event.constraints.minAge) {
       return AgeTooYoung(event.constraints.minAge);
     }
@@ -66,23 +65,19 @@ class EventService {
   /// system clock.
   static ParticipationStatusSnapshot participationStatus(
     EventParticipation participation, {
-    DateTime? now,
+    required DateTime now,
   }) {
-    final referenceNow = now ?? DateTime.now();
     return ParticipationStatusSnapshot(
       hasHostApproval:
-          participation.hostApprovalStatus ==
-                  EventJoinRequestStatus.approved ||
-              _isWaitlistOfferAcceptedAt(participation, referenceNow),
+          participation.hostApprovalStatus == EventJoinRequestStatus.approved ||
+          _isWaitlistOfferAcceptedAt(participation, now),
       hasOpenWaitlistOffer:
           participation.waitlistOfferStatus ==
-                  EventWaitlistOfferStatus.active ||
-              participation.waitlistOfferStatus ==
-                  EventWaitlistOfferStatus.accepted,
-      isWaitlistOfferActive:
-          _isWaitlistOfferActiveAt(participation, referenceNow),
-      isWaitlistOfferAccepted:
-          _isWaitlistOfferAcceptedAt(participation, referenceNow),
+              EventWaitlistOfferStatus.active ||
+          participation.waitlistOfferStatus ==
+              EventWaitlistOfferStatus.accepted,
+      isWaitlistOfferActive: _isWaitlistOfferActiveAt(participation, now),
+      isWaitlistOfferAccepted: _isWaitlistOfferAcceptedAt(participation, now),
     );
   }
 

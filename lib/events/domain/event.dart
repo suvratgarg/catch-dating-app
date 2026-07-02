@@ -187,7 +187,7 @@ abstract class Event with _$Event {
   @Deprecated('Use EventService.eligibilityFor instead')
   EventEligibility eligibilityFor(
     UserProfile user, {
-    DateTime? now,
+    required DateTime now,
     bool hasValidInvite = false,
   }) {
     return EventService.eligibilityFor(
@@ -204,7 +204,7 @@ abstract class Event with _$Event {
   /// edge and are intentionally resolved outside this model.
   EventSignUpStatus statusFor(
     UserProfile user, {
-    DateTime? now,
+    required DateTime now,
     bool hasValidInvite = false,
   }) {
     return switch (EventService.eligibilityFor(

@@ -55,20 +55,12 @@ abstract class EventParticipation with _$EventParticipation {
       _$EventParticipationFromJson(json);
 
   @Deprecated('Use EventService.participationStatus instead')
-  bool get hasHostApproval =>
-      EventService.participationStatus(this).hasHostApproval;
-
-  @Deprecated('Use EventService.participationStatus instead')
   bool isWaitlistOfferActiveAt(DateTime now) =>
       EventService.participationStatus(this, now: now).isWaitlistOfferActive;
 
   @Deprecated('Use EventService.participationStatus instead')
   bool isWaitlistOfferAcceptedAt(DateTime now) =>
       EventService.participationStatus(this, now: now).isWaitlistOfferAccepted;
-
-  @Deprecated('Use EventService.participationStatus instead')
-  bool get hasOpenWaitlistOffer =>
-      EventService.participationStatus(this).hasOpenWaitlistOffer;
 }
 
 String eventParticipationId({required String eventId, required String uid}) =>
