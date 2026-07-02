@@ -15,7 +15,7 @@ import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/presentation/event_action_keys.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen_state.dart';
-import 'package:catch_dating_app/events/presentation/event_joined_celebration_screen.dart';
+import 'package:catch_dating_app/events/shared/event_joined_celebration_screen.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
