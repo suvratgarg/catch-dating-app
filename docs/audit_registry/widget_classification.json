@@ -10,13 +10,13 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1106,
-    "widgetClasses": 1006,
+    "total": 1108,
+    "widgetClasses": 1008,
     "stateClasses": 100,
-    "publicClasses": 1006,
+    "publicClasses": 1008,
     "privateClasses": 100,
     "byRole": {
-      "atom": 39,
+      "atom": 41,
       "composition": 289,
       "feature-adapter": 311,
       "pattern": 14,
@@ -27,10 +27,10 @@
       "keep-canonical-contract": 121,
       "keep-public-cataloged": 879,
       "keep-widget-state": 100,
-      "review-promote-or-consolidate": 6
+      "review-promote-or-consolidate": 8
     },
     "byCatalogStatus": {
-      "cataloged": 811,
+      "cataloged": 813,
       "contracted": 121,
       "not-applicable": 100,
       "route-covered": 72,
@@ -2963,6 +2963,34 @@
       "flags": []
     },
     {
+      "name": "CatchChipRemoveButton",
+      "file": "lib/core/widgets/catch_chip.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "atom",
+      "canonicalFamily": "catch.chip_remove_button",
+      "publicApi": true,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "tokens-and-primitives",
+      "stateOwnership": "local-ui-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "internal-only",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract",
+        "public-widget-missing-widgetbook"
+      ]
+    },
+    {
       "name": "CatchControlShell",
       "file": "lib/core/widgets/catch_control_shell.dart",
       "classKind": "widget",
@@ -3086,7 +3114,7 @@
       "role": "composition",
       "canonicalFamily": "catch.detail_hero_fallback",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
@@ -3101,8 +3129,7 @@
         "inlineDelete"
       ],
       "flags": [
-        "core-widget-without-contract",
-        "public-widget-missing-widgetbook"
+        "core-widget-without-contract"
       ]
     },
     {
@@ -3114,7 +3141,7 @@
       "role": "composition",
       "canonicalFamily": "catch.detail_hero_scrim",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
@@ -3129,8 +3156,7 @@
         "inlineDelete"
       ],
       "flags": [
-        "core-widget-without-contract",
-        "public-widget-missing-widgetbook"
+        "core-widget-without-contract"
       ]
     },
     {
@@ -3581,6 +3607,34 @@
         "mergeIntoCanonical"
       ],
       "flags": []
+    },
+    {
+      "name": "CatchFormFieldOptionalBadge",
+      "file": "lib/core/widgets/catch_form_field_label.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "atom",
+      "canonicalFamily": "catch.form_field_optional_badge",
+      "publicApi": true,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "tokens-and-primitives",
+      "stateOwnership": "local-ui-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "internal-only",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract",
+        "public-widget-missing-widgetbook"
+      ]
     },
     {
       "name": "CatchFrameworkErrorView",

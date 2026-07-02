@@ -101,7 +101,7 @@ class CatchChip extends StatelessWidget {
                       ),
                       if (onRemove != null) ...[
                         const SizedBox(width: CatchSpacing.s2),
-                        _buildRemoveButton(
+                        CatchChipRemoveButton(
                           color: foreground,
                           onRemove: enabled ? onRemove : null,
                         ),
@@ -118,16 +118,21 @@ class CatchChip extends StatelessWidget {
   }
 }
 
-Widget _buildRemoveButton({
-  required Color color,
-  required VoidCallback? onRemove,
-}) {
-  return GestureDetector(
-    behavior: HitTestBehavior.opaque,
-    onTap: onRemove,
-    child: Padding(
-      padding: const EdgeInsets.all(CatchSpacing.micro2),
-      child: Icon(CatchIcons.closeRounded, color: color, size: CatchIcon.sm),
-    ),
-  );
+class CatchChipRemoveButton extends StatelessWidget {
+  const CatchChipRemoveButton({super.key, required this.color, this.onRemove});
+
+  final Color color;
+  final VoidCallback? onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onRemove,
+      child: Padding(
+        padding: const EdgeInsets.all(CatchSpacing.micro2),
+        child: Icon(CatchIcons.closeRounded, color: color, size: CatchIcon.sm),
+      ),
+    );
+  }
 }

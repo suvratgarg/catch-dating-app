@@ -28,6 +28,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_icon.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_framework_error_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
@@ -809,6 +810,7 @@ void main() {
     expect(decoration.color, Colors.transparent);
     expect(decoration.border?.top.color, tokens.ink);
     expect(decoration.border?.top.width, 1.5);
+    expect(find.byType(CatchChipRemoveButton), findsOneWidget);
 
     await tester.tap(find.text('Easy'));
     await tester.pump();
@@ -817,6 +819,18 @@ void main() {
     await tester.tap(find.byIcon(CatchIcons.closeRounded));
     await tester.pump();
     expect(removed, isTrue);
+  });
+
+  testWidgets('CatchFormFieldLabel renders optional badge leaf', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(const CatchFormFieldLabel(label: 'Instagram', isOptional: true)),
+    );
+
+    expect(find.text('Instagram'), findsOneWidget);
+    expect(find.byType(CatchFormFieldOptionalBadge), findsOneWidget);
+    expect(find.text('Optional'), findsOneWidget);
   });
 
   testWidgets('CatchSegmentedControl supports expanded icon and label tabs', (

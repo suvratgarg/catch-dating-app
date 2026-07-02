@@ -25,6 +25,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_icon.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
@@ -1043,6 +1044,56 @@ Widget catchChipContractStates(BuildContext context) {
           inkColor: t.like,
           icon: Icon(CatchIcons.directionsRunRounded),
           onTap: _noop,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchChipRemoveButton,
+  path: '[Core primitives]/Selection',
+)
+Widget catchChipRemoveButtonContractStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  return _ContractScreen(
+    title: 'CatchChipRemoveButton',
+    contractId: 'catch.chip.remove_button',
+    states: const ['enabled', 'disabled'],
+    children: [
+      _StateCard(
+        label: 'remove affordance',
+        child: _InlineWrap(
+          children: [
+            CatchChipRemoveButton(color: t.ink, onRemove: _noop),
+            CatchChipRemoveButton(color: t.ink3),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchFormFieldOptionalBadge,
+  path: '[Core primitives]/Inputs',
+)
+Widget catchFormFieldOptionalBadgeContractStates(BuildContext context) {
+  return const _ContractScreen(
+    title: 'CatchFormFieldOptionalBadge',
+    contractId: 'catch.form_field_label.optional_badge',
+    states: ['default', 'error'],
+    children: [
+      _StateCard(
+        label: 'badge states',
+        child: _InlineWrap(
+          children: [
+            CatchFormFieldOptionalBadge(),
+            CatchFormFieldOptionalBadge(hasError: true),
+          ],
         ),
       ),
     ],
