@@ -298,7 +298,7 @@ class ProfileFieldRow extends StatelessWidget {
         onCancel: onCancel,
       ),
       singleChoice: <T extends Labelled>(descriptor) =>
-          _ProfileSingleEnumEntry<T>(
+          ProfileSingleEnumEntry<T>(
             icon: descriptor.icon,
             label: descriptor.label,
             values: descriptor.values,
@@ -311,22 +311,21 @@ class ProfileFieldRow extends StatelessWidget {
             onSaved: onSaved,
             onCancel: onCancel,
           ),
-      multiChoice: <T extends Labelled>(descriptor) =>
-          _ProfileMultiEnumEntry<T>(
-            icon: descriptor.icon,
-            label: descriptor.label,
-            values: descriptor.values,
-            selected: descriptor.selected,
-            fieldName: descriptor.fieldName,
-            placeholder: descriptor.placeholder,
-            patchForValues: descriptor.patchForValues,
-            patchForLatestProfile: descriptor.patchForLatestProfile,
-            isExpanded: isExpanded(descriptor.fieldName),
-            onTap: () => onToggle(descriptor.fieldName),
-            onSaved: onSaved,
-            onCancel: onCancel,
-            isAddAffordanceWhenEmpty: descriptor.isAddAffordanceWhenEmpty,
-          ),
+      multiChoice: <T extends Labelled>(descriptor) => ProfileMultiEnumEntry<T>(
+        icon: descriptor.icon,
+        label: descriptor.label,
+        values: descriptor.values,
+        selected: descriptor.selected,
+        fieldName: descriptor.fieldName,
+        placeholder: descriptor.placeholder,
+        patchForValues: descriptor.patchForValues,
+        patchForLatestProfile: descriptor.patchForLatestProfile,
+        isExpanded: isExpanded(descriptor.fieldName),
+        onTap: () => onToggle(descriptor.fieldName),
+        onSaved: onSaved,
+        onCancel: onCancel,
+        isAddAffordanceWhenEmpty: descriptor.isAddAffordanceWhenEmpty,
+      ),
       range: (descriptor) => ProfileInlineRangeEditor(
         key: ValueKey('inline-${descriptor.id}-editor'),
         icon: descriptor.icon,
@@ -400,8 +399,9 @@ class ProfileDirectTextEntry extends StatelessWidget {
   }
 }
 
-class _ProfileSingleEnumEntry<T extends Labelled> extends StatelessWidget {
-  const _ProfileSingleEnumEntry({
+class ProfileSingleEnumEntry<T extends Labelled> extends StatelessWidget {
+  const ProfileSingleEnumEntry({
+    super.key,
     required this.icon,
     required this.label,
     required this.values,
@@ -448,8 +448,9 @@ class _ProfileSingleEnumEntry<T extends Labelled> extends StatelessWidget {
   }
 }
 
-class _ProfileMultiEnumEntry<T extends Labelled> extends StatelessWidget {
-  const _ProfileMultiEnumEntry({
+class ProfileMultiEnumEntry<T extends Labelled> extends StatelessWidget {
+  const ProfileMultiEnumEntry({
+    super.key,
     required this.icon,
     required this.label,
     required this.values,

@@ -54,6 +54,15 @@ Widget _profileTab(UserProfile user) {
   );
 }
 
+Widget _profileWidgetHarness(Widget child) {
+  return ProviderScope(
+    child: MaterialApp(
+      theme: AppTheme.light,
+      home: Scaffold(body: child),
+    ),
+  );
+}
+
 Future<void> _pumpProfileTab(WidgetTester tester, UserProfile user) async {
   tester.view.devicePixelRatio = 1.0;
   tester.view.physicalSize = const Size(390, 2200);
@@ -1346,6 +1355,65 @@ void main() {
 
     expect(find.text('Children'), findsOneWidget);
     expect(_catchChip(ChildrenStatus.dontHave.label), findsOneWidget);
+  });
+
+  testWidgets('ProfileSingleEnumEntry renders through the inline editor', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _profileWidgetHarness(
+        ProfileSingleEnumEntry<EducationLevel>(
+          icon: CatchIcons.schoolOutlined,
+          label: 'Education',
+          values: EducationLevel.values,
+          value: EducationLevel.masters,
+          fieldName: 'education',
+          patchForValue: (value) => UpdateUserProfilePatch(education: value),
+          isExpanded: false,
+          onTap: () {},
+          onSaved: () {},
+          onCancel: () {},
+        ),
+      ),
+    );
+
+    expect(find.byType(ProfileSingleEnumEntry<EducationLevel>), findsOneWidget);
+    expect(
+      find.byType(ProfileInlineSingleChoiceEntryEditor<EducationLevel>),
+      findsOneWidget,
+    );
+    expect(find.text('Education'), findsOneWidget);
+    expect(find.text(EducationLevel.masters.label), findsOneWidget);
+  });
+
+  testWidgets('ProfileMultiEnumEntry renders through the inline editor', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _profileWidgetHarness(
+        ProfileMultiEnumEntry<Language>(
+          icon: CatchIcons.languageOutlined,
+          label: 'Languages',
+          values: Language.values,
+          selected: const [Language.english, Language.hindi],
+          fieldName: 'languages',
+          placeholder: 'Languages',
+          patchForValues: (values) => UpdateUserProfilePatch(languages: values),
+          isExpanded: false,
+          onTap: () {},
+          onSaved: () {},
+          onCancel: () {},
+        ),
+      ),
+    );
+
+    expect(find.byType(ProfileMultiEnumEntry<Language>), findsOneWidget);
+    expect(
+      find.byType(ProfileInlineMultiChoiceEntryEditor<Language>),
+      findsOneWidget,
+    );
+    expect(find.text('Languages'), findsOneWidget);
+    expect(find.text('English, Hindi'), findsOneWidget);
   });
 
   testWidgets('single-choice chip saves only after Done', (tester) async {

@@ -717,6 +717,111 @@ Widget profileDirectTextEntryStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Single enum entry adapter states',
+  type: ProfileSingleEnumEntry,
+  path: '[P1 product surfaces]/Profiles/Sections',
+)
+Widget profileSingleEnumEntryStates(BuildContext context) {
+  return _ProfileCatalog(
+    title: 'ProfileSingleEnumEntry',
+    contractId: 'screen.profile.edit_tab.single_enum_entry',
+    children: [
+      _StateCard(
+        label: 'selected collapsed',
+        child: _SectionFrame(
+          height: CatchLayout.activityArtDefaultHeight,
+          child: ProfileSingleEnumEntry<EducationLevel>(
+            icon: CatchIcons.schoolOutlined,
+            label: 'Education',
+            values: EducationLevel.values,
+            value: EducationLevel.masters,
+            fieldName: 'education',
+            patchForValue: (value) => UpdateUserProfilePatch(education: value),
+            isExpanded: false,
+            onTap: () {},
+            onSaved: () {},
+            onCancel: () {},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'empty expanded',
+        child: _SectionFrame(
+          height: 300,
+          child: ProfileSingleEnumEntry<EducationLevel>(
+            icon: CatchIcons.schoolOutlined,
+            label: 'Education',
+            values: EducationLevel.values,
+            value: null,
+            fieldName: 'education',
+            patchForValue: (value) => UpdateUserProfilePatch(education: value),
+            placeholder: 'Education',
+            isExpanded: true,
+            onTap: () {},
+            onSaved: () {},
+            onCancel: () {},
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Multi enum entry adapter states',
+  type: ProfileMultiEnumEntry,
+  path: '[P1 product surfaces]/Profiles/Sections',
+)
+Widget profileMultiEnumEntryStates(BuildContext context) {
+  return _ProfileCatalog(
+    title: 'ProfileMultiEnumEntry',
+    contractId: 'screen.profile.edit_tab.multi_enum_entry',
+    children: [
+      _StateCard(
+        label: 'selected collapsed',
+        child: _SectionFrame(
+          height: CatchLayout.activityArtDefaultHeight,
+          child: ProfileMultiEnumEntry<Language>(
+            icon: CatchIcons.languageOutlined,
+            label: 'Languages',
+            values: Language.values,
+            selected: const [Language.english, Language.hindi],
+            fieldName: 'languages',
+            placeholder: 'Languages',
+            patchForValues: (values) =>
+                UpdateUserProfilePatch(languages: values),
+            isExpanded: false,
+            onTap: () {},
+            onSaved: () {},
+            onCancel: () {},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'empty expanded',
+        child: _SectionFrame(
+          height: 300,
+          child: ProfileMultiEnumEntry<Language>(
+            icon: CatchIcons.languageOutlined,
+            label: 'Languages',
+            values: Language.values,
+            selected: const [],
+            fieldName: 'languages',
+            placeholder: 'Languages',
+            patchForValues: (values) =>
+                UpdateUserProfilePatch(languages: values),
+            isExpanded: true,
+            onTap: () {},
+            onSaved: () {},
+            onCancel: () {},
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Prompt entry adapter states',
   type: ProfilePromptEntry,
   path: '[P1 product surfaces]/Profiles/Sections',

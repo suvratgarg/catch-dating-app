@@ -13,8 +13,8 @@
     "total": 1163,
     "widgetClasses": 1058,
     "stateClasses": 105,
-    "publicClasses": 1056,
-    "privateClasses": 107,
+    "publicClasses": 1058,
+    "privateClasses": 105,
     "byRole": {
       "atom": 54,
       "composition": 318,
@@ -27,9 +27,8 @@
       "keep-canonical-contract": 160,
       "keep-public-cataloged": 880,
       "keep-widget-state": 105,
-      "review-catalog-coverage": 5,
-      "review-promote-or-consolidate": 11,
-      "review-promote-or-inline": 2
+      "review-catalog-coverage": 7,
+      "review-promote-or-consolidate": 11
     },
     "byCatalogStatus": {
       "cataloged": 818,
@@ -26827,58 +26826,6 @@
       "flags": []
     },
     {
-      "name": "_ProfileMultiEnumEntry",
-      "file": "lib/user_profile/presentation/widgets/profile_tab.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "private",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.user_profile.profile_multi_enum_entry",
-      "publicApi": false,
-      "catalogStatus": "uncataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "review-promote-or-inline",
-      "remediationOptions": [
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
-      ],
-      "flags": [
-        "private-widget-publicization-required"
-      ]
-    },
-    {
-      "name": "_ProfileSingleEnumEntry",
-      "file": "lib/user_profile/presentation/widgets/profile_tab.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "private",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.user_profile.profile_single_enum_entry",
-      "publicApi": false,
-      "catalogStatus": "uncataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "review-promote-or-inline",
-      "remediationOptions": [
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
-      ],
-      "flags": [
-        "private-widget-publicization-required"
-      ]
-    },
-    {
       "name": "_ProfileTabContentState",
       "file": "lib/user_profile/presentation/widgets/profile_tab.dart",
       "classKind": "widget-state",
@@ -26950,6 +26897,33 @@
       ]
     },
     {
+      "name": "ProfileMultiEnumEntry",
+      "file": "lib/user_profile/presentation/widgets/profile_tab.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "feature-adapter",
+      "canonicalFamily": "feature.user_profile.profile_multi_enum_entry",
+      "publicApi": true,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "feature-display-models",
+      "stateOwnership": "feature-display-state",
+      "asyncOwnership": "display-state-only",
+      "layoutOwnership": "feature-section-layout",
+      "actionOwnership": "feature-callbacks",
+      "decision": "review-catalog-coverage",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "public-widget-missing-widgetbook"
+      ]
+    },
+    {
       "name": "ProfilePhotosSection",
       "file": "lib/user_profile/presentation/widgets/profile_tab.dart",
       "classKind": "widget",
@@ -26996,6 +26970,33 @@
         "mergeIntoCanonical"
       ],
       "flags": []
+    },
+    {
+      "name": "ProfileSingleEnumEntry",
+      "file": "lib/user_profile/presentation/widgets/profile_tab.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "feature-adapter",
+      "canonicalFamily": "feature.user_profile.profile_single_enum_entry",
+      "publicApi": true,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "feature-display-models",
+      "stateOwnership": "feature-display-state",
+      "asyncOwnership": "display-state-only",
+      "layoutOwnership": "feature-section-layout",
+      "actionOwnership": "feature-callbacks",
+      "decision": "review-catalog-coverage",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "public-widget-missing-widgetbook"
+      ]
     },
     {
       "name": "ProfileTab",

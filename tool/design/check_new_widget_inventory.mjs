@@ -338,11 +338,13 @@ function spawnGit(args, options = {}) {
 
 function readWidgetbookNames() {
   const source = fs.readFileSync(fromRepo("widgetbook/lib/main.directories.g.dart"), "utf8");
-  return new Set(
-    [...source.matchAll(/WidgetbookComponent\(\s*name:\s*'([^']+)'/gu)].map(
-      (match) => match[1],
-    ),
-  );
+  const names = new Set();
+  for (const match of source.matchAll(/WidgetbookComponent\(\s*name:\s*'([^']+)'/gu)) {
+    const name = match[1];
+    names.add(name);
+    names.add(name.replace(/<.*>$/u, ""));
+  }
+  return names;
 }
 
 function mentionsSymbol(source, symbol) {

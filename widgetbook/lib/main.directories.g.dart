@@ -9915,6 +9915,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'ProfileMultiEnumEntry<Labelled>',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Multi enum entry adapter states',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .profileMultiEnumEntryStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'ProfilePhotosSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -9951,6 +9961,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Profile settings button',
                     builder: _widgetbook_workspace_profiles_profile_use_cases
                         .profileSettingsButtonStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProfileSingleEnumEntry<Labelled>',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Single enum entry adapter states',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .profileSingleEnumEntryStates,
                   ),
                 ],
               ),
