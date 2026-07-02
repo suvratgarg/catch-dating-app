@@ -49,7 +49,8 @@ import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeleto
 import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_payout_prompt_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
+import 'package:catch_dating_app/user_profile/user_profile.dart'
+    show ProfileInlineTextValue;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
