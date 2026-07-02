@@ -1,9 +1,12 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
-import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
+import {fileURLToPath} from "node:url";
+import {fromRepo} from "../lib/repo_paths.mjs";
 
-const trackerPath = fromRepo("docs/audit_registry/architecture_pattern_adoption.json");
+const defaultTrackerPath = fromRepo(
+  "docs/audit_registry/architecture_pattern_adoption.json",
+);
 
 const forbiddenImports = [
   {
@@ -43,67 +46,58 @@ const forbiddenSourcePatterns = [
   },
 ];
 
-const args = process.argv.slice(2);
-if (args.includes("--help") || args.includes("-h")) {
-  printHelp();
-  process.exit(0);
-}
+const isCliEntrypoint =
+  process.argv[1] != null &&
+  path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 
-const shouldJson = args.includes("--json");
-const tracker = readJson(trackerPath);
-const adoptedProviderFreePaths = collectAdoptedProviderFreePaths(tracker);
-const findings = [];
+if (isCliEntrypoint) runCli();
 
-for (const entry of adoptedProviderFreePaths) {
-  const absolutePath = fromRepo(entry.path);
-  if (!fs.existsSync(absolutePath)) {
+export function scanAdoptedArchitectureBoundaries({
+  root = fromRepo(),
+  tracker = null,
+  trackerPath = path.join(
+    root,
+    "docs/audit_registry/architecture_pattern_adoption.json",
+  ),
+} = {}) {
+  const resolvedTracker = tracker ?? readJson(trackerPath);
+  const adoptedProviderFreePaths =
+    collectAdoptedProviderFreePaths(resolvedTracker);
+  const findings = [];
+
+  for (const entry of adoptedProviderFreePaths) {
+    const absolutePath = path.join(root, entry.path);
+    if (!fs.existsSync(absolutePath)) {
+      findings.push({
+        path: entry.path,
+        patternId: entry.patternId,
+        reason: "tracked aligned provider-free adopter is missing on disk",
+        evidence: [],
+      });
+      continue;
+    }
+
+    const source = fs.readFileSync(absolutePath, "utf8");
+    const evidence = scanBoundaryFile({source});
+    if (evidence.length === 0) continue;
     findings.push({
       path: entry.path,
       patternId: entry.patternId,
-      reason: "tracked aligned provider-free adopter is missing on disk",
-      evidence: [],
+      role: entry.role,
+      reason:
+        "aligned provider-free adopter imports or uses provider, routing, data, or repository APIs",
+      evidence,
     });
-    continue;
   }
 
-  const source = fs.readFileSync(absolutePath, "utf8");
-  const evidence = [
-    ...scanForbiddenImports(source),
-    ...scanForbiddenSource(source),
-  ];
-  if (evidence.length === 0) continue;
-  findings.push({
-    path: entry.path,
-    patternId: entry.patternId,
-    role: entry.role,
-    reason:
-      "aligned provider-free adopter imports or uses provider, routing, data, or repository APIs",
-    evidence,
-  });
+  return {
+    tracker: trackerPath == null ? null : relativeToDisplay(root, trackerPath),
+    checkedProviderFreeAdopters: adoptedProviderFreePaths.length,
+    findings,
+  };
 }
 
-const result = {
-  tracker: relativeToRepo(trackerPath),
-  checkedProviderFreeAdopters: adoptedProviderFreePaths.length,
-  findings,
-};
-
-if (shouldJson) {
-  console.log(JSON.stringify(result, null, 2));
-}
-
-if (findings.length > 0) {
-  if (!shouldJson) printFindings(result);
-  process.exit(1);
-}
-
-if (!shouldJson) {
-  console.log(
-    `Adopted architecture boundary check passed (${adoptedProviderFreePaths.length} provider-free adopter paths).`,
-  );
-}
-
-function collectAdoptedProviderFreePaths(tracker) {
+export function collectAdoptedProviderFreePaths(tracker) {
   const paths = new Map();
   for (const pattern of tracker.patterns ?? []) {
     for (const adopter of pattern.adopters ?? []) {
@@ -123,7 +117,11 @@ function collectAdoptedProviderFreePaths(tracker) {
   return [...paths.values()].sort((a, b) => a.path.localeCompare(b.path));
 }
 
-function scanForbiddenImports(source) {
+export function scanBoundaryFile({source}) {
+  return [...scanForbiddenImports(source), ...scanForbiddenSource(source)];
+}
+
+export function scanForbiddenImports(source) {
   const evidence = [];
   for (const match of source.matchAll(/import\s+'([^']+)';/gu)) {
     const uri = match[1];
@@ -139,7 +137,7 @@ function scanForbiddenImports(source) {
   return evidence;
 }
 
-function scanForbiddenSource(source) {
+export function scanForbiddenSource(source) {
   const evidence = [];
   const importEnd = lastImportEnd(source);
   const body = source.slice(importEnd);
@@ -176,8 +174,9 @@ function readJson(file) {
   try {
     return JSON.parse(fs.readFileSync(file, "utf8"));
   } catch (error) {
-    console.error(`Failed to parse ${path.relative(fromRepo(), file)}: ${error.message}`);
-    process.exit(1);
+    throw new Error(
+      `Failed to parse ${relativeToDisplay(fromRepo(), file)}: ${error.message}`,
+    );
   }
 }
 
@@ -199,8 +198,93 @@ function printHelp() {
   console.log(`Usage:
   node tool/architecture/check_adopted_architecture_boundaries.mjs
   node tool/architecture/check_adopted_architecture_boundaries.mjs --json
+  node tool/architecture/check_adopted_architecture_boundaries.mjs --root <repo-root> --tracker <path>
 
 Reads docs/audit_registry/architecture_pattern_adoption.json and enforces that
 aligned adopter Dart files with "providerFree": true do not import or use
 Riverpod/provider, routing, data-layer, or repository APIs directly.`);
+}
+
+function parseArgs(rawArgs) {
+  const parsed = {
+    help: false,
+    json: false,
+    root: fromRepo(),
+    trackerPath: defaultTrackerPath,
+  };
+
+  for (let index = 0; index < rawArgs.length; index += 1) {
+    const arg = rawArgs[index];
+    if (arg === "--help" || arg === "-h") {
+      parsed.help = true;
+    } else if (arg === "--json") {
+      parsed.json = true;
+    } else if (arg === "--root") {
+      parsed.root = requireValue(rawArgs, (index += 1), arg);
+      if (parsed.trackerPath === defaultTrackerPath) {
+        parsed.trackerPath = path.join(
+          parsed.root,
+          "docs/audit_registry/architecture_pattern_adoption.json",
+        );
+      }
+    } else if (arg === "--tracker") {
+      parsed.trackerPath = requireValue(rawArgs, (index += 1), arg);
+    } else {
+      console.error(`Unknown argument: ${arg}`);
+      process.exit(2);
+    }
+  }
+
+  return parsed;
+}
+
+function requireValue(argsList, index, flag) {
+  const value = argsList[index];
+  if (value == null || value.startsWith("--")) {
+    console.error(`Missing value for ${flag}`);
+    process.exit(2);
+  }
+  return path.resolve(value);
+}
+
+function relativeToDisplay(root, file) {
+  return normalizePath(path.relative(root, file));
+}
+
+function normalizePath(filePath) {
+  return filePath.split(path.sep).join("/");
+}
+
+function runCli() {
+  const args = parseArgs(process.argv.slice(2));
+  if (args.help) {
+    printHelp();
+    process.exit(0);
+  }
+
+  let result;
+  try {
+    result = scanAdoptedArchitectureBoundaries({
+      root: args.root,
+      trackerPath: args.trackerPath,
+    });
+  } catch (error) {
+    console.error(error.message);
+    process.exit(1);
+  }
+
+  if (args.json) {
+    console.log(JSON.stringify(result, null, 2));
+  }
+
+  if (result.findings.length > 0) {
+    if (!args.json) printFindings(result);
+    process.exit(1);
+  }
+
+  if (!args.json) {
+    console.log(
+      `Adopted architecture boundary check passed (${result.checkedProviderFreeAdopters} provider-free adopter paths).`,
+    );
+  }
 }
