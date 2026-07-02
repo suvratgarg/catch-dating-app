@@ -3623,6 +3623,110 @@ Widget catchCodeInputContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
+  type: CatchCodeInputRow,
+  path: '[Core primitives]/Inputs',
+)
+Widget catchCodeInputRowContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'CatchCodeInputRow',
+    contractId: 'catch.code_input.row',
+    states: const ['empty', 'partial', 'custom-prefix'],
+    children: const [
+      _StateCard(
+        label: 'empty',
+        child: SizedBox(width: 320, child: CatchCodeInputRow()),
+      ),
+      _StateCard(
+        label: 'partial',
+        child: SizedBox(
+          width: 320,
+          child: CatchCodeInputRow(value: '421', active: 3),
+        ),
+      ),
+      _StateCard(
+        label: 'custom-prefix',
+        child: SizedBox(
+          width: 240,
+          child: CatchCodeInputRow(
+            length: 4,
+            value: '90',
+            cellKeyPrefix: 'handoff_digit',
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchCodeInputCell,
+  path: '[Core primitives]/Inputs',
+)
+Widget catchCodeInputCellContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'CatchCodeInputCell',
+    contractId: 'catch.code_input.cell',
+    states: const ['digit', 'active-caret', 'inactive-empty'],
+    children: const [
+      _StateCard(
+        label: 'digit',
+        child: SizedBox(
+          width: 64,
+          child: CatchCodeInputCell(digit: '8', isActive: false),
+        ),
+      ),
+      _StateCard(
+        label: 'active-caret',
+        child: SizedBox(
+          width: 64,
+          child: CatchCodeInputCell(digit: '', isActive: true),
+        ),
+      ),
+      _StateCard(
+        label: 'inactive-empty',
+        child: SizedBox(
+          width: 64,
+          child: CatchCodeInputCell(digit: '', isActive: false),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchCodeInputCaret,
+  path: '[Core primitives]/Inputs',
+)
+Widget catchCodeInputCaretContractStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  return _ContractScreen(
+    title: 'CatchCodeInputCaret',
+    contractId: 'catch.code_input.caret',
+    states: const ['default', 'accent'],
+    children: [
+      const _StateCard(
+        label: 'default',
+        child: Padding(
+          padding: EdgeInsets.all(24),
+          child: CatchCodeInputCaret(),
+        ),
+      ),
+      _StateCard(
+        label: 'accent',
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: CatchCodeInputCaret(color: t.primary),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
   type: CatchOptionGroup,
   path: '[Core primitives]/Selection',
 )

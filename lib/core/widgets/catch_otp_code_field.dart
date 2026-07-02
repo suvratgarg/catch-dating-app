@@ -39,15 +39,128 @@ class CatchCodeInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _buildCodeInputRow(
-      context,
+    return CatchCodeInputRow(
       length: length,
       value: value,
       active: active,
       caret: caret,
       height: height,
       gap: gap,
-      cellKeyPrefix: 'code_digit',
+    );
+  }
+}
+
+/// Token-styled row of verification-code cells.
+class CatchCodeInputRow extends StatelessWidget {
+  const CatchCodeInputRow({
+    super.key,
+    this.length = 6,
+    this.value = '',
+    this.active,
+    this.caret = true,
+    this.height = CatchLayout.otpDigitHeight,
+    this.gap = CatchLayout.otpDigitGap,
+    this.cellKeyPrefix = 'code_digit',
+  }) : assert(length > 0);
+
+  final int length;
+  final String value;
+  final int? active;
+  final bool caret;
+  final double height;
+  final double gap;
+  final String cellKeyPrefix;
+
+  @override
+  Widget build(BuildContext context) {
+    final tokens = CatchTokens.of(context);
+    final code = value.length > length ? value.substring(0, length) : value;
+    final done = code.length >= length;
+    final activeIndex =
+        active ?? (code.length < length ? code.length : length - 1);
+    final textStyle = CatchTextStyles.code(context, color: tokens.ink);
+
+    return Row(
+      children: [
+        for (var i = 0; i < length; i++) ...[
+          Expanded(
+            child: CatchCodeInputCell(
+              key: ValueKey('${cellKeyPrefix}_$i'),
+              digit: i < code.length ? code[i] : '',
+              isActive: !done && i == activeIndex,
+              showCaret: caret,
+              height: height,
+              textStyle: textStyle,
+            ),
+          ),
+          if (i < length - 1) SizedBox(width: gap),
+        ],
+      ],
+    );
+  }
+}
+
+/// Token-styled verification-code cell.
+class CatchCodeInputCell extends StatelessWidget {
+  const CatchCodeInputCell({
+    super.key,
+    required this.digit,
+    required this.isActive,
+    this.showCaret = true,
+    this.height = CatchLayout.otpDigitHeight,
+    this.textStyle,
+  });
+
+  final String digit;
+  final bool isActive;
+  final bool showCaret;
+  final double height;
+  final TextStyle? textStyle;
+
+  @override
+  Widget build(BuildContext context) {
+    final tokens = CatchTokens.of(context);
+    final digitStyle =
+        textStyle ?? CatchTextStyles.code(context, color: tokens.ink);
+
+    return AnimatedContainer(
+      duration: CatchMotion.fast,
+      height: height,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: tokens.surface,
+        borderRadius: BorderRadius.circular(CatchRadius.interactiveTile),
+        border: Border.all(
+          color: isActive ? tokens.ink : tokens.line2,
+          width: isActive ? 1.5 : 1,
+        ),
+      ),
+      child: digit.isNotEmpty
+          ? Text(digit, style: digitStyle)
+          : isActive && showCaret
+          ? CatchCodeInputCaret(color: tokens.ink)
+          : null,
+    );
+  }
+}
+
+/// Token-styled insertion caret used inside code input cells.
+class CatchCodeInputCaret extends StatelessWidget {
+  const CatchCodeInputCaret({super.key, this.color});
+
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: color ?? CatchTokens.of(context).ink,
+        borderRadius: BorderRadius.circular(CatchRadius.pill),
+      ),
+      child: const SizedBox(
+        width: CatchLayout.otpCaretWidth,
+        height: CatchLayout.otpCaretHeight,
+      ),
     );
   }
 }
@@ -93,8 +206,7 @@ class CatchOtpCodeField extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          _buildCodeInputRow(
-            context,
+          CatchCodeInputRow(
             length: length,
             value: controller.text,
             active: active,
@@ -133,84 +245,4 @@ class CatchOtpCodeField extends StatelessWidget {
       ),
     );
   }
-}
-
-Widget _buildCodeInputRow(
-  BuildContext context, {
-  required int length,
-  required String value,
-  required int? active,
-  required bool caret,
-  required double height,
-  required double gap,
-  required String cellKeyPrefix,
-}) {
-  final tokens = CatchTokens.of(context);
-  final code = value.length > length ? value.substring(0, length) : value;
-  final done = code.length >= length;
-  final activeIndex =
-      active ?? (code.length < length ? code.length : length - 1);
-  final textStyle = CatchTextStyles.code(context, color: tokens.ink);
-
-  return Row(
-    children: [
-      for (var i = 0; i < length; i++) ...[
-        Expanded(
-          child: _buildCodeInputCell(
-            digit: i < code.length ? code[i] : '',
-            isActive: !done && i == activeIndex,
-            showCaret: caret,
-            height: height,
-            textStyle: textStyle,
-            key: ValueKey('${cellKeyPrefix}_$i'),
-            tokens: tokens,
-          ),
-        ),
-        if (i < length - 1) SizedBox(width: gap),
-      ],
-    ],
-  );
-}
-
-Widget _buildCodeInputCell({
-  required Key key,
-  required String digit,
-  required bool isActive,
-  required bool showCaret,
-  required double height,
-  required TextStyle? textStyle,
-  required CatchTokens tokens,
-}) {
-  return AnimatedContainer(
-    key: key,
-    duration: CatchMotion.fast,
-    height: height,
-    alignment: Alignment.center,
-    decoration: BoxDecoration(
-      color: tokens.surface,
-      borderRadius: BorderRadius.circular(CatchRadius.interactiveTile),
-      border: Border.all(
-        color: isActive ? tokens.ink : tokens.line2,
-        width: isActive ? 1.5 : 1,
-      ),
-    ),
-    child: digit.isNotEmpty
-        ? Text(digit, style: textStyle)
-        : isActive && showCaret
-        ? _buildCodeInputCaret(tokens)
-        : null,
-  );
-}
-
-Widget _buildCodeInputCaret(CatchTokens tokens) {
-  return DecoratedBox(
-    decoration: BoxDecoration(
-      color: tokens.ink,
-      borderRadius: BorderRadius.circular(CatchRadius.pill),
-    ),
-    child: const SizedBox(
-      width: CatchLayout.otpCaretWidth,
-      height: CatchLayout.otpCaretHeight,
-    ),
-  );
 }

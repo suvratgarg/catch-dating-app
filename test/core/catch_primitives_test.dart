@@ -608,6 +608,8 @@ void main() {
       await tester.pump();
 
       expect(controller.text, '123456');
+      expect(find.byType(CatchCodeInputRow), findsOneWidget);
+      expect(find.byType(CatchCodeInputCell), findsNWidgets(6));
       expect(find.text('1'), findsOneWidget);
       expect(find.text('6'), findsOneWidget);
       expect(find.text('7'), findsNothing);
@@ -625,10 +627,17 @@ void main() {
 
     final tokens = CatchTokens.of(tester.element(find.byType(CatchCodeInput)));
     final activeCellFinder = find.byKey(const ValueKey('code_digit_3'));
-    final activeCell = tester.widget<AnimatedContainer>(activeCellFinder);
+    final activeContainerFinder = find.descendant(
+      of: activeCellFinder,
+      matching: find.byType(AnimatedContainer),
+    );
+    final activeCell = tester.widget<AnimatedContainer>(activeContainerFinder);
     final decoration = activeCell.decoration! as BoxDecoration;
     final border = decoration.border! as Border;
 
+    expect(find.byType(CatchCodeInputRow), findsOneWidget);
+    expect(find.byType(CatchCodeInputCell), findsNWidgets(4));
+    expect(find.byType(CatchCodeInputCaret), findsOneWidget);
     expect(find.text('1'), findsOneWidget);
     expect(find.text('2'), findsOneWidget);
     expect(
