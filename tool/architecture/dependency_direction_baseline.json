@@ -21,11 +21,6 @@
     {
       "rule": "crossFeaturePresentationImport",
       "path": "lib/dashboard/presentation/widgets/dashboard_full.dart",
-      "import": "package:catch_dating_app/events/presentation/event_check_in_celebration_screen.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/dashboard/presentation/widgets/dashboard_full.dart",
       "import": "package:catch_dating_app/reviews/presentation/write_review_sheet.dart"
     },
     {

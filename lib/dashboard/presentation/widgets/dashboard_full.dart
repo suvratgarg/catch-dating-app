@@ -25,7 +25,7 @@ import 'package:catch_dating_app/event_success/event_success_companion_launcher.
 import 'package:catch_dating_app/events/data/event_calendar_links.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_location_links.dart';
-import 'package:catch_dating_app/events/presentation/event_check_in_celebration_screen.dart';
+import 'package:catch_dating_app/events/shared/event_check_in_celebration_screen.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
 import 'package:catch_dating_app/reviews/presentation/write_review_sheet.dart';

@@ -36,7 +36,7 @@ export 'data/external_event_repository.dart';
 export 'data/saved_event_repository.dart';
 
 // ── Presentation — screens ──────────────────────────────────────────────────
-export 'presentation/event_check_in_celebration_screen.dart';
+export 'shared/event_check_in_celebration_screen.dart';
 export 'presentation/event_detail_screen.dart';
 export 'shared/event_joined_celebration_screen.dart';
 export 'presentation/event_location_map_screen.dart';

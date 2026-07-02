@@ -30,7 +30,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
-import 'package:catch_dating_app/events/presentation/event_check_in_celebration_screen.dart';
+import 'package:catch_dating_app/events/shared/event_check_in_celebration_screen.dart';
 import 'package:catch_dating_app/events/shared/event_joined_celebration_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_map_screen.dart';
