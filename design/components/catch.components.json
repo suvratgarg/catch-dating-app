@@ -329,6 +329,27 @@
               "custom-color",
               "custom-padding"
             ]
+          },
+          {
+            "id": "catch.button.label",
+            "symbol": "CatchButtonLabel",
+            "file": "lib/core/widgets/catch_button.dart",
+            "summary": "Direct button label renderer for icon, loading, and typography composition.",
+            "states": [
+              "label",
+              "with-icon",
+              "full-width"
+            ]
+          },
+          {
+            "id": "catch.button.loading_dots",
+            "symbol": "CatchButtonLoadingDots",
+            "file": "lib/core/widgets/catch_button.dart",
+            "summary": "Direct loading-dot renderer used inside loading buttons.",
+            "states": [
+              "primary",
+              "light"
+            ]
           }
         ]
       },
@@ -467,6 +488,16 @@
               "accented"
             ],
             "file": "lib/core/widgets/catch_select_chip.dart"
+          },
+          {
+            "id": "catch.chip.remove_button",
+            "symbol": "CatchChipRemoveButton",
+            "file": "lib/core/widgets/catch_chip.dart",
+            "summary": "Direct removable-chip close affordance renderer.",
+            "states": [
+              "enabled",
+              "disabled"
+            ]
           }
         ]
       },
@@ -611,7 +642,31 @@
           "CatchTextStyles.bodyS",
           "CatchTextStyles.supporting"
         ],
-        "goldens": []
+        "goldens": [],
+        "members": [
+          {
+            "id": "catch.empty_state.content",
+            "symbol": "CatchEmptyStateContent",
+            "file": "lib/core/widgets/catch_empty_state.dart",
+            "summary": "Direct empty-state content renderer for title, message, action, and layout variants.",
+            "states": [
+              "stacked",
+              "inline",
+              "with-action"
+            ]
+          },
+          {
+            "id": "catch.empty_state.icon",
+            "symbol": "CatchEmptyStateIcon",
+            "file": "lib/core/widgets/catch_empty_state.dart",
+            "summary": "Direct empty-state icon renderer for plain and bubble icon treatments.",
+            "states": [
+              "plain",
+              "bubble",
+              "sized"
+            ]
+          }
+        ]
       },
       "handoff": {
         "allowedChildren": [
@@ -820,6 +875,18 @@
               "debug-details",
               "collapsed-details",
               "expanded-details"
+            ]
+          },
+          {
+            "id": "catch.error_body",
+            "symbol": "CatchErrorBody",
+            "file": "lib/core/widgets/catch_error_state.dart",
+            "summary": "Direct branded error-body renderer used by error placement adapters.",
+            "states": [
+              "full-screen",
+              "inline",
+              "compact",
+              "secondary-action"
             ]
           }
         ]
@@ -1417,6 +1484,16 @@
               "custom"
             ],
             "file": "lib/core/widgets/catch_field.dart"
+          },
+          {
+            "id": "catch.form_field_label.optional_badge",
+            "symbol": "CatchFormFieldOptionalBadge",
+            "file": "lib/core/widgets/catch_form_field_label.dart",
+            "summary": "Direct optional-badge renderer used inside form field labels.",
+            "states": [
+              "default",
+              "error"
+            ]
           }
         ]
       },
@@ -2377,6 +2454,28 @@
               "custom-color",
               "truncated"
             ]
+          },
+          {
+            "id": "catch.metric_strip.cell",
+            "symbol": "CatchMetricStripCell",
+            "file": "lib/core/widgets/catch_metric_strip.dart",
+            "summary": "Direct metric-strip value/label cell renderer.",
+            "states": [
+              "default",
+              "with-unit",
+              "long-label",
+              "color-overrides"
+            ]
+          },
+          {
+            "id": "catch.metric_strip.divider",
+            "symbol": "CatchMetricStripDivider",
+            "file": "lib/core/widgets/catch_metric_strip.dart",
+            "summary": "Direct metric-strip divider renderer.",
+            "states": [
+              "default",
+              "color-override"
+            ]
           }
         ]
       },
@@ -2575,6 +2674,28 @@
               "share-error",
               "custom-width",
               "custom-copy"
+            ]
+          },
+          {
+            "id": "catch.sheet.plain_header",
+            "symbol": "CatchPlainSheetHeader",
+            "file": "lib/core/widgets/catch_bottom_sheet.dart",
+            "summary": "Direct plain sheet-header renderer for title, subtitle, badge, and trailing content.",
+            "states": [
+              "title-subtitle",
+              "trailing",
+              "title-only"
+            ]
+          },
+          {
+            "id": "catch.sheet.branded_header",
+            "symbol": "CatchBrandedSheetHeader",
+            "file": "lib/core/widgets/catch_bottom_sheet.dart",
+            "summary": "Direct branded sheet-header renderer with glyph, title, subtitle, badge, and trailing content.",
+            "states": [
+              "title-subtitle",
+              "trailing",
+              "title-only"
             ]
           }
         ]
@@ -3950,7 +4071,19 @@
           "CatchTextStyles.titleS",
           "CatchTextStyles.bodyS"
         ],
-        "goldens": []
+        "goldens": [],
+        "members": [
+          {
+            "id": "catch.journey_steps.node",
+            "symbol": "CatchJourneyStepNode",
+            "file": "lib/core/widgets/catch_journey_steps.dart",
+            "summary": "Direct journey-step node renderer for step status, icon, and connector composition.",
+            "states": [
+              "default",
+              "accented"
+            ]
+          }
+        ]
       },
       "handoff": {
         "allowedChildren": [],
@@ -4980,7 +5113,20 @@
           "CatchIcons.imageOutlined",
           "CatchIcon.md"
         ],
-        "goldens": []
+        "goldens": [],
+        "members": [
+          {
+            "id": "catch.network_image.fallback",
+            "symbol": "CatchNetworkImageFallback",
+            "file": "lib/core/widgets/catch_network_image.dart",
+            "summary": "Direct branded image fallback renderer used by network and asset image loading failures.",
+            "states": [
+              "default",
+              "custom-icon",
+              "custom-color"
+            ]
+          }
+        ]
       },
       "handoff": {
         "allowedChildren": [],
@@ -5200,6 +5346,38 @@
               "complete",
               "autofocus",
               "submitted"
+            ]
+          },
+          {
+            "id": "catch.code_input.row",
+            "symbol": "CatchCodeInputRow",
+            "file": "lib/core/widgets/catch_otp_code_field.dart",
+            "summary": "Direct code-input row renderer for fixed-length verification cells.",
+            "states": [
+              "empty",
+              "partial",
+              "custom-prefix"
+            ]
+          },
+          {
+            "id": "catch.code_input.cell",
+            "symbol": "CatchCodeInputCell",
+            "file": "lib/core/widgets/catch_otp_code_field.dart",
+            "summary": "Direct single code-input cell renderer.",
+            "states": [
+              "digit",
+              "active-caret",
+              "inactive-empty"
+            ]
+          },
+          {
+            "id": "catch.code_input.caret",
+            "symbol": "CatchCodeInputCaret",
+            "file": "lib/core/widgets/catch_otp_code_field.dart",
+            "summary": "Direct active-caret renderer used inside code-input cells.",
+            "states": [
+              "default",
+              "accent"
             ]
           }
         ]
@@ -6062,7 +6240,31 @@
           "CatchLayout.tabDockBlurSigma",
           "CatchLayout.tabDockIconSize"
         ],
-        "goldens": []
+        "goldens": [],
+        "members": [
+          {
+            "id": "catch.tab_dock.button",
+            "symbol": "CatchTabDockButton",
+            "file": "lib/core/widgets/catch_tab_dock.dart",
+            "summary": "Direct tab-dock button renderer for navigation tabs.",
+            "states": [
+              "selected",
+              "unselected",
+              "badge"
+            ]
+          },
+          {
+            "id": "catch.tab_dock.icon",
+            "symbol": "CatchTabDockIcon",
+            "file": "lib/core/widgets/catch_tab_dock.dart",
+            "summary": "Direct tab-dock icon/count renderer.",
+            "states": [
+              "plain",
+              "badge",
+              "large-badge"
+            ]
+          }
+        ]
       },
       "handoff": {
         "allowedChildren": [
@@ -7438,6 +7640,57 @@
               "empty",
               "square"
             ]
+          },
+          {
+            "id": "catch.person_avatar.shell",
+            "symbol": "CatchPersonAvatarShell",
+            "file": "lib/core/widgets/catch_person_avatar.dart",
+            "summary": "Direct person-avatar shell renderer for shape, image, fallback, and adornment composition.",
+            "states": [
+              "circle",
+              "square"
+            ]
+          },
+          {
+            "id": "catch.person_avatar.obscured_content",
+            "symbol": "CatchObscuredAvatarContent",
+            "file": "lib/core/widgets/catch_person_avatar.dart",
+            "summary": "Direct obscured-avatar content renderer.",
+            "states": [
+              "default"
+            ]
+          },
+          {
+            "id": "catch.person_avatar.veiled",
+            "symbol": "CatchVeiledPersonAvatar",
+            "file": "lib/core/widgets/catch_person_avatar.dart",
+            "summary": "Direct veiled-avatar renderer for obscured people in stacks and cards.",
+            "states": [
+              "run",
+              "dinner"
+            ]
+          },
+          {
+            "id": "catch.person_avatar.activity_initials",
+            "symbol": "CatchActivityInitialsPlaceholder",
+            "file": "lib/core/widgets/catch_person_avatar.dart",
+            "summary": "Direct activity-context initials placeholder renderer.",
+            "states": [
+              "initials",
+              "dim",
+              "empty"
+            ]
+          },
+          {
+            "id": "catch.person_avatar.initials",
+            "symbol": "CatchInitialsAvatarPlaceholder",
+            "file": "lib/core/widgets/catch_person_avatar.dart",
+            "summary": "Direct initials placeholder renderer for person avatars.",
+            "states": [
+              "derived",
+              "explicit",
+              "empty"
+            ]
           }
         ]
       },
@@ -7461,65 +7714,65 @@
       }
     },
     {
-    "id": "catch.person_row",
-    "name": "CatchPersonRow",
-    "status": "active",
-    "kind": "composite",
-    "summary": "Global people row for roster, safety, and chat-preview surfaces with configurable avatar shape, divider, timestamp, unread badge, and new-match marker.",
-    "dart": {
-      "symbol": "CatchPersonRow",
-      "file": "lib/core/widgets/catch_person_row.dart",
-      "constructors": [
-        "CatchPersonRow"
-      ]
-    },
-    "design": {
-      "figma": {
-        "status": "unmapped",
-        "componentName": "Catch/PersonRow",
-        "componentUrl": null
+      "id": "catch.person_row",
+      "name": "CatchPersonRow",
+      "status": "active",
+      "kind": "composite",
+      "summary": "Global people row for roster, safety, and chat-preview surfaces with configurable avatar shape, divider, timestamp, unread badge, and new-match marker.",
+      "dart": {
+        "symbol": "CatchPersonRow",
+        "file": "lib/core/widgets/catch_person_row.dart",
+        "constructors": [
+          "CatchPersonRow"
+        ]
       },
-      "codeConnect": {
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/PersonRow",
+          "componentUrl": null
+        },
+        "codeConnect": {
           "status": "planned",
           "snippetLanguage": "dart",
           "template": null
-      },
-      "claude": {
-        "handoffName": "PersonRow",
-        "allowed": true
-      }
-    },
-    "contract": {
-      "props": [
-        {
-          "name": "data",
-          "type": "object",
-          "required": true,
-          "dartType": "CatchPersonRowData"
         },
-        {
-          "name": "trailing",
-          "type": "widget",
-          "required": false,
-          "dartType": "Widget"
-        },
-        {
-          "name": "onTap",
-          "type": "callback",
-          "required": false,
-          "dartType": "VoidCallback"
+        "claude": {
+          "handoffName": "PersonRow",
+          "allowed": true
         }
-      ],
-      "states": [
-        "roster",
-        "roster-trailing",
-        "chat-preview",
-        "chat-preview-new",
-        "chat-preview-unread",
-        "chat-preview-square-avatar",
-        "divider",
-        "long-copy"
-      ],
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "data",
+            "type": "object",
+            "required": true,
+            "dartType": "CatchPersonRowData"
+          },
+          {
+            "name": "trailing",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget"
+          },
+          {
+            "name": "onTap",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback"
+          }
+        ],
+        "states": [
+          "roster",
+          "roster-trailing",
+          "chat-preview",
+          "chat-preview-new",
+          "chat-preview-unread",
+          "chat-preview-square-avatar",
+          "divider",
+          "long-copy"
+        ],
         "slots": [],
         "tokens": [
           "space.s1",
@@ -7533,26 +7786,83 @@
           "theme.light.color.line",
           "theme.light.color.surface"
         ],
-    "dartRoles": [
-      "CatchPersonRowData",
-      "CatchPersonAvatar",
-      "CatchBadge",
-      "CatchPersonAvatarShape"
-    ],
-        "goldens": []
+        "dartRoles": [
+          "CatchPersonRowData",
+          "CatchPersonAvatar",
+          "CatchBadge",
+          "CatchPersonAvatarShape"
+        ],
+        "goldens": [],
+        "members": [
+          {
+            "id": "catch.person_row.chat_layout",
+            "symbol": "CatchPersonChatLayout",
+            "file": "lib/core/widgets/catch_person_row.dart",
+            "summary": "Direct chat-row layout renderer used by CatchPersonRow chat variants.",
+            "states": [
+              "default",
+              "context",
+              "typing",
+              "unread",
+              "long-copy"
+            ]
+          },
+          {
+            "id": "catch.person_row.chat_trailing",
+            "symbol": "CatchPersonChatTrailing",
+            "file": "lib/core/widgets/catch_person_row.dart",
+            "summary": "Direct chat-row trailing metadata renderer.",
+            "states": [
+              "timestamp",
+              "unread",
+              "new-dot"
+            ]
+          },
+          {
+            "id": "catch.person_row.unread_count_pill",
+            "symbol": "CatchPersonUnreadCountPill",
+            "file": "lib/core/widgets/catch_person_row.dart",
+            "summary": "Direct unread-count pill renderer used by chat rows.",
+            "states": [
+              "single",
+              "many",
+              "capped"
+            ]
+          },
+          {
+            "id": "catch.person_row.new_match_dot",
+            "symbol": "CatchPersonNewMatchDot",
+            "file": "lib/core/widgets/catch_person_row.dart",
+            "summary": "Direct new-match dot renderer used by chat rows.",
+            "states": [
+              "default"
+            ]
+          },
+          {
+            "id": "catch.person_row.roster_layout",
+            "symbol": "CatchPersonRosterLayout",
+            "file": "lib/core/widgets/catch_person_row.dart",
+            "summary": "Direct roster-row layout renderer used by CatchPersonRow roster variants.",
+            "states": [
+              "meta",
+              "context",
+              "long-copy"
+            ]
+          }
+        ]
       },
-    "handoff": {
-      "allowedChildren": [
-        "catch.person_avatar",
-        "catch.badge"
-      ],
-      "notes": [
-        "Global product composition for people rows. Feature view models should map into CatchPersonRowData at the screen/list boundary rather than introducing row adapters."
-      ]
-    },
-    "governance": {
-      "role": "composition",
-      "canonicalFamily": "catch.person_row",
+      "handoff": {
+        "allowedChildren": [
+          "catch.person_avatar",
+          "catch.badge"
+        ],
+        "notes": [
+          "Global product composition for people rows. Feature view models should map into CatchPersonRowData at the screen/list boundary rather than introducing row adapters."
+        ]
+      },
+      "governance": {
+        "role": "composition",
+        "canonicalFamily": "catch.person_row",
         "publicApi": true,
         "stateOwnership": "slot-state-only",
         "asyncOwnership": "none",
@@ -7788,6 +8098,27 @@
               "dark",
               "long-copy"
             ]
+          },
+          {
+            "id": "catch.event_thumbnail.activity_fallback",
+            "symbol": "CatchEventThumbnailActivityFallback",
+            "file": "lib/core/widgets/catch_event_thumbnail.dart",
+            "summary": "Direct event-thumbnail activity fallback renderer for no-photo states.",
+            "states": [
+              "run",
+              "dinner",
+              "large-icon"
+            ]
+          },
+          {
+            "id": "catch.event_thumbnail.scrim",
+            "symbol": "CatchEventThumbnailScrimOverlay",
+            "file": "lib/core/widgets/catch_event_thumbnail.dart",
+            "summary": "Direct event-thumbnail scrim overlay renderer.",
+            "states": [
+              "bottom",
+              "full"
+            ]
           }
         ]
       },
@@ -7973,7 +8304,27 @@
           "CatchGradedImage",
           "CatchNetworkImage"
         ],
-        "goldens": []
+        "goldens": [],
+        "members": [
+          {
+            "id": "catch.detail_media.fallback",
+            "symbol": "CatchDetailHeroFallback",
+            "file": "lib/core/widgets/catch_detail_hero_backdrop.dart",
+            "summary": "Direct detail-hero fallback renderer for no-photo media states.",
+            "states": [
+              "gradient"
+            ]
+          },
+          {
+            "id": "catch.detail_media.scrim",
+            "symbol": "CatchDetailHeroScrim",
+            "file": "lib/core/widgets/catch_detail_hero_backdrop.dart",
+            "summary": "Direct detail-hero scrim renderer for media text protection.",
+            "states": [
+              "vertical-gradient"
+            ]
+          }
+        ]
       },
       "handoff": {
         "allowedChildren": [
