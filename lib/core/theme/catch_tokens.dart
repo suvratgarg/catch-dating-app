@@ -508,10 +508,31 @@ abstract final class CatchInsets {
   /// Form-step padding with more bottom space for final/action-heavy steps.
   static const EdgeInsets formStepBodyRelaxed = pageBodyRelaxed;
 
+  /// Long-form edit body padding under a top app bar.
+  static const EdgeInsets formEditBodyRelaxed = EdgeInsets.fromLTRB(
+    CatchSpacing.screenPx,
+    CatchSpacing.s4,
+    CatchSpacing.screenPx,
+    CatchSpacing.s7,
+  );
+
+  /// Top offset for titled form sections inside a continuous edit page.
+  static const EdgeInsets formSectionTop = EdgeInsets.only(
+    top: CatchSpacing.s2,
+  );
+
   /// Inline error offset below form controls inside step forms.
   static const EdgeInsets formFieldError = EdgeInsets.only(
     top: CatchSpacing.s1,
     left: CatchSpacing.s1,
+  );
+
+  /// Bottom-docked form action padding with page gutters and safe-area lift.
+  static const EdgeInsets formActionDock = EdgeInsets.fromLTRB(
+    CatchSpacing.screenPx,
+    CatchSpacing.s3,
+    CatchSpacing.screenPx,
+    CatchSpacing.micro18,
   );
 
   /// Default content padding inside cards and bordered panels.

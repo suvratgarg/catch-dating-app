@@ -18133,6 +18133,14 @@
           },
           {
             "file": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
+            "symbol": "HostClubEditScaffold"
+          },
+          {
+            "file": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
+            "symbol": "HostClubEditFooter"
+          },
+          {
+            "file": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
             "symbol": "HostClubSubmitOutcomeState"
           },
           {
@@ -18714,7 +18722,7 @@
             "symbol": "ImageUploadRepository"
           }
         ],
-        "notes": "HostEditClubRouteScreen resolves the club by route id unless an initial Club extra is supplied and handles loading/error/not-found states. HostClubEditorStateView renders loaded club branches by resolving uid/access mode through HostClubEditState, then composes CreateClubScreen(initialClub) for owner full edit or co-host media-only editing. CreateClubScreen renders owner edit as a single long form using compact logo/photo-strip media variants and grouped CatchField identity/contact rows. CreateClubController enforces owner-only full edits and allows non-owner hosts to update media only. HostClubSubmitOutcomeState owns submit-success close-route policy shared with create; remaining work is field/media display data, validation, mutation request data, and typed callbacks."
+        "notes": "HostEditClubRouteScreen resolves the club by route id unless an initial Club extra is supplied and handles loading/error/not-found states. HostClubEditorStateView renders loaded club branches by resolving uid/access mode through HostClubEditState, then composes CreateClubScreen(initialClub) for owner full edit or co-host media-only editing. CreateClubScreen delegates owner long-form edit composition to HostClubEditScaffold, HostClubEditSection, HostClubEditCityField, and HostClubEditFooter using compact logo/photo-strip media variants and grouped CatchField identity/contact rows. CreateClubController enforces owner-only full edits and allows non-owner hosts to update media only. HostClubSubmitOutcomeState owns submit-success close-route policy shared with create; remaining work is field/media display data, validation, mutation request data, and typed callbacks."
       },
       "designRefs": [
         {
@@ -19049,9 +19057,9 @@
             ],
             "flutter": {
               "file": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-              "symbol": "CreateClubScreen"
+              "symbol": "HostClubEditScaffold"
             },
-            "currentOwner": "CreateClubScreen private edit scaffold",
+            "currentOwner": "HostClubEditScaffold + CreateClubScreen callbacks",
             "targetOwner": "provider-free edit-club section shell",
             "dependencies": [
               "catch.top_bar",
@@ -19062,7 +19070,7 @@
               "media_only_cohost_edit",
               "text_scale_2"
             ],
-            "migration": "Separate the owner long-form and co-host media-only variants into named display states."
+            "migration": "HostClubEditScaffold now owns the named owner long-form shell; continue moving display data and typed field/media callbacks out of CreateClubScreen."
           },
           {
             "id": "section.host.club_edit.media",
@@ -19099,9 +19107,9 @@
             ],
             "flutter": {
               "file": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-              "symbol": "CreateClubScreen"
+              "symbol": "HostClubEditSection"
             },
-            "currentOwner": "CreateClubScreen private edit sections",
+            "currentOwner": "HostClubEditScaffold + HostClubEditSection + HostClubEditCityField",
             "targetOwner": "provider-free identity/contact sections",
             "dependencies": [
               "catch.field"
@@ -19111,7 +19119,7 @@
               "optional_contact_clearing",
               "validation_error"
             ],
-            "migration": "Owner edit now uses grouped CatchField identity/contact rows with deterministic reference fixture coverage. Promote private edit sections only after Host Clubs inline editors confirm reuse; keep field data adapter-owned."
+            "migration": "Owner edit uses named grouped CatchField identity/contact sections with deterministic reference fixture coverage. Keep moving field display data, validation flags, and callbacks into adapter-owned inputs."
           },
           {
             "id": "section.host.club_edit.defaults",
@@ -19125,7 +19133,7 @@
               "file": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
               "symbol": "ClubHostDefaultsStep"
             },
-            "currentOwner": "CreateClubScreen private edit sections",
+            "currentOwner": "HostClubEditScaffold + defaults step widgets",
             "targetOwner": "provider-free defaults sections",
             "dependencies": [
               "catch.chip",
@@ -19147,9 +19155,9 @@
             ],
             "flutter": {
               "file": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-              "symbol": "_buildEditClubFooter"
+              "symbol": "HostClubEditFooter"
             },
-            "currentOwner": "CreateClubScreen private footer",
+            "currentOwner": "HostClubEditFooter + HostClubCreateFooterState",
             "targetOwner": "provider-free edit footer",
             "dependencies": [
               "catch.button"
@@ -19159,7 +19167,7 @@
               "submit_error",
               "success_pop"
             ],
-            "migration": "HostClubCreateState owns save enabled/loading/error display state for the shared edit footer, and HostClubSubmitOutcomeState owns close-after-submit-success policy. Continue moving save request construction and typed callbacks out of CreateClubScreen."
+            "migration": "HostClubEditFooter renders save enabled/loading state from HostClubCreateFooterState, and HostClubSubmitOutcomeState owns close-after-submit-success policy. Continue moving save request construction and typed callbacks out of CreateClubScreen."
           }
         ]
       },
