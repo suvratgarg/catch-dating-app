@@ -10,14 +10,14 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1100,
-    "widgetClasses": 1000,
+    "total": 1104,
+    "widgetClasses": 1004,
     "stateClasses": 100,
-    "publicClasses": 1000,
+    "publicClasses": 1004,
     "privateClasses": 100,
     "byRole": {
-      "atom": 37,
-      "composition": 285,
+      "atom": 39,
+      "composition": 287,
       "feature-adapter": 311,
       "pattern": 14,
       "screen": 353,
@@ -26,13 +26,15 @@
     "byDecision": {
       "keep-canonical-contract": 121,
       "keep-public-cataloged": 879,
-      "keep-widget-state": 100
+      "keep-widget-state": 100,
+      "review-promote-or-consolidate": 4
     },
     "byCatalogStatus": {
       "cataloged": 807,
       "contracted": 121,
       "not-applicable": 100,
-      "route-covered": 72
+      "route-covered": 72,
+      "uncataloged": 4
     }
   },
   "widgets": [
@@ -2884,6 +2886,62 @@
       "flags": []
     },
     {
+      "name": "CatchButtonLabel",
+      "file": "lib/core/widgets/catch_button.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "atom",
+      "canonicalFamily": "catch.button_label",
+      "publicApi": true,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "tokens-and-primitives",
+      "stateOwnership": "local-ui-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "internal-only",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract",
+        "public-widget-missing-widgetbook"
+      ]
+    },
+    {
+      "name": "CatchButtonLoadingDots",
+      "file": "lib/core/widgets/catch_button.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.button_loading_dots",
+      "publicApi": true,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract",
+        "public-widget-missing-widgetbook"
+      ]
+    },
+    {
       "name": "CatchChip",
       "file": "lib/core/widgets/catch_chip.dart",
       "classKind": "widget",
@@ -3089,6 +3147,62 @@
         "mergeIntoCanonical"
       ],
       "flags": []
+    },
+    {
+      "name": "CatchEmptyStateContent",
+      "file": "lib/core/widgets/catch_empty_state.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.empty_state_content",
+      "publicApi": true,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract",
+        "public-widget-missing-widgetbook"
+      ]
+    },
+    {
+      "name": "CatchEmptyStateIcon",
+      "file": "lib/core/widgets/catch_empty_state.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "atom",
+      "canonicalFamily": "catch.empty_state_icon",
+      "publicApi": true,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "tokens-and-primitives",
+      "stateOwnership": "local-ui-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "internal-only",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract",
+        "public-widget-missing-widgetbook"
+      ]
     },
     {
       "name": "CatchErrorBanner",

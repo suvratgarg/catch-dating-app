@@ -95,8 +95,8 @@ class _CatchButtonState extends State<CatchButton> {
             switchInCurve: CatchMotion.standardCurve,
             switchOutCurve: CatchMotion.standardCurve,
             child: widget.isLoading
-                ? _buildLoadingDots(palette.foreground)
-                : _buildButtonLabel(
+                ? CatchButtonLoadingDots(color: palette.foreground)
+                : CatchButtonLabel(
                     label: widget.label,
                     color: palette.foreground,
                     icon: widget.icon,
@@ -165,63 +165,84 @@ class _CatchButtonState extends State<CatchButton> {
   }
 }
 
-Widget _buildButtonLabel({
-  required String label,
-  required Color color,
-  required Widget? icon,
-  required double gap,
-  required bool fullWidth,
-  required TextStyle textStyle,
-}) {
-  final content = Row(
-    mainAxisSize: MainAxisSize.min,
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      if (icon != null) ...[
-        IconTheme(
-          data: IconThemeData(color: color, size: CatchIcon.md),
-          child: icon,
+class CatchButtonLabel extends StatelessWidget {
+  const CatchButtonLabel({
+    super.key,
+    required this.label,
+    required this.color,
+    required this.textStyle,
+    this.icon,
+    this.gap = CatchSpacing.micro6,
+    this.fullWidth = false,
+  });
+
+  final String label;
+  final Color color;
+  final Widget? icon;
+  final double gap;
+  final bool fullWidth;
+  final TextStyle textStyle;
+
+  @override
+  Widget build(BuildContext context) {
+    final iconWidget = icon;
+    final content = Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        if (iconWidget != null) ...[
+          IconTheme(
+            data: IconThemeData(color: color, size: CatchIcon.md),
+            child: iconWidget,
+          ),
+          SizedBox(width: gap),
+        ],
+        Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: textStyle.copyWith(color: color),
         ),
-        SizedBox(width: gap),
       ],
-      Text(
-        label,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: textStyle.copyWith(color: color),
-      ),
-    ],
-  );
-
-  if (fullWidth) {
-    return Center(
-      child: FittedBox(fit: BoxFit.scaleDown, child: content),
     );
-  }
 
-  return FittedBox(fit: BoxFit.scaleDown, child: content);
+    if (fullWidth) {
+      return Center(
+        child: FittedBox(fit: BoxFit.scaleDown, child: content),
+      );
+    }
+
+    return FittedBox(fit: BoxFit.scaleDown, child: content);
+  }
 }
 
-Widget _buildLoadingDots(Color color) {
-  return Row(
-    key: const ValueKey('catch-button-loading'),
-    mainAxisSize: MainAxisSize.min,
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: List.generate(3, (index) {
-      return Padding(
-        padding: EdgeInsets.only(left: index == 0 ? 0 : CatchSpacing.s1),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: color.withValues(
-              alpha: CatchOpacity.loadingDotAlphas[index],
+class CatchButtonLoadingDots extends StatelessWidget {
+  const CatchButtonLoadingDots({super.key, required this.color});
+
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      key: const ValueKey('catch-button-loading'),
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(3, (index) {
+        return Padding(
+          padding: EdgeInsets.only(left: index == 0 ? 0 : CatchSpacing.s1),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: color.withValues(
+                alpha: CatchOpacity.loadingDotAlphas[index],
+              ),
+              borderRadius: BorderRadius.circular(CatchRadius.pill),
             ),
-            borderRadius: BorderRadius.circular(CatchRadius.pill),
+            child: const SizedBox.square(dimension: CatchSpacing.micro6),
           ),
-          child: const SizedBox.square(dimension: CatchSpacing.micro6),
-        ),
-      );
-    }),
-  );
+        );
+      }),
+    );
+  }
 }
 
 class _ButtonSizeSpec {

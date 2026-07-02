@@ -165,6 +165,8 @@ void main() {
         tester.getSize(find.widgetWithText(CatchButton, 'Join event')).width,
         240,
       );
+      expect(find.byType(CatchButtonLabel), findsOneWidget);
+      expect(find.byType(CatchButtonLoadingDots), findsOneWidget);
 
       await tester.tap(find.text('Join event'));
       await tester.pump();
@@ -1635,6 +1637,8 @@ void main() {
     );
 
     expect(find.byType(CatchSurface), findsNothing);
+    expect(find.byType(CatchEmptyStateContent), findsOneWidget);
+    expect(find.byType(CatchEmptyStateIcon), findsOneWidget);
 
     final icon = tester.widget<Icon>(find.byIcon(CatchIcons.search));
     final title = tester.widget<Text>(find.text('Nothing here yet'));

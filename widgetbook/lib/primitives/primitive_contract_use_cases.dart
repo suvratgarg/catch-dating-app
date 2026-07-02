@@ -570,6 +570,96 @@ Widget catchEmptyStateContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
+  type: CatchEmptyStateContent,
+  path: '[Core primitives]/Feedback',
+)
+Widget catchEmptyStateContentContractStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+  final titleStyle = CatchTextStyles.sectionTitle(context);
+  final messageStyle = CatchTextStyles.supporting(context, color: t.ink2);
+
+  return _ContractScreen(
+    title: 'CatchEmptyStateContent',
+    contractId: 'catch.empty_state.content',
+    states: const ['stacked', 'inline', 'with-action'],
+    children: [
+      _StateCard(
+        label: 'stacked',
+        child: CatchEmptyStateContent(
+          layout: CatchEmptyStateLayout.stacked,
+          icon: CatchIcons.eventOutlined,
+          title: 'No events yet',
+          message: 'Follow a host to see upcoming plans.',
+          titleStyle: titleStyle,
+          messageStyle: messageStyle,
+        ),
+      ),
+      _StateCard(
+        label: 'inline',
+        child: CatchEmptyStateContent(
+          layout: CatchEmptyStateLayout.inline,
+          icon: CatchIcons.search,
+          title: 'No matches',
+          message: 'Try widening your filters.',
+          titleStyle: titleStyle,
+          messageStyle: messageStyle,
+        ),
+      ),
+      _StateCard(
+        label: 'with-action',
+        child: CatchEmptyStateContent(
+          layout: CatchEmptyStateLayout.stacked,
+          icon: CatchIcons.eventOutlined,
+          iconStyle: CatchEmptyStateIconStyle.bubble,
+          title: 'No events yet',
+          message: 'Follow a host to see upcoming plans.',
+          action: CatchButton(label: 'Explore hosts', onPressed: _noop),
+          titleStyle: titleStyle,
+          messageStyle: messageStyle,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchEmptyStateIcon,
+  path: '[Core primitives]/Feedback',
+)
+Widget catchEmptyStateIconContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'CatchEmptyStateIcon',
+    contractId: 'catch.empty_state.icon',
+    states: const ['plain', 'bubble', 'sized'],
+    children: [
+      _StateCard(
+        label: 'icon styles',
+        child: _InlineWrap(
+          children: [
+            CatchEmptyStateIcon(
+              icon: CatchIcons.eventOutlined,
+              style: CatchEmptyStateIconStyle.plain,
+            ),
+            CatchEmptyStateIcon(
+              icon: CatchIcons.group,
+              style: CatchEmptyStateIconStyle.bubble,
+            ),
+            CatchEmptyStateIcon(
+              icon: CatchIcons.search,
+              style: CatchEmptyStateIconStyle.bubble,
+              size: 24,
+              containerSize: 56,
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
   type: CatchErrorBanner,
   path: '[Core primitives]/Feedback',
 )
@@ -811,6 +901,81 @@ Widget catchButtonContractStates(BuildContext context) {
           label: 'Add to calendar',
           icon: Icon(CatchIcons.calendarAdd),
           onPressed: _noop,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchButtonLabel,
+  path: '[Core primitives]/Actions',
+)
+Widget catchButtonLabelContractStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+  final textStyle = CatchTextStyles.buttonMd(context);
+
+  return _ContractScreen(
+    title: 'CatchButtonLabel',
+    contractId: 'catch.button.label',
+    states: const ['label', 'with-icon', 'full-width'],
+    children: [
+      _StateCard(
+        label: 'label / icon',
+        child: _InlineWrap(
+          children: [
+            CatchButtonLabel(
+              label: 'Continue',
+              color: t.primary,
+              textStyle: textStyle,
+            ),
+            CatchButtonLabel(
+              label: 'Add to calendar',
+              color: t.ink,
+              icon: Icon(CatchIcons.calendarAdd),
+              textStyle: textStyle,
+            ),
+          ],
+        ),
+      ),
+      _StateCard(
+        label: 'full-width fit',
+        child: SizedBox(
+          width: 220,
+          child: CatchButtonLabel(
+            label: 'Very long call to action label',
+            color: t.primary,
+            icon: Icon(CatchIcons.sparkle),
+            fullWidth: true,
+            textStyle: textStyle,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchButtonLoadingDots,
+  path: '[Core primitives]/Actions',
+)
+Widget catchButtonLoadingDotsContractStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  return _ContractScreen(
+    title: 'CatchButtonLoadingDots',
+    contractId: 'catch.button.loading_dots',
+    states: const ['primary', 'light'],
+    children: [
+      _StateCard(
+        label: 'dot tones',
+        child: _InlineWrap(
+          children: [
+            CatchButtonLoadingDots(color: t.primary),
+            const CatchButtonLoadingDots(color: CatchTokens.editorialLight),
+          ],
         ),
       ),
     ],
