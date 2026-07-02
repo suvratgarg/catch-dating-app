@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
@@ -155,6 +156,71 @@ class HostEventEditLocationState {
       pickerInitialLabel: _trimTextToNull(normalizedMeetingPoint),
     );
   }
+}
+
+sealed class HostEventEditIntent {
+  const HostEventEditIntent();
+}
+
+final class HostEventEditPickDateIntent extends HostEventEditIntent {
+  const HostEventEditPickDateIntent();
+}
+
+final class HostEventEditPickStartTimeIntent extends HostEventEditIntent {
+  const HostEventEditPickStartTimeIntent();
+}
+
+final class HostEventEditDurationChangedIntent extends HostEventEditIntent {
+  const HostEventEditDurationChangedIntent(this.durationMinutes);
+
+  final int durationMinutes;
+}
+
+final class HostEventEditMeetingPointChangedIntent extends HostEventEditIntent {
+  const HostEventEditMeetingPointChangedIntent(this.value);
+
+  final String value;
+}
+
+final class HostEventEditPickLocationIntent extends HostEventEditIntent {
+  const HostEventEditPickLocationIntent();
+}
+
+final class HostEventEditPaceChangedIntent extends HostEventEditIntent {
+  const HostEventEditPaceChangedIntent(this.pace);
+
+  final PaceLevel pace;
+}
+
+final class HostEventEditAdmissionPresetChangedIntent
+    extends HostEventEditIntent {
+  const HostEventEditAdmissionPresetChangedIntent(this.preset);
+
+  final EventAdmissionPreset preset;
+}
+
+final class HostEventEditCohortCapsChangedIntent extends HostEventEditIntent {
+  const HostEventEditCohortCapsChangedIntent(this.enabled);
+
+  final bool enabled;
+}
+
+final class HostEventEditDynamicPricingChangedIntent
+    extends HostEventEditIntent {
+  const HostEventEditDynamicPricingChangedIntent(this.enabled);
+
+  final bool enabled;
+}
+
+final class HostEventEditCancellationPolicyChangedIntent
+    extends HostEventEditIntent {
+  const HostEventEditCancellationPolicyChangedIntent(this.policyId);
+
+  final EventCancellationPolicyId policyId;
+}
+
+final class HostEventEditSaveIntent extends HostEventEditIntent {
+  const HostEventEditSaveIntent();
 }
 
 String? _trimInviteCode(String? value) {

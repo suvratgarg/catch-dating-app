@@ -331,6 +331,32 @@ void main() {
     expect(empty.pickerInitialLabel, isNull);
   });
 
+  test('HostEventEdit intents carry typed callback payloads', () {
+    expect(const HostEventEditDurationChangedIntent(75).durationMinutes, 75);
+    expect(const HostEventEditMeetingPointChangedIntent('Gate').value, 'Gate');
+    expect(
+      const HostEventEditPaceChangedIntent(PaceLevel.fast).pace,
+      PaceLevel.fast,
+    );
+    expect(
+      const HostEventEditAdmissionPresetChangedIntent(
+        EventAdmissionPreset.inviteOnly,
+      ).preset,
+      EventAdmissionPreset.inviteOnly,
+    );
+    expect(const HostEventEditCohortCapsChangedIntent(true).enabled, isTrue);
+    expect(
+      const HostEventEditDynamicPricingChangedIntent(true).enabled,
+      isTrue,
+    );
+    expect(
+      const HostEventEditCancellationPolicyChangedIntent(
+        EventCancellationPolicyId.strict,
+      ).policyId,
+      EventCancellationPolicyId.strict,
+    );
+  });
+
   testWidgets('saves host-editable event details through updateEvent', (
     tester,
   ) async {

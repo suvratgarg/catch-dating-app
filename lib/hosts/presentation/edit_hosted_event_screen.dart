@@ -529,7 +529,8 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                   icon: CatchIcons.calendarTodayOutlined,
                   value: _dateController.text,
                   placeholder: 'Select a date',
-                  onTap: _pickDate,
+                  onTap: () =>
+                      _handleIntent(const HostEventEditPickDateIntent()),
                 ),
                 gapH12,
                 EditHostedEventPickerTile(
@@ -537,7 +538,8 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                   icon: CatchIcons.scheduleOutlined,
                   value: _startTimeController.text,
                   placeholder: 'Select start time',
-                  onTap: _pickStartTime,
+                  onTap: () =>
+                      _handleIntent(const HostEventEditPickStartTimeIntent()),
                 ),
                 if (_scheduleErrorText != null) ...[
                   gapH6,
@@ -561,8 +563,9 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                   increaseTooltip: 'Increase duration',
                   formatValue: (value) =>
                       EventFormatters.durationMinutes(value.round()),
-                  onChanged: (duration) =>
-                      setState(() => _durationMinutes = duration.round()),
+                  onChanged: (duration) => _handleIntent(
+                    HostEventEditDurationChangedIntent(duration.round()),
+                  ),
                 ),
               ],
               gapH24,
@@ -579,7 +582,9 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                 prefixIcon: Icon(CatchIcons.locationOnOutlined),
                 textCapitalization: TextCapitalization.words,
                 textInputAction: TextInputAction.next,
-                onChanged: (_) => setState(() {}),
+                onChanged: (value) => _handleIntent(
+                  HostEventEditMeetingPointChangedIntent(value),
+                ),
                 validator: (value) =>
                     value == null || value.trim().isEmpty ? 'Required' : null,
               ),
@@ -589,7 +594,8 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                 startingPoint: locationState.startingPoint,
                 selectedLabel: locationState.selectedLabel,
                 enabled: locationState.canPick,
-                onTap: _pickLocation,
+                onTap: () =>
+                    _handleIntent(const HostEventEditPickLocationIntent()),
               ),
               gapH16,
               CatchField.input(
@@ -644,7 +650,9 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                           enabled: screenState.canEdit,
                           semanticsLabel: 'Select ${pace.label} pace',
                           onTap: screenState.canEdit
-                              ? () => setState(() => _selectedPace = pace)
+                              ? () => _handleIntent(
+                                  HostEventEditPaceChangedIntent(pace),
+                                )
                               : null,
                         ),
                       )
@@ -683,34 +691,21 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                   dynamicPricingStepController: _dynamicPricingStepController,
                   dynamicPricingMaxController: _dynamicPricingMaxController,
                   admissionPreset: _selectedAdmissionPreset,
-                  onAdmissionPresetChanged: (preset) => setState(() {
-                    _selectedAdmissionPreset = preset;
-                    if (preset != EventAdmissionPreset.inviteOnly) {
-                      _loadedPrivateAccess = false;
-                    }
-                    if (preset != EventAdmissionPreset.balancedSingles) {
-                      _dynamicPricingEnabled = false;
-                    }
-                    if (preset != EventAdmissionPreset.openCapacity) {
-                      _cohortCapsEnabled = false;
-                    }
-                  }),
+                  onAdmissionPresetChanged: (preset) => _handleIntent(
+                    HostEventEditAdmissionPresetChangedIntent(preset),
+                  ),
                   cohortCapsEnabled: _cohortCapsEnabled,
-                  onCohortCapsEnabledChanged: (value) =>
-                      setState(() => _cohortCapsEnabled = value),
+                  onCohortCapsEnabledChanged: (value) => _handleIntent(
+                    HostEventEditCohortCapsChangedIntent(value),
+                  ),
                   dynamicPricingEnabled: _dynamicPricingEnabled,
-                  onDynamicPricingChanged: (value) => setState(() {
-                    _dynamicPricingEnabled = value;
-                    if (value && _dynamicPricingStepController.text.isEmpty) {
-                      _dynamicPricingStepController.text = '250';
-                    }
-                    if (value && _dynamicPricingMaxController.text.isEmpty) {
-                      _dynamicPricingMaxController.text = '1500';
-                    }
-                  }),
+                  onDynamicPricingChanged: (value) => _handleIntent(
+                    HostEventEditDynamicPricingChangedIntent(value),
+                  ),
                   cancellationPolicyId: _selectedCancellationPolicyId,
-                  onCancellationPolicyChanged: (policyId) =>
-                      setState(() => _selectedCancellationPolicyId = policyId),
+                  onCancellationPolicyChanged: (policyId) => _handleIntent(
+                    HostEventEditCancellationPolicyChangedIntent(policyId),
+                  ),
                   privateAccessAsync: privateAccessState.privateAccess,
                 ),
             ],
@@ -719,7 +714,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
       ),
       bottomNavigationBar: EditHostedEventFooter(
         state: screenState.footer,
-        onSave: _saveChanges,
+        onSave: () => _handleIntent(const HostEventEditSaveIntent()),
       ),
     );
   }
@@ -803,6 +798,52 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
       startTime.minute,
     );
     return startsAt.isAfter(_now) ? null : 'Event start must be in the future.';
+  }
+
+  void _handleIntent(HostEventEditIntent intent) {
+    switch (intent) {
+      case HostEventEditPickDateIntent():
+        unawaited(_pickDate());
+      case HostEventEditPickStartTimeIntent():
+        unawaited(_pickStartTime());
+      case HostEventEditDurationChangedIntent(:final durationMinutes):
+        setState(() => _durationMinutes = durationMinutes);
+      case HostEventEditMeetingPointChangedIntent():
+        setState(() {});
+      case HostEventEditPickLocationIntent():
+        unawaited(_pickLocation());
+      case HostEventEditPaceChangedIntent(:final pace):
+        setState(() => _selectedPace = pace);
+      case HostEventEditAdmissionPresetChangedIntent(:final preset):
+        setState(() {
+          _selectedAdmissionPreset = preset;
+          if (preset != EventAdmissionPreset.inviteOnly) {
+            _loadedPrivateAccess = false;
+          }
+          if (preset != EventAdmissionPreset.balancedSingles) {
+            _dynamicPricingEnabled = false;
+          }
+          if (preset != EventAdmissionPreset.openCapacity) {
+            _cohortCapsEnabled = false;
+          }
+        });
+      case HostEventEditCohortCapsChangedIntent(:final enabled):
+        setState(() => _cohortCapsEnabled = enabled);
+      case HostEventEditDynamicPricingChangedIntent(:final enabled):
+        setState(() {
+          _dynamicPricingEnabled = enabled;
+          if (enabled && _dynamicPricingStepController.text.isEmpty) {
+            _dynamicPricingStepController.text = '250';
+          }
+          if (enabled && _dynamicPricingMaxController.text.isEmpty) {
+            _dynamicPricingMaxController.text = '1500';
+          }
+        });
+      case HostEventEditCancellationPolicyChangedIntent(:final policyId):
+        setState(() => _selectedCancellationPolicyId = policyId);
+      case HostEventEditSaveIntent():
+        _saveChanges();
+    }
   }
 
   void _saveChanges() {

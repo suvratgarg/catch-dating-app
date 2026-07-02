@@ -19598,7 +19598,7 @@
       ],
       "composition": {
         "currentLayout": "EditHostedEventRouteScreen owns provider loading/access through HostEventEditState. EditHostedEventScreen owns form controllers, validation, location picker navigation, mutation execution, snackbar, and Navigator side effects while HostEventEditScreenState owns loaded editability, schedule/policy locks, save footer state, save error display input, feedback copy, and pop-on-success policy; HostEventEditSaveRequest owns validated save payload construction; HostEventEditPrivateAccessState owns invite-only private-access watch and invite-code seed policy; HostEventEditLocationState owns selected-location display and picker initial-label state.",
-        "targetLayout": "Host Edit Event should keep route access in HostEventEditState, continue expanding HostEventEditScreenState into field values, validation, and typed callbacks, then compose provider-free form sections.",
+        "targetLayout": "Host Edit Event should keep route access in HostEventEditState, continue expanding HostEventEditScreenState into field values and validation, then compose provider-free form sections.",
         "sections": [
           {
             "id": "section.host.event_edit.route_adapter",
@@ -19751,7 +19751,7 @@
               "submit_error",
               "success_pop"
             ],
-            "migration": "HostEventEditScreenState now owns save enabled/loading/error input, feedback copy, and pop-on-success policy while HostEventEditSaveRequest owns validated save payload construction and EditHostedEventFooter renders the CatchButton dock. Continue moving typed callbacks out of the route widget."
+            "migration": "HostEventEditScreenState now owns save enabled/loading/error input, feedback copy, and pop-on-success policy while HostEventEditSaveRequest owns validated save payload construction and EditHostedEventFooter renders the CatchButton dock. HostEventEditIntent owns typed route callback payloads."
           }
         ]
       },
@@ -19769,7 +19769,7 @@
         {
           "id": "DS-HOST-EVENT-EDIT-003",
           "status": "open",
-          "nextAction": "HostEventEditScreenState now owns loaded editability, schedule/policy locks, save footer state, save error input, feedback copy, and pop-on-success policy. HostEventEditSaveRequest owns validated save payload construction, HostEventEditPrivateAccessState owns invite-only private-access watch and invite-code seed policy, and HostEventEditLocationState owns selected-location display and picker initial-label state. Remaining adapter work is validation, field display values, and typed callbacks so the screen no longer owns form-side effects."
+          "nextAction": "HostEventEditScreenState now owns loaded editability, schedule/policy locks, save footer state, save error input, feedback copy, and pop-on-success policy. HostEventEditSaveRequest owns validated save payload construction, HostEventEditPrivateAccessState owns invite-only private-access watch and invite-code seed policy, HostEventEditLocationState owns selected-location display and picker initial-label state, and HostEventEditIntent owns typed route callback payloads. Remaining adapter work is validation and field display values so the screen no longer owns form-side effects."
         },
         {
           "id": "DS-HOST-EVENT-EDIT-004",
