@@ -331,6 +331,37 @@ void main() {
     expect(empty.pickerInitialLabel, isNull);
   });
 
+  test('HostEventEditScheduleValidationState maps start-time validation', () {
+    final now = DateTime(2026, 5, 22, 7);
+
+    final future = HostEventEditScheduleValidationState.from(
+      scheduleLocked: false,
+      selectedStartDateTime: now.add(const Duration(hours: 1)),
+      now: now,
+      invalidScheduleMessage: 'Event start must be in the future.',
+    );
+    expect(future.isValid, isTrue);
+    expect(future.errorText, isNull);
+
+    final past = HostEventEditScheduleValidationState.from(
+      scheduleLocked: false,
+      selectedStartDateTime: now.subtract(const Duration(minutes: 1)),
+      now: now,
+      invalidScheduleMessage: 'Event start must be in the future.',
+    );
+    expect(past.isValid, isFalse);
+    expect(past.errorText, 'Event start must be in the future.');
+
+    final locked = HostEventEditScheduleValidationState.from(
+      scheduleLocked: true,
+      selectedStartDateTime: now.subtract(const Duration(days: 1)),
+      now: now,
+      invalidScheduleMessage: 'Event start must be in the future.',
+    );
+    expect(locked.isValid, isTrue);
+    expect(locked.errorText, isNull);
+  });
+
   test('HostEventEdit intents carry typed callback payloads', () {
     expect(const HostEventEditDurationChangedIntent(75).durationMinutes, 75);
     expect(const HostEventEditMeetingPointChangedIntent('Gate').value, 'Gate');

@@ -158,6 +158,28 @@ class HostEventEditLocationState {
   }
 }
 
+@immutable
+class HostEventEditScheduleValidationState {
+  const HostEventEditScheduleValidationState({required this.errorText});
+
+  final String? errorText;
+
+  bool get isValid => errorText == null;
+
+  factory HostEventEditScheduleValidationState.from({
+    required bool scheduleLocked,
+    required DateTime selectedStartDateTime,
+    required DateTime now,
+    required String invalidScheduleMessage,
+  }) {
+    return HostEventEditScheduleValidationState(
+      errorText: scheduleLocked || selectedStartDateTime.isAfter(now)
+          ? null
+          : invalidScheduleMessage,
+    );
+  }
+}
+
 sealed class HostEventEditIntent {
   const HostEventEditIntent();
 }

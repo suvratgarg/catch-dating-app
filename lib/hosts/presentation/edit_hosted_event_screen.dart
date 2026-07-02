@@ -731,7 +731,10 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
       title: 'Event date',
     );
     if (picked == null) return;
-    final scheduleError = _scheduleErrorFor(picked, _selectedStartTime);
+    final scheduleError = _scheduleValidationFor(
+      picked,
+      _selectedStartTime,
+    ).errorText;
     setState(() {
       _selectedDate = DateUtils.dateOnly(picked);
       _dateController.text = _formatDate(_selectedDate);
@@ -746,7 +749,10 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
       title: 'Start time',
     );
     if (picked == null) return;
-    final scheduleError = _scheduleErrorFor(_selectedDate, picked);
+    final scheduleError = _scheduleValidationFor(
+      _selectedDate,
+      picked,
+    ).errorText;
     setState(() {
       _selectedStartTime = picked;
       _startTimeController.text = AppTimeFormatters.clockTime(
@@ -789,15 +795,24 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
     }
   }
 
-  String? _scheduleErrorFor(DateTime date, TimeOfDay startTime) {
-    final startsAt = DateTime(
-      date.year,
-      date.month,
-      date.day,
-      startTime.hour,
-      startTime.minute,
+  HostEventEditScheduleValidationState _scheduleValidationFor(
+    DateTime date,
+    TimeOfDay startTime, {
+    bool scheduleLocked = false,
+  }) {
+    return HostEventEditScheduleValidationState.from(
+      scheduleLocked: scheduleLocked,
+      selectedStartDateTime: DateTime(
+        date.year,
+        date.month,
+        date.day,
+        startTime.hour,
+        startTime.minute,
+      ),
+      now: _now,
+      invalidScheduleMessage:
+          const HostEventEditSaveOutcomeState.updated().invalidScheduleMessage,
     );
-    return startsAt.isAfter(_now) ? null : 'Event start must be in the future.';
   }
 
   void _handleIntent(HostEventEditIntent intent) {
@@ -860,12 +875,13 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
       );
       return;
     }
-    if (!screenState.scheduleLocked &&
-        _scheduleErrorFor(_selectedDate, _selectedStartTime) != null) {
-      setState(
-        () =>
-            _scheduleErrorText = screenState.saveOutcome.invalidScheduleMessage,
-      );
+    final scheduleValidation = _scheduleValidationFor(
+      _selectedDate,
+      _selectedStartTime,
+      scheduleLocked: screenState.scheduleLocked,
+    );
+    if (!scheduleValidation.isValid) {
+      setState(() => _scheduleErrorText = scheduleValidation.errorText);
       return;
     }
 
