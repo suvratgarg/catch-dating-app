@@ -10,21 +10,21 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1159,
-    "widgetClasses": 1054,
+    "total": 1160,
+    "widgetClasses": 1055,
     "stateClasses": 105,
-    "publicClasses": 1052,
+    "publicClasses": 1053,
     "privateClasses": 107,
     "byRole": {
       "atom": 48,
-      "composition": 320,
+      "composition": 321,
       "feature-adapter": 318,
       "pattern": 14,
       "screen": 354,
       "widget-state": 105
     },
     "byDecision": {
-      "keep-canonical-contract": 125,
+      "keep-canonical-contract": 126,
       "keep-public-cataloged": 880,
       "keep-widget-state": 105,
       "review-catalog-coverage": 5,
@@ -33,7 +33,7 @@
     },
     "byCatalogStatus": {
       "cataloged": 849,
-      "contracted": 125,
+      "contracted": 126,
       "not-applicable": 105,
       "route-covered": 72,
       "uncataloged": 8
@@ -2912,6 +2912,29 @@
       "publicApi": true,
       "catalogStatus": "contracted",
       "contractId": "catch.bottom_dock",
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "keep-canonical-contract",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "CatchBottomDockCta",
+      "file": "lib/core/widgets/catch_bottom_dock.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.bottom_dock",
+      "publicApi": true,
+      "catalogStatus": "contracted",
+      "contractId": "catch.bottom_dock.cta",
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",

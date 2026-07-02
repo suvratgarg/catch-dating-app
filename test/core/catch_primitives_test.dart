@@ -235,12 +235,32 @@ void main() {
         ),
       );
 
+      expect(find.byType(CatchBottomDockCta), findsOneWidget);
       final button = tester.widget<CatchButton>(
         find.widgetWithText(CatchButton, 'Join event'),
       );
       expect(button.accentColor, accent);
     },
   );
+
+  testWidgets('CatchBottomDockCta renders catch line and footnote', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        CatchBottomDockCta(
+          label: 'Confirm',
+          onPressed: () {},
+          catchLine: 'free to join',
+          footnote: 'No charge until approval.',
+        ),
+      ),
+    );
+
+    expect(find.text('Confirm'), findsOneWidget);
+    expect(find.text('FREE TO JOIN'), findsOneWidget);
+    expect(find.text('No charge until approval.'), findsOneWidget);
+  });
 
   testWidgets('CatchIconButton renders handoff icon button variants', (
     tester,

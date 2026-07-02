@@ -70,7 +70,19 @@ class CatchBottomDock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (variant == CatchBottomDockVariant.cta) {
-      return _buildCta(context);
+      return CatchBottomDockCta(
+        label: label!,
+        onPressed: onPressed,
+        leadingContent: leadingContent,
+        buttonKey: buttonKey,
+        isLoading: isLoading,
+        backgroundColor: backgroundColor,
+        dividerColor: dividerColor,
+        buttonAccentColor: buttonAccentColor,
+        catchLine: catchLine,
+        catchLineAccent: catchLineAccent,
+        footnote: footnote,
+      );
     }
 
     final t = CatchTokens.of(context);
@@ -85,8 +97,38 @@ class CatchBottomDock extends StatelessWidget {
     if (!includeSafeArea) return dock;
     return SafeArea(child: dock);
   }
+}
 
-  Widget _buildCta(BuildContext context) {
+class CatchBottomDockCta extends StatelessWidget {
+  const CatchBottomDockCta({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.leadingContent,
+    this.buttonKey,
+    this.isLoading = false,
+    this.backgroundColor,
+    this.dividerColor,
+    this.buttonAccentColor,
+    this.catchLine,
+    this.catchLineAccent,
+    this.footnote,
+  });
+
+  final String label;
+  final VoidCallback? onPressed;
+  final Widget? leadingContent;
+  final Key? buttonKey;
+  final bool isLoading;
+  final Color? backgroundColor;
+  final Color? dividerColor;
+  final Color? buttonAccentColor;
+  final String? catchLine;
+  final Color? catchLineAccent;
+  final String? footnote;
+
+  @override
+  Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
 
@@ -141,7 +183,7 @@ class CatchBottomDock extends StatelessWidget {
                     Expanded(
                       child: CatchButton(
                         key: buttonKey,
-                        label: label!,
+                        label: label,
                         onPressed: onPressed,
                         size: CatchButtonSize.lg,
                         isLoading: isLoading,

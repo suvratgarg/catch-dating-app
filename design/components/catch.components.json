@@ -6217,7 +6217,20 @@
           "CatchIcons.sparkle",
           "CatchTextStyles.monoLabel"
         ],
-        "goldens": []
+        "goldens": [],
+        "members": [
+          {
+            "id": "catch.bottom_dock.cta",
+            "symbol": "CatchBottomDockCta",
+            "summary": "Direct sticky CTA footer renderer used by CatchBottomDock.cta.",
+            "states": [
+              "default",
+              "leading-content",
+              "catch-line-footnote"
+            ],
+            "file": "lib/core/widgets/catch_bottom_dock.dart"
+          }
+        ]
       },
       "handoff": {
         "allowedChildren": [

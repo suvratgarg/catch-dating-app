@@ -4999,6 +4999,48 @@ Widget catchBottomDockContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
+  type: CatchBottomDockCta,
+  path: '[Core primitives]/Product composites',
+)
+Widget catchBottomDockCtaContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'CatchBottomDockCta',
+    contractId: 'catch.bottom_dock.cta',
+    states: const ['default', 'leading-content', 'catch-line-footnote'],
+    children: [
+      _StateCard(
+        label: 'default',
+        child: _DockFrame(
+          child: CatchBottomDockCta(label: 'Book your spot', onPressed: _noop),
+        ),
+      ),
+      _StateCard(
+        label: 'leading-content',
+        child: _DockFrame(
+          child: CatchBottomDockCta(
+            label: 'Join waitlist',
+            leadingContent: const CatchBadge(label: '4 left'),
+            onPressed: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'catch-line-footnote',
+        child: _DockFrame(
+          child: CatchBottomDockCta(
+            label: 'Confirm',
+            catchLine: 'FREE TO JOIN',
+            footnote: 'No charge until the host approves.',
+            onPressed: _noop,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
   type: CatchEventCard,
   path: '[Core primitives]/Product composites',
 )
