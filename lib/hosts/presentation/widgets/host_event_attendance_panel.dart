@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -553,11 +554,223 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final children = switch (mode) {
-      HostEventParticipantsMode.setup => _setupChildren(context),
-      HostEventParticipantsMode.live => _liveChildren(context),
-      HostEventParticipantsMode.report => _reportChildren(context),
-    };
+    late final Widget section;
+    switch (mode) {
+      case HostEventParticipantsMode.setup:
+        final rosterState = HostRosterDisplayState.setup(
+          usesRequestApproval: usesRequestApproval,
+          attendeeIds: viewModel.attendeeIds,
+          waitlistedIds: viewModel.waitlistedIds,
+          totalCount: viewModel.totalCount,
+          capacityLimit: viewModel.event.capacityLimit,
+          waitlistCount: viewModel.waitlistCount,
+          participationsByUid: viewModel.participationsByUid,
+          profiles: profiles,
+          searchQuery: searchQuery,
+          selectedFilter: selectedFilter,
+        );
+        section = Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (showHeader) ...[
+              HostRosterFilterHeader(
+                title: 'Participation',
+                subtitle: usesRequestApproval
+                    ? 'Review profiles and approve requests before launch.'
+                    : 'Review booking status before launch.',
+                filters: rosterState.filters,
+                selectedFilter: rosterState.activeFilter,
+                onFilterChanged: onFilterChanged,
+              ),
+              gapH12,
+            ],
+            if (rosterState.showBulkOfferAction) ...[
+              HostWaitlistBulkOfferAction(
+                count: rosterState.bulkOfferCount,
+                candidateCount: rosterState.offerableWaitlistIds.length,
+                isPending: mutationState.waitlistOfferPending,
+                onOffer: () =>
+                    actions.createWaitlistOffers(rosterState.bulkOfferIds),
+              ),
+              gapH12,
+            ],
+            HostRosterSearchBar(
+              value: searchQuery,
+              label: 'Search people',
+              onChanged: onSearchChanged,
+            ),
+            gapH14,
+            CatchRosterTable(
+              columns: const ['Guest', 'Signal', 'Host action'],
+              showEmpty: rosterState.rowIds.isEmpty,
+              emptyTitle: rosterState.emptyTitle,
+              emptyMessage: rosterState.emptyMessage,
+              rows: [
+                for (final uid in rosterState.rowIds)
+                  _setupRow(
+                    uid,
+                    usesRequestApproval: usesRequestApproval,
+                    requestActionPending: mutationState.isRequestActionPending(
+                      uid,
+                    ),
+                    offerActionPending: mutationState.isWaitlistOfferPending(
+                      uid,
+                    ),
+                  ),
+              ],
+            ),
+          ],
+        );
+      case HostEventParticipantsMode.live:
+        final rosterState = HostRosterDisplayState.live(
+          usesRequestApproval: usesRequestApproval,
+          attendeeIds: viewModel.attendeeIds,
+          attendedIds: viewModel.attendedIds,
+          waitlistedIds: viewModel.waitlistedIds,
+          totalCount: viewModel.totalCount,
+          capacityLimit: viewModel.event.capacityLimit,
+          participationsByUid: viewModel.participationsByUid,
+          profiles: profiles,
+          searchQuery: searchQuery,
+          selectedFilter: selectedFilter,
+        );
+        section = Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            HostRosterFilterHeader(
+              title: showHeader ? 'Check-in board' : null,
+              subtitle: showHeader
+                  ? 'Use the status tiles to focus the roster as people arrive.'
+                  : null,
+              filters: rosterState.filters,
+              selectedFilter: rosterState.activeFilter,
+              onFilterChanged: onFilterChanged,
+            ),
+            gapH12,
+            if (rosterState.showBulkOfferAction) ...[
+              HostWaitlistBulkOfferAction(
+                count: rosterState.bulkOfferCount,
+                candidateCount: rosterState.offerableWaitlistIds.length,
+                isPending: mutationState.waitlistOfferPending,
+                onOffer: () =>
+                    actions.createWaitlistOffers(rosterState.bulkOfferIds),
+              ),
+              gapH12,
+            ],
+            HostRosterSearchBar(
+              value: searchQuery,
+              label: 'Search roster',
+              onChanged: onSearchChanged,
+            ),
+            gapH14,
+            CatchRosterTable(
+              columns: const ['Guest', 'Status', 'Host action'],
+              showEmpty: rosterState.rowIds.isEmpty,
+              emptyTitle: rosterState.emptyTitle,
+              emptyMessage: rosterState.emptyMessage,
+              rows: [
+                for (final uid in rosterState.rowIds)
+                  _liveRow(
+                    uid,
+                    usesRequestApproval: usesRequestApproval,
+                    attendanceActionPending: mutationState
+                        .isAttendanceActionPending(uid),
+                    offerActionPending: mutationState.isWaitlistOfferPending(
+                      uid,
+                    ),
+                  ),
+              ],
+            ),
+          ],
+        );
+      case HostEventParticipantsMode.report:
+        final t = CatchTokens.of(context);
+        final reportSummary = HostReportSummaryDisplayState.resolve(
+          totalCount: viewModel.totalCount,
+          checkedInCount: viewModel.checkedInCount,
+          waitlistCount: viewModel.waitlistCount,
+          priceInPaise: viewModel.event.priceInPaise,
+          currencyCode: viewModel.event.currency,
+        );
+        final rosterState = HostRosterDisplayState.report(
+          attendeeIds: viewModel.attendeeIds,
+          attendedIds: viewModel.attendedIds,
+          waitlistedIds: viewModel.waitlistedIds,
+          totalCount: viewModel.totalCount,
+          waitlistCount: viewModel.waitlistCount,
+          profiles: profiles,
+          searchQuery: searchQuery,
+          selectedFilter: selectedFilter,
+        );
+        section = Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (showHeader) ...[
+              HostRosterFilterHeader(
+                title: 'Event report',
+                subtitle:
+                    'Attendance, payout, and export-ready roster history.',
+                filters: rosterState.filters,
+                selectedFilter: rosterState.activeFilter,
+                onFilterChanged: onFilterChanged,
+              ),
+              gapH12,
+            ],
+            HostRosterSearchBar(
+              value: searchQuery,
+              label: 'Search roster',
+              onChanged: onSearchChanged,
+            ),
+            gapH14,
+            CatchRosterTable(
+              columns: const ['Name', 'Attendance', 'Payment'],
+              showEmpty: rosterState.rowIds.isEmpty,
+              emptyTitle: rosterState.emptyTitle,
+              emptyMessage: rosterState.emptyMessage,
+              rows: [for (final uid in rosterState.rowIds) _reportRow(uid)],
+            ),
+            gapH12,
+            CatchSurface(
+              padding: CatchInsets.compactControlContent,
+              borderColor: t.line,
+              radius: CatchRadius.md,
+              backgroundColor: t.raised,
+              child: Text(
+                reportSummary.summary,
+                style: CatchTextStyles.supporting(context, color: t.ink2),
+              ),
+            ),
+            gapH12,
+            if (mutationState.reportExportError != null) ...[
+              CatchErrorBanner.fromError(
+                mutationState.reportExportError!,
+                context: AppErrorContext.event,
+              ),
+              gapH12,
+            ],
+            Row(
+              children: [
+                Expanded(
+                  child: HostExportReportButton(
+                    label: 'Ops CSV',
+                    isExporting: mutationState.opsReportExportPending,
+                    onExport: actions.shareOpsReport,
+                  ),
+                ),
+                gapW10,
+                Expanded(
+                  child: HostExportReportButton(
+                    label: 'Revenue CSV',
+                    primary: true,
+                    isExporting: mutationState.revenueReportExportPending,
+                    onExport: actions.shareRevenueReport,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+    }
 
     return ListView(
       shrinkWrap: !scrollable,
@@ -565,215 +778,9 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
       physics: scrollable
           ? const AlwaysScrollableScrollPhysics()
           : const NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.only(bottom: scrollable ? CatchSpacing.s6 : 0),
-      children: children,
+      padding: scrollable ? CatchInsets.scrollEnd : EdgeInsets.zero,
+      children: [section],
     );
-  }
-
-  List<Widget> _setupChildren(BuildContext context) {
-    final rosterState = HostRosterDisplayState.setup(
-      usesRequestApproval: usesRequestApproval,
-      attendeeIds: viewModel.attendeeIds,
-      waitlistedIds: viewModel.waitlistedIds,
-      totalCount: viewModel.totalCount,
-      capacityLimit: viewModel.event.capacityLimit,
-      waitlistCount: viewModel.waitlistCount,
-      participationsByUid: viewModel.participationsByUid,
-      profiles: profiles,
-      searchQuery: searchQuery,
-      selectedFilter: selectedFilter,
-    );
-
-    return [
-      if (showHeader) ...[
-        HostRosterFilterHeader(
-          title: 'Participation',
-          subtitle: usesRequestApproval
-              ? 'Review profiles and approve requests before launch.'
-              : 'Review booking status before launch.',
-          filters: rosterState.filters,
-          selectedFilter: rosterState.activeFilter,
-          onFilterChanged: onFilterChanged,
-        ),
-        gapH12,
-      ],
-      if (rosterState.showBulkOfferAction) ...[
-        HostWaitlistBulkOfferAction(
-          count: rosterState.bulkOfferCount,
-          candidateCount: rosterState.offerableWaitlistIds.length,
-          isPending: mutationState.waitlistOfferPending,
-          onOffer: () => actions.createWaitlistOffers(rosterState.bulkOfferIds),
-        ),
-        gapH12,
-      ],
-      HostRosterSearchBar(
-        value: searchQuery,
-        label: 'Search people',
-        onChanged: onSearchChanged,
-      ),
-      gapH14,
-      CatchRosterTable(
-        columns: const ['Guest', 'Signal', 'Host action'],
-        showEmpty: rosterState.rowIds.isEmpty,
-        emptyTitle: rosterState.emptyTitle,
-        emptyMessage: rosterState.emptyMessage,
-        rows: [
-          for (final uid in rosterState.rowIds)
-            _setupRow(
-              uid,
-              usesRequestApproval: usesRequestApproval,
-              requestActionPending: mutationState.isRequestActionPending(uid),
-              offerActionPending: mutationState.isWaitlistOfferPending(uid),
-            ),
-        ],
-      ),
-    ];
-  }
-
-  List<Widget> _liveChildren(BuildContext context) {
-    final rosterState = HostRosterDisplayState.live(
-      usesRequestApproval: usesRequestApproval,
-      attendeeIds: viewModel.attendeeIds,
-      attendedIds: viewModel.attendedIds,
-      waitlistedIds: viewModel.waitlistedIds,
-      totalCount: viewModel.totalCount,
-      capacityLimit: viewModel.event.capacityLimit,
-      participationsByUid: viewModel.participationsByUid,
-      profiles: profiles,
-      searchQuery: searchQuery,
-      selectedFilter: selectedFilter,
-    );
-
-    return [
-      HostRosterFilterHeader(
-        title: showHeader ? 'Check-in board' : null,
-        subtitle: showHeader
-            ? 'Use the status tiles to focus the roster as people arrive.'
-            : null,
-        filters: rosterState.filters,
-        selectedFilter: rosterState.activeFilter,
-        onFilterChanged: onFilterChanged,
-      ),
-      gapH12,
-      if (rosterState.showBulkOfferAction) ...[
-        HostWaitlistBulkOfferAction(
-          count: rosterState.bulkOfferCount,
-          candidateCount: rosterState.offerableWaitlistIds.length,
-          isPending: mutationState.waitlistOfferPending,
-          onOffer: () => actions.createWaitlistOffers(rosterState.bulkOfferIds),
-        ),
-        gapH12,
-      ],
-      HostRosterSearchBar(
-        value: searchQuery,
-        label: 'Search roster',
-        onChanged: onSearchChanged,
-      ),
-      gapH14,
-      CatchRosterTable(
-        columns: const ['Guest', 'Status', 'Host action'],
-        showEmpty: rosterState.rowIds.isEmpty,
-        emptyTitle: rosterState.emptyTitle,
-        emptyMessage: rosterState.emptyMessage,
-        rows: [
-          for (final uid in rosterState.rowIds)
-            _liveRow(
-              uid,
-              usesRequestApproval: usesRequestApproval,
-              attendanceActionPending: mutationState.isAttendanceActionPending(
-                uid,
-              ),
-              offerActionPending: mutationState.isWaitlistOfferPending(uid),
-            ),
-        ],
-      ),
-    ];
-  }
-
-  List<Widget> _reportChildren(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final reportSummary = HostReportSummaryDisplayState.resolve(
-      totalCount: viewModel.totalCount,
-      checkedInCount: viewModel.checkedInCount,
-      waitlistCount: viewModel.waitlistCount,
-      priceInPaise: viewModel.event.priceInPaise,
-      currencyCode: viewModel.event.currency,
-    );
-    final rosterState = HostRosterDisplayState.report(
-      attendeeIds: viewModel.attendeeIds,
-      attendedIds: viewModel.attendedIds,
-      waitlistedIds: viewModel.waitlistedIds,
-      totalCount: viewModel.totalCount,
-      waitlistCount: viewModel.waitlistCount,
-      profiles: profiles,
-      searchQuery: searchQuery,
-      selectedFilter: selectedFilter,
-    );
-
-    return [
-      if (showHeader) ...[
-        HostRosterFilterHeader(
-          title: 'Event report',
-          subtitle: 'Attendance, payout, and export-ready roster history.',
-          filters: rosterState.filters,
-          selectedFilter: rosterState.activeFilter,
-          onFilterChanged: onFilterChanged,
-        ),
-        gapH12,
-      ],
-      HostRosterSearchBar(
-        value: searchQuery,
-        label: 'Search roster',
-        onChanged: onSearchChanged,
-      ),
-      gapH14,
-      CatchRosterTable(
-        columns: const ['Name', 'Attendance', 'Payment'],
-        showEmpty: rosterState.rowIds.isEmpty,
-        emptyTitle: rosterState.emptyTitle,
-        emptyMessage: rosterState.emptyMessage,
-        rows: [for (final uid in rosterState.rowIds) _reportRow(uid)],
-      ),
-      gapH12,
-      CatchSurface(
-        padding: CatchInsets.compactControlContent,
-        borderColor: t.line,
-        radius: CatchRadius.md,
-        backgroundColor: t.raised,
-        child: Text(
-          reportSummary.summary,
-          style: CatchTextStyles.supporting(context, color: t.ink2),
-        ),
-      ),
-      gapH12,
-      if (mutationState.reportExportError != null) ...[
-        CatchErrorBanner.fromError(
-          mutationState.reportExportError!,
-          context: AppErrorContext.event,
-        ),
-        gapH12,
-      ],
-      Row(
-        children: [
-          Expanded(
-            child: HostExportReportButton(
-              label: 'Ops CSV',
-              isExporting: mutationState.opsReportExportPending,
-              onExport: actions.shareOpsReport,
-            ),
-          ),
-          gapW10,
-          Expanded(
-            child: HostExportReportButton(
-              label: 'Revenue CSV',
-              primary: true,
-              isExporting: mutationState.revenueReportExportPending,
-              onExport: actions.shareRevenueReport,
-            ),
-          ),
-        ],
-      ),
-    ];
   }
 
   CatchRosterRow _setupRow(
@@ -879,6 +886,10 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
     );
   }
 
+  String _nameFor(String uid) => profiles[uid]?.$1 ?? 'Runner';
+
+  String? _photoFor(String uid) => profiles[uid]?.$2;
+
   /// Shared waitlist action — a settled offer reads as an outcome [CatchBadge],
   /// otherwise an "Offer" button (disabled while a send is in flight).
   CatchRosterAction _waitlistOfferAction(
@@ -910,10 +921,6 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
       onPressed: () => actions.openProfile(uid),
     );
   }
-
-  String _nameFor(String uid) => profiles[uid]?.$1 ?? 'Runner';
-
-  String? _photoFor(String uid) => profiles[uid]?.$2;
 }
 
 Object? _mutationError(MutationState<dynamic> mutation) {
@@ -959,7 +966,7 @@ class HostRosterSearchBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchSection.contained(
-      padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s3),
+      padding: CatchInsets.inlineHorizontalRelaxed,
       child: CatchField.input(
         key: ValueKey('hostRosterSearch-$label'),
         title: label,
@@ -1093,7 +1100,8 @@ class HostWaitlistBulkOfferAction extends StatelessWidget {
             isLoading: isPending,
             onPressed: isPending ? null : onOffer,
           );
-          if (constraints.maxWidth < 340) {
+          if (constraints.maxWidth <
+              ComponentBreakpoints.hostWaitlistBulkOfferStackBreakpoint) {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [

@@ -426,6 +426,10 @@ abstract final class CatchInsets {
     horizontal: CatchSpacing.screenPx,
   );
 
+  /// Bottom breathing room for scrollable component bodies whose surrounding
+  /// shell already owns horizontal and top padding.
+  static const EdgeInsets scrollEnd = EdgeInsets.only(bottom: CatchSpacing.s6);
+
   /// Wider horizontal gutters for sparse auth/onboarding layouts.
   static const EdgeInsets pageHorizontalWide = EdgeInsets.symmetric(
     horizontal: CatchSpacing.s6,
