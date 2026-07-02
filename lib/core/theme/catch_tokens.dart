@@ -508,6 +508,12 @@ abstract final class CatchInsets {
   /// Form-step padding with more bottom space for final/action-heavy steps.
   static const EdgeInsets formStepBodyRelaxed = pageBodyRelaxed;
 
+  /// Inline error offset below form controls inside step forms.
+  static const EdgeInsets formFieldError = EdgeInsets.only(
+    top: CatchSpacing.s1,
+    left: CatchSpacing.s1,
+  );
+
   /// Default content padding inside cards and bordered panels.
   static const EdgeInsets content = EdgeInsets.all(CatchSpacing.s4);
 

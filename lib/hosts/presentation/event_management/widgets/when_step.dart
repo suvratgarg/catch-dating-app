@@ -38,7 +38,6 @@ class WhenStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     return Form(
       key: formKey,
       autovalidateMode: autovalidateMode,
@@ -47,9 +46,8 @@ class WhenStep extends StatelessWidget {
         children: [
           const CatchFormFieldLabel(label: 'Date', large: true),
           gapH8,
-          _buildPickerTile(
+          WhenStepPickerTile(
             key: CreateEventFormKeys.datePicker,
-            context: context,
             icon: CatchIcons.calendarTodayOutlined,
             value: dateController.text.isEmpty ? null : dateController.text,
             placeholder: 'Select a date',
@@ -59,27 +57,14 @@ class WhenStep extends StatelessWidget {
             validator: (_) =>
                 dateController.text.isEmpty ? 'Please select a date' : null,
             builder: (field) => field.hasError
-                ? Padding(
-                    padding: const EdgeInsets.only(
-                      top: CatchSpacing.s1,
-                      left: CatchSpacing.s1,
-                    ),
-                    child: Text(
-                      field.errorText!,
-                      style: CatchTextStyles.supporting(
-                        context,
-                        color: t.primary,
-                      ),
-                    ),
-                  )
+                ? WhenStepFieldError(text: field.errorText!)
                 : const SizedBox.shrink(),
           ),
           gapH20,
           const CatchFormFieldLabel(label: 'Start time', large: true),
           gapH8,
-          _buildPickerTile(
+          WhenStepPickerTile(
             key: CreateEventFormKeys.timePicker,
-            context: context,
             icon: CatchIcons.scheduleOutlined,
             value: startTimeController.text.isEmpty
                 ? null
@@ -91,32 +76,11 @@ class WhenStep extends StatelessWidget {
             validator: (_) =>
                 startTimeController.text.isEmpty ? 'Required' : null,
             builder: (field) => field.hasError
-                ? Padding(
-                    padding: const EdgeInsets.only(
-                      top: CatchSpacing.s1,
-                      left: CatchSpacing.s1,
-                    ),
-                    child: Text(
-                      field.errorText!,
-                      style: CatchTextStyles.supporting(
-                        context,
-                        color: t.primary,
-                      ),
-                    ),
-                  )
+                ? WhenStepFieldError(text: field.errorText!)
                 : const SizedBox.shrink(),
           ),
           if (scheduleErrorText != null)
-            Padding(
-              padding: const EdgeInsets.only(
-                top: CatchSpacing.s1,
-                left: CatchSpacing.s1,
-              ),
-              child: Text(
-                scheduleErrorText!,
-                style: CatchTextStyles.supporting(context, color: t.primary),
-              ),
-            ),
+            WhenStepFieldError(text: scheduleErrorText!),
           gapH20,
           const CatchFormFieldLabel(label: 'Duration', large: true),
           gapH8,
@@ -132,18 +96,26 @@ class WhenStep extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildPickerTile({
-    required Key key,
-    required BuildContext context,
-    required IconData icon,
-    required String? value,
-    required String placeholder,
-    required VoidCallback onTap,
-  }) {
+class WhenStepPickerTile extends StatelessWidget {
+  const WhenStepPickerTile({
+    super.key,
+    required this.icon,
+    required this.value,
+    required this.placeholder,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String? value;
+  final String placeholder;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return CatchControlShell(
-      key: key,
       onTap: onTap,
       tone: CatchControlTone.raised,
       padding: CatchControlMetrics.contentPadding(CatchControlSize.md),
@@ -166,6 +138,24 @@ class WhenStep extends StatelessWidget {
             color: t.ink3,
           ),
         ],
+      ),
+    );
+  }
+}
+
+class WhenStepFieldError extends StatelessWidget {
+  const WhenStepFieldError({super.key, required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Padding(
+      padding: CatchInsets.formFieldError,
+      child: Text(
+        text,
+        style: CatchTextStyles.supporting(context, color: t.primary),
       ),
     );
   }
