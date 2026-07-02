@@ -347,11 +347,6 @@
       "rule": "crossFeaturePresentationImport",
       "path": "lib/user_profile/presentation/widgets/profile_tab.dart",
       "import": "package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart"
-    },
-    {
-      "rule": "domainFrameworkImport",
-      "path": "lib/hosts/domain/host_profile.dart",
-      "import": "package:cloud_firestore/cloud_firestore.dart"
     }
   ]
 }

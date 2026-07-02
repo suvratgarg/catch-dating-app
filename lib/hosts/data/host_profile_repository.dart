@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/domain/host_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,7 +18,7 @@ class HostProfileRepository {
 
   Stream<HostProfile?> watchHostProfile(String uid) => withBackendErrorStream(
     () => _hostProfileRef(uid).snapshots().map(
-      (doc) => doc.exists ? HostProfile.fromDocument(doc) : null,
+      (doc) => doc.exists ? _hostProfileFromDocument(doc) : null,
     ),
     context: const BackendErrorContext(
       service: BackendService.firestore,
@@ -65,9 +66,44 @@ class HostProfileRepository {
   );
 }
 
+HostProfile _hostProfileFromDocument(
+  DocumentSnapshot<Map<String, dynamic>> doc,
+) {
+  final data = doc.data() ?? const <String, dynamic>{};
+  return HostProfile(
+    uid: doc.id,
+    displayName: _string(data['displayName']) ?? 'Catch Host',
+    avatarUrl: _string(data['avatarUrl']),
+    roleTitle: _string(data['roleTitle']),
+    bio: _string(data['bio']),
+    status: _status(data['status']),
+    verified: data['verified'] == true,
+    linkedClubIds: [
+      for (final value in data['linkedClubIds'] as List? ?? const [])
+        if (value is String && value.isNotEmpty) value,
+    ],
+    createdAt: nullableDateTimeFromFirestoreValue(data['createdAt']),
+    updatedAt: nullableDateTimeFromFirestoreValue(data['updatedAt']),
+  );
+}
+
 String? _nullableTrimmed(String? value) {
   final normalized = value?.trim();
   return normalized == null || normalized.isEmpty ? null : normalized;
+}
+
+String? _string(Object? value) {
+  if (value is! String) return null;
+  final normalized = value.trim();
+  return normalized.isEmpty ? null : normalized;
+}
+
+HostProfileStatus _status(Object? value) {
+  return switch (value) {
+    'pending' => HostProfileStatus.pending,
+    'suspended' => HostProfileStatus.suspended,
+    _ => HostProfileStatus.active,
+  };
 }
 
 final hostProfileRepositoryProvider = Provider<HostProfileRepository>((ref) {
