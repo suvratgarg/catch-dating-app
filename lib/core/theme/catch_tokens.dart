@@ -736,6 +736,19 @@ abstract final class CatchInsets {
     bottom: CatchSpacing.micro10,
   );
 
+  /// Top alignment offset for small hint dots beside multiline detail copy.
+  static const EdgeInsets detailHintDotTop = EdgeInsets.only(
+    top: CatchSpacing.s1,
+  );
+
+  /// Safe-area minimum padding for fixed loading CTAs on detail screens.
+  static const EdgeInsets detailLoadingCtaSafeArea = EdgeInsets.fromLTRB(
+    CatchLayout.detailScreenHorizontalPadding,
+    CatchSpacing.s3,
+    CatchLayout.detailScreenHorizontalPadding,
+    CatchSpacing.s3,
+  );
+
   /// Default content padding inside cards and bordered panels.
   static const EdgeInsets cardContent = content;
 

@@ -1508,6 +1508,44 @@ void main() {
       expect(find.text('Event removed.'), findsOneWidget);
     });
 
+    testWidgets('route saved event button surfaces save failures', (
+      tester,
+    ) async {
+      final fakeSavedEventRepository = FakeSavedEventRepository()
+        ..throwOnSave = true;
+
+      await pumpEventsTestApp(
+        tester,
+        const EventDetailScreen(clubId: 'club-1', eventId: 'event-1'),
+        overrides: [
+          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          eventDetailViewModelProvider('event-1').overrideWith(
+            (ref) => AsyncData(
+              EventDetailViewModel(
+                event: buildEvent(),
+                userProfile: buildUser(),
+                reviews: const [],
+                isAuthenticated: true,
+                isHost: false,
+                isSaved: false,
+                participation: null,
+              ),
+            ),
+          ),
+          paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
+          savedEventRepositoryProvider.overrideWithValue(
+            fakeSavedEventRepository,
+          ),
+        ],
+      );
+
+      await tester.tap(find.byTooltip('Save event'));
+      await pumpFeatureUi(tester);
+
+      expect(fakeSavedEventRepository.savedUid, isNull);
+      expect(find.text('save failed'), findsOneWidget);
+    });
+
     testWidgets('location tap opens the in-app event map', (tester) async {
       final event = buildEvent(
         meetingPoint: 'Race Course Road main gate',

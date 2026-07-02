@@ -12,6 +12,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
@@ -174,85 +175,91 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
         ),
       );
 
-      return Scaffold(
-        backgroundColor: style.pageBackground,
-        body: EventDetailBody(
-          event: vm.event,
-          userProfile: vm.userProfile,
-          clubId: widget.clubId,
-          reviews: vm.reviews,
-          isAuthenticated: vm.isAuthenticated,
-          sectionVisibility: sectionVisibility,
-          isSaved: vm.isSaved,
-          participation: vm.participation,
-          savePending: saveMutation.isPending,
-          surfaceStyle: style,
-          onBack: () => Navigator.of(context).pop(),
-          onShare: shareEvent,
-          showAddToCalendar: _canAddEventToCalendar(
+      return CatchMutationErrorListener(
+        mutation: EventDetailController.toggleSavedEventMutation,
+        errorContext: AppErrorContext.event,
+        child: Scaffold(
+          backgroundColor: style.pageBackground,
+          body: EventDetailBody(
             event: vm.event,
-            participation: vm.participation,
-            isHost: sectionVisibility.renderSocialAsHost,
-            now: now,
-          ),
-          onAddToCalendar: (buttonContext) =>
-              unawaited(_addEventToCalendar(buttonContext, vm.event, calendar)),
-          onToggleSaved: () => _toggleSavedEvent(
-            context,
-            ref,
-            event: vm.event,
-            clubId: widget.clubId,
             userProfile: vm.userProfile,
-            isAuthenticated: vm.isAuthenticated,
-            isSaved: vm.isSaved,
-          ),
-          companionState: companionState,
-          hostState: hostState,
-          socialState: socialState,
-          onLocationTap: vm.event.hasExactStartingPoint
-              ? () => context.pushNamed(
-                  Routes.eventLocationMapScreen.name,
-                  pathParameters: {'eventId': vm.event.id},
-                )
-              : null,
-          onOpenCompanion: () => context.pushNamed(
-            Routes.eventSuccessCompanionScreen.name,
-            pathParameters: {'clubId': widget.clubId, 'eventId': vm.event.id},
-            extra: vm.event,
-          ),
-          onRetryCompanion: () =>
-              ref.invalidate(watchEventSuccessPlanProvider(vm.event.id)),
-          onViewClub: (clubId) => context.pushNamed(
-            Routes.clubDetailScreen.name,
-            pathParameters: {'clubId': clubId},
-          ),
-          onMessageHost: (clubId, hostUid) => unawaited(
-            _messageHost(context, ref, clubId: clubId, hostUid: hostUid),
-          ),
-          onRetryHosts: () => ref.invalidate(fetchClubProvider(widget.clubId)),
-          inviteCode: widget.inviteCode,
-          inviteLinkId: widget.inviteLinkId,
-          now: now,
-          presentationMode: widget.presentationMode,
-          heroTag: widget.heroTag,
-        ),
-        bottomNavigationBar: _eventDetailBottomNavigationBar(
-          event: vm.event,
-          userProfile: vm.userProfile,
-          clubId: widget.clubId,
-          isAuthenticated: vm.isAuthenticated,
-          participation: vm.participation,
-          inviteCode: widget.inviteCode,
-          inviteLinkId: widget.inviteLinkId,
-          now: now,
-          darkSurface: isSpotlightDark,
-          sectionVisibility: sectionVisibility,
-          onGuestBook: () => _openEventSignIn(
-            context,
             clubId: widget.clubId,
-            eventId: vm.event.id,
+            reviews: vm.reviews,
+            isAuthenticated: vm.isAuthenticated,
+            sectionVisibility: sectionVisibility,
+            isSaved: vm.isSaved,
+            participation: vm.participation,
+            savePending: saveMutation.isPending,
+            surfaceStyle: style,
+            onBack: () => Navigator.of(context).pop(),
+            onShare: shareEvent,
+            showAddToCalendar: _canAddEventToCalendar(
+              event: vm.event,
+              participation: vm.participation,
+              isHost: sectionVisibility.renderSocialAsHost,
+              now: now,
+            ),
+            onAddToCalendar: (buttonContext) => unawaited(
+              _addEventToCalendar(buttonContext, vm.event, calendar),
+            ),
+            onToggleSaved: () => _toggleSavedEvent(
+              context,
+              ref,
+              event: vm.event,
+              clubId: widget.clubId,
+              userProfile: vm.userProfile,
+              isAuthenticated: vm.isAuthenticated,
+              isSaved: vm.isSaved,
+            ),
+            companionState: companionState,
+            hostState: hostState,
+            socialState: socialState,
+            onLocationTap: vm.event.hasExactStartingPoint
+                ? () => context.pushNamed(
+                    Routes.eventLocationMapScreen.name,
+                    pathParameters: {'eventId': vm.event.id},
+                  )
+                : null,
+            onOpenCompanion: () => context.pushNamed(
+              Routes.eventSuccessCompanionScreen.name,
+              pathParameters: {'clubId': widget.clubId, 'eventId': vm.event.id},
+              extra: vm.event,
+            ),
+            onRetryCompanion: () =>
+                ref.invalidate(watchEventSuccessPlanProvider(vm.event.id)),
+            onViewClub: (clubId) => context.pushNamed(
+              Routes.clubDetailScreen.name,
+              pathParameters: {'clubId': clubId},
+            ),
+            onMessageHost: (clubId, hostUid) => unawaited(
+              _messageHost(context, ref, clubId: clubId, hostUid: hostUid),
+            ),
+            onRetryHosts: () =>
+                ref.invalidate(fetchClubProvider(widget.clubId)),
             inviteCode: widget.inviteCode,
             inviteLinkId: widget.inviteLinkId,
+            now: now,
+            presentationMode: widget.presentationMode,
+            heroTag: widget.heroTag,
+          ),
+          bottomNavigationBar: _eventDetailBottomNavigationBar(
+            event: vm.event,
+            userProfile: vm.userProfile,
+            clubId: widget.clubId,
+            isAuthenticated: vm.isAuthenticated,
+            participation: vm.participation,
+            inviteCode: widget.inviteCode,
+            inviteLinkId: widget.inviteLinkId,
+            now: now,
+            darkSurface: isSpotlightDark,
+            sectionVisibility: sectionVisibility,
+            onGuestBook: () => _openEventSignIn(
+              context,
+              clubId: widget.clubId,
+              eventId: vm.event.id,
+              inviteCode: widget.inviteCode,
+              inviteLinkId: widget.inviteLinkId,
+            ),
           ),
         ),
       );
@@ -382,18 +389,34 @@ void _toggleSavedEvent(
     return;
   }
 
-  EventDetailController.toggleSavedEventMutation.run(ref, (tx) async {
-    final nowSaved = await tx
-        .get(eventDetailControllerProvider.notifier)
-        .toggleSavedEvent(
-          event: event,
-          userProfile: userProfile,
-          isSaved: isSaved,
-        );
-    if (!context.mounted) return nowSaved;
-    showCatchSnackBar(context, nowSaved ? 'Event saved.' : 'Event removed.');
-    return nowSaved;
-  });
+  unawaited(
+    EventDetailController.toggleSavedEventMutation
+        .run(ref, (tx) async {
+          final nowSaved = await tx
+              .get(eventDetailControllerProvider.notifier)
+              .toggleSavedEvent(
+                event: event,
+                userProfile: userProfile,
+                isSaved: isSaved,
+              );
+          if (!context.mounted) return nowSaved;
+          showCatchSnackBar(
+            context,
+            nowSaved ? 'Event saved.' : 'Event removed.',
+          );
+          return nowSaved;
+        })
+        .catchError((Object error, StackTrace stackTrace) {
+          ref
+              .read(errorLoggerProvider)
+              .logError(
+                error,
+                stackTrace,
+                reason: 'EventDetailScreen._toggleSavedEvent failed',
+              );
+          return isSaved;
+        }),
+  );
 }
 
 Future<void> _shareEvent(
@@ -712,7 +735,7 @@ class EventDetailHintSkeleton extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(top: CatchSpacing.s1),
+                  padding: CatchInsets.detailHintDotTop,
                   child: CatchSkeleton.circle(
                     size: CatchLayout.eventDetailHintDotExtent,
                   ),
@@ -845,12 +868,7 @@ class EventDetailLoadingCta extends StatelessWidget {
       color: t.surface,
       child: SafeArea(
         top: false,
-        minimum: const EdgeInsets.fromLTRB(
-          CatchLayout.detailScreenHorizontalPadding,
-          CatchSpacing.s3,
-          CatchLayout.detailScreenHorizontalPadding,
-          CatchSpacing.s3,
-        ),
+        minimum: CatchInsets.detailLoadingCtaSafeArea,
         child: CatchSkeleton.box(
           width: double.infinity,
           height: CatchLayout.buttonLgHeight,

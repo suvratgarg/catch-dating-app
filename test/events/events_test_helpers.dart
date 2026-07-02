@@ -760,11 +760,13 @@ class FakeSavedEventRepository extends Fake implements SavedEventRepository {
   String? savedEventId;
   String? unsavedUid;
   String? unsavedEventId;
+  bool throwOnSave = false;
   final Map<String, List<Event>> savedEventDetails = {};
   final Map<String, List<saved_domain.SavedEvent>> savedEvents = {};
 
   @override
   Future<void> saveEvent({required String uid, required String eventId}) async {
+    if (throwOnSave) throw StateError('save failed');
     savedUid = uid;
     savedEventId = eventId;
   }
