@@ -313,15 +313,16 @@ class CalendarAgendaSliverSection extends StatelessWidget {
       ),
       CalendarAgendaReadyState(:final rows, :final today) =>
         EventAgendaSliverList(
-          events: [for (final row in rows) row.event],
+          agendaRows: [
+            for (final row in rows)
+              EventAgendaRow(
+                event: row.event,
+                clubName: row.clubName,
+                badgeLabel: row.badgeLabel,
+                status: _eventTileStatusFor(row.status),
+              ),
+          ],
           showClubName: true,
-          clubNameBuilder: (event) =>
-              rows.firstWhere((row) => row.event.id == event.id).clubName,
-          badgeLabelBuilder: (event) =>
-              rows.firstWhere((row) => row.event.id == event.id).badgeLabel,
-          statusBuilder: (event) => _eventTileStatusFor(
-            rows.firstWhere((row) => row.event.id == event.id).status,
-          ),
           today: today,
           preserveInputOrder: true,
           dayKeyBuilder: dayKeyBuilder,
@@ -344,26 +345,35 @@ double _calendarDateHeaderHeightFor(
   required bool expanded,
 }) {
   final scaler = MediaQuery.textScalerOf(context);
-  final monthHeight = scaler.scale(26) * 1.12;
-  final titleRowHeight = monthHeight < 36 ? 36.0 : monthHeight;
-  final weekdayHeight = scaler.scale(13) * 1.45;
-  final dateHeight = scaler.scale(13) * 1.30;
+  final monthHeight =
+      scaler.scale(CatchLayout.calendarHeaderTitleFontSize) *
+      CatchLayout.calendarHeaderTitleLineHeight;
+  final titleRowHeight = monthHeight < CatchLayout.calendarHeaderTitleMinHeight
+      ? CatchLayout.calendarHeaderTitleMinHeight
+      : monthHeight;
+  final weekdayHeight =
+      scaler.scale(CatchLayout.calendarWeekdayFontSize) *
+      CatchLayout.calendarWeekdayLineHeight;
+  final dateHeight =
+      scaler.scale(CatchLayout.calendarDateFontSize) *
+      CatchLayout.calendarDateLineHeight;
   final weekStripHeight =
       CatchLayout.calendarWeekStripVerticalInsetTotal +
       weekdayHeight +
       CatchSpacing.micro2 +
       dateHeight +
       CatchSpacing.s1 +
-      4;
+      CatchLayout.calendarWeekStripBottomInset;
   if (expanded) {
-    final monthWeekdayHeight = scaler.scale(11) * 1.30;
-    const monthDayHeight = 40.0;
+    final monthWeekdayHeight =
+        scaler.scale(CatchLayout.calendarMonthWeekdayFontSize) *
+        CatchLayout.calendarMonthWeekdayLineHeight;
     return CatchSpacing.s2 +
         titleRowHeight +
         CatchSpacing.s4 +
         monthWeekdayHeight +
         CatchSpacing.s2 +
-        (monthDayHeight * 6) +
+        CatchLayout.calendarMonthGridHeight +
         CatchLayout.calendarMonthGridGapTotal +
         CatchSpacing.s3 +
         CatchSpacing.micro2;
@@ -454,7 +464,7 @@ class CalendarDateHeaderSkeleton extends StatelessWidget {
               CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
               const Spacer(),
               CatchSkeleton.box(
-                width: CatchSpacing.s16 + CatchSpacing.s4,
+                width: CatchLayout.calendarHeaderSkeletonToggleWidth,
                 height: CatchSpacing.s8,
                 radius: CatchRadius.pill,
               ),

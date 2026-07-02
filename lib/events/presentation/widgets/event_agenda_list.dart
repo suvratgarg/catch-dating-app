@@ -17,6 +17,7 @@ class EventAgendaList extends StatelessWidget {
   const EventAgendaList({
     super.key,
     required this.events,
+    this.agendaRows,
     this.onEventSelected,
     this.badgeLabel,
     this.badgeLabelBuilder,
@@ -38,6 +39,7 @@ class EventAgendaList extends StatelessWidget {
   });
 
   final List<Event> events;
+  final List<EventAgendaRow>? agendaRows;
   final ValueChanged<Event>? onEventSelected;
   final String? badgeLabel;
   final EventBadgeLabelBuilder? badgeLabelBuilder;
@@ -58,6 +60,7 @@ class EventAgendaList extends StatelessWidget {
       slivers: [
         EventAgendaSliverList(
           events: events,
+          agendaRows: agendaRows,
           onEventSelected: onEventSelected,
           badgeLabel: badgeLabel,
           badgeLabelBuilder: badgeLabelBuilder,
@@ -80,7 +83,8 @@ class EventAgendaList extends StatelessWidget {
 class EventAgendaSliverList extends StatelessWidget {
   const EventAgendaSliverList({
     super.key,
-    required this.events,
+    this.events = const <Event>[],
+    this.agendaRows,
     this.onEventSelected,
     this.badgeLabel,
     this.badgeLabelBuilder,
@@ -102,6 +106,7 @@ class EventAgendaSliverList extends StatelessWidget {
   });
 
   final List<Event> events;
+  final List<EventAgendaRow>? agendaRows;
   final ValueChanged<Event>? onEventSelected;
   final String? badgeLabel;
   final EventBadgeLabelBuilder? badgeLabelBuilder;
@@ -118,8 +123,9 @@ class EventAgendaSliverList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final grouped = _groupEvents(
-      events,
+    final rows = agendaRows ?? _agendaRowsFromEvents();
+    final grouped = _groupAgendaRows(
+      rows,
       preserveInputOrder: preserveInputOrder,
     );
     final effectiveToday = today ?? DateTime.now();
@@ -130,13 +136,9 @@ class EventAgendaSliverList extends StatelessWidget {
           key: dayKeyBuilder?.call(entries[groupIndex].key),
           child: AgendaDayGroup(
             date: entries[groupIndex].key,
-            events: entries[groupIndex].value,
+            rows: entries[groupIndex].value,
             today: effectiveToday,
             onEventSelected: onEventSelected,
-            badgeLabel: badgeLabel,
-            badgeLabelBuilder: badgeLabelBuilder,
-            clubNameBuilder: clubNameBuilder,
-            statusBuilder: statusBuilder,
             showClubName: showClubName,
             dayLabelBottomGap: dayLabelBottomGap,
             itemGap: itemGap,
@@ -158,6 +160,32 @@ class EventAgendaSliverList extends StatelessWidget {
             ),
     );
   }
+
+  List<EventAgendaRow> _agendaRowsFromEvents() {
+    return [
+      for (final event in events)
+        EventAgendaRow(
+          event: event,
+          badgeLabel: badgeLabelBuilder?.call(event) ?? badgeLabel,
+          clubName: clubNameBuilder?.call(event),
+          status: statusBuilder?.call(event),
+        ),
+    ];
+  }
+}
+
+class EventAgendaRow {
+  const EventAgendaRow({
+    required this.event,
+    this.badgeLabel,
+    this.clubName,
+    this.status,
+  });
+
+  final Event event;
+  final String? badgeLabel;
+  final String? clubName;
+  final EventTileStatus? status;
 }
 
 class EventAgendaSliverSkeleton extends StatelessWidget {
@@ -277,7 +305,9 @@ class EventAgendaTileSkeleton extends StatelessWidget {
                       ],
                     ),
                     gapH8,
-                    CatchSkeleton.text(width: CatchLayout.skeletonTextBodyWidth),
+                    CatchSkeleton.text(
+                      width: CatchLayout.skeletonTextBodyWidth,
+                    ),
                   ],
                 ),
               ),
@@ -293,26 +323,18 @@ class AgendaDayGroup extends StatelessWidget {
   const AgendaDayGroup({
     super.key,
     required this.date,
-    required this.events,
+    required this.rows,
     required this.today,
     required this.onEventSelected,
-    required this.badgeLabel,
-    required this.badgeLabelBuilder,
-    required this.clubNameBuilder,
-    required this.statusBuilder,
     required this.showClubName,
     required this.dayLabelBottomGap,
     required this.itemGap,
   });
 
   final DateTime date;
-  final List<Event> events;
+  final List<EventAgendaRow> rows;
   final DateTime today;
   final ValueChanged<Event>? onEventSelected;
-  final String? badgeLabel;
-  final EventBadgeLabelBuilder? badgeLabelBuilder;
-  final ClubNameBuilder? clubNameBuilder;
-  final EventTileStatusBuilder? statusBuilder;
   final bool showClubName;
   final double dayLabelBottomGap;
   final double itemGap;
@@ -332,46 +354,45 @@ class AgendaDayGroup extends StatelessWidget {
           ),
         ),
         SizedBox(height: dayLabelBottomGap),
-        for (var eventIndex = 0; eventIndex < events.length; eventIndex++) ...[
+        for (var eventIndex = 0; eventIndex < rows.length; eventIndex++) ...[
           Builder(
             builder: (context) {
-              final event = events[eventIndex];
-              final effectiveBadge = badgeLabelBuilder?.call(event) ?? badgeLabel;
-              final clubName = clubNameBuilder?.call(event);
-              final status =
-                  statusBuilder?.call(event) ?? _statusForBadge(effectiveBadge);
+              final row = rows[eventIndex];
+              final event = row.event;
+              final status = row.status ?? _statusForBadge(row.badgeLabel);
               return EventAgendaTile(
                 data: EventTileData.fromEvent(
                   event: event,
                   status: status,
-                  clubName: clubName,
+                  clubName: row.clubName,
                 ),
                 showClubName: showClubName,
-                badgeLabel: effectiveBadge,
+                badgeLabel: row.badgeLabel,
                 onTap: onEventSelected == null
                     ? null
                     : () => onEventSelected!(event),
               );
             },
           ),
-          if (eventIndex < events.length - 1) SizedBox(height: itemGap),
+          if (eventIndex < rows.length - 1) SizedBox(height: itemGap),
         ],
       ],
     );
   }
 }
 
-Map<DateTime, List<Event>> _groupEvents(
-  List<Event> events, {
+Map<DateTime, List<EventAgendaRow>> _groupAgendaRows(
+  List<EventAgendaRow> rows, {
   required bool preserveInputOrder,
 }) {
   final sorted = preserveInputOrder
-      ? events
-      : ([...events]..sort((a, b) => a.startTime.compareTo(b.startTime)));
-  final grouped = <DateTime, List<Event>>{};
-  for (final event in sorted) {
-    final day = DateUtils.dateOnly(event.startTime);
-    grouped.putIfAbsent(day, () => []).add(event);
+      ? rows
+      : ([...rows]
+          ..sort((a, b) => a.event.startTime.compareTo(b.event.startTime)));
+  final grouped = <DateTime, List<EventAgendaRow>>{};
+  for (final row in sorted) {
+    final day = DateUtils.dateOnly(row.event.startTime);
+    grouped.putIfAbsent(day, () => []).add(row);
   }
   return grouped;
 }
