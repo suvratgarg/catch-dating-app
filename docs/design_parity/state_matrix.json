@@ -8477,8 +8477,8 @@
             },
             {
               "id": "DP-HOST-CLUB-EDIT-002",
-              "status": "open",
-              "nextAction": "Owner edit compares within threshold at 7.92% / 8.64. Extend HostClubEditState beyond route identity/access mode into field/media/mutation callbacks and close navigation before closing the architecture gap."
+              "status": "closed",
+              "nextAction": "Closed. Owner edit compares within threshold at 7.92% / 8.64. HostClubEditState owns route identity/access mode, while shared Host Club Create/Edit adapter state owns field/media display values, validation, submit request data, route callback intents, and submit-success close policy."
             }
           ]
         },

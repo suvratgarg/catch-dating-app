@@ -18882,7 +18882,7 @@
           "tests": [
             "test/explore/explore_widgets_test.dart"
           ],
-          "nextAction": "Host Edit Club owner edit now has a manifest-registered design reference, deterministic default/validation/media/mutation captures, and an advisory comparison within threshold at 7.92% / 8.64. Continue adapter ownership work for field/media/mutation callbacks and close navigation."
+          "nextAction": "Host Edit Club owner edit now has a manifest-registered design reference, deterministic default/validation/media/mutation captures, and an advisory comparison within threshold at 7.92% / 8.64. Shared Host Club Create/Edit adapter state owns field/media display values, validation, submit request data, route callback intents, and submit-success close policy."
         },
         {
           "id": "media_only_cohost_edit",
@@ -19184,8 +19184,8 @@
         },
         {
           "id": "DS-HOST-CLUB-EDIT-003",
-          "status": "open",
-          "nextAction": "HostClubSubmitOutcomeState now owns submit-success close-route policy shared with create. Remaining work is field/media display values, validation, mutation request data, and typed callbacks beyond HostClubEditState route identity/access mode."
+          "status": "closed",
+          "nextAction": "Closed. HostClubEditState owns route identity/access mode, while shared Host Club Create/Edit adapter state owns field/media display values, validation, submit request data, route callback intents, and submit-success close policy."
         },
         {
           "id": "DS-HOST-CLUB-EDIT-004",
