@@ -371,6 +371,15 @@ class EventSuccessHostSection extends ConsumerWidget {
     final generateGuidedRotationsMutation = ref.watch(
       EventSuccessController.generateGuidedRotationsMutation,
     );
+    final startRevealCountdownMutation = ref.watch(
+      EventSuccessController.startRevealCountdownMutation,
+    );
+    final revealRoundMutation = ref.watch(
+      EventSuccessController.revealRoundMutation,
+    );
+    final resetRevealMutation = ref.watch(
+      EventSuccessController.resetRevealMutation,
+    );
     final attendanceErrorMutation = liveRoster == null
         ? null
         : _firstMutationError(<MutationState<void>>[
@@ -533,6 +542,24 @@ class EventSuccessHostSection extends ConsumerWidget {
           _generateEventSuccessMicroPods(ref: ref, eventId: event.id),
       onGenerateGuidedRotations: () =>
           _generateEventSuccessGuidedRotations(ref: ref, eventId: event.id),
+      revealActionState: EventSuccessRevealActionState.resolve(
+        startMutation: startRevealCountdownMutation,
+        revealMutation: revealRoundMutation,
+        resetMutation: resetRevealMutation,
+      ),
+      onStartRevealCountdown: (roundIndex, _) =>
+          _startEventSuccessRevealCountdown(
+            ref: ref,
+            eventId: event.id,
+            roundIndex: roundIndex,
+          ),
+      onRevealRound: (roundIndex) => _revealEventSuccessRound(
+        ref: ref,
+        eventId: event.id,
+        roundIndex: roundIndex,
+      ),
+      onResetReveal: () =>
+          _resetEventSuccessReveal(ref: ref, eventId: event.id),
       fixtureActions: fixtureActions,
     );
   }
@@ -579,6 +606,44 @@ Future<void> _generateEventSuccessGuidedRotations({
     (tx) => tx
         .get(eventSuccessControllerProvider.notifier)
         .generateGuidedRotations(eventId: eventId),
+  );
+}
+
+Future<void> _startEventSuccessRevealCountdown({
+  required WidgetRef ref,
+  required String eventId,
+  required int roundIndex,
+}) {
+  return EventSuccessController.startRevealCountdownMutation.run(
+    ref,
+    (tx) => tx
+        .get(eventSuccessControllerProvider.notifier)
+        .startRevealCountdown(eventId: eventId, roundIndex: roundIndex),
+  );
+}
+
+Future<void> _revealEventSuccessRound({
+  required WidgetRef ref,
+  required String eventId,
+  required int roundIndex,
+}) {
+  return EventSuccessController.revealRoundMutation.run(
+    ref,
+    (tx) => tx
+        .get(eventSuccessControllerProvider.notifier)
+        .revealRound(eventId: eventId, roundIndex: roundIndex),
+  );
+}
+
+Future<void> _resetEventSuccessReveal({
+  required WidgetRef ref,
+  required String eventId,
+}) {
+  return EventSuccessController.resetRevealMutation.run(
+    ref,
+    (tx) => tx
+        .get(eventSuccessControllerProvider.notifier)
+        .resetReveal(eventId: eventId),
   );
 }
 
@@ -997,6 +1062,10 @@ class EventSuccessHostPanel extends StatefulWidget {
         const EventSuccessAssignmentGenerationActionState(),
     this.onGenerateMicroPods,
     this.onGenerateGuidedRotations,
+    this.revealActionState = const EventSuccessRevealActionState(),
+    this.onStartRevealCountdown,
+    this.onRevealRound,
+    this.onResetReveal,
     this.fixtureActions,
   });
 
@@ -1029,6 +1098,11 @@ class EventSuccessHostPanel extends StatefulWidget {
   final EventSuccessAssignmentGenerationActionState rotationsGenerationState;
   final Future<void> Function()? onGenerateMicroPods;
   final Future<void> Function()? onGenerateGuidedRotations;
+  final EventSuccessRevealActionState revealActionState;
+  final Future<void> Function(int roundIndex, int countdownSeconds)?
+  onStartRevealCountdown;
+  final Future<void> Function(int roundIndex)? onRevealRound;
+  final Future<void> Function()? onResetReveal;
   final EventSuccessHostFixtureActions? fixtureActions;
 
   @override
@@ -1122,6 +1196,10 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
           widget.fixtureActions?.onGenerateGuidedRotations,
           widget.onGenerateGuidedRotations,
         ),
+        revealActionState: widget.revealActionState,
+        onStartRevealCountdown: _startRevealCountdownCallback(),
+        onRevealRound: _revealRoundCallback(),
+        onResetReveal: _resetRevealCallback(),
         fixtureActions: widget.fixtureActions,
         shrinkWrap: shrinkWrap,
         physics: physics,
@@ -1187,6 +1265,55 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
       return () async => fixtureAction();
     }
     return productionAction;
+  }
+
+  Future<void> Function(int roundIndex, int countdownSeconds)?
+  _startRevealCountdownCallback() {
+    final fixtureAction = widget.fixtureActions?.onStartRevealCountdown;
+    final productionAction = widget.onStartRevealCountdown;
+    if (fixtureAction == null && productionAction == null) return null;
+    return (roundIndex, countdownSeconds) async {
+      await widget.onPlayLiveEffect?.call(
+        EventSuccessLiveEffectKind.countdownStart,
+      );
+      if (fixtureAction != null) {
+        fixtureAction(roundIndex, countdownSeconds);
+        return;
+      }
+      await productionAction?.call(roundIndex, countdownSeconds);
+    };
+  }
+
+  Future<void> Function(int roundIndex)? _revealRoundCallback() {
+    final fixtureAction = widget.fixtureActions?.onRevealRound;
+    final productionAction = widget.onRevealRound;
+    if (fixtureAction == null && productionAction == null) return null;
+    return (roundIndex) async {
+      await widget.onPlayLiveEffect?.call(
+        EventSuccessLiveEffectKind.assignmentRevealed,
+      );
+      if (fixtureAction != null) {
+        fixtureAction(roundIndex);
+        return;
+      }
+      await productionAction?.call(roundIndex);
+    };
+  }
+
+  Future<void> Function()? _resetRevealCallback() {
+    final fixtureAction = widget.fixtureActions?.onResetReveal;
+    final productionAction = widget.onResetReveal;
+    if (fixtureAction == null && productionAction == null) return null;
+    return () async {
+      await widget.onPlayLiveEffect?.call(
+        EventSuccessLiveEffectKind.revealReset,
+      );
+      if (fixtureAction != null) {
+        fixtureAction();
+        return;
+      }
+      await productionAction?.call();
+    };
   }
 }
 

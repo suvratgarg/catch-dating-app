@@ -24,6 +24,10 @@ class LiveTab extends StatelessWidget {
     required this.rotationsGenerationState,
     required this.onGenerateMicroPods,
     required this.onGenerateGuidedRotations,
+    required this.revealActionState,
+    required this.onStartRevealCountdown,
+    required this.onRevealRound,
+    required this.onResetReveal,
     required this.fixtureActions,
     required this.shrinkWrap,
     required this.physics,
@@ -51,6 +55,11 @@ class LiveTab extends StatelessWidget {
   final EventSuccessAssignmentGenerationActionState rotationsGenerationState;
   final Future<void> Function()? onGenerateMicroPods;
   final Future<void> Function()? onGenerateGuidedRotations;
+  final EventSuccessRevealActionState revealActionState;
+  final Future<void> Function(int roundIndex, int countdownSeconds)?
+  onStartRevealCountdown;
+  final Future<void> Function(int roundIndex)? onRevealRound;
+  final Future<void> Function()? onResetReveal;
   final EventSuccessHostFixtureActions? fixtureActions;
   final bool shrinkWrap;
   final ScrollPhysics physics;
@@ -206,9 +215,10 @@ class LiveTab extends StatelessWidget {
         ...rotationParticipantProfiles,
         ...assignmentParticipantProfiles,
       ],
-      onStartCountdown: fixtureActions?.onStartRevealCountdown,
-      onRevealRound: fixtureActions?.onRevealRound,
-      onResetReveal: fixtureActions?.onResetReveal,
+      actionState: revealActionState,
+      onStartCountdown: onStartRevealCountdown,
+      onRevealRound: onRevealRound,
+      onResetReveal: onResetReveal,
     );
 
     final liveRevealAvailable =

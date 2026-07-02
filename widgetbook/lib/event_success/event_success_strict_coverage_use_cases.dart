@@ -3022,9 +3022,9 @@ class _LiveRevealCoverageStates extends StatelessWidget {
           preferences: const [],
           participantProfiles: EventSuccessCompanionFixtures.peers,
           now: now,
-          onStartCountdown: (_, _) {},
-          onRevealRound: (_) {},
-          onResetReveal: () {},
+          onStartCountdown: (_, _) async {},
+          onRevealRound: (_) async {},
+          onResetReveal: () async {},
         ),
         gapH16,
         EventSuccessLiveRevealAttendeeCard(

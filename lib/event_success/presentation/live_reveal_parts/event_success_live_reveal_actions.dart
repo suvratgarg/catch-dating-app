@@ -1,8 +1,8 @@
 part of '../event_success_live_reveal_card.dart';
 
-class HostRevealActions extends ConsumerWidget {
+class HostRevealActions extends StatelessWidget {
   const HostRevealActions({
-    required this.eventId,
+    super.key,
     required this.roundCount,
     required this.nextRound,
     required this.activeRound,
@@ -15,7 +15,6 @@ class HostRevealActions extends ConsumerWidget {
     this.onResetReveal,
   });
 
-  final String eventId;
   final int roundCount;
   final int? nextRound;
   final int activeRound;
@@ -23,12 +22,13 @@ class HostRevealActions extends ConsumerWidget {
   final bool isCountingDown;
   final bool allRevealed;
   final bool isLoading;
-  final void Function(int roundIndex, int countdownSeconds)? onStartCountdown;
-  final ValueChanged<int>? onRevealRound;
-  final VoidCallback? onResetReveal;
+  final Future<void> Function(int roundIndex, int countdownSeconds)?
+  onStartCountdown;
+  final Future<void> Function(int roundIndex)? onRevealRound;
+  final Future<void> Function()? onResetReveal;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     if (roundCount == 0) {
       return CatchButton(
         label: 'Generate assignments first',
@@ -45,7 +45,9 @@ class HostRevealActions extends ConsumerWidget {
               label: 'Reveal now',
               icon: Icon(CatchIcons.visibilityOutlined),
               isLoading: isLoading,
-              onPressed: isLoading ? null : () => _reveal(ref, activeRound),
+              onPressed: isLoading || onRevealRound == null
+                  ? null
+                  : () => unawaited(onRevealRound!(activeRound)),
               fullWidth: true,
             ),
           ),
@@ -56,7 +58,9 @@ class HostRevealActions extends ConsumerWidget {
               icon: Icon(CatchIcons.restartAltRounded),
               variant: CatchButtonVariant.secondary,
               isLoading: isLoading,
-              onPressed: isLoading ? null : () => _reset(ref),
+              onPressed: isLoading || onResetReveal == null
+                  ? null
+                  : () => unawaited(onResetReveal!()),
               fullWidth: true,
             ),
           ),
@@ -69,11 +73,16 @@ class HostRevealActions extends ConsumerWidget {
         icon: Icon(CatchIcons.restartAltRounded),
         variant: CatchButtonVariant.secondary,
         isLoading: isLoading,
-        onPressed: isLoading ? null : () => _reset(ref),
+        onPressed: isLoading || onResetReveal == null
+            ? null
+            : () => unawaited(onResetReveal!()),
         fullWidth: true,
       );
     }
     final roundIndex = nextRound ?? 0;
+    final canUsePrimary = countdownSeconds == 0
+        ? onRevealRound != null
+        : onStartCountdown != null;
     return Row(
       children: [
         Expanded(
@@ -83,13 +92,15 @@ class HostRevealActions extends ConsumerWidget {
                 : 'Drop ${countdownSeconds}s countdown',
             icon: Icon(CatchIcons.timerOutlined),
             isLoading: isLoading,
-            onPressed: isLoading
+            onPressed: isLoading || !canUsePrimary
                 ? null
                 : () {
                     if (countdownSeconds == 0) {
-                      _reveal(ref, roundIndex);
+                      unawaited(onRevealRound!(roundIndex));
                     } else {
-                      _start(ref, roundIndex);
+                      unawaited(
+                        onStartCountdown!(roundIndex, countdownSeconds),
+                      );
                     }
                   },
             fullWidth: true,
@@ -102,68 +113,13 @@ class HostRevealActions extends ConsumerWidget {
             icon: Icon(CatchIcons.visibilityOutlined),
             variant: CatchButtonVariant.secondary,
             isLoading: isLoading,
-            onPressed: isLoading ? null : () => _reveal(ref, roundIndex),
+            onPressed: isLoading || onRevealRound == null
+                ? null
+                : () => unawaited(onRevealRound!(roundIndex)),
             fullWidth: true,
           ),
         ),
       ],
-    );
-  }
-
-  void _start(WidgetRef ref, int roundIndex) {
-    unawaited(
-      ref
-          .read(eventSuccessLiveEffectsControllerProvider)
-          .play(EventSuccessLiveEffectKind.countdownStart),
-    );
-    final fixtureAction = onStartCountdown;
-    if (fixtureAction != null) {
-      fixtureAction(roundIndex, countdownSeconds);
-      return;
-    }
-    EventSuccessController.startRevealCountdownMutation.run(
-      ref,
-      (tx) => tx
-          .get(eventSuccessControllerProvider.notifier)
-          .startRevealCountdown(eventId: eventId, roundIndex: roundIndex),
-    );
-  }
-
-  void _reveal(WidgetRef ref, int roundIndex) {
-    unawaited(
-      ref
-          .read(eventSuccessLiveEffectsControllerProvider)
-          .play(EventSuccessLiveEffectKind.assignmentRevealed),
-    );
-    final fixtureAction = onRevealRound;
-    if (fixtureAction != null) {
-      fixtureAction(roundIndex);
-      return;
-    }
-    EventSuccessController.revealRoundMutation.run(
-      ref,
-      (tx) => tx
-          .get(eventSuccessControllerProvider.notifier)
-          .revealRound(eventId: eventId, roundIndex: roundIndex),
-    );
-  }
-
-  void _reset(WidgetRef ref) {
-    unawaited(
-      ref
-          .read(eventSuccessLiveEffectsControllerProvider)
-          .play(EventSuccessLiveEffectKind.revealReset),
-    );
-    final fixtureAction = onResetReveal;
-    if (fixtureAction != null) {
-      fixtureAction();
-      return;
-    }
-    EventSuccessController.resetRevealMutation.run(
-      ref,
-      (tx) => tx
-          .get(eventSuccessControllerProvider.notifier)
-          .resetReveal(eventId: eventId),
     );
   }
 }

@@ -16,7 +16,6 @@ import 'package:catch_dating_app/event_success/domain/event_success_playbooks.da
 import 'package:catch_dating_app/event_success/domain/event_success_preference.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:flutter/material.dart';
@@ -52,4 +51,34 @@ enum EventSuccessRevealAssignmentKind {
     EventSuccessRevealAssignmentKind.microPods => CatchIcons.groups2Outlined,
     EventSuccessRevealAssignmentKind.rotations => CatchIcons.syncAltRounded,
   };
+}
+
+class EventSuccessRevealActionState {
+  const EventSuccessRevealActionState({this.isLoading = false, this.error});
+
+  factory EventSuccessRevealActionState.resolve({
+    required MutationState<void> startMutation,
+    required MutationState<void> revealMutation,
+    required MutationState<void> resetMutation,
+  }) {
+    final errorMutation = startMutation.hasError
+        ? startMutation
+        : revealMutation.hasError
+        ? revealMutation
+        : resetMutation.hasError
+        ? resetMutation
+        : null;
+    return EventSuccessRevealActionState(
+      isLoading:
+          startMutation.isPending ||
+          revealMutation.isPending ||
+          resetMutation.isPending,
+      error: errorMutation == null
+          ? null
+          : (errorMutation as MutationError).error,
+    );
+  }
+
+  final bool isLoading;
+  final Object? error;
 }
