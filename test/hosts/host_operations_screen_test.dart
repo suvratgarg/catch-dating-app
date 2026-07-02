@@ -15,6 +15,8 @@ import 'package:catch_dating_app/hosts/domain/host_profile.dart';
 import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_settings_state.dart';
+import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_card.dart';
+import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -313,6 +315,22 @@ void main() {
     expect(find.byType(HostLoadingScreen), findsOneWidget);
     expect(find.text('Professional profile'), findsOneWidget);
     expect(find.text('Sign in required'), findsNothing);
+  });
+
+  testWidgets('Host payment card shows loading while uid resolves', (
+    tester,
+  ) async {
+    await _pumpHostScreen(
+      tester,
+      HostPaymentAccountControllerCard(
+        club: buildClub(id: 'owned-club', ownerUserId: _hostUid),
+      ),
+      overrides: [uidProvider.overrideWithValue(const AsyncLoading<String?>())],
+      settle: false,
+    );
+
+    expect(find.byType(HostPaymentAccountLoadingCard), findsOneWidget);
+    expect(find.text('Connect payouts to get paid'), findsNothing);
   });
 
   test(

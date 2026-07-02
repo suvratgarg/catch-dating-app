@@ -19,10 +19,16 @@ class HostPaymentAccountControllerCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final uid = ref.watch(uidProvider).asData?.value;
-    final accountAsync = uid == null
-        ? const AsyncValue<HostPaymentAccount?>.data(null)
-        : ref.watch(watchHostPaymentAccountProvider(uid));
+    final uidAsync = ref.watch(uidProvider);
+    final uid = uidAsync.asData?.value;
+    final accountAsync = switch (uidAsync) {
+      AsyncData(:final value) => value == null
+          ? const AsyncValue<HostPaymentAccount?>.data(null)
+          : ref.watch(watchHostPaymentAccountProvider(value)),
+      AsyncError(:final error, :final stackTrace) =>
+        AsyncValue<HostPaymentAccount?>.error(error, stackTrace),
+      _ => const AsyncValue<HostPaymentAccount?>.loading(),
+    };
     final onboardingMutation = ref.watch(
       HostPaymentAccountController.startOnboardingMutation,
     );
