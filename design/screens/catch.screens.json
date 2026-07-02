@@ -15524,6 +15524,14 @@
             "symbol": "AuthStep"
           },
           {
+            "file": "lib/auth/presentation/auth_presentation_state.dart",
+            "symbol": "AuthPhoneEntryViewState"
+          },
+          {
+            "file": "lib/auth/presentation/auth_presentation_state.dart",
+            "symbol": "AuthOtpEntryViewState"
+          },
+          {
             "file": "lib/auth/presentation/phone_page.dart",
             "symbol": "PhonePage"
           },
@@ -15542,7 +15550,7 @@
             "symbol": "AuthRepository"
           }
         ],
-        "notes": "AuthScreen is a state shell over AuthController.step and swaps PhonePage/OtpPage. PhonePage owns local phone text editing, country picker UI, validation, and send-code mutation feedback; OtpPage owns OTP text, resend cooldown timer, verify/resend mutation feedback, and change-number navigation. A future AuthScreenState adapter should expose phone, OTP, validation, cooldown, and mutation modes as fixtureable display state."
+        "notes": "AuthScreen is a state shell over AuthController.step and swaps PhonePage/OtpPage. PhonePage owns local phone text editing, country picker UI, validation, and send-code mutation feedback; OtpPage owns OTP text, resend cooldown timer, verify/resend mutation feedback, and change-number navigation. AuthPhoneEntryViewState and AuthOtpEntryViewState now expose fixtureable phone, OTP, cooldown, mutation-mode, resend, verify, and change-number display policy."
       },
       "designRefs": [
         {
@@ -15764,8 +15772,8 @@
         }
       ],
       "composition": {
-        "currentLayout": "AuthScreen watches AuthController.step and swaps PhonePage/OtpPage. PhonePage and OtpPage own text controllers, form validation, timers, mutation calls, and branded error banners inside shared onboarding frames.",
-        "targetLayout": "Auth should expose a route-level AuthScreenState adapter that owns step, phone, OTP, country, cooldown, validation, mutation modes, and retry/change-number intents before composing provider-free phone and OTP sections.",
+        "currentLayout": "AuthScreen watches AuthController.step and swaps PhonePage/OtpPage. PhonePage and OtpPage own text controllers, form validation, timers, mutation calls, and branded error banners inside shared onboarding frames, while AuthPhoneEntryViewState and AuthOtpEntryViewState own derived display labels, loading flags, cooldown copy, and action enablement.",
+        "targetLayout": "Auth should keep AuthController as the mutation owner and keep local text/timer lifecycle in the step widgets, while all reusable display policy routes through provider-free AuthPhoneEntryViewState and AuthOtpEntryViewState before future visual refactors.",
         "sections": [
           {
             "id": "section.auth.route_adapter",
@@ -15776,11 +15784,11 @@
               "AuthScreenState"
             ],
             "flutter": {
-              "file": "lib/auth/presentation/auth_screen.dart",
-              "symbol": "AuthScreen"
+              "file": "lib/auth/presentation/auth_presentation_state.dart",
+              "symbol": "AuthPhoneEntryViewState"
             },
-            "currentOwner": "AuthScreen + AuthController",
-            "targetOwner": "AuthScreenState adapter backed by AuthController",
+            "currentOwner": "AuthScreen + AuthController + AuthPhoneEntryViewState + AuthOtpEntryViewState",
+            "targetOwner": "Auth display adapters backed by AuthController and mutation state",
             "dependencies": [
               "catch.surface"
             ],
@@ -15790,7 +15798,7 @@
               "send_code_mutation",
               "verify_otp_mutation"
             ],
-            "migration": "Keep AuthController as mutation owner, but expose a fixtureable display adapter for Widgetbook/captures instead of rendering directly from provider state."
+            "migration": "AuthPhoneEntryViewState and AuthOtpEntryViewState now expose fixtureable display policy while AuthController remains the mutation owner."
           },
           {
             "id": "section.auth.phone_entry",
@@ -15805,7 +15813,7 @@
               "symbol": "PhonePage"
             },
             "currentOwner": "PhonePage",
-            "targetOwner": "provider-free phone entry section",
+            "targetOwner": "PhonePage over AuthPhoneEntryViewState",
             "dependencies": [
               "catch.field",
               "catch.button",
@@ -15818,7 +15826,7 @@
               "send_code_mutation",
               "text_scale_2"
             ],
-            "migration": "Move local phone display data, country picker state, validation messages, and send-code pending/error modes into an auth display adapter."
+            "migration": "PhonePage now derives country, autofocus, and send loading display state through AuthPhoneEntryViewState; validation and mutation error mapping stay local because they depend on Form and BuildContext."
           },
           {
             "id": "section.auth.otp_entry",
@@ -15833,7 +15841,7 @@
               "symbol": "OtpPage"
             },
             "currentOwner": "OtpPage",
-            "targetOwner": "provider-free OTP entry section",
+            "targetOwner": "OtpPage over AuthOtpEntryViewState",
             "dependencies": [
               "catch.field",
               "catch.button"
@@ -15844,7 +15852,7 @@
               "verify_otp_mutation",
               "text_scale_2"
             ],
-            "migration": "Move OTP display data, cooldown timing, resend state, verify state, and change-number intent into an auth display adapter."
+            "migration": "OtpPage now derives display phone copy, cooldown label, resend label, verify/resend/change-number enablement, and verify loading through AuthOtpEntryViewState while keeping the timer and text controller lifecycle local."
           },
           {
             "id": "section.auth.error_feedback",
@@ -15885,8 +15893,8 @@
         },
         {
           "id": "DS-AUTH-003",
-          "status": "open",
-          "nextAction": "Auth Widgetbook and capture previews now seed local phone, OTP, cooldown, mutation, validation, country-picker, text-scale, and reduced-motion state without Firebase side effects. Remaining adapter work is deciding whether a production Auth display-state adapter is still needed before larger auth refactors."
+          "status": "closed",
+          "nextAction": "Closed by AuthPhoneEntryViewState and AuthOtpEntryViewState, which move production phone/OTP display policy, cooldown copy, resend/verify/change-number action enablement, and mutation loading flags into provider-free adapters with focused tests. Future work is state-specific design references under DS-AUTH-001."
         }
       ]
     },

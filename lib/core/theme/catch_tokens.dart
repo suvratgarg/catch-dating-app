@@ -553,6 +553,11 @@ abstract final class CatchInsets {
     horizontal: CatchSpacing.micro6,
   );
 
+  /// Margin between the selected country flag and dial code text.
+  static const EdgeInsets countryCodeFlagMargin = EdgeInsets.only(
+    right: CatchSpacing.micro6,
+  );
+
   /// Pill horizontal padding for badges and compact chips.
   static const EdgeInsets pillHorizontal = EdgeInsets.symmetric(
     horizontal: CatchSpacing.micro14,
@@ -1383,6 +1388,8 @@ abstract final class CatchMotion {
   static const Duration afterglowCountUp = Duration(milliseconds: 600);
   static const Duration arrivalCelebration = Duration(milliseconds: 800);
   static const Duration snackbar = Duration(seconds: 2);
+  static const Duration authOtpCooldownTick = Duration(seconds: 1);
+  static const Duration authOtpResendCooldown = Duration(seconds: 60);
   static const Duration revealDrop = Duration(milliseconds: 280);
   static const Duration revealSettle = Duration(milliseconds: 170);
   static const Duration revealCinematicTick = Duration(seconds: 1);

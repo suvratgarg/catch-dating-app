@@ -267,6 +267,18 @@
           "role": "ExploreScreen and ExploreEventsSection route-owned clear-search/filter/time-filter callback coverage for empty-state adapters",
           "status": "aligned",
           "lastReviewedPass": "2026-07-01-explore-events-empty-state-adapter"
+        },
+        {
+          "path": "lib/auth/presentation/auth_presentation_state.dart",
+          "role": "provider-free AuthPhoneEntryViewState and AuthOtpEntryViewState adapters for phone-country display, autofocus policy, OTP display phone copy, cooldown/resend labels, verify/resend/change-number action enablement, and mutation loading flags",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-02-auth-presentation-state-adapter"
+        },
+        {
+          "path": "test/auth/presentation/auth_presentation_state_test.dart",
+          "role": "AuthPhoneEntryViewState and AuthOtpEntryViewState display-policy behavior coverage",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-02-auth-presentation-state-adapter"
         }
       ],
       "variantPatterns": [],

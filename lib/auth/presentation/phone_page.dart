@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/auth/presentation/auth_form_keys.dart';
 import 'package:catch_dating_app/auth/presentation/auth_input.dart';
+import 'package:catch_dating_app/auth/presentation/auth_presentation_state.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
@@ -64,9 +65,11 @@ class _PhonePageState extends ConsumerState<PhonePage> {
 
   @override
   Widget build(BuildContext context) {
+    final data = ref.watch(authControllerProvider);
     final mutation = ref.watch(AuthController.sendOtpMutation);
-    final shouldAutofocus = ref.watch(
-      authControllerProvider.select((data) => data.step == AuthStep.phone),
+    final viewState = AuthPhoneEntryViewState.from(
+      data: data,
+      isSendPending: mutation.isPending,
     );
 
     return Form(
@@ -77,7 +80,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
           label: 'Send code',
           icon: Icon(CatchIcons.arrowForwardRounded),
           onPressed: _submit,
-          isLoading: mutation.isPending,
+          isLoading: viewState.sendButtonLoading,
           fullWidth: true,
           size: CatchButtonSize.lg,
         ),
@@ -95,9 +98,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CountryCodeSelector(
-                countryCode: ref.watch(
-                  authControllerProvider.select((d) => d.countryCode),
-                ),
+                countryCode: viewState.countryCode,
                 onChanged: (code) {
                   ref
                       .read(authControllerProvider.notifier)
@@ -112,7 +113,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
                   title: 'Mobile number',
                   showLabel: false,
                   controller: _phoneController,
-                  autofocus: shouldAutofocus,
+                  autofocus: viewState.shouldAutofocus,
                   keyboardType: TextInputType.phone,
                   textInputAction: TextInputAction.done,
                   autofillHints: const [AutofillHints.telephoneNumberNational],
@@ -208,7 +209,7 @@ class CountryCodeSelector extends StatelessWidget {
           ),
           closeIcon: Icon(CatchIcons.closeRounded, color: t.ink2),
           padding: CatchInsets.inlineHorizontal,
-          margin: const EdgeInsets.only(right: CatchSpacing.micro6),
+          margin: CatchInsets.countryCodeFlagMargin,
           flagWidth: CatchSpacing.s6,
           flagDecoration: BoxDecoration(
             borderRadius: BorderRadius.circular(CatchRadius.xs),

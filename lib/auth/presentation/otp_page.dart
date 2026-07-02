@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/auth/presentation/auth_form_keys.dart';
 import 'package:catch_dating_app/auth/presentation/auth_input.dart';
+import 'package:catch_dating_app/auth/presentation/auth_presentation_state.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -25,11 +26,9 @@ class OtpPage extends ConsumerStatefulWidget {
 }
 
 class _OtpPageState extends ConsumerState<OtpPage> {
-  static const _resendCooldown = Duration(seconds: 60);
-
   final _otpController = TextEditingController();
   Timer? _resendTimer;
-  int _secondsUntilResend = _resendCooldown.inSeconds;
+  int _secondsUntilResend = AuthOtpEntryViewState.resendCooldown.inSeconds;
 
   @override
   void initState() {
@@ -88,12 +87,15 @@ class _OtpPageState extends ConsumerState<OtpPage> {
 
   void _restartResendCooldown() {
     _resendTimer?.cancel();
-    setState(() => _secondsUntilResend = _resendCooldown.inSeconds);
+    setState(
+      () =>
+          _secondsUntilResend = AuthOtpEntryViewState.resendCooldown.inSeconds,
+    );
     _resendTimer = _createResendTimer();
   }
 
   Timer _createResendTimer() {
-    return Timer.periodic(const Duration(seconds: 1), (timer) {
+    return Timer.periodic(CatchMotion.authOtpCooldownTick, (timer) {
       if (!mounted) {
         timer.cancel();
         return;
@@ -114,34 +116,30 @@ class _OtpPageState extends ConsumerState<OtpPage> {
     final data = ref.watch(authControllerProvider);
     final verifyMutation = ref.watch(AuthController.verifyOtpMutation);
     final sendMutation = ref.watch(AuthController.sendOtpMutation);
-    final shouldAutofocus = data.step == AuthStep.otp;
-    final displayPhoneNumber = AuthInput.displayPhoneNumber(
-      phoneNumber: data.phoneNumber,
-      countryCode: data.countryCode,
+    final viewState = AuthOtpEntryViewState.from(
+      data: data,
+      otpCode: _otpController.text,
+      secondsUntilResend: _secondsUntilResend,
+      isVerifyPending: verifyMutation.isPending,
+      isSendPending: sendMutation.isPending,
     );
     final t = CatchTokens.of(context);
-    final canResend =
-        _secondsUntilResend == 0 &&
-        !verifyMutation.isPending &&
-        !sendMutation.isPending;
-    final canVerify =
-        AuthInput.isCompleteOtpCode(_otpController.text) &&
-        !verifyMutation.isPending &&
-        !sendMutation.isPending;
 
     return OnboardingStepLayout(
       footer: CatchButton(
         label: 'Verify',
         icon: Icon(CatchIcons.checkRounded),
-        onPressed: canVerify ? () => _submit(_otpController.text) : null,
-        isLoading: verifyMutation.isPending,
+        onPressed: viewState.canVerify
+            ? () => _submit(_otpController.text)
+            : null,
+        isLoading: viewState.verifyButtonLoading,
         fullWidth: true,
         size: CatchButtonSize.lg,
       ),
       children: [
         CatchStepHeader(
           title: 'Enter the code',
-          subtitle: 'Sent to $displayPhoneNumber',
+          subtitle: 'Sent to ${viewState.displayPhoneNumber}',
           showBack: false,
           gutter: false,
         ),
@@ -149,7 +147,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
         CatchOtpCodeField(
           inputKey: AuthFormKeys.otpField,
           controller: _otpController,
-          autofocus: shouldAutofocus,
+          autofocus: viewState.shouldAutofocus,
           onSubmitted: _submit,
           onChanged: _handleCodeChanged,
         ),
@@ -173,7 +171,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
         ],
         gapH20,
         Text(
-          _resendCooldownLabel,
+          viewState.resendCooldownLabel,
           style: CatchTextStyles.monoLabel(context, color: t.ink3),
         ),
         gapH12,
@@ -183,8 +181,8 @@ class _OtpPageState extends ConsumerState<OtpPage> {
           children: [
             CatchButton(
               key: AuthFormKeys.resendOtp,
-              label: _resendButtonLabel(sendMutation.isPending),
-              onPressed: canResend ? _resendOtp : null,
+              label: viewState.resendButtonLabel,
+              onPressed: viewState.canResend ? _resendOtp : null,
               variant: CatchButtonVariant.ghost,
               size: CatchButtonSize.sm,
               foregroundColor: t.ink,
@@ -192,11 +190,11 @@ class _OtpPageState extends ConsumerState<OtpPage> {
             CatchButton(
               key: AuthFormKeys.changeNumber,
               label: 'Change number',
-              onPressed: verifyMutation.isPending || sendMutation.isPending
-                  ? null
-                  : () => ref
+              onPressed: viewState.canChangeNumber
+                  ? () => ref
                         .read(authControllerProvider.notifier)
-                        .goToStep(AuthStep.phone),
+                        .goToStep(AuthStep.phone)
+                  : null,
               variant: CatchButtonVariant.ghost,
               size: CatchButtonSize.sm,
               foregroundColor: t.ink2,
@@ -205,20 +203,5 @@ class _OtpPageState extends ConsumerState<OtpPage> {
         ),
       ],
     );
-  }
-
-  String get _resendCooldownLabel {
-    if (_secondsUntilResend == 0) return 'RESEND NOW';
-    final minutes = _secondsUntilResend ~/ 60;
-    final seconds = (_secondsUntilResend % 60).toString().padLeft(2, '0');
-    return 'RESEND IN $minutes:$seconds';
-  }
-
-  String _resendButtonLabel(bool isSending) {
-    if (isSending) {
-      return 'Sending OTP...';
-    }
-
-    return 'Resend OTP';
   }
 }
