@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/clubs/presentation/club_action_keys.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_membership_controller.dart';
+import 'package:catch_dating_app/clubs/shared/club_action_keys.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -86,10 +86,7 @@ class CatchClubDock extends StatelessWidget {
               Row(
                 children: [
                   if (showCount) ...[
-                    DockCount(
-                      members: members!,
-                      label: membersLabel,
-                    ),
+                    DockCount(members: members!, label: membersLabel),
                     const SizedBox(width: CatchSpacing.s3),
                   ],
                   ..._controls(t, activity),
@@ -254,10 +251,7 @@ class DockBell extends StatelessWidget {
         child: isLoading
             ? SizedBox.square(
                 dimension: CatchIcon.md,
-                child: CatchLoadingIndicator(
-                  strokeWidth: 2,
-                  color: foreground,
-                ),
+                child: CatchLoadingIndicator(strokeWidth: 2, color: foreground),
               )
             : Icon(
                 active

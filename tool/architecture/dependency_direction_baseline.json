@@ -60,18 +60,8 @@
     },
     {
       "rule": "crossFeaturePresentationImport",
-      "path": "lib/events/presentation/location_picker_screen.dart",
-      "import": "package:catch_dating_app/locations/presentation/google_maps_coordinate_adapter.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
       "path": "lib/events/presentation/widgets/event_detail_social_section.dart",
       "import": "package:catch_dating_app/reviews/presentation/reviews_section.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/events/presentation/widgets/event_pins_map.dart",
-      "import": "package:catch_dating_app/locations/presentation/google_maps_coordinate_adapter.dart"
     },
     {
       "rule": "crossFeaturePresentationImport",
@@ -137,11 +127,6 @@
       "rule": "crossFeaturePresentationImport",
       "path": "lib/hosts/presentation/host_operations_screen.dart",
       "import": "package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/hosts/presentation/widgets/host_club_tools.dart",
-      "import": "package:catch_dating_app/clubs/presentation/club_action_keys.dart"
     },
     {
       "rule": "crossFeaturePresentationImport",

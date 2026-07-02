@@ -47,5 +47,5 @@ export 'shared/club_identity_atoms.dart';
 export 'shared/club_transition_tags.dart';
 
 // ── Presentation — value types & formatters ─────────────────────────────────
-export 'presentation/club_action_keys.dart';
+export 'shared/club_action_keys.dart';
 export 'data/club_name_lookup.dart';
