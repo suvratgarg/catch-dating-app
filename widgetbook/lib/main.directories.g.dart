@@ -7781,6 +7781,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostClubOrganizerOverviewController',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Exact catalog',
+                    builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                        .hostStrictHostClubOrganizerOverviewControllerCatalogStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostClubPreviewPane',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(

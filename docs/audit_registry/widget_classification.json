@@ -10,26 +10,26 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1065,
-    "widgetClasses": 965,
+    "total": 1066,
+    "widgetClasses": 966,
     "stateClasses": 100,
-    "publicClasses": 965,
+    "publicClasses": 966,
     "privateClasses": 100,
     "byRole": {
       "atom": 37,
       "composition": 280,
       "feature-adapter": 307,
       "pattern": 14,
-      "screen": 327,
+      "screen": 328,
       "widget-state": 100
     },
     "byDecision": {
       "keep-canonical-contract": 121,
-      "keep-public-cataloged": 844,
+      "keep-public-cataloged": 845,
       "keep-widget-state": 100
     },
     "byCatalogStatus": {
-      "cataloged": 773,
+      "cataloged": 774,
       "contracted": 121,
       "not-applicable": 100,
       "route-covered": 71
@@ -18053,10 +18053,33 @@
       "name": "HostClubOrganizerOverview",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
       "classKind": "widget",
-      "baseClass": "ConsumerWidget",
+      "baseClass": "StatelessWidget",
       "visibility": "public",
       "role": "screen",
       "canonicalFamily": "screen.host_club_organizer_overview",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "HostClubOrganizerOverviewController",
+      "file": "lib/hosts/presentation/host_operations_screen.dart",
+      "classKind": "widget",
+      "baseClass": "ConsumerWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.host_club_organizer_overview_controller",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,

@@ -1467,7 +1467,7 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold> {
                   initialExpandedField: widget.initialExpandedEditField,
                   onPreviewClub: _openClubPreview,
                 ),
-                HostClubTab.organizer => HostClubOrganizerOverview(
+                HostClubTab.organizer => HostClubOrganizerOverviewController(
                   club: selectedClub,
                   currentUid: _state.currentUid,
                   isOwner: _state.selectedClubIsOwner,
@@ -2525,8 +2525,8 @@ class HostMetaRow extends StatelessWidget {
   }
 }
 
-class HostClubOrganizerOverview extends ConsumerWidget {
-  const HostClubOrganizerOverview({
+class HostClubOrganizerOverviewController extends ConsumerWidget {
+  const HostClubOrganizerOverviewController({
     super.key,
     required this.club,
     required this.currentUid,
@@ -2553,8 +2553,57 @@ class HostClubOrganizerOverview extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final eventsAsync = ref.watch(watchEventsForClubProvider(club.id));
     final events = eventsAsync.asData?.value ?? const <Event>[];
-    final activeEvents = events.where((event) => !event.isCancelled).toList();
+    final activeEventCount = events.where((event) => !event.isCancelled).length;
 
+    return HostClubOrganizerOverview(
+      club: club,
+      currentUid: currentUid,
+      isOwner: isOwner,
+      clubs: clubs,
+      showClubPicker: showClubPicker,
+      eventsLoaded: eventsAsync.hasValue,
+      eventCount: events.length,
+      activeEventCount: activeEventCount,
+      onSelectClubIndex: onSelectClubIndex,
+      onSelectTab: onSelectTab,
+      onPreviewClub: onPreviewClub,
+      onOpenSettings: onOpenSettings,
+    );
+  }
+}
+
+class HostClubOrganizerOverview extends StatelessWidget {
+  const HostClubOrganizerOverview({
+    super.key,
+    required this.club,
+    required this.currentUid,
+    required this.isOwner,
+    required this.clubs,
+    required this.showClubPicker,
+    required this.eventsLoaded,
+    required this.eventCount,
+    required this.activeEventCount,
+    required this.onSelectClubIndex,
+    required this.onSelectTab,
+    required this.onPreviewClub,
+    required this.onOpenSettings,
+  });
+
+  final Club club;
+  final String currentUid;
+  final bool isOwner;
+  final List<Club> clubs;
+  final bool showClubPicker;
+  final bool eventsLoaded;
+  final int eventCount;
+  final int activeEventCount;
+  final ValueChanged<int> onSelectClubIndex;
+  final ValueChanged<HostClubTab> onSelectTab;
+  final HostClubPreviewCallback onPreviewClub;
+  final VoidCallback onOpenSettings;
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       key: const ValueKey('host-club-organizer-overview'),
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -2588,9 +2637,9 @@ class HostClubOrganizerOverview extends ConsumerWidget {
         gapH16,
         HostOrganizerMetricGrid(
           club: club,
-          eventsLoaded: eventsAsync.hasValue,
-          eventCount: events.length,
-          activeEventCount: activeEvents.length,
+          eventsLoaded: eventsLoaded,
+          eventCount: eventCount,
+          activeEventCount: activeEventCount,
         ),
         gapH12,
         CatchSection.contained(
@@ -2623,7 +2672,7 @@ class HostClubOrganizerOverview extends ConsumerWidget {
         gapH10,
         HostOrganizerTrendStrip(
           memberCount: club.memberCount,
-          activeEventCount: activeEvents.length,
+          activeEventCount: activeEventCount,
           onTap: () => onSelectTab(HostClubTab.insights),
         ),
         gapH24,

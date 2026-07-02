@@ -1258,11 +1258,26 @@ Widget _hostClubPreviewFor(String focus) {
       isOwner: true,
       clubs: HostOperationsFixtures.clubs,
       showClubPicker: true,
+      eventsLoaded: true,
+      eventCount: events.length,
+      activeEventCount: events.where((event) => !event.isCancelled).length,
       onSelectClubIndex: (_) {},
       onSelectTab: (_) {},
       onPreviewClub: (_) {},
       onOpenSettings: () {},
     ),
+    'HostClubOrganizerOverviewController' =>
+      HostClubOrganizerOverviewController(
+        club: club,
+        currentUid: _hostUid,
+        isOwner: true,
+        clubs: HostOperationsFixtures.clubs,
+        showClubPicker: true,
+        onSelectClubIndex: (_) {},
+        onSelectTab: (_) {},
+        onPreviewClub: (_) {},
+        onOpenSettings: () {},
+      ),
     'HostClubPreviewPane' => HostClubPreviewPane(
       club: club,
       onPreviewClub: (_) {},
@@ -1744,6 +1759,11 @@ String _hostComponentSlug(String name) {
 @widgetbook.UseCase(
   name: 'Covered by host clubs route states',
   type: HostClubOrganizerOverview,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostClubOrganizerOverviewController,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 @widgetbook.UseCase(
@@ -5811,6 +5831,15 @@ Widget hostStrictHostClubInsightsPaneCatalogStates(BuildContext context) =>
 )
 Widget hostStrictHostClubOrganizerOverviewCatalogStates(BuildContext context) =>
     _hostClubExactCatalog(context, 'HostClubOrganizerOverview');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostClubOrganizerOverviewController,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostClubOrganizerOverviewControllerCatalogStates(
+  BuildContext context,
+) => _hostClubExactCatalog(context, 'HostClubOrganizerOverviewController');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
