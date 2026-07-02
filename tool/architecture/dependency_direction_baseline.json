@@ -2,21 +2,5 @@
   "version": 1,
   "updated": "2026-07-02",
   "description": "Current dependency-direction debt baseline. Normal scanner runs fail on findings not listed here.",
-  "allowedFindings": [
-    {
-      "rule": "presentationPluginImport",
-      "path": "lib/event_success/presentation/event_success_companion_screen.dart",
-      "import": "package:mobile_scanner/mobile_scanner.dart"
-    },
-    {
-      "rule": "presentationPluginImport",
-      "path": "lib/events/presentation/location_picker_screen.dart",
-      "import": "package:google_maps_flutter/google_maps_flutter.dart"
-    },
-    {
-      "rule": "presentationPluginImport",
-      "path": "lib/events/presentation/widgets/event_pins_map.dart",
-      "import": "package:google_maps_flutter/google_maps_flutter.dart"
-    }
-  ]
+  "allowedFindings": []
 }
