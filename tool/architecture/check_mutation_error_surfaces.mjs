@@ -1,58 +1,47 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
-import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
+import {fileURLToPath} from "node:url";
+import {fromRepo} from "../lib/repo_paths.mjs";
 
-const args = process.argv.slice(2);
-if (args.includes("--help") || args.includes("-h")) {
-  printHelp();
-  process.exit(0);
+const isCliEntrypoint =
+  process.argv[1] != null &&
+  path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+
+if (isCliEntrypoint) runCli();
+
+export function scanMutationErrorSurfaces({root = fromRepo()} = {}) {
+  const dartFiles = collectDartFiles(path.join(root, "lib"));
+  const findings = [];
+
+  for (const file of dartFiles) {
+    const source = fs.readFileSync(file, "utf8");
+    const relativePath = normalizePath(path.relative(root, file));
+    findings.push(...scanFile({relativePath, source}));
+  }
+
+  return {
+    checkedFiles: dartFiles.length,
+    findings,
+  };
 }
 
-const shouldJson = args.includes("--json");
-const unknownArg = args.find((arg) => arg !== "--json");
-if (unknownArg) {
-  console.error(`Unknown argument: ${unknownArg}`);
-  process.exit(2);
-}
+export function scanFile({relativePath, source}) {
+  if (!isBuildMethodMutationPendingCandidate(source)) return [];
+  if (hasMutationErrorSurface(source)) return [];
 
-const dartFiles = collectDartFiles(fromRepo("lib"));
-const findings = [];
-
-for (const file of dartFiles) {
-  const source = fs.readFileSync(file, "utf8");
-  if (!isBuildMethodMutationPendingCandidate(source)) continue;
-  if (hasMutationErrorSurface(source)) continue;
-
-  findings.push({
-    path: relativeToRepo(file),
-    reason:
-      "build method reads mutation pending state but has no mutation error surface",
-    pendingLines: pendingLines(source).slice(0, 8),
-  });
-}
-
-const result = {
-  checkedFiles: dartFiles.length,
-  findings,
-};
-
-if (shouldJson) {
-  console.log(JSON.stringify(result, null, 2));
-}
-
-if (findings.length > 0) {
-  if (!shouldJson) printFindings(result);
-  process.exit(1);
-}
-
-if (!shouldJson) {
-  console.log(
-    `Mutation error surface check passed (${dartFiles.length} lib Dart files scanned).`,
-  );
+  return [
+    {
+      path: relativePath,
+      reason:
+        "build method reads mutation pending state but has no mutation error surface",
+      pendingLines: pendingLines(source).slice(0, 8),
+    },
+  ];
 }
 
 function collectDartFiles(root) {
+  if (!fs.existsSync(root)) return [];
   const files = [];
   walk(root, files);
   return files
@@ -104,6 +93,43 @@ function pendingLines(source) {
   return matches;
 }
 
+function parseArgs(rawArgs) {
+  const parsed = {
+    help: false,
+    json: false,
+    root: fromRepo(),
+  };
+
+  for (let index = 0; index < rawArgs.length; index += 1) {
+    const arg = rawArgs[index];
+    if (arg === "--help" || arg === "-h") {
+      parsed.help = true;
+    } else if (arg === "--json") {
+      parsed.json = true;
+    } else if (arg === "--root") {
+      parsed.root = requireValue(rawArgs, (index += 1), arg);
+    } else {
+      console.error(`Unknown argument: ${arg}`);
+      process.exit(2);
+    }
+  }
+
+  return parsed;
+}
+
+function requireValue(argsList, index, flag) {
+  const value = argsList[index];
+  if (value == null || value.startsWith("--")) {
+    console.error(`Missing value for ${flag}`);
+    process.exit(2);
+  }
+  return path.resolve(value);
+}
+
+function normalizePath(filePath) {
+  return filePath.split(path.sep).join("/");
+}
+
 function printFindings(result) {
   console.error(
     `Mutation error surface check failed (${result.findings.length} finding(s)).`,
@@ -120,9 +146,36 @@ function printHelp() {
   console.log(`Usage:
   node tool/architecture/check_mutation_error_surfaces.mjs
   node tool/architecture/check_mutation_error_surfaces.mjs --json
+  node tool/architecture/check_mutation_error_surfaces.mjs --root <repo-root>
 
 Scans production lib/**/*.dart build methods. Any file that reads mutation
 isPending state from Riverpod must also include a mutation error surface in the
 same file, such as CatchMutationErrorListener, CatchMutationErrorBanner,
 mutationErrorMessage, showCatchErrorSnackBar, or a direct hasError branch.`);
+}
+
+function runCli() {
+  const args = parseArgs(process.argv.slice(2));
+
+  if (args.help) {
+    printHelp();
+    process.exit(0);
+  }
+
+  const result = scanMutationErrorSurfaces({root: args.root});
+
+  if (args.json) {
+    console.log(JSON.stringify(result, null, 2));
+  }
+
+  if (result.findings.length > 0) {
+    if (!args.json) printFindings(result);
+    process.exit(1);
+  }
+
+  if (!args.json) {
+    console.log(
+      `Mutation error surface check passed (${result.checkedFiles} lib Dart files scanned).`,
+    );
+  }
 }
