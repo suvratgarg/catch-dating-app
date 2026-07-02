@@ -17,10 +17,9 @@ HostReportExport buildHostRevenueReportExport({
   required Event event,
   required List<EventParticipation> participations,
   required Map<String, String> namesByUid,
-  DateTime? exportedAt,
+  required DateTime exportedAt,
 }) {
   final sorted = _sortParticipations(participations);
-  final generatedAt = exportedAt ?? DateTime.now();
   final totalEstimatedRevenue = sorted.fold<int>(
     0,
     (sum, participation) =>
@@ -63,26 +62,26 @@ HostReportExport buildHostRevenueReportExport({
         event: event,
         participation: participation,
         namesByUid: namesByUid,
-        exportedAt: generatedAt,
+        exportedAt: exportedAt,
       ),
     _revenueSummaryRow(
       event: event,
       label: 'TOTAL_ESTIMATED_ACTIVE_REVENUE',
       amountMinor: totalEstimatedRevenue,
       amountSource: 'active_payment_id_event_price_estimate',
-      exportedAt: generatedAt,
+      exportedAt: exportedAt,
     ),
     _revenueCountRow(
       event: event,
       label: 'NO_SHOW_COUNT',
       count: noShowCount,
-      exportedAt: generatedAt,
+      exportedAt: exportedAt,
     ),
     _revenueCountRow(
       event: event,
       label: 'CANCELLED_COUNT',
       count: cancelledCount,
-      exportedAt: generatedAt,
+      exportedAt: exportedAt,
     ),
   ];
 
@@ -97,10 +96,9 @@ HostReportExport buildHostOpsReportExport({
   required Event event,
   required List<EventParticipation> participations,
   required Map<String, String> namesByUid,
-  DateTime? exportedAt,
+  required DateTime exportedAt,
 }) {
   final sorted = _sortParticipations(participations);
-  final generatedAt = exportedAt ?? DateTime.now();
   final arrivalOrderByUid = _arrivalOrderByUid(sorted);
   final rows = <List<Object?>>[
     const [
@@ -135,7 +133,7 @@ HostReportExport buildHostOpsReportExport({
         event.id,
         event.title,
         _iso(event.startTime),
-        _iso(generatedAt),
+        _iso(exportedAt),
         namesByUid[participation.uid] ?? participation.uid,
         participation.uid,
         participation.status.name,

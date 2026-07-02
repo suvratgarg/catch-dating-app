@@ -149,6 +149,7 @@ class HostEventManageController implements HostEventManageActions {
       event: viewModel.event,
       participations: reportData.participations,
       namesByUid: reportData.namesByUid,
+      exportedAt: DateTime.now(),
     );
     await _shareExport(export: export, origin: origin);
   }
@@ -167,6 +168,7 @@ class HostEventManageController implements HostEventManageActions {
       event: viewModel.event,
       participations: reportData.participations,
       namesByUid: reportData.namesByUid,
+      exportedAt: DateTime.now(),
     );
     await _shareExport(export: export, origin: origin);
   }
