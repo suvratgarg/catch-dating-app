@@ -93,6 +93,8 @@ import 'package:catch_dating_app/hosts/presentation/widgets/host_club_tools.dart
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_tools.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_payout_prompt.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_payout_prompt_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
 import 'package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart';
@@ -1314,9 +1316,14 @@ Widget _hostClubPreviewFor(String focus) {
       item: metricItems.first,
     ),
     'HostOrganizerPayoutPrompt' => HostOrganizerPayoutPrompt(
-      uid: _hostUid,
+      state: const HostOrganizerPayoutPromptState.setupRequired(),
       onManagePayouts: () {},
     ),
+    'HostOrganizerPayoutPromptController' =>
+      HostOrganizerPayoutPromptController(
+        uid: _hostUid,
+        onManagePayouts: () {},
+      ),
     'HostOrganizerSectionHeader' => const HostOrganizerSectionHeader(
       label: 'Team',
       actionLabel: 'Manage',
@@ -1747,6 +1754,11 @@ String _hostComponentSlug(String name) {
 @widgetbook.UseCase(
   name: 'Covered by host clubs route states',
   type: HostOrganizerPayoutPrompt,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostOrganizerPayoutPromptController,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 @widgetbook.UseCase(
@@ -6098,6 +6110,15 @@ Widget hostStrictHostOrganizerMetricTileCatalogStates(BuildContext context) =>
 )
 Widget hostStrictHostOrganizerPayoutPromptCatalogStates(BuildContext context) =>
     _hostClubExactCatalog(context, 'HostOrganizerPayoutPrompt');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostOrganizerPayoutPromptController,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostOrganizerPayoutPromptControllerCatalogStates(
+  BuildContext context,
+) => _hostClubExactCatalog(context, 'HostOrganizerPayoutPromptController');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',

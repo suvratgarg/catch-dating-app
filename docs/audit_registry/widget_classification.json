@@ -10,26 +10,26 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1064,
-    "widgetClasses": 964,
+    "total": 1065,
+    "widgetClasses": 965,
     "stateClasses": 100,
-    "publicClasses": 964,
+    "publicClasses": 965,
     "privateClasses": 100,
     "byRole": {
       "atom": 37,
       "composition": 280,
-      "feature-adapter": 305,
+      "feature-adapter": 307,
       "pattern": 14,
-      "screen": 328,
+      "screen": 327,
       "widget-state": 100
     },
     "byDecision": {
       "keep-canonical-contract": 121,
-      "keep-public-cataloged": 843,
+      "keep-public-cataloged": 844,
       "keep-widget-state": 100
     },
     "byCatalogStatus": {
-      "cataloged": 772,
+      "cataloged": 773,
       "contracted": 121,
       "not-applicable": 100,
       "route-covered": 71
@@ -18556,29 +18556,6 @@
       "flags": []
     },
     {
-      "name": "HostOrganizerPayoutPrompt",
-      "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "classKind": "widget",
-      "baseClass": "ConsumerWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.host_organizer_payout_prompt",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
       "name": "HostOrganizerSectionHeader",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
       "classKind": "widget",
@@ -20100,6 +20077,52 @@
       "visibility": "public",
       "role": "feature-adapter",
       "canonicalFamily": "feature.hosts.host_tab_rail_skeleton",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "feature-display-models",
+      "stateOwnership": "feature-display-state",
+      "asyncOwnership": "display-state-only",
+      "layoutOwnership": "feature-section-layout",
+      "actionOwnership": "feature-callbacks",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "HostOrganizerPayoutPromptController",
+      "file": "lib/hosts/presentation/widgets/host_organizer_payout_prompt_controller.dart",
+      "classKind": "widget",
+      "baseClass": "ConsumerWidget",
+      "visibility": "public",
+      "role": "feature-adapter",
+      "canonicalFamily": "feature.hosts.host_organizer_payout_prompt_controller",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "feature-display-models",
+      "stateOwnership": "feature-display-state",
+      "asyncOwnership": "display-state-only",
+      "layoutOwnership": "feature-section-layout",
+      "actionOwnership": "feature-callbacks",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "HostOrganizerPayoutPrompt",
+      "file": "lib/hosts/presentation/widgets/host_organizer_payout_prompt.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "feature-adapter",
+      "canonicalFamily": "feature.hosts.host_organizer_payout_prompt",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,

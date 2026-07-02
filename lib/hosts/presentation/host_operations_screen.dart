@@ -46,8 +46,8 @@ import 'package:catch_dating_app/hosts/presentation/host_profile_controller.dart
 import 'package:catch_dating_app/hosts/presentation/host_settings_state.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_payout_prompt_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
-import 'package:catch_dating_app/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
 import 'package:flutter/material.dart';
@@ -2580,7 +2580,7 @@ class HostClubOrganizerOverview extends ConsumerWidget {
         ),
         if (isOwner) ...[
           gapH14,
-          HostOrganizerPayoutPrompt(
+          HostOrganizerPayoutPromptController(
             uid: currentUid,
             onManagePayouts: () => onSelectTab(HostClubTab.edit),
           ),
@@ -2702,94 +2702,6 @@ class HostOrganizerHeader extends StatelessWidget {
           ),
         ],
       ],
-    );
-  }
-}
-
-class HostOrganizerPayoutPrompt extends ConsumerWidget {
-  const HostOrganizerPayoutPrompt({
-    super.key,
-    required this.uid,
-    required this.onManagePayouts,
-  });
-
-  final String uid;
-  final VoidCallback onManagePayouts;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final accountAsync = ref.watch(watchHostPaymentAccountProvider(uid));
-    final account = accountAsync.asData?.value;
-    if (account?.canAcceptInternationalPayments == true) {
-      return const SizedBox.shrink();
-    }
-
-    final loading = accountAsync.isLoading && !accountAsync.hasValue;
-    final error = accountAsync.hasError;
-    final title = loading
-        ? 'Checking payout status'
-        : error
-        ? 'Payout status needs attention'
-        : 'Connect payouts to get paid';
-    final message = loading
-        ? 'We are checking whether this organizer can collect paid bookings.'
-        : error
-        ? 'Open payouts to retry status checks and continue setup.'
-        : "Paid events can't collect until Stripe is set up.";
-
-    final t = CatchTokens.of(context);
-    final warningFill = Color.alphaBlend(
-      t.warning.withValues(alpha: CatchOpacity.calloutFill),
-      t.surface,
-    );
-
-    return CatchSurface(
-      backgroundColor: warningFill,
-      borderColor: Colors.transparent,
-      radius: CatchRadius.md,
-      padding: const EdgeInsets.symmetric(
-        horizontal: CatchSpacing.s4,
-        vertical: CatchSpacing.s3,
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: CatchStroke.hairline),
-            child: Icon(
-              CatchIcons.warningAmberRounded,
-              size: CatchIcon.md,
-              color: t.warning,
-            ),
-          ),
-          gapW12,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: CatchTextStyles.labelL(context)),
-                gapH2,
-                Text(
-                  message,
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
-                ),
-                if (!loading) ...[
-                  gapH8,
-                  SizedBox(
-                    width: CatchLayout.hostPayoutSetupButtonWidth,
-                    child: CatchButton(
-                      label: 'Set up payouts',
-                      size: CatchButtonSize.sm,
-                      fullWidth: true,
-                      onPressed: onManagePayouts,
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

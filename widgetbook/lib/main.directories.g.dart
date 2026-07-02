@@ -8188,6 +8188,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostOrganizerPayoutPromptController',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Exact catalog',
+                    builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                        .hostStrictHostOrganizerPayoutPromptControllerCatalogStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostOrganizerSectionHeader',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
