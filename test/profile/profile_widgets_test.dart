@@ -27,6 +27,7 @@ import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/preview_tab.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_insights_tab.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_sliver_header.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
@@ -225,7 +226,7 @@ void main() {
   });
 
   testWidgets(
-    'Profile sliver header uses Your profile title with Edit and Preview options',
+    'Profile sliver header uses Your profile title with profile tab options',
     (tester) async {
       const topSafeArea = 47.0;
       tester.view.devicePixelRatio = 1.0;
@@ -250,6 +251,7 @@ void main() {
       expect(find.text('Your profile').hitTestable(), findsOneWidget);
       expect(find.text('Edit'), findsOneWidget);
       expect(find.text('Preview'), findsOneWidget);
+      expect(find.text('Insights'), findsOneWidget);
       expect(find.text('Edit profile'), findsNothing);
       expect(find.text('Preview profile'), findsNothing);
       expect(find.text('You'), findsNothing);
@@ -271,6 +273,7 @@ void main() {
       expect(find.text('Your profile').hitTestable(), findsNothing);
       expect(find.text('Edit'), findsOneWidget);
       expect(find.text('Preview'), findsOneWidget);
+      expect(find.text('Insights'), findsOneWidget);
       expect(
         tester.getTopLeft(_profileOptionGroup()).dy,
         greaterThanOrEqualTo(topSafeArea),
@@ -338,18 +341,35 @@ void main() {
     expect(find.byType(TabBarView), findsOneWidget);
     expect(find.byType(ProfileTabSliverBody), findsOneWidget);
     expect(find.byType(PreviewTab), findsNothing);
+    expect(find.byType(ProfileInsightsTabSliverBody), findsNothing);
 
     await tester.drag(find.byType(TabBarView), const Offset(-320, 0));
     await pumpFeatureUi(tester);
 
     expect(find.byType(PreviewTab), findsOneWidget);
     expect(find.byType(ProfileTabSliverBody), findsNothing);
+    expect(find.byType(ProfileInsightsTabSliverBody), findsNothing);
+
+    await tester.drag(find.byType(TabBarView), const Offset(-320, 0));
+    await pumpFeatureUi(tester);
+
+    expect(find.byType(ProfileInsightsTabSliverBody), findsOneWidget);
+    expect(find.byType(ProfileTabSliverBody), findsNothing);
+    expect(find.byType(PreviewTab), findsNothing);
+
+    await tester.drag(find.byType(TabBarView), const Offset(320, 0));
+    await pumpFeatureUi(tester);
+
+    expect(find.byType(PreviewTab), findsOneWidget);
+    expect(find.byType(ProfileTabSliverBody), findsNothing);
+    expect(find.byType(ProfileInsightsTabSliverBody), findsNothing);
 
     await tester.drag(find.byType(TabBarView), const Offset(320, 0));
     await pumpFeatureUi(tester);
 
     expect(find.byType(ProfileTabSliverBody), findsOneWidget);
     expect(find.byType(PreviewTab), findsNothing);
+    expect(find.byType(ProfileInsightsTabSliverBody), findsNothing);
   });
 
   testWidgets('ProfileScreen preserves NestedScrollView overlap contract', (
@@ -1736,7 +1756,7 @@ class _ProfileHeaderHarnessState extends State<_ProfileHeaderHarness>
   @override
   void initState() {
     super.initState();
-    _controller = TabController(length: 2, vsync: this);
+    _controller = TabController(length: 3, vsync: this);
   }
 
   @override

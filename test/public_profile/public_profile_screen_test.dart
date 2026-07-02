@@ -191,6 +191,34 @@ void main() {
       expect(find.text('Riya has been blocked.'), findsNothing);
     },
   );
+
+  testWidgets(
+    'PublicProfileScreen blocks users with success feedback and route pop',
+    (tester) async {
+      final safetyRepository = _FakePublicProfileSafetyRepository();
+      final profile = buildPublicProfile(name: 'Riya');
+      await _pumpPublicProfile(
+        tester,
+        targetStream: Stream<PublicProfile?>.value(profile),
+        safetyRepository: safetyRepository,
+        includePreviousRoute: true,
+      );
+      await pumpFeatureUi(tester);
+
+      await tester.tap(find.byIcon(CatchIcons.moreHorizRounded));
+      await pumpFeatureUi(tester);
+      await tester.tap(
+        find.ancestor(of: find.text('Block'), matching: find.byType(InkWell)),
+      );
+      await pumpFeatureUi(tester);
+      await tester.tap(find.widgetWithText(CatchButton, 'Block'));
+      await pumpFeatureUi(tester);
+
+      expect(safetyRepository.blockCalls, ['runner-1']);
+      expect(find.text('Riya has been blocked.'), findsOneWidget);
+      expect(find.text('Previous route'), findsOneWidget);
+    },
+  );
 }
 
 Future<void> _pumpPublicProfile(
@@ -198,6 +226,7 @@ Future<void> _pumpPublicProfile(
   required Stream<PublicProfile?> targetStream,
   PublicProfile? initialProfile,
   SafetyRepository? safetyRepository,
+  bool includePreviousRoute = false,
 }) async {
   final viewer = buildUser(uid: 'viewer-1', name: 'Viewer');
   final container = ProviderContainer(
@@ -220,10 +249,23 @@ Future<void> _pumpPublicProfile(
       container: container,
       child: MaterialApp(
         theme: AppTheme.light,
-        home: PublicProfileScreen(
-          uid: 'runner-1',
-          initialProfile: initialProfile,
-        ),
+        home: includePreviousRoute
+            ? null
+            : PublicProfileScreen(
+                uid: 'runner-1',
+                initialProfile: initialProfile,
+              ),
+        initialRoute: includePreviousRoute ? '/profile' : null,
+        routes: includePreviousRoute
+            ? {
+                '/': (_) =>
+                    const Scaffold(body: Center(child: Text('Previous route'))),
+                '/profile': (_) => PublicProfileScreen(
+                  uid: 'runner-1',
+                  initialProfile: initialProfile,
+                ),
+              }
+            : const <String, WidgetBuilder>{},
       ),
     ),
   );
