@@ -1476,6 +1476,8 @@ Widget _hostEventManagePreviewFor(String focus) {
       inviteCode: inviteCode,
       link: HostOperationsFixtures.inviteLinks.first,
       actionsDisabled: false,
+      onCopyInviteLink: (_, _) {},
+      onDisableInviteLink: (_) {},
     ),
     'HostInviteLinksList' => HostInviteLinksList(
       event: event,
@@ -1483,7 +1485,16 @@ Widget _hostEventManagePreviewFor(String focus) {
       linksAsync: AsyncData<List<EventInviteLink>>(
         HostOperationsFixtures.inviteLinks,
       ),
+      state: HostInviteLinksListDisplayState.resolve(
+        createPending: false,
+        copyPending: false,
+        disablePending: false,
+      ),
+      mutationError: null,
       onRetry: () {},
+      onCreateInviteLink: (_) async {},
+      onCopyInviteLink: (_, _) {},
+      onDisableInviteLink: (_) {},
     ),
     'HostManageMetaItem' => Builder(
       builder: (context) => HostManageMetaItem(
@@ -1546,8 +1557,17 @@ Widget _hostEventManagePreviewFor(String focus) {
             HostOperationsFixtures.inviteLinks,
           ),
           shareMutation: shareMutation,
+          inviteLinksListState: HostInviteLinksListDisplayState.resolve(
+            createPending: false,
+            copyPending: false,
+            disablePending: false,
+          ),
+          inviteLinksMutationError: null,
           onRetryInviteLinks: () {},
           onSharePrivateLink: (_) {},
+          onCreateInviteLink: (_) async {},
+          onCopyInviteLink: (_, _) {},
+          onDisableInviteLink: (_) {},
         );
       },
     ),
@@ -1564,9 +1584,18 @@ Widget _hostEventManagePreviewFor(String focus) {
         shareMutation: ref.watch(
           HostEventManageController.sharePrivateLinkMutation,
         ),
+        inviteLinksListState: HostInviteLinksListDisplayState.resolve(
+          createPending: false,
+          copyPending: false,
+          disablePending: false,
+        ),
+        inviteLinksMutationError: null,
         onRetryPrivateAccess: () {},
         onRetryInviteLinks: () {},
         onSharePrivateLink: (_) {},
+        onCreateInviteLink: (_) async {},
+        onCopyInviteLink: (_, _) {},
+        onDisableInviteLink: (_) {},
       ),
     ),
     'HostPrivateAccessShell' => const HostPrivateAccessShell(

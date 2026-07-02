@@ -212,6 +212,15 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
     final shareMutation = ref.watch(
       HostEventManageController.sharePrivateLinkMutation,
     );
+    final createInviteLinkMutation = ref.watch(
+      HostEventManageController.createInviteLinkMutation,
+    );
+    final copyInviteLinkMutation = ref.watch(
+      HostEventManageController.copyInviteLinkMutation,
+    );
+    final disableInviteLinkMutation = ref.watch(
+      HostEventManageController.disableInviteLinkMutation,
+    );
     final textScale = MediaQuery.textScalerOf(context).scale(1);
     final screenState = HostEventManageScreenState.resolve(
       club: club,
@@ -302,6 +311,16 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             privateAccessAsync: accessAsync,
             inviteLinksAsync: inviteLinksAsync,
             shareMutation: shareMutation,
+            inviteLinksListState: HostInviteLinksListDisplayState.resolve(
+              createPending: createInviteLinkMutation.isPending,
+              copyPending: copyInviteLinkMutation.isPending,
+              disablePending: disableInviteLinkMutation.isPending,
+            ),
+            inviteLinksMutationError: _firstMutationError([
+              createInviteLinkMutation,
+              copyInviteLinkMutation,
+              disableInviteLinkMutation,
+            ]),
             onDeleted: onBackToSuccess,
             actionState: actionState,
             actionError: _firstMutationError([cancelMutation, deleteMutation]),
@@ -320,6 +339,8 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
     required AsyncValue<EventPrivateAccess?>? privateAccessAsync,
     required AsyncValue<List<EventInviteLink>>? inviteLinksAsync,
     required MutationState<dynamic> shareMutation,
+    required HostInviteLinksListDisplayState inviteLinksListState,
+    required Object? inviteLinksMutationError,
     required VoidCallback onDeleted,
     required HostEventActionDisplayState actionState,
     required Object? actionError,
@@ -374,6 +395,8 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             accessAsync: privateAccessAsync!,
             inviteLinksAsync: inviteLinksAsync!,
             shareMutation: shareMutation,
+            inviteLinksListState: inviteLinksListState,
+            inviteLinksMutationError: inviteLinksMutationError,
             onRetryPrivateAccess: () =>
                 ref.invalidate(watchEventPrivateAccessProvider(event.id)),
             onRetryInviteLinks: () =>
@@ -384,6 +407,29 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
               club: club,
               event: event,
               inviteLink: inviteLink,
+            ),
+            onCreateInviteLink: (draft) => _createNamedInviteLink(
+              context: context,
+              ref: ref,
+              event: event,
+              inviteCode: privateLinkActionState!.inviteCode!,
+              draft: draft,
+            ),
+            onCopyInviteLink: (link, url) => unawaited(
+              _copyNamedInviteLink(
+                context: context,
+                ref: ref,
+                link: link,
+                url: url,
+              ),
+            ),
+            onDisableInviteLink: (link) => unawaited(
+              _disableNamedInviteLink(
+                context: context,
+                ref: ref,
+                event: event,
+                link: link,
+              ),
             ),
           ),
         ],
@@ -513,6 +559,103 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       }),
     );
   }
+
+  Future<void> _createNamedInviteLink({
+    required BuildContext context,
+    required WidgetRef ref,
+    required Event event,
+    required String inviteCode,
+    required HostInviteLinkDraft draft,
+  }) async {
+    try {
+      final label = await HostEventManageController.createInviteLinkMutation
+          .run(
+            ref,
+            (tx) => tx
+                .get(hostEventManageActionsProvider)
+                .createInviteLink(
+                  event: event,
+                  inviteCode: inviteCode,
+                  draft: draft,
+                ),
+          );
+      if (!context.mounted) return;
+      showCatchSnackBar(context, '$label copied.');
+    } catch (error, stackTrace) {
+      ref
+          .read(errorLoggerProvider)
+          .logError(
+            error,
+            stackTrace,
+            reason: 'HostEventManageScreen._createNamedInviteLink failed',
+          );
+    }
+  }
+
+  Future<void> _copyNamedInviteLink({
+    required BuildContext context,
+    required WidgetRef ref,
+    required EventInviteLink link,
+    required String url,
+  }) async {
+    try {
+      final label = await HostEventManageController.copyInviteLinkMutation.run(
+        ref,
+        (tx) => tx
+            .get(hostEventManageActionsProvider)
+            .copyInviteLink(label: link.label, url: url),
+      );
+      if (!context.mounted) return;
+      showCatchSnackBar(context, '$label copied.');
+    } catch (error, stackTrace) {
+      ref
+          .read(errorLoggerProvider)
+          .logError(
+            error,
+            stackTrace,
+            reason: 'HostEventManageScreen._copyNamedInviteLink failed',
+          );
+    }
+  }
+
+  Future<void> _disableNamedInviteLink({
+    required BuildContext context,
+    required WidgetRef ref,
+    required Event event,
+    required EventInviteLink link,
+  }) async {
+    final confirmed = await showCatchAdaptiveDialog<bool>(
+      context: context,
+      title: 'Disable invite link?',
+      message:
+          'This stops new attribution for ${link.label}, but keeps its history in reporting.',
+      actions: const [
+        CatchDialogAction(label: 'Keep active', value: false),
+        CatchDialogAction(label: 'Disable', value: true, isDestructive: true),
+      ],
+    );
+    if (confirmed != true) return;
+    if (!context.mounted) return;
+    try {
+      final label = await HostEventManageController.disableInviteLinkMutation
+          .run(
+            ref,
+            (tx) => tx
+                .get(hostEventManageActionsProvider)
+                .disableInviteLink(event: event, link: link),
+          );
+      if (!context.mounted) return;
+      showCatchSnackBar(context, '$label disabled.');
+    } catch (error, stackTrace) {
+      ref
+          .read(errorLoggerProvider)
+          .logError(
+            error,
+            stackTrace,
+            reason: 'HostEventManageScreen._disableNamedInviteLink failed',
+          );
+    }
+  }
 }
 
 bool _showsCapacityNotice(Event event) {
@@ -633,9 +776,14 @@ class HostPrivateAccessCard extends StatelessWidget {
     required this.accessAsync,
     required this.inviteLinksAsync,
     required this.shareMutation,
+    required this.inviteLinksListState,
+    required this.inviteLinksMutationError,
     required this.onRetryPrivateAccess,
     required this.onRetryInviteLinks,
     required this.onSharePrivateLink,
+    required this.onCreateInviteLink,
+    required this.onCopyInviteLink,
+    required this.onDisableInviteLink,
   });
 
   final Club club;
@@ -643,9 +791,14 @@ class HostPrivateAccessCard extends StatelessWidget {
   final AsyncValue<EventPrivateAccess?> accessAsync;
   final AsyncValue<List<EventInviteLink>> inviteLinksAsync;
   final MutationState<dynamic> shareMutation;
+  final HostInviteLinksListDisplayState inviteLinksListState;
+  final Object? inviteLinksMutationError;
   final VoidCallback onRetryPrivateAccess;
   final VoidCallback onRetryInviteLinks;
   final ValueChanged<String> onSharePrivateLink;
+  final Future<void> Function(HostInviteLinkDraft draft) onCreateInviteLink;
+  final void Function(EventInviteLink link, String url) onCopyInviteLink;
+  final void Function(EventInviteLink link) onDisableInviteLink;
 
   @override
   Widget build(BuildContext context) {
@@ -687,8 +840,13 @@ class HostPrivateAccessCard extends StatelessWidget {
           state: privateAccessState,
           inviteLinksAsync: inviteLinksAsync,
           shareMutation: shareMutation,
+          inviteLinksListState: inviteLinksListState,
+          inviteLinksMutationError: inviteLinksMutationError,
           onRetryInviteLinks: onRetryInviteLinks,
           onSharePrivateLink: onSharePrivateLink,
+          onCreateInviteLink: onCreateInviteLink,
+          onCopyInviteLink: onCopyInviteLink,
+          onDisableInviteLink: onDisableInviteLink,
         );
       },
     );
@@ -718,16 +876,26 @@ class HostPrivateAccessBody extends StatelessWidget {
     required this.state,
     required this.inviteLinksAsync,
     required this.shareMutation,
+    required this.inviteLinksListState,
+    required this.inviteLinksMutationError,
     required this.onRetryInviteLinks,
     required this.onSharePrivateLink,
+    required this.onCreateInviteLink,
+    required this.onCopyInviteLink,
+    required this.onDisableInviteLink,
   });
 
   final Event event;
   final HostPrivateAccessDisplayState state;
   final AsyncValue<List<EventInviteLink>> inviteLinksAsync;
   final MutationState<dynamic> shareMutation;
+  final HostInviteLinksListDisplayState inviteLinksListState;
+  final Object? inviteLinksMutationError;
   final VoidCallback onRetryInviteLinks;
   final ValueChanged<String> onSharePrivateLink;
+  final Future<void> Function(HostInviteLinkDraft draft) onCreateInviteLink;
+  final void Function(EventInviteLink link, String url) onCopyInviteLink;
+  final void Function(EventInviteLink link) onDisableInviteLink;
 
   @override
   Widget build(BuildContext context) {
@@ -802,7 +970,12 @@ class HostPrivateAccessBody extends StatelessWidget {
               event: event,
               inviteCode: linkAction.inviteCode!,
               linksAsync: inviteLinksAsync,
+              state: inviteLinksListState,
+              mutationError: inviteLinksMutationError,
               onRetry: onRetryInviteLinks,
+              onCreateInviteLink: onCreateInviteLink,
+              onCopyInviteLink: onCopyInviteLink,
+              onDisableInviteLink: onDisableInviteLink,
             ),
           ],
         ],
@@ -848,42 +1021,33 @@ void _shareHostPrivateLink({
   );
 }
 
-class HostInviteLinksList extends ConsumerWidget {
+class HostInviteLinksList extends StatelessWidget {
   const HostInviteLinksList({
     super.key,
     required this.event,
     required this.inviteCode,
     required this.linksAsync,
+    required this.state,
+    required this.mutationError,
     required this.onRetry,
+    required this.onCreateInviteLink,
+    required this.onCopyInviteLink,
+    required this.onDisableInviteLink,
   });
 
   final Event event;
   final String inviteCode;
   final AsyncValue<List<EventInviteLink>> linksAsync;
+  final HostInviteLinksListDisplayState state;
+  final Object? mutationError;
   final VoidCallback onRetry;
+  final Future<void> Function(HostInviteLinkDraft draft) onCreateInviteLink;
+  final void Function(EventInviteLink link, String url) onCopyInviteLink;
+  final void Function(EventInviteLink link) onDisableInviteLink;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final createMutation = ref.watch(
-      HostEventManageController.createInviteLinkMutation,
-    );
-    final copyMutation = ref.watch(
-      HostEventManageController.copyInviteLinkMutation,
-    );
-    final disableMutation = ref.watch(
-      HostEventManageController.disableInviteLinkMutation,
-    );
-    final listState = HostInviteLinksListDisplayState.resolve(
-      createPending: createMutation.isPending,
-      copyPending: copyMutation.isPending,
-      disablePending: disableMutation.isPending,
-    );
-    final mutationError = [
-      createMutation,
-      copyMutation,
-      disableMutation,
-    ].firstWhere((mutation) => mutation.hasError, orElse: () => createMutation);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -892,12 +1056,12 @@ class HostInviteLinksList extends ConsumerWidget {
           builder: (context, constraints) {
             final button = CatchButton(
               label: 'New link',
-              onPressed: listState.isMutating
+              onPressed: state.isMutating
                   ? null
-                  : () => unawaited(_createNamedLink(context, ref)),
+                  : () => unawaited(_createNamedLink(context)),
               variant: CatchButtonVariant.secondary,
               icon: Icon(CatchIcons.addRounded),
-              isLoading: listState.createPending,
+              isLoading: state.createPending,
             );
             if (constraints.maxWidth < 360) {
               return Column(
@@ -930,11 +1094,11 @@ class HostInviteLinksList extends ConsumerWidget {
           'Track which channels create demand, bookings, arrivals, catches, and chats.',
           style: CatchTextStyles.supporting(context, color: t.ink2),
         ),
-        if (mutationError.hasError) ...[
+        if (mutationError != null) ...[
           gapH12,
-          CatchMutationErrorBanner(
-            mutation: mutationError,
-            errorContext: AppErrorContext.event,
+          CatchErrorBanner.fromError(
+            mutationError!,
+            context: AppErrorContext.event,
           ),
         ],
         gapH12,
@@ -952,7 +1116,7 @@ class HostInviteLinksList extends ConsumerWidget {
           ),
           builder: (context, links) => links.isEmpty
               ? Text(
-                  listState.emptyCopy,
+                  state.emptyCopy,
                   style: CatchTextStyles.supporting(context, color: t.ink2),
                 )
               : Column(
@@ -962,7 +1126,9 @@ class HostInviteLinksList extends ConsumerWidget {
                         event: event,
                         inviteCode: inviteCode,
                         link: link,
-                        actionsDisabled: listState.isMutating,
+                        actionsDisabled: state.isMutating,
+                        onCopyInviteLink: onCopyInviteLink,
+                        onDisableInviteLink: onDisableInviteLink,
                       ),
                   ],
                 ),
@@ -971,52 +1137,34 @@ class HostInviteLinksList extends ConsumerWidget {
     );
   }
 
-  Future<void> _createNamedLink(BuildContext context, WidgetRef ref) async {
+  Future<void> _createNamedLink(BuildContext context) async {
     final draft = await _showInviteLinkDialog(context);
     if (draft == null) return;
     if (!context.mounted) return;
-    try {
-      final label = await HostEventManageController.createInviteLinkMutation
-          .run(
-            ref,
-            (tx) => tx
-                .get(hostEventManageActionsProvider)
-                .createInviteLink(
-                  event: event,
-                  inviteCode: inviteCode,
-                  draft: draft,
-                ),
-          );
-      if (!context.mounted) return;
-      showCatchSnackBar(context, '$label copied.');
-    } catch (error, stackTrace) {
-      ref
-          .read(errorLoggerProvider)
-          .logError(
-            error,
-            stackTrace,
-            reason: 'HostInviteLinksList._createNamedLink failed',
-          );
-    }
+    await onCreateInviteLink(draft);
   }
 }
 
-class HostInviteLinkRow extends ConsumerWidget {
+class HostInviteLinkRow extends StatelessWidget {
   const HostInviteLinkRow({
     super.key,
     required this.event,
     required this.inviteCode,
     required this.link,
     required this.actionsDisabled,
+    required this.onCopyInviteLink,
+    required this.onDisableInviteLink,
   });
 
   final Event event;
   final String inviteCode;
   final EventInviteLink link;
   final bool actionsDisabled;
+  final void Function(EventInviteLink link, String url) onCopyInviteLink;
+  final void Function(EventInviteLink link) onDisableInviteLink;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final rowState = HostInviteLinkRowDisplayState.resolve(
       event: event,
@@ -1073,9 +1221,7 @@ class HostInviteLinkRow extends ConsumerWidget {
                   child: CatchIconButton(
                     onTap: rowState.actionsDisabled
                         ? null
-                        : () => unawaited(
-                            _copyInviteLink(context, ref, rowState.url),
-                          ),
+                        : () => onCopyInviteLink(link, rowState.url),
                     disabled: rowState.actionsDisabled,
                     child: Icon(
                       CatchIcons.contentCopyRounded,
@@ -1090,7 +1236,7 @@ class HostInviteLinkRow extends ConsumerWidget {
                     child: CatchIconButton(
                       onTap: rowState.actionsDisabled
                           ? null
-                          : () => unawaited(_disableInviteLink(context, ref)),
+                          : () => onDisableInviteLink(link),
                       disabled: rowState.actionsDisabled,
                       child: Icon(
                         CatchIcons.hourglassDisabledRounded,
@@ -1122,65 +1268,6 @@ class HostInviteLinkRow extends ConsumerWidget {
         ),
       ),
     );
-  }
-
-  Future<void> _copyInviteLink(
-    BuildContext context,
-    WidgetRef ref,
-    String url,
-  ) async {
-    try {
-      final label = await HostEventManageController.copyInviteLinkMutation.run(
-        ref,
-        (tx) => tx
-            .get(hostEventManageActionsProvider)
-            .copyInviteLink(label: link.label, url: url),
-      );
-      if (!context.mounted) return;
-      showCatchSnackBar(context, '$label copied.');
-    } catch (error, stackTrace) {
-      ref
-          .read(errorLoggerProvider)
-          .logError(
-            error,
-            stackTrace,
-            reason: 'HostInviteLinkRow._copyInviteLink failed',
-          );
-    }
-  }
-
-  Future<void> _disableInviteLink(BuildContext context, WidgetRef ref) async {
-    final confirmed = await showCatchAdaptiveDialog<bool>(
-      context: context,
-      title: 'Disable invite link?',
-      message:
-          'This stops new attribution for ${link.label}, but keeps its history in reporting.',
-      actions: const [
-        CatchDialogAction(label: 'Keep active', value: false),
-        CatchDialogAction(label: 'Disable', value: true, isDestructive: true),
-      ],
-    );
-    if (confirmed != true) return;
-    if (!context.mounted) return;
-    try {
-      final label = await HostEventManageController.disableInviteLinkMutation
-          .run(
-            ref,
-            (tx) => tx
-                .get(hostEventManageActionsProvider)
-                .disableInviteLink(event: event, link: link),
-          );
-      if (!context.mounted) return;
-      showCatchSnackBar(context, '$label disabled.');
-    } catch (error, stackTrace) {
-      ref
-          .read(errorLoggerProvider)
-          .logError(
-            error,
-            stackTrace,
-            reason: 'HostInviteLinkRow._disableInviteLink failed',
-          );
-    }
   }
 }
 
