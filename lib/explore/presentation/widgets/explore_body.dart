@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_avatar_rail.dart';
-import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_discover_list.dart';
+import 'package:catch_dating_app/clubs/clubs.dart'
+    show ClubAvatarRail, buildClubDirectorySlivers;
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_event_type_browse_grid.dart';
