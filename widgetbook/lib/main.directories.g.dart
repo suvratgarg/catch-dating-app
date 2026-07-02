@@ -9370,6 +9370,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'ProfileInfoSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Info section states',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .profileInfoSectionStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'ProfileInfoSkeletonSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(

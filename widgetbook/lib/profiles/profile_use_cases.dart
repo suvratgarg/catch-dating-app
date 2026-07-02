@@ -34,7 +34,7 @@ import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor
 import 'package:catch_dating_app/user_profile/presentation/widgets/preview_tab.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_info_section.dart'
-    show ProfileInfoRowFrame, profileTabBodyPadding;
+    show ProfileInfoRowFrame, ProfileInfoSection, profileTabBodyPadding;
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_insights_tab.dart'
     show ProfileInsightsTabSliverBody;
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_sliver_header.dart';
@@ -544,6 +544,78 @@ Widget profileFieldRowStates(BuildContext context) {
         child: _SectionFrame(
           height: CatchLayout.maxContentWidth,
           child: _ProfileFieldRowCatalog(rows: rows),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Info section states',
+  type: ProfileInfoSection,
+  path: '[P1 product surfaces]/Profiles/Sections',
+)
+Widget profileInfoSectionStates(BuildContext context) {
+  return _ProfileCatalog(
+    title: 'ProfileInfoSection',
+    contractId: 'screen.profile.edit_tab.info_section',
+    children: [
+      _StateCard(
+        label: 'grouped section',
+        child: _SectionFrame(
+          height: 280,
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              ProfileInfoSection(
+                title: 'About you',
+                subtitle: '3 fields',
+                grouped: true,
+                fullBleedRows: true,
+                children: [
+                  for (final label in ['Display name', 'Instagram', 'Company'])
+                    CatchSurface(
+                      padding: CatchInsets.content,
+                      child: Text(
+                        label,
+                        style: CatchTextStyles.labelL(context),
+                      ),
+                    ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'ungrouped section',
+        child: _SectionFrame(
+          height: 220,
+          child: ListView(
+            padding: CatchInsets.content,
+            children: [
+              ProfileInfoSection(
+                title: 'Running',
+                children: [
+                  CatchSurface(
+                    padding: CatchInsets.content,
+                    child: Text(
+                      'Preferred pace',
+                      style: CatchTextStyles.labelL(context),
+                    ),
+                  ),
+                  gapH8,
+                  CatchSurface(
+                    padding: CatchInsets.content,
+                    child: Text(
+                      'Weekend mornings',
+                      style: CatchTextStyles.labelL(context),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     ],

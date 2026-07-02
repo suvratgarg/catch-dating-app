@@ -10,14 +10,14 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1087,
-    "widgetClasses": 987,
+    "total": 1088,
+    "widgetClasses": 988,
     "stateClasses": 100,
-    "publicClasses": 987,
+    "publicClasses": 988,
     "privateClasses": 100,
     "byRole": {
       "atom": 37,
-      "composition": 280,
+      "composition": 281,
       "feature-adapter": 308,
       "pattern": 14,
       "screen": 348,
@@ -25,11 +25,11 @@
     },
     "byDecision": {
       "keep-canonical-contract": 121,
-      "keep-public-cataloged": 866,
+      "keep-public-cataloged": 867,
       "keep-widget-state": 100
     },
     "byCatalogStatus": {
-      "cataloged": 794,
+      "cataloged": 795,
       "contracted": 121,
       "not-applicable": 100,
       "route-covered": 72
@@ -24854,6 +24854,29 @@
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "ProfileInfoSection",
+      "file": "lib/user_profile/presentation/widgets/profile_info_section.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.profile_info_section",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
       "decision": "keep-public-cataloged",
       "remediationOptions": [
         "keepPublicCataloged",

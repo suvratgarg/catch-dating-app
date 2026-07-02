@@ -15,55 +15,62 @@ const profileTabBodyPadding = EdgeInsets.fromLTRB(
   CatchSpacing.s7,
 );
 
-/// Kept as a top-level builder function because a widget class would add
-/// boilerplate with no benefit: it's a pure mapping from parameters to
-/// a widget subtree without lifecycle or state.
-Widget profileInfoSection({
-  Key? key,
-  required BuildContext context,
-  required List<Widget> children,
-  String? title,
-  String? subtitle,
-  bool grouped = false,
-  bool first = false,
-  bool fullBleedRows = false,
-}) {
-  if (children.isEmpty) {
-    return const SizedBox.shrink();
-  }
+class ProfileInfoSection extends StatelessWidget {
+  const ProfileInfoSection({
+    super.key,
+    required this.children,
+    this.title,
+    this.subtitle,
+    this.grouped = false,
+    this.first = false,
+    this.fullBleedRows = false,
+  });
 
-  final t = CatchTokens.of(context);
-  final tiles = <Widget>[];
-  for (var i = 0; i < children.length; i++) {
-    tiles.add(
-      ProfileInfoRowFrame(fullBleed: fullBleedRows, child: children[i]),
-    );
-    if (grouped && i < children.length - 1) {
+  final List<Widget> children;
+  final String? title;
+  final String? subtitle;
+  final bool grouped;
+  final bool first;
+  final bool fullBleedRows;
+
+  @override
+  Widget build(BuildContext context) {
+    if (children.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final t = CatchTokens.of(context);
+    final tiles = <Widget>[];
+    for (var i = 0; i < children.length; i++) {
       tiles.add(
-        Divider(
-          height: 1,
-          indent: CatchSpacing.s8,
-          endIndent: CatchSpacing.s8,
-          color: t.line.withValues(alpha: CatchOpacity.fieldRowDivider),
-        ),
+        ProfileInfoRowFrame(fullBleed: fullBleedRows, child: children[i]),
+      );
+      if (grouped && i < children.length - 1) {
+        tiles.add(
+          Divider(
+            height: 1,
+            indent: CatchSpacing.s8,
+            endIndent: CatchSpacing.s8,
+            color: t.line.withValues(alpha: CatchOpacity.fieldRowDivider),
+          ),
+        );
+      }
+    }
+
+    final tileList = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: tiles,
+    );
+    if (grouped && title != null) {
+      return CatchSection.divided(
+        title: title,
+        count: subtitle,
+        first: first,
+        bodyGap: CatchSpacing.micro10,
+        child: tileList,
       );
     }
-  }
 
-  final tileList = Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: tiles,
-  );
-  final Widget section;
-  if (grouped && title != null) {
-    section = CatchSection.divided(
-      title: title,
-      count: subtitle,
-      first: first,
-      bodyGap: CatchSpacing.micro10,
-      child: tileList,
-    );
-  } else {
     final body = grouped
         ? CatchSurface(
             borderColor: t.line,
@@ -72,7 +79,7 @@ Widget profileInfoSection({
           )
         : tileList;
 
-    section = Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (title != null) ...[
@@ -82,7 +89,7 @@ Widget profileInfoSection({
               left: grouped ? CatchSpacing.s1 : 0,
               bottom: CatchSpacing.micro2,
             ),
-            child: Text(title, style: CatchTextStyles.labelL(context)),
+            child: Text(title!, style: CatchTextStyles.labelL(context)),
           ),
           gapH8,
         ],
@@ -90,9 +97,6 @@ Widget profileInfoSection({
       ],
     );
   }
-
-  if (key == null) return section;
-  return KeyedSubtree(key: key, child: section);
 }
 
 class ProfileInfoRowFrame extends StatelessWidget {

@@ -185,18 +185,18 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
               ),
             ),
           ),
-          profileInfoSection(
-            context: context,
+          ProfileInfoSection(
             title: 'Prompts',
             subtitle:
                 '${editState.completedPromptCount} of $maxProfilePromptAnswers answered',
-            children: prompts,
             grouped: true,
             fullBleedRows: true,
+            children: prompts,
           ),
-          profileInfoSection(
-            context: context,
+          ProfileInfoSection(
             title: 'About you',
+            grouped: true,
+            fullBleedRows: true,
             children: [
               for (final row in editState.aboutSectionRows)
                 ProfileFieldRow(
@@ -207,12 +207,11 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
                   onCancel: _collapseField,
                 ),
             ],
+          ),
+          ProfileInfoSection(
+            title: 'Running',
             grouped: true,
             fullBleedRows: true,
-          ),
-          profileInfoSection(
-            context: context,
-            title: 'Running',
             children: [
               for (final row in editState.runningRows)
                 ProfileFieldRow(
@@ -223,12 +222,11 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
                   onCancel: _collapseField,
                 ),
             ],
+          ),
+          ProfileInfoSection(
+            title: 'Lifestyle',
             grouped: true,
             fullBleedRows: true,
-          ),
-          profileInfoSection(
-            context: context,
-            title: 'Lifestyle',
             children: [
               for (final row in editState.lifestyleRows)
                 ProfileFieldRow(
@@ -239,8 +237,6 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
                   onCancel: _collapseField,
                 ),
             ],
-            grouped: true,
-            fullBleedRows: true,
           ),
         ],
       ),
