@@ -169,6 +169,28 @@ void main() {
     expect(state.fields.currencyCode, 'INR');
   });
 
+  test('HostClubCreate route intents carry typed callback payloads', () {
+    final city = cityOptionByName('Mumbai');
+    final defaults = ClubHostDefaults(
+      eventPolicy: const ClubHostDefaults().eventPolicy.copyWith(minAge: 24),
+    );
+
+    expect((HostClubCreateCityChangedIntent(city)).city?.label, 'Mumbai');
+    expect((const HostClubCreateRemoveClubPhotoIntent(2)).index, 2);
+
+    const reorderIntent = HostClubCreateReorderClubPhotoIntent(
+      fromIndex: 1,
+      toIndex: 3,
+    );
+    expect(reorderIntent.fromIndex, 1);
+    expect(reorderIntent.toIndex, 3);
+    expect(HostClubCreateDefaultsChangedIntent(defaults).defaults, defaults);
+    expect(
+      const HostClubCreateIdentityChangedIntent('Sea Face').value,
+      'Sea Face',
+    );
+  });
+
   test('HostClubCreateState maps selected media display state', () {
     final club = Club(
       id: 'club-1',

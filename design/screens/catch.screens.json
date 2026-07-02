@@ -18186,7 +18186,7 @@
             "symbol": "ImageUploadRepository"
           }
         ],
-        "notes": "HostCreateClubScreen is the route-facing wrapper for CreateClubScreen. CreateClubScreen owns PageController step state, form controllers, draft restoration/saving, cover/profile photo picking, host defaults, Event Success defaults, submit mutation execution, and the actual Navigator pop side effect. HostClubCreateState owns the visible step title, footer labels/enabled state, media/edit-scaffold enabled state, media display values, edit validation display state, mutation error copy, and typed primary/save-draft intents; HostClubCreateDraftRequest and HostClubCreateSubmitRequest own draft/submit request construction; HostClubSubmitOutcomeState owns the submit-success close-route decision. Draft-load retry and deeper typed callbacks still need to move out of the route before visual parity edits."
+        "notes": "HostCreateClubScreen is the route-facing wrapper for CreateClubScreen. CreateClubScreen owns PageController step state, form controllers, draft restoration/saving, cover/profile photo picking, host defaults, Event Success defaults, submit mutation execution, and the actual Navigator pop side effect. HostClubCreateState owns the visible step title, footer labels/enabled state, media/edit-scaffold enabled state, media display values, field/city display state, edit validation display state, mutation error copy, and typed primary/save-draft intents; HostClubCreateRouteIntent owns route callback dispatch; HostClubCreateDraftRequest and HostClubCreateSubmitRequest own draft/submit request construction; HostClubSubmitOutcomeState owns the submit-success close-route decision. Draft-load retry still needs to move out of the route before visual parity edits."
       },
       "designRefs": [
         {
@@ -18480,7 +18480,7 @@
       ],
       "composition": {
         "currentLayout": "HostCreateClubScreen delegates to CreateClubScreen, where route-level form state, draft persistence, form validation, media value ownership, and Navigator side effects still live beside visual sections; HostClubCreateState owns step title, footer action state, media/edit-scaffold enabled state, mutation error copy, and primary/save-draft intents. HostClubSubmitOutcomeState owns the submit-success close-route decision.",
-        "targetLayout": "Host Create Club should continue moving draft load/save retry and typed route callbacks into adapter state before composing provider-free step sections and a footer.",
+        "targetLayout": "Host Create Club should continue moving draft-load retry into adapter state before composing provider-free step sections and a footer.",
         "sections": [
           {
             "id": "section.host.club_create.adapter",
@@ -18505,7 +18505,7 @@
               "submit_pending",
               "submit_error"
             ],
-            "migration": "HostClubCreateState now owns current-step title, submit/save loading, mutation error copy, media/edit-scaffold enabled state, media display values, edit validation display state, footer labels, and primary/save-draft action intents. HostClubCreateDraftRequest and HostClubCreateSubmitRequest own draft/submit request construction. HostClubSubmitOutcomeState owns the submit-success close-route decision. Continue moving draft-load retry and deeper typed callbacks into adapters before visual parity refactors."
+            "migration": "HostClubCreateState now owns current-step title, submit/save loading, mutation error copy, media/edit-scaffold enabled state, media display values, edit validation display state, footer labels, and primary/save-draft action intents. HostClubCreateRouteIntent owns route callback dispatch. HostClubCreateDraftRequest and HostClubCreateSubmitRequest own draft/submit request construction. HostClubSubmitOutcomeState owns the submit-success close-route decision. Continue moving draft-load retry into adapters before visual parity refactors."
           },
           {
             "id": "section.host.club_create.step_header",
@@ -18646,7 +18646,7 @@
         {
           "id": "DS-HOST-CLUB-CREATE-003",
           "status": "open",
-          "nextAction": "HostClubCreateState now owns footer action labels/enabled state, media/edit-scaffold enabled state, media display values, field/city display state, edit validation display state, mutation error copy, and typed primary/save-draft intents; HostClubCreateDraftRequest and HostClubCreateSubmitRequest own draft/submit request construction; HostClubSubmitOutcomeState now owns submit-success close-route policy. Continue moving draft-load retry and deeper typed callbacks into adapters."
+          "nextAction": "HostClubCreateState now owns footer action labels/enabled state, media/edit-scaffold enabled state, media display values, field/city display state, edit validation display state, mutation error copy, and typed primary/save-draft intents; HostClubCreateRouteIntent owns route callback dispatch; HostClubCreateDraftRequest and HostClubCreateSubmitRequest own draft/submit request construction; HostClubSubmitOutcomeState now owns submit-success close-route policy. Continue moving draft-load retry into adapters."
         },
         {
           "id": "DS-HOST-CLUB-CREATE-004",

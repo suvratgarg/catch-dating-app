@@ -68,6 +68,76 @@ enum HostClubCreatePrimaryIntent { nextStep, submit }
 
 enum HostClubCreateSaveDraftIntent { saveDraft }
 
+sealed class HostClubCreateRouteIntent {
+  const HostClubCreateRouteIntent();
+}
+
+final class HostClubCreateBackIntent extends HostClubCreateRouteIntent {
+  const HostClubCreateBackIntent();
+}
+
+final class HostClubCreatePickProfileImageIntent
+    extends HostClubCreateRouteIntent {
+  const HostClubCreatePickProfileImageIntent();
+}
+
+final class HostClubCreatePickClubPhotosIntent
+    extends HostClubCreateRouteIntent {
+  const HostClubCreatePickClubPhotosIntent();
+}
+
+final class HostClubCreateRemoveClubPhotoIntent
+    extends HostClubCreateRouteIntent {
+  const HostClubCreateRemoveClubPhotoIntent(this.index);
+
+  final int index;
+}
+
+final class HostClubCreateReorderClubPhotoIntent
+    extends HostClubCreateRouteIntent {
+  const HostClubCreateReorderClubPhotoIntent({
+    required this.fromIndex,
+    required this.toIndex,
+  });
+
+  final int fromIndex;
+  final int toIndex;
+}
+
+final class HostClubCreateCityChangedIntent extends HostClubCreateRouteIntent {
+  const HostClubCreateCityChangedIntent(this.city);
+
+  final CityOption? city;
+}
+
+final class HostClubCreateDefaultsChangedIntent
+    extends HostClubCreateRouteIntent {
+  const HostClubCreateDefaultsChangedIntent(this.defaults);
+
+  final ClubHostDefaults defaults;
+}
+
+final class HostClubCreateIdentityChangedIntent
+    extends HostClubCreateRouteIntent {
+  const HostClubCreateIdentityChangedIntent(this.value);
+
+  final String value;
+}
+
+final class HostClubCreateSaveEditIntent extends HostClubCreateRouteIntent {
+  const HostClubCreateSaveEditIntent();
+}
+
+final class HostClubCreatePickCityIntent {
+  const HostClubCreatePickCityIntent();
+}
+
+typedef HostClubCreateRouteIntentCallback =
+    void Function(HostClubCreateRouteIntent intent);
+
+typedef HostClubCreatePickCityCallback =
+    Future<CityOption?> Function(HostClubCreatePickCityIntent intent);
+
 @immutable
 class HostClubCreateFooterState {
   const HostClubCreateFooterState({
@@ -793,6 +863,41 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
     if (_editValidationState.shouldShowErrors) setState(() {});
   }
 
+  void _handleRouteIntent(HostClubCreateRouteIntent intent) {
+    switch (intent) {
+      case HostClubCreateBackIntent():
+        _back();
+      case HostClubCreatePickProfileImageIntent():
+        unawaited(_pickProfileImage());
+      case HostClubCreatePickClubPhotosIntent():
+        unawaited(_pickClubPhotos());
+      case HostClubCreateRemoveClubPhotoIntent(:final index):
+        _removeClubPhoto(index);
+      case HostClubCreateReorderClubPhotoIntent(
+        :final fromIndex,
+        :final toIndex,
+      ):
+        _reorderClubPhoto(fromIndex, toIndex);
+      case HostClubCreateCityChangedIntent(:final city):
+        setState(() => _selectedCity = city?.effectiveMarketId);
+      case HostClubCreateDefaultsChangedIntent(:final defaults):
+        setState(() => _hostDefaults = defaults);
+      case HostClubCreateIdentityChangedIntent(:final value):
+        _handleEditIdentityChanged(value);
+      case HostClubCreateSaveEditIntent():
+        _submitEdit();
+    }
+  }
+
+  Future<CityOption?> _handlePickCityIntent(
+    HostClubCreatePickCityIntent intent,
+  ) {
+    switch (intent) {
+      case HostClubCreatePickCityIntent():
+        return _pickCityForEdit();
+    }
+  }
+
   Future<void> _saveDraft() async {
     if (_isEditing) return;
 
@@ -958,16 +1063,8 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
         emailController: _emailController,
         hostDefaults: _hostDefaults,
         currencyCode: screenState.fields.currencyCode,
-        onBack: _back,
-        onPickProfileImage: _pickProfileImage,
-        onPickClubPhotos: _pickClubPhotos,
-        onRemoveClubPhoto: _removeClubPhoto,
-        onReorderClubPhoto: _reorderClubPhoto,
-        onPickCity: _pickCityForEdit,
-        onIdentityChanged: _handleEditIdentityChanged,
-        onDefaultsChanged: (defaults) =>
-            setState(() => _hostDefaults = defaults),
-        onSave: _submitEdit,
+        onIntent: _handleRouteIntent,
+        onPickCity: _handlePickCityIntent,
       );
     }
 
@@ -981,7 +1078,8 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
               subtitle: screenState.subtitle,
               step: screenState.currentStep + 1,
               total: screenState.totalSteps,
-              onBack: _back,
+              onBack: () =>
+                  _handleRouteIntent(const HostClubCreateBackIntent()),
             ),
             gapH4,
             Expanded(
@@ -994,9 +1092,9 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                     autovalidateMode: widget.formAutovalidateMode,
                     nameController: _nameController,
                     selectedCity: screenState.fields.selectedCity,
-                    onCityChanged: (city) => setState(() {
-                      _selectedCity = city?.effectiveMarketId;
-                    }),
+                    onCityChanged: (city) => _handleRouteIntent(
+                      HostClubCreateCityChangedIntent(city),
+                    ),
                     areaController: _areaController,
                     detailsEnabled: screenState.fields.detailsEnabled,
                     clubPhotoPreviews: screenState.media.clubPhotoPreviews,
@@ -1005,16 +1103,27 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                     existingProfileImageUrl:
                         screenState.media.existingProfileImageUrl,
                     onPickClubPhotos: screenState.media.enabled
-                        ? _pickClubPhotos
+                        ? () => _handleRouteIntent(
+                            const HostClubCreatePickClubPhotosIntent(),
+                          )
                         : null,
                     onRemoveClubPhoto: screenState.media.enabled
-                        ? _removeClubPhoto
+                        ? (index) => _handleRouteIntent(
+                            HostClubCreateRemoveClubPhotoIntent(index),
+                          )
                         : null,
                     onReorderClubPhoto: screenState.media.enabled
-                        ? _reorderClubPhoto
+                        ? (fromIndex, toIndex) => _handleRouteIntent(
+                            HostClubCreateReorderClubPhotoIntent(
+                              fromIndex: fromIndex,
+                              toIndex: toIndex,
+                            ),
+                          )
                         : null,
                     onPickProfileImage: screenState.media.enabled
-                        ? _pickProfileImage
+                        ? () => _handleRouteIntent(
+                            const HostClubCreatePickProfileImageIntent(),
+                          )
                         : null,
                   ),
                   if (!screenState.mediaOnly) ...[
@@ -1029,14 +1138,16 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                       formKey: _defaultsFormKey,
                       defaults: _hostDefaults,
                       currencyCode: screenState.fields.currencyCode,
-                      onChanged: (defaults) =>
-                          setState(() => _hostDefaults = defaults),
+                      onChanged: (defaults) => _handleRouteIntent(
+                        HostClubCreateDefaultsChangedIntent(defaults),
+                      ),
                     ),
                     ClubEventSuccessDefaultsStep(
                       formKey: _eventSuccessFormKey,
                       defaults: _hostDefaults,
-                      onChanged: (defaults) =>
-                          setState(() => _hostDefaults = defaults),
+                      onChanged: (defaults) => _handleRouteIntent(
+                        HostClubCreateDefaultsChangedIntent(defaults),
+                      ),
                     ),
                   ],
                 ],
@@ -1084,15 +1195,8 @@ class HostClubEditScaffold extends StatelessWidget {
     required this.emailController,
     required this.hostDefaults,
     required this.currencyCode,
-    required this.onBack,
-    required this.onPickProfileImage,
-    required this.onPickClubPhotos,
-    required this.onRemoveClubPhoto,
-    required this.onReorderClubPhoto,
+    required this.onIntent,
     required this.onPickCity,
-    required this.onIdentityChanged,
-    required this.onDefaultsChanged,
-    required this.onSave,
   });
 
   final HostClubEditScaffoldState scaffoldState;
@@ -1113,15 +1217,8 @@ class HostClubEditScaffold extends StatelessWidget {
   final TextEditingController emailController;
   final ClubHostDefaults hostDefaults;
   final String currencyCode;
-  final VoidCallback onBack;
-  final VoidCallback onPickProfileImage;
-  final VoidCallback onPickClubPhotos;
-  final ValueChanged<int> onRemoveClubPhoto;
-  final void Function(int fromIndex, int toIndex) onReorderClubPhoto;
-  final Future<CityOption?> Function() onPickCity;
-  final ValueChanged<String> onIdentityChanged;
-  final ValueChanged<ClubHostDefaults> onDefaultsChanged;
-  final VoidCallback onSave;
+  final HostClubCreateRouteIntentCallback onIntent;
+  final HostClubCreatePickCityCallback onPickCity;
 
   @override
   Widget build(BuildContext context) {
@@ -1131,7 +1228,7 @@ class HostClubEditScaffold extends StatelessWidget {
       appBar: CatchTopBar(
         title: 'Edit club',
         leadingType: CatchTopBarLeading.back,
-        onBack: onBack,
+        onBack: () => onIntent(const HostClubCreateBackIntent()),
       ),
       body: Column(
         children: [
@@ -1145,7 +1242,9 @@ class HostClubEditScaffold extends StatelessWidget {
                     imageBytes: media.profileImageBytes,
                     existingImageUrl: media.existingProfileImageUrl,
                     onTap: scaffoldState.mediaEnabled
-                        ? onPickProfileImage
+                        ? () => onIntent(
+                            const HostClubCreatePickProfileImageIntent(),
+                          )
                         : null,
                     variant: CreateClubProfileImagePickerVariant.editLogo,
                   ),
@@ -1154,13 +1253,22 @@ class HostClubEditScaffold extends StatelessWidget {
                     photos: media.clubPhotoPreviews,
                     existingImageUrl: media.existingCoverImageUrl,
                     onAddPhotos: scaffoldState.mediaEnabled
-                        ? onPickClubPhotos
+                        ? () => onIntent(
+                            const HostClubCreatePickClubPhotosIntent(),
+                          )
                         : null,
                     onRemovePhoto: scaffoldState.mediaEnabled
-                        ? onRemoveClubPhoto
+                        ? (index) => onIntent(
+                            HostClubCreateRemoveClubPhotoIntent(index),
+                          )
                         : null,
                     onReorderPhoto: scaffoldState.mediaEnabled
-                        ? onReorderClubPhoto
+                        ? (fromIndex, toIndex) => onIntent(
+                            HostClubCreateReorderClubPhotoIntent(
+                              fromIndex: fromIndex,
+                              toIndex: toIndex,
+                            ),
+                          )
                         : null,
                     variant: CreateClubPhotosPickerVariant.editStrip,
                   ),
@@ -1178,7 +1286,9 @@ class HostClubEditScaffold extends StatelessWidget {
                               CatchField.input(
                                 title: 'Club name',
                                 controller: nameController,
-                                onChanged: onIdentityChanged,
+                                onChanged: (value) => onIntent(
+                                  HostClubCreateIdentityChangedIntent(value),
+                                ),
                                 icon: CatchIcons.groupOutlined,
                                 textCapitalization: TextCapitalization.words,
                                 textInputAction: TextInputAction.next,
@@ -1198,7 +1308,9 @@ class HostClubEditScaffold extends StatelessWidget {
                               CatchField.input(
                                 title: 'Area / neighbourhood',
                                 controller: areaController,
-                                onChanged: onIdentityChanged,
+                                onChanged: (value) => onIntent(
+                                  HostClubCreateIdentityChangedIntent(value),
+                                ),
                                 icon: CatchIcons.locationOnOutlined,
                                 placeholder: 'e.g. Bandra, Koramangala',
                                 textCapitalization: TextCapitalization.words,
@@ -1213,7 +1325,9 @@ class HostClubEditScaffold extends StatelessWidget {
                               CatchField.input(
                                 title: 'Description',
                                 controller: descriptionController,
-                                onChanged: onIdentityChanged,
+                                onChanged: (value) => onIntent(
+                                  HostClubCreateIdentityChangedIntent(value),
+                                ),
                                 icon: CatchIcons.editNoteOutlined,
                                 maxLines: 4,
                                 minLines: 2,
@@ -1270,7 +1384,9 @@ class HostClubEditScaffold extends StatelessWidget {
                           formKey: defaultsFormKey,
                           defaults: hostDefaults,
                           currencyCode: currencyCode,
-                          onChanged: onDefaultsChanged,
+                          onChanged: (defaults) => onIntent(
+                            HostClubCreateDefaultsChangedIntent(defaults),
+                          ),
                           scrollable: false,
                           padding: EdgeInsets.zero,
                         ),
@@ -1278,7 +1394,9 @@ class HostClubEditScaffold extends StatelessWidget {
                         ClubEventSuccessDefaultsStep(
                           formKey: eventSuccessFormKey,
                           defaults: hostDefaults,
-                          onChanged: onDefaultsChanged,
+                          onChanged: (defaults) => onIntent(
+                            HostClubCreateDefaultsChangedIntent(defaults),
+                          ),
                           scrollable: false,
                           padding: EdgeInsets.zero,
                         ),
@@ -1290,7 +1408,10 @@ class HostClubEditScaffold extends StatelessWidget {
             ),
           ),
           if (mutationError != null) CatchErrorBanner(message: mutationError!),
-          HostClubEditFooter(footer: scaffoldState.footer, onSave: onSave),
+          HostClubEditFooter(
+            footer: scaffoldState.footer,
+            onSave: () => onIntent(const HostClubCreateSaveEditIntent()),
+          ),
         ],
       ),
     );
@@ -1347,7 +1468,7 @@ class HostClubEditCityField extends StatelessWidget {
   final CityOption? city;
   final String? rawCityName;
   final bool enabled;
-  final Future<CityOption?> Function() onPickCity;
+  final HostClubCreatePickCityCallback onPickCity;
 
   @override
   Widget build(BuildContext context) {
@@ -1370,7 +1491,9 @@ class HostClubEditCityField extends StatelessWidget {
           error: field.errorText,
           onTap: enabled
               ? () async {
-                  final picked = await onPickCity();
+                  final picked = await onPickCity(
+                    const HostClubCreatePickCityIntent(),
+                  );
                   if (picked != null) field.didChange(picked);
                 }
               : null,
