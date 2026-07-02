@@ -163,6 +163,25 @@ class EventSuccessLiveActionState {
   final Object? attendanceError;
 }
 
+class EventSuccessAssignmentGenerationActionState {
+  const EventSuccessAssignmentGenerationActionState({
+    this.isGenerating = false,
+    this.error,
+  });
+
+  factory EventSuccessAssignmentGenerationActionState.resolve(
+    MutationState<void> mutation,
+  ) {
+    return EventSuccessAssignmentGenerationActionState(
+      isGenerating: mutation.isPending,
+      error: mutation.hasError ? (mutation as MutationError).error : null,
+    );
+  }
+
+  final bool isGenerating;
+  final Object? error;
+}
+
 class EventSuccessHostSectionState {
   const EventSuccessHostSectionState._({
     required this.status,
@@ -346,6 +365,12 @@ class EventSuccessHostSection extends ConsumerWidget {
     final completePlanMutation = ref.watch(
       EventSuccessController.completePlanMutation,
     );
+    final generateMicroPodsMutation = ref.watch(
+      EventSuccessController.generateMicroPodsMutation,
+    );
+    final generateGuidedRotationsMutation = ref.watch(
+      EventSuccessController.generateGuidedRotationsMutation,
+    );
     final attendanceErrorMutation = liveRoster == null
         ? null
         : _firstMutationError(<MutationState<void>>[
@@ -496,6 +521,18 @@ class EventSuccessHostSection extends ConsumerWidget {
           _setEventSuccessLiveStep(ref: ref, eventId: event.id, index: index),
       onCompleteLiveGuide: () =>
           _completeEventSuccessLiveGuide(ref: ref, eventId: event.id),
+      microPodsGenerationState:
+          EventSuccessAssignmentGenerationActionState.resolve(
+            generateMicroPodsMutation,
+          ),
+      rotationsGenerationState:
+          EventSuccessAssignmentGenerationActionState.resolve(
+            generateGuidedRotationsMutation,
+          ),
+      onGenerateMicroPods: () =>
+          _generateEventSuccessMicroPods(ref: ref, eventId: event.id),
+      onGenerateGuidedRotations: () =>
+          _generateEventSuccessGuidedRotations(ref: ref, eventId: event.id),
       fixtureActions: fixtureActions,
     );
   }
@@ -519,6 +556,30 @@ Future<void> _saveEventSuccessSetup(
           attendeePrompt: request.attendeePrompt,
         );
   });
+}
+
+Future<void> _generateEventSuccessMicroPods({
+  required WidgetRef ref,
+  required String eventId,
+}) {
+  return EventSuccessController.generateMicroPodsMutation.run(
+    ref,
+    (tx) => tx
+        .get(eventSuccessControllerProvider.notifier)
+        .generateMicroPods(eventId: eventId),
+  );
+}
+
+Future<void> _generateEventSuccessGuidedRotations({
+  required WidgetRef ref,
+  required String eventId,
+}) {
+  return EventSuccessController.generateGuidedRotationsMutation.run(
+    ref,
+    (tx) => tx
+        .get(eventSuccessControllerProvider.notifier)
+        .generateGuidedRotations(eventId: eventId),
+  );
 }
 
 Future<void> _setEventSuccessLiveStep({
@@ -930,6 +991,12 @@ class EventSuccessHostPanel extends StatefulWidget {
     this.onSetLiveStep,
     this.onCompleteLiveGuide,
     this.onPlayLiveEffect,
+    this.microPodsGenerationState =
+        const EventSuccessAssignmentGenerationActionState(),
+    this.rotationsGenerationState =
+        const EventSuccessAssignmentGenerationActionState(),
+    this.onGenerateMicroPods,
+    this.onGenerateGuidedRotations,
     this.fixtureActions,
   });
 
@@ -958,6 +1025,10 @@ class EventSuccessHostPanel extends StatefulWidget {
   final Future<void> Function()? onCompleteLiveGuide;
   final Future<void> Function(EventSuccessLiveEffectKind kind)?
   onPlayLiveEffect;
+  final EventSuccessAssignmentGenerationActionState microPodsGenerationState;
+  final EventSuccessAssignmentGenerationActionState rotationsGenerationState;
+  final Future<void> Function()? onGenerateMicroPods;
+  final Future<void> Function()? onGenerateGuidedRotations;
   final EventSuccessHostFixtureActions? fixtureActions;
 
   @override
@@ -1041,6 +1112,16 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         ),
         onNextStep: _liveStepCallback(widget.fixtureActions?.onNextStep),
         onCompleteGuide: _liveCompleteCallback(),
+        microPodsGenerationState: widget.microPodsGenerationState,
+        rotationsGenerationState: widget.rotationsGenerationState,
+        onGenerateMicroPods: _voidFixtureCallback(
+          widget.fixtureActions?.onGenerateMicroPods,
+          widget.onGenerateMicroPods,
+        ),
+        onGenerateGuidedRotations: _voidFixtureCallback(
+          widget.fixtureActions?.onGenerateGuidedRotations,
+          widget.onGenerateGuidedRotations,
+        ),
         fixtureActions: widget.fixtureActions,
         shrinkWrap: shrinkWrap,
         physics: physics,
@@ -1096,6 +1177,16 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
       };
     }
     return widget.onCompleteLiveGuide;
+  }
+
+  Future<void> Function()? _voidFixtureCallback(
+    VoidCallback? fixtureAction,
+    Future<void> Function()? productionAction,
+  ) {
+    if (fixtureAction != null) {
+      return () async => fixtureAction();
+    }
+    return productionAction;
   }
 }
 

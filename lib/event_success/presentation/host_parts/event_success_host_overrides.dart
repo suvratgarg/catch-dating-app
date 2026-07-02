@@ -1,29 +1,27 @@
 part of '../event_success_host_screen.dart';
 
-class MicroPodsHostCard extends ConsumerWidget {
+class MicroPodsHostCard extends StatelessWidget {
   const MicroPodsHostCard({
+    super.key,
     required this.event,
-    required this.eventId,
     required this.assignments,
     required this.participantProfiles,
     required this.preferences,
+    required this.actionState,
     this.onGenerate,
     this.onOverride,
   });
 
   final Event event;
-  final String eventId;
   final List<EventSuccessAssignment> assignments;
   final List<PublicProfile> participantProfiles;
   final List<EventSuccessPreference> preferences;
-  final VoidCallback? onGenerate;
+  final EventSuccessAssignmentGenerationActionState actionState;
+  final Future<void> Function()? onGenerate;
   final ValueChanged<List<EventSuccessGroupOverrideRound>>? onOverride;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final mutation = ref.watch(
-      EventSuccessController.generateMicroPodsMutation,
-    );
+  Widget build(BuildContext context) {
     final optedOutUids = preferences
         .where((preference) => preference.microPodsOptedOut)
         .map((preference) => preference.uid)
@@ -89,10 +87,10 @@ class MicroPodsHostCard extends ConsumerWidget {
             gapH10,
             AssignmentReasonSummary(assignments: activeAssignments),
           ],
-          if (mutation.hasError) ...[
+          if (actionState.error != null) ...[
             gapH8,
             CatchErrorBanner.fromError(
-              (mutation as MutationError).error,
+              actionState.error!,
               context: AppErrorContext.event,
             ),
           ],
@@ -102,17 +100,10 @@ class MicroPodsHostCard extends ConsumerWidget {
               key: const ValueKey('eventSuccessGenerateMicroPodsButton'),
               label: 'Generate micro-pods',
               icon: Icon(CatchIcons.autoAwesomeOutlined),
-              isLoading: onGenerate == null && mutation.isPending,
-              onPressed: mutation.isPending
+              isLoading: actionState.isGenerating,
+              onPressed: actionState.isGenerating || onGenerate == null
                   ? null
-                  : onGenerate ??
-                        () => EventSuccessController.generateMicroPodsMutation
-                            .run(
-                              ref,
-                              (tx) => tx
-                                  .get(eventSuccessControllerProvider.notifier)
-                                  .generateMicroPods(eventId: eventId),
-                            ),
+                  : () => unawaited(onGenerate!()),
               fullWidth: true,
             )
           else
@@ -124,21 +115,10 @@ class MicroPodsHostCard extends ConsumerWidget {
                     label: 'Regenerate',
                     icon: Icon(CatchIcons.autoAwesomeOutlined),
                     variant: CatchButtonVariant.secondary,
-                    isLoading: onGenerate == null && mutation.isPending,
-                    onPressed: mutation.isPending
+                    isLoading: actionState.isGenerating,
+                    onPressed: actionState.isGenerating || onGenerate == null
                         ? null
-                        : onGenerate ??
-                              () => EventSuccessController
-                                  .generateMicroPodsMutation
-                                  .run(
-                                    ref,
-                                    (tx) => tx
-                                        .get(
-                                          eventSuccessControllerProvider
-                                              .notifier,
-                                        )
-                                        .generateMicroPods(eventId: eventId),
-                                  ),
+                        : () => unawaited(onGenerate!()),
                     fullWidth: true,
                   ),
                 ),
@@ -187,6 +167,7 @@ Future<void> _showGroupOverrideSheet({
 
 class GroupOverrideSheet extends ConsumerStatefulWidget {
   const GroupOverrideSheet({
+    super.key,
     required this.event,
     required this.assignments,
     required this.participantProfiles,
@@ -209,7 +190,7 @@ class _GroupOverrideSheetState extends ConsumerState<GroupOverrideSheet> {
   late final Map<String, String> _participantLabels = {
     for (final profile in widget.participantProfiles) profile.uid: profile.name,
   };
-  late final List<_GroupOverrideRoundDraft> _rounds =
+  late final List<GroupOverrideRoundDraft> _rounds =
       _groupRoundDraftsFromAssignments(widget.assignments);
 
   @override
@@ -307,7 +288,7 @@ class _GroupOverrideSheetState extends ConsumerState<GroupOverrideSheet> {
     return null;
   }
 
-  void _addGroup(_GroupOverrideRoundDraft round) {
+  void _addGroup(GroupOverrideRoundDraft round) {
     final used = round.groups
         .expand((group) => group.memberUids)
         .whereType<String>()
@@ -316,17 +297,14 @@ class _GroupOverrideSheetState extends ConsumerState<GroupOverrideSheet> {
         .where((uid) => !used.contains(uid))
         .toList(growable: false);
     round.groups.add(
-      _GroupOverrideUnitDraft(
+      GroupOverrideUnitDraft(
         label: 'Group ${round.groups.length + 1}',
         memberUids: <String?>[if (available.isNotEmpty) available.first],
       ),
     );
   }
 
-  void _addMember(
-    _GroupOverrideRoundDraft round,
-    _GroupOverrideUnitDraft group,
-  ) {
+  void _addMember(GroupOverrideRoundDraft round, GroupOverrideUnitDraft group) {
     final used = round.groups
         .expand((draft) => draft.memberUids)
         .whereType<String>()
@@ -373,6 +351,7 @@ class _GroupOverrideSheetState extends ConsumerState<GroupOverrideSheet> {
 
 class GroupOverrideRoundEditor extends StatelessWidget {
   const GroupOverrideRoundEditor({
+    super.key,
     required this.round,
     required this.participantUids,
     required this.participantLabel,
@@ -383,14 +362,14 @@ class GroupOverrideRoundEditor extends StatelessWidget {
     required this.onRemoveMember,
   });
 
-  final _GroupOverrideRoundDraft round;
+  final GroupOverrideRoundDraft round;
   final List<String> participantUids;
   final String Function(String uid) participantLabel;
   final VoidCallback onChanged;
   final VoidCallback onAddGroup;
-  final ValueChanged<_GroupOverrideUnitDraft> onRemoveGroup;
-  final ValueChanged<_GroupOverrideUnitDraft> onAddMember;
-  final void Function(_GroupOverrideUnitDraft group, String? memberUid)
+  final ValueChanged<GroupOverrideUnitDraft> onRemoveGroup;
+  final ValueChanged<GroupOverrideUnitDraft> onAddMember;
+  final void Function(GroupOverrideUnitDraft group, String? memberUid)
   onRemoveMember;
 
   @override
@@ -447,6 +426,7 @@ class GroupOverrideRoundEditor extends StatelessWidget {
 
 class GroupOverrideUnitEditor extends StatelessWidget {
   const GroupOverrideUnitEditor({
+    super.key,
     required this.group,
     required this.participantUids,
     required this.participantLabel,
@@ -456,7 +436,7 @@ class GroupOverrideUnitEditor extends StatelessWidget {
     required this.onRemoveMember,
   });
 
-  final _GroupOverrideUnitDraft group;
+  final GroupOverrideUnitDraft group;
   final List<String> participantUids;
   final String Function(String uid) participantLabel;
   final VoidCallback onChanged;
@@ -530,6 +510,7 @@ class GroupOverrideUnitEditor extends StatelessWidget {
 
 class GroupOverrideMemberEditor extends StatelessWidget {
   const GroupOverrideMemberEditor({
+    super.key,
     required this.value,
     required this.participantUids,
     required this.participantLabel,
@@ -569,13 +550,15 @@ class GroupOverrideMemberEditor extends StatelessWidget {
   }
 }
 
-class RotationsHostCard extends ConsumerWidget {
+class RotationsHostCard extends StatelessWidget {
   const RotationsHostCard({
+    super.key,
     required this.event,
     required this.rotationIntervalMinutes,
     required this.assignments,
     required this.participantProfiles,
     required this.preferences,
+    required this.actionState,
     this.onGenerate,
     this.onOverride,
   });
@@ -585,14 +568,12 @@ class RotationsHostCard extends ConsumerWidget {
   final List<EventSuccessAssignment> assignments;
   final List<PublicProfile> participantProfiles;
   final List<EventSuccessPreference> preferences;
-  final VoidCallback? onGenerate;
+  final EventSuccessAssignmentGenerationActionState actionState;
+  final Future<void> Function()? onGenerate;
   final ValueChanged<List<EventSuccessRotationOverrideRound>>? onOverride;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final mutation = ref.watch(
-      EventSuccessController.generateGuidedRotationsMutation,
-    );
+  Widget build(BuildContext context) {
     final optedOutUids = preferences
         .where((preference) => preference.guidedRotationsOptedOut)
         .map((preference) => preference.uid)
@@ -683,10 +664,10 @@ class RotationsHostCard extends ConsumerWidget {
             gapH10,
             AssignmentReasonSummary(assignments: activeAssignments),
           ],
-          if (mutation.hasError) ...[
+          if (actionState.error != null) ...[
             gapH8,
             CatchErrorBanner.fromError(
-              (mutation as MutationError).error,
+              actionState.error!,
               context: AppErrorContext.event,
             ),
           ],
@@ -696,18 +677,10 @@ class RotationsHostCard extends ConsumerWidget {
               key: const ValueKey('eventSuccessGenerateRotationsButton'),
               label: 'Generate rotations',
               icon: Icon(CatchIcons.autoAwesomeOutlined),
-              isLoading: onGenerate == null && mutation.isPending,
-              onPressed: mutation.isPending
+              isLoading: actionState.isGenerating,
+              onPressed: actionState.isGenerating || onGenerate == null
                   ? null
-                  : onGenerate ??
-                        () => EventSuccessController
-                            .generateGuidedRotationsMutation
-                            .run(
-                              ref,
-                              (tx) => tx
-                                  .get(eventSuccessControllerProvider.notifier)
-                                  .generateGuidedRotations(eventId: event.id),
-                            ),
+                  : () => unawaited(onGenerate!()),
               fullWidth: true,
             )
           else
@@ -719,23 +692,10 @@ class RotationsHostCard extends ConsumerWidget {
                     label: 'Regenerate',
                     icon: Icon(CatchIcons.autoAwesomeOutlined),
                     variant: CatchButtonVariant.secondary,
-                    isLoading: onGenerate == null && mutation.isPending,
-                    onPressed: mutation.isPending
+                    isLoading: actionState.isGenerating,
+                    onPressed: actionState.isGenerating || onGenerate == null
                         ? null
-                        : onGenerate ??
-                              () => EventSuccessController
-                                  .generateGuidedRotationsMutation
-                                  .run(
-                                    ref,
-                                    (tx) => tx
-                                        .get(
-                                          eventSuccessControllerProvider
-                                              .notifier,
-                                        )
-                                        .generateGuidedRotations(
-                                          eventId: event.id,
-                                        ),
-                                  ),
+                        : () => unawaited(onGenerate!()),
                     fullWidth: true,
                   ),
                 ),
@@ -784,6 +744,7 @@ Future<void> _showRotationOverrideSheet({
 
 class RotationOverrideSheet extends ConsumerStatefulWidget {
   const RotationOverrideSheet({
+    super.key,
     required this.event,
     required this.assignments,
     required this.participantProfiles,
@@ -807,7 +768,7 @@ class _RotationOverrideSheetState extends ConsumerState<RotationOverrideSheet> {
   late final Map<String, String> _participantLabels = {
     for (final profile in widget.participantProfiles) profile.uid: profile.name,
   };
-  late final List<_RotationOverrideRoundDraft> _rounds =
+  late final List<RotationOverrideRoundDraft> _rounds =
       _rotationRoundDraftsFromAssignments(widget.assignments);
 
   @override
@@ -899,7 +860,7 @@ class _RotationOverrideSheetState extends ConsumerState<RotationOverrideSheet> {
     return null;
   }
 
-  void _addPair(_RotationOverrideRoundDraft round) {
+  void _addPair(RotationOverrideRoundDraft round) {
     final used = round.pairings
         .expand((pair) => [pair.uidA, pair.uidB])
         .whereType<String>()
@@ -908,7 +869,7 @@ class _RotationOverrideSheetState extends ConsumerState<RotationOverrideSheet> {
         .where((uid) => !used.contains(uid))
         .toList(growable: false);
     round.pairings.add(
-      _RotationOverridePairDraft(
+      RotationOverridePairDraft(
         uidA: available.isEmpty ? null : available.first,
         uidB: available.length < 2 ? null : available[1],
       ),
@@ -949,6 +910,7 @@ class _RotationOverrideSheetState extends ConsumerState<RotationOverrideSheet> {
 
 class RotationOverrideRoundEditor extends StatelessWidget {
   const RotationOverrideRoundEditor({
+    super.key,
     required this.round,
     required this.participantUids,
     required this.participantLabel,
@@ -957,12 +919,12 @@ class RotationOverrideRoundEditor extends StatelessWidget {
     required this.onRemovePair,
   });
 
-  final _RotationOverrideRoundDraft round;
+  final RotationOverrideRoundDraft round;
   final List<String> participantUids;
   final String Function(String uid) participantLabel;
   final VoidCallback onChanged;
   final VoidCallback onAddPair;
-  final ValueChanged<_RotationOverridePairDraft> onRemovePair;
+  final ValueChanged<RotationOverridePairDraft> onRemovePair;
 
   @override
   Widget build(BuildContext context) {
@@ -1016,6 +978,7 @@ class RotationOverrideRoundEditor extends StatelessWidget {
 
 class RotationOverridePairEditor extends StatelessWidget {
   const RotationOverridePairEditor({
+    super.key,
     required this.pair,
     required this.participantUids,
     required this.participantLabel,
@@ -1023,7 +986,7 @@ class RotationOverridePairEditor extends StatelessWidget {
     required this.onRemove,
   });
 
-  final _RotationOverridePairDraft pair;
+  final RotationOverridePairDraft pair;
   final List<String> participantUids;
   final String Function(String uid) participantLabel;
   final VoidCallback onChanged;
@@ -1076,6 +1039,7 @@ class RotationOverridePairEditor extends StatelessWidget {
 
 class HostOverrideIconAction extends StatelessWidget {
   const HostOverrideIconAction({
+    super.key,
     required this.tooltip,
     required this.icon,
     required this.onPressed,
@@ -1101,7 +1065,7 @@ class HostOverrideIconAction extends StatelessWidget {
 }
 
 class PodGroupSummary extends StatelessWidget {
-  const PodGroupSummary({required this.assignments});
+  const PodGroupSummary({super.key, required this.assignments});
 
   final List<EventSuccessAssignment> assignments;
 
@@ -1123,7 +1087,7 @@ class PodGroupSummary extends StatelessWidget {
 }
 
 class AssignmentReasonSummary extends StatelessWidget {
-  const AssignmentReasonSummary({required this.assignments});
+  const AssignmentReasonSummary({super.key, required this.assignments});
 
   final List<EventSuccessAssignment> assignments;
 
@@ -1225,7 +1189,7 @@ List<String> _wingmanRequestProfileUids(
   return uids.toList()..sort();
 }
 
-List<_GroupOverrideRoundDraft> _groupRoundDraftsFromAssignments(
+List<GroupOverrideRoundDraft> _groupRoundDraftsFromAssignments(
   List<EventSuccessAssignment> assignments,
 ) {
   final hasGroupRotations = assignments.any(
@@ -1235,17 +1199,17 @@ List<_GroupOverrideRoundDraft> _groupRoundDraftsFromAssignments(
     return _groupRotationRoundDraftsFromAssignments(assignments);
   }
   return [
-    _GroupOverrideRoundDraft(
+    GroupOverrideRoundDraft(
       roundIndex: 0,
       groups: _staticGroupDraftsFromAssignments(assignments),
     ),
   ];
 }
 
-List<_GroupOverrideRoundDraft> _groupRotationRoundDraftsFromAssignments(
+List<GroupOverrideRoundDraft> _groupRotationRoundDraftsFromAssignments(
   List<EventSuccessAssignment> assignments,
 ) {
-  final groupsByRound = <int, Map<String, _GroupOverrideUnitDraft>>{};
+  final groupsByRound = <int, Map<String, GroupOverrideUnitDraft>>{};
   for (final assignment in assignments) {
     for (final slot in assignment.groupRotationSlots) {
       final memberUids = [assignment.uid, ...slot.peerUids]..sort();
@@ -1254,7 +1218,7 @@ List<_GroupOverrideRoundDraft> _groupRotationRoundDraftsFromAssignments(
           .putIfAbsent(slot.roundIndex, () => {})
           .putIfAbsent(
             key,
-            () => _GroupOverrideUnitDraft(
+            () => GroupOverrideUnitDraft(
               label: slot.unitLabel,
               memberUids: <String?>[...memberUids],
             ),
@@ -1265,14 +1229,14 @@ List<_GroupOverrideRoundDraft> _groupRotationRoundDraftsFromAssignments(
     ..sort((a, b) => a.key.compareTo(b.key));
   return [
     for (final entry in entries)
-      _GroupOverrideRoundDraft(
+      GroupOverrideRoundDraft(
         roundIndex: entry.key,
         groups: entry.value.values.toList(),
       ),
   ];
 }
 
-List<_GroupOverrideUnitDraft> _staticGroupDraftsFromAssignments(
+List<GroupOverrideUnitDraft> _staticGroupDraftsFromAssignments(
   List<EventSuccessAssignment> assignments,
 ) {
   final memberUidsByLabel = <String, Set<String>>{};
@@ -1286,31 +1250,31 @@ List<_GroupOverrideUnitDraft> _staticGroupDraftsFromAssignments(
     ..sort((a, b) => a.key.compareTo(b.key));
   return [
     for (final entry in entries)
-      _GroupOverrideUnitDraft(
+      GroupOverrideUnitDraft(
         label: entry.key,
         memberUids: <String?>[...(entry.value.toList()..sort())],
       ),
   ];
 }
 
-final class _GroupOverrideRoundDraft {
-  _GroupOverrideRoundDraft({required this.roundIndex, required this.groups});
+final class GroupOverrideRoundDraft {
+  GroupOverrideRoundDraft({required this.roundIndex, required this.groups});
 
   final int roundIndex;
-  final List<_GroupOverrideUnitDraft> groups;
+  final List<GroupOverrideUnitDraft> groups;
 }
 
-final class _GroupOverrideUnitDraft {
-  _GroupOverrideUnitDraft({required this.label, required this.memberUids});
+final class GroupOverrideUnitDraft {
+  GroupOverrideUnitDraft({required this.label, required this.memberUids});
 
   String label;
   final List<String?> memberUids;
 }
 
-List<_RotationOverrideRoundDraft> _rotationRoundDraftsFromAssignments(
+List<RotationOverrideRoundDraft> _rotationRoundDraftsFromAssignments(
   List<EventSuccessAssignment> assignments,
 ) {
-  final pairsByRound = <int, Map<String, _RotationOverridePairDraft>>{};
+  final pairsByRound = <int, Map<String, RotationOverridePairDraft>>{};
   for (final assignment in assignments) {
     for (final slot in assignment.rotationSlots) {
       final pairUids = [assignment.uid, slot.peerUid]..sort();
@@ -1319,7 +1283,7 @@ List<_RotationOverrideRoundDraft> _rotationRoundDraftsFromAssignments(
           .putIfAbsent(slot.roundIndex, () => {})
           .putIfAbsent(
             key,
-            () => _RotationOverridePairDraft(
+            () => RotationOverridePairDraft(
               uidA: pairUids.first,
               uidB: pairUids.last,
             ),
@@ -1330,25 +1294,25 @@ List<_RotationOverrideRoundDraft> _rotationRoundDraftsFromAssignments(
     ..sort((a, b) => a.key.compareTo(b.key));
   return [
     for (final entry in entries)
-      _RotationOverrideRoundDraft(
+      RotationOverrideRoundDraft(
         roundIndex: entry.key,
         pairings: entry.value.values.toList(),
       ),
   ];
 }
 
-final class _RotationOverrideRoundDraft {
-  _RotationOverrideRoundDraft({
+final class RotationOverrideRoundDraft {
+  RotationOverrideRoundDraft({
     required this.roundIndex,
     required this.pairings,
   });
 
   final int roundIndex;
-  final List<_RotationOverridePairDraft> pairings;
+  final List<RotationOverridePairDraft> pairings;
 }
 
-final class _RotationOverridePairDraft {
-  _RotationOverridePairDraft({required this.uidA, required this.uidB});
+final class RotationOverridePairDraft {
+  RotationOverridePairDraft({required this.uidA, required this.uidB});
 
   String? uidA;
   String? uidB;

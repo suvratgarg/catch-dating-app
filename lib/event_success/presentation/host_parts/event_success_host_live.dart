@@ -20,6 +20,10 @@ class LiveTab extends StatelessWidget {
     required this.onPreviousStep,
     required this.onNextStep,
     required this.onCompleteGuide,
+    required this.microPodsGenerationState,
+    required this.rotationsGenerationState,
+    required this.onGenerateMicroPods,
+    required this.onGenerateGuidedRotations,
     required this.fixtureActions,
     required this.shrinkWrap,
     required this.physics,
@@ -43,6 +47,10 @@ class LiveTab extends StatelessWidget {
   final Future<void> Function(int stepIndex)? onPreviousStep;
   final Future<void> Function(int stepIndex)? onNextStep;
   final Future<void> Function()? onCompleteGuide;
+  final EventSuccessAssignmentGenerationActionState microPodsGenerationState;
+  final EventSuccessAssignmentGenerationActionState rotationsGenerationState;
+  final Future<void> Function()? onGenerateMicroPods;
+  final Future<void> Function()? onGenerateGuidedRotations;
   final EventSuccessHostFixtureActions? fixtureActions;
   final bool shrinkWrap;
   final ScrollPhysics physics;
@@ -168,11 +176,11 @@ class LiveTab extends StatelessWidget {
 
     Widget microPodsCard() => MicroPodsHostCard(
       event: event,
-      eventId: event.id,
       assignments: assignments,
       participantProfiles: assignmentParticipantProfiles,
       preferences: preferences,
-      onGenerate: fixtureActions?.onGenerateMicroPods,
+      actionState: microPodsGenerationState,
+      onGenerate: onGenerateMicroPods,
       onOverride: fixtureActions?.onOverrideGroupAssignments,
     );
 
@@ -183,7 +191,8 @@ class LiveTab extends StatelessWidget {
       assignments: rotationAssignments,
       participantProfiles: rotationParticipantProfiles,
       preferences: preferences,
-      onGenerate: fixtureActions?.onGenerateGuidedRotations,
+      actionState: rotationsGenerationState,
+      onGenerate: onGenerateGuidedRotations,
       onOverride: fixtureActions?.onOverrideGuidedRotations,
     );
 
