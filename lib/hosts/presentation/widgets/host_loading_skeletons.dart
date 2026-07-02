@@ -197,14 +197,14 @@ class HostAnalyticsReportSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSectionStack(
+    return const CatchSectionStack(
       padding: EdgeInsets.zero,
       gap: CatchSpacing.s4,
       children: [
-        const HostAnalyticsMetricGridSkeleton(),
-        const HostChartSkeleton(),
-        const HostEventRowsSkeleton(count: 3),
-        const HostSettingsRowsSkeleton(),
+        HostAnalyticsMetricGridSkeleton(),
+        HostChartSkeleton(),
+        HostEventRowsSkeleton(count: 3),
+        HostSettingsRowsSkeleton(),
       ],
     );
   }

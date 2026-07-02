@@ -7043,6 +7043,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'ClubProfileImageTile',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Profile image tile states',
+                builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                    .clubProfileImageTileCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CreateClubContactFields',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -7079,6 +7089,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Direct form states',
                 builder: _widgetbook_workspace_hosts_host_operations_use_cases
                     .createClubScreenCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EditClubPhotosLabel',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Photos label states',
+                builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                    .editClubPhotosLabelCatalogStates,
               ),
             ],
           ),
@@ -7134,6 +7154,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Dialog states',
                 builder: _widgetbook_workspace_hosts_host_operations_use_cases
                     .createEventUnsavedChangesDialogCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'DraftCard',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Draft card states',
+                builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                    .draftCardCatalogStates,
               ),
             ],
           ),
@@ -7298,6 +7328,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_operations_use_cases
                             .hostRosterPrimitiveCatalogStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostAnalyticsMetricGridSkeleton',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Metric grid skeleton states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostAnalyticsMetricGridSkeletonCatalogStates,
                   ),
                 ],
               ),

@@ -853,6 +853,24 @@ Widget hostLoadingSkeletonCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Metric grid skeleton states',
+  type: HostAnalyticsMetricGridSkeleton,
+  path: '[P1 product surfaces]/Host operations/Components',
+)
+Widget hostAnalyticsMetricGridSkeletonCatalogStates(BuildContext context) {
+  return const _HostCatalog(
+    title: 'HostAnalyticsMetricGridSkeleton',
+    contractId: 'component.host.analytics.metric_grid_skeleton',
+    children: [
+      _StateCard(
+        label: 'two metrics',
+        child: SizedBox(width: 360, child: HostAnalyticsMetricGridSkeleton()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Roster primitive states',
   type: CatchRosterTileCell,
   path: '[P1 product surfaces]/Host operations/Components',
@@ -4030,6 +4048,28 @@ Widget createClubPhotosPickerCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Photos label states',
+  type: EditClubPhotosLabel,
+  path: '[P1 product surfaces]/Host create club',
+)
+Widget editClubPhotosLabelCatalogStates(BuildContext context) {
+  return const _HostCatalog(
+    title: 'EditClubPhotosLabel',
+    contractId: 'component.host.club.edit_photos_label',
+    children: [
+      _StateCard(
+        label: 'three photos',
+        child: SizedBox(width: 320, child: EditClubPhotosLabel(count: 3)),
+      ),
+      _StateCard(
+        label: 'empty strip',
+        child: SizedBox(width: 320, child: EditClubPhotosLabel(count: 0)),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Image states',
   type: CreateClubProfileImagePicker,
   path: '[P1 product surfaces]/Host create club',
@@ -4056,6 +4096,39 @@ Widget createClubProfileImagePickerCatalogStates(BuildContext context) {
             onTap: () {},
             variant: CreateClubProfileImagePickerVariant.editLogo,
           ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Profile image tile states',
+  type: ClubProfileImageTile,
+  path: '[P1 product surfaces]/Host create club',
+)
+Widget clubProfileImageTileCatalogStates(BuildContext context) {
+  return _HostCatalog(
+    title: 'ClubProfileImageTile',
+    contractId: 'component.host.club.profile_image_tile',
+    children: [
+      _StateCard(
+        label: 'empty large',
+        child: ClubProfileImageTile(
+          imageBytes: null,
+          existingImageUrl: null,
+          onTap: () {},
+          size: CatchLayout.clubProfileImagePickerExtent,
+          showEmptyLabel: true,
+        ),
+      ),
+      _StateCard(
+        label: 'logo filled',
+        child: ClubProfileImageTile(
+          imageBytes: _createClubPngBytes(),
+          existingImageUrl: null,
+          onTap: () {},
+          size: 64,
         ),
       ),
     ],
@@ -4376,6 +4449,38 @@ Widget draftPickerSheetCatalogStates(BuildContext context) {
             onStartFresh: () {},
             onDeleteDraft: (_) async {},
           ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Draft card states',
+  type: DraftCard,
+  path: '[P1 product surfaces]/Host create event',
+)
+Widget draftCardCatalogStates(BuildContext context) {
+  return _HostCatalog(
+    title: 'DraftCard',
+    contractId: 'component.host.event.draft_card',
+    children: [
+      _StateCard(
+        label: 'saved draft',
+        child: DraftCard(
+          draft: HostOperationsFixtures.eventDraft,
+          isDeleting: false,
+          onSelect: () {},
+          onDelete: () {},
+        ),
+      ),
+      _StateCard(
+        label: 'delete pending',
+        child: DraftCard(
+          draft: HostOperationsFixtures.eventDraft,
+          isDeleting: true,
+          onSelect: () {},
+          onDelete: () {},
         ),
       ),
     ],

@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.536
+version: 2.5.537
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.537
+
+- Cataloged host create/operations leaves directly: club photo count label,
+  club profile image tile, draft card, and analytics metric-grid skeleton. The
+  composed create/edit forms and analytics report remain cataloged, while these
+  smaller public renderers now have independent review states.
 
 ### 2.5.536
 
@@ -5415,6 +5422,7 @@ Generated 2026-05-06.
 | `HostSettingsRowsSkeleton` | `lib/hosts/presentation/widgets/host_loading_skeletons.dart:93` | Settings/profile row skeleton for Host Account, Host Profile, and Host Clubs field-row waves. |
 | `HostEventRowsSkeleton` | `lib/hosts/presentation/widgets/host_loading_skeletons.dart:140` | Hosted-event list skeleton that mirrors `CatchField` event rows with icon, title, secondary metadata, value lane, and chevron placeholder. |
 | `HostAnalyticsReportSkeleton` | `lib/hosts/presentation/widgets/host_loading_skeletons.dart:187` | Host analytics loading body with metric-grid, chart, and row-summary placeholders for the Insights tab. |
+| `HostAnalyticsMetricGridSkeleton` | `lib/hosts/presentation/widgets/host_loading_skeletons.dart:301` | Two-card metric-grid placeholder used by host analytics loading states. Keeps compact stat-card geometry reviewable independently from the full report skeleton. |
 | `HostChartSkeleton` | `lib/hosts/presentation/widgets/host_loading_skeletons.dart:205` | Reusable host chart placeholder used inside analytics/report loading states. |
 | `HostRosterSkeleton` | `lib/hosts/presentation/widgets/host_loading_skeletons.dart:227` | Attendance/participants roster skeleton with filter chips and participant rows for Setup, Live, and Report provider waves. |
 | `HostInlineSkeletonIcon` | `lib/hosts/presentation/widgets/host_loading_skeletons.dart:269` | Compact square skeleton for tiny host inline pending states such as draft-picker delete and private-link metadata loading. |
@@ -5885,7 +5893,9 @@ Generated 2026-05-06.
 | `ClubPolaroidArtwork` | `lib/clubs/presentation/shared/catch_polaroid.dart:115` | Map-style no-photo artwork for club polaroids and compact club crests. It avoids generated initials, uses a quiet location mark, and derives deterministic accents from `ClubCoverVisualPalette`. |
 | `ClubCoverVisualPalette` | `lib/clubs/presentation/shared/catch_polaroid.dart:175` | Deterministic club visual palette derived from `ActivityPalette` and tokens for production cards that need matching no-cover accents. |
 | `CreateClubPhotosPicker` | `lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart:16` | Ordered photo picker for the host create/edit club form. Standard mode keeps the create-flow grid/empty add affordance; `editStrip` mode renders the compact four-up Host Edit Club photo strip with count, cover badge, removable tiles, and reorder helper copy while reusing `OrderedPhotoPicker`. |
+| `EditClubPhotosLabel` | `lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart:149` | Compact edit-strip label/count row for host edit-club photo picker. Owns the PHOTOS kicker and count lane while the picker owns tile order, removal, and reorder copy. |
 | `CreateClubProfileImagePicker` | `lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart:84` | Profile/logo image picker for host create/edit club forms. Standard mode keeps the create-flow square add/change tile; `editLogo` mode renders the compact Host Edit Club logo row with kicker, square tile, camera/edit affordance, and supporting copy. |
+| `ClubProfileImageTile` | `lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart:167` | Reusable square club profile/logo image tile used by create/edit club pickers. Renders memory or network images, the empty raised slot, optional empty label, semantics, and size variants without owning picker state. |
 | `CreateClubContactFields` | `lib/hosts/presentation/club_management/create/widgets/create_club_contact_fields.dart:6` | Contact fields (Instagram, WhatsApp, website, email) for the host create/edit club form. |
 | `DirectoryCard` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:3` | Directory-style club card router for Explore. Chooses the photo card when cover imagery exists and the no-cover identity card otherwise, wraps both in button semantics when tappable, and centralizes joined-state sash selection before delegating to the display cards. |
 | `DirectoryPhotoCard` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:40` | Image-backed Explore club directory card. Uses `CatchPolaroid` with real club imagery through `ClubPhotoMediaOverlay`, overlays `ClubPhotoChrome`, keeps the Archivo club identity band below the media, and renders tags plus hosted-by/action affordances without moving join mutation state into display-only card code. |
@@ -6013,6 +6023,8 @@ Generated 2026-05-06.
 | `EventDetailSocialSection` | `lib/events/presentation/widgets/event_detail_social_section.dart:10` | Social context sections for the loaded event detail body: Who's going and Reviews, both composed with `CatchSection`. The roster supports a guest lock prompt and signed-in roster view; review writing requires an attended `EventParticipation` and an event end time that has passed. |
 | `GuestWhoIsGoing` | `lib/events/presentation/widgets/event_detail_social_section.dart:107` | Public signed-out roster prompt used by `EventDetailSocialSection`. Renders the optional local header and sign-in visibility copy with optional event-detail surface colors. |
 | `MapOverlayControls` | `lib/events/presentation/widgets/map_overlay_controls.dart:5` | Floating safe-area controls for chromeless map surfaces. Provides rounded back affordance plus optional trailing/below content for map actions such as create-event confirm/search. |
+| `DraftPickerSheet` | `lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart:81` | Host create-event draft picker bottom sheet. Owns the local draft list, delete confirmation flow, empty state, and start-fresh action while delegating draft selection and deletion effects to parent callbacks. |
+| `DraftCard` | `lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart:199` | Provider-free draft row renderer used inside `DraftPickerSheet`. Shows draft summary, relative saved timestamp, delete affordance, and delete-pending inline skeleton without owning sheet state. |
 | `EventDetailsStep` | `lib/hosts/presentation/event_management/widgets/event_details_step.dart:16` | First host create-event step. Renders event photos, activity type, optional custom format/structure, distance, pace, and description with handoff `SelectChip` choices and `CatchField` inputs. Activity type choices carry their own activity pigment; format and pace choices inherit the selected activity accent. |
 | `EventPolicyStep` | `lib/hosts/presentation/event_management/widgets/event_policy_step.dart:50` | Host create/edit event policy step for capacity, base price, admission preset, invite code, dynamic pricing, cancellation policy, eligibility bounds, and host payout copy. Uses handoff `SelectChip` selectors for admission/cancellation and `CatchField.toggle` for cohort caps and demand pricing. |
 | `EventSuccessStep` | `lib/hosts/presentation/event_management/widgets/event_success_step.dart:9` | Final host create-event live-guide step. Wraps `EventSuccessDefaultsPanel`, passing the current event capacity so structure defaults can estimate pods/teams from the booking policy while keeping live-guide setup separate from policy editing. |
