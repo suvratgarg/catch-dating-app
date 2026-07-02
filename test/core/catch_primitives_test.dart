@@ -1294,6 +1294,8 @@ void main() {
     expect(find.text('members'), findsOneWidget);
     expect(find.text('upcoming'), findsOneWidget);
     expect(find.text('rating'), findsOneWidget);
+    expect(find.byType(CatchMetricStripCell), findsNWidgets(3));
+    expect(find.byType(CatchMetricStripDivider), findsNWidgets(2));
   });
 
   testWidgets('CatchSection section variant renders row variants', (

@@ -10,14 +10,14 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1110,
-    "widgetClasses": 1010,
+    "total": 1112,
+    "widgetClasses": 1012,
     "stateClasses": 100,
-    "publicClasses": 1010,
+    "publicClasses": 1012,
     "privateClasses": 100,
     "byRole": {
       "atom": 41,
-      "composition": 291,
+      "composition": 293,
       "feature-adapter": 311,
       "pattern": 14,
       "screen": 353,
@@ -27,10 +27,10 @@
       "keep-canonical-contract": 121,
       "keep-public-cataloged": 879,
       "keep-widget-state": 100,
-      "review-promote-or-consolidate": 10
+      "review-promote-or-consolidate": 12
     },
     "byCatalogStatus": {
-      "cataloged": 815,
+      "cataloged": 817,
       "contracted": 121,
       "not-applicable": 100,
       "route-covered": 72,
@@ -3501,7 +3501,7 @@
       "role": "composition",
       "canonicalFamily": "catch.event_thumbnail_activity_fallback",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
@@ -3516,8 +3516,7 @@
         "inlineDelete"
       ],
       "flags": [
-        "core-widget-without-contract",
-        "public-widget-missing-widgetbook"
+        "core-widget-without-contract"
       ]
     },
     {
@@ -3529,7 +3528,7 @@
       "role": "composition",
       "canonicalFamily": "catch.event_thumbnail_scrim_overlay",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
@@ -3544,8 +3543,7 @@
         "inlineDelete"
       ],
       "flags": [
-        "core-widget-without-contract",
-        "public-widget-missing-widgetbook"
+        "core-widget-without-contract"
       ]
     },
     {
@@ -3919,6 +3917,62 @@
         "mergeIntoCanonical"
       ],
       "flags": []
+    },
+    {
+      "name": "CatchMetricStripCell",
+      "file": "lib/core/widgets/catch_metric_strip.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.metric_strip_cell",
+      "publicApi": true,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract",
+        "public-widget-missing-widgetbook"
+      ]
+    },
+    {
+      "name": "CatchMetricStripDivider",
+      "file": "lib/core/widgets/catch_metric_strip.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.metric_strip_divider",
+      "publicApi": true,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract",
+        "public-widget-missing-widgetbook"
+      ]
     },
     {
       "name": "CatchMiniBarChart",

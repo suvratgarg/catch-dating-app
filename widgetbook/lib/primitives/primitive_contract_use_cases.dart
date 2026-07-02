@@ -2402,6 +2402,97 @@ Widget catchMetricStripContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
+  type: CatchMetricStripCell,
+  path: '[Core primitives]/Data display',
+)
+Widget catchMetricStripCellContractStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  return _ContractScreen(
+    title: 'CatchMetricStripCell',
+    contractId: 'catch.metric_strip.cell',
+    states: const ['default', 'with-unit', 'long-label', 'color-overrides'],
+    children: [
+      const _StateCard(
+        label: 'default',
+        child: SizedBox(
+          width: 112,
+          child: CatchMetricStripCell(
+            item: CatchMetricStripItem(value: '24', label: 'going'),
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'with-unit',
+        child: SizedBox(
+          width: 112,
+          child: CatchMetricStripCell(
+            item: CatchMetricStripItem(value: '2.4', unit: 'km', label: 'away'),
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'long-label',
+        child: SizedBox(
+          width: 112,
+          child: CatchMetricStripCell(
+            item: CatchMetricStripItem(
+              value: '98%',
+              label: 'historical show rate',
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'color-overrides',
+        child: SizedBox(
+          width: 112,
+          child: CatchMetricStripCell(
+            valueColor: t.primary,
+            unitColor: t.accent,
+            labelColor: t.ink2,
+            item: const CatchMetricStripItem(
+              value: '12',
+              unit: 'min',
+              label: 'walk',
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchMetricStripDivider,
+  path: '[Core primitives]/Data display',
+)
+Widget catchMetricStripDividerContractStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  return _ContractScreen(
+    title: 'CatchMetricStripDivider',
+    contractId: 'catch.metric_strip.divider',
+    states: const ['default', 'color-override'],
+    children: [
+      _StateCard(
+        label: 'divider colors',
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CatchMetricStripDivider(),
+            const SizedBox(width: CatchSpacing.s2),
+            CatchMetricStripDivider(color: t.primary),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
   type: CatchTopBar,
   path: '[Core primitives]/Navigation',
 )
