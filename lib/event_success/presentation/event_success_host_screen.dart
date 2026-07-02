@@ -1212,31 +1212,6 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
 
   @override
   Widget build(BuildContext context) {
-    final body = _selectedBody();
-    if (!widget.showTabs) return body;
-
-    final tabs = EventSuccessTabPicker(
-      selectedTab: _selectedTab,
-      onChanged: (tab) => setState(() => _selectedTab = tab),
-    );
-
-    if (widget.embedded) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [tabs, gapH16, body],
-      );
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Padding(padding: _hostTabPickerPadding, child: tabs),
-        Expanded(child: body),
-      ],
-    );
-  }
-
-  Widget _selectedBody() {
     final shrinkWrap = widget.embedded;
     final physics = widget.embedded
         ? const NeverScrollableScrollPhysics()
@@ -1245,7 +1220,7 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         ? EdgeInsets.zero
         : CatchInsets.contentRelaxed;
 
-    return switch (_selectedTab) {
+    final body = switch (_selectedTab) {
       EventSuccessHostTab.setup => SetupTab(
         event: widget.event,
         plan: widget.plan,
@@ -1311,6 +1286,27 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         padding: padding,
       ),
     };
+    if (!widget.showTabs) return body;
+
+    final tabs = EventSuccessTabPicker(
+      selectedTab: _selectedTab,
+      onChanged: (tab) => setState(() => _selectedTab = tab),
+    );
+
+    if (widget.embedded) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [tabs, gapH16, body],
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(padding: _hostTabPickerPadding, child: tabs),
+        Expanded(child: body),
+      ],
+    );
   }
 
   Future<void> Function(EventSuccessSetupSaveRequest request)?

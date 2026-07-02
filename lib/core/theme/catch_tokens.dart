@@ -553,6 +553,12 @@ abstract final class CatchInsets {
   /// Dense content padding for compact summary tiles and small controls.
   static const EdgeInsets contentDense = EdgeInsets.all(CatchSpacing.s3);
 
+  /// Event Success live check-in summary strip content padding.
+  static const EdgeInsets eventSuccessLiveSummaryContent = EdgeInsets.symmetric(
+    horizontal: CatchSpacing.s5,
+    vertical: CatchSpacing.s4,
+  );
+
   /// Relaxed content padding for empty states, large cards, and share panels.
   static const EdgeInsets contentRelaxed = EdgeInsets.all(CatchSpacing.s5);
 

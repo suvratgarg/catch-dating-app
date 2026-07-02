@@ -350,15 +350,6 @@ class LiveTab extends StatelessWidget {
   }
 }
 
-MutationState<void>? _firstMutationError(
-  Iterable<MutationState<void>> mutations,
-) {
-  for (final mutation in mutations) {
-    if (mutation.hasError) return mutation;
-  }
-  return null;
-}
-
 class LiveNowConsole extends StatelessWidget {
   const LiveNowConsole({
     super.key,
@@ -462,36 +453,34 @@ class LiveNowConsole extends StatelessWidget {
                 ),
               ),
               gapH12,
-              CatchSurface(
-                padding: CatchInsets.contentDense,
-                backgroundColor: fg.withValues(
-                  alpha: CatchOpacity.photoScrimLight,
-                ),
-                borderColor: fg.withValues(alpha: CatchOpacity.subtleBorder),
-                radius: CatchRadius.sm,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(
-                      CatchIcons.phoneIphoneRounded,
-                      size: CatchIcon.md,
-                      color: fg.withValues(
-                        alpha: CatchOpacity.eventSuccessProminent,
+              ColoredBox(
+                color: fg.withValues(alpha: CatchOpacity.photoScrimLight),
+                child: Padding(
+                  padding: CatchInsets.contentDense,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        CatchIcons.phoneIphoneRounded,
+                        size: CatchIcon.md,
+                        color: fg.withValues(
+                          alpha: CatchOpacity.eventSuccessProminent,
+                        ),
                       ),
-                    ),
-                    gapW8,
-                    Expanded(
-                      child: Text(
-                        attendeeExperience,
-                        style: CatchTextStyles.supporting(
-                          context,
-                          color: fg.withValues(
-                            alpha: CatchOpacity.eventSuccessProminent,
+                      gapW8,
+                      Expanded(
+                        child: Text(
+                          attendeeExperience,
+                          style: CatchTextStyles.supporting(
+                            context,
+                            color: fg.withValues(
+                              alpha: CatchOpacity.eventSuccessProminent,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -586,10 +575,7 @@ class LiveCheckInSummaryStrip extends StatelessWidget {
       backgroundColor: t.ink,
       borderWidth: 0,
       radius: CatchRadius.md,
-      padding: const EdgeInsets.symmetric(
-        horizontal: CatchSpacing.s5,
-        vertical: CatchSpacing.s4,
-      ),
+      padding: CatchInsets.eventSuccessLiveSummaryContent,
       child: Row(
         children: [
           Icon(CatchIcons.gridViewRounded, color: t.bg, size: CatchIcon.row),
