@@ -38,8 +38,8 @@ class EventLocationMapRouteScreen extends ConsumerWidget {
     return CatchAsyncValueView<EventDetailViewModel?>(
       value: vmAsync,
       loadingBuilder: (_) =>
-          _chromelessMapScaffold(child: const EventLocationMapLoadingBody()),
-      errorBuilder: (_, error, _) => _chromelessMapScaffold(
+          const ChromelessMapScaffold(child: EventLocationMapLoadingBody()),
+      errorBuilder: (_, error, _) => ChromelessMapScaffold(
         child: CatchErrorState.fromError(
           error,
           context: AppErrorContext.event,
@@ -49,8 +49,8 @@ class EventLocationMapRouteScreen extends ConsumerWidget {
       builder: (context, vm) {
         final event = vm?.event;
         if (event == null) {
-          return _chromelessMapScaffold(
-            child: const CatchErrorState(
+          return const ChromelessMapScaffold(
+            child: CatchErrorState(
               title: 'Event not found',
               message: 'This event is no longer available.',
             ),
@@ -62,8 +62,8 @@ class EventLocationMapRouteScreen extends ConsumerWidget {
         );
 
         if (!state.hasExactStartingPoint) {
-          return _chromelessMapScaffold(
-            child: const CatchErrorState(
+          return const ChromelessMapScaffold(
+            child: CatchErrorState(
               title: 'Location unavailable',
               message:
                   'This event does not have an exact pinned starting point yet.',
@@ -71,7 +71,7 @@ class EventLocationMapRouteScreen extends ConsumerWidget {
           );
         }
 
-        return _chromelessMapScaffold(
+        return ChromelessMapScaffold(
           safeArea: false,
           child: EventLocationMapScreen(
             state: state,
@@ -261,9 +261,19 @@ class EventLocationMapScreen extends StatelessWidget {
   }
 }
 
-Widget _chromelessMapScaffold({required Widget child, bool safeArea = true}) {
-  return Builder(
-    builder: (context) => Scaffold(
+class ChromelessMapScaffold extends StatelessWidget {
+  const ChromelessMapScaffold({
+    super.key,
+    required this.child,
+    this.safeArea = true,
+  });
+
+  final Widget child;
+  final bool safeArea;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
       backgroundColor: CatchTokens.of(context).bg,
       body: Stack(
         children: [
@@ -271,6 +281,6 @@ Widget _chromelessMapScaffold({required Widget child, bool safeArea = true}) {
           const MapOverlayControls(),
         ],
       ),
-    ),
-  );
+    );
+  }
 }

@@ -2218,6 +2218,37 @@ Widget eventMapViewStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Map empty states',
+  type: EventMapEmptyState,
+  path: '[Events]/Map',
+)
+Widget eventMapEmptyStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'Event map empty states',
+    catalogId: 'screen.events.map.empty_states',
+    children: [
+      _StateCard(
+        label: 'no mapped events',
+        child: SizedBox(height: 220, child: EventMapEmptyState()),
+      ),
+      _StateCard(
+        label: 'no exact pins',
+        child: SizedBox(height: 220, child: EventMapNoPinnedEventsState()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Map no-pinned state',
+  type: EventMapNoPinnedEventsState,
+  path: '[Events]/Map',
+)
+Widget eventMapNoPinnedEventsState(BuildContext context) {
+  return const SizedBox(height: 220, child: EventMapNoPinnedEventsState());
+}
+
+@widgetbook.UseCase(
   name: 'Location loading',
   type: EventLocationMapLoadingBody,
   path: '[Events]/Map',
@@ -2236,6 +2267,17 @@ Widget eventMapLoadingBodyState(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Chromeless map scaffold',
+  type: ChromelessMapScaffold,
+  path: '[Events]/Map',
+)
+Widget chromelessMapScaffoldState(BuildContext context) {
+  return const _DeviceFrame(
+    child: ChromelessMapScaffold(child: EventMapLoadingBody()),
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Map placeholder',
   type: EventPinsMap,
   path: '[Events]/Map',
@@ -2249,6 +2291,25 @@ Widget eventPinsMapState(BuildContext context) {
       selectedEventId: _event.id,
       selectedEventCenter: _mapCenter,
       enableNetworkTiles: false,
+      userLocation: _mapCenter,
+      distanceRingRadiusKm: 3,
+      onEventSelected: (_) {},
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Pins placeholder',
+  type: EventPinsMapPlaceholder,
+  path: '[Events]/Map',
+)
+Widget eventPinsMapPlaceholderState(BuildContext context) {
+  return SizedBox(
+    height: 360,
+    child: EventPinsMapPlaceholder(
+      items: _eventMapItems(),
+      selectedEventId: _event.id,
+      markerIcon: CatchIcons.running,
       userLocation: _mapCenter,
       distanceRingRadiusKm: 3,
       onEventSelected: (_) {},

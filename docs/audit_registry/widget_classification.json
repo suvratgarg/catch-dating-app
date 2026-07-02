@@ -10,26 +10,26 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1096,
-    "widgetClasses": 996,
+    "total": 1100,
+    "widgetClasses": 1000,
     "stateClasses": 100,
-    "publicClasses": 996,
+    "publicClasses": 1000,
     "privateClasses": 100,
     "byRole": {
       "atom": 37,
       "composition": 285,
-      "feature-adapter": 310,
+      "feature-adapter": 311,
       "pattern": 14,
-      "screen": 350,
+      "screen": 353,
       "widget-state": 100
     },
     "byDecision": {
       "keep-canonical-contract": 121,
-      "keep-public-cataloged": 875,
+      "keep-public-cataloged": 879,
       "keep-widget-state": 100
     },
     "byCatalogStatus": {
-      "cataloged": 803,
+      "cataloged": 807,
       "contracted": 121,
       "not-applicable": 100,
       "route-covered": 72
@@ -12570,6 +12570,29 @@
       "flags": []
     },
     {
+      "name": "ChromelessMapScaffold",
+      "file": "lib/events/presentation/event_location_map_screen.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.chromeless_map_scaffold",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
       "name": "EventLocationMapLoadingBody",
       "file": "lib/events/presentation/event_location_map_screen.dart",
       "classKind": "widget",
@@ -12662,6 +12685,29 @@
       "flags": []
     },
     {
+      "name": "EventMapEmptyState",
+      "file": "lib/events/presentation/event_map_screen.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.event_map_empty_state",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
       "name": "EventMapLoadingBody",
       "file": "lib/events/presentation/event_map_screen.dart",
       "classKind": "widget",
@@ -12669,6 +12715,29 @@
       "visibility": "public",
       "role": "screen",
       "canonicalFamily": "screen.event_map_loading_body",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "EventMapNoPinnedEventsState",
+      "file": "lib/events/presentation/event_map_screen.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.event_map_no_pinned_events_state",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,
@@ -14193,6 +14262,29 @@
       "visibility": "public",
       "role": "feature-adapter",
       "canonicalFamily": "feature.events.event_pins_map",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "feature-display-models",
+      "stateOwnership": "feature-display-state",
+      "asyncOwnership": "display-state-only",
+      "layoutOwnership": "feature-section-layout",
+      "actionOwnership": "feature-callbacks",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "EventPinsMapPlaceholder",
+      "file": "lib/events/presentation/widgets/event_pins_map.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "feature-adapter",
+      "canonicalFamily": "feature.events.event_pins_map_placeholder",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,

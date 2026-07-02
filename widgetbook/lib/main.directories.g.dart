@@ -3075,6 +3075,16 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Map',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'ChromelessMapScaffold',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Chromeless map scaffold',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .chromelessMapScaffoldState,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'EventLocationMapLoadingBody',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3085,12 +3095,32 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'EventMapEmptyState',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Map empty states',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventMapEmptyStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'EventMapLoadingBody',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Map loading',
                 builder: _widgetbook_workspace_events_event_detail_use_cases
                     .eventMapLoadingBodyState,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventMapNoPinnedEventsState',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Map no-pinned state',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventMapNoPinnedEventsState,
               ),
             ],
           ),
@@ -3111,6 +3141,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Map placeholder',
                 builder: _widgetbook_workspace_events_event_detail_use_cases
                     .eventPinsMapState,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventPinsMapPlaceholder',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Pins placeholder',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventPinsMapPlaceholderState,
               ),
             ],
           ),
