@@ -4,16 +4,6 @@
   "description": "Current dependency-direction debt baseline. Normal scanner runs fail on findings not listed here.",
   "allowedFindings": [
     {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/events/presentation/event_map_screen.dart",
-      "import": "package:catch_dating_app/explore/presentation/explore_view_model.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/explore/presentation/widgets/explore_list.dart",
-      "import": "package:catch_dating_app/clubs/presentation/detail/club_membership_controller.dart"
-    },
-    {
       "rule": "presentationPluginImport",
       "path": "lib/event_success/presentation/event_success_companion_screen.dart",
       "import": "package:mobile_scanner/mobile_scanner.dart"
