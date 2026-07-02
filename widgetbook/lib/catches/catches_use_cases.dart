@@ -1557,6 +1557,60 @@ Widget catchesReactionControlStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Reaction button states',
+  type: ReactionControlButton,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget reactionControlButtonStates(BuildContext context) {
+  return _CatchesCatalog(
+    title: 'ReactionControlButton',
+    contractId: 'screen.catches.event.reaction_button',
+    children: [
+      _StateCard(
+        label: 'surface',
+        child: _SectionFrame(
+          height: 140,
+          child: Center(
+            child: ReactionControlButton(
+              tooltip: 'Like prompt',
+              icon: CatchIcons.favoriteBorderRounded,
+              onPressed: _noopTap,
+              style: ProfileReactionControlsStyle.surface,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'overlay pending disabled',
+        child: _SectionFrame(
+          height: 140,
+          child: Center(
+            child: Wrap(
+              spacing: CatchSpacing.s3,
+              children: [
+                ReactionControlButton(
+                  tooltip: 'Comment on photo',
+                  icon: CatchIcons.chatBubbleOutlineRounded,
+                  onPressed: _noopTap,
+                  style: ProfileReactionControlsStyle.overlay,
+                  isPending: true,
+                ),
+                ReactionControlButton(
+                  tooltip: 'Like section unavailable',
+                  icon: CatchIcons.favoriteBorderRounded,
+                  onPressed: null,
+                  style: ProfileReactionControlsStyle.surface,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Reaction comment sheet states',
   type: ProfileReactionCommentSheet,
   path: '[P1 product surfaces]/Catches/Sections',

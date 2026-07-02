@@ -4351,6 +4351,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'ReactionControlButton',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Reaction button states',
+                    builder: _widgetbook_workspace_catches_catches_use_cases
+                        .reactionControlButtonStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'RunningStat',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(

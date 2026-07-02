@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.535
+version: 2.5.536
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.536
+
+- Cataloged `ReactionControlButton` directly in the Catches Widgetbook surface
+  so like/comment button chrome, pending state, disabled state, and overlay
+  styling are reviewed independently from the composed
+  `ProfileReactionControls` pair.
 
 ### 2.5.535
 
@@ -5523,6 +5530,7 @@ Generated 2026-05-06.
 | `ProfileInfoChip` | `lib/swipes/presentation/widgets/profile_info_chip.dart:3` | Single compact info chip on the profile surface — muted icon + label. |
 | `CatchesPassButton` | `lib/swipes/presentation/widgets/catches_pass_button.dart:6` | Floating lower-left pass button used on the Catches decision screen after removing generic deck action buttons. Uses the shared pass key, tooltip, semantic label, disabled opacity, and pending spinner state supplied by the route-owned action state. |
 | `ProfileReactionControls` | `lib/swipes/presentation/widgets/profile_reaction_controls.dart:22` | Shared like/comment controls for reactable profile sections. Catches uses surface, overlay, vertical, disabled, and pending variants; the comment action opens the shared reaction comment sheet. |
+| `ReactionControlButton` | `lib/swipes/presentation/widgets/profile_reaction_controls.dart:198` | Single circular like/comment button used by `ProfileReactionControls`. Receives tooltip, icon, enabled callback, surface/overlay style, and pending state explicitly, then renders semantics, tokenized circular chrome, disabled opacity, and pending spinner without owning reaction submission. |
 | `ProfileReactionCommentSheet` | `lib/swipes/presentation/widgets/profile_reaction_controls.dart:100` | Shared reaction-comment bottom sheet used by `ProfileReactionControls`. Keeps comment entry provider-free, uses canonical `CatchBottomSheetScaffold`/`CatchField` chrome, supports empty and prefilled draft review states, and is cataloged directly for exact Widgetbook review. |
 | `SwipeEmptyState` | `lib/swipes/presentation/widgets/swipe_empty_state.dart:7` | Provider-free deck empty/access state. Renders copy from `buildSwipeEmptyContent` for empty queue, event missing, sign-in required, event in progress, did-not-attend, and closed-window branches. |
 | `AttendedEventTile` | `lib/swipes/presentation/widgets/attended_event_tile.dart:11` | Provider-free row tile for an attended event in the catches hub list. Renders `CatchesHubEventRow` title, date/attendance label, countdown label, recap CTA, and catch badge; catch and recap navigation callbacks are supplied by `SwipeHubScreen`. |
