@@ -11,6 +11,7 @@ import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
@@ -2271,27 +2272,30 @@ Widget hostTeamAddHostSheetStates(BuildContext context) {
       _StateCard(
         label: 'add pending',
         child: const _DeviceFrame(
-          child: _HostClubsMutationPreview(
-            mode: _HostClubsMutationPreviewMode.teamAddPending,
-            child: _HostShellScope(child: _HostTeamAddHostSheetPreview()),
+          child: _HostShellScope(
+            child: _HostTeamAddHostSheetPreview(
+              mode: _HostTeamAddHostSheetPreviewMode.pending,
+            ),
           ),
         ),
       ),
       _StateCard(
         label: 'add error',
         child: const _DeviceFrame(
-          child: _HostClubsMutationPreview(
-            mode: _HostClubsMutationPreviewMode.teamAddError,
-            child: _HostShellScope(child: _HostTeamAddHostSheetPreview()),
+          child: _HostShellScope(
+            child: _HostTeamAddHostSheetPreview(
+              mode: _HostTeamAddHostSheetPreviewMode.error,
+            ),
           ),
         ),
       ),
       _StateCard(
         label: 'add offline',
         child: const _DeviceFrame(
-          child: _HostClubsMutationPreview(
-            mode: _HostClubsMutationPreviewMode.teamAddOffline,
-            child: _HostShellScope(child: _HostTeamAddHostSheetPreview()),
+          child: _HostShellScope(
+            child: _HostTeamAddHostSheetPreview(
+              mode: _HostTeamAddHostSheetPreviewMode.offline,
+            ),
           ),
         ),
       ),
@@ -7585,9 +7589,6 @@ enum _HostClubsMutationPreviewMode {
   payoutRefreshPending,
   payoutRefreshError,
   payoutRefreshOffline,
-  teamAddPending,
-  teamAddError,
-  teamAddOffline,
   teamPending,
   teamError,
   teamOffline,
@@ -7689,21 +7690,6 @@ class _HostClubsMutationPreviewState
           obviousOfflineException(),
         );
         break;
-      case _HostClubsMutationPreviewMode.teamAddPending:
-        _runPending(HostTeamManagementController.addHostMutation);
-        break;
-      case _HostClubsMutationPreviewMode.teamAddError:
-        _runError(
-          HostTeamManagementController.addHostMutation,
-          StateError('Widgetbook add host failed'),
-        );
-        break;
-      case _HostClubsMutationPreviewMode.teamAddOffline:
-        _runError(
-          HostTeamManagementController.addHostMutation,
-          obviousOfflineException(),
-        );
-        break;
       case _HostClubsMutationPreviewMode.teamPending:
         _runPending(HostTeamManagementController.removeHostMutation);
         break;
@@ -7754,14 +7740,42 @@ class _HostTeamSectionPreview extends StatelessWidget {
   }
 }
 
+enum _HostTeamAddHostSheetPreviewMode { ready, pending, error, offline }
+
 class _HostTeamAddHostSheetPreview extends StatelessWidget {
-  const _HostTeamAddHostSheetPreview();
+  const _HostTeamAddHostSheetPreview({
+    this.mode = _HostTeamAddHostSheetPreviewMode.ready,
+  });
+
+  final _HostTeamAddHostSheetPreviewMode mode;
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    final actionState = switch (mode) {
+      _HostTeamAddHostSheetPreviewMode.ready =>
+        const HostTeamAddHostActionState(),
+      _HostTeamAddHostSheetPreviewMode.pending =>
+        const HostTeamAddHostActionState(isSaving: true),
+      _HostTeamAddHostSheetPreviewMode.error => HostTeamAddHostActionState(
+        errorMessage: appErrorMessage(
+          StateError('Widgetbook add host failed'),
+          context: AppErrorContext.club,
+        ),
+      ),
+      _HostTeamAddHostSheetPreviewMode.offline => HostTeamAddHostActionState(
+        errorMessage: appErrorMessage(
+          obviousOfflineException(),
+          context: AppErrorContext.club,
+        ),
+      ),
+    };
+
+    return Scaffold(
       body: SafeArea(
-        child: HostTeamAddHostSheet(clubId: 'design-host-sea-face'),
+        child: HostTeamAddHostSheet(
+          clubId: 'design-host-sea-face',
+          actionState: actionState,
+        ),
       ),
     );
   }
