@@ -228,8 +228,7 @@ class _ProfilePhotoEditorScreenState
                       clipBehavior: Clip.antiAlias,
                       child: AspectRatio(
                         aspectRatio: profilePhotoAspectRatio,
-                        child: _photoEditorPreview(
-                          context: context,
+                        child: ProfilePhotoEditorPreview(
                           cropKey: _cropKey,
                           bytes: _imageBytes,
                           url: widget.photo?.url,
@@ -306,51 +305,61 @@ class _ProfilePhotoEditorScreenState
   }
 }
 
-Widget _photoEditorPreview({
-  required BuildContext context,
-  required GlobalKey cropKey,
-  required Uint8List? bytes,
-  required String? url,
-  required bool loading,
-}) {
-  final t = CatchTokens.of(context);
-  final imageBytes = bytes;
-  final existingUrl = url;
+class ProfilePhotoEditorPreview extends StatelessWidget {
+  const ProfilePhotoEditorPreview({
+    super.key,
+    required this.cropKey,
+    required this.loading,
+    this.bytes,
+    this.url,
+  });
 
-  if (loading) {
-    return CatchSkeleton.custom(
-      child: const ColoredBox(
-        color: CatchTokens.editorialLight,
-        child: SizedBox.expand(),
-      ),
-    );
-  }
-  if (imageBytes != null) {
-    return RepaintBoundary(
-      key: cropKey,
-      child: ClipRect(
-        child: InteractiveViewer(
-          minScale: 1,
-          maxScale: 4,
-          boundaryMargin: const EdgeInsets.all(
-            CatchLayout.profilePhotoEditorBoundaryMargin,
-          ),
-          child: SizedBox.expand(
-            child: Image.memory(imageBytes, fit: BoxFit.cover),
+  final GlobalKey cropKey;
+  final bool loading;
+  final Uint8List? bytes;
+  final String? url;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final imageBytes = bytes;
+    final existingUrl = url;
+
+    if (loading) {
+      return CatchSkeleton.custom(
+        child: const ColoredBox(
+          color: CatchTokens.editorialLight,
+          child: SizedBox.expand(),
+        ),
+      );
+    }
+    if (imageBytes != null) {
+      return RepaintBoundary(
+        key: cropKey,
+        child: ClipRect(
+          child: InteractiveViewer(
+            minScale: 1,
+            maxScale: 4,
+            boundaryMargin: const EdgeInsets.all(
+              CatchLayout.profilePhotoEditorBoundaryMargin,
+            ),
+            child: SizedBox.expand(
+              child: Image.memory(imageBytes, fit: BoxFit.cover),
+            ),
           ),
         ),
+      );
+    }
+    if (existingUrl != null) {
+      return CatchNetworkImage(existingUrl);
+    }
+    return ColoredBox(
+      color: t.primarySoft,
+      child: Center(
+        child: Icon(CatchIcons.addPhotoAlternateOutlined, color: t.primary),
       ),
     );
   }
-  if (existingUrl != null) {
-    return CatchNetworkImage(existingUrl);
-  }
-  return ColoredBox(
-    color: t.primarySoft,
-    child: Center(
-      child: Icon(CatchIcons.addPhotoAlternateOutlined, color: t.primary),
-    ),
-  );
 }
 
 final class _PhotoPromptChoice {

@@ -560,6 +560,87 @@ Widget orderedPhotoPickerStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Ordered tile states',
+  type: OrderedPhotoTile,
+  path: '[P3 utility surfaces]/Image uploads',
+)
+Widget orderedPhotoTileStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'OrderedPhotoTile',
+    contractId: 'component.image_uploads.ordered_photo_tile',
+    children: [
+      _StateCard(
+        label: 'cover removable',
+        child: Center(
+          child: SizedBox(
+            width: 260,
+            height: 146,
+            child: OrderedPhotoTile(
+              photo: _orderedPhotoPreviews.first,
+              index: 0,
+              canReorder: true,
+              showCoverBadge: true,
+              showReorderHandle: true,
+              onRemove: _noop,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'read only',
+        child: Center(
+          child: SizedBox(
+            width: 260,
+            height: 146,
+            child: OrderedPhotoTile(
+              photo: _orderedPhotoPreviews.last,
+              index: 1,
+              canReorder: false,
+              showCoverBadge: false,
+              showReorderHandle: false,
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Ordered add tile states',
+  type: OrderedPhotoAddTile,
+  path: '[P3 utility surfaces]/Image uploads',
+)
+Widget orderedPhotoAddTileStates(BuildContext context) {
+  return const _UtilityCatalog(
+    title: 'OrderedPhotoAddTile',
+    contractId: 'component.image_uploads.ordered_photo_add_tile',
+    children: [
+      _StateCard(
+        label: 'active',
+        child: Center(
+          child: SizedBox(
+            width: 260,
+            height: 146,
+            child: OrderedPhotoAddTile(label: 'Add event photos', onTap: _noop),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'disabled compact',
+        child: Center(
+          child: SizedBox(
+            width: 160,
+            height: 82,
+            child: OrderedPhotoAddTile(label: 'Add more'),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Slot states',
   type: PhotoSlot,
   path: '[P3 utility surfaces]/Image uploads',
@@ -683,6 +764,60 @@ Widget profilePhotoEditorScreenStates(BuildContext context) {
                 photo: _profilePhotos.first,
                 canDelete: true,
               ),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Editor preview states',
+  type: ProfilePhotoEditorPreview,
+  path: '[P3 utility surfaces]/Image uploads',
+)
+Widget profilePhotoEditorPreviewStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'ProfilePhotoEditorPreview',
+    contractId: 'component.image_uploads.profile_photo_editor_preview',
+    children: [
+      _StateCard(
+        label: 'existing image',
+        child: Center(
+          child: SizedBox(
+            width: 260,
+            height: 347,
+            child: ProfilePhotoEditorPreview(
+              cropKey: GlobalKey(),
+              loading: false,
+              url: _profilePhotos.first.url,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'loading',
+        child: Center(
+          child: SizedBox(
+            width: 260,
+            height: 347,
+            child: ProfilePhotoEditorPreview(
+              cropKey: GlobalKey(),
+              loading: true,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'empty',
+        child: Center(
+          child: SizedBox(
+            width: 260,
+            height: 347,
+            child: ProfilePhotoEditorPreview(
+              cropKey: GlobalKey(),
+              loading: false,
             ),
           ),
         ),

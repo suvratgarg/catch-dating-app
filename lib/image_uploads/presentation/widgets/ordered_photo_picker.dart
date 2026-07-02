@@ -81,7 +81,7 @@ class _OrderedPhotoPickerState extends State<OrderedPhotoPicker> {
         if (photos.isEmpty)
           AspectRatio(
             aspectRatio: CatchAspectRatio.wide16x9,
-            child: _addPhotoTile(
+            child: OrderedPhotoAddTile(
               label: widget.emptyActionLabel,
               onTap: widget.onAddPhotos,
             ),
@@ -123,14 +123,14 @@ class _OrderedPhotoPickerState extends State<OrderedPhotoPicker> {
                 ),
                 itemBuilder: (context, index) {
                   if (index >= photos.length) {
-                    return _addPhotoTile(
+                    return OrderedPhotoAddTile(
                       label: widget.addActionLabel,
                       onTap: widget.onAddPhotos,
                     );
                   }
                   final photo = photos[index];
                   return itemBuilder(
-                    _orderedPhotoTile(
+                    OrderedPhotoTile(
                       key: ValueKey(photo.id),
                       photo: photo,
                       index: index,
@@ -152,183 +152,189 @@ class _OrderedPhotoPickerState extends State<OrderedPhotoPicker> {
   }
 }
 
-Widget _orderedPhotoTile({
-  required Key key,
-  required OrderedPhotoPreview photo,
-  required int index,
-  required bool canReorder,
-  required bool showCoverBadge,
-  required bool showReorderHandle,
-  VoidCallback? onRemove,
-}) {
-  return KeyedSubtree(
-    key: key,
-    child: Builder(
-      builder: (context) {
-        final t = CatchTokens.of(context);
+class OrderedPhotoTile extends StatelessWidget {
+  const OrderedPhotoTile({
+    super.key,
+    required this.photo,
+    required this.index,
+    required this.canReorder,
+    required this.showCoverBadge,
+    required this.showReorderHandle,
+    this.onRemove,
+  });
 
-        return Semantics(
-          image: true,
-          label: 'Photo ${index + 1}',
-          child: Tooltip(
-            message: 'Photo ${index + 1}',
-            excludeFromSemantics: true,
-            child: CatchSurface(
-              tone: CatchSurfaceTone.raised,
-              radius: CatchRadius.md,
-              borderWidth: 0,
-              clipBehavior: Clip.antiAlias,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  if (photo.bytes != null)
-                    Image.memory(photo.bytes!, fit: BoxFit.cover)
-                  else
-                    CatchNetworkImage(
-                      photo.imageUrl!,
-                      errorBuilder: (_, _, _) => ColoredBox(
-                        color: t.raised,
-                        child: Center(
-                          child: Icon(
-                            CatchIcons.brokenImageOutlined,
-                            size: CatchIcon.tile,
-                            color: t.ink2,
-                          ),
-                        ),
-                      ),
-                    ),
-                  if (onRemove != null)
-                    Positioned(
-                      top: CatchSpacing.s1,
-                      right: CatchSpacing.s1,
-                      child: Tooltip(
-                        message: 'Remove photo ${index + 1}',
-                        child: Material(
-                          color: t.surface.withValues(
-                            alpha: CatchOpacity.photoSlotDeleteChrome,
-                          ),
-                          shape: const CircleBorder(),
-                          clipBehavior: Clip.antiAlias,
-                          child: InkWell(
-                            key: OrderedPhotoPickerKeys.removeAction(index),
-                            customBorder: const CircleBorder(),
-                            onTap: onRemove,
-                            child: SizedBox.square(
-                              dimension: CatchLayout.photoSlotDeleteExtent,
-                              child: Icon(
-                                CatchIcons.closeRounded,
-                                size: CatchIcon.sm,
-                                color: t.ink,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  if (showCoverBadge)
-                    Positioned(
-                      top: CatchSpacing.s1,
-                      left: CatchSpacing.s1,
-                      child: CatchSurface(
-                        radius: CatchRadius.pill,
-                        borderWidth: 0,
-                        backgroundColor: t.ink.withValues(
-                          alpha: CatchOpacity.photoSlotDeleteChrome,
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: CatchSpacing.micro6,
-                          vertical: CatchSpacing.micro3,
-                        ),
-                        child: Text(
-                          'COVER',
-                          style: CatchTextStyles.monoLabel(
-                            context,
-                            color: t.surface,
-                          ),
-                        ),
-                      ),
-                    ),
-                  if (canReorder && showReorderHandle)
-                    Positioned(
-                      bottom: CatchSpacing.s1,
-                      right: CatchSpacing.s1,
-                      child: CatchIconTile(
-                        icon: CatchIcons.dragIndicatorRounded,
-                        iconColor: t.ink,
-                        backgroundColor: t.surface.withValues(
-                          alpha: CatchOpacity.imageEditControlFill,
-                        ),
-                        borderColor: Colors.transparent,
-                        size: CatchIcon.row,
-                        iconSize: CatchIcon.sm,
-                        radius: CatchRadius.pill,
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    ),
-  );
-}
+  final OrderedPhotoPreview photo;
+  final int index;
+  final bool canReorder;
+  final bool showCoverBadge;
+  final bool showReorderHandle;
+  final VoidCallback? onRemove;
 
-Widget _addPhotoTile({required String label, required VoidCallback? onTap}) {
-  return Builder(
-    builder: (context) {
-      final t = CatchTokens.of(context);
-      return Semantics(
-        button: true,
-        enabled: onTap != null,
-        label: label,
-        child: Tooltip(
-          message: label,
-          excludeFromSemantics: true,
-          child: CatchSurface(
-            key: OrderedPhotoPickerKeys.addAction(label),
-            tone: CatchSurfaceTone.raised,
-            radius: CatchRadius.md,
-            borderWidth: 0,
-            clipBehavior: Clip.antiAlias,
-            onTap: onTap,
-            padding: CatchInsets.contentDense,
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final textScale = MediaQuery.textScalerOf(context).scale(1);
-                final showLabel =
-                    constraints.maxHeight >= 96 && textScale < 1.4;
-                return ExcludeSemantics(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        CatchIcons.addPhotoAlternateOutlined,
-                        size: CatchIcon.hero,
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Semantics(
+      image: true,
+      label: 'Photo ${index + 1}',
+      child: Tooltip(
+        message: 'Photo ${index + 1}',
+        excludeFromSemantics: true,
+        child: CatchSurface(
+          tone: CatchSurfaceTone.raised,
+          radius: CatchRadius.md,
+          borderWidth: 0,
+          clipBehavior: Clip.antiAlias,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              if (photo.bytes != null)
+                Image.memory(photo.bytes!, fit: BoxFit.cover)
+              else
+                CatchNetworkImage(
+                  photo.imageUrl!,
+                  errorBuilder: (_, _, _) => ColoredBox(
+                    color: t.raised,
+                    child: Center(
+                      child: Icon(
+                        CatchIcons.brokenImageOutlined,
+                        size: CatchIcon.tile,
                         color: t.ink2,
                       ),
-                      if (showLabel) ...[
-                        gapH8,
-                        Text(
-                          label,
-                          style: CatchTextStyles.bodyLead(
-                            context,
-                            color: t.ink2,
-                          ),
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ],
+                    ),
                   ),
-                );
-              },
-            ),
+                ),
+              if (onRemove != null)
+                Positioned(
+                  top: CatchSpacing.s1,
+                  right: CatchSpacing.s1,
+                  child: Tooltip(
+                    message: 'Remove photo ${index + 1}',
+                    child: Material(
+                      color: t.surface.withValues(
+                        alpha: CatchOpacity.photoSlotDeleteChrome,
+                      ),
+                      shape: const CircleBorder(),
+                      clipBehavior: Clip.antiAlias,
+                      child: InkWell(
+                        key: OrderedPhotoPickerKeys.removeAction(index),
+                        customBorder: const CircleBorder(),
+                        onTap: onRemove,
+                        child: SizedBox.square(
+                          dimension: CatchLayout.photoSlotDeleteExtent,
+                          child: Icon(
+                            CatchIcons.closeRounded,
+                            size: CatchIcon.sm,
+                            color: t.ink,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              if (showCoverBadge)
+                Positioned(
+                  top: CatchSpacing.s1,
+                  left: CatchSpacing.s1,
+                  child: CatchSurface(
+                    radius: CatchRadius.pill,
+                    borderWidth: 0,
+                    backgroundColor: t.ink.withValues(
+                      alpha: CatchOpacity.photoSlotDeleteChrome,
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: CatchSpacing.micro6,
+                      vertical: CatchSpacing.micro3,
+                    ),
+                    child: Text(
+                      'COVER',
+                      style: CatchTextStyles.monoLabel(
+                        context,
+                        color: t.surface,
+                      ),
+                    ),
+                  ),
+                ),
+              if (canReorder && showReorderHandle)
+                Positioned(
+                  bottom: CatchSpacing.s1,
+                  right: CatchSpacing.s1,
+                  child: CatchIconTile(
+                    icon: CatchIcons.dragIndicatorRounded,
+                    iconColor: t.ink,
+                    backgroundColor: t.surface.withValues(
+                      alpha: CatchOpacity.imageEditControlFill,
+                    ),
+                    borderColor: Colors.transparent,
+                    size: CatchIcon.row,
+                    iconSize: CatchIcon.sm,
+                    radius: CatchRadius.pill,
+                  ),
+                ),
+            ],
           ),
         ),
-      );
-    },
-  );
+      ),
+    );
+  }
+}
+
+class OrderedPhotoAddTile extends StatelessWidget {
+  const OrderedPhotoAddTile({super.key, required this.label, this.onTap});
+
+  final String label;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Semantics(
+      button: true,
+      enabled: onTap != null,
+      label: label,
+      child: Tooltip(
+        message: label,
+        excludeFromSemantics: true,
+        child: CatchSurface(
+          key: OrderedPhotoPickerKeys.addAction(label),
+          tone: CatchSurfaceTone.raised,
+          radius: CatchRadius.md,
+          borderWidth: 0,
+          clipBehavior: Clip.antiAlias,
+          onTap: onTap,
+          padding: CatchInsets.contentDense,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final textScale = MediaQuery.textScalerOf(context).scale(1);
+              final showLabel = constraints.maxHeight >= 96 && textScale < 1.4;
+              return ExcludeSemantics(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      CatchIcons.addPhotoAlternateOutlined,
+                      size: CatchIcon.hero,
+                      color: t.ink2,
+                    ),
+                    if (showLabel) ...[
+                      gapH8,
+                      Text(
+                        label,
+                        style: CatchTextStyles.bodyLead(context, color: t.ink2),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
 }

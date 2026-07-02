@@ -5857,22 +5857,25 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `ProfilePhotoEditorScreen` | `lib/image_uploads/presentation/profile_photo_editor_screen.dart:14` | Add/edit profile-photo flow opened by onboarding and Edit Profile. It picks or replaces the image, shows a crop preview, lets the user choose an optional catalog photo prompt that is not already used by another profile photo, supports guarded deletion, and saves through `PhotoUploadController.savePhoto` so grouped `profilePhotos` stay synchronized and duplicate prompts are cleared. The image-preview loading branch keeps the bounded crop frame and renders a `CatchSkeleton.custom` placeholder instead of an unshaped progress spinner. |
+| `ProfilePhotoEditorScreen` | `lib/image_uploads/presentation/profile_photo_editor_screen.dart:25` | Add/edit profile-photo flow opened by onboarding and Edit Profile. It picks or replaces the image, shows a crop preview, lets the user choose an optional catalog photo prompt that is not already used by another profile photo, supports guarded deletion, and saves through `PhotoUploadController.savePhoto` so grouped `profilePhotos` stay synchronized and duplicate prompts are cleared. The image-preview loading branch keeps the bounded crop frame and renders a `CatchSkeleton.custom` placeholder instead of an unshaped progress spinner. |
 
 ### StatefulWidget
 
 | Widget | File | Purpose |
 |---|---|---|
 | `OrderedPhotoPicker` | `lib/image_uploads/presentation/widgets/ordered_photo_picker.dart:32` | Shared ordered media picker for host club/event forms. Filters to previews with image data, renders add/photo tiles on `CatchSurface`, preserves semantic labels/tooltips, exposes stable add/remove keys, supports optional removal and reorder callbacks, optional first-photo cover badge, optional reorder-handle visibility, and keeps callers responsible for upload/persistence state. Add-tile visible labels collapse in short/high text-scale tiles while semantic labels and tooltips remain. |
+| `PhotoGrid` | `lib/image_uploads/presentation/photo_grid.dart:15` | Dense 3x2 profile photo grid over normalized `ProfilePhoto` objects. Uses `maximumProfilePhotoCount`, keyed slots, guarded delete callbacks, optional reorder, and a hideable leading `MAIN` label; callers own opening `ProfilePhotoEditorScreen` and enforcing the completed-profile minimum. |
 
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `PhotoGrid` | `lib/image_uploads/presentation/photo_grid.dart:10` | Dense 3x2 profile photo grid over normalized `ProfilePhoto` objects. Uses `maximumProfilePhotoCount`, keyed slots, guarded delete callbacks, optional reorder, and a hideable leading `MAIN` label; callers own opening `ProfilePhotoEditorScreen` and enforcing the completed-profile minimum. |
-| `PhotoSlot` | `lib/image_uploads/presentation/widgets/photo_slot.dart:6` | Single keyed profile-photo slot. Renders through `CatchSurface`, grades filled photos with `GradedImage`, shows DS striped material for pending uploads, dashed hairline targets for empty slots, semantic labels/tooltips for add/edit/delete/uploading/unavailable states, optional prompt and main-label overlays, reorder target affordance, and blocked taps while inactive or loading. |
-| `StripedPhotoPlaceholder` | `lib/image_uploads/presentation/widgets/photo_slot.dart:219` | Pending-upload placeholder used by `PhotoSlot` before a local or remote image is available. Paints the raised background with subtle diagonal stripes and mono slot copy while semantics stay owned by the parent photo slot. |
-| `PhotoSlotMainBadge` | `lib/image_uploads/presentation/widgets/photo_slot.dart:260` | Compact pill badge used by `PhotoSlot` and ordered media pickers for leading/main/cover labels. Receives display copy explicitly, uppercases it, and renders through `CatchSurface` token chrome without owning upload or reorder state. |
+| `ProfilePhotoEditorPreview` | `lib/image_uploads/presentation/profile_photo_editor_screen.dart:308` | Provider-free preview renderer for the profile-photo editor. Shows the loading skeleton, editable crop boundary, existing remote image, or empty add-photo state while the route owns pick/save/delete mutations and passes the repaint-boundary key explicitly for crop capture. |
+| `OrderedPhotoTile` | `lib/image_uploads/presentation/widgets/ordered_photo_picker.dart:155` | Single ordered media tile used by `OrderedPhotoPicker`. Renders local bytes or remote images with photo semantics, optional remove control, cover badge, and reorder handle while callers own reorder and persistence callbacks. |
+| `OrderedPhotoAddTile` | `lib/image_uploads/presentation/widgets/ordered_photo_picker.dart:282` | Add-photo affordance used by ordered media pickers. Preserves the stable add-action key, button semantics, tooltip copy, responsive label hiding in compact tiles, and shared `CatchSurface` chrome. |
+| `PhotoSlot` | `lib/image_uploads/presentation/widgets/photo_slot.dart:13` | Single keyed profile-photo slot. Renders through `CatchSurface`, grades filled photos with `GradedImage`, shows DS striped material for pending uploads, dashed hairline targets for empty slots, semantic labels/tooltips for add/edit/delete/uploading/unavailable states, optional prompt and main-label overlays, reorder target affordance, and blocked taps while inactive or loading. |
+| `StripedPhotoPlaceholder` | `lib/image_uploads/presentation/widgets/photo_slot.dart:235` | Pending-upload placeholder used by `PhotoSlot` before a local or remote image is available. Paints the raised background with subtle diagonal stripes and mono slot copy while semantics stay owned by the parent photo slot. |
+| `PhotoSlotMainBadge` | `lib/image_uploads/presentation/widgets/photo_slot.dart:261` | Compact pill badge used by `PhotoSlot` and ordered media pickers for leading/main/cover labels. Receives display copy explicitly, uppercases it, and renders through `CatchSurface` token chrome without owning upload or reorder state. |
 
 ---
 

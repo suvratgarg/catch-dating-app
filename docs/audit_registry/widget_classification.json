@@ -10,26 +10,26 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1089,
-    "widgetClasses": 989,
+    "total": 1092,
+    "widgetClasses": 992,
     "stateClasses": 100,
-    "publicClasses": 989,
+    "publicClasses": 992,
     "privateClasses": 100,
     "byRole": {
       "atom": 37,
-      "composition": 281,
+      "composition": 283,
       "feature-adapter": 308,
       "pattern": 14,
-      "screen": 349,
+      "screen": 350,
       "widget-state": 100
     },
     "byDecision": {
       "keep-canonical-contract": 121,
-      "keep-public-cataloged": 868,
+      "keep-public-cataloged": 871,
       "keep-widget-state": 100
     },
     "byCatalogStatus": {
-      "cataloged": 796,
+      "cataloged": 799,
       "contracted": 121,
       "not-applicable": 100,
       "route-covered": 72
@@ -20423,6 +20423,29 @@
       "flags": []
     },
     {
+      "name": "ProfilePhotoEditorPreview",
+      "file": "lib/image_uploads/presentation/profile_photo_editor_screen.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.profile_photo_editor_preview",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
       "name": "ProfilePhotoEditorScreen",
       "file": "lib/image_uploads/presentation/profile_photo_editor_screen.dart",
       "classKind": "widget",
@@ -20469,6 +20492,29 @@
       "flags": []
     },
     {
+      "name": "OrderedPhotoAddTile",
+      "file": "lib/image_uploads/presentation/widgets/ordered_photo_picker.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.ordered_photo_add_tile",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
       "name": "OrderedPhotoPicker",
       "file": "lib/image_uploads/presentation/widgets/ordered_photo_picker.dart",
       "classKind": "widget",
@@ -20484,6 +20530,29 @@
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "OrderedPhotoTile",
+      "file": "lib/image_uploads/presentation/widgets/ordered_photo_picker.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.ordered_photo_tile",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
       "decision": "keep-public-cataloged",
       "remediationOptions": [
         "keepPublicCataloged",

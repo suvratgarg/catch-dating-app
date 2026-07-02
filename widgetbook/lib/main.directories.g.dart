@@ -10221,12 +10221,32 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Image uploads',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'OrderedPhotoAddTile',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Ordered add tile states',
+                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                    .orderedPhotoAddTileStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'OrderedPhotoPicker',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Picker states',
                 builder: _widgetbook_workspace_utility_p3_utility_use_cases
                     .orderedPhotoPickerStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'OrderedPhotoTile',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Ordered tile states',
+                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                    .orderedPhotoTileStates,
               ),
             ],
           ),
@@ -10257,6 +10277,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Main badge states',
                 builder: _widgetbook_workspace_utility_p3_utility_use_cases
                     .photoSlotMainBadgeStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProfilePhotoEditorPreview',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Editor preview states',
+                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                    .profilePhotoEditorPreviewStates,
               ),
             ],
           ),
