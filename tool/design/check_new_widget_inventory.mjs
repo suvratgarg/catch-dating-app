@@ -117,7 +117,7 @@ function scanSnapshot({files, readFile}) {
 function collectWidgetClasses(source, lineStarts) {
   const rows = [];
   const regex =
-    /class\s+([A-Za-z_][A-Za-z0-9_]*)\s+extends\s+(?:[A-Za-z_][A-Za-z0-9_]*\.)?(StatelessWidget|StatefulWidget|ConsumerWidget|ConsumerStatefulWidget|HookWidget|HookConsumerWidget)\b/gu;
+    /class\s+([A-Za-z_][A-Za-z0-9_]*)(?:<[^>{}]+>)?\s+extends\s+(?:[A-Za-z_][A-Za-z0-9_]*\.)?(StatelessWidget|StatefulWidget|ConsumerWidget|ConsumerStatefulWidget|HookWidget|HookConsumerWidget)\b/gu;
 
   for (const match of source.matchAll(regex)) {
     rows.push({
@@ -155,7 +155,8 @@ function collectWidgetHelpers(source, lineStarts, classRanges) {
 
 function collectClassRanges(source, lineStarts) {
   const rows = [];
-  const regex = /class\s+([A-Za-z_][A-Za-z0-9_]*)\s+extends\s+([A-Za-z_][A-Za-z0-9_<>?, ]*)/gu;
+  const regex =
+    /class\s+([A-Za-z_][A-Za-z0-9_]*)(?:<[^>{}]+>)?\s+extends\s+([A-Za-z_][A-Za-z0-9_<>?, ]*)/gu;
 
   for (const match of source.matchAll(regex)) {
     const open = source.indexOf("{", match.index);

@@ -3000,10 +3000,7 @@ class HostOrganizerTeamRow extends StatelessWidget {
                       isCurrentUser ? 'You · $roleLabel' : roleLabel,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: CatchTextStyles.supporting(
-                        context,
-                        color: t.ink2,
-                      ),
+                      style: CatchTextStyles.supporting(context, color: t.ink2),
                     ),
                   ],
                 ),
@@ -4199,10 +4196,7 @@ class HostAnalyticsEventTile extends StatelessWidget {
                     gapH4,
                     Text(
                       EventFormatters.shortDate(event.startTime),
-                      style: CatchTextStyles.supporting(
-                        context,
-                        color: t.ink3,
-                      ),
+                      style: CatchTextStyles.supporting(context, color: t.ink3),
                     ),
                     gapH8,
                     Wrap(
@@ -4380,10 +4374,7 @@ class HostAnalyticsDataQualityPanel extends StatelessWidget {
                   Expanded(
                     child: Text(
                       indexedRow.$2.detail,
-                      style: CatchTextStyles.supporting(
-                        context,
-                        color: t.ink2,
-                      ),
+                      style: CatchTextStyles.supporting(context, color: t.ink2),
                     ),
                   ),
                 ],
@@ -4751,10 +4742,10 @@ class HostInlineOptionEditor<T> extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<HostInlineOptionEditor<T>> createState() =>
-      HostInlineOptionEditorState<T>();
+      _HostInlineOptionEditorState<T>();
 }
 
-class HostInlineOptionEditorState<T>
+class _HostInlineOptionEditorState<T>
     extends ConsumerState<HostInlineOptionEditor<T>>
     with _HostInlineClubSaveState<HostInlineOptionEditor<T>> {
   late T _selected = widget.currentValue;

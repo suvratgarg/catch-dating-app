@@ -56,6 +56,7 @@ import 'package:catch_dating_app/core/widgets/catch_status_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_tab_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -1331,6 +1332,37 @@ void main() {
     expect(find.text('01'), findsOneWidget);
     expect(find.text('02'), findsOneWidget);
     expect(find.byType(CatchJourneyStepNode), findsNWidgets(2));
+  });
+
+  testWidgets('CatchTabDock composes public button and icon renderers', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        CatchTabDock<String>(
+          active: 'chats',
+          items: const [
+            CatchTabDockItem(
+              id: 'home',
+              icon: Icons.home_outlined,
+              label: 'Home',
+            ),
+            CatchTabDockItem(
+              id: 'chats',
+              icon: Icons.chat_bubble_outline,
+              activeIcon: Icons.chat_bubble,
+              label: 'Chats',
+              badgeCount: 104,
+            ),
+          ],
+          onChanged: (_) {},
+        ),
+      ),
+    );
+
+    expect(find.byType(CatchTabDockButton<String>), findsNWidgets(2));
+    expect(find.byType(CatchTabDockIcon), findsNWidgets(2));
+    expect(find.text('99+'), findsOneWidget);
   });
 
   testWidgets('CatchSection section variant renders row variants', (

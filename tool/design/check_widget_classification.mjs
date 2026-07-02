@@ -206,7 +206,7 @@ function collectSourceDeclarations() {
     const source = fs.readFileSync(file, "utf8");
     const relativeFile = path.relative(repoRoot, file);
     const regex =
-      /class\s+([A-Za-z_][A-Za-z0-9_]*)\s+extends\s+(?:[A-Za-z_][A-Za-z0-9_]*\.)?((?:StatelessWidget|StatefulWidget|ConsumerWidget|ConsumerStatefulWidget|HookWidget|HookConsumerWidget)|(?:State|ConsumerState)<[^>{}]+>)/gu;
+      /class\s+([A-Za-z_][A-Za-z0-9_]*)(?:<[^>{}]+>)?\s+extends\s+(?:[A-Za-z_][A-Za-z0-9_]*\.)?((?:StatelessWidget|StatefulWidget|ConsumerWidget|ConsumerStatefulWidget|HookWidget|HookConsumerWidget)|(?:State|ConsumerState)<[^>{}]+>)/gu;
     for (const match of source.matchAll(regex)) {
       rows.push({
         file: relativeFile,

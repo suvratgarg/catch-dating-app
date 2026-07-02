@@ -113,7 +113,7 @@ function collectImports(source) {
 function collectWidgetDeclarations(source) {
   const declarations = [];
   const regex =
-    /class\s+([A-Za-z_][A-Za-z0-9_]*)\s+extends\s+(?:[A-Za-z_][A-Za-z0-9_]*\.)?((?:StatelessWidget|StatefulWidget|ConsumerWidget|ConsumerStatefulWidget|HookWidget|HookConsumerWidget)|(?:State|ConsumerState)<[^>{}]+>)/gu;
+    /class\s+([A-Za-z_][A-Za-z0-9_]*)(?:<[^>{}]+>)?\s+extends\s+(?:[A-Za-z_][A-Za-z0-9_]*\.)?((?:StatelessWidget|StatefulWidget|ConsumerWidget|ConsumerStatefulWidget|HookWidget|HookConsumerWidget)|(?:State|ConsumerState)<[^>{}]+>)/gu;
   for (const match of source.matchAll(regex)) {
     const baseClass = match[2];
     declarations.push({

@@ -10,31 +10,33 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1114,
-    "widgetClasses": 1014,
-    "stateClasses": 100,
-    "publicClasses": 1014,
-    "privateClasses": 100,
+    "total": 1138,
+    "widgetClasses": 1034,
+    "stateClasses": 104,
+    "publicClasses": 1032,
+    "privateClasses": 106,
     "byRole": {
-      "atom": 41,
-      "composition": 295,
-      "feature-adapter": 311,
+      "atom": 45,
+      "composition": 303,
+      "feature-adapter": 318,
       "pattern": 14,
-      "screen": 353,
-      "widget-state": 100
+      "screen": 354,
+      "widget-state": 104
     },
     "byDecision": {
-      "keep-canonical-contract": 121,
-      "keep-public-cataloged": 879,
-      "keep-widget-state": 100,
-      "review-promote-or-consolidate": 14
+      "keep-canonical-contract": 125,
+      "keep-public-cataloged": 880,
+      "keep-widget-state": 104,
+      "review-catalog-coverage": 5,
+      "review-promote-or-consolidate": 22,
+      "review-promote-or-inline": 2
     },
     "byCatalogStatus": {
-      "cataloged": 820,
-      "contracted": 121,
-      "not-applicable": 100,
+      "cataloged": 829,
+      "contracted": 125,
+      "not-applicable": 104,
       "route-covered": 72,
-      "uncataloged": 1
+      "uncataloged": 8
     }
   },
   "widgets": [
@@ -2583,6 +2585,56 @@
       "flags": []
     },
     {
+      "name": "_CatchActionMenuState",
+      "file": "lib/core/widgets/catch_action_menu.dart",
+      "classKind": "widget-state",
+      "baseClass": "State<CatchActionMenu<T>",
+      "visibility": "private",
+      "role": "widget-state",
+      "canonicalFamily": "state.catch_action_menu_t",
+      "publicApi": false,
+      "catalogStatus": "not-applicable",
+      "contractId": null,
+      "allowedDependencyLevel": "owning-widget-state",
+      "stateOwnership": "owning-widget-state",
+      "asyncOwnership": "owning-widget-state",
+      "layoutOwnership": "owning-widget-state",
+      "actionOwnership": "owning-widget-state",
+      "decision": "keep-widget-state",
+      "remediationOptions": [
+        "moveStateToController",
+        "routeThroughScreenState"
+      ],
+      "flags": []
+    },
+    {
+      "name": "CatchActionMenu",
+      "file": "lib/core/widgets/catch_action_menu.dart",
+      "classKind": "widget",
+      "baseClass": "StatefulWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.action_menu",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract"
+      ]
+    },
+    {
       "name": "CatchActivityArt",
       "file": "lib/core/widgets/catch_activity_art.dart",
       "classKind": "widget",
@@ -2643,6 +2695,29 @@
       "stateOwnership": "local-ui-only",
       "asyncOwnership": "none",
       "layoutOwnership": "internal-only",
+      "actionOwnership": "callbacks-only",
+      "decision": "keep-canonical-contract",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "CatchConfirmDialog",
+      "file": "lib/core/widgets/catch_adaptive_dialog.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.confirm_dialog",
+      "publicApi": true,
+      "catalogStatus": "contracted",
+      "contractId": "catch.confirm_dialog",
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
       "decision": "keep-canonical-contract",
       "remediationOptions": [
@@ -2721,6 +2796,62 @@
         "mergeIntoCanonical"
       ],
       "flags": [
+        "primitive-imports-provider-layer"
+      ]
+    },
+    {
+      "name": "CatchAsyncValueSliver",
+      "file": "lib/core/widgets/catch_async_value_view.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.async_value_sliver",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract",
+        "primitive-imports-provider-layer"
+      ]
+    },
+    {
+      "name": "CatchAsyncValueView",
+      "file": "lib/core/widgets/catch_async_value_view.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.async_value_view",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract",
         "primitive-imports-provider-layer"
       ]
     },
@@ -2937,6 +3068,34 @@
       ],
       "flags": [
         "core-widget-without-contract"
+      ]
+    },
+    {
+      "name": "CatchChipField",
+      "file": "lib/core/widgets/catch_chip_field.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "atom",
+      "canonicalFamily": "catch.chip_field",
+      "publicApi": true,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "tokens-and-primitives",
+      "stateOwnership": "local-ui-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "internal-only",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract",
+        "public-widget-missing-widgetbook"
       ]
     },
     {
@@ -3839,7 +3998,7 @@
       "role": "composition",
       "canonicalFamily": "catch.journey_step_node",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
@@ -3854,8 +4013,7 @@
         "inlineDelete"
       ],
       "flags": [
-        "core-widget-without-contract",
-        "public-widget-missing-widgetbook"
+        "core-widget-without-contract"
       ]
     },
     {
@@ -3926,6 +4084,33 @@
         "mergeIntoCanonical"
       ],
       "flags": []
+    },
+    {
+      "name": "CatchMenu",
+      "file": "lib/core/widgets/catch_menu.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.menu",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract"
+      ]
     },
     {
       "name": "CatchMetaDotRow",
@@ -4257,6 +4442,29 @@
       "stateOwnership": "local-ui-only",
       "asyncOwnership": "none",
       "layoutOwnership": "internal-only",
+      "actionOwnership": "callbacks-only",
+      "decision": "keep-canonical-contract",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "CatchOptionGroup",
+      "file": "lib/core/widgets/catch_option_group.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.option_group",
+      "publicApi": true,
+      "catalogStatus": "contracted",
+      "contractId": "catch.option_group",
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
       "decision": "keep-canonical-contract",
       "remediationOptions": [
@@ -4772,6 +4980,29 @@
       "flags": []
     },
     {
+      "name": "CatchSegmentedControl",
+      "file": "lib/core/widgets/catch_segmented_control.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "atom",
+      "canonicalFamily": "catch.segmented_control",
+      "publicApi": true,
+      "catalogStatus": "contracted",
+      "contractId": "catch.segmented_control",
+      "allowedDependencyLevel": "tokens-and-primitives",
+      "stateOwnership": "local-ui-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "internal-only",
+      "actionOwnership": "callbacks-only",
+      "decision": "keep-canonical-contract",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
       "name": "_SelectChipState",
       "file": "lib/core/widgets/catch_select_chip.dart",
       "classKind": "widget-state",
@@ -5071,6 +5302,83 @@
       "flags": []
     },
     {
+      "name": "CatchTabDock",
+      "file": "lib/core/widgets/catch_tab_dock.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.tab_dock",
+      "publicApi": true,
+      "catalogStatus": "contracted",
+      "contractId": "catch.tab_dock",
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "keep-canonical-contract",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "CatchTabDockButton",
+      "file": "lib/core/widgets/catch_tab_dock.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "atom",
+      "canonicalFamily": "catch.tab_dock_button",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "tokens-and-primitives",
+      "stateOwnership": "local-ui-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "internal-only",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract"
+      ]
+    },
+    {
+      "name": "CatchTabDockIcon",
+      "file": "lib/core/widgets/catch_tab_dock.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "atom",
+      "canonicalFamily": "catch.tab_dock_icon",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "tokens-and-primitives",
+      "stateOwnership": "local-ui-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "internal-only",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract"
+      ]
+    },
+    {
       "name": "CatchTextButton",
       "file": "lib/core/widgets/catch_text_button.dart",
       "classKind": "widget",
@@ -5230,6 +5538,33 @@
         "mergeIntoCanonical"
       ],
       "flags": []
+    },
+    {
+      "name": "CatchTopBarMenuAction",
+      "file": "lib/core/widgets/catch_top_bar.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.top_bar_menu_action",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract"
+      ]
     },
     {
       "name": "CatchTopBarTabBar",
@@ -18230,6 +18565,29 @@
       "flags": []
     },
     {
+      "name": "_HostInlineOptionEditorState",
+      "file": "lib/hosts/presentation/host_operations_screen.dart",
+      "classKind": "widget-state",
+      "baseClass": "ConsumerState<HostInlineOptionEditor<T>",
+      "visibility": "private",
+      "role": "widget-state",
+      "canonicalFamily": "state.host_inline_option_editor_t",
+      "publicApi": false,
+      "catalogStatus": "not-applicable",
+      "contractId": null,
+      "allowedDependencyLevel": "owning-widget-state",
+      "stateOwnership": "owning-widget-state",
+      "asyncOwnership": "owning-widget-state",
+      "layoutOwnership": "owning-widget-state",
+      "actionOwnership": "owning-widget-state",
+      "decision": "keep-widget-state",
+      "remediationOptions": [
+        "moveStateToController",
+        "routeThroughScreenState"
+      ],
+      "flags": []
+    },
+    {
       "name": "_HostInlineTextEntryEditorState",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
       "classKind": "widget-state",
@@ -18973,6 +19331,29 @@
       "visibility": "public",
       "role": "screen",
       "canonicalFamily": "screen.host_inline_age_range_editor",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "HostInlineOptionEditor",
+      "file": "lib/hosts/presentation/host_operations_screen.dart",
+      "classKind": "widget",
+      "baseClass": "ConsumerStatefulWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.host_inline_option_editor",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,
@@ -25203,6 +25584,79 @@
       "flags": []
     },
     {
+      "name": "_ProfileInlineMultiChoiceEntryEditorState",
+      "file": "lib/user_profile/presentation/widgets/inline_editor_choice.dart",
+      "classKind": "widget-state",
+      "baseClass": "ConsumerState<ProfileInlineMultiChoiceEntryEditor<T>",
+      "visibility": "private",
+      "role": "widget-state",
+      "canonicalFamily": "state.profile_inline_multi_choice_entry_editor_t",
+      "publicApi": false,
+      "catalogStatus": "not-applicable",
+      "contractId": null,
+      "allowedDependencyLevel": "owning-widget-state",
+      "stateOwnership": "owning-widget-state",
+      "asyncOwnership": "owning-widget-state",
+      "layoutOwnership": "owning-widget-state",
+      "actionOwnership": "owning-widget-state",
+      "decision": "keep-widget-state",
+      "remediationOptions": [
+        "moveStateToController",
+        "routeThroughScreenState"
+      ],
+      "flags": []
+    },
+    {
+      "name": "_ProfileInlineSingleChoiceEntryEditorState",
+      "file": "lib/user_profile/presentation/widgets/inline_editor_choice.dart",
+      "classKind": "widget-state",
+      "baseClass": "ConsumerState<ProfileInlineSingleChoiceEntryEditor<T>",
+      "visibility": "private",
+      "role": "widget-state",
+      "canonicalFamily": "state.profile_inline_single_choice_entry_editor_t",
+      "publicApi": false,
+      "catalogStatus": "not-applicable",
+      "contractId": null,
+      "allowedDependencyLevel": "owning-widget-state",
+      "stateOwnership": "owning-widget-state",
+      "asyncOwnership": "owning-widget-state",
+      "layoutOwnership": "owning-widget-state",
+      "actionOwnership": "owning-widget-state",
+      "decision": "keep-widget-state",
+      "remediationOptions": [
+        "moveStateToController",
+        "routeThroughScreenState"
+      ],
+      "flags": []
+    },
+    {
+      "name": "ProfileChipOptions",
+      "file": "lib/user_profile/presentation/widgets/inline_editor_choice.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "feature-adapter",
+      "canonicalFamily": "feature.user_profile.profile_chip_options",
+      "publicApi": true,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "feature-display-models",
+      "stateOwnership": "feature-display-state",
+      "asyncOwnership": "display-state-only",
+      "layoutOwnership": "feature-section-layout",
+      "actionOwnership": "feature-callbacks",
+      "decision": "review-catalog-coverage",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "public-widget-missing-widgetbook"
+      ]
+    },
+    {
       "name": "ProfileChipPlaceholder",
       "file": "lib/user_profile/presentation/widgets/inline_editor_choice.dart",
       "classKind": "widget",
@@ -25224,6 +25678,114 @@
         "mergeIntoCanonical"
       ],
       "flags": []
+    },
+    {
+      "name": "ProfileInlineMultiChoiceEntryEditor",
+      "file": "lib/user_profile/presentation/widgets/inline_editor_choice.dart",
+      "classKind": "widget",
+      "baseClass": "ConsumerStatefulWidget",
+      "visibility": "public",
+      "role": "feature-adapter",
+      "canonicalFamily": "feature.user_profile.profile_inline_multi_choice_entry_editor",
+      "publicApi": true,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "feature-display-models",
+      "stateOwnership": "feature-display-state",
+      "asyncOwnership": "display-state-only",
+      "layoutOwnership": "feature-section-layout",
+      "actionOwnership": "feature-callbacks",
+      "decision": "review-catalog-coverage",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "public-widget-missing-widgetbook"
+      ]
+    },
+    {
+      "name": "ProfileInlineSingleChoiceEntryEditor",
+      "file": "lib/user_profile/presentation/widgets/inline_editor_choice.dart",
+      "classKind": "widget",
+      "baseClass": "ConsumerStatefulWidget",
+      "visibility": "public",
+      "role": "feature-adapter",
+      "canonicalFamily": "feature.user_profile.profile_inline_single_choice_entry_editor",
+      "publicApi": true,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "feature-display-models",
+      "stateOwnership": "feature-display-state",
+      "asyncOwnership": "display-state-only",
+      "layoutOwnership": "feature-section-layout",
+      "actionOwnership": "feature-callbacks",
+      "decision": "review-catalog-coverage",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "public-widget-missing-widgetbook"
+      ]
+    },
+    {
+      "name": "ProfileMultiChipValue",
+      "file": "lib/user_profile/presentation/widgets/inline_editor_choice.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "feature-adapter",
+      "canonicalFamily": "feature.user_profile.profile_multi_chip_value",
+      "publicApi": true,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "feature-display-models",
+      "stateOwnership": "feature-display-state",
+      "asyncOwnership": "display-state-only",
+      "layoutOwnership": "feature-section-layout",
+      "actionOwnership": "feature-callbacks",
+      "decision": "review-catalog-coverage",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "public-widget-missing-widgetbook"
+      ]
+    },
+    {
+      "name": "ProfileSingleChipValue",
+      "file": "lib/user_profile/presentation/widgets/inline_editor_choice.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "feature-adapter",
+      "canonicalFamily": "feature.user_profile.profile_single_chip_value",
+      "publicApi": true,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "feature-display-models",
+      "stateOwnership": "feature-display-state",
+      "asyncOwnership": "display-state-only",
+      "layoutOwnership": "feature-section-layout",
+      "actionOwnership": "feature-callbacks",
+      "decision": "review-catalog-coverage",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "public-widget-missing-widgetbook"
+      ]
     },
     {
       "name": "_ProfileInlineHeightEditorState",
@@ -25732,6 +26294,58 @@
         "mergeIntoCanonical"
       ],
       "flags": []
+    },
+    {
+      "name": "_ProfileMultiEnumEntry",
+      "file": "lib/user_profile/presentation/widgets/profile_tab.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "role": "feature-adapter",
+      "canonicalFamily": "feature.user_profile.profile_multi_enum_entry",
+      "publicApi": false,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "feature-display-models",
+      "stateOwnership": "feature-display-state",
+      "asyncOwnership": "display-state-only",
+      "layoutOwnership": "feature-section-layout",
+      "actionOwnership": "feature-callbacks",
+      "decision": "review-promote-or-inline",
+      "remediationOptions": [
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "private-widget-publicization-required"
+      ]
+    },
+    {
+      "name": "_ProfileSingleEnumEntry",
+      "file": "lib/user_profile/presentation/widgets/profile_tab.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "role": "feature-adapter",
+      "canonicalFamily": "feature.user_profile.profile_single_enum_entry",
+      "publicApi": false,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "feature-display-models",
+      "stateOwnership": "feature-display-state",
+      "asyncOwnership": "display-state-only",
+      "layoutOwnership": "feature-section-layout",
+      "actionOwnership": "feature-callbacks",
+      "decision": "review-promote-or-inline",
+      "remediationOptions": [
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "private-widget-publicization-required"
+      ]
     },
     {
       "name": "_ProfileTabContentState",

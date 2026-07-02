@@ -4194,6 +4194,93 @@ Widget catchTabDockContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
+  type: CatchTabDockButton,
+  path: '[Core primitives]/Navigation',
+)
+Widget catchTabDockButtonContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'CatchTabDockButton',
+    contractId: 'catch.tab_dock.button',
+    states: const ['selected', 'unselected', 'badge'],
+    children: [
+      _StateCard(
+        label: 'button states',
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: 96,
+              child: CatchTabDockButton<String>(
+                item: _contractTabDockItems[0],
+                selected: true,
+                onTap: _noop,
+              ),
+            ),
+            const SizedBox(width: CatchSpacing.s4),
+            SizedBox(
+              width: 96,
+              child: CatchTabDockButton<String>(
+                item: _contractTabDockItems[1],
+                selected: false,
+                onTap: _noop,
+              ),
+            ),
+            const SizedBox(width: CatchSpacing.s4),
+            SizedBox(
+              width: 96,
+              child: CatchTabDockButton<String>(
+                item: _contractTabDockItems[2],
+                selected: true,
+                onTap: _noop,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchTabDockIcon,
+  path: '[Core primitives]/Navigation',
+)
+Widget catchTabDockIconContractStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  return _ContractScreen(
+    title: 'CatchTabDockIcon',
+    contractId: 'catch.tab_dock.icon',
+    states: const ['plain', 'badge', 'large-badge'],
+    children: [
+      _StateCard(
+        label: 'icon badges',
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CatchTabDockIcon(icon: Icons.explore_outlined, color: t.ink),
+            const SizedBox(width: CatchSpacing.s4),
+            CatchTabDockIcon(
+              icon: Icons.chat_bubble_outline,
+              color: t.ink,
+              badgeCount: 7,
+            ),
+            const SizedBox(width: CatchSpacing.s4),
+            CatchTabDockIcon(
+              icon: Icons.chat_bubble_outline,
+              color: t.ink,
+              badgeCount: 104,
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
   type: CatchConfirmDialog,
   path: '[Core primitives]/Dialogs',
 )
