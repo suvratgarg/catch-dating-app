@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
+import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_avatar_rail.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_links.dart';
@@ -21,11 +21,11 @@ import 'package:catch_dating_app/dashboard/presentation/widgets/quick_actions.da
 import 'package:catch_dating_app/dashboard/presentation/widgets/recommendations.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/stride_card.dart';
 import 'package:catch_dating_app/event_success/event_success_companion_launcher.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/data/event_calendar_links.dart';
-import 'package:catch_dating_app/events/presentation/event_check_in_celebration_screen.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_location_links.dart';
+import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
+import 'package:catch_dating_app/events/presentation/event_check_in_celebration_screen.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
 import 'package:catch_dating_app/reviews/presentation/write_review_sheet.dart';

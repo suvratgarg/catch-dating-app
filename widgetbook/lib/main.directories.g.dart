@@ -4377,6 +4377,26 @@ final directories = <_widgetbook.WidgetbookNode>[
               ),
             ],
           ),
+          _widgetbook.WidgetbookComponent(
+            name: 'NotificationGroupWidget',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Grouped row content',
+                builder: _widgetbook_workspace_dashboard_dashboard_use_cases
+                    .dashboardNotificationGroupWidgetReview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'NotificationRowSkeleton',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Row skeleton states',
+                builder: _widgetbook_workspace_dashboard_dashboard_use_cases
+                    .dashboardNotificationRowSkeletonReview,
+              ),
+            ],
+          ),
         ],
       ),
       _widgetbook.WidgetbookFolder(
@@ -4413,6 +4433,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'DashboardHeaderContent',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Header content',
+                builder: _widgetbook_workspace_dashboard_dashboard_use_cases
+                    .dashboardHeaderContentReview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'DashboardScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -4433,12 +4463,52 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'EmptyHeroContent',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Hero content states',
+                builder: _widgetbook_workspace_dashboard_dashboard_use_cases
+                    .dashboardEmptyHeroContentReviewStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventFocusCard',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Card states',
+                builder: _widgetbook_workspace_dashboard_dashboard_use_cases
+                    .dashboardEventFocusCardReviewStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventFocusPageIndicator',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Page indicator states',
+                builder: _widgetbook_workspace_dashboard_dashboard_use_cases
+                    .dashboardEventFocusPageIndicatorReviewStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'EventFocusRail',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Rail states',
                 builder: _widgetbook_workspace_dashboard_dashboard_use_cases
                     .dashboardEventFocusRailReviewStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'FollowedClubsRailSkeleton',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Followed clubs skeleton',
+                builder: _widgetbook_workspace_dashboard_dashboard_use_cases
+                    .dashboardFollowedClubsRailSkeletonReview,
               ),
             ],
           ),

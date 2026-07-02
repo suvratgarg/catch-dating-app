@@ -9,8 +9,8 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_page_dots.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_arrival_action.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
@@ -203,8 +203,8 @@ class _EventFocusRailState extends State<EventFocusRail> {
     );
   }
 
-  List<_EventFocusItem> _buildItems() {
-    final items = <_EventFocusItem>[];
+  List<EventFocusItem> _buildItems() {
+    final items = <EventFocusItem>[];
     final checkInEventId =
         widget.arrivalAction?.kind == EventArrivalActionKind.selfCheckIn
         ? widget.arrivalAction?.event.id
@@ -212,11 +212,11 @@ class _EventFocusRailState extends State<EventFocusRail> {
 
     for (final event in widget.upcomingEvents) {
       items.add(
-        _EventFocusItem(
+        EventFocusItem(
           event: event,
           kind: event.id == checkInEventId
-              ? _EventFocusKind.checkIn
-              : _EventFocusKind.upcoming,
+              ? EventFocusKind.checkIn
+              : EventFocusKind.upcoming,
           clubName: widget.clubNameBuilder?.call(event),
         ),
       );
@@ -226,9 +226,9 @@ class _EventFocusRailState extends State<EventFocusRail> {
     if (widget.activeSwipeEvent != null) {
       afterEventIds.add(widget.activeSwipeEvent!.id);
       items.add(
-        _EventFocusItem(
+        EventFocusItem(
           event: widget.activeSwipeEvent!,
-          kind: _EventFocusKind.afterEvent,
+          kind: EventFocusKind.afterEvent,
           canSwipe: true,
           needsReview:
               widget.pendingReviewEvent?.id == widget.activeSwipeEvent!.id,
@@ -239,9 +239,9 @@ class _EventFocusRailState extends State<EventFocusRail> {
     if (widget.pendingReviewEvent != null &&
         !afterEventIds.contains(widget.pendingReviewEvent!.id)) {
       items.add(
-        _EventFocusItem(
+        EventFocusItem(
           event: widget.pendingReviewEvent!,
-          kind: _EventFocusKind.afterEvent,
+          kind: EventFocusKind.afterEvent,
           needsReview: true,
           clubName: widget.clubNameBuilder?.call(widget.pendingReviewEvent!),
         ),
@@ -252,11 +252,11 @@ class _EventFocusRailState extends State<EventFocusRail> {
     return items;
   }
 
-  int _compareFocusItems(_EventFocusItem a, _EventFocusItem b) {
+  int _compareFocusItems(EventFocusItem a, EventFocusItem b) {
     final priority = a.priority.compareTo(b.priority);
     if (priority != 0) return priority;
-    if (a.kind == _EventFocusKind.afterEvent &&
-        b.kind == _EventFocusKind.afterEvent) {
+    if (a.kind == EventFocusKind.afterEvent &&
+        b.kind == EventFocusKind.afterEvent) {
       return b.event.endTime.compareTo(a.event.endTime);
     }
     return a.event.startTime.compareTo(b.event.startTime);
@@ -285,19 +285,19 @@ class _EventFocusRailState extends State<EventFocusRail> {
     setState(() => _selectedIndex = nextIndex);
   }
 
-  void _handleAction(_EventFocusItem item, _EventFocusAction action) {
+  void _handleAction(EventFocusItem item, EventFocusAction action) {
     switch (action) {
-      case _EventFocusAction.viewEvent:
+      case EventFocusAction.viewEvent:
         widget.actions.onViewEvent(item.event);
-      case _EventFocusAction.checkIn:
+      case EventFocusAction.checkIn:
         widget.actions.onCheckIn(item.event);
-      case _EventFocusAction.swipe:
+      case EventFocusAction.swipe:
         widget.actions.onOpenSwipe(item.event);
-      case _EventFocusAction.review:
+      case EventFocusAction.review:
         widget.actions.onWriteReview(item.event);
-      case _EventFocusAction.directions:
+      case EventFocusAction.directions:
         widget.actions.onOpenDirections(item.event);
-      case _EventFocusAction.addToCalendar:
+      case EventFocusAction.addToCalendar:
         widget.actions.onAddToCalendar(item.event);
     }
   }
@@ -335,11 +335,11 @@ class EventFocusCard extends StatelessWidget {
     required this.onActionPressed,
   });
 
-  final _EventFocusItem item;
+  final EventFocusItem item;
   final int cardIndex;
   final int cardCount;
   final EventFocusCheckInState checkInState;
-  final ValueChanged<_EventFocusAction> onActionPressed;
+  final ValueChanged<EventFocusAction> onActionPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -410,11 +410,11 @@ class EventFocusCard extends StatelessWidget {
             accentColor: index == 0 ? activity.accent : null,
             isLoading:
                 index == 0 &&
-                item.primaryAction == _EventFocusAction.checkIn &&
+                item.primaryAction == EventFocusAction.checkIn &&
                 checkInState.isPending,
             onPressed:
                 index == 0 &&
-                    item.primaryAction == _EventFocusAction.checkIn &&
+                    item.primaryAction == EventFocusAction.checkIn &&
                     checkInState.isPending
                 ? null
                 : () => onActionPressed(actions[index]),
@@ -424,9 +424,9 @@ class EventFocusCard extends StatelessWidget {
   }
 }
 
-enum _EventFocusKind { upcoming, checkIn, afterEvent }
+enum EventFocusKind { upcoming, checkIn, afterEvent }
 
-enum _EventFocusAction {
+enum EventFocusAction {
   viewEvent,
   checkIn,
   directions,
@@ -435,34 +435,34 @@ enum _EventFocusAction {
   review,
 }
 
-extension on _EventFocusAction {
+extension on EventFocusAction {
   String get label {
     return switch (this) {
-      _EventFocusAction.viewEvent => 'View event',
-      _EventFocusAction.checkIn => 'Check in',
-      _EventFocusAction.directions => 'Directions',
-      _EventFocusAction.addToCalendar => 'Add to calendar',
-      _EventFocusAction.swipe => 'Start catching',
-      _EventFocusAction.review => 'Write review',
+      EventFocusAction.viewEvent => 'View event',
+      EventFocusAction.checkIn => 'Check in',
+      EventFocusAction.directions => 'Directions',
+      EventFocusAction.addToCalendar => 'Add to calendar',
+      EventFocusAction.swipe => 'Start catching',
+      EventFocusAction.review => 'Write review',
     };
   }
 
   IconData get icon {
     return switch (this) {
-      _EventFocusAction.viewEvent => CatchIcons.forwardArrow,
-      _EventFocusAction.checkIn => CatchIcons.pin,
-      _EventFocusAction.directions => PhosphorIconsRegular.compass,
-      _EventFocusAction.addToCalendar => CatchIcons.calendarAdd,
-      _EventFocusAction.swipe => PhosphorIconsFill.heart,
-      _EventFocusAction.review => PhosphorIconsRegular.pencilLine,
+      EventFocusAction.viewEvent => CatchIcons.forwardArrow,
+      EventFocusAction.checkIn => CatchIcons.pin,
+      EventFocusAction.directions => PhosphorIconsRegular.compass,
+      EventFocusAction.addToCalendar => CatchIcons.calendarAdd,
+      EventFocusAction.swipe => PhosphorIconsFill.heart,
+      EventFocusAction.review => PhosphorIconsRegular.pencilLine,
     };
   }
 
   Key get key => EventFocusRail.actionKey(name);
 }
 
-class _EventFocusItem {
-  const _EventFocusItem({
+class EventFocusItem {
+  const EventFocusItem({
     required this.event,
     required this.kind,
     this.clubName,
@@ -471,16 +471,16 @@ class _EventFocusItem {
   });
 
   final Event event;
-  final _EventFocusKind kind;
+  final EventFocusKind kind;
   final String? clubName;
   final bool canSwipe;
   final bool needsReview;
 
   bool get isUrgent =>
-      kind == _EventFocusKind.checkIn || canSwipe || needsReview;
+      kind == EventFocusKind.checkIn || canSwipe || needsReview;
 
   int get priority {
-    if (kind == _EventFocusKind.checkIn) return 0;
+    if (kind == EventFocusKind.checkIn) return 0;
     if (canSwipe) return 1;
     if (needsReview) return 2;
     return 3;
@@ -488,30 +488,30 @@ class _EventFocusItem {
 
   String get badgeLabel {
     return switch (kind) {
-      _EventFocusKind.checkIn => 'Check-in open',
-      _EventFocusKind.afterEvent => 'After the event',
-      _EventFocusKind.upcoming => 'Next event',
+      EventFocusKind.checkIn => 'Check-in open',
+      EventFocusKind.afterEvent => 'After the event',
+      EventFocusKind.upcoming => 'Next event',
     };
   }
 
-  _EventFocusAction get primaryAction {
-    if (kind == _EventFocusKind.checkIn) return _EventFocusAction.checkIn;
-    if (canSwipe) return _EventFocusAction.swipe;
-    if (needsReview) return _EventFocusAction.review;
-    return _EventFocusAction.viewEvent;
+  EventFocusAction get primaryAction {
+    if (kind == EventFocusKind.checkIn) return EventFocusAction.checkIn;
+    if (canSwipe) return EventFocusAction.swipe;
+    if (needsReview) return EventFocusAction.review;
+    return EventFocusAction.viewEvent;
   }
 
-  List<_EventFocusAction> get secondaryActions {
-    if (kind == _EventFocusKind.checkIn) {
-      return const [_EventFocusAction.directions];
+  List<EventFocusAction> get secondaryActions {
+    if (kind == EventFocusKind.checkIn) {
+      return const [EventFocusAction.directions];
     }
-    if (kind == _EventFocusKind.upcoming) {
+    if (kind == EventFocusKind.upcoming) {
       return const [
-        _EventFocusAction.directions,
-        _EventFocusAction.addToCalendar,
+        EventFocusAction.directions,
+        EventFocusAction.addToCalendar,
       ];
     }
-    if (canSwipe && needsReview) return const [_EventFocusAction.review];
+    if (canSwipe && needsReview) return const [EventFocusAction.review];
     return const [];
   }
 }

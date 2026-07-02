@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.530
+version: 2.5.531
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,14 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.531
+
+- Cataloged the Dashboard activity/home leaf renderers directly: grouped
+  notification rows, notification row skeleton, followed-clubs rail skeleton,
+  header content, empty hero content, event-focus card, and event-focus page
+  indicator. `EventFocusCard` now accepts public display state so the public
+  card can be reviewed outside its rail.
 
 ### 2.5.530
 
@@ -5268,7 +5276,10 @@ Generated 2026-05-06.
 | `DashboardScreen` | `lib/dashboard/presentation/dashboard_screen.dart:24` | Home tab. Watches the user's profile, active club memberships, signed-up events, and Home unread notification count only while Home is active. Renders one `CustomScrollView` with a scroll-away greeting/empty header, top-right Notifications bell, red unread badge, and dashboard sliver body; it no longer owns a route-local tab controller or Dashboard/Activity tab row. Route-level loading uses a dashboard-shaped skeleton shell for the header, notification affordance, focus card, stride card, quick actions, and recommendations; typed `AppException` failures use the shared Catch error descriptor so offline states show consistent Connection issue copy. |
 | `DashboardFull` | `lib/dashboard/presentation/widgets/dashboard_full.dart:21` | Standalone full-dashboard wrapper used by focused tests/non-tab embedding. Takes explicit `followedClubIds` from the membership-edge seam and renders the full dashboard header plus `DashboardFullSliverBody`. The header avatar is a Profile-tab button and must use thumbnail-scale profile imagery through `UserProfile.primaryPhotoThumbnailUrl`. |
 | `DashboardFullSliverBody` | `lib/dashboard/presentation/widgets/dashboard_full.dart:84` | Sliver body for the populated Home dashboard. Uses `CatchSectionStack` for the handoff rhythm and orders the body as `EventFocusRail`, `StrideCard`, `QuickActions`, the personal followed-clubs `ClubAvatarRail` when available, and the "Recommended for you" rail. It joins club names for committed events through `clubNameLookupProvider`, resolves followed clubs through `watchClubsByIdsProvider`, supplies typed Calendar/Saved Events callbacks to `QuickActions`, maps self-check-in mutation state into `EventFocusCheckInState`, supplies typed `EventFocusActions` for route/controller/external effects, supplies typed stride actions/busy state to `DashboardStrideSection`, and leaves notifications on the dedicated Notifications screen. |
-| `EventFocusRail` | `lib/dashboard/presentation/widgets/event_focus_rail.dart:33` | Consolidated Home rail for attendee committed-event actions. Builds full-width snapping `EventActionCard` pages for upcoming, check-in, catch-window, and review states; stacks actions such as View event, Check in, Directions, Add to calendar, Start catching, and Write review so labels do not clip on narrow screens. The rail is a provider-free visual section that receives typed `EventFocusActions` plus display-only `EventFocusCheckInState`; the composing Dashboard body owns navigation, calendar, directions, self-check-in, event-success, and review-sheet effects. |
+| `FollowedClubsRailSkeleton` | `lib/dashboard/presentation/widgets/dashboard_full.dart:378` | Loading placeholder for the personal followed-clubs rail. Reserves the "Your clubs" header plus three avatar/text skeleton chips so the populated dashboard does not collapse while followed club documents resolve. |
+| `EventFocusRail` | `lib/dashboard/presentation/widgets/event_focus_rail.dart:53` | Consolidated Home rail for attendee committed-event actions. Builds full-width snapping `EventActionCard` pages for upcoming, check-in, catch-window, and review states; stacks actions such as View event, Check in, Directions, Add to calendar, Start catching, and Write review so labels do not clip on narrow screens. The rail is a provider-free visual section that receives typed `EventFocusActions` plus display-only `EventFocusCheckInState`; the composing Dashboard body owns navigation, calendar, directions, self-check-in, event-success, and review-sheet effects. |
+| `EventFocusPageIndicator` | `lib/dashboard/presentation/widgets/event_focus_rail.dart:306` | Centered page-dot indicator for the dashboard event-focus carousel. Receives selected index and item count directly and supplies an accessible "Event n of m" semantic label through `CatchPageDots`. |
+| `EventFocusCard` | `lib/dashboard/presentation/widgets/event_focus_rail.dart:328` | Single dashboard event-focus card. Receives public `EventFocusItem` display state, card position, check-in pending state, and action callback; maps upcoming/check-in/after-event flags into `EventActionCard` badges, metadata rows, primary/secondary actions, accent colors, and pending check-in button disablement without reading route providers. |
 | `ActivityScreen` | `lib/dashboard/presentation/activity_screen.dart:19` | Route-level Activity screen registered as `screen.notifications.list` and opened from the Home header bell. Uses `CatchTopBar(title: 'Activity')`, keeps the bottom nav visible by living under the Home shell branch, watches uid/activity providers at the route edge, resolves `NotificationsListState`, owns `ActivityController.markAllReadMutation` feedback, and owns row navigation side effects. |
 | `NotificationsListState` | `lib/dashboard/presentation/notifications_list_state.dart:6` | Provider-free adapter state for the Notifications route. Converts uid/activity provider waves into loading, signed-out, loading-row, error, empty, and populated states; derives visible rows, read/unread state, route intents, relative times, and Today/Yesterday/This week/Earlier groups from an injected clock; exposes mark-all-read label/action availability for the top bar. |
 | `ActivitySection` | `lib/dashboard/presentation/widgets/activity_section.dart:33` | Reusable notification body for `screen.notifications.list`. The route uses `ActivitySection.fromState` with `NotificationsListState` so loading/empty/error/content rendering is provider-free; the legacy `uid` constructor remains for existing Widgetbook/lab call sites. It groups visible notifications by Today, Yesterday, This week, and Earlier through compact top-hairline day groups; signed-up event rows are intentionally not part of this handoff screen. |
@@ -5281,12 +5292,14 @@ Generated 2026-05-06.
 | `DashboardEmpty` | `lib/dashboard/presentation/widgets/dashboard_empty.dart:10` | Standalone empty-dashboard wrapper used by focused tests/non-tab embedding. Renders the empty dashboard header plus `DashboardEmptySliverBody`. |
 | `DashboardEmptySliverBody` | `lib/dashboard/presentation/widgets/dashboard_empty.dart:56` | Sliver body for the empty Home dashboard. Uses `CatchSectionStack` with the cover-story `EmptyHeroCard` followed by a `CatchSection` journey for "How Catch works"; weekly activity, quick actions, and personal clubs stay out of the first-run composition. |
 | `EmptyHeroCard` | `lib/dashboard/presentation/widgets/empty_hero_card.dart:10` | Cover-story hero shown on the empty dashboard prompting the user to book their first event. Its copy matches the handoff first-run story, omits the old decorative glyph, and uses `CatchButtonVariant.light` so the CTA stays legible in dark mode. |
+| `EmptyHeroContent` | `lib/dashboard/presentation/widgets/empty_hero_card.dart:57` | Provider-free content block inside `EmptyHeroCard`. Owns the optional welcome eyebrow, no-events kicker, first-event headline, supporting copy, and light CTA while the surrounding card decides full-bleed versus inset hero chrome and routing callback. |
 
 ### Sliver Helpers
 
 | Helper | File | Purpose |
 |---|---|---|
 | `DashboardSliverHeader` | `lib/dashboard/presentation/widgets/dashboard_sliver_header.dart:7` | Dashboard-specific wrapper around `CatchSliverHeader`. Keeps the home greeting/onboarding header visually consistent while allowing it to scroll away with the dashboard content, and exposes trailing action slots such as the Notifications bell. |
+| `DashboardHeaderContent` | `lib/dashboard/presentation/widgets/dashboard_sliver_header.dart:15` | Dashboard header title content used by `DashboardSliverHeader`. Receives eyebrow, title, and trailing actions explicitly, keeps the compact screen-title block padding, and truncates header copy before rendering optional action slots. |
 
 ### StatelessWidget
 
@@ -5294,11 +5307,11 @@ Generated 2026-05-06.
 |---|---|---|
 | `_DashboardLoadingScreen` | `lib/dashboard/presentation/dashboard_screen.dart:220` | Loading scaffold for Home while profile/booked-run data resolves. |
 | `_DashboardErrorScreen` | `lib/dashboard/presentation/dashboard_screen.dart:229` | Branded error scaffold for Home profile/booked-run load failures. |
-| `_DashboardSectionStateCard` | `lib/dashboard/presentation/widgets/dashboard_full.dart:161` | Inline loading/error card for a dashboard section (e.g., "Loading your recent runs..."). |
-| `_NotificationDayGroups` | `lib/dashboard/presentation/widgets/activity_section.dart:112` | Notifications screen day-group wrapper. Matches the handoff's tight Activity composition with first group flush, later groups separated by an 8px offset, top hairline, 18px inset, uppercase kicker, then `NotificationRow` children. |
+| `DashboardSectionStateCard` | `lib/dashboard/presentation/widgets/dashboard_section_state_card.dart:9` | Inline loading/error card for dashboard sections such as recommendations and weekly activity. Renders shared skeleton or message copy in a compact `CatchSurface` so section-level empty/loading states stay visually consistent. |
+| `NotificationDayGroups` | `lib/dashboard/presentation/widgets/activity_section.dart:133` | Notifications screen day-group wrapper. Matches the handoff's tight Activity composition with first group flush, later groups separated by an 8px offset, top hairline, 18px inset, uppercase kicker, then grouped notification rows. |
+| `NotificationRowSkeleton` | `lib/dashboard/presentation/widgets/activity_section.dart:206` | Loading row placeholder for activity notifications. Reserves icon, title/time, and two-line body skeletons, with optional inset divider matching the loaded notification row stack. |
 | `NotificationRow` | `lib/dashboard/presentation/widgets/activity_section.dart:158` | Handoff-style row for backend-owned activity notifications. It exposes the design contract (`type`, `title`, `time`, `body`, `unread`, `divider`, optional tap), renders on-surface with a type-colored glyph, optional inset divider, relative time, unread title/time color, and optional route navigation with branded failure feedback from the parent group, and deliberately does not render card fills, badges, or icon chips. |
-| `_NotificationGroup` | `lib/dashboard/presentation/widgets/activity_section.dart:227` | Small adapter that renders a group of notification rows and injects row dividers after the first item. |
-| `_ActivityStateLabel` | `lib/dashboard/presentation/widgets/activity_section.dart:422` | Status label shown for the loading activity state. |
+| `NotificationGroupWidget` | `lib/dashboard/presentation/widgets/activity_section.dart:314` | Small adapter that renders a group of `NotificationRowDisplay` entries and injects row dividers after the first item. Optional route callbacks let the Activity route own navigation while Widgetbook can render display rows provider-free. |
 
 ---
 
