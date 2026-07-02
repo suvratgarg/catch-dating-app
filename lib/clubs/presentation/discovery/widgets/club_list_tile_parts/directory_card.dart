@@ -60,11 +60,7 @@ class DirectoryPhotoCard extends StatelessWidget {
     return CatchPolaroid(
       onTap: onTap,
       media: ClubPhotoMediaOverlay(club: club),
-      mediaOverlay: ClubPhotoChrome(
-        club: club,
-        sash: sash,
-        palette: palette,
-      ),
+      mediaOverlay: ClubPhotoChrome(club: club, sash: sash, palette: palette),
       caption: _directoryCaption(club),
       captionColor: t.ink3,
       title: club.name,
@@ -102,11 +98,7 @@ class DirectoryIdentityCard extends StatelessWidget {
     return CatchPolaroid(
       onTap: onTap,
       media: ClubPolaroidArtwork(club: club),
-      mediaOverlay: ClubPhotoChrome(
-        club: club,
-        sash: sash,
-        palette: palette,
-      ),
+      mediaOverlay: ClubPhotoChrome(club: club, sash: sash, palette: palette),
       caption: _directoryCaption(club),
       captionColor: t.ink3,
       title: club.name,
@@ -316,7 +308,11 @@ class ClubRule extends StatelessWidget {
 }
 
 class ClubHostActionRow extends StatelessWidget {
-  const ClubHostActionRow({super.key, required this.club, required this.isJoined});
+  const ClubHostActionRow({
+    super.key,
+    required this.club,
+    required this.isJoined,
+  });
 
   final Club club;
   final bool isJoined;
@@ -326,7 +322,10 @@ class ClubHostActionRow extends StatelessWidget {
     return ClubHostIdentityLine(
       hostName: club.displayHostName,
       hostAvatarUrl: club.hostAvatarUrl,
-      trailing: MembershipTrailing(clubId: club.id, isJoined: isJoined),
+      trailing: MembershipTrailingController(
+        clubId: club.id,
+        isJoined: isJoined,
+      ),
     );
   }
 }
@@ -370,11 +369,62 @@ List<String> _visibleTags(Club club) {
   return visibleClubTags(club);
 }
 
-class MembershipTrailing extends StatelessWidget {
-  const MembershipTrailing({super.key, required this.clubId, required this.isJoined});
+class MembershipTrailingController extends ConsumerWidget {
+  const MembershipTrailingController({
+    super.key,
+    required this.clubId,
+    required this.isJoined,
+  });
 
   final String clubId;
   final bool isJoined;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (isJoined) {
+      return const MembershipTrailing(
+        isJoined: true,
+        isPending: false,
+        onJoinPressed: null,
+      );
+    }
+
+    // Key by clubId so each tile observes only its own join state; an unkeyed
+    // shared mutation would spin/disable every visible Join button at once.
+    final joinMutation = ref.watch(
+      ClubMembershipController.joinMutation(clubId),
+    );
+    return MembershipTrailing(
+      isJoined: false,
+      isPending: joinMutation.isPending,
+      onJoinPressed: () {
+        final uid = ref.read(uidProvider).asData?.value;
+        if (uid == null) {
+          context.go(
+            Uri(
+              path: Routes.authScreen.path,
+              queryParameters: {'from': '/clubs/$clubId'},
+            ).toString(),
+          );
+          return;
+        }
+        _joinClub(ref, clubId);
+      },
+    );
+  }
+}
+
+class MembershipTrailing extends StatelessWidget {
+  const MembershipTrailing({
+    super.key,
+    required this.isJoined,
+    required this.isPending,
+    required this.onJoinPressed,
+  });
+
+  final bool isJoined;
+  final bool isPending;
+  final VoidCallback? onJoinPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -383,38 +433,15 @@ class MembershipTrailing extends StatelessWidget {
       // redundant button needed.
       return const SizedBox.shrink();
     }
-    return Consumer(
-      builder: (context, ref, _) {
-        final t = CatchTokens.of(context);
-        // Key by clubId so each tile observes only its own join state; an unkeyed
-        // shared mutation would spin/disable every visible Join button at once.
-        final joinMutation = ref.watch(
-          ClubMembershipController.joinMutation(clubId),
-        );
 
-        return CatchButton(
-          label: 'Join',
-          icon: Icon(CatchIcons.groupAddOutlined),
-          onPressed: joinMutation.isPending
-              ? null
-              : () {
-                  final uid = ref.read(uidProvider).asData?.value;
-                  if (uid == null) {
-                    context.go(
-                      Uri(
-                        path: Routes.authScreen.path,
-                        queryParameters: {'from': '/clubs/$clubId'},
-                      ).toString(),
-                    );
-                    return;
-                  }
-                  _joinClub(ref, clubId);
-                },
-          size: CatchButtonSize.sm,
-          backgroundColor: t.ink,
-          foregroundColor: t.primaryInk,
-        );
-      },
+    final t = CatchTokens.of(context);
+    return CatchButton(
+      label: 'Join',
+      icon: Icon(CatchIcons.groupAddOutlined),
+      onPressed: isPending ? null : onJoinPressed,
+      size: CatchButtonSize.sm,
+      backgroundColor: t.ink,
+      foregroundColor: t.primaryInk,
     );
   }
 }

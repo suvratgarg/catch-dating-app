@@ -10,26 +10,26 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1076,
-    "widgetClasses": 976,
+    "total": 1077,
+    "widgetClasses": 977,
     "stateClasses": 100,
-    "publicClasses": 976,
+    "publicClasses": 977,
     "privateClasses": 100,
     "byRole": {
       "atom": 37,
       "composition": 280,
-      "feature-adapter": 307,
+      "feature-adapter": 308,
       "pattern": 14,
       "screen": 338,
       "widget-state": 100
     },
     "byDecision": {
       "keep-canonical-contract": 121,
-      "keep-public-cataloged": 855,
+      "keep-public-cataloged": 856,
       "keep-widget-state": 100
     },
     "byCatalogStatus": {
-      "cataloged": 783,
+      "cataloged": 784,
       "contracted": 121,
       "not-applicable": 100,
       "route-covered": 72
@@ -1899,6 +1899,29 @@
       "visibility": "public",
       "role": "feature-adapter",
       "canonicalFamily": "feature.clubs.membership_trailing",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "feature-display-models",
+      "stateOwnership": "feature-display-state",
+      "asyncOwnership": "display-state-only",
+      "layoutOwnership": "feature-section-layout",
+      "actionOwnership": "feature-callbacks",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "MembershipTrailingController",
+      "file": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
+      "classKind": "widget",
+      "baseClass": "ConsumerWidget",
+      "visibility": "public",
+      "role": "feature-adapter",
+      "canonicalFamily": "feature.clubs.membership_trailing_controller",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,

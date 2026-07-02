@@ -580,6 +580,16 @@ final directories = <_widgetbook.WidgetbookNode>[
               ),
             ],
           ),
+          _widgetbook.WidgetbookComponent(
+            name: 'MembershipTrailingController',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Membership trailing controller states',
+                builder: _widgetbook_workspace_clubs_club_detail_use_cases
+                    .membershipTrailingControllerStates,
+              ),
+            ],
+          ),
         ],
       ),
       _widgetbook.WidgetbookFolder(

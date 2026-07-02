@@ -267,9 +267,10 @@ a feature section here only when auditing that feature's widget surface.
   (`DirectoryCard`, `DirectoryPhotoCard`, `DirectoryIdentityCard`,
   `ClubPhotoMediaOverlay`, `ClubPhotoChrome`, `ClubPhotoScrim`,
   `ClubLogoCrest`, `ClubLogoFallback`, `ClubDirectoryFooter`,
-  `ClubHostActionRow`, `MembershipTrailing`, and `ClubRule`) with exact
-  Widgetbook coverage. The catalog now uses the current public names instead of
-  stale underscored directory-card entries.
+  `ClubHostActionRow`, `MembershipTrailingController`,
+  `MembershipTrailing`, and `ClubRule`) with exact Widgetbook coverage. The
+  catalog now uses the current public names instead of stale underscored
+  directory-card entries.
 
 ### 2.5.512
 
@@ -5993,8 +5994,9 @@ Generated 2026-05-06.
 | `ClubLogoFallback` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:257` | Empty logo fallback used inside the accent-colored `ClubLogoCrest` shell when the club has no profile image or the network image fails. |
 | `ClubDirectoryFooter` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:266` | Directory-card footer stack for rating, host/action row, separator rule, and visible club tags. Keeps card metadata layout separate from the media and title band. |
 | `ClubRule` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:304` | Single-pixel directory-card separator used between host/action metadata and tag chips. |
-| `ClubHostActionRow` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:318` | Directory-card hosted-by row. Reuses `ClubHostIdentityLine` and delegates joined/joinable trailing state to `MembershipTrailing`. |
-| `MembershipTrailing` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:373` | Directory-card membership action adapter. Hides redundant joined controls because the card sash carries that state, and keys join mutation state by `clubId` so one pending Join button does not disable every visible club card. |
+| `ClubHostActionRow` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:313` | Directory-card hosted-by row. Reuses `ClubHostIdentityLine` and delegates joined/joinable trailing state to `MembershipTrailingController`. |
+| `MembershipTrailingController` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:372` | Directory-card membership action adapter. Hides redundant joined controls because the card sash carries that state, keys join mutation state by `clubId` so one pending Join button does not disable every visible club card, and routes signed-out users through the auth flow. |
+| `MembershipTrailing` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:417` | Provider-free directory-card join renderer. Shows the compact `CatchButton` for joinable clubs, disables it while the controller mutation is pending, and renders no redundant joined control when the sash already carries membership state. |
 | `ClubImage` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/club_image.dart:3` | Club media renderer for list tiles and avatar chips. Selects cover/profile image order by explicit flags, grades network imagery through `CatchGradedImage`, and falls back to `ClubPolaroidArtwork` with compact or full fallback chrome chosen by the caller. |
 | `AvatarChip` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/avatar_chip.dart:6` | Joined-club rail tile with a rounded image/fallback chip, optional live-badge border/copy, semantic open-club label, and truncated club name. |
 

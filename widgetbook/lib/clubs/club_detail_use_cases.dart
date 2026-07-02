@@ -863,6 +863,33 @@ Widget clubHostActionRowStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Membership trailing controller states',
+  type: MembershipTrailingController,
+  path: '[Club Discovery]/Atoms',
+)
+Widget membershipTrailingControllerStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'MembershipTrailingController',
+    catalogId: 'atom.club.membership_trailing_controller',
+    children: [
+      _StateCard(
+        label: 'joinable controller',
+        child: _ClubDirectoryPreviewScope(
+          child: MembershipTrailingController(
+            clubId: _club.id,
+            isJoined: false,
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'joined controller',
+        child: MembershipTrailingController(clubId: _clubId, isJoined: true),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Membership trailing states',
   type: MembershipTrailing,
   path: '[Club Discovery]/Atoms',
@@ -874,13 +901,27 @@ Widget membershipTrailingStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'join button',
-        child: _ClubDirectoryPreviewScope(
-          child: MembershipTrailing(clubId: _club.id, isJoined: false),
+        child: MembershipTrailing(
+          isJoined: false,
+          isPending: false,
+          onJoinPressed: () {},
+        ),
+      ),
+      const _StateCard(
+        label: 'pending',
+        child: MembershipTrailing(
+          isJoined: false,
+          isPending: true,
+          onJoinPressed: null,
         ),
       ),
       const _StateCard(
         label: 'joined hidden',
-        child: MembershipTrailing(clubId: _clubId, isJoined: true),
+        child: MembershipTrailing(
+          isJoined: true,
+          isPending: false,
+          onJoinPressed: null,
+        ),
       ),
     ],
   );
