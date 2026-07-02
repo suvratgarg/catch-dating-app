@@ -50,8 +50,6 @@ import 'package:catch_dating_app/user_profile/domain/profile_readiness.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart'
-    show AsyncData, AsyncValue, Provider;
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -256,10 +254,13 @@ const _completeRunPreferencesIntent = 'complete-run-preferences';
 const _initialRouteOverride = String.fromEnvironment('CATCH_INITIAL_ROUTE');
 
 @visibleForTesting
-final initialAppLocationProvider = Provider<String>(
-  (ref) => _initialLocationFromPlatform(),
-);
+// keepalive: initial app location is startup routing state consumed by the
+// app-wide keepAlive GoRouter provider.
+@Riverpod(keepAlive: true)
+String initialAppLocation(Ref ref) => _initialLocationFromPlatform();
 
+// keepalive: GoRouter is the app-wide navigation graph and owns route refresh
+// listeners for auth/update state.
 @Riverpod(keepAlive: true)
 GoRouter goRouter(Ref ref) {
   final notifier = _RouterRefreshNotifier();

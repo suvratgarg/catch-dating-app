@@ -23,7 +23,6 @@ class ChatsListCelebrationController {
 
   void showNewMatchCelebrations({
     required BuildContext context,
-    required WidgetRef ref,
     required String uid,
     required AsyncValue<List<Match>>? previous,
     required AsyncValue<List<Match>> next,
@@ -37,7 +36,7 @@ class ChatsListCelebrationController {
       isHostApp: isHostApp,
     );
     for (final match in matches) {
-      showMatchCelebration(context, ref, match, uid);
+      showMatchCelebration(context, match, uid);
     }
   }
 }

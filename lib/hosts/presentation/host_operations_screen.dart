@@ -42,8 +42,10 @@ import 'package:catch_dating_app/hosts/data/host_profile_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_profile.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_club_edit_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_home_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/host_profile_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_settings_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_settings_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_payout_prompt_controller.dart';
@@ -73,7 +75,7 @@ class HostOperationsHomeScreen extends ConsumerWidget {
     final clubsAsync = uid == null
         ? null
         : ref.watch(_hostClubsForUserProvider(uid));
-    final routeState = HostHomeRouteState.fromAsync(
+    final routeState = buildHostHomeRouteState(
       uid: uidAsync,
       clubs: clubsAsync,
     );
@@ -382,7 +384,7 @@ class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {
     final clubsAsync = uid == null
         ? const AsyncData<List<Club>>([])
         : ref.watch(_hostClubsForUserProvider(uid));
-    final state = HostSettingsState.fromAsync(
+    final state = buildHostSettingsState(
       uid: uid,
       profile: hostProfileAsync,
       clubs: clubsAsync,
@@ -925,10 +927,7 @@ class _HostProfileScreenState extends ConsumerState<HostProfileScreen> {
     final profileAsync = uid == null
         ? const AsyncData<HostProfile?>(null)
         : ref.watch(watchHostProfileProvider(uid));
-    final state = HostProfileEditState.fromAsync(
-      uid: uid,
-      profile: profileAsync,
-    );
+    final state = buildHostProfileEditState(uid: uid, profile: profileAsync);
     final ensureMutation = ref.watch(
       HostProfileController.ensureProfileMutation,
     );
@@ -1703,7 +1702,7 @@ class HostTodayDashboardCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final eventsAsync = ref.watch(watchEventsForClubProvider(club.id));
-    final dashboardState = HostHomeTodayDashboardState.fromAsync(eventsAsync);
+    final dashboardState = buildHostHomeTodayDashboardState(eventsAsync);
 
     return HostTodayDashboardSection(
       club: club,
@@ -2403,7 +2402,7 @@ class HostEventsClubCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final eventsAsync = ref.watch(watchEventsForClubProvider(club.id));
-    final eventsState = HostHomeEventsSectionState.fromAsync(eventsAsync);
+    final eventsState = buildHostHomeEventsSectionState(eventsAsync);
     final owner = club.isOwnedBy(currentUid);
 
     return HostEventsClubSection(

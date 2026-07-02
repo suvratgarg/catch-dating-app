@@ -13,6 +13,7 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_state.dart';
+import 'package:catch_dating_app/reviews/presentation/reviews_history_view_model.dart';
 import 'package:catch_dating_app/reviews/shared/reviews_section.dart';
 import 'package:catch_dating_app/reviews/shared/write_review_sheet.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -50,7 +51,7 @@ class ReviewsHistoryScreen extends ConsumerWidget {
         title: 'Sign in to see reviews',
         message: 'Your past event reviews will appear here.',
       ),
-      data: (uid) => ReviewsHistoryState.fromAsync(
+      data: (uid) => buildReviewsHistoryState(
         uid: uid,
         user: userAsync,
         reviews: reviewsAsync,

@@ -13,8 +13,10 @@ import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_profile_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_profile.dart';
 import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_home_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_settings_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_settings_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_card.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/payments/data/host_payment_account_repository.dart';
@@ -51,7 +53,7 @@ void main() {
       ],
     );
 
-    final state = HostSettingsState.fromAsync(
+    final state = buildHostSettingsState(
       uid: _hostUid,
       profile: const AsyncLoading<HostProfile?>(),
       clubs: AsyncData<List<Club>>([ownedClub]),
@@ -76,28 +78,28 @@ void main() {
     );
 
     expect(
-      HostProfileEditState.fromAsync(
+      buildHostProfileEditState(
         uid: null,
         profile: const AsyncData<HostProfile?>(null),
       ),
       isA<HostProfileEditAuthRequired>(),
     );
     expect(
-      HostProfileEditState.fromAsync(
+      buildHostProfileEditState(
         uid: _hostUid,
         profile: const AsyncLoading<HostProfile?>(),
       ),
       isA<HostProfileEditLoading>(),
     );
     expect(
-      HostProfileEditState.fromAsync(
+      buildHostProfileEditState(
         uid: _hostUid,
         profile: const AsyncData<HostProfile?>(null),
       ),
       isA<HostProfileEditMissing>(),
     );
     expect(
-      HostProfileEditState.fromAsync(
+      buildHostProfileEditState(
         uid: _hostUid,
         profile: AsyncData<HostProfile?>(profile),
       ),
@@ -229,15 +231,15 @@ void main() {
     final clubsError = StateError('clubs failed');
 
     expect(
-      HostHomeRouteState.fromAsync(uid: const AsyncData<String?>(null)).status,
+      buildHostHomeRouteState(uid: const AsyncData<String?>(null)).status,
       HostHomeRouteStatus.authRequired,
     );
     expect(
-      HostHomeRouteState.fromAsync(uid: const AsyncLoading<String?>()).status,
+      buildHostHomeRouteState(uid: const AsyncLoading<String?>()).status,
       HostHomeRouteStatus.loading,
     );
 
-    final authErrorState = HostHomeRouteState.fromAsync(
+    final authErrorState = buildHostHomeRouteState(
       uid: AsyncError<String?>(authError, stackTrace),
     );
     expect(authErrorState.status, HostHomeRouteStatus.error);
@@ -245,14 +247,14 @@ void main() {
     expect(authErrorState.errorContext, AppErrorContext.auth);
 
     expect(
-      HostHomeRouteState.fromAsync(
+      buildHostHomeRouteState(
         uid: const AsyncData<String?>(_hostUid),
         clubs: const AsyncLoading<List<Club>>(),
       ).status,
       HostHomeRouteStatus.loading,
     );
 
-    final clubsErrorState = HostHomeRouteState.fromAsync(
+    final clubsErrorState = buildHostHomeRouteState(
       uid: const AsyncData<String?>(_hostUid),
       clubs: AsyncError<List<Club>>(clubsError, stackTrace),
     );
@@ -261,14 +263,14 @@ void main() {
     expect(clubsErrorState.error, clubsError);
     expect(clubsErrorState.errorContext, AppErrorContext.club);
 
-    final emptyState = HostHomeRouteState.fromAsync(
+    final emptyState = buildHostHomeRouteState(
       uid: const AsyncData<String?>(_hostUid),
       clubs: const AsyncData<List<Club>>([]),
     );
     expect(emptyState.status, HostHomeRouteStatus.empty);
     expect(emptyState.uid, _hostUid);
 
-    final loadedState = HostHomeRouteState.fromAsync(
+    final loadedState = buildHostHomeRouteState(
       uid: const AsyncData<String?>(_hostUid),
       clubs: AsyncData<List<Club>>([club]),
     );
@@ -382,25 +384,23 @@ void main() {
     final error = StateError('events failed');
 
     expect(
-      HostHomeEventsSectionState.fromAsync(
-        const AsyncLoading<List<Event>>(),
-      ).status,
+      buildHostHomeEventsSectionState(const AsyncLoading<List<Event>>()).status,
       HostHomeEventsStatus.loading,
     );
 
-    final errorState = HostHomeEventsSectionState.fromAsync(
+    final errorState = buildHostHomeEventsSectionState(
       AsyncError<List<Event>>(error, stackTrace),
     );
     expect(errorState.status, HostHomeEventsStatus.error);
     expect(errorState.error, error);
 
-    final emptyState = HostHomeEventsSectionState.fromAsync(
+    final emptyState = buildHostHomeEventsSectionState(
       AsyncData<List<Event>>([cancelled]),
     );
     expect(emptyState.status, HostHomeEventsStatus.empty);
     expect(emptyState.rows.isEmpty, isTrue);
 
-    final populatedState = HostHomeEventsSectionState.fromAsync(
+    final populatedState = buildHostHomeEventsSectionState(
       AsyncData<List<Event>>([event, cancelled]),
     );
     expect(populatedState.status, HostHomeEventsStatus.populated);
@@ -421,18 +421,18 @@ void main() {
     ).copyWith(status: EventLifecycleStatus.cancelled);
 
     expect(
-      HostHomeTodayDashboardState.fromAsync(
+      buildHostHomeTodayDashboardState(
         const AsyncLoading<List<Event>>(),
       ).status,
       HostHomeTodayStatus.loading,
     );
 
-    final emptyState = HostHomeTodayDashboardState.fromAsync(
+    final emptyState = buildHostHomeTodayDashboardState(
       AsyncData<List<Event>>([cancelled]),
     );
     expect(emptyState.status, HostHomeTodayStatus.empty);
 
-    final contentState = HostHomeTodayDashboardState.fromAsync(
+    final contentState = buildHostHomeTodayDashboardState(
       AsyncData<List<Event>>([late, early, cancelled]),
     );
     expect(contentState.status, HostHomeTodayStatus.content);

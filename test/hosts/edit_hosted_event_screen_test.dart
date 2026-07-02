@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
@@ -10,6 +11,7 @@ import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dar
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_edit_screen_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_edit_view_model.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -277,7 +279,7 @@ void main() {
       createdAt: DateTime(2026),
     );
 
-    final firstLoad = HostEventEditPrivateAccessState.from(
+    final firstLoad = buildHostEventEditPrivateAccessState(
       admissionPreset: EventAdmissionPreset.inviteOnly,
       loadedPrivateAccess: false,
       privateAccess: AsyncData(access),
@@ -285,9 +287,9 @@ void main() {
     expect(firstLoad.shouldWatch, isTrue);
     expect(firstLoad.shouldMarkLoaded, isTrue);
     expect(firstLoad.inviteCodeSeed, 'SOCIAL2026');
-    expect(firstLoad.privateAccess.isLoading, isFalse);
+    expect(firstLoad.privateAccess.status, CatchAsyncStatus.data);
 
-    final alreadyLoaded = HostEventEditPrivateAccessState.from(
+    final alreadyLoaded = buildHostEventEditPrivateAccessState(
       admissionPreset: EventAdmissionPreset.inviteOnly,
       loadedPrivateAccess: true,
       privateAccess: AsyncData(access),
@@ -296,7 +298,7 @@ void main() {
     expect(alreadyLoaded.shouldMarkLoaded, isFalse);
     expect(alreadyLoaded.inviteCodeSeed, isNull);
 
-    final openCapacity = HostEventEditPrivateAccessState.from(
+    final openCapacity = buildHostEventEditPrivateAccessState(
       admissionPreset: EventAdmissionPreset.openCapacity,
       loadedPrivateAccess: false,
       privateAccess: AsyncData(access),

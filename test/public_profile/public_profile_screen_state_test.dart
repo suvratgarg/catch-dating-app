@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/public_profile/presentation/public_profile_screen_state.dart';
+import 'package:catch_dating_app/public_profile/presentation/public_profile_screen_view_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -8,7 +9,7 @@ void main() {
   test('PublicProfileScreenState maps cold loading without fallback', () {
     final viewer = buildUser(uid: 'viewer-1', name: 'Viewer');
 
-    final state = PublicProfileScreenState.fromAsync(
+    final state = publicProfileScreenStateFromAsync(
       uid: 'runner-1',
       profileAsync: const AsyncLoading(),
       initialProfile: null,
@@ -31,7 +32,7 @@ void main() {
       final initialProfile = buildPublicProfile(name: 'Riya');
       final viewer = buildUser(uid: 'viewer-1', name: 'Viewer');
 
-      final state = PublicProfileScreenState.fromAsync(
+      final state = publicProfileScreenStateFromAsync(
         uid: 'runner-1',
         profileAsync: const AsyncLoading(),
         initialProfile: initialProfile,
@@ -54,7 +55,7 @@ void main() {
   test('PublicProfileScreenState maps errors to retry intent', () {
     final error = StateError('profile failed');
 
-    final state = PublicProfileScreenState.fromAsync(
+    final state = publicProfileScreenStateFromAsync(
       uid: 'runner-1',
       profileAsync: AsyncError(error, StackTrace.empty),
       initialProfile: null,
@@ -70,7 +71,7 @@ void main() {
   });
 
   test('PublicProfileScreenState maps null profile to unavailable state', () {
-    final state = PublicProfileScreenState.fromAsync(
+    final state = publicProfileScreenStateFromAsync(
       uid: 'runner-1',
       profileAsync: const AsyncData(null),
       initialProfile: null,
@@ -89,7 +90,7 @@ void main() {
     final profile = buildPublicProfile(name: 'Riya');
     final viewer = buildUser(name: 'Riya');
 
-    final state = PublicProfileScreenState.fromAsync(
+    final state = publicProfileScreenStateFromAsync(
       uid: 'runner-1',
       profileAsync: AsyncData(profile),
       initialProfile: null,

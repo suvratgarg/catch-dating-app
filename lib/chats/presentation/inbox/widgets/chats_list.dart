@@ -8,6 +8,7 @@ import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_empty_st
 import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_list_body.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
@@ -40,7 +41,6 @@ class ChatsList extends ConsumerWidget {
       ref.listen(watchMatchesForUserProvider(uid), (previous, next) {
         const ChatsListCelebrationController().showNewMatchCelebrations(
           context: context,
-          ref: ref,
           uid: uid,
           previous: previous,
           next: next,
@@ -52,7 +52,7 @@ class ChatsList extends ConsumerWidget {
     final effectiveState =
         displayState ??
         ChatsListDisplayState.fromAsync(
-          viewModel: ref.watch(chatsListViewModelProvider),
+          viewModel: _catchAsyncState(ref.watch(chatsListViewModelProvider)),
           uid: uid,
           query: query,
           hostFilter: hostFilter,
@@ -84,6 +84,14 @@ class ChatsList extends ConsumerWidget {
       ),
     };
   }
+}
+
+CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
+  return value.when(
+    data: CatchAsyncState<T>.data,
+    loading: () => const CatchAsyncState.loading(),
+    error: (error, stackTrace) => CatchAsyncState<T>.error(error),
+  );
 }
 
 void _retryChatsList(WidgetRef ref, ChatsListRetryIntent intent) {

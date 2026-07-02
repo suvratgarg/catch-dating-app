@@ -9,7 +9,10 @@ import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.
 import 'package:catch_dating_app/chats/presentation/inbox/chats_search_header_controller.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/host_inbox_filter.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_sliver_header.dart';
+import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_config.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -25,6 +28,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import '../clubs/clubs_test_helpers.dart' as club_test;
 import '../events/events_test_helpers.dart';
 import '../test_pump_helpers.dart';
 
@@ -177,10 +181,10 @@ void main() {
       );
 
       final state = HostInboxScreenState.fromAsync(
-        viewModel: AsyncData<ChatsListViewModel>(
+        viewModel: CatchAsyncState<ChatsListViewModel>.data(
           _stateTestViewModel(conversations: [unread, read]),
         ),
-        uid: const AsyncData<String?>('host-1'),
+        uid: const CatchAsyncState<String?>.data('host-1'),
         query: '',
         selectedFilter: HostInboxFilter.unread,
         isHostApp: true,
@@ -196,14 +200,14 @@ void main() {
 
     test('maps search and unread empty states', () {
       final searchEmpty = HostInboxScreenState.fromAsync(
-        viewModel: const AsyncData<ChatsListViewModel>(
+        viewModel: const CatchAsyncState<ChatsListViewModel>.data(
           ChatsListViewModel(
             newMatches: <ChatThreadPreview>[],
             conversations: <ChatThreadPreview>[],
             totalThreadCount: 2,
           ),
         ),
-        uid: const AsyncData<String?>('host-1'),
+        uid: const CatchAsyncState<String?>.data('host-1'),
         query: 'no matching attendee',
         selectedFilter: HostInboxFilter.all,
         isHostApp: true,
@@ -214,7 +218,7 @@ void main() {
       );
 
       final noUnread = HostInboxScreenState.fromAsync(
-        viewModel: AsyncData<ChatsListViewModel>(
+        viewModel: CatchAsyncState<ChatsListViewModel>.data(
           _stateTestViewModel(
             conversations: [
               _previewForStateTest(
@@ -226,7 +230,7 @@ void main() {
             ],
           ),
         ),
-        uid: const AsyncData<String?>('host-1'),
+        uid: const CatchAsyncState<String?>.data('host-1'),
         query: '',
         selectedFilter: HostInboxFilter.unread,
         isHostApp: true,
@@ -239,8 +243,8 @@ void main() {
 
     test('maps async loading and error branches', () {
       final loading = HostInboxScreenState.fromAsync(
-        viewModel: const AsyncLoading<ChatsListViewModel>(),
-        uid: const AsyncData<String?>('host-1'),
+        viewModel: const CatchAsyncState<ChatsListViewModel>.loading(),
+        uid: const CatchAsyncState<String?>.data('host-1'),
         query: '',
         selectedFilter: HostInboxFilter.all,
         isHostApp: true,
@@ -250,8 +254,8 @@ void main() {
 
       final error = StateError('host inbox failed');
       final failed = HostInboxScreenState.fromAsync(
-        viewModel: AsyncError<ChatsListViewModel>(error, StackTrace.empty),
-        uid: const AsyncData<String?>('host-1'),
+        viewModel: CatchAsyncState<ChatsListViewModel>.error(error),
+        uid: const CatchAsyncState<String?>.data('host-1'),
         query: '',
         selectedFilter: HostInboxFilter.all,
         isHostApp: true,
@@ -262,14 +266,14 @@ void main() {
 
       final authError = StateError('auth failed');
       final authFailed = HostInboxScreenState.fromAsync(
-        viewModel: const AsyncData<ChatsListViewModel>(
+        viewModel: const CatchAsyncState<ChatsListViewModel>.data(
           ChatsListViewModel(
             newMatches: <ChatThreadPreview>[],
             conversations: <ChatThreadPreview>[],
             totalThreadCount: 0,
           ),
         ),
-        uid: AsyncError<String?>(authError, StackTrace.empty),
+        uid: CatchAsyncState<String?>.error(authError),
         query: '',
         selectedFilter: HostInboxFilter.all,
         isHostApp: true,
@@ -475,6 +479,8 @@ void main() {
     final match = _buildMatch();
     final matchRepository = _FakeMatchRepository(matches: [match]);
     final conversationRepository = _FakeConversationRepository();
+    final publicProfileRepository = FakePublicProfileRepository()
+      ..profiles = [buildPublicProfile(uid: 'runner-2')];
     final container = ProviderContainer(
       overrides: [
         uidProvider.overrideWith((ref) => Stream.value('runner-1')),
@@ -482,12 +488,12 @@ void main() {
         conversationRepositoryProvider.overrideWithValue(
           conversationRepository,
         ),
+        publicProfileRepositoryProvider.overrideWithValue(
+          publicProfileRepository,
+        ),
         watchMatchesForUserProvider(
           'runner-1',
         ).overrideWith((ref) => Stream.value([match])),
-        watchPublicProfileProvider('runner-2').overrideWith(
-          (ref) => Stream.value(buildPublicProfile(uid: 'runner-2')),
-        ),
       ],
     );
     addTearDown(container.dispose);
@@ -541,6 +547,11 @@ void main() {
     final matches = [olderTaylorMatch, latestTaylorMatch, morganMatch];
     final matchRepository = _FakeMatchRepository(matches: matches);
     final conversationRepository = _FakeConversationRepository();
+    final publicProfileRepository = FakePublicProfileRepository()
+      ..profiles = [
+        buildPublicProfile(uid: 'runner-2', name: 'Taylor'),
+        buildPublicProfile(uid: 'runner-3', name: 'Morgan'),
+      ];
 
     await tester.pumpWidget(
       ProviderScope(
@@ -550,19 +561,12 @@ void main() {
           conversationRepositoryProvider.overrideWithValue(
             conversationRepository,
           ),
+          publicProfileRepositoryProvider.overrideWithValue(
+            publicProfileRepository,
+          ),
           watchMatchesForUserProvider(
             'runner-1',
           ).overrideWith((ref) => Stream.value(matches)),
-          watchPublicProfileProvider('runner-2').overrideWith(
-            (ref) => Stream.value(
-              buildPublicProfile(uid: 'runner-2', name: 'Taylor'),
-            ),
-          ),
-          watchPublicProfileProvider('runner-3').overrideWith(
-            (ref) => Stream.value(
-              buildPublicProfile(uid: 'runner-3', name: 'Morgan'),
-            ),
-          ),
         ],
         child: MaterialApp(
           theme: AppTheme.light,
@@ -583,6 +587,89 @@ void main() {
     expect(find.text('2 chats'), findsNothing);
     expect(find.text('3 active'), findsNothing);
     expect(find.text('Messages'), findsNothing);
+    expect(publicProfileRepository.fetchPublicProfilesCalls, [
+      ['runner-2', 'runner-3'],
+    ]);
+  });
+
+  testWidgets('batches inbox club and public profile lookups per roster', (
+    tester,
+  ) async {
+    final hostInquiry = _buildMatch(
+      id: 'host-inquiry',
+      user1Id: 'guest-1',
+      user2Id: 'host-1',
+      lastMessageAt: DateTime(2026, 4, 23, 12),
+      lastMessagePreview: 'Is there parking near the start?',
+      lastMessageSenderId: 'guest-1',
+      conversationType: MatchConversationType.clubHostInquiry,
+      clubId: 'club-1',
+    );
+    final secondHostInquiry = _buildMatch(
+      id: 'second-host-inquiry',
+      user1Id: 'guest-2',
+      user2Id: 'host-1',
+      lastMessageAt: DateTime(2026, 4, 23, 11),
+      lastMessagePreview: 'Can I bring a friend?',
+      lastMessageSenderId: 'guest-2',
+      conversationType: MatchConversationType.clubHostInquiry,
+      clubId: 'club-1',
+    );
+    final datingMatch = _buildMatch(
+      id: 'dating-match',
+      user1Id: 'host-1',
+      lastMessageAt: DateTime(2026, 4, 23, 10),
+      lastMessagePreview: 'Regular match.',
+      lastMessageSenderId: 'runner-2',
+    );
+    final matches = [hostInquiry, secondHostInquiry, datingMatch];
+    final matchRepository = _FakeMatchRepository(matches: matches);
+    final conversationRepository = _FakeConversationRepository();
+    final clubsRepository = club_test.FakeClubsRepository()
+      ..clubsById['club-1'] = club_test.buildClub(
+        hostName: 'Stride Social',
+        hostProfiles: const [
+          ClubHostProfile(uid: 'guest-1', displayName: 'Asha Guest'),
+          ClubHostProfile(uid: 'guest-2', displayName: 'Nikhil Guest'),
+        ],
+      );
+    final publicProfileRepository = FakePublicProfileRepository()
+      ..profiles = [buildPublicProfile(uid: 'runner-2', name: 'Taylor')];
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream.value('host-1')),
+          matchRepositoryProvider.overrideWithValue(matchRepository),
+          conversationRepositoryProvider.overrideWithValue(
+            conversationRepository,
+          ),
+          clubsRepositoryProvider.overrideWithValue(clubsRepository),
+          publicProfileRepositoryProvider.overrideWithValue(
+            publicProfileRepository,
+          ),
+          watchMatchesForUserProvider(
+            'host-1',
+          ).overrideWith((ref) => Stream.value(matches)),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: const ChatsListScreen(),
+        ),
+      ),
+    );
+
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Asha Guest'), findsOneWidget);
+    expect(find.text('Nikhil Guest'), findsOneWidget);
+    expect(find.text('Taylor'), findsOneWidget);
+    expect(clubsRepository.watchClubsByIdsCalls, [
+      ['club-1'],
+    ]);
+    expect(publicProfileRepository.fetchPublicProfilesCalls, [
+      ['runner-2'],
+    ]);
   });
 
   testWidgets('host inbox uses attendee-query framing', (tester) async {
@@ -787,6 +874,8 @@ void main() {
     final matches = [hostInquiry, datingMatch];
     final matchRepository = _FakeMatchRepository(matches: matches);
     final conversationRepository = _FakeConversationRepository();
+    final publicProfileRepository = FakePublicProfileRepository()
+      ..profiles = [buildPublicProfile(uid: 'runner-2', name: 'Taylor')];
 
     await tester.pumpWidget(
       ProviderScope(
@@ -796,14 +885,12 @@ void main() {
           conversationRepositoryProvider.overrideWithValue(
             conversationRepository,
           ),
+          publicProfileRepositoryProvider.overrideWithValue(
+            publicProfileRepository,
+          ),
           watchMatchesForUserProvider(
             'host-1',
           ).overrideWith((ref) => Stream.value(matches)),
-          watchPublicProfileProvider('runner-2').overrideWith(
-            (ref) => Stream.value(
-              buildPublicProfile(uid: 'runner-2', name: 'Taylor'),
-            ),
-          ),
         ],
         child: MaterialApp(
           theme: AppTheme.light,
@@ -829,6 +916,8 @@ void main() {
     );
     final matchRepository = _FakeMatchRepository(matches: [selfSentMatch]);
     final conversationRepository = _FakeConversationRepository();
+    final publicProfileRepository = FakePublicProfileRepository()
+      ..profiles = [buildPublicProfile(uid: 'runner-2', name: 'Yash')];
 
     await tester.pumpWidget(
       ProviderScope(
@@ -838,13 +927,12 @@ void main() {
           conversationRepositoryProvider.overrideWithValue(
             conversationRepository,
           ),
+          publicProfileRepositoryProvider.overrideWithValue(
+            publicProfileRepository,
+          ),
           watchMatchesForUserProvider(
             'runner-1',
           ).overrideWith((ref) => Stream.value([selfSentMatch])),
-          watchPublicProfileProvider('runner-2').overrideWith(
-            (ref) =>
-                Stream.value(buildPublicProfile(uid: 'runner-2', name: 'Yash')),
-          ),
         ],
         child: MaterialApp(
           theme: AppTheme.light,
@@ -873,6 +961,8 @@ void main() {
       match: match,
     );
     final conversationRepository = _FakeConversationRepository();
+    final publicProfileRepository = FakePublicProfileRepository()
+      ..profiles = [profile];
     final router = GoRouter(
       initialLocation: Routes.matchesListScreen.path,
       routes: [
@@ -903,6 +993,9 @@ void main() {
           matchRepositoryProvider.overrideWithValue(matchRepository),
           conversationRepositoryProvider.overrideWithValue(
             conversationRepository,
+          ),
+          publicProfileRepositoryProvider.overrideWithValue(
+            publicProfileRepository,
           ),
           watchMatchesForUserProvider(
             'runner-1',

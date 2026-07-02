@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/business_rules.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/device_location.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -41,6 +42,7 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/crea
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_edit_screen_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_edit_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/validators.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
@@ -477,13 +479,13 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
         _selectedAdmissionPreset == EventAdmissionPreset.inviteOnly
         ? ref.watch(watchEventPrivateAccessProvider(widget.event.id))
         : const AsyncData<EventPrivateAccess?>(null);
-    final privateAccessState = HostEventEditPrivateAccessState.from(
+    final privateAccessState = buildHostEventEditPrivateAccessState(
       admissionPreset: _selectedAdmissionPreset,
       loadedPrivateAccess: _loadedPrivateAccess,
       privateAccess: privateAccessAsync,
     );
-    privateAccessState.privateAccess.whenData((_) {
-      if (!privateAccessState.shouldMarkLoaded) return;
+    if (privateAccessState.shouldMarkLoaded &&
+        privateAccessState.privateAccess.status == CatchAsyncStatus.data) {
       _loadedPrivateAccess = true;
       final inviteCode = privateAccessState.inviteCodeSeed;
       if (inviteCode != null) {
@@ -493,7 +495,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
           }
         });
       }
-    });
+    }
 
     return Scaffold(
       backgroundColor: t.bg,
@@ -1120,7 +1122,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
   final ValueChanged<bool> onDynamicPricingChanged;
   final EventCancellationPolicyId cancellationPolicyId;
   final ValueChanged<EventCancellationPolicyId> onCancellationPolicyChanged;
-  final AsyncValue<EventPrivateAccess?> privateAccessAsync;
+  final CatchAsyncState<EventPrivateAccess?> privateAccessAsync;
 
   @override
   Widget build(BuildContext context) {
@@ -1189,7 +1191,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
           ),
           if (admissionPreset == EventAdmissionPreset.inviteOnly) ...[
             gapH16,
-            if (privateAccessAsync.isLoading)
+            if (privateAccessAsync.status == CatchAsyncStatus.loading)
               Text(
                 'Loading current invite code...',
                 style: CatchTextStyles.supporting(context, color: t.ink2),

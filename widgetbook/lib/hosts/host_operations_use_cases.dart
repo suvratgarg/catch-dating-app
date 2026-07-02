@@ -15,6 +15,7 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
@@ -44,7 +45,6 @@ import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
-import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
 import 'package:catch_dating_app/events/shared/attendance_sheet_view_model.dart';
 import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
@@ -80,11 +80,14 @@ import 'package:catch_dating_app/hosts/presentation/event_management/widgets/eve
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/when_step.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/where_step.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_home_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_settings_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_settings_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_card.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
@@ -103,6 +106,7 @@ import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
+import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
@@ -1137,7 +1141,7 @@ Widget _hostHomePreviewFor(String focus) {
   final club = HostOperationsFixtures.primaryClub;
   final event = HostOperationsFixtures.upcomingEvent;
   final clubs = HostOperationsFixtures.clubs;
-  final state = HostHomeTodayDashboardState.fromAsync(
+  final state = buildHostHomeTodayDashboardState(
     AsyncData<List<Event>>([event, HostOperationsFixtures.privateEvent]),
   );
   final tasks = HostHomeTodayTaskData.forEvent(event);
@@ -1416,6 +1420,11 @@ Widget _hostEventManagePreviewFor(String focus) {
   final viewModel = _hostAttendanceViewModel();
   final profiles = _hostAttendeeProfiles();
   final inviteCode = HostOperationsFixtures.privateAccess.inviteCode;
+  final inviteLink = AppDeepLinks.event(
+    clubId: club.id,
+    eventId: event.id,
+    inviteCode: inviteCode,
+  ).toString();
   final filters = const [
     HostRosterFilterSpec(
       filter: HostRosterFilter.all,
@@ -1458,14 +1467,13 @@ Widget _hostEventManagePreviewFor(String focus) {
       ),
       actionError: null,
       privateLinkActionState: HostPrivateLinkActionState.resolve(
-        club: club,
-        event: event,
-        accessAsync: AsyncData<EventPrivateAccess?>(
+        accessState: CatchAsyncState<EventPrivateAccess?>.data(
           HostOperationsFixtures.privateAccess,
         ),
-        inviteLinksAsync: AsyncData<List<EventInviteLink>>(
+        inviteLinksState: CatchAsyncState<List<EventInviteLink>>.data(
           HostOperationsFixtures.inviteLinks,
         ),
+        inviteLink: inviteLink,
         sharePending: false,
       ),
       onEditEvent: () {},
@@ -1486,10 +1494,11 @@ Widget _hostEventManagePreviewFor(String focus) {
         profiles: profiles,
       ),
       mutationState: HostParticipantsMutationDisplayState.resolve(
-        markAttendancePending: false,
-        approveJoinRequestPending: false,
-        declineJoinRequestPending: false,
-        createWaitlistOfferPending: false,
+        markAttendancePendingIds: const {},
+        approveJoinRequestPendingIds: const {},
+        declineJoinRequestPendingIds: const {},
+        createWaitlistOfferPendingIds: const {},
+        bulkWaitlistOfferPending: false,
         opsReportPending: false,
         revenueReportPending: false,
       ),
@@ -1569,10 +1578,11 @@ Widget _hostEventManagePreviewFor(String focus) {
       showHeader: true,
       usesRequestApproval: false,
       mutationState: HostParticipantsMutationDisplayState.resolve(
-        markAttendancePending: false,
-        approveJoinRequestPending: false,
-        declineJoinRequestPending: false,
-        createWaitlistOfferPending: false,
+        markAttendancePendingIds: const {},
+        approveJoinRequestPendingIds: const {},
+        declineJoinRequestPendingIds: const {},
+        createWaitlistOfferPendingIds: const {},
+        bulkWaitlistOfferPending: false,
         opsReportPending: false,
         revenueReportPending: false,
       ),
@@ -1598,12 +1608,11 @@ Widget _hostEventManagePreviewFor(String focus) {
         return HostPrivateAccessBody(
           event: event,
           state: HostPrivateAccessDisplayState.resolve(
-            club: club,
-            event: event,
             access: HostOperationsFixtures.privateAccess,
-            inviteLinksAsync: AsyncData<List<EventInviteLink>>(
+            inviteLinksState: CatchAsyncState<List<EventInviteLink>>.data(
               HostOperationsFixtures.inviteLinks,
             ),
+            inviteLink: inviteLink,
             sharePending: shareMutation.isPending,
           ),
           inviteLinksAsync: AsyncData<List<EventInviteLink>>(
@@ -7154,7 +7163,9 @@ class _EditableHostedEventPolicyCardFrameState
         cancellationPolicyId: _cancellationPolicyId,
         onCancellationPolicyChanged: (policyId) =>
             setState(() => _cancellationPolicyId = policyId),
-        privateAccessAsync: const AsyncData<Object?>(null),
+        privateAccessAsync: const CatchAsyncState<EventPrivateAccess?>.data(
+          null,
+        ),
       ),
     );
   }
@@ -7233,7 +7244,7 @@ class _HostSettingsClubsFrame extends StatelessWidget {
                       ? HostSettingsClubsError(error: error!)
                       : loading
                       ? const HostSettingsClubsLoading()
-                      : HostSettingsClubsState.fromAsync(
+                      : buildHostSettingsClubsState(
                           AsyncData<List<Club>>(
                             clubs ?? HostOperationsFixtures.clubs,
                           ),
@@ -8141,11 +8152,11 @@ class _HostManageAttendanceMutationPreviewState
     _resetMutations();
     switch (widget.mode) {
       case _HostManageAttendanceMutationPreviewMode.pending:
-        _runPending(EventBookingController.createWaitlistOfferMutation);
+        _runPending(HostEventBookingController.createWaitlistOfferMutation);
         break;
       case _HostManageAttendanceMutationPreviewMode.error:
         _runError(
-          EventBookingController.markAttendanceMutation,
+          HostEventBookingController.markAttendanceMutation,
           StateError('Widgetbook attendance mutation failed'),
         );
         break;
@@ -8153,10 +8164,10 @@ class _HostManageAttendanceMutationPreviewState
   }
 
   void _resetMutations() {
-    EventBookingController.markAttendanceMutation.reset(ref);
-    EventBookingController.approveJoinRequestMutation.reset(ref);
-    EventBookingController.declineJoinRequestMutation.reset(ref);
-    EventBookingController.createWaitlistOfferMutation.reset(ref);
+    HostEventBookingController.markAttendanceMutation.reset(ref);
+    HostEventBookingController.approveJoinRequestMutation.reset(ref);
+    HostEventBookingController.declineJoinRequestMutation.reset(ref);
+    HostEventBookingController.createWaitlistOfferMutation.reset(ref);
   }
 
   void _runPending<T>(Mutation<T> mutation) {
@@ -8418,20 +8429,20 @@ class _HostManageActionMutationPreviewState
     _resetMutations();
     switch (widget.mode) {
       case _HostManageActionMutationPreviewMode.cancelPending:
-        _runPending(EventBookingController.hostCancelEventMutation);
+        _runPending(HostEventBookingController.hostCancelEventMutation);
         break;
       case _HostManageActionMutationPreviewMode.cancelError:
         _runError(
-          EventBookingController.hostCancelEventMutation,
+          HostEventBookingController.hostCancelEventMutation,
           StateError('Widgetbook cancel event failed'),
         );
         break;
       case _HostManageActionMutationPreviewMode.deletePending:
-        _runPending(EventBookingController.deleteEventMutation);
+        _runPending(HostEventBookingController.deleteEventMutation);
         break;
       case _HostManageActionMutationPreviewMode.deleteError:
         _runError(
-          EventBookingController.deleteEventMutation,
+          HostEventBookingController.deleteEventMutation,
           StateError('Widgetbook delete event failed'),
         );
         break;
@@ -8439,8 +8450,8 @@ class _HostManageActionMutationPreviewState
   }
 
   void _resetMutations() {
-    EventBookingController.hostCancelEventMutation.reset(ref);
-    EventBookingController.deleteEventMutation.reset(ref);
+    HostEventBookingController.hostCancelEventMutation.reset(ref);
+    HostEventBookingController.deleteEventMutation.reset(ref);
   }
 
   void _runPending<T>(Mutation<T> mutation) {

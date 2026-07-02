@@ -8,6 +8,7 @@ import 'package:catch_dating_app/chats/domain/suvbot_action_item.dart';
 import 'package:catch_dating_app/chats/presentation/chat_read_marker_controller.dart';
 import 'package:catch_dating_app/chats/presentation/chat_read_marker_state.dart';
 import 'package:catch_dating_app/chats/presentation/chat_route_state.dart';
+import 'package:catch_dating_app/chats/presentation/chat_route_view_model.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
 import 'package:catch_dating_app/chats/presentation/chat_scroll_coordinator.dart';
 import 'package:catch_dating_app/chats/presentation/chat_thread_action_controller.dart';
@@ -16,6 +17,7 @@ import 'package:catch_dating_app/chats/presentation/host_chat_screen_state.dart'
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/external_share.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -24,6 +26,7 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
+import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -354,6 +357,38 @@ const _emptySuvbotActionsAsync = AsyncData<List<SuvbotActionItem>>(
   <SuvbotActionItem>[],
 );
 
+HostChatScreenState _hostChatState({
+  required String matchId,
+  required String? uid,
+  required AsyncValue<Match?> matchAsync,
+  required AsyncValue<List<ChatMessage>> messagesAsync,
+  required AsyncValue<List<SuvbotActionItem>> suvbotActionsAsync,
+  required PublicProfile? profile,
+  required ClubHostProfile? hostProfile,
+  bool reportUserPending = false,
+  bool blockUserPending = false,
+}) {
+  return HostChatScreenState.resolve(
+    matchId: matchId,
+    uid: uid,
+    matchAsync: _catchAsyncState(matchAsync),
+    messagesAsync: _catchAsyncState(messagesAsync),
+    suvbotActionsAsync: _catchAsyncState(suvbotActionsAsync),
+    profile: profile,
+    hostProfile: hostProfile,
+    reportUserPending: reportUserPending,
+    blockUserPending: blockUserPending,
+  );
+}
+
+CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
+  return value.when(
+    data: CatchAsyncState<T>.data,
+    loading: () => const CatchAsyncState.loading(),
+    error: (error, stackTrace) => CatchAsyncState<T>.error(error),
+  );
+}
+
 void main() {
   group('ChatReadMarkerState', () {
     test('marks a uid once and exposes the last known uid for dispose', () {
@@ -489,7 +524,7 @@ void main() {
       final controller = ChatThreadActionController(safetyRunner: runner);
       final profile = buildPublicProfile(uid: 'runner-2', name: 'Taylor');
 
-      final state = HostChatScreenState.resolve(
+      final state = _hostChatState(
         matchId: 'match-1',
         uid: 'runner-1',
         matchAsync: AsyncData<Match?>(buildMatch()),
@@ -498,7 +533,7 @@ void main() {
         profile: profile,
         hostProfile: null,
       );
-      final hostInquiryState = HostChatScreenState.resolve(
+      final hostInquiryState = _hostChatState(
         matchId: 'host-inquiry-1',
         uid: 'host-1',
         matchAsync: AsyncData<Match?>(
@@ -527,7 +562,7 @@ void main() {
       () async {
         final runner = FakeChatSafetyActionRunner();
         final controller = ChatThreadActionController(safetyRunner: runner);
-        final state = HostChatScreenState.resolve(
+        final state = _hostChatState(
           matchId: 'match-1',
           uid: 'runner-1',
           matchAsync: AsyncData<Match?>(buildMatch()),
@@ -607,7 +642,7 @@ void main() {
         failBlocks: true,
       );
       final controller = ChatThreadActionController(safetyRunner: runner);
-      final state = HostChatScreenState.resolve(
+      final state = _hostChatState(
         matchId: 'match-1',
         uid: 'runner-1',
         matchAsync: AsyncData<Match?>(buildMatch()),
@@ -792,7 +827,7 @@ void main() {
       );
       final profile = buildPublicProfile(uid: 'guest-1', name: 'Aarav');
 
-      final state = HostChatScreenState.resolve(
+      final state = _hostChatState(
         matchId: match.id,
         uid: 'host-1',
         matchAsync: AsyncData<Match?>(match),
@@ -829,7 +864,7 @@ void main() {
         clubId: 'club-1',
       );
 
-      final fallback = HostChatScreenState.resolve(
+      final fallback = _hostChatState(
         matchId: hostInquiry.id,
         uid: 'host-1',
         matchAsync: AsyncData<Match?>(hostInquiry),
@@ -838,7 +873,7 @@ void main() {
         profile: null,
         hostProfile: null,
       );
-      final loading = HostChatScreenState.resolve(
+      final loading = _hostChatState(
         matchId: hostInquiry.id,
         uid: 'host-1',
         matchAsync: const AsyncLoading<Match?>(),
@@ -847,7 +882,7 @@ void main() {
         profile: null,
         hostProfile: null,
       );
-      final blocked = HostChatScreenState.resolve(
+      final blocked = _hostChatState(
         matchId: hostInquiry.id,
         uid: 'host-1',
         matchAsync: AsyncData<Match?>(
@@ -873,7 +908,7 @@ void main() {
         clubId: 'club-1',
       );
 
-      final state = HostChatScreenState.resolve(
+      final state = _hostChatState(
         matchId: match.id,
         uid: 'host-1',
         matchAsync: AsyncData<Match?>(match),
@@ -895,7 +930,7 @@ void main() {
       final match = buildMatch();
       final profile = buildPublicProfile(uid: 'runner-2', name: 'Taylor');
 
-      final state = HostChatScreenState.resolve(
+      final state = _hostChatState(
         matchId: match.id,
         uid: 'runner-1',
         matchAsync: AsyncData<Match?>(match),
@@ -904,7 +939,7 @@ void main() {
         profile: profile,
         hostProfile: null,
       );
-      final disabledReport = HostChatScreenState.resolve(
+      final disabledReport = _hostChatState(
         matchId: match.id,
         uid: 'runner-1',
         matchAsync: AsyncData<Match?>(match),
@@ -953,7 +988,7 @@ void main() {
           user2Id: 'runner-1',
         );
 
-        final hostState = HostChatScreenState.resolve(
+        final hostState = _hostChatState(
           matchId: hostInquiry.id,
           uid: 'host-1',
           matchAsync: AsyncData<Match?>(hostInquiry),
@@ -962,7 +997,7 @@ void main() {
           profile: buildPublicProfile(uid: 'guest-1', name: 'Aarav'),
           hostProfile: null,
         );
-        final suvbotState = HostChatScreenState.resolve(
+        final suvbotState = _hostChatState(
           matchId: suvbotMatch.id,
           uid: 'runner-1',
           matchAsync: AsyncData<Match?>(suvbotMatch),
@@ -1005,7 +1040,7 @@ void main() {
       final messageError = StateError('messages failed');
       final suvbotError = StateError('controls failed');
 
-      final failedRoute = HostChatScreenState.resolve(
+      final failedRoute = _hostChatState(
         matchId: match.id,
         uid: 'runner-1',
         matchAsync: AsyncError<Match?>(routeError, StackTrace.empty),
@@ -1020,7 +1055,7 @@ void main() {
         HostChatRetryIntent.reloadMatch,
       );
 
-      final failedMessages = HostChatScreenState.resolve(
+      final failedMessages = _hostChatState(
         matchId: match.id,
         uid: 'runner-1',
         matchAsync: AsyncData<Match?>(match),
@@ -1042,7 +1077,7 @@ void main() {
         user1Id: suvbotUid,
         user2Id: 'runner-1',
       );
-      final failedSuvbotActions = HostChatScreenState.resolve(
+      final failedSuvbotActions = _hostChatState(
         matchId: suvbotMatch.id,
         uid: 'runner-1',
         matchAsync: AsyncData<Match?>(suvbotMatch),
@@ -1180,6 +1215,7 @@ void main() {
 
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
             matchRepositoryProvider.overrideWithValue(matchRepository),
@@ -1609,9 +1645,11 @@ void main() {
     testWidgets('routes match load errors through a retryable chat state', (
       tester,
     ) async {
+      final matchController = StreamController<Match?>();
+      matchController.addError(Exception('match failed'), StackTrace.empty);
+      addTearDown(matchController.close);
       final matchRepository = FakeMatchRepository(
-        matchStream: () =>
-            Stream<Match?>.error(Exception('match failed'), StackTrace.empty),
+        matchStream: () => matchController.stream,
       );
       final conversationRepository = FakeConversationRepository();
 

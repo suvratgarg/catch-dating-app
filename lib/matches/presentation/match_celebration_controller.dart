@@ -8,7 +8,6 @@ import 'package:go_router/go_router.dart';
 
 void showMatchCelebration(
   BuildContext context,
-  WidgetRef ref,
   Match match,
   String currentUid,
 ) {
@@ -17,22 +16,24 @@ void showMatchCelebration(
   Navigator.of(context, rootNavigator: true).push(
     MaterialPageRoute<void>(
       fullscreenDialog: true,
-      builder: (routeContext) => MatchCelebrationDialog(
-        match: match,
-        otherUid: otherUid,
-        onSendMessage: () {
-          Navigator.of(routeContext).pop();
-          final otherProfile = ref
-              .read(watchPublicProfileProvider(otherUid))
-              .asData
-              ?.value;
-          context.goNamed(
-            Routes.chatScreen.name,
-            pathParameters: {'matchId': match.id},
-            extra: otherProfile,
-          );
-        },
-        onKeepSwiping: () => Navigator.of(routeContext).pop(),
+      builder: (routeContext) => Consumer(
+        builder: (_, ref, _) => MatchCelebrationDialog(
+          match: match,
+          otherUid: otherUid,
+          onSendMessage: () {
+            Navigator.of(routeContext).pop();
+            final otherProfile = ref
+                .read(watchPublicProfileProvider(otherUid))
+                .asData
+                ?.value;
+            context.goNamed(
+              Routes.chatScreen.name,
+              pathParameters: {'matchId': match.id},
+              extra: otherProfile,
+            );
+          },
+          onKeepSwiping: () => Navigator.of(routeContext).pop(),
+        ),
       ),
     ),
   );

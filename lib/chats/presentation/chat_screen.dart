@@ -8,6 +8,7 @@ import 'package:catch_dating_app/chats/presentation/chat_controller.dart';
 import 'package:catch_dating_app/chats/presentation/chat_read_marker_controller.dart';
 import 'package:catch_dating_app/chats/presentation/chat_retry_controller.dart';
 import 'package:catch_dating_app/chats/presentation/chat_route_state.dart';
+import 'package:catch_dating_app/chats/presentation/chat_route_view_model.dart';
 import 'package:catch_dating_app/chats/presentation/chat_scroll_coordinator.dart';
 import 'package:catch_dating_app/chats/presentation/chat_thread_action_controller.dart';
 import 'package:catch_dating_app/chats/presentation/host_chat_screen_state.dart';
@@ -18,6 +19,7 @@ import 'package:catch_dating_app/chats/presentation/widgets/chat_message_list.da
 import 'package:catch_dating_app/chats/presentation/widgets/chat_share_card.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/suvbot_action_bar.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
@@ -55,9 +57,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   void initState() {
     super.initState();
     _textController = TextEditingController(text: widget.initialDraftText);
-    _readMarkerController = ChatReadMarkerController.fromRef(
+    _readMarkerController = ChatReadMarkerController.fromReader(
       conversationId: widget.matchId,
-      ref: ref,
+      read: ref.read,
     );
     _scrollCoordinator = ChatScrollCoordinator(isMounted: () => mounted);
     _resetUnread(ref.read(uidProvider).value);
@@ -326,7 +328,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     )
                   : routeError == null
                   ? ChatMessageList(
-                      messagesAsync: routeState.displayMessagesAsync,
+                      messagesAsync: _asyncValue(
+                        routeState.displayMessagesAsync,
+                      ),
                       currentUid: routeState.uid,
                       event: routeState.event,
                       otherName: chatState.messageOtherName,
@@ -337,16 +341,21 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                               chatState.messagesRetryIntent!,
                             ),
                     )
-                  : CatchErrorState.fromError(
-                      routeError.error,
-                      context: AppErrorContext.chat,
+                  : CatchErrorState(
+                      title: 'Messages unavailable',
+                      message: appErrorMessage(
+                        routeError.error,
+                        context: AppErrorContext.chat,
+                      ),
+                      icon: CatchIcons.chatBubbleOutlineRounded,
                       onRetry: () =>
                           _retryController.run(routeError.retryIntent),
+                      retryLabel: 'Reload messages',
                     ),
             ),
             if (routeState.showSuvbotActionBar)
               SuvbotActionBar(
-                actions: routeState.suvbotActionsAsync,
+                actions: _asyncValue(routeState.suvbotActionsAsync),
                 pending: routeState.suvbotPending,
                 onAction: _runSuvbotAction,
                 onTextAction: _runSuvbotTextAction,
@@ -371,4 +380,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       ),
     );
   }
+}
+
+AsyncValue<T> _asyncValue<T>(CatchAsyncState<T> state) {
+  return switch (state.status) {
+    CatchAsyncStatus.data => AsyncData(state.value as T),
+    CatchAsyncStatus.loading => const AsyncLoading(),
+    CatchAsyncStatus.error => AsyncError(state.error!, StackTrace.empty),
+  };
 }

@@ -4,7 +4,6 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum HostHomeTab { today, events }
 
@@ -15,7 +14,7 @@ enum HostHomeRouteStatus { authRequired, loading, error, empty, loaded }
 
 @immutable
 class HostHomeRouteState {
-  const HostHomeRouteState._({
+  const HostHomeRouteState({
     required this.status,
     this.uid,
     this.clubs = const [],
@@ -23,56 +22,6 @@ class HostHomeRouteState {
     this.stackTrace,
     this.errorContext = AppErrorContext.club,
   });
-
-  factory HostHomeRouteState.fromAsync({
-    required AsyncValue<String?> uid,
-    AsyncValue<List<Club>>? clubs,
-  }) {
-    if (uid.hasError) {
-      return HostHomeRouteState._(
-        status: HostHomeRouteStatus.error,
-        error: uid.error,
-        stackTrace: uid.stackTrace,
-        errorContext: AppErrorContext.auth,
-      );
-    }
-
-    final currentUid = uid.asData?.value;
-    if (currentUid == null) {
-      return uid.isLoading
-          ? const HostHomeRouteState._(status: HostHomeRouteStatus.loading)
-          : const HostHomeRouteState._(
-              status: HostHomeRouteStatus.authRequired,
-            );
-    }
-
-    final clubValue = clubs;
-    if (clubValue == null || clubValue.isLoading) {
-      return HostHomeRouteState._(
-        status: HostHomeRouteStatus.loading,
-        uid: currentUid,
-      );
-    }
-    if (clubValue.hasError) {
-      return HostHomeRouteState._(
-        status: HostHomeRouteStatus.error,
-        uid: currentUid,
-        error: clubValue.error,
-        stackTrace: clubValue.stackTrace,
-      );
-    }
-
-    final resolvedClubs = List<Club>.unmodifiable(
-      clubValue.asData?.value ?? const <Club>[],
-    );
-    return HostHomeRouteState._(
-      status: resolvedClubs.isEmpty
-          ? HostHomeRouteStatus.empty
-          : HostHomeRouteStatus.loaded,
-      uid: currentUid,
-      clubs: resolvedClubs,
-    );
-  }
 
   final HostHomeRouteStatus status;
   final String? uid;
@@ -144,7 +93,7 @@ class HostHomeScreenState {
 
 @immutable
 class HostHomeEventRowsState {
-  const HostHomeEventRowsState._({required this.rows});
+  const HostHomeEventRowsState({required this.rows});
 
   factory HostHomeEventRowsState.fromEvents(
     Iterable<Event> events, {
@@ -153,7 +102,7 @@ class HostHomeEventRowsState {
     final activeEvents = events.where((event) => !event.isCancelled).toList()
       ..sort((a, b) => a.startTime.compareTo(b.startTime));
     final visibleEvents = activeEvents.take(limit).toList(growable: false);
-    return HostHomeEventRowsState._(
+    return HostHomeEventRowsState(
       rows: [
         for (var index = 0; index < visibleEvents.length; index++)
           HostHomeEventRowData(event: visibleEvents[index], divider: index > 0),
@@ -181,37 +130,12 @@ enum HostHomeEventsStatus { loading, error, empty, populated }
 
 @immutable
 class HostHomeEventsSectionState {
-  const HostHomeEventsSectionState._({
+  const HostHomeEventsSectionState({
     required this.status,
-    this.rows = const HostHomeEventRowsState._(rows: []),
+    this.rows = const HostHomeEventRowsState(rows: []),
     this.error,
     this.stackTrace,
   });
-
-  factory HostHomeEventsSectionState.fromAsync(AsyncValue<List<Event>> events) {
-    if (events.isLoading) {
-      return const HostHomeEventsSectionState._(
-        status: HostHomeEventsStatus.loading,
-      );
-    }
-    if (events.hasError) {
-      return HostHomeEventsSectionState._(
-        status: HostHomeEventsStatus.error,
-        error: events.error,
-        stackTrace: events.stackTrace,
-      );
-    }
-
-    final rows = HostHomeEventRowsState.fromEvents(
-      events.asData?.value ?? const <Event>[],
-    );
-    return HostHomeEventsSectionState._(
-      status: rows.isEmpty
-          ? HostHomeEventsStatus.empty
-          : HostHomeEventsStatus.populated,
-      rows: rows,
-    );
-  }
 
   final HostHomeEventsStatus status;
   final HostHomeEventRowsState rows;
@@ -223,47 +147,13 @@ enum HostHomeTodayStatus { loading, error, empty, content }
 
 @immutable
 class HostHomeTodayDashboardState {
-  const HostHomeTodayDashboardState._({
+  const HostHomeTodayDashboardState({
     required this.status,
     this.event,
     this.tasks = const <HostHomeTodayTaskData>[],
     this.error,
     this.stackTrace,
   });
-
-  factory HostHomeTodayDashboardState.fromAsync(
-    AsyncValue<List<Event>> events,
-  ) {
-    if (events.isLoading) {
-      return const HostHomeTodayDashboardState._(
-        status: HostHomeTodayStatus.loading,
-      );
-    }
-    if (events.hasError) {
-      return HostHomeTodayDashboardState._(
-        status: HostHomeTodayStatus.error,
-        error: events.error,
-        stackTrace: events.stackTrace,
-      );
-    }
-
-    final activeEvents = events.asData?.value
-        .where((event) => !event.isCancelled)
-        .toList();
-    activeEvents?.sort((a, b) => a.startTime.compareTo(b.startTime));
-    final event = activeEvents?.firstOrNull;
-    if (event == null) {
-      return const HostHomeTodayDashboardState._(
-        status: HostHomeTodayStatus.empty,
-      );
-    }
-
-    return HostHomeTodayDashboardState._(
-      status: HostHomeTodayStatus.content,
-      event: event,
-      tasks: HostHomeTodayTaskData.forEvent(event),
-    );
-  }
 
   final HostHomeTodayStatus status;
   final Event? event;

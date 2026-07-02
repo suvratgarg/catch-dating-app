@@ -10,11 +10,18 @@ import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-final eventSuccessCompanionLaunchRegistryProvider =
-    Provider<EventSuccessCompanionLaunchRegistry>(
-      (ref) => EventSuccessCompanionLaunchRegistry(),
-    );
+part 'event_success_companion_launcher.g.dart';
+
+// keepalive: companion launch de-dupe state must survive app-shell listener
+// rebuilds so attendance transitions do not relaunch the same companion route.
+@Riverpod(keepAlive: true)
+EventSuccessCompanionLaunchRegistry eventSuccessCompanionLaunchRegistry(
+  Ref ref,
+) {
+  return EventSuccessCompanionLaunchRegistry();
+}
 
 enum EventSuccessCompanionLaunchMoment { checkedIn }
 

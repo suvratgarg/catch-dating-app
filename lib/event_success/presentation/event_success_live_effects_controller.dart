@@ -1,7 +1,9 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'event_success_live_effects_controller.g.dart';
 
 /// Per-moment effect dispatched by the companion runtime. Haptic and audio
 /// signatures are layered so each kind has a distinct *feel* — countdown
@@ -62,12 +64,14 @@ class _EventSuccessAudioPalette {
   }
 }
 
-final eventSuccessLiveEffectsControllerProvider =
-    Provider<EventSuccessLiveEffectsController>((ref) {
-      final controller = EventSuccessLiveEffectsController();
-      ref.onDispose(controller.dispose);
-      return controller;
-    });
+// keepalive: live effects are driven through imperative ref.read calls, and
+// ambient-bed playback must not auto-dispose between route callbacks.
+@Riverpod(keepAlive: true)
+EventSuccessLiveEffectsController eventSuccessLiveEffectsController(Ref ref) {
+  final controller = EventSuccessLiveEffectsController();
+  ref.onDispose(controller.dispose);
+  return controller;
+}
 
 /// Multi-channel effects controller layering haptics + asset audio. Designed
 /// to gracefully no-op when audio assets are missing (so UI work isn't
