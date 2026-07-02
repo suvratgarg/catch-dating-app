@@ -51,7 +51,7 @@ final class EventDetailControllerProvider
 }
 
 String _$eventDetailControllerHash() =>
-    r'f69f9441c72124a21dcd0079c3ff12c1785ea767';
+    r'30262f686303292ba2c780a2ca9be33f66330be7';
 
 /// **Pattern A: Action controller + static Mutations**
 ///
