@@ -20,16 +20,6 @@
     },
     {
       "rule": "crossFeaturePresentationImport",
-      "path": "lib/explore/presentation/explore_map_screen.dart",
-      "import": "package:catch_dating_app/events/presentation/event_map_screen.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/explore/presentation/explore_map_screen.dart",
-      "import": "package:catch_dating_app/events/presentation/event_map_view_model.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
       "path": "lib/explore/presentation/widgets/explore_list.dart",
       "import": "package:catch_dating_app/clubs/presentation/detail/club_membership_controller.dart"
     },
@@ -40,23 +30,8 @@
     },
     {
       "rule": "crossFeaturePresentationImport",
-      "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "import": "package:catch_dating_app/events/presentation/location_picker_screen.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
-      "import": "package:catch_dating_app/events/presentation/location_picker_screen.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
       "path": "lib/hosts/presentation/event_management/widgets/event_success_step.dart",
       "import": "package:catch_dating_app/event_success/presentation/event_success_defaults_panel.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "import": "package:catch_dating_app/event_success/presentation/event_success_host_screen.dart"
     },
     {
       "rule": "crossFeaturePresentationImport",
