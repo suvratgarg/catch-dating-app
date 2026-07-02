@@ -18,7 +18,8 @@ class MicroPodsHostCard extends StatelessWidget {
   final List<EventSuccessPreference> preferences;
   final EventSuccessAssignmentGenerationActionState actionState;
   final Future<void> Function()? onGenerate;
-  final ValueChanged<List<EventSuccessGroupOverrideRound>>? onOverride;
+  final Future<void> Function(List<EventSuccessGroupOverrideRound> rounds)?
+  onOverride;
 
   @override
   Widget build(BuildContext context) {
@@ -150,7 +151,8 @@ Future<void> _showGroupOverrideSheet({
   required Event event,
   required List<EventSuccessAssignment> assignments,
   required List<PublicProfile> participantProfiles,
-  ValueChanged<List<EventSuccessGroupOverrideRound>>? onOverride,
+  Future<void> Function(List<EventSuccessGroupOverrideRound> rounds)?
+  onOverride,
 }) {
   return showModalBottomSheet<void>(
     context: context,
@@ -165,7 +167,7 @@ Future<void> _showGroupOverrideSheet({
   );
 }
 
-class GroupOverrideSheet extends ConsumerStatefulWidget {
+class GroupOverrideSheet extends StatefulWidget {
   const GroupOverrideSheet({
     super.key,
     required this.event,
@@ -177,13 +179,14 @@ class GroupOverrideSheet extends ConsumerStatefulWidget {
   final Event event;
   final List<EventSuccessAssignment> assignments;
   final List<PublicProfile> participantProfiles;
-  final ValueChanged<List<EventSuccessGroupOverrideRound>>? onOverride;
+  final Future<void> Function(List<EventSuccessGroupOverrideRound> rounds)?
+  onOverride;
 
   @override
-  ConsumerState<GroupOverrideSheet> createState() => _GroupOverrideSheetState();
+  State<GroupOverrideSheet> createState() => _GroupOverrideSheetState();
 }
 
-class _GroupOverrideSheetState extends ConsumerState<GroupOverrideSheet> {
+class _GroupOverrideSheetState extends State<GroupOverrideSheet> {
   late final List<String> _participantUids = _rotationParticipantUids(
     widget.assignments,
   );
@@ -192,12 +195,11 @@ class _GroupOverrideSheetState extends ConsumerState<GroupOverrideSheet> {
   };
   late final List<GroupOverrideRoundDraft> _rounds =
       _groupRoundDraftsFromAssignments(widget.assignments);
+  bool _isSaving = false;
+  Object? _saveError;
 
   @override
   Widget build(BuildContext context) {
-    final mutation = ref.watch(
-      EventSuccessController.overrideGroupAssignmentsMutation,
-    );
     final validationError = _validationError;
     final maxHeight = MediaQuery.sizeOf(context).height * 0.68;
     return CatchBottomSheetScaffold(
@@ -206,9 +208,9 @@ class _GroupOverrideSheetState extends ConsumerState<GroupOverrideSheet> {
       action: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (mutation.hasError) ...[
+          if (_saveError != null) ...[
             CatchErrorBanner.fromError(
-              (mutation as MutationError).error,
+              _saveError!,
               context: AppErrorContext.event,
             ),
             gapH8,
@@ -226,10 +228,13 @@ class _GroupOverrideSheetState extends ConsumerState<GroupOverrideSheet> {
           CatchButton(
             label: 'Save overrides',
             icon: Icon(CatchIcons.checkRounded),
-            isLoading: widget.onOverride == null && mutation.isPending,
-            onPressed: mutation.isPending || validationError != null
+            isLoading: _isSaving,
+            onPressed:
+                _isSaving ||
+                    validationError != null ||
+                    widget.onOverride == null
                 ? null
-                : () => _saveOverrides(context),
+                : () => unawaited(_saveOverrides(context)),
             fullWidth: true,
           ),
         ],
@@ -315,7 +320,7 @@ class _GroupOverrideSheetState extends ConsumerState<GroupOverrideSheet> {
     group.memberUids.add(available.isEmpty ? null : available.first);
   }
 
-  void _saveOverrides(BuildContext context) {
+  Future<void> _saveOverrides(BuildContext context) async {
     final overrideRounds = [
       for (final round in _rounds)
         EventSuccessGroupOverrideRound(
@@ -329,23 +334,26 @@ class _GroupOverrideSheetState extends ConsumerState<GroupOverrideSheet> {
           ],
         ),
     ];
-    final fixtureOverride = widget.onOverride;
-    if (fixtureOverride != null) {
-      fixtureOverride(overrideRounds);
-      Navigator.of(context).pop();
-      return;
-    }
-    EventSuccessController.overrideGroupAssignmentsMutation.run(ref, (
-      tx,
-    ) async {
-      await tx
-          .get(eventSuccessControllerProvider.notifier)
-          .overrideGroupAssignments(
-            eventId: widget.event.id,
-            rounds: overrideRounds,
-          );
-      if (context.mounted) Navigator.of(context).pop();
+    final saveOverrides = widget.onOverride;
+    if (saveOverrides == null) return;
+    setState(() {
+      _isSaving = true;
+      _saveError = null;
     });
+    var saved = false;
+    try {
+      await saveOverrides(overrideRounds);
+      saved = true;
+      if (context.mounted) Navigator.of(context).pop();
+    } catch (error) {
+      if (context.mounted) {
+        setState(() => _saveError = error);
+      }
+    } finally {
+      if (context.mounted && !saved) {
+        setState(() => _isSaving = false);
+      }
+    }
   }
 }
 
@@ -570,7 +578,8 @@ class RotationsHostCard extends StatelessWidget {
   final List<EventSuccessPreference> preferences;
   final EventSuccessAssignmentGenerationActionState actionState;
   final Future<void> Function()? onGenerate;
-  final ValueChanged<List<EventSuccessRotationOverrideRound>>? onOverride;
+  final Future<void> Function(List<EventSuccessRotationOverrideRound> rounds)?
+  onOverride;
 
   @override
   Widget build(BuildContext context) {
@@ -727,7 +736,8 @@ Future<void> _showRotationOverrideSheet({
   required Event event,
   required List<EventSuccessAssignment> assignments,
   required List<PublicProfile> participantProfiles,
-  ValueChanged<List<EventSuccessRotationOverrideRound>>? onOverride,
+  Future<void> Function(List<EventSuccessRotationOverrideRound> rounds)?
+  onOverride,
 }) {
   return showModalBottomSheet<void>(
     context: context,
@@ -742,7 +752,7 @@ Future<void> _showRotationOverrideSheet({
   );
 }
 
-class RotationOverrideSheet extends ConsumerStatefulWidget {
+class RotationOverrideSheet extends StatefulWidget {
   const RotationOverrideSheet({
     super.key,
     required this.event,
@@ -754,14 +764,14 @@ class RotationOverrideSheet extends ConsumerStatefulWidget {
   final Event event;
   final List<EventSuccessAssignment> assignments;
   final List<PublicProfile> participantProfiles;
-  final ValueChanged<List<EventSuccessRotationOverrideRound>>? onOverride;
+  final Future<void> Function(List<EventSuccessRotationOverrideRound> rounds)?
+  onOverride;
 
   @override
-  ConsumerState<RotationOverrideSheet> createState() =>
-      _RotationOverrideSheetState();
+  State<RotationOverrideSheet> createState() => _RotationOverrideSheetState();
 }
 
-class _RotationOverrideSheetState extends ConsumerState<RotationOverrideSheet> {
+class _RotationOverrideSheetState extends State<RotationOverrideSheet> {
   late final List<String> _participantUids = _rotationParticipantUids(
     widget.assignments,
   );
@@ -770,12 +780,11 @@ class _RotationOverrideSheetState extends ConsumerState<RotationOverrideSheet> {
   };
   late final List<RotationOverrideRoundDraft> _rounds =
       _rotationRoundDraftsFromAssignments(widget.assignments);
+  bool _isSaving = false;
+  Object? _saveError;
 
   @override
   Widget build(BuildContext context) {
-    final mutation = ref.watch(
-      EventSuccessController.overrideGuidedRotationsMutation,
-    );
     final validationError = _validationError;
     final maxHeight = MediaQuery.sizeOf(context).height * 0.68;
     return CatchBottomSheetScaffold(
@@ -784,9 +793,9 @@ class _RotationOverrideSheetState extends ConsumerState<RotationOverrideSheet> {
       action: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (mutation.hasError) ...[
+          if (_saveError != null) ...[
             CatchErrorBanner.fromError(
-              (mutation as MutationError).error,
+              _saveError!,
               context: AppErrorContext.event,
             ),
             gapH8,
@@ -804,10 +813,13 @@ class _RotationOverrideSheetState extends ConsumerState<RotationOverrideSheet> {
           CatchButton(
             label: 'Save overrides',
             icon: Icon(CatchIcons.checkRounded),
-            isLoading: widget.onOverride == null && mutation.isPending,
-            onPressed: mutation.isPending || validationError != null
+            isLoading: _isSaving,
+            onPressed:
+                _isSaving ||
+                    validationError != null ||
+                    widget.onOverride == null
                 ? null
-                : () => _saveOverrides(context),
+                : () => unawaited(_saveOverrides(context)),
             fullWidth: true,
           ),
         ],
@@ -876,7 +888,7 @@ class _RotationOverrideSheetState extends ConsumerState<RotationOverrideSheet> {
     );
   }
 
-  void _saveOverrides(BuildContext context) {
+  Future<void> _saveOverrides(BuildContext context) async {
     final overrideRounds = [
       for (final round in _rounds)
         EventSuccessRotationOverrideRound(
@@ -890,21 +902,26 @@ class _RotationOverrideSheetState extends ConsumerState<RotationOverrideSheet> {
           ],
         ),
     ];
-    final fixtureOverride = widget.onOverride;
-    if (fixtureOverride != null) {
-      fixtureOverride(overrideRounds);
-      Navigator.of(context).pop();
-      return;
-    }
-    EventSuccessController.overrideGuidedRotationsMutation.run(ref, (tx) async {
-      await tx
-          .get(eventSuccessControllerProvider.notifier)
-          .overrideGuidedRotations(
-            eventId: widget.event.id,
-            rounds: overrideRounds,
-          );
-      if (context.mounted) Navigator.of(context).pop();
+    final saveOverrides = widget.onOverride;
+    if (saveOverrides == null) return;
+    setState(() {
+      _isSaving = true;
+      _saveError = null;
     });
+    var saved = false;
+    try {
+      await saveOverrides(overrideRounds);
+      saved = true;
+      if (context.mounted) Navigator.of(context).pop();
+    } catch (error) {
+      if (context.mounted) {
+        setState(() => _saveError = error);
+      }
+    } finally {
+      if (context.mounted && !saved) {
+        setState(() => _isSaving = false);
+      }
+    }
   }
 }
 

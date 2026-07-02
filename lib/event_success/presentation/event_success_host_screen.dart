@@ -542,6 +542,18 @@ class EventSuccessHostSection extends ConsumerWidget {
           _generateEventSuccessMicroPods(ref: ref, eventId: event.id),
       onGenerateGuidedRotations: () =>
           _generateEventSuccessGuidedRotations(ref: ref, eventId: event.id),
+      onOverrideGroupAssignments: (rounds) =>
+          _overrideEventSuccessGroupAssignments(
+            ref: ref,
+            eventId: event.id,
+            rounds: rounds,
+          ),
+      onOverrideGuidedRotations: (rounds) =>
+          _overrideEventSuccessGuidedRotations(
+            ref: ref,
+            eventId: event.id,
+            rounds: rounds,
+          ),
       revealActionState: EventSuccessRevealActionState.resolve(
         startMutation: startRevealCountdownMutation,
         revealMutation: revealRoundMutation,
@@ -644,6 +656,32 @@ Future<void> _resetEventSuccessReveal({
     (tx) => tx
         .get(eventSuccessControllerProvider.notifier)
         .resetReveal(eventId: eventId),
+  );
+}
+
+Future<void> _overrideEventSuccessGroupAssignments({
+  required WidgetRef ref,
+  required String eventId,
+  required List<EventSuccessGroupOverrideRound> rounds,
+}) {
+  return EventSuccessController.overrideGroupAssignmentsMutation.run(
+    ref,
+    (tx) => tx
+        .get(eventSuccessControllerProvider.notifier)
+        .overrideGroupAssignments(eventId: eventId, rounds: rounds),
+  );
+}
+
+Future<void> _overrideEventSuccessGuidedRotations({
+  required WidgetRef ref,
+  required String eventId,
+  required List<EventSuccessRotationOverrideRound> rounds,
+}) {
+  return EventSuccessController.overrideGuidedRotationsMutation.run(
+    ref,
+    (tx) => tx
+        .get(eventSuccessControllerProvider.notifier)
+        .overrideGuidedRotations(eventId: eventId, rounds: rounds),
   );
 }
 
@@ -1062,6 +1100,8 @@ class EventSuccessHostPanel extends StatefulWidget {
         const EventSuccessAssignmentGenerationActionState(),
     this.onGenerateMicroPods,
     this.onGenerateGuidedRotations,
+    this.onOverrideGroupAssignments,
+    this.onOverrideGuidedRotations,
     this.revealActionState = const EventSuccessRevealActionState(),
     this.onStartRevealCountdown,
     this.onRevealRound,
@@ -1098,6 +1138,10 @@ class EventSuccessHostPanel extends StatefulWidget {
   final EventSuccessAssignmentGenerationActionState rotationsGenerationState;
   final Future<void> Function()? onGenerateMicroPods;
   final Future<void> Function()? onGenerateGuidedRotations;
+  final Future<void> Function(List<EventSuccessGroupOverrideRound> rounds)?
+  onOverrideGroupAssignments;
+  final Future<void> Function(List<EventSuccessRotationOverrideRound> rounds)?
+  onOverrideGuidedRotations;
   final EventSuccessRevealActionState revealActionState;
   final Future<void> Function(int roundIndex, int countdownSeconds)?
   onStartRevealCountdown;
@@ -1196,6 +1240,8 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
           widget.fixtureActions?.onGenerateGuidedRotations,
           widget.onGenerateGuidedRotations,
         ),
+        onOverrideGroupAssignments: _groupOverrideCallback(),
+        onOverrideGuidedRotations: _rotationOverrideCallback(),
         revealActionState: widget.revealActionState,
         onStartRevealCountdown: _startRevealCountdownCallback(),
         onRevealRound: _revealRoundCallback(),
@@ -1265,6 +1311,34 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
       return () async => fixtureAction();
     }
     return productionAction;
+  }
+
+  Future<void> Function(List<EventSuccessGroupOverrideRound> rounds)?
+  _groupOverrideCallback() {
+    final fixtureAction = widget.fixtureActions?.onOverrideGroupAssignments;
+    final productionAction = widget.onOverrideGroupAssignments;
+    if (fixtureAction == null && productionAction == null) return null;
+    return (rounds) async {
+      if (fixtureAction != null) {
+        fixtureAction(rounds);
+        return;
+      }
+      await productionAction?.call(rounds);
+    };
+  }
+
+  Future<void> Function(List<EventSuccessRotationOverrideRound> rounds)?
+  _rotationOverrideCallback() {
+    final fixtureAction = widget.fixtureActions?.onOverrideGuidedRotations;
+    final productionAction = widget.onOverrideGuidedRotations;
+    if (fixtureAction == null && productionAction == null) return null;
+    return (rounds) async {
+      if (fixtureAction != null) {
+        fixtureAction(rounds);
+        return;
+      }
+      await productionAction?.call(rounds);
+    };
   }
 
   Future<void> Function(int roundIndex, int countdownSeconds)?

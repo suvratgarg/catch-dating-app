@@ -24,6 +24,8 @@ class LiveTab extends StatelessWidget {
     required this.rotationsGenerationState,
     required this.onGenerateMicroPods,
     required this.onGenerateGuidedRotations,
+    required this.onOverrideGroupAssignments,
+    required this.onOverrideGuidedRotations,
     required this.revealActionState,
     required this.onStartRevealCountdown,
     required this.onRevealRound,
@@ -55,6 +57,10 @@ class LiveTab extends StatelessWidget {
   final EventSuccessAssignmentGenerationActionState rotationsGenerationState;
   final Future<void> Function()? onGenerateMicroPods;
   final Future<void> Function()? onGenerateGuidedRotations;
+  final Future<void> Function(List<EventSuccessGroupOverrideRound> rounds)?
+  onOverrideGroupAssignments;
+  final Future<void> Function(List<EventSuccessRotationOverrideRound> rounds)?
+  onOverrideGuidedRotations;
   final EventSuccessRevealActionState revealActionState;
   final Future<void> Function(int roundIndex, int countdownSeconds)?
   onStartRevealCountdown;
@@ -190,7 +196,7 @@ class LiveTab extends StatelessWidget {
       preferences: preferences,
       actionState: microPodsGenerationState,
       onGenerate: onGenerateMicroPods,
-      onOverride: fixtureActions?.onOverrideGroupAssignments,
+      onOverride: onOverrideGroupAssignments,
     );
 
     Widget rotationsCard() => RotationsHostCard(
@@ -202,7 +208,7 @@ class LiveTab extends StatelessWidget {
       preferences: preferences,
       actionState: rotationsGenerationState,
       onGenerate: onGenerateGuidedRotations,
-      onOverride: fixtureActions?.onOverrideGuidedRotations,
+      onOverride: onOverrideGuidedRotations,
     );
 
     Widget liveRevealCard() => EventSuccessLiveRevealHostCard(
