@@ -170,23 +170,8 @@
     },
     {
       "rule": "crossFeaturePresentationImport",
-      "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-      "import": "package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/hosts/presentation/club_management/create/widgets/club_basics_step.dart",
-      "import": "package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
       "path": "lib/hosts/presentation/club_management/create/widgets/club_event_success_defaults_step.dart",
       "import": "package:catch_dating_app/event_success/presentation/event_success_defaults_panel.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart",
-      "import": "package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart"
     },
     {
       "rule": "crossFeaturePresentationImport",
@@ -200,28 +185,8 @@
     },
     {
       "rule": "crossFeaturePresentationImport",
-      "path": "lib/hosts/presentation/event_management/create/create_event_photo_draft_state.dart",
-      "import": "package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
       "path": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
       "import": "package:catch_dating_app/events/presentation/location_picker_screen.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
-      "import": "package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/hosts/presentation/event_management/widgets/create_event_photo_picker.dart",
-      "import": "package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-      "import": "package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart"
     },
     {
       "rule": "crossFeaturePresentationImport",

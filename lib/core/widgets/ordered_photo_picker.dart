@@ -236,9 +236,8 @@ class OrderedPhotoTile extends StatelessWidget {
                 Positioned(
                   top: CatchSpacing.s1,
                   left: CatchSpacing.s1,
-                  child: CatchSurface(
+                  child: CatchSurface.tinted(
                     radius: CatchRadius.pill,
-                    borderWidth: 0,
                     backgroundColor: t.ink.withValues(
                       alpha: CatchOpacity.photoSlotDeleteChrome,
                     ),

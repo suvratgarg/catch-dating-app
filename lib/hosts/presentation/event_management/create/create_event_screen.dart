@@ -13,6 +13,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_flow.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
+import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
@@ -39,7 +40,6 @@ import 'package:catch_dating_app/hosts/presentation/event_management/widgets/eve
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/when_step.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/where_step.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
-import 'package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

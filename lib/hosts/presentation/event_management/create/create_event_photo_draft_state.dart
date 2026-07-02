@@ -1,5 +1,5 @@
+import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
-import 'package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart';
 
 const createEventMaxPhotos = 6;
 
