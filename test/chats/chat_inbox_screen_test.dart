@@ -143,6 +143,23 @@ void main() {
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
 
   group('HostInboxScreenState', () {
+    test('chats view model propagates uid auth errors', () {
+      final error = StateError('auth failed');
+      final container = ProviderContainer(
+        overrides: [
+          uidProvider.overrideWithValue(
+            AsyncError<String?>(error, StackTrace.empty),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final viewModel = container.read(chatsListViewModelProvider);
+
+      expect(viewModel.hasError, isTrue);
+      expect(viewModel.error, same(error));
+    });
+
     test('computes host filter, unread count, and visible rows', () {
       final unread = _previewForStateTest(
         match: _buildMatch(
@@ -163,7 +180,7 @@ void main() {
         viewModel: AsyncData<ChatsListViewModel>(
           _stateTestViewModel(conversations: [unread, read]),
         ),
-        uid: 'host-1',
+        uid: const AsyncData<String?>('host-1'),
         query: '',
         selectedFilter: HostInboxFilter.unread,
         isHostApp: true,
@@ -186,7 +203,7 @@ void main() {
             totalThreadCount: 2,
           ),
         ),
-        uid: 'host-1',
+        uid: const AsyncData<String?>('host-1'),
         query: 'no matching attendee',
         selectedFilter: HostInboxFilter.all,
         isHostApp: true,
@@ -209,7 +226,7 @@ void main() {
             ],
           ),
         ),
-        uid: 'host-1',
+        uid: const AsyncData<String?>('host-1'),
         query: '',
         selectedFilter: HostInboxFilter.unread,
         isHostApp: true,
@@ -223,7 +240,7 @@ void main() {
     test('maps async loading and error branches', () {
       final loading = HostInboxScreenState.fromAsync(
         viewModel: const AsyncLoading<ChatsListViewModel>(),
-        uid: 'host-1',
+        uid: const AsyncData<String?>('host-1'),
         query: '',
         selectedFilter: HostInboxFilter.all,
         isHostApp: true,
@@ -234,7 +251,7 @@ void main() {
       final error = StateError('host inbox failed');
       final failed = HostInboxScreenState.fromAsync(
         viewModel: AsyncError<ChatsListViewModel>(error, StackTrace.empty),
-        uid: 'host-1',
+        uid: const AsyncData<String?>('host-1'),
         query: '',
         selectedFilter: HostInboxFilter.all,
         isHostApp: true,
@@ -242,6 +259,22 @@ void main() {
       final errorState = failed.displayState as ChatsListError;
       expect(errorState.error, same(error));
       expect(errorState.retryIntent, ChatsListRetryIntent.reloadViewModel);
+
+      final authError = StateError('auth failed');
+      final authFailed = HostInboxScreenState.fromAsync(
+        viewModel: const AsyncData<ChatsListViewModel>(
+          ChatsListViewModel(
+            newMatches: <ChatThreadPreview>[],
+            conversations: <ChatThreadPreview>[],
+            totalThreadCount: 0,
+          ),
+        ),
+        uid: AsyncError<String?>(authError, StackTrace.empty),
+        query: '',
+        selectedFilter: HostInboxFilter.all,
+        isHostApp: true,
+      );
+      expect((authFailed.displayState as ChatsListError).error, authError);
     });
   });
 

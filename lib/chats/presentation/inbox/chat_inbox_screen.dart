@@ -29,13 +29,13 @@ class _ChatsListScreenState extends ConsumerState<ChatsListScreen> {
     final t = CatchTokens.of(context);
     final isHostApp = AppConfig.appRole.isHost;
 
-    final uid = ref.watch(uidProvider).asData?.value;
+    final uidAsync = ref.watch(uidProvider);
     final viewModelAsync = ref.watch(chatsListViewModelProvider);
     final searchValue = ref.watch(chatSearchQueryProvider);
     final query = searchValue.trim();
     final screenState = HostInboxScreenState.fromAsync(
       viewModel: viewModelAsync,
-      uid: uid,
+      uid: uidAsync,
       query: query,
       selectedFilter: _hostInboxFilter,
       isHostApp: isHostApp,

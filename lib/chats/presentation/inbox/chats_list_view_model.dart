@@ -72,10 +72,19 @@ class ChatSearchQuery extends _$ChatSearchQuery {
 @riverpod
 AsyncValue<ChatsListViewModel> chatsListViewModel(Ref ref) {
   final uidAsync = ref.watch(uidProvider);
-  final uid = uidAsync.asData?.value;
+  final String? uid;
+  switch (uidAsync) {
+    case AsyncData(:final value):
+      uid = value;
+    case AsyncError(:final error, :final stackTrace):
+      return AsyncError<ChatsListViewModel>(error, stackTrace);
+    default:
+      return const AsyncLoading();
+  }
   if (uid == null) return const AsyncLoading();
+  final currentUid = uid;
 
-  final matchesAsync = ref.watch(watchMatchesForUserProvider(uid));
+  final matchesAsync = ref.watch(watchMatchesForUserProvider(currentUid));
   final query = ref.watch(chatSearchQueryProvider);
 
   return matchesAsync.whenData((matches) {
@@ -84,10 +93,10 @@ AsyncValue<ChatsListViewModel> chatsListViewModel(Ref ref) {
         : matches;
     final matchesByPerson = collapseMatchesByOtherUser(
       roleMatches.toList(growable: false),
-      uid,
+      currentUid,
     );
     final previews = matchesByPerson
-        .map((match) => _previewForMatch(ref, match, uid))
+        .map((match) => _previewForMatch(ref, match, currentUid))
         .toList();
 
     final newMatches = <ChatThreadPreview>[];

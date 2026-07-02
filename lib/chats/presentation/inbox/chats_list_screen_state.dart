@@ -12,12 +12,25 @@ class HostInboxScreenState {
 
   factory HostInboxScreenState.fromAsync({
     required AsyncValue<ChatsListViewModel> viewModel,
-    required String? uid,
+    required AsyncValue<String?> uid,
     required String query,
     required HostInboxFilter selectedFilter,
     required bool isHostApp,
   }) {
-    final source = viewModel.asData?.value;
+    final String? uidValue;
+    final AsyncValue<ChatsListViewModel> effectiveViewModel;
+    switch (uid) {
+      case AsyncData(:final value):
+        uidValue = value;
+        effectiveViewModel = viewModel;
+      case AsyncError(:final error, :final stackTrace):
+        uidValue = null;
+        effectiveViewModel = AsyncError<ChatsListViewModel>(error, stackTrace);
+      default:
+        uidValue = null;
+        effectiveViewModel = const AsyncLoading<ChatsListViewModel>();
+    }
+    final source = effectiveViewModel.asData?.value;
     final normalizedQuery = query.trim();
     final hostFilter = isHostApp ? selectedFilter : null;
 
@@ -27,8 +40,8 @@ class HostInboxScreenState {
       showSearchAction:
           (source?.totalThreadCount ?? 0) > 0 || normalizedQuery.isNotEmpty,
       displayState: ChatsListDisplayState.fromAsync(
-        viewModel: viewModel,
-        uid: uid,
+        viewModel: effectiveViewModel,
+        uid: uidValue,
         query: normalizedQuery,
         hostFilter: hostFilter,
       ),
