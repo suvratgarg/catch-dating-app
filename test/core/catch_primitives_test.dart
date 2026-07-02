@@ -27,6 +27,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_icon.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_framework_error_view.dart';
@@ -55,6 +56,7 @@ import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -1229,6 +1231,45 @@ void main() {
 
     expect(find.byType(CatchDetailHeroFallback), findsOneWidget);
     expect(find.byType(CatchDetailHeroScrim), findsNothing);
+  });
+
+  testWidgets('CatchEventThumbnail composes fallback and scrim renderers', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const SizedBox(
+          width: 220,
+          height: 140,
+          child: CatchEventThumbnail(
+            photoUrl: null,
+            pace: PaceLevel.easy,
+            activityKind: ActivityKind.socialRun,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(CatchEventThumbnailActivityFallback), findsOneWidget);
+    expect(find.byType(CatchEventThumbnailScrimOverlay), findsOneWidget);
+
+    await tester.pumpWidget(
+      _wrap(
+        const SizedBox(
+          width: 220,
+          height: 140,
+          child: CatchEventThumbnail(
+            photoUrl: null,
+            pace: PaceLevel.easy,
+            activityKind: ActivityKind.dinner,
+            scrim: CatchEventThumbnailScrim.none,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(CatchEventThumbnailActivityFallback), findsOneWidget);
+    expect(find.byType(CatchEventThumbnailScrimOverlay), findsNothing);
   });
 
   testWidgets('CatchMetricStrip renders compact labeled data pairs', (

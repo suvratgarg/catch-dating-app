@@ -2,8 +2,8 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:flutter/material.dart';
 
 export 'package:catch_dating_app/core/widgets/event_activity_visuals.dart'
@@ -53,18 +53,17 @@ class CatchEventThumbnail extends StatelessWidget {
             child: CatchNetworkImage(
               url,
               fit: fit,
-              errorBuilder: (context, _, _) => _buildActivityFallback(
-                context,
-                activityKind: activityKind,
-                iconAlignment: iconAlignment,
-                iconSize: fallbackIconSize,
-                iconOpacity: fallbackIconOpacity,
-                patternOpacity: fallbackPatternOpacity,
-              ),
+              errorBuilder: (context, _, _) =>
+                  CatchEventThumbnailActivityFallback(
+                    activityKind: activityKind,
+                    iconAlignment: iconAlignment,
+                    iconSize: fallbackIconSize,
+                    iconOpacity: fallbackIconOpacity,
+                    patternOpacity: fallbackPatternOpacity,
+                  ),
               loadingBuilder: (context, child, progress) {
                 if (progress == null) return child;
-                return _buildActivityFallback(
-                  context,
+                return CatchEventThumbnailActivityFallback(
                   activityKind: activityKind,
                   iconAlignment: iconAlignment,
                   iconSize: fallbackIconSize,
@@ -75,72 +74,90 @@ class CatchEventThumbnail extends StatelessWidget {
             ),
           )
         else
-          _buildActivityFallback(
-            context,
+          CatchEventThumbnailActivityFallback(
             activityKind: activityKind,
             iconAlignment: iconAlignment,
             iconSize: fallbackIconSize,
             iconOpacity: fallbackIconOpacity,
             patternOpacity: fallbackPatternOpacity,
           ),
-        if (scrim != CatchEventThumbnailScrim.none) _buildScrim(scrim),
+        if (scrim != CatchEventThumbnailScrim.none)
+          CatchEventThumbnailScrimOverlay(style: scrim),
       ],
     );
   }
 }
 
-Widget _buildActivityFallback(
-  BuildContext context, {
-  required ActivityKind activityKind,
-  required Alignment iconAlignment,
-  required double? iconSize,
-  required double iconOpacity,
-  required double patternOpacity,
-}) {
-  return EventActivityBackdrop(
-    visual: eventActivityVisual(activityKind, context: context),
-    dense: true,
-    iconAlignment: iconAlignment,
-    iconSize: iconSize ?? CatchLayout.eventThumbnailBackdropIconSize,
-    iconOpacity: iconOpacity,
-    patternOpacity: patternOpacity,
-  );
+class CatchEventThumbnailActivityFallback extends StatelessWidget {
+  const CatchEventThumbnailActivityFallback({
+    super.key,
+    required this.activityKind,
+    this.iconAlignment = Alignment.bottomRight,
+    this.iconSize,
+    this.iconOpacity = CatchOpacity.fallbackArtworkIcon,
+    this.patternOpacity = CatchOpacity.ticketPerforationLine,
+  });
+
+  final ActivityKind activityKind;
+  final Alignment iconAlignment;
+  final double? iconSize;
+  final double iconOpacity;
+  final double patternOpacity;
+
+  @override
+  Widget build(BuildContext context) {
+    return EventActivityBackdrop(
+      visual: eventActivityVisual(activityKind, context: context),
+      dense: true,
+      iconAlignment: iconAlignment,
+      iconSize: iconSize ?? CatchLayout.eventThumbnailBackdropIconSize,
+      iconOpacity: iconOpacity,
+      patternOpacity: patternOpacity,
+    );
+  }
 }
 
-Widget _buildScrim(CatchEventThumbnailScrim style) {
-  final colors = switch (style) {
-    CatchEventThumbnailScrim.none => const [Colors.transparent],
-    CatchEventThumbnailScrim.bottom => [
-      Colors.transparent,
-      Colors.transparent,
-      CatchTokens.editorialDark.withValues(alpha: CatchOpacity.mutedContent),
-      CatchTokens.editorialDark.withValues(alpha: CatchOpacity.gradientBand),
-    ],
-    CatchEventThumbnailScrim.full => [
-      CatchTokens.editorialDark.withValues(
-        alpha: CatchOpacity.photoScrimBarelyVisible,
-      ),
-      CatchTokens.editorialDark.withValues(alpha: CatchOpacity.mutedContent),
-      CatchTokens.editorialDark.withValues(alpha: CatchOpacity.gradientBand),
-    ],
-  };
-  final stops = switch (style) {
-    CatchEventThumbnailScrim.none => null,
-    CatchEventThumbnailScrim.bottom => const [0.0, 0.45, 0.78, 1.0],
-    CatchEventThumbnailScrim.full => const [0.0, 0.55, 1.0],
-  };
-  return IgnorePointer(
-    child: DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: colors,
-          stops: stops,
+class CatchEventThumbnailScrimOverlay extends StatelessWidget {
+  const CatchEventThumbnailScrimOverlay({super.key, required this.style});
+
+  final CatchEventThumbnailScrim style;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = switch (style) {
+      CatchEventThumbnailScrim.none => const [Colors.transparent],
+      CatchEventThumbnailScrim.bottom => [
+        Colors.transparent,
+        Colors.transparent,
+        CatchTokens.editorialDark.withValues(alpha: CatchOpacity.mutedContent),
+        CatchTokens.editorialDark.withValues(alpha: CatchOpacity.gradientBand),
+      ],
+      CatchEventThumbnailScrim.full => [
+        CatchTokens.editorialDark.withValues(
+          alpha: CatchOpacity.photoScrimBarelyVisible,
+        ),
+        CatchTokens.editorialDark.withValues(alpha: CatchOpacity.mutedContent),
+        CatchTokens.editorialDark.withValues(alpha: CatchOpacity.gradientBand),
+      ],
+    };
+    final stops = switch (style) {
+      CatchEventThumbnailScrim.none => null,
+      CatchEventThumbnailScrim.bottom => const [0.0, 0.45, 0.78, 1.0],
+      CatchEventThumbnailScrim.full => const [0.0, 0.55, 1.0],
+    };
+    return IgnorePointer(
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: colors,
+            stops: stops,
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 enum CatchEventThumbnailScrim { none, bottom, full }

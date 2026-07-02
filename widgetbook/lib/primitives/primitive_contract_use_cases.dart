@@ -24,6 +24,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_icon.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
+import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
@@ -4834,6 +4835,86 @@ Widget catchDetailHeroScrimContractStates(BuildContext context) {
       _StateCard(
         label: 'vertical-gradient',
         child: SizedBox(width: 340, height: 180, child: CatchDetailHeroScrim()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchEventThumbnailActivityFallback,
+  path: '[Core primitives]/Media',
+)
+Widget catchEventThumbnailActivityFallbackContractStates(BuildContext context) {
+  return const _ContractScreen(
+    title: 'CatchEventThumbnailActivityFallback',
+    contractId: 'catch.event_thumbnail.activity_fallback',
+    states: ['run', 'dinner', 'large-icon'],
+    children: [
+      _StateCard(
+        label: 'activity fallbacks',
+        child: _InlineWrap(
+          children: [
+            SizedBox(
+              width: 148,
+              height: 104,
+              child: CatchEventThumbnailActivityFallback(
+                activityKind: ActivityKind.socialRun,
+              ),
+            ),
+            SizedBox(
+              width: 148,
+              height: 104,
+              child: CatchEventThumbnailActivityFallback(
+                activityKind: ActivityKind.dinner,
+              ),
+            ),
+            SizedBox(
+              width: 148,
+              height: 104,
+              child: CatchEventThumbnailActivityFallback(
+                activityKind: ActivityKind.pickleball,
+                iconSize: 92,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchEventThumbnailScrimOverlay,
+  path: '[Core primitives]/Media',
+)
+Widget catchEventThumbnailScrimOverlayContractStates(BuildContext context) {
+  return const _ContractScreen(
+    title: 'CatchEventThumbnailScrimOverlay',
+    contractId: 'catch.event_thumbnail.scrim',
+    states: ['bottom', 'full'],
+    children: [
+      _StateCard(
+        label: 'scrim styles',
+        child: _InlineWrap(
+          children: [
+            SizedBox(
+              width: 148,
+              height: 104,
+              child: CatchEventThumbnailScrimOverlay(
+                style: CatchEventThumbnailScrim.bottom,
+              ),
+            ),
+            SizedBox(
+              width: 148,
+              height: 104,
+              child: CatchEventThumbnailScrimOverlay(
+                style: CatchEventThumbnailScrim.full,
+              ),
+            ),
+          ],
+        ),
       ),
     ],
   );
