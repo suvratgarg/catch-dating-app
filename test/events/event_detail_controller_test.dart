@@ -8,6 +8,8 @@ import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/saved_event.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -374,25 +376,58 @@ void main() {
       },
     );
 
-    test('does not surface invite-link attribution failures', () async {
-      final repository = FakeEventRepository()
-        ..recordInviteOpenError = StateError('attribution failed');
-      final container = ProviderContainer(
-        overrides: [eventRepositoryProvider.overrideWith((ref) => repository)],
-      );
-      addTearDown(container.dispose);
+    test(
+      'logs but does not surface invite-link attribution failures',
+      () async {
+        final repository = FakeEventRepository()
+          ..recordInviteOpenError = StateError('attribution failed');
+        final errorLogger = _RecordingErrorLogger();
+        final container = ProviderContainer(
+          overrides: [
+            eventRepositoryProvider.overrideWith((ref) => repository),
+            errorLoggerProvider.overrideWithValue(errorLogger),
+          ],
+        );
+        addTearDown(container.dispose);
 
-      await container
-          .read(eventDetailControllerProvider.notifier)
-          .recordInviteLinkOpenBestEffort(
-            eventId: 'event-12',
-            inviteLinkId: 'invite-12',
-          );
+        await container
+            .read(eventDetailControllerProvider.notifier)
+            .recordInviteLinkOpenBestEffort(
+              eventId: 'event-12',
+              inviteLinkId: 'invite-12',
+            );
 
-      expect(repository.recordedInviteOpenEventId, isNull);
-      expect(repository.recordedInviteOpenLinkId, isNull);
-    });
+        expect(repository.recordedInviteOpenEventId, isNull);
+        expect(repository.recordedInviteOpenLinkId, isNull);
+        expect(errorLogger.loggedExceptions, hasLength(1));
+        expect(
+          errorLogger.loggedExceptions.single.message,
+          contains('Unable to record invite link open best effort'),
+        );
+      },
+    );
   });
+}
+
+class _RecordingErrorLogger extends ErrorLogger {
+  _RecordingErrorLogger()
+    : super(crashReporter: null, shouldReportErrors: false);
+
+  final List<AppException> loggedExceptions = [];
+
+  @override
+  void logAppException(AppException exception) {
+    loggedExceptions.add(exception);
+  }
+
+  @override
+  void log({
+    required LogLevel level,
+    required String message,
+    Object? error,
+    StackTrace? stackTrace,
+    Map<String, String>? context,
+  }) {}
 }
 
 EventParticipation _participation({

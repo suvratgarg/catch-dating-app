@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_host_contact_controller.dart';
 import 'package:catch_dating_app/core/app_config.dart';
+import 'package:catch_dating_app/core/app_error_context.dart' as app_ops;
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -452,19 +452,19 @@ Future<void> _addEventToCalendar(
     );
 
     if (context.mounted) {
-      ProviderScope.containerOf(context, listen: false)
-          .read(errorLoggerProvider)
-          .logAppException(
-            normalizeBackendError(
-              actionError,
-              stackTrace: stackTrace,
-              context: const BackendErrorContext(
-                service: BackendService.external,
-                action: 'add event to calendar',
-                resource: 'calendar_link',
-              ),
-            ),
-          );
+      app_ops.logAppError(
+        actionError,
+        stackTrace: stackTrace,
+        context: const app_ops.AppErrorContext(
+          operation: app_ops.AppOperation.plugin,
+          action: 'add event to calendar',
+          resource: 'calendar_link',
+        ),
+        logError: ProviderScope.containerOf(
+          context,
+          listen: false,
+        ).read(errorLoggerProvider),
+      );
 
       showCatchSnackBar(context, 'Could not open calendar.');
     }

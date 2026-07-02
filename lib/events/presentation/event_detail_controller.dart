@@ -1,6 +1,8 @@
+import 'package:catch_dating_app/core/app_error_context.dart' as app_ops;
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -36,12 +38,16 @@ class EventDetailController extends _$EventDetailController {
     required String eventId,
     required String inviteLinkId,
   }) async {
-    try {
-      await ref
+    await app_ops.runLoggingAppErrors(
+      () => ref
           .read(eventRepositoryProvider)
-          .recordInviteLinkOpen(eventId: eventId, inviteLinkId: inviteLinkId);
-    } catch (_) {
-      // Invite attribution must never block event detail rendering.
-    }
+          .recordInviteLinkOpen(eventId: eventId, inviteLinkId: inviteLinkId),
+      context: const app_ops.AppErrorContext(
+        operation: app_ops.AppOperation.runtime,
+        action: 'record invite link open best effort',
+        resource: 'eventInviteLinks',
+      ),
+      logError: ref.read(errorLoggerProvider),
+    );
   }
 }
