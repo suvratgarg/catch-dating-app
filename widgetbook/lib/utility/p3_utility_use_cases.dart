@@ -2650,6 +2650,73 @@ Widget paymentHistoryListStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Loading states',
+  type: PaymentHistorySkeleton,
+  path: '[P3 utility surfaces]/Payment history',
+)
+Widget paymentHistorySkeletonStates(BuildContext context) {
+  return const _UtilityCatalog(
+    title: 'PaymentHistorySkeleton',
+    contractId: 'screen.payments.history.skeleton',
+    children: [
+      _StateCard(
+        label: 'loading list',
+        child: _DeviceFrame(child: PaymentHistorySkeleton()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Row skeleton states',
+  type: PaymentHistoryTileSkeleton,
+  path: '[P3 utility surfaces]/Payment history',
+)
+Widget paymentHistoryTileSkeletonStates(BuildContext context) {
+  return const _UtilityCatalog(
+    title: 'PaymentHistoryTileSkeleton',
+    contractId: 'screen.payments.history.row_skeleton',
+    children: [
+      _StateCard(label: 'loading row', child: PaymentHistoryTileSkeleton()),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Empty states',
+  type: PaymentHistoryEmptyState,
+  path: '[P3 utility surfaces]/Payment history',
+)
+Widget paymentHistoryEmptyStateStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'PaymentHistoryEmptyState',
+    contractId: 'screen.payments.history.empty',
+    children: [
+      _StateCard(
+        label: 'no payments',
+        child: _DeviceFrame(
+          child: PaymentHistoryEmptyState(
+            icon: CatchIcons.receiptLongOutlined,
+            title: 'No payments yet',
+            message: 'Event bookings and refunds will appear here.',
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'signed out',
+        child: _DeviceFrame(
+          child: PaymentHistoryEmptyState(
+            icon: CatchIcons.lockOutlineRounded,
+            title: 'Sign in required',
+            message: 'Sign in again to view payment history.',
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Row states',
   type: PaymentHistoryTile,
   path: '[P3 utility surfaces]/Payment history',

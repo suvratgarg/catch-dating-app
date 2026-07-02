@@ -10,26 +10,26 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1082,
-    "widgetClasses": 982,
+    "total": 1085,
+    "widgetClasses": 985,
     "stateClasses": 100,
-    "publicClasses": 982,
+    "publicClasses": 985,
     "privateClasses": 100,
     "byRole": {
       "atom": 37,
       "composition": 280,
       "feature-adapter": 308,
       "pattern": 14,
-      "screen": 343,
+      "screen": 346,
       "widget-state": 100
     },
     "byDecision": {
       "keep-canonical-contract": 121,
-      "keep-public-cataloged": 861,
+      "keep-public-cataloged": 864,
       "keep-widget-state": 100
     },
     "byCatalogStatus": {
-      "cataloged": 789,
+      "cataloged": 792,
       "contracted": 121,
       "not-applicable": 100,
       "route-covered": 72
@@ -21488,6 +21488,29 @@
       "flags": []
     },
     {
+      "name": "PaymentHistoryEmptyState",
+      "file": "lib/payments/presentation/payment_history_screen.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.payment_history_empty_state",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
       "name": "PaymentHistoryList",
       "file": "lib/payments/presentation/payment_history_screen.dart",
       "classKind": "widget",
@@ -21557,6 +21580,29 @@
       "flags": []
     },
     {
+      "name": "PaymentHistorySkeleton",
+      "file": "lib/payments/presentation/payment_history_screen.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.payment_history_skeleton",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
       "name": "PaymentHistoryTile",
       "file": "lib/payments/presentation/payment_history_screen.dart",
       "classKind": "widget",
@@ -21564,6 +21610,29 @@
       "visibility": "public",
       "role": "screen",
       "canonicalFamily": "screen.payment_history_tile",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "PaymentHistoryTileSkeleton",
+      "file": "lib/payments/presentation/payment_history_screen.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.payment_history_tile_skeleton",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,

@@ -34,12 +34,12 @@ class PaymentHistoryScreen extends ConsumerWidget {
       appBar: const CatchTopBar(title: 'Payment history'),
       body: CatchAsyncValueView<String?>(
         value: uidAsync,
-        loadingBuilder: (_) => paymentHistorySkeleton(),
+        loadingBuilder: (_) => const PaymentHistorySkeleton(),
         errorContext: AppErrorContext.payments,
         onRetry: () => ref.invalidate(uidProvider),
         builder: (context, uid) {
           if (uid == null) {
-            return paymentHistoryEmpty(
+            return PaymentHistoryEmptyState(
               icon: CatchIcons.lockOutlineRounded,
               title: 'Sign in required',
               message: 'Sign in again to view payment history.',
@@ -65,7 +65,7 @@ class PaymentHistoryListController extends ConsumerWidget {
 
     return CatchAsyncValueView<PaymentHistoryViewModel>(
       value: paymentHistoryAsync,
-      loadingBuilder: (_) => paymentHistorySkeleton(),
+      loadingBuilder: (_) => const PaymentHistorySkeleton(),
       errorContext: AppErrorContext.payments,
       onRetry: () => ref.invalidate(watchPaymentsForUserProvider(userId)),
       builder: (context, paymentHistory) =>
@@ -82,7 +82,7 @@ class PaymentHistoryList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (paymentHistory.isEmpty) {
-      return paymentHistoryEmpty(
+      return PaymentHistoryEmptyState(
         icon: CatchIcons.receiptLongOutlined,
         title: 'No payments yet',
         message: 'Event bookings and refunds will appear here.',
@@ -112,84 +112,104 @@ class PaymentHistoryList extends StatelessWidget {
   }
 }
 
-Widget paymentHistorySkeleton() {
-  return ListView.separated(
-    padding: CatchInsets.listBody,
-    itemCount: 5,
-    separatorBuilder: (context, _) => Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          maxWidth: CatchLayout.maxContentWidth,
+class PaymentHistorySkeleton extends StatelessWidget {
+  const PaymentHistorySkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      padding: CatchInsets.listBody,
+      itemCount: 5,
+      separatorBuilder: (context, _) => Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            maxWidth: CatchLayout.maxContentWidth,
+          ),
+          child: Divider(color: CatchTokens.of(context).line, height: 1),
         ),
-        child: Divider(color: CatchTokens.of(context).line, height: 1),
       ),
-    ),
-    itemBuilder: (context, _) => Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          maxWidth: CatchLayout.maxContentWidth,
+      itemBuilder: (context, _) => Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            maxWidth: CatchLayout.maxContentWidth,
+          ),
+          child: const PaymentHistoryTileSkeleton(),
         ),
-        child: paymentHistoryTileSkeleton(),
       ),
-    ),
-  );
+    );
+  }
 }
 
-Widget paymentHistoryTileSkeleton() {
-  return Padding(
-    padding: CatchInsets.contentVertical,
-    child: Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: CatchSpacing.s1,
-        vertical: CatchSpacing.s2,
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+class PaymentHistoryTileSkeleton extends StatelessWidget {
+  const PaymentHistoryTileSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: CatchInsets.contentVertical,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: CatchSpacing.s1,
+          vertical: CatchSpacing.s2,
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CatchSkeleton.text(width: CatchLayout.skeletonTextLongWidth),
+                  gapH8,
+                  CatchSkeleton.text(
+                    width: CatchLayout.skeletonTextSecondaryWidth,
+                  ),
+                  gapH6,
+                  CatchSkeleton.text(width: CatchLayout.skeletonTextWideWidth),
+                ],
+              ),
+            ),
+            gapW16,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                CatchSkeleton.text(width: CatchLayout.skeletonTextLongWidth),
+                CatchSkeleton.text(width: CatchLayout.skeletonTextStatusWidth),
                 gapH8,
-                CatchSkeleton.text(
-                  width: CatchLayout.skeletonTextSecondaryWidth,
+                CatchSkeleton.box(
+                  width: CatchLayout.skeletonTextActionWidth,
+                  height: CatchSpacing.s5,
+                  radius: CatchRadius.pill,
                 ),
-                gapH6,
-                CatchSkeleton.text(width: CatchLayout.skeletonTextWideWidth),
               ],
             ),
-          ),
-          gapW16,
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              CatchSkeleton.text(width: CatchLayout.skeletonTextStatusWidth),
-              gapH8,
-              CatchSkeleton.box(
-                width: CatchLayout.skeletonTextActionWidth,
-                height: CatchSpacing.s5,
-                radius: CatchRadius.pill,
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }
 
-Widget paymentHistoryEmpty({
-  required IconData icon,
-  required String title,
-  required String message,
-}) {
-  return CatchScreenBody(
-    scrollable: false,
-    child: Center(
-      child: CatchEmptyState(icon: icon, title: title, message: message),
-    ),
-  );
+class PaymentHistoryEmptyState extends StatelessWidget {
+  const PaymentHistoryEmptyState({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.message,
+  });
+
+  final IconData icon;
+  final String title;
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchScreenBody(
+      scrollable: false,
+      child: Center(
+        child: CatchEmptyState(icon: icon, title: title, message: message),
+      ),
+    );
+  }
 }
 
 class PaymentHistoryTile extends StatelessWidget {

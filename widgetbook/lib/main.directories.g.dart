@@ -10411,6 +10411,16 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Payment history',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'PaymentHistoryEmptyState',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Empty states',
+                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                    .paymentHistoryEmptyStateStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'PaymentHistoryList',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -10441,12 +10451,32 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'PaymentHistorySkeleton',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Loading states',
+                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                    .paymentHistorySkeletonStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'PaymentHistoryTile',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Row states',
                 builder: _widgetbook_workspace_utility_p3_utility_use_cases
                     .paymentHistoryTileStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'PaymentHistoryTileSkeleton',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Row skeleton states',
+                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                    .paymentHistoryTileSkeletonStates,
               ),
             ],
           ),
