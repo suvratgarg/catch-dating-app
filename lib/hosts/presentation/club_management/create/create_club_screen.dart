@@ -4,6 +4,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_draft.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
@@ -15,9 +16,11 @@ import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_flow.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
@@ -613,7 +616,18 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final uid = ref.watch(uidProvider).asData?.value;
+    final uidAsync = ref.watch(uidProvider);
+    if (_isEditing && uidAsync.isLoading) {
+      return const CatchStartupLoadingScreen();
+    }
+    if (_isEditing && uidAsync.hasError) {
+      return CatchErrorScaffold.fromError(
+        uidAsync.error!,
+        context: AppErrorContext.auth,
+        onRetry: () => ref.invalidate(uidProvider),
+      );
+    }
+    final uid = uidAsync.asData?.value;
     final mediaOnly = _isMediaOnlyForUid(uid);
     final activeSteps = _activeSteps;
     final submitMutation = ref.watch(CreateClubController.submitMutation);

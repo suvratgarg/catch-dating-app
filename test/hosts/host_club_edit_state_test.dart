@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_create_club_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -81,5 +83,24 @@ void main() {
 
     expect(find.text('Host access required'), findsOneWidget);
     expect(find.text('Edit club'), findsNothing);
+  });
+
+  testWidgets('CreateClubScreen keeps edit mode loading while uid resolves', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWithValue(const AsyncLoading<String?>()),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: CreateClubScreen(initialClub: club),
+        ),
+      ),
+    );
+
+    expect(find.byType(CatchStartupLoadingScreen), findsOneWidget);
+    expect(find.text('Club name'), findsNothing);
   });
 }
