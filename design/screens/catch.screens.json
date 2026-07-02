@@ -19203,6 +19203,14 @@
             "symbol": "EditHostedEventScreen"
           },
           {
+            "file": "lib/hosts/presentation/host_event_edit_screen_state.dart",
+            "symbol": "HostEventEditScreenState"
+          },
+          {
+            "file": "lib/hosts/presentation/host_event_edit_screen_state.dart",
+            "symbol": "EditHostedEventFooterState"
+          },
+          {
             "file": "lib/clubs/data/clubs_repository.dart",
             "symbol": "fetchClub"
           },
@@ -19233,7 +19241,7 @@
             "symbol": "EventRepository"
           }
         ],
-        "notes": "EditHostedEventRouteScreen resolves uid, club, and event, handles loading/error/not-found/unauthorized route states, and delegates loaded state to EditHostedEventScreen. EditHostedEventScreen owns local form controllers, schedule/policy lock derivation, location picker, invite/private-access loading, validation, EventBookingController.updateHostedEventMutation, snackbar feedback, and pop-on-success. A future HostEventEditScreenState should centralize route access, editable/locked scopes, field data, private-access state, mutation state, and typed route callbacks."
+        "notes": "EditHostedEventRouteScreen resolves uid, club, and event, handles loading/error/not-found/unauthorized route states, and delegates loaded state to EditHostedEventScreen. HostEventEditScreenState now owns loaded editability, schedule/policy lock derivation, save footer enabled/loading state, save error exposure, success/missing-location feedback copy, and pop-on-success policy. EditHostedEventScreen still owns local form controllers, location picker, invite/private-access loading, validation, EventBookingController.updateHostedEventMutation execution, and Navigator/snackbar side effects."
       },
       "designRefs": [
         {
@@ -19491,8 +19499,8 @@
           "id": "submit_pending",
           "kind": "mutation",
           "status": "captured",
-          "source": "updateHostedEventMutation drives footer loading and disables Save changes.",
-          "nextAction": "Compare pending footer treatment against mutation reference variants once exported.",
+          "source": "HostEventEditScreenState maps updateHostedEventMutation pending into EditHostedEventFooterState loading and disabled Save changes state.",
+          "nextAction": "Pending footer display policy is adapter-owned; compare against mutation reference variants once exported.",
           "captureIds": [
             "edit_hosted_event_submit_pending"
           ]
@@ -19501,8 +19509,8 @@
           "id": "submit_error",
           "kind": "mutation",
           "status": "captured",
-          "source": "updateHostedEventMutation errors render CatchErrorBanner.fromError under the scope notice.",
-          "nextAction": "Compare error banner treatment against mutation reference variants once exported.",
+          "source": "HostEventEditScreenState exposes updateHostedEventMutation errors before EditHostedEventScreen renders CatchErrorBanner.fromError under the scope notice.",
+          "nextAction": "Submit error display policy is adapter-owned; compare against mutation reference variants once exported.",
           "captureIds": [
             "edit_hosted_event_submit_error"
           ]
@@ -19511,7 +19519,7 @@
           "id": "success_pop",
           "kind": "mutation",
           "status": "tested",
-          "source": "Successful save updates the event, invalidates event/roster providers, shows shared Catch snackbar feedback, and pops.",
+          "source": "HostEventEditScreenState owns success copy and pop-on-success policy; EditHostedEventScreen still executes the update mutation, provider invalidations, snackbar, and Navigator pop side effects.",
           "tests": [
             "test/hosts/edit_hosted_event_screen_test.dart"
           ],
@@ -19569,8 +19577,8 @@
         }
       ],
       "composition": {
-        "currentLayout": "EditHostedEventRouteScreen owns provider loading/access and EditHostedEventScreen owns form controllers, schedule/policy locking, validation, private access, mutation, snackbar, and pop behavior.",
-        "targetLayout": "Host Edit Event should resolve a HostEventEditState adapter for route access, editable scopes, field values, policy/private access, mutation, and navigation before composing provider-free form sections.",
+        "currentLayout": "EditHostedEventRouteScreen owns provider loading/access through HostEventEditState. EditHostedEventScreen owns form controllers, validation, private access, location picker, mutation execution, snackbar, and Navigator side effects while HostEventEditScreenState owns loaded editability, schedule/policy locks, save footer state, save error display input, feedback copy, and pop-on-success policy.",
+        "targetLayout": "Host Edit Event should keep route access in HostEventEditState, continue expanding HostEventEditScreenState into field values, policy/private access, validation, selected-location, save request data, and typed callbacks, then compose provider-free form sections.",
         "sections": [
           {
             "id": "section.host.event_edit.route_adapter",
@@ -19584,7 +19592,7 @@
               "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
               "symbol": "EditHostedEventRouteScreen"
             },
-            "currentOwner": "EditHostedEventRouteScreen + EditHostedEventScreen",
+            "currentOwner": "EditHostedEventRouteScreen + HostEventEditState",
             "targetOwner": "HostEventEditState adapter",
             "dependencies": [
               "catch.surface"
@@ -19596,7 +19604,7 @@
               "event_not_found",
               "unauthorized_host"
             ],
-            "migration": "Move route provider waves and host authorization into an adapter with typed retry/access states."
+            "migration": "Route provider waves and host authorization now live in HostEventEditState; keep loaded edit-form policy in HostEventEditScreenState."
           },
           {
             "id": "section.host.event_edit.scope_notice",
@@ -19610,7 +19618,7 @@
               "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
               "symbol": "EditHostedEventScopeNotice"
             },
-            "currentOwner": "EditHostedEventScreen private notice",
+            "currentOwner": "HostEventEditScreenState + EditHostedEventScopeNotice",
             "targetOwner": "provider-free scope notice section",
             "dependencies": [
               "catch.badge",
@@ -19622,7 +19630,7 @@
               "policy_locked",
               "cancelled_event_disabled"
             ],
-            "migration": "Keep the notice local until Host Manage and Create Event confirm a shared host action notice pattern."
+            "migration": "HostEventEditScreenState now owns the booleans that drive notice title/copy. Keep the notice renderer local until Host Manage and Create Event confirm a shared host action notice pattern."
           },
           {
             "id": "section.host.event_edit.schedule",
@@ -19711,9 +19719,9 @@
             ],
             "flutter": {
               "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-              "symbol": "_buildEditHostedEventFooter"
+              "symbol": "EditHostedEventFooter"
             },
-            "currentOwner": "EditHostedEventScreen private footer",
+            "currentOwner": "EditHostedEventFooter over EditHostedEventFooterState",
             "targetOwner": "provider-free mutation footer",
             "dependencies": [
               "catch.button"
@@ -19723,7 +19731,7 @@
               "submit_error",
               "success_pop"
             ],
-            "migration": "Adapter should own save enabled/loading/error state while the footer renders the CatchButton dock."
+            "migration": "HostEventEditScreenState now owns save enabled/loading/error input, feedback copy, and pop-on-success policy while EditHostedEventFooter renders the CatchButton dock. Continue moving save request construction and typed callbacks out of the route widget."
           }
         ]
       },
@@ -19741,7 +19749,7 @@
         {
           "id": "DS-HOST-EVENT-EDIT-003",
           "status": "open",
-          "nextAction": "Extend HostEventEditState beyond route/lock state into private-access, validation, location picker, mutation callbacks, and close navigation."
+          "nextAction": "HostEventEditScreenState now owns loaded editability, schedule/policy locks, save footer state, save error input, feedback copy, and pop-on-success policy. Remaining adapter work is private-access loading/data, validation, selected-location, field display values, save request construction, and typed callbacks so the screen no longer owns form-side effects."
         },
         {
           "id": "DS-HOST-EVENT-EDIT-004",

@@ -291,6 +291,18 @@
           "role": "OnboardingFlowState and OnboardingTopBarState route-shell display-policy behavior coverage",
           "status": "aligned",
           "lastReviewedPass": "2026-07-02-onboarding-flow-state-adapter"
+        },
+        {
+          "path": "lib/hosts/presentation/host_event_edit_screen_state.dart",
+          "role": "provider-free HostEventEditScreenState, EditHostedEventFooterState, and HostEventEditSaveOutcomeState adapters for loaded editability, schedule/policy locks, save footer enabled/loading state, save error exposure, feedback copy, and pop-on-success policy",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-02-host-event-edit-screen-state-adapter"
+        },
+        {
+          "path": "test/hosts/edit_hosted_event_screen_test.dart",
+          "role": "HostEventEditScreenState save display, editability, lock, error, and success policy behavior coverage",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-02-host-event-edit-screen-state-adapter"
         }
       ],
       "variantPatterns": [],

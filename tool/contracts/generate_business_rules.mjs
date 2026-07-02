@@ -20,6 +20,7 @@ const requiredNumbers = [
   ["eventScheduling.maxDurationMinutes", eventScheduling.maxDurationMinutes],
   ["eventScheduling.durationStepMinutes", eventScheduling.durationStepMinutes],
   ["eventScheduling.scheduleLockSlotMinutes", eventScheduling.scheduleLockSlotMinutes],
+  ["eventScheduling.editDatePickerWindowDays", eventScheduling.editDatePickerWindowDays],
   ["eventAttendance.selfCheckInWindowBeforeMinutes", eventAttendance.selfCheckInWindowBeforeMinutes],
   ["eventAttendance.selfCheckInWindowAfterMinutes", eventAttendance.selfCheckInWindowAfterMinutes],
   ["eventAttendance.selfCheckInMaxDistanceMeters", eventAttendance.selfCheckInMaxDistanceMeters],
@@ -62,6 +63,10 @@ const dart = `${header}final class CatchBusinessRules {
   static const eventMaxDurationMinutes = ${eventScheduling.maxDurationMinutes};
   static const eventDurationStepMinutes = ${eventScheduling.durationStepMinutes};
   static const eventScheduleLockSlotMinutes = ${eventScheduling.scheduleLockSlotMinutes};
+  static const eventEditDatePickerWindowDays = ${eventScheduling.editDatePickerWindowDays};
+  static const eventEditDatePickerWindow = Duration(
+    days: eventEditDatePickerWindowDays,
+  );
 
   static const eventSelfCheckInWindowBeforeMinutes = ${eventAttendance.selfCheckInWindowBeforeMinutes};
   static const eventSelfCheckInWindowAfterMinutes = ${eventAttendance.selfCheckInWindowAfterMinutes};
@@ -69,6 +74,8 @@ const dart = `${header}final class CatchBusinessRules {
   static const eventFirstHelloMaxDistanceMeters = ${eventAttendance.firstHelloMaxDistanceMeters};
   static const eventHostAttendanceWindowBeforeMinutes = ${eventAttendance.hostAttendanceWindowBeforeMinutes};
   static const eventHostAttendanceWindowAfterEventHours = ${eventAttendance.hostAttendanceWindowAfterEventHours};
+
+  static Duration eventDuration(int minutes) => Duration(minutes: minutes);
 }
 `;
 
@@ -77,6 +84,7 @@ export const EVENT_MIN_DURATION_MINUTES = ${eventScheduling.minDurationMinutes};
 export const EVENT_MAX_DURATION_MINUTES = ${eventScheduling.maxDurationMinutes};
 export const EVENT_DURATION_STEP_MINUTES = ${eventScheduling.durationStepMinutes};
 export const EVENT_SCHEDULE_LOCK_SLOT_MINUTES = ${eventScheduling.scheduleLockSlotMinutes};
+export const EVENT_EDIT_DATE_PICKER_WINDOW_DAYS = ${eventScheduling.editDatePickerWindowDays};
 
 export const EVENT_SELF_CHECK_IN_WINDOW_BEFORE_MINUTES = ${eventAttendance.selfCheckInWindowBeforeMinutes};
 export const EVENT_SELF_CHECK_IN_WINDOW_AFTER_MINUTES = ${eventAttendance.selfCheckInWindowAfterMinutes};

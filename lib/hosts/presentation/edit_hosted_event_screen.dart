@@ -38,6 +38,7 @@ import 'package:catch_dating_app/events/presentation/location_picker_screen.dart
 import 'package:catch_dating_app/events/presentation/widgets/map_pin_tile.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_edit_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/validators.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
@@ -173,17 +174,14 @@ class HostEventEditState {
     );
   }
 
-  static bool eventCanEdit(Event event) => !event.isCancelled;
+  static bool eventCanEdit(Event event) =>
+      HostEventEditScreenState.eventCanEdit(event);
 
   static bool eventScheduleLocked(Event event, DateTime now) =>
-      !eventCanEdit(event) ||
-      event.startTime.isBefore(now) ||
-      event.signedUpCount > 0 ||
-      event.waitlistCount > 0 ||
-      event.attendedCount > 0;
+      HostEventEditScreenState.eventScheduleLocked(event, now);
 
   static bool eventPolicyLocked(Event event, DateTime now) =>
-      eventScheduleLocked(event, now);
+      HostEventEditScreenState.eventPolicyLocked(event, now);
 }
 
 class EditHostedEventScreen extends ConsumerStatefulWidget {
@@ -240,13 +238,6 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
   String? _scheduleErrorText;
 
   DateTime get _now => widget.now?.call() ?? DateTime.now();
-  bool get _canEdit => HostEventEditState.eventCanEdit(widget.event);
-
-  bool get _scheduleLocked =>
-      HostEventEditState.eventScheduleLocked(widget.event, _now);
-
-  bool get _policyLocked =>
-      HostEventEditState.eventPolicyLocked(widget.event, _now);
 
   DateTime get _selectedStartDateTime => DateTime(
     _selectedDate.year,
@@ -342,6 +333,15 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
     final mutation = ref.watch(
       EventBookingController.updateHostedEventMutation,
     );
+    final saveError = mutation.hasError
+        ? (mutation as MutationError).error
+        : null;
+    final screenState = HostEventEditScreenState.from(
+      event: widget.event,
+      now: _now,
+      savePending: mutation.isPending,
+      saveError: saveError,
+    );
     final privateAccessAsync =
         _selectedAdmissionPreset == EventAdmissionPreset.inviteOnly
         ? ref.watch(watchEventPrivateAccessProvider(widget.event.id))
@@ -372,34 +372,32 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
             children: [
               EditHostedEventScopeNotice(
                 isCancelled: widget.event.isCancelled,
-                scheduleLocked: _scheduleLocked,
-                policyLocked: _policyLocked,
+                scheduleLocked: screenState.scheduleLocked,
+                policyLocked: screenState.policyLocked,
               ),
-              if (mutation.hasError) ...[
+              if (screenState.hasSaveError) ...[
                 gapH12,
                 CatchErrorBanner.fromError(
-                  (mutation as MutationError).error,
+                  screenState.saveError!,
                   context: AppErrorContext.event,
                 ),
               ],
               gapH20,
               const CatchFormFieldLabel(label: 'Schedule', large: true),
               gapH8,
-              if (_scheduleLocked)
+              if (screenState.scheduleLocked)
                 ReadOnlyHostedEventScheduleCard(event: widget.event)
               else ...[
-                _buildPickerTile(
+                EditHostedEventPickerTile(
                   key: CreateEventFormKeys.datePicker,
-                  context: context,
                   icon: CatchIcons.calendarTodayOutlined,
                   value: _dateController.text,
                   placeholder: 'Select a date',
                   onTap: _pickDate,
                 ),
                 gapH12,
-                _buildPickerTile(
+                EditHostedEventPickerTile(
                   key: CreateEventFormKeys.timePicker,
-                  context: context,
                   icon: CatchIcons.scheduleOutlined,
                   value: _startTimeController.text,
                   placeholder: 'Select start time',
@@ -438,7 +436,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                 key: CreateEventFormKeys.meetingPoint,
                 title: 'Location name',
                 controller: _meetingPointController,
-                enabled: _canEdit,
+                enabled: screenState.canEdit,
                 placeholder: 'e.g. Bandstand Promenade, Bandra',
                 helperText:
                     'This is what attendees see in event cards and details.',
@@ -454,7 +452,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                 key: CreateEventFormKeys.mapPicker,
                 startingPoint: _startingPoint,
                 selectedLabel: _meetingPointController.text,
-                enabled: _canEdit,
+                enabled: screenState.canEdit,
                 onTap: _pickLocation,
               ),
               gapH16,
@@ -463,7 +461,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                 title: 'Extra directions',
                 isOptional: true,
                 controller: _locationDetailsController,
-                enabled: _canEdit,
+                enabled: screenState.canEdit,
                 placeholder: 'e.g. Meet outside the blue gate, third entrance',
                 prefixIcon: Icon(CatchIcons.infoOutline),
                 maxLines: 3,
@@ -478,7 +476,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                   key: CreateEventFormKeys.distance,
                   title: 'Distance (km)',
                   controller: _distanceController,
-                  enabled: _canEdit,
+                  enabled: screenState.canEdit,
                   placeholder: '10',
                   prefixIcon: Icon(CatchIcons.straightenOutlined),
                   keyboardType: const TextInputType.numberWithOptions(
@@ -507,9 +505,9 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                         (pace) => CatchSelectChip(
                           label: pace.label,
                           active: _selectedPace == pace,
-                          enabled: _canEdit,
+                          enabled: screenState.canEdit,
                           semanticsLabel: 'Select ${pace.label} pace',
-                          onTap: _canEdit
+                          onTap: screenState.canEdit
                               ? () => setState(() => _selectedPace = pace)
                               : null,
                         ),
@@ -523,7 +521,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                 title: 'Description',
                 isOptional: true,
                 controller: _descriptionController,
-                enabled: _canEdit,
+                enabled: screenState.canEdit,
                 placeholder:
                     'What should attendees expect? Any tips for the route or venue?',
                 prefixIcon: Icon(CatchIcons.editNoteOutlined),
@@ -534,7 +532,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
               gapH24,
               const CatchFormFieldLabel(label: 'Event policy', large: true),
               gapH8,
-              if (_policyLocked)
+              if (screenState.policyLocked)
                 ReadOnlyHostedEventPolicyCard(event: widget.event)
               else
                 EditableHostedEventPolicyCard(
@@ -583,75 +581,16 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: _buildEditHostedEventFooter(
-        isLoading: mutation.isPending,
-        onSave: !_canEdit || mutation.isPending ? null : _saveChanges,
-      ),
-    );
-  }
-
-  Widget _buildPickerTile({
-    required Key key,
-    required BuildContext context,
-    required IconData icon,
-    required String? value,
-    required String placeholder,
-    required VoidCallback onTap,
-  }) {
-    final t = CatchTokens.of(context);
-    return CatchControlShell(
-      key: key,
-      onTap: onTap,
-      tone: CatchControlTone.raised,
-      padding: CatchControlMetrics.contentPadding(CatchControlSize.md),
-      semanticButton: true,
-      child: Row(
-        children: [
-          Icon(icon, size: CatchIcon.control, color: t.ink2),
-          gapW12,
-          Expanded(
-            child: Text(
-              value == null || value.isEmpty ? placeholder : value,
-              style: value == null || value.isEmpty
-                  ? CatchTextStyles.bodyLead(context, color: t.ink3)
-                  : CatchTextStyles.bodyLead(context),
-            ),
-          ),
-          Icon(
-            CatchIcons.chevronRightRounded,
-            size: CatchIcon.md,
-            color: t.ink3,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEditHostedEventFooter({
-    required bool isLoading,
-    required VoidCallback? onSave,
-  }) {
-    return CatchBottomDock(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s5,
-        CatchSpacing.s3,
-        CatchSpacing.s5,
-        CatchSpacing.micro18,
-      ),
-      child: CatchButton(
-        key: EditHostedEventKeys.saveButton,
-        label: 'Save changes',
-        onPressed: onSave,
-        isLoading: isLoading,
-        fullWidth: true,
-        icon: Icon(CatchIcons.saveOutlined),
+      bottomNavigationBar: EditHostedEventFooter(
+        state: screenState.footer,
+        onSave: _saveChanges,
       ),
     );
   }
 
   Future<void> _pickDate() async {
     final today = DateUtils.dateOnly(_now);
-    final lastDate = today.add(const Duration(days: 365));
+    final lastDate = today.add(CatchBusinessRules.eventEditDatePickerWindow);
     final initialDate = _selectedDate.isBefore(today) ? today : _selectedDate;
     final picked = await showCatchDatePicker(
       context: context,
@@ -726,26 +665,37 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
   }
 
   void _saveChanges() {
+    final screenState = HostEventEditScreenState.from(
+      event: widget.event,
+      now: _now,
+      savePending: false,
+    );
     if (!_formKey.currentState!.validate()) return;
     if (_startingPoint == null) {
-      showCatchSnackBar(context, 'Pin a starting point before saving.');
+      showCatchSnackBar(
+        context,
+        screenState.saveOutcome.missingStartingPointMessage,
+      );
       return;
     }
-    if (!_scheduleLocked &&
+    if (!screenState.scheduleLocked &&
         _scheduleErrorFor(_selectedDate, _selectedStartTime) != null) {
-      setState(() => _scheduleErrorText = 'Event start must be in the future.');
+      setState(
+        () =>
+            _scheduleErrorText = screenState.saveOutcome.invalidScheduleMessage,
+      );
       return;
     }
 
     final distanceKm = widget.event.eventFormat.activityKind.isDistanceBased
         ? double.parse(_distanceController.text.trim())
         : widget.event.distanceKm;
-    final startTime = _scheduleLocked
+    final startTime = screenState.scheduleLocked
         ? widget.event.startTime
         : _selectedStartDateTime;
-    final endTime = _scheduleLocked
+    final endTime = screenState.scheduleLocked
         ? widget.event.endTime
-        : startTime.add(Duration(minutes: _durationMinutes));
+        : startTime.add(CatchBusinessRules.eventDuration(_durationMinutes));
     final meetingLocation = EventMeetingLocation(
       name: _meetingPointController.text.trim(),
       address: _meetingLocationAddress,
@@ -754,7 +704,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
       longitude: _startingPoint!.longitude,
       notes: _trimToNull(_locationDetailsController.text),
     ).normalized();
-    final includePolicy = !_policyLocked;
+    final includePolicy = !screenState.policyLocked;
     final eventPolicyDefaults = includePolicy ? _eventPolicyDefaults : null;
     final eventPolicy = includePolicy
         ? _eventPolicyForDefaults(eventPolicyDefaults!)
@@ -800,8 +750,10 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
         ref.invalidate(watchEventProvider(widget.event.id));
         ref.invalidate(watchEventParticipationRosterProvider(widget.event.id));
         if (!mounted) return;
-        showCatchSnackBar(context, 'Event updated.');
-        await Navigator.of(context).maybePop();
+        showCatchSnackBar(context, screenState.saveOutcome.successMessage);
+        if (screenState.saveOutcome.popRouteOnSuccess) {
+          await Navigator.of(context).maybePop();
+        }
       }),
     );
   }
@@ -851,6 +803,78 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
     final code = _inviteCodeController.text.trim();
     if (code.length <= 4) return code.isEmpty ? null : code;
     return '${code.substring(0, 2)}...${code.substring(code.length - 2)}';
+  }
+}
+
+class EditHostedEventPickerTile extends StatelessWidget {
+  const EditHostedEventPickerTile({
+    super.key,
+    required this.icon,
+    required this.value,
+    required this.placeholder,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String? value;
+  final String placeholder;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final displayValue = value;
+    final hasValue = displayValue != null && displayValue.isNotEmpty;
+    return CatchControlShell(
+      onTap: onTap,
+      tone: CatchControlTone.raised,
+      padding: CatchControlMetrics.contentPadding(CatchControlSize.md),
+      semanticButton: true,
+      child: Row(
+        children: [
+          Icon(icon, size: CatchIcon.control, color: t.ink2),
+          gapW12,
+          Expanded(
+            child: Text(
+              hasValue ? displayValue : placeholder,
+              style: hasValue
+                  ? CatchTextStyles.bodyLead(context)
+                  : CatchTextStyles.bodyLead(context, color: t.ink3),
+            ),
+          ),
+          Icon(
+            CatchIcons.chevronRightRounded,
+            size: CatchIcon.md,
+            color: t.ink3,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class EditHostedEventFooter extends StatelessWidget {
+  const EditHostedEventFooter({
+    super.key,
+    required this.state,
+    required this.onSave,
+  });
+
+  final EditHostedEventFooterState state;
+  final VoidCallback onSave;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchBottomDock(
+      child: CatchButton(
+        key: EditHostedEventKeys.saveButton,
+        label: state.label,
+        onPressed: state.isEnabled ? onSave : null,
+        isLoading: state.isLoading,
+        fullWidth: true,
+        icon: Icon(CatchIcons.saveOutlined),
+      ),
+    );
   }
 }
 
@@ -1221,13 +1245,11 @@ class ReadOnlyHostedEventPolicyCard extends StatelessWidget {
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH12,
-          _buildReadOnlyPolicyRow(
-            context: context,
+          ReadOnlyHostedEventPolicyRow(
             label: 'Capacity',
             value: '${event.capacityLimit}',
           ),
-          _buildReadOnlyPolicyRow(
-            context: context,
+          ReadOnlyHostedEventPolicyRow(
             label: 'Price',
             value: event.isFree
                 ? 'Free'
@@ -1236,13 +1258,11 @@ class ReadOnlyHostedEventPolicyCard extends StatelessWidget {
                     currencyCode: event.currency,
                   ),
           ),
-          _buildReadOnlyPolicyRow(
-            context: context,
+          ReadOnlyHostedEventPolicyRow(
             label: 'Admission',
             value: _admissionPresetFor(policy).title,
           ),
-          _buildReadOnlyPolicyRow(
-            context: context,
+          ReadOnlyHostedEventPolicyRow(
             label: 'Cancellation',
             value: policy.cancellationPolicy.title,
             showDivider: false,
@@ -1251,13 +1271,22 @@ class ReadOnlyHostedEventPolicyCard extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildReadOnlyPolicyRow({
-    required BuildContext context,
-    required String label,
-    required String value,
-    bool showDivider = true,
-  }) {
+class ReadOnlyHostedEventPolicyRow extends StatelessWidget {
+  const ReadOnlyHostedEventPolicyRow({
+    super.key,
+    required this.label,
+    required this.value,
+    this.showDivider = true,
+  });
+
+  final String label;
+  final String value;
+  final bool showDivider;
+
+  @override
+  Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return Column(
       children: [

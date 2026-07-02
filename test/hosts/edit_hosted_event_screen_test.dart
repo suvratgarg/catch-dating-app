@@ -6,6 +6,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_edit_screen_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -98,6 +99,54 @@ void main() {
       ),
       isTrue,
     );
+  });
+
+  test('HostEventEditScreenState maps save display and success policy', () {
+    final start = DateTime(2026, 5, 22, 7);
+    final editable = buildEvent(
+      startTime: start,
+      endTime: start.add(const Duration(hours: 1)),
+    );
+    final cancelled = editable.copyWith(
+      status: EventLifecycleStatus.cancelled,
+      cancelledAt: start.subtract(const Duration(days: 1)),
+    );
+    final error = StateError('Save failed');
+
+    final ready = HostEventEditScreenState.from(
+      event: editable,
+      now: start.subtract(const Duration(days: 1)),
+      savePending: false,
+    );
+    expect(ready.canEdit, isTrue);
+    expect(ready.scheduleLocked, isFalse);
+    expect(ready.policyLocked, isFalse);
+    expect(ready.footer.label, 'Save changes');
+    expect(ready.footer.isEnabled, isTrue);
+    expect(ready.footer.isLoading, isFalse);
+    expect(ready.saveOutcome.successMessage, 'Event updated.');
+    expect(ready.saveOutcome.popRouteOnSuccess, isTrue);
+
+    final pending = HostEventEditScreenState.from(
+      event: editable,
+      now: start.subtract(const Duration(days: 1)),
+      savePending: true,
+      saveError: error,
+    );
+    expect(pending.footer.isEnabled, isFalse);
+    expect(pending.footer.isLoading, isTrue);
+    expect(pending.saveError, same(error));
+    expect(pending.hasSaveError, isTrue);
+
+    final disabled = HostEventEditScreenState.from(
+      event: cancelled,
+      now: start.subtract(const Duration(days: 1)),
+      savePending: false,
+    );
+    expect(disabled.canEdit, isFalse);
+    expect(disabled.footer.isEnabled, isFalse);
+    expect(disabled.scheduleLocked, isTrue);
+    expect(disabled.policyLocked, isTrue);
   });
 
   testWidgets('saves host-editable event details through updateEvent', (
