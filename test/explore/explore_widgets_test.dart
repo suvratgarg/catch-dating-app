@@ -371,6 +371,7 @@ void main() {
                       availability: resolveViewerEventAvailability(
                         event: featuredEvent,
                         userProfile: null,
+                        now: DateTime.now(),
                       ),
                       status: EventTileStatus.open,
                     ),
@@ -380,6 +381,7 @@ void main() {
                       availability: resolveViewerEventAvailability(
                         event: bodyEvent,
                         userProfile: null,
+                        now: DateTime.now(),
                       ),
                       status: EventTileStatus.open,
                     ),
@@ -452,6 +454,7 @@ void main() {
                       availability: resolveViewerEventAvailability(
                         event: event,
                         userProfile: null,
+                        now: DateTime.now(),
                       ),
                       status: EventTileStatus.open,
                     ),
@@ -507,6 +510,7 @@ void main() {
                       availability: resolveViewerEventAvailability(
                         event: event,
                         userProfile: null,
+                        now: DateTime.now(),
                       ),
                       status: EventTileStatus.open,
                     ),
@@ -581,6 +585,7 @@ void main() {
                       availability: resolveViewerEventAvailability(
                         event: event,
                         userProfile: null,
+                        now: DateTime.now(),
                       ),
                       status: EventTileStatus.open,
                     ),
@@ -830,6 +835,7 @@ void main() {
                           availability: resolveViewerEventAvailability(
                             event: event,
                             userProfile: null,
+                            now: DateTime.now(),
                           ),
                           status: EventTileStatus.open,
                         ),
@@ -905,6 +911,7 @@ void main() {
                       availability: resolveViewerEventAvailability(
                         event: featuredEvent,
                         userProfile: null,
+                        now: DateTime.now(),
                       ),
                       status: EventTileStatus.open,
                     ),
@@ -914,6 +921,7 @@ void main() {
                       availability: resolveViewerEventAvailability(
                         event: event,
                         userProfile: null,
+                        now: DateTime.now(),
                       ),
                       status: EventTileStatus.full,
                     ),
@@ -2613,6 +2621,7 @@ void main() {
                       availability: resolveViewerEventAvailability(
                         event: event,
                         userProfile: null,
+                        now: DateTime.now(),
                       ),
                       status: EventTileStatus.open,
                     ),

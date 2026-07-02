@@ -80,10 +80,10 @@ ViewerEventAvailability resolveViewerEventAvailability({
   bool isSaved = false,
   bool isHosted = false,
   bool isClubMember = false,
-  DateTime? now,
+  required DateTime now,
   bool hasValidInvite = false,
 }) {
-  final referenceNow = now ?? DateTime.now();
+  final referenceNow = now;
   final base = _ViewerEventAvailabilityBuilder(
     event: event,
     userProfile: userProfile,

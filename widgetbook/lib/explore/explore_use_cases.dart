@@ -2726,6 +2726,7 @@ ExploreEventItem _item({
     availability: resolveViewerEventAvailability(
       event: event,
       userProfile: _viewer,
+      now: _now,
     ),
     distanceFromUserKm: distanceFromUserKm,
     isJoinedClubMember: isJoinedClubMember,
