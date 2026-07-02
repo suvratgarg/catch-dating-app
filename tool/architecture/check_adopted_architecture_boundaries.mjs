@@ -18,6 +18,14 @@ const forbiddenImports = [
     pattern: /^package:catch_dating_app\/routing\//u,
     label: "app routing",
   },
+  {
+    pattern: /^package:catch_dating_app\/[^/]+\/data\//u,
+    label: "feature data layer",
+  },
+  {
+    pattern: /^package:catch_dating_app\/[^/]+\/.*repository/u,
+    label: "repository API",
+  },
 ];
 
 const forbiddenSourcePatterns = [
@@ -68,7 +76,8 @@ for (const entry of adoptedProviderFreePaths) {
     path: entry.path,
     patternId: entry.patternId,
     role: entry.role,
-    reason: "aligned provider-free adopter imports or uses provider/routing APIs",
+    reason:
+      "aligned provider-free adopter imports or uses provider, routing, data, or repository APIs",
     evidence,
   });
 }
@@ -99,35 +108,19 @@ function collectAdoptedProviderFreePaths(tracker) {
   for (const pattern of tracker.patterns ?? []) {
     for (const adopter of pattern.adopters ?? []) {
       if (adopter.status !== "aligned") continue;
+      if (adopter.providerFree !== true) continue;
       if (typeof adopter.path !== "string" || !adopter.path.endsWith(".dart")) {
         continue;
       }
       if (!adopter.path.startsWith("lib/")) continue;
-      const role = adopter.role ?? "";
-      if (!isProviderFreeRole(role)) continue;
       paths.set(adopter.path, {
         path: adopter.path,
         patternId: pattern.id,
-        role,
+        role: adopter.role ?? "",
       });
     }
   }
   return [...paths.values()].sort((a, b) => a.path.localeCompare(b.path));
-}
-
-function isProviderFreeRole(role) {
-  const normalized = role.toLowerCase();
-  if (
-    normalized.includes("route screen") ||
-    normalized.includes("route shell")
-  ) {
-    return false;
-  }
-  return (
-    normalized.includes("provider-free") ||
-    (normalized.includes("has no direct") &&
-      normalized.includes("provider reads"))
-  );
 }
 
 function scanForbiddenImports(source) {
@@ -208,6 +201,6 @@ function printHelp() {
   node tool/architecture/check_adopted_architecture_boundaries.mjs --json
 
 Reads docs/audit_registry/architecture_pattern_adoption.json and enforces that
-aligned adopter Dart files whose role declares provider-free behavior do not
-import or use Riverpod/provider or routing APIs directly.`);
+aligned adopter Dart files with "providerFree": true do not import or use
+Riverpod/provider, routing, data-layer, or repository APIs directly.`);
 }
