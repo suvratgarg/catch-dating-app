@@ -18,6 +18,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_structure.da
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/event_success/event_success_companion_clock.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
@@ -180,6 +181,17 @@ void main() {
                       plan: plan,
                       planIsPersisted: true,
                       roster: EventParticipationRoster.empty(),
+                      onSaveSetup: (request) =>
+                          EventSuccessController.saveSetupMutation.run(
+                            ref,
+                            (tx) => tx
+                                .get(eventSuccessControllerProvider.notifier)
+                                .saveSetup(
+                                  plan: request.plan,
+                                  draft: request.draft,
+                                  attendeePrompt: request.attendeePrompt,
+                                ),
+                          ),
                     ),
                   ),
                 ),

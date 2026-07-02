@@ -87,6 +87,46 @@ enum EventSuccessHostRetryIntent {
   scorecard,
 }
 
+class EventSuccessSetupActionState {
+  const EventSuccessSetupActionState({this.isSaving = false, this.error});
+
+  factory EventSuccessSetupActionState.resolve({
+    required MutationState<EventSuccessPlan> ensureMutation,
+    required MutationState<void> saveMutation,
+  }) {
+    final error = saveMutation.hasError
+        ? (saveMutation as MutationError).error
+        : ensureMutation.hasError
+        ? (ensureMutation as MutationError).error
+        : null;
+    return EventSuccessSetupActionState(
+      isSaving: ensureMutation.isPending || saveMutation.isPending,
+      error: error,
+    );
+  }
+
+  final bool isSaving;
+  final Object? error;
+
+  bool get hasError => error != null;
+}
+
+class EventSuccessSetupSaveRequest {
+  const EventSuccessSetupSaveRequest({
+    required this.event,
+    required this.plan,
+    required this.planIsPersisted,
+    required this.draft,
+    required this.attendeePrompt,
+  });
+
+  final Event event;
+  final EventSuccessPlan plan;
+  final bool planIsPersisted;
+  final EventSuccessHostDraft draft;
+  final String attendeePrompt;
+}
+
 class EventSuccessHostSectionState {
   const EventSuccessHostSectionState._({
     required this.status,
@@ -260,6 +300,10 @@ class EventSuccessHostSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final planAsync = ref.watch(watchEventSuccessPlanProvider(event.id));
+    final ensureMutation = ref.watch(EventSuccessController.ensurePlanMutation);
+    final saveSetupMutation = ref.watch(
+      EventSuccessController.saveSetupMutation,
+    );
     final persistedPlan = planAsync.asData?.value;
     final hasSavedGuide = persistedPlan != null;
     final shouldLoadRoster =
@@ -388,9 +432,34 @@ class EventSuccessHostSection extends ConsumerWidget {
       showTabs: showTabs,
       liveRoster: liveRoster,
       compactLiveControls: compactLiveControls,
+      setupActionState: EventSuccessSetupActionState.resolve(
+        ensureMutation: ensureMutation,
+        saveMutation: saveSetupMutation,
+      ),
+      onSaveSetup: (request) => _saveEventSuccessSetup(ref, request),
       fixtureActions: fixtureActions,
     );
   }
+}
+
+Future<void> _saveEventSuccessSetup(
+  WidgetRef ref,
+  EventSuccessSetupSaveRequest request,
+) {
+  return EventSuccessController.saveSetupMutation.run(ref, (tx) async {
+    final basePlan = request.planIsPersisted
+        ? request.plan
+        : await tx
+              .get(eventSuccessControllerProvider.notifier)
+              .ensurePlan(request.event);
+    await tx
+        .get(eventSuccessControllerProvider.notifier)
+        .saveSetup(
+          plan: basePlan,
+          draft: request.draft,
+          attendeePrompt: request.attendeePrompt,
+        );
+  });
 }
 
 AppErrorContext _eventSuccessHostRetryContext(
@@ -477,7 +546,7 @@ class EventSuccessHostSectionSkeleton extends StatelessWidget {
 }
 
 class EventSuccessTabPickerSkeleton extends StatelessWidget {
-  const EventSuccessTabPickerSkeleton();
+  const EventSuccessTabPickerSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -498,7 +567,7 @@ class EventSuccessTabPickerSkeleton extends StatelessWidget {
 }
 
 class EventSuccessSetupTabSkeleton extends StatelessWidget {
-  const EventSuccessSetupTabSkeleton();
+  const EventSuccessSetupTabSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -523,7 +592,7 @@ class EventSuccessSetupTabSkeleton extends StatelessWidget {
 }
 
 class EventSuccessLiveTabSkeleton extends StatelessWidget {
-  const EventSuccessLiveTabSkeleton();
+  const EventSuccessLiveTabSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -548,7 +617,7 @@ class EventSuccessLiveTabSkeleton extends StatelessWidget {
 }
 
 class EventSuccessReportTabSkeleton extends StatelessWidget {
-  const EventSuccessReportTabSkeleton();
+  const EventSuccessReportTabSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -574,6 +643,7 @@ class EventSuccessReportTabSkeleton extends StatelessWidget {
 
 class EventSuccessSkeletonSurface extends StatelessWidget {
   const EventSuccessSkeletonSurface({
+    super.key,
     required this.titleWidth,
     required this.textLines,
     required this.trailingChips,
@@ -618,7 +688,7 @@ class EventSuccessSkeletonSurface extends StatelessWidget {
 }
 
 class EventSuccessSetupControlsSkeleton extends StatelessWidget {
-  const EventSuccessSetupControlsSkeleton();
+  const EventSuccessSetupControlsSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -650,7 +720,7 @@ class EventSuccessSetupControlsSkeleton extends StatelessWidget {
 }
 
 class EventSuccessLiveRosterSkeleton extends StatelessWidget {
-  const EventSuccessLiveRosterSkeleton();
+  const EventSuccessLiveRosterSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -700,7 +770,7 @@ class EventSuccessLiveRosterSkeleton extends StatelessWidget {
 }
 
 class EventSuccessReportMetricsSkeleton extends StatelessWidget {
-  const EventSuccessReportMetricsSkeleton();
+  const EventSuccessReportMetricsSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -761,6 +831,8 @@ class EventSuccessHostPanel extends StatefulWidget {
     this.embedded = true,
     this.liveRoster,
     this.compactLiveControls = false,
+    this.setupActionState = const EventSuccessSetupActionState(),
+    this.onSaveSetup,
     this.fixtureActions,
   });
 
@@ -781,6 +853,9 @@ class EventSuccessHostPanel extends StatefulWidget {
   final bool embedded;
   final Widget? liveRoster;
   final bool compactLiveControls;
+  final EventSuccessSetupActionState setupActionState;
+  final Future<void> Function(EventSuccessSetupSaveRequest request)?
+  onSaveSetup;
   final EventSuccessHostFixtureActions? fixtureActions;
 
   @override
@@ -838,7 +913,8 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         event: widget.event,
         plan: widget.plan,
         planIsPersisted: widget.planIsPersisted,
-        fixtureActions: widget.fixtureActions,
+        actionState: widget.setupActionState,
+        onSaveSetup: _setupSaveCallback(),
         shrinkWrap: shrinkWrap,
         physics: physics,
         padding: padding,
@@ -876,6 +952,15 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         padding: padding,
       ),
     };
+  }
+
+  Future<void> Function(EventSuccessSetupSaveRequest request)?
+  _setupSaveCallback() {
+    final fixtureAction = widget.fixtureActions?.onSaveSetup;
+    if (fixtureAction != null) {
+      return (_) async => fixtureAction();
+    }
+    return widget.onSaveSetup;
   }
 }
 
