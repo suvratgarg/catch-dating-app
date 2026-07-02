@@ -8973,12 +8973,32 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'ProfileSettingsButton',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Profile settings button',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .profileSettingsButtonStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'ProfileTab',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Edit tab states',
                     builder: _widgetbook_workspace_profiles_profile_use_cases
                         .profileTabStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProfileTabBar',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Profile tab bar',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .profileTabBarStates,
                   ),
                 ],
               ),
@@ -9009,6 +9029,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Edit tab sliver body states',
                     builder: _widgetbook_workspace_profiles_profile_use_cases
                         .profileTabSliverBodyStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProfileTitle',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Profile title',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .profileTitleStates,
                   ),
                 ],
               ),

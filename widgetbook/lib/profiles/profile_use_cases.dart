@@ -287,6 +287,85 @@ Widget profileScreenSelfSectionStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Profile title',
+  type: ProfileTitle,
+  path: '[P1 product surfaces]/Profiles/Sections',
+)
+Widget profileTitleStates(BuildContext context) {
+  return _ProfileCatalog(
+    title: 'ProfileTitle',
+    contractId: 'section.profile.self.title',
+    children: [
+      _StateCard(
+        label: 'title row',
+        child: const _SectionFrame(
+          height: 120,
+          child: _ProfileHeaderRouterFrame(child: ProfileTitle()),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Profile tab bar',
+  type: ProfileTabBar,
+  path: '[P1 product surfaces]/Profiles/Sections',
+)
+Widget profileTabBarStates(BuildContext context) {
+  return _ProfileCatalog(
+    title: 'ProfileTabBar',
+    contractId: 'section.profile.self.tab_bar',
+    children: [
+      _StateCard(
+        label: 'edit selected',
+        child: const _SectionFrame(
+          height: 96,
+          child: _ProfileTabBarPreview(initialIndex: 0),
+        ),
+      ),
+      _StateCard(
+        label: 'preview selected',
+        child: const _SectionFrame(
+          height: 96,
+          child: _ProfileTabBarPreview(initialIndex: 1),
+        ),
+      ),
+      _StateCard(
+        label: 'insights selected',
+        child: const _SectionFrame(
+          height: 96,
+          child: _ProfileTabBarPreview(initialIndex: 2),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Profile settings button',
+  type: ProfileSettingsButton,
+  path: '[P1 product surfaces]/Profiles/Sections',
+)
+Widget profileSettingsButtonStates(BuildContext context) {
+  return _ProfileCatalog(
+    title: 'ProfileSettingsButton',
+    contractId: 'section.profile.self.settings_button',
+    children: [
+      _StateCard(
+        label: 'settings action',
+        child: const _SectionFrame(
+          height: 96,
+          child: _ProfileHeaderRouterFrame(
+            child: Center(child: ProfileSettingsButton()),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Preview tab states',
   type: PreviewTab,
   path: '[P1 product surfaces]/Profiles/Sections',
@@ -1288,7 +1367,7 @@ class _ProfileHeaderPreviewState extends State<_ProfileHeaderPreview>
   void initState() {
     super.initState();
     _controller = TabController(
-      length: 2,
+      length: 3,
       initialIndex: widget.initialIndex,
       vsync: this,
     );
@@ -1310,6 +1389,66 @@ class _ProfileHeaderPreviewState extends State<_ProfileHeaderPreview>
           child: Center(child: Text('Header review body')),
         ),
       ],
+    );
+  }
+}
+
+class _ProfileTabBarPreview extends StatefulWidget {
+  const _ProfileTabBarPreview({required this.initialIndex});
+
+  final int initialIndex;
+
+  @override
+  State<_ProfileTabBarPreview> createState() => _ProfileTabBarPreviewState();
+}
+
+class _ProfileTabBarPreviewState extends State<_ProfileTabBarPreview>
+    with SingleTickerProviderStateMixin {
+  late final TabController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TabController(
+      length: 3,
+      initialIndex: widget.initialIndex,
+      vsync: this,
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => ProfileTabBar(controller: _controller);
+}
+
+class _ProfileHeaderRouterFrame extends StatelessWidget {
+  const _ProfileHeaderRouterFrame({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final router = GoRouter(
+      routes: [
+        GoRoute(path: '/', builder: (_, _) => child),
+        GoRoute(
+          path: Routes.settingsScreen.path,
+          name: Routes.settingsScreen.name,
+          builder: (_, _) => const _SettingsPlaceholder(),
+        ),
+      ],
+    );
+
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      routerConfig: router,
     );
   }
 }

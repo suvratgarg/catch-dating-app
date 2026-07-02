@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.526
+version: 2.5.527
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,12 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.527
+
+- Cataloged the Profile header leaf renderers directly: title row, tab bar,
+  and settings action. Widgetbook's header preview now uses the same 3-tab
+  controller length as production so the Insights tab remains scaffold-safe.
 
 ### 2.5.526
 
@@ -5581,6 +5587,9 @@ Generated 2026-05-06.
 | `SelfProfileTabBody` | `lib/user_profile/presentation/profile_screen.dart:161` | Provider-free self-profile branch renderer for loading, error, unavailable, and ready states inside `ProfileScreen`'s `NestedScrollView.body`. Receives the route-owned `TabController`, preview scroll controller, preview bridge callbacks, and retry callback explicitly. Loading preserves the tab shell with Edit skeleton, Preview skeleton, and Insights body; ready renders Edit, Preview, and Insights through sliver-aware tab scroll views. Widgetbook mounts it inside a `NestedScrollView` preview so the `SliverOverlapInjector` contract is exercised. |
 | `ProfileTabScrollView` | `lib/user_profile/presentation/profile_screen.dart:250` | Shared tab scroll wrapper used by `SelfProfileTabBody`. Installs `CatchPagerFocusBoundary`, starts each tab with the `NestedScrollView` overlap injector, and then appends the tab slivers. |
 | `PreviewTab` | `lib/user_profile/presentation/widgets/preview_tab.dart:5` | Preview tab showing how the user's profile looks to others by rendering the shared handoff `ProfileSurface`, with owner-provided scroll controller, physics, bottom padding, and leading-overscroll callback when mounted inside ProfileScreen. |
+| `ProfileTitle` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:24` | Self-profile scroll-away title row. Renders the `Your profile` heading, screen-title spacing, page background, and settings action while the surrounding `ProfileSliverHeader` owns sliver placement. |
+| `ProfileTabBar` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:51` | Self-profile pinned tab selector. Receives the route-owned 3-tab `TabController` and maps Edit, Preview, and Insights to the shared `CatchOptionGroup` with bottom hairline chrome. |
+| `ProfileSettingsButton` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:84` | Self-profile settings icon action. Uses `CatchTopBarIconAction` with the settings glyph and routes to `screen.settings.account` through the surrounding `GoRouter` context. |
 | `ProfileInlineTextValue` | `lib/user_profile/presentation/widgets/profile_inline_editors.dart:299` | Prompt row value wrapper that renders the collapsed display value directly and composes active prompt-answer editing through `CatchField.input`. Supports multiline prompt editing, length limiting, blank-line normalization, autofocus, and shared underline input chrome without profile-local text-field implementation. |
 
 ### StatefulWidget
