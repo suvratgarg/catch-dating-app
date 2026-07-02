@@ -266,3 +266,72 @@ if [[ $probe_status -ne 0 || "$probe_output" == *"catch_"* ]]; then
   echo "$probe_output" >&2
   exit 1
 fi
+
+run_analyze_probe "mutation pending per-mutation violation" <<'DART'
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/experimental/mutation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+class EventDetailMutationProbeController {
+  static final saveMutation = Mutation<void>();
+  static final deleteMutation = Mutation<void>();
+}
+
+class CatchUiMutationProbe extends ConsumerWidget {
+  const CatchUiMutationProbe({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final saveMutation = ref.watch(
+      EventDetailMutationProbeController.saveMutation,
+    );
+    final deleteMutation = ref.watch(
+      EventDetailMutationProbeController.deleteMutation,
+    );
+    final saveFailed = saveMutation.hasError;
+    return Text(deleteMutation.isPending || saveFailed ? 'Busy' : 'Ready');
+  }
+}
+DART
+
+expect_code_count \
+  "mutation pending per-mutation violation" \
+  "catch_mutation_pending_requires_error" \
+  1
+
+run_analyze_probe "mutation pending per-mutation clean case" <<'DART'
+import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/experimental/mutation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+class EventDetailMutationProbeController {
+  static final saveMutation = Mutation<void>();
+  static final deleteMutation = Mutation<void>();
+}
+
+class CatchUiMutationProbe extends ConsumerWidget {
+  const CatchUiMutationProbe({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final saveMutation = ref.watch(
+      EventDetailMutationProbeController.saveMutation,
+    );
+    final deleteMutation = ref.watch(
+      EventDetailMutationProbeController.deleteMutation,
+    );
+    if (saveMutation.hasError) return const Text('Failed');
+    return CatchMutationErrorListener(
+      mutation: EventDetailMutationProbeController.deleteMutation,
+      child: Text(deleteMutation.isPending ? 'Deleting' : 'Ready'),
+    );
+  }
+}
+DART
+
+if [[ $probe_status -ne 0 || "$probe_output" == *"catch_"* ]]; then
+  echo "Catch UI lint mutation per-mutation clean probe emitted an unexpected diagnostic." >&2
+  echo "$probe_output" >&2
+  exit 1
+fi

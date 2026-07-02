@@ -1546,42 +1546,23 @@ List<CatchUiMutationPendingFinding> catchUiMutationPendingWithoutErrorFindings(
 ) {
   if (node.name.lexeme != 'build') return const [];
 
-  final source = node.body.toSource();
-  if (_hasCatchMutationErrorSurface(source)) return const [];
-
-  final findings = <CatchUiMutationPendingFinding>[
-    for (final label in _directMutationPendingLabels(source))
-      CatchUiMutationPendingFinding(
-        node: node,
-        label: label,
-        variableName: null,
-      ),
-  ];
-
   final mutationVariables = _MutationVariableVisitor();
   node.body.accept(mutationVariables);
-  if (mutationVariables.names.isEmpty) return findings;
 
-  final errorVariables = _MutationPropertyReadVisitor('hasError');
-  node.body.accept(errorVariables);
+  final errorSurfaces = _MutationErrorSurfaceVisitor(
+    mutationVariables.expressions,
+  );
+  node.body.accept(errorSurfaces);
 
-  final pendingReads = _MutationPendingReadVisitor(mutationVariables.names);
+  final pendingReads = _MutationPendingReadVisitor(
+    mutationVariables.expressions,
+  );
   node.body.accept(pendingReads);
 
-  findings.addAll([
+  return [
     for (final read in pendingReads.reads)
-      if (read.variableName == null ||
-          !errorVariables.names.contains(read.variableName))
-        read,
-  ]);
-
-  return findings;
-}
-
-Iterable<String> _directMutationPendingLabels(String source) {
-  return RegExp(
-    r'\bref\.(?:watch|read)\s*\([^;]*?(?:Mutation|mutation)[^;]*?\)\.isPending\b',
-  ).allMatches(source).map((match) => match.group(0)!);
+      if (!errorSurfaces.covers(read)) read,
+  ];
 }
 
 class CatchUiMutationPendingFinding {
@@ -1589,15 +1570,17 @@ class CatchUiMutationPendingFinding {
     required this.node,
     required this.label,
     required this.variableName,
+    required this.mutationExpression,
   });
 
   final AstNode node;
   final String label;
   final String? variableName;
+  final String? mutationExpression;
 }
 
 class _MutationVariableVisitor extends RecursiveAstVisitor<void> {
-  final names = <String>{};
+  final expressions = <String, String?>{};
 
   @override
   void visitVariableDeclaration(VariableDeclaration node) {
@@ -1616,52 +1599,147 @@ class _MutationVariableVisitor extends RecursiveAstVisitor<void> {
       declaredType: declaredType,
       variableName: node.name.lexeme,
     )) {
-      names.add(node.name.lexeme);
+      expressions[node.name.lexeme] = _watchedMutationExpression(initializer);
     }
 
     super.visitVariableDeclaration(node);
   }
 }
 
-class _MutationPropertyReadVisitor extends RecursiveAstVisitor<void> {
-  _MutationPropertyReadVisitor(this.propertyName);
+class _MutationErrorSurfaceVisitor extends RecursiveAstVisitor<void> {
+  _MutationErrorSurfaceVisitor(this.mutationVariables);
 
-  final String propertyName;
-  final names = <String>{};
+  final Map<String, String?> mutationVariables;
+  final variableNames = <String>{};
+  final mutationExpressions = <String>{};
+
+  bool covers(CatchUiMutationPendingFinding finding) {
+    final variableName = finding.variableName;
+    if (variableName != null && variableNames.contains(variableName)) {
+      return true;
+    }
+    final mutationExpression = finding.mutationExpression;
+    return mutationExpression != null &&
+        mutationExpressions.contains(mutationExpression);
+  }
 
   @override
   void visitPrefixedIdentifier(PrefixedIdentifier node) {
-    if (node.identifier.name == propertyName) {
-      names.add(node.prefix.name);
+    if (node.identifier.name == 'hasError') {
+      _addVariable(node.prefix.name);
     }
     super.visitPrefixedIdentifier(node);
   }
 
   @override
   void visitPropertyAccess(PropertyAccess node) {
-    if (node.propertyName.name == propertyName) {
+    if (node.propertyName.name == 'hasError') {
       final target = node.target;
-      if (target is SimpleIdentifier) names.add(target.name);
+      if (target is SimpleIdentifier) _addVariable(target.name);
     }
     super.visitPropertyAccess(node);
+  }
+
+  @override
+  void visitInstanceCreationExpression(InstanceCreationExpression node) {
+    final typeName = _constructorTypeName(node);
+    if (typeName == 'CatchMutationErrorBanner' ||
+        typeName == 'CatchMutationErrorListener') {
+      final mutation = _namedArgumentExpression(node, 'mutation');
+      if (mutation != null) _addMutationExpression(mutation);
+    } else if (typeName == 'CatchMutationErrorListeners') {
+      final mutations = _namedArgumentExpression(node, 'mutations');
+      if (mutations is ListLiteral) {
+        for (final element in mutations.elements) {
+          if (element is Expression) _addMutationExpression(element);
+        }
+      } else if (mutations != null) {
+        _addMutationExpression(mutations);
+      }
+    }
+
+    super.visitInstanceCreationExpression(node);
+  }
+
+  @override
+  void visitMethodInvocation(MethodInvocation node) {
+    if (node.methodName.name == 'mutationErrorMessage' &&
+        node.argumentList.arguments.isNotEmpty) {
+      final argument = node.argumentList.arguments.first;
+      final expression = argument is NamedExpression
+          ? argument.expression
+          : argument;
+      _addMutationExpression(expression);
+    }
+
+    if (_isMutationErrorHelperName(node.methodName.name)) {
+      for (final argument in node.argumentList.arguments) {
+        _addMutationExpressionsFromArgument(argument);
+      }
+    }
+
+    if (node.methodName.name == 'firstWhere' &&
+        node.target is ListLiteral &&
+        node.toSource().contains('.hasError')) {
+      _addMutationExpressionsFromList(node.target as ListLiteral);
+    }
+
+    super.visitMethodInvocation(node);
+  }
+
+  void _addMutationExpressionsFromArgument(Expression expression) {
+    final candidate = expression is NamedExpression
+        ? expression.expression
+        : expression;
+    if (candidate is ListLiteral) {
+      _addMutationExpressionsFromList(candidate);
+    } else {
+      _addMutationExpression(candidate);
+    }
+  }
+
+  void _addMutationExpressionsFromList(ListLiteral list) {
+    for (final element in list.elements) {
+      if (element is Expression) _addMutationExpression(element);
+    }
+  }
+
+  void _addMutationExpression(Expression expression) {
+    if (expression is SimpleIdentifier) {
+      _addVariable(expression.name);
+      return;
+    }
+    final watchedExpression = _watchedMutationExpression(expression);
+    if (watchedExpression != null) {
+      mutationExpressions.add(watchedExpression);
+      return;
+    }
+    mutationExpressions.add(_canonicalMutationExpression(expression));
+  }
+
+  void _addVariable(String name) {
+    variableNames.add(name);
+    final expression = mutationVariables[name];
+    if (expression != null) mutationExpressions.add(expression);
   }
 }
 
 class _MutationPendingReadVisitor extends RecursiveAstVisitor<void> {
   _MutationPendingReadVisitor(this.mutationVariables);
 
-  final Set<String> mutationVariables;
+  final Map<String, String?> mutationVariables;
   final reads = <CatchUiMutationPendingFinding>[];
 
   @override
   void visitPrefixedIdentifier(PrefixedIdentifier node) {
     if (node.identifier.name == 'isPending' &&
-        mutationVariables.contains(node.prefix.name)) {
+        mutationVariables.containsKey(node.prefix.name)) {
       reads.add(
         CatchUiMutationPendingFinding(
           node: node.identifier,
           label: node.prefix.name,
           variableName: node.prefix.name,
+          mutationExpression: mutationVariables[node.prefix.name],
         ),
       );
     }
@@ -1676,36 +1754,30 @@ class _MutationPendingReadVisitor extends RecursiveAstVisitor<void> {
     }
 
     final target = node.target;
-    if (target is SimpleIdentifier && mutationVariables.contains(target.name)) {
+    if (target is SimpleIdentifier &&
+        mutationVariables.containsKey(target.name)) {
       reads.add(
         CatchUiMutationPendingFinding(
           node: node.propertyName,
           label: target.name,
           variableName: target.name,
+          mutationExpression: mutationVariables[target.name],
         ),
       );
     } else if (target != null && _isDirectMutationWatchExpression(target)) {
+      final mutationExpression = _watchedMutationExpression(target);
       reads.add(
         CatchUiMutationPendingFinding(
           node: node.propertyName,
           label: target.toSource(),
           variableName: null,
+          mutationExpression: mutationExpression,
         ),
       );
     }
 
     super.visitPropertyAccess(node);
   }
-}
-
-bool _hasCatchMutationErrorSurface(String source) {
-  return [
-    RegExp(r'\.hasError\b'),
-    RegExp(r'\bCatchMutationErrorBanner\b'),
-    RegExp(r'\bCatchMutationErrorListener(?:s)?\b'),
-    RegExp(r'\bmutationErrorMessage\s*\('),
-    RegExp(r'\bshowCatchErrorSnackBar\s*\('),
-  ].any((pattern) => pattern.hasMatch(source));
 }
 
 bool _isMutationWatchExpression(
@@ -1726,6 +1798,39 @@ bool _isDirectMutationWatchExpression(Expression expression) {
   final text = expression.toSource();
   return RegExp(r'\bref\.(?:watch|read)\s*\(').hasMatch(text) &&
       (text.contains('Mutation') || text.contains('mutation'));
+}
+
+bool _isMutationErrorHelperName(String name) {
+  return name.contains('MutationError') || name.contains('ErrorMutation');
+}
+
+Expression? _namedArgumentExpression(
+  InstanceCreationExpression node,
+  String name,
+) {
+  for (final argument in node.argumentList.arguments) {
+    if (argument is NamedExpression && argument.name.label.name == name) {
+      return argument.expression;
+    }
+  }
+  return null;
+}
+
+String? _watchedMutationExpression(Expression expression) {
+  if (expression is MethodInvocation &&
+      expression.target?.toSource() == 'ref' &&
+      (expression.methodName.name == 'watch' ||
+          expression.methodName.name == 'read') &&
+      expression.argumentList.arguments.length == 1) {
+    return _canonicalMutationExpression(
+      expression.argumentList.arguments.single,
+    );
+  }
+  return null;
+}
+
+String _canonicalMutationExpression(Expression expression) {
+  return expression.toSource().replaceAll(RegExp(r'\s+'), '');
 }
 
 bool _isEdgeInsetsConstructor(String typeName) {

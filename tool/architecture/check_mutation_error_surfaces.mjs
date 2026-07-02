@@ -28,14 +28,19 @@ export function scanMutationErrorSurfaces({root = fromRepo()} = {}) {
 
 export function scanFile({relativePath, source}) {
   if (!isBuildMethodMutationPendingCandidate(source)) return [];
-  if (hasMutationErrorSurface(source)) return [];
+  const mutationVariables = mutationVariableExpressions(source);
+  const covered = coveredMutationSurfaces(source, mutationVariables);
+  const uncoveredPendingLines = pendingLines(source, mutationVariables).filter(
+    (pending) => !isPendingCovered(pending, covered),
+  );
+  if (uncoveredPendingLines.length === 0) return [];
 
   return [
     {
       path: relativePath,
       reason:
         "build method reads mutation pending state but has no mutation error surface",
-      pendingLines: pendingLines(source).slice(0, 8),
+      pendingLines: uncoveredPendingLines.slice(0, 8),
     },
   ];
 }
@@ -70,27 +75,156 @@ function isBuildMethodMutationPendingCandidate(source) {
   );
 }
 
-function hasMutationErrorSurface(source) {
-  return [
-    /\.hasError\b/u,
-    /\bCatchMutationErrorBanner\b/u,
-    /\bCatchMutationErrorListener(?:s)?\b/u,
-    /\bmutationErrorMessage\s*\(/u,
-    /\bshowCatchErrorSnackBar\s*\(/u,
-  ].some((pattern) => pattern.test(source));
+function mutationVariableExpressions(source) {
+  const variables = new Map();
+  const declarationPattern =
+    /\bfinal(?:\s+([A-Za-z0-9_<>, ?]+))?\s+(\w+)\s*=\s*ref\.(?:watch|read)\s*\(([\s\S]*?)\)\s*;/gmu;
+  for (const match of source.matchAll(declarationPattern)) {
+    const [, declaredType = "", variableName, expression] = match;
+    if (
+      declaredType.includes("Mutation") ||
+      variableName.toLowerCase().includes("mutation") ||
+      expression.includes("Mutation") ||
+      expression.includes("mutation")
+    ) {
+      variables.set(variableName, canonicalMutationExpression(expression));
+    }
+  }
+  return variables;
 }
 
-function pendingLines(source) {
+function coveredMutationSurfaces(source, mutationVariables) {
+  const variables = new Set();
+  const expressions = new Set();
+
+  for (const variableName of mutationVariables.keys()) {
+    const escaped = escapeRegExp(variableName);
+    if (new RegExp(`\\b${escaped}\\.hasError\\b`, "u").test(source)) {
+      addCoveredVariable({variableName, mutationVariables, variables, expressions});
+    }
+    if (
+      new RegExp(`\\bmutationErrorMessage\\s*\\(\\s*${escaped}\\b`, "u").test(
+        source,
+      )
+    ) {
+      addCoveredVariable({variableName, mutationVariables, variables, expressions});
+    }
+    if (
+      new RegExp(
+        `\\bCatchMutationError(?:Banner|Listener)s?\\s*\\([\\s\\S]*?\\bmutation(?:s)?\\s*:\\s*(?:\\[[\\s\\S]*?)?${escaped}\\b`,
+        "u",
+      ).test(source)
+    ) {
+      addCoveredVariable({variableName, mutationVariables, variables, expressions});
+    }
+  }
+
+  for (const match of source.matchAll(
+    /\bCatchMutationError(?:Banner|Listener)\s*\([\s\S]*?\bmutation\s*:\s*([^,\)\]]+)/gmu,
+  )) {
+    expressions.add(canonicalMutationExpression(match[1]));
+  }
+  for (const match of source.matchAll(
+    /\bCatchMutationErrorListeners\s*\([\s\S]*?\bmutations\s*:\s*\[([\s\S]*?)\]/gmu,
+  )) {
+    addCoveredExpressionList(match[1], {mutationVariables, variables, expressions});
+  }
+  for (const match of source.matchAll(
+    /\b\w*(?:MutationError|ErrorMutation)\w*\s*\(\s*\[([\s\S]*?)\]\s*\)/gmu,
+  )) {
+    addCoveredExpressionList(match[1], {mutationVariables, variables, expressions});
+  }
+  for (const match of source.matchAll(
+    /\[([^\[\]]*?)\]\s*\.firstWhere\s*\([\s\S]*?\.hasError[\s\S]*?\)/gmu,
+  )) {
+    addCoveredExpressionList(match[1], {mutationVariables, variables, expressions});
+  }
+
+  return {variables, expressions};
+}
+
+function addCoveredExpressionList(
+  rawList,
+  {mutationVariables, variables, expressions},
+) {
+  for (const expression of rawList.split(",")) {
+    const trimmed = expression.trim();
+    if (!trimmed) continue;
+    if (mutationVariables.has(trimmed)) {
+      addCoveredVariable({
+        variableName: trimmed,
+        mutationVariables,
+        variables,
+        expressions,
+      });
+    } else {
+      expressions.add(canonicalMutationExpression(trimmed));
+    }
+  }
+}
+
+function addCoveredVariable({
+  variableName,
+  mutationVariables,
+  variables,
+  expressions,
+}) {
+  variables.add(variableName);
+  const expression = mutationVariables.get(variableName);
+  if (expression) expressions.add(expression);
+}
+
+function pendingLines(source, mutationVariables) {
   const lines = source.split(/\r?\n/u);
   const matches = [];
   for (const [index, line] of lines.entries()) {
-    if (!line.includes(".isPending")) continue;
-    matches.push({
-      line: index + 1,
-      text: line.trim(),
-    });
+    for (const variableName of mutationVariables.keys()) {
+      if (!new RegExp(`\\b${escapeRegExp(variableName)}\\.isPending\\b`, "u").test(line)) {
+        continue;
+      }
+      matches.push({
+        line: index + 1,
+        text: line.trim(),
+        variableName,
+        mutationExpression: mutationVariables.get(variableName) ?? null,
+      });
+    }
+    for (const match of line.matchAll(
+      /ref\.(?:watch|read)\s*\(([\s\S]*?)\)\.isPending/gmu,
+    )) {
+      const mutationExpression = canonicalMutationExpression(match[1]);
+      if (!isStaticMutationExpression(mutationExpression)) continue;
+      matches.push({
+        line: index + 1,
+        text: line.trim(),
+        variableName: null,
+        mutationExpression,
+      });
+    }
   }
   return matches;
+}
+
+function isPendingCovered(pending, covered) {
+  if (pending.variableName != null && covered.variables.has(pending.variableName)) {
+    return true;
+  }
+  return (
+    pending.mutationExpression != null &&
+    covered.expressions.has(pending.mutationExpression)
+  );
+}
+
+function canonicalMutationExpression(expression) {
+  return String(expression).replace(/\s+/gu, "").replace(/,+$/u, "");
+}
+
+function isStaticMutationExpression(expression) {
+  return /^[A-Z]/u.test(expression) || expression.includes("Mutation");
+}
+
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
 }
 
 function parseArgs(rawArgs) {
@@ -148,10 +282,10 @@ function printHelp() {
   node tool/architecture/check_mutation_error_surfaces.mjs --json
   node tool/architecture/check_mutation_error_surfaces.mjs --root <repo-root>
 
-Scans production lib/**/*.dart build methods. Any file that reads mutation
-isPending state from Riverpod must also include a mutation error surface in the
-same file, such as CatchMutationErrorListener, CatchMutationErrorBanner,
-mutationErrorMessage, showCatchErrorSnackBar, or a direct hasError branch.`);
+Scans production lib/**/*.dart build methods. Any watched mutation whose
+isPending state is read must also expose a matching mutation error surface, such
+as CatchMutationErrorListener, CatchMutationErrorBanner, mutationErrorMessage, or
+a direct hasError branch for that same mutation.`);
 }
 
 function runCli() {

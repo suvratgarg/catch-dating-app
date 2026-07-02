@@ -681,8 +681,18 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
     // Surface companion action failures (feedback, wingman, opt-outs, first
     // hello, match clues). These run as fire-and-forget mutations from the
     // cards, so without these listeners a failed write would be silent.
-    return _wrapCompanionMutationListeners(
-      EventSuccessCompanionScreen(
+    return CatchMutationErrorListeners(
+      mutations: [
+        EventSuccessController.feedbackMutation,
+        EventSuccessController.compatibilityResponseMutation,
+        EventSuccessController.wingmanRequestMutation,
+        EventSuccessController.firstHelloStartMutation,
+        EventSuccessController.firstHelloCompleteMutation,
+        EventBookingController.selfCheckInMutation,
+        EventSuccessController.microPodsOptOutMutation,
+        EventSuccessController.guidedRotationsOptOutMutation,
+      ],
+      child: EventSuccessCompanionScreen(
         event: event,
         plan: plan,
         userProfile: profile,
@@ -814,31 +824,6 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
       ),
     );
   }
-
-  Widget _wrapCompanionMutationListeners(Widget child) =>
-      CatchMutationErrorListener(
-        mutation: EventSuccessController.feedbackMutation,
-        child: CatchMutationErrorListener(
-          mutation: EventSuccessController.compatibilityResponseMutation,
-          child: CatchMutationErrorListener(
-            mutation: EventSuccessController.wingmanRequestMutation,
-            child: CatchMutationErrorListener(
-              mutation: EventSuccessController.firstHelloStartMutation,
-              child: CatchMutationErrorListener(
-                mutation: EventSuccessController.firstHelloCompleteMutation,
-                child: CatchMutationErrorListener(
-                  mutation: EventSuccessController.microPodsOptOutMutation,
-                  child: CatchMutationErrorListener(
-                    mutation:
-                        EventSuccessController.guidedRotationsOptOutMutation,
-                    child: child,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
 }
 
 @immutable

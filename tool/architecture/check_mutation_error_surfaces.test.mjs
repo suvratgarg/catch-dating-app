@@ -42,6 +42,124 @@ test("scanFile allows pending mutations with an error surface", () => {
   assert.deepEqual(findings, []);
 });
 
+test("scanFile flags a second pending mutation without its own error surface", () => {
+  const findings = scanFile({
+    relativePath: "lib/events/presentation/event_detail_screen.dart",
+    source: [
+      "class EventDetailScreen extends ConsumerWidget {",
+      "  Widget build(BuildContext context, WidgetRef ref) {",
+      "    final Mutation<void> save = ref.watch(EventDetailController.saveMutation);",
+      "    final Mutation<void> delete = ref.watch(EventDetailController.deleteMutation);",
+      "    if (save.hasError) return const Text('Failed');",
+      "    return Text(delete.isPending ? 'Deleting' : 'Ready');",
+      "  }",
+      "}",
+    ].join("\n"),
+  });
+
+  assert.equal(findings.length, 1);
+  assert.equal(findings[0].pendingLines.length, 1);
+  assert.equal(findings[0].pendingLines[0].line, 6);
+});
+
+test("scanFile allows a listener for the matching pending mutation", () => {
+  const findings = scanFile({
+    relativePath: "lib/events/presentation/event_detail_screen.dart",
+    source: [
+      "class EventDetailScreen extends ConsumerWidget {",
+      "  Widget build(BuildContext context, WidgetRef ref) {",
+      "    final Mutation<void> save = ref.watch(EventDetailController.saveMutation);",
+      "    final Mutation<void> delete = ref.watch(EventDetailController.deleteMutation);",
+      "    if (save.hasError) return const Text('Failed');",
+      "    return CatchMutationErrorListener(",
+      "      mutation: EventDetailController.deleteMutation,",
+      "      child: Text(delete.isPending ? 'Deleting' : 'Ready'),",
+      "    );",
+      "  }",
+      "}",
+    ].join("\n"),
+  });
+
+  assert.deepEqual(findings, []);
+});
+
+test("scanFile allows mutation error helper lists for matching mutations", () => {
+  const findings = scanFile({
+    relativePath: "lib/events/presentation/event_detail_screen.dart",
+    source: [
+      "class EventDetailScreen extends ConsumerWidget {",
+      "  Widget build(BuildContext context, WidgetRef ref) {",
+      "    final Mutation<void> save = ref.watch(EventDetailController.saveMutation);",
+      "    final Mutation<void> delete = ref.watch(EventDetailController.deleteMutation);",
+      "    final error = _firstMutationError([save, delete]);",
+      "    return Text(save.isPending || delete.isPending ? 'Saving' : '$error');",
+      "  }",
+      "}",
+    ].join("\n"),
+  });
+
+  assert.deepEqual(findings, []);
+});
+
+test("scanFile allows inline firstWhere hasError mutation lists", () => {
+  const findings = scanFile({
+    relativePath: "lib/events/presentation/event_detail_screen.dart",
+    source: [
+      "class EventDetailScreen extends ConsumerWidget {",
+      "  Widget build(BuildContext context, WidgetRef ref) {",
+      "    final Mutation<void> save = ref.watch(EventDetailController.saveMutation);",
+      "    final Mutation<void> delete = ref.watch(EventDetailController.deleteMutation);",
+      "    final errorMutation = [save, delete].firstWhere((m) => m.hasError, orElse: () => save);",
+      "    return Text(save.isPending || delete.isPending ? 'Saving' : '$errorMutation');",
+      "  }",
+      "}",
+    ].join("\n"),
+  });
+
+  assert.deepEqual(findings, []);
+});
+
+test("scanFile normalizes multiline watch expressions with trailing commas", () => {
+  const findings = scanFile({
+    relativePath: "lib/events/presentation/event_detail_screen.dart",
+    source: [
+      "class EventDetailScreen extends ConsumerWidget {",
+      "  Widget build(BuildContext context, WidgetRef ref) {",
+      "    final Mutation<void> save = ref.watch(",
+      "      EventDetailController.saveMutation,",
+      "    );",
+      "    return CatchMutationErrorListener(",
+      "      mutation: EventDetailController.saveMutation,",
+      "      child: Text(save.isPending ? 'Saving' : 'Ready'),",
+      "    );",
+      "  }",
+      "}",
+    ].join("\n"),
+  });
+
+  assert.deepEqual(findings, []);
+});
+
+test("scanFile ignores direct pending guards outside build helpers", () => {
+  const findings = scanFile({
+    relativePath: "lib/events/presentation/event_detail_screen.dart",
+    source: [
+      "class EventDetailScreen extends ConsumerWidget {",
+      "  Widget build(BuildContext context, WidgetRef ref) {",
+      "    final Mutation<void> save = ref.watch(EventDetailController.saveMutation);",
+      "    if (save.hasError) return const Text('Failed');",
+      "    return Text(save.isPending ? 'Saving' : 'Ready');",
+      "  }",
+      "}",
+      "void runGuard(WidgetRef ref, Mutation<void> mutation) {",
+      "  if (ref.read(mutation).isPending) return;",
+      "}",
+    ].join("\n"),
+  });
+
+  assert.deepEqual(findings, []);
+});
+
 test("scanFile ignores non-build mutation pending reads", () => {
   const findings = scanFile({
     relativePath: "lib/events/presentation/event_detail_controller.dart",
