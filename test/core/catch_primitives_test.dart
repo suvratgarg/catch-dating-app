@@ -1135,7 +1135,29 @@ void main() {
 
       expect(find.text('SR'), findsOneWidget);
       expect(find.text('PB'), findsOneWidget);
+      expect(find.byType(CatchPersonAvatarShell), findsNWidgets(2));
+      expect(find.byType(CatchActivityInitialsPlaceholder), findsNWidgets(2));
       expect(CatchPersonAvatar.initialsOf('Social run'), 'SR');
+    },
+  );
+
+  testWidgets(
+    'CatchPersonAvatar composes obscured initials fallback renderers',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          const CatchPersonAvatar(
+            size: 48,
+            name: 'Private guest',
+            obscured: true,
+          ),
+        ),
+      );
+
+      expect(find.text('PG'), findsOneWidget);
+      expect(find.byType(CatchPersonAvatarShell), findsOneWidget);
+      expect(find.byType(CatchObscuredAvatarContent), findsOneWidget);
+      expect(find.byType(CatchInitialsAvatarPlaceholder), findsOneWidget);
     },
   );
 
@@ -1157,6 +1179,8 @@ void main() {
 
     expect(find.text('AS'), findsOneWidget);
     expect(find.byIcon(CatchIcons.personOutlined), findsNWidgets(2));
+    expect(find.byType(CatchVeiledPersonAvatar), findsNWidgets(2));
+    expect(find.byType(CatchInitialsAvatarPlaceholder), findsOneWidget);
     expect(find.text('+1'), findsOneWidget);
   });
 

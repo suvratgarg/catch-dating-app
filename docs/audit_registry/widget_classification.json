@@ -10,14 +10,14 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1148,
-    "widgetClasses": 1044,
+    "total": 1153,
+    "widgetClasses": 1049,
     "stateClasses": 104,
-    "publicClasses": 1042,
+    "publicClasses": 1047,
     "privateClasses": 106,
     "byRole": {
-      "atom": 47,
-      "composition": 311,
+      "atom": 48,
+      "composition": 315,
       "feature-adapter": 318,
       "pattern": 14,
       "screen": 354,
@@ -28,11 +28,11 @@
       "keep-public-cataloged": 880,
       "keep-widget-state": 104,
       "review-catalog-coverage": 5,
-      "review-promote-or-consolidate": 32,
+      "review-promote-or-consolidate": 37,
       "review-promote-or-inline": 2
     },
     "byCatalogStatus": {
-      "cataloged": 839,
+      "cataloged": 844,
       "contracted": 125,
       "not-applicable": 104,
       "route-covered": 72,
@@ -4678,6 +4678,87 @@
       "flags": []
     },
     {
+      "name": "CatchActivityInitialsPlaceholder",
+      "file": "lib/core/widgets/catch_person_avatar.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.activity_initials_placeholder",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract"
+      ]
+    },
+    {
+      "name": "CatchInitialsAvatarPlaceholder",
+      "file": "lib/core/widgets/catch_person_avatar.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.initials_avatar_placeholder",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract"
+      ]
+    },
+    {
+      "name": "CatchObscuredAvatarContent",
+      "file": "lib/core/widgets/catch_person_avatar.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.obscured_avatar_content",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract"
+      ]
+    },
+    {
       "name": "CatchPersonAvatar",
       "file": "lib/core/widgets/catch_person_avatar.dart",
       "classKind": "widget",
@@ -4701,6 +4782,33 @@
       "flags": []
     },
     {
+      "name": "CatchPersonAvatarShell",
+      "file": "lib/core/widgets/catch_person_avatar.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.person_avatar_shell",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract"
+      ]
+    },
+    {
       "name": "CatchPersonAvatarStack",
       "file": "lib/core/widgets/catch_person_avatar.dart",
       "classKind": "widget",
@@ -4722,6 +4830,33 @@
         "mergeIntoCanonical"
       ],
       "flags": []
+    },
+    {
+      "name": "CatchVeiledPersonAvatar",
+      "file": "lib/core/widgets/catch_person_avatar.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "atom",
+      "canonicalFamily": "catch.veiled_person_avatar",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "tokens-and-primitives",
+      "stateOwnership": "local-ui-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "internal-only",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract"
+      ]
     },
     {
       "name": "CatchPersonChatLayout",

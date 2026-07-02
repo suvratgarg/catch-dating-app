@@ -5660,6 +5660,188 @@ Widget catchPersonAvatarContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
+  type: CatchPersonAvatarShell,
+  path: '[Core primitives]/People',
+)
+Widget catchPersonAvatarShellContractStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  return _ContractScreen(
+    title: 'CatchPersonAvatarShell',
+    contractId: 'catch.person_avatar.shell',
+    states: const ['circle', 'square'],
+    children: [
+      _StateCard(
+        label: 'circle',
+        child: CatchPersonAvatarShell(
+          size: 56,
+          child: ColoredBox(color: t.primarySoft),
+        ),
+      ),
+      _StateCard(
+        label: 'square',
+        child: CatchPersonAvatarShell(
+          size: 56,
+          shape: CatchPersonAvatarShape.square,
+          child: ColoredBox(color: t.raised),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchObscuredAvatarContent,
+  path: '[Core primitives]/People',
+)
+Widget catchObscuredAvatarContentContractStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  return _ContractScreen(
+    title: 'CatchObscuredAvatarContent',
+    contractId: 'catch.person_avatar.obscured_content',
+    states: const ['default'],
+    children: [
+      _StateCard(
+        label: 'default',
+        child: SizedBox.square(
+          dimension: 56,
+          child: CatchObscuredAvatarContent(
+            child: ColoredBox(color: t.primarySoft),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchVeiledPersonAvatar,
+  path: '[Core primitives]/People',
+)
+Widget catchVeiledPersonAvatarContractStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  return _ContractScreen(
+    title: 'CatchVeiledPersonAvatar',
+    contractId: 'catch.person_avatar.veiled',
+    states: const ['run', 'dinner'],
+    children: [
+      _StateCard(
+        label: 'run',
+        child: CatchVeiledPersonAvatar(
+          size: 48,
+          activityKind: ActivityKind.socialRun,
+          borderWidth: 2,
+          borderColor: t.surface,
+        ),
+      ),
+      _StateCard(
+        label: 'dinner',
+        child: CatchVeiledPersonAvatar(
+          size: 48,
+          activityKind: ActivityKind.dinner,
+          borderWidth: 2,
+          borderColor: t.surface,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchActivityInitialsPlaceholder,
+  path: '[Core primitives]/People',
+)
+Widget catchActivityInitialsPlaceholderContractStates(BuildContext context) {
+  return const _ContractScreen(
+    title: 'CatchActivityInitialsPlaceholder',
+    contractId: 'catch.person_avatar.activity_initials',
+    states: ['initials', 'dim', 'empty'],
+    children: [
+      _StateCard(
+        label: 'initials',
+        child: SizedBox.square(
+          dimension: 56,
+          child: CatchActivityInitialsPlaceholder(
+            kind: ActivityKind.socialRun,
+            initials: 'SR',
+            size: 56,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'dim',
+        child: SizedBox.square(
+          dimension: 56,
+          child: CatchActivityInitialsPlaceholder(
+            kind: ActivityKind.dinner,
+            initials: 'DN',
+            size: 56,
+            dim: true,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'empty',
+        child: SizedBox.square(
+          dimension: 56,
+          child: CatchActivityInitialsPlaceholder(
+            kind: ActivityKind.yoga,
+            initials: '',
+            size: 56,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchInitialsAvatarPlaceholder,
+  path: '[Core primitives]/People',
+)
+Widget catchInitialsAvatarPlaceholderContractStates(BuildContext context) {
+  return const _ContractScreen(
+    title: 'CatchInitialsAvatarPlaceholder',
+    contractId: 'catch.person_avatar.initials',
+    states: ['derived', 'explicit', 'empty'],
+    children: [
+      _StateCard(
+        label: 'derived',
+        child: SizedBox.square(
+          dimension: 56,
+          child: CatchInitialsAvatarPlaceholder(name: 'Aanya Rao', size: 56),
+        ),
+      ),
+      _StateCard(
+        label: 'explicit',
+        child: SizedBox.square(
+          dimension: 56,
+          child: CatchInitialsAvatarPlaceholder(
+            name: 'Host team',
+            initials: 'HT',
+            size: 56,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'empty',
+        child: SizedBox.square(
+          dimension: 56,
+          child: CatchInitialsAvatarPlaceholder(name: '', size: 56),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
   type: CatchPersonRow,
   path: '[Core primitives]/Product composites',
 )
