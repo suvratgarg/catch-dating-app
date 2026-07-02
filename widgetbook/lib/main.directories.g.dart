@@ -10316,6 +10316,26 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'PaymentConfirmationBody',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Body states',
+                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                    .paymentConfirmationBodyStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'PaymentConfirmationBodyController',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Provider states',
+                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                    .paymentConfirmationBodyControllerStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'PaymentConfirmationHeadsUp',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -10332,6 +10352,26 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Screen states',
                 builder: _widgetbook_workspace_utility_p3_utility_use_cases
                     .paymentConfirmationScreenStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'PaymentPendingCheckoutBody',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Body states',
+                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                    .paymentPendingCheckoutBodyStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'PaymentPendingCheckoutController',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Provider states',
+                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                    .paymentPendingCheckoutControllerStates,
               ),
             ],
           ),

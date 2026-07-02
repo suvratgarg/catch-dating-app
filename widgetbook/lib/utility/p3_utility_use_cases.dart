@@ -2663,6 +2663,161 @@ Widget paymentConfirmationScreenStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Provider states',
+  type: PaymentPendingCheckoutController,
+  path: '[P3 utility surfaces]/Payment confirmation',
+)
+Widget paymentPendingCheckoutControllerStates(BuildContext context) {
+  final pendingPayment = _payments.firstWhere(
+    (payment) => payment.status == PaymentStatus.pending,
+  );
+  return _UtilityCatalog(
+    title: 'PaymentPendingCheckoutController',
+    contractId: 'screen.payments.confirmation.pending_controller',
+    children: [
+      _StateCard(
+        label: 'checkout pending',
+        child: _DeviceFrame(
+          child: _PaymentScope(
+            eventsById: {_event.id: _event},
+            paymentsByPaymentId: {pendingPayment.paymentId: pendingPayment},
+            child: IgnorePointer(
+              child: PaymentPendingCheckoutController(
+                data: _confirmationData(
+                  pendingPayment,
+                  checkoutUrl: Uri.parse('https://checkout.example/pay'),
+                ),
+                event: _event,
+              ),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Body states',
+  type: PaymentPendingCheckoutBody,
+  path: '[P3 utility surfaces]/Payment confirmation',
+)
+Widget paymentPendingCheckoutBodyStates(BuildContext context) {
+  final pendingPayment = _payments.firstWhere(
+    (payment) => payment.status == PaymentStatus.pending,
+  );
+  final failedPayment = _payments.firstWhere(
+    (payment) => payment.status == PaymentStatus.refundFailed,
+  );
+  return _UtilityCatalog(
+    title: 'PaymentPendingCheckoutBody',
+    contractId: 'screen.payments.confirmation.pending_body',
+    children: [
+      _StateCard(
+        label: 'pending checkout',
+        child: _DeviceFrame(
+          child: IgnorePointer(
+            child: PaymentPendingCheckoutBody(
+              data: _confirmationData(
+                pendingPayment,
+                checkoutUrl: Uri.parse('https://checkout.example/pay'),
+              ),
+              event: _event,
+              failed: false,
+              providerLabel: 'Stripe',
+              onOpenCheckout: _noop,
+              onViewPaymentHistory: _noop,
+              onBackToEvent: _noop,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'failed checkout',
+        child: _DeviceFrame(
+          child: IgnorePointer(
+            child: PaymentPendingCheckoutBody(
+              data: _confirmationData(
+                failedPayment,
+                checkoutUrl: Uri.parse('https://checkout.example/retry'),
+              ),
+              event: _event,
+              failed: true,
+              providerLabel: 'Stripe',
+              onOpenCheckout: _noop,
+              onViewPaymentHistory: _noop,
+              onBackToEvent: _noop,
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Provider states',
+  type: PaymentConfirmationBodyController,
+  path: '[P3 utility surfaces]/Payment confirmation',
+)
+Widget paymentConfirmationBodyControllerStates(BuildContext context) {
+  final paidPayment = _payments.first;
+  return _UtilityCatalog(
+    title: 'PaymentConfirmationBodyController',
+    contractId: 'screen.payments.confirmation.body_controller',
+    children: [
+      _StateCard(
+        label: 'joined celebration',
+        child: _DeviceFrame(
+          child: _PaymentScope(
+            eventsById: {_event.id: _event},
+            child: IgnorePointer(
+              child: PaymentConfirmationBodyController(
+                data: _confirmationData(paidPayment),
+                event: _event,
+              ),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Body states',
+  type: PaymentConfirmationBody,
+  path: '[P3 utility surfaces]/Payment confirmation',
+)
+Widget paymentConfirmationBodyStates(BuildContext context) {
+  final paidPayment = _payments.first;
+  return _UtilityCatalog(
+    title: 'PaymentConfirmationBody',
+    contractId: 'screen.payments.confirmation.body',
+    children: [
+      _StateCard(
+        label: 'joined celebration',
+        child: _DeviceFrame(
+          child: IgnorePointer(
+            child: PaymentConfirmationBody(
+              data: _confirmationData(paidPayment),
+              event: _event,
+              clubName: 'Bandra Breakers',
+              onAddToCalendar: _noop,
+              onOpenDirections: _noop,
+              onInviteFriend: _noop,
+              onReferralShare: _noop,
+              onViewEvent: _noop,
+              onBackHome: _noop,
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Checkout sheet states',
   type: PaymentCheckoutSheet,
   path: '[P3 utility surfaces]/Payment confirmation',
