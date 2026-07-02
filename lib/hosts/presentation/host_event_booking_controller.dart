@@ -6,6 +6,14 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_event_booking_controller.g.dart';
 
+typedef HostEventParticipantMutationKey = ({String eventId, String userId});
+typedef HostEventBulkMutationKey = ({
+  String eventId,
+  HostEventBulkMutationScope scope,
+});
+
+enum HostEventBulkMutationScope { waitlistOffer }
+
 @riverpod
 class HostEventBookingController extends _$HostEventBookingController {
   static final createWaitlistOfferMutation = Mutation<void>();
@@ -16,28 +24,29 @@ class HostEventBookingController extends _$HostEventBookingController {
   static final deleteEventMutation = Mutation<void>();
   static final updateHostedEventMutation = Mutation<void>();
 
-  static String waitlistOfferMutationKey({
+  static HostEventParticipantMutationKey waitlistOfferMutationKey({
     required String eventId,
     required String userId,
-  }) => '$eventId:waitlist-offer:$userId';
+  }) => (eventId: eventId, userId: userId);
 
-  static String bulkWaitlistOfferMutationKey({required String eventId}) =>
-      '$eventId:waitlist-offer:bulk';
+  static HostEventBulkMutationKey bulkWaitlistOfferMutationKey({
+    required String eventId,
+  }) => (eventId: eventId, scope: HostEventBulkMutationScope.waitlistOffer);
 
-  static String approveJoinRequestMutationKey({
+  static HostEventParticipantMutationKey approveJoinRequestMutationKey({
     required String eventId,
     required String userId,
-  }) => '$eventId:approve-request:$userId';
+  }) => (eventId: eventId, userId: userId);
 
-  static String declineJoinRequestMutationKey({
+  static HostEventParticipantMutationKey declineJoinRequestMutationKey({
     required String eventId,
     required String userId,
-  }) => '$eventId:decline-request:$userId';
+  }) => (eventId: eventId, userId: userId);
 
-  static String markAttendanceMutationKey({
+  static HostEventParticipantMutationKey markAttendanceMutationKey({
     required String eventId,
     required String userId,
-  }) => '$eventId:attendance:$userId';
+  }) => (eventId: eventId, userId: userId);
 
   @override
   void build() {}

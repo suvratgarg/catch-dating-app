@@ -210,28 +210,28 @@ void main() {
           eventId: 'event-1',
           userId: 'user-1',
         ),
-        'event-1:waitlist-offer:user-1',
+        (eventId: 'event-1', userId: 'user-1'),
       );
       expect(
         HostEventBookingController.approveJoinRequestMutationKey(
           eventId: 'event-1',
           userId: 'user-1',
         ),
-        'event-1:approve-request:user-1',
+        (eventId: 'event-1', userId: 'user-1'),
       );
       expect(
         HostEventBookingController.declineJoinRequestMutationKey(
           eventId: 'event-1',
           userId: 'user-1',
         ),
-        'event-1:decline-request:user-1',
+        (eventId: 'event-1', userId: 'user-1'),
       );
       expect(
         HostEventBookingController.markAttendanceMutationKey(
           eventId: 'event-1',
           userId: 'user-1',
         ),
-        'event-1:attendance:user-1',
+        (eventId: 'event-1', userId: 'user-1'),
       );
     });
 
@@ -240,7 +240,7 @@ void main() {
         HostEventBookingController.bulkWaitlistOfferMutationKey(
           eventId: 'event-1',
         ),
-        'event-1:waitlist-offer:bulk',
+        (eventId: 'event-1', scope: HostEventBulkMutationScope.waitlistOffer),
       );
     });
   });

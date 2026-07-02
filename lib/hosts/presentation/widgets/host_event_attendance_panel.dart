@@ -344,7 +344,7 @@ void _createWaitlistOffers(
   );
 }
 
-String _waitlistOfferMutationKey(String eventId, List<String> userIds) {
+Object _waitlistOfferMutationKey(String eventId, List<String> userIds) {
   return userIds.length == 1
       ? HostEventBookingController.waitlistOfferMutationKey(
           eventId: eventId,
