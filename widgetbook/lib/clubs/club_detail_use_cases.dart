@@ -31,7 +31,7 @@ import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
-import 'package:catch_dating_app/reviews/presentation/reviews_section.dart';
+import 'package:catch_dating_app/reviews/shared/reviews_section.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';

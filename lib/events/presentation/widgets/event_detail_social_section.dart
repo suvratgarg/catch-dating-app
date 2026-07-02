@@ -8,7 +8,7 @@ import 'package:catch_dating_app/events/presentation/event_detail_display_state.
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
-import 'package:catch_dating_app/reviews/presentation/reviews_section.dart';
+import 'package:catch_dating_app/reviews/shared/reviews_section.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 

@@ -5,18 +5,8 @@
   "allowedFindings": [
     {
       "rule": "crossFeaturePresentationImport",
-      "path": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-      "import": "package:catch_dating_app/reviews/presentation/reviews_section.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
       "path": "lib/dashboard/presentation/widgets/dashboard_full.dart",
       "import": "package:catch_dating_app/clubs/presentation/discovery/widgets/club_avatar_rail.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/dashboard/presentation/widgets/dashboard_full.dart",
-      "import": "package:catch_dating_app/reviews/presentation/write_review_sheet.dart"
     },
     {
       "rule": "crossFeaturePresentationImport",
@@ -32,11 +22,6 @@
       "rule": "crossFeaturePresentationImport",
       "path": "lib/events/presentation/event_map_screen.dart",
       "import": "package:catch_dating_app/explore/presentation/explore_view_model.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/events/presentation/widgets/event_detail_social_section.dart",
-      "import": "package:catch_dating_app/reviews/presentation/reviews_section.dart"
     },
     {
       "rule": "crossFeaturePresentationImport",
@@ -97,6 +82,61 @@
       "rule": "crossFeaturePresentationImport",
       "path": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
       "import": "package:catch_dating_app/events/presentation/widgets/who_is_going.dart"
+    },
+    {
+      "rule": "domainClockAccess",
+      "path": "lib/event_success/domain/event_success_defaults.dart"
+    },
+    {
+      "rule": "domainClockAccess",
+      "path": "lib/event_success/domain/event_success_event_preview.dart"
+    },
+    {
+      "rule": "domainClockAccess",
+      "path": "lib/event_success/domain/event_success_plan.dart"
+    },
+    {
+      "rule": "domainClockAccess",
+      "path": "lib/events/domain/event_service.dart"
+    },
+    {
+      "rule": "domainClockAccess",
+      "path": "lib/events/domain/event.dart"
+    },
+    {
+      "rule": "domainClockAccess",
+      "path": "lib/events/domain/viewer_event_availability.dart"
+    },
+    {
+      "rule": "domainClockAccess",
+      "path": "lib/hosts/domain/host_report_export.dart"
+    },
+    {
+      "rule": "domainClockAccess",
+      "path": "lib/swipes/domain/swipe_window.dart"
+    },
+    {
+      "rule": "domainClockAccess",
+      "path": "lib/user_profile/domain/profile_photo.dart"
+    },
+    {
+      "rule": "domainClockAccess",
+      "path": "lib/user_profile/domain/profile_validation.dart"
+    },
+    {
+      "rule": "presentationPluginImport",
+      "path": "lib/event_success/presentation/event_success_companion_screen.dart",
+      "import": "package:mobile_scanner/mobile_scanner.dart"
+    },
+    {
+      "rule": "presentationPluginImport",
+      "path": "lib/events/presentation/location_picker_screen.dart",
+      "import": "package:google_maps_flutter/google_maps_flutter.dart"
+    },
+    {
+      "rule": "presentationPluginImport",
+      "path": "lib/events/presentation/widgets/event_pins_map.dart",
+      "import": "package:google_maps_flutter/google_maps_flutter.dart"
     }
   ]
 }

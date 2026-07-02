@@ -74,7 +74,7 @@ import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart'
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_screen.dart';
-import 'package:catch_dating_app/reviews/presentation/reviews_section.dart';
+import 'package:catch_dating_app/reviews/shared/reviews_section.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';

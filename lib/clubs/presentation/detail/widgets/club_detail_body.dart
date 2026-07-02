@@ -19,7 +19,7 @@ import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
-import 'package:catch_dating_app/reviews/presentation/reviews_section.dart';
+import 'package:catch_dating_app/reviews/shared/reviews_section.dart';
 import 'package:flutter/material.dart';
 
 typedef ClubEventSelectionHandler = void Function(Event event);

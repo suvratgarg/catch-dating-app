@@ -28,7 +28,7 @@ import 'package:catch_dating_app/events/domain/event_location_links.dart';
 import 'package:catch_dating_app/events/shared/event_check_in_celebration_screen.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
-import 'package:catch_dating_app/reviews/presentation/write_review_sheet.dart';
+import 'package:catch_dating_app/reviews/shared/write_review_sheet.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
