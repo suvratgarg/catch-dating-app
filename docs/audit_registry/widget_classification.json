@@ -1,7 +1,7 @@
 {
   "$schema": "./widget_classification.schema.json",
   "version": 1,
-  "updated": "2026-07-01",
+  "updated": "2026-07-02",
   "sourceOfTruth": {
     "scope": "Generated inventory for production Flutter widget and widget-state classes under lib/**. Widgetbook/test scaffolds are intentionally out of scope.",
     "canonicalContracts": "design/components/catch.components.json owns canonical global component contracts and governance metadata.",
@@ -25,16 +25,16 @@
     },
     "byDecision": {
       "keep-canonical-contract": 121,
-      "keep-public-cataloged": 790,
+      "keep-public-cataloged": 793,
       "keep-widget-state": 101,
-      "review-catalog-coverage": 52
+      "review-catalog-coverage": 49
     },
     "byCatalogStatus": {
-      "cataloged": 719,
+      "cataloged": 722,
       "contracted": 121,
       "not-applicable": 101,
       "route-covered": 71,
-      "uncataloged": 52
+      "uncataloged": 49
     }
   },
   "widgets": [
@@ -13196,23 +13196,19 @@
       "role": "composition",
       "canonicalFamily": "catch.event_companion_card",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "public-widget-missing-widgetbook"
-      ]
+      "flags": []
     },
     {
       "name": "EventCompanionEntry",
@@ -13292,23 +13288,19 @@
       "role": "composition",
       "canonicalFamily": "catch.event_invite_loop_card",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "public-widget-missing-widgetbook"
-      ]
+      "flags": []
     },
     {
       "name": "GuestBookCta",
@@ -13319,23 +13311,19 @@
       "role": "feature-adapter",
       "canonicalFamily": "feature.events.guest_book_cta",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "public-widget-missing-widgetbook"
-      ]
+      "flags": []
     },
     {
       "name": "AttendedLeading",

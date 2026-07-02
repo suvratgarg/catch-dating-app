@@ -2605,6 +2605,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'EventCompanionCard',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Companion card',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventDetailCompanionCardStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'EventCompanionEntry',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -2695,6 +2705,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'EventInviteLoopCard',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Invite loop card',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventDetailInviteLoopCardStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'EventPhotoHeader',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -2721,6 +2741,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Event stats',
                 builder: _widgetbook_workspace_events_event_detail_use_cases
                     .eventStatsGridState,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'GuestBookCta',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Guest book CTA',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventDetailGuestBookCtaStates,
               ),
             ],
           ),

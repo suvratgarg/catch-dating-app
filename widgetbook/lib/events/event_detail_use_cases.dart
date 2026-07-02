@@ -1661,6 +1661,116 @@ Widget eventDetailCompanionEntryStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Invite loop card',
+  type: EventInviteLoopCard,
+  path: '[Event Detail]/Sections',
+)
+Widget eventDetailInviteLoopCardStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'EventInviteLoopCard',
+    catalogId: 'section.event.invite_loop_card',
+    children: [
+      _StateCard(
+        label: 'light surface',
+        child: _DeviceFrame(
+          child: Padding(
+            padding: CatchInsets.content,
+            child: EventInviteLoopCard(
+              event: _event,
+              onShare: _noopContext,
+              surfaceStyle: EventDetailSurfaceStyle.light(
+                CatchTokens.of(context),
+              ),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'ticket surface',
+        child: _DeviceFrame(
+          child: Padding(
+            padding: CatchInsets.content,
+            child: EventInviteLoopCard(
+              event: _event,
+              onShare: _noopContext,
+              surfaceStyle: EventDetailSurfaceStyle.dark(
+                CatchTokens.of(context),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Companion card',
+  type: EventCompanionCard,
+  path: '[Event Detail]/Sections',
+)
+Widget eventDetailCompanionCardStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'EventCompanionCard',
+    catalogId: 'section.event.companion_card',
+    children: [
+      _StateCard(
+        label: 'light surface',
+        child: _DeviceFrame(
+          child: Padding(
+            padding: CatchInsets.content,
+            child: EventCompanionCard(
+              surfaceStyle: EventDetailSurfaceStyle.light(
+                CatchTokens.of(context),
+              ),
+              onOpen: _noop,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'ticket surface',
+        child: _DeviceFrame(
+          child: Padding(
+            padding: CatchInsets.content,
+            child: EventCompanionCard(
+              surfaceStyle: EventDetailSurfaceStyle.dark(
+                CatchTokens.of(context),
+              ),
+              onOpen: _noop,
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Guest book CTA',
+  type: GuestBookCta,
+  path: '[Event Detail]/Sections',
+)
+Widget eventDetailGuestBookCtaStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'GuestBookCta',
+    catalogId: 'section.event.guest_book_cta',
+    children: [
+      _StateCard(
+        label: 'light dock',
+        child: const _DockFrame(child: GuestBookCta(onPressed: _noop)),
+      ),
+      _StateCard(
+        label: 'dark dock',
+        child: const _DockFrame(
+          child: GuestBookCta(onPressed: _noop, darkSurface: true),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Host section states',
   type: EventDetailHostsSection,
   path: '[Event Detail]/Sections',

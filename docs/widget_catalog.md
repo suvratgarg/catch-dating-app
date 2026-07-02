@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.524
+version: 2.5.525
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.525
+
+- Cataloged the Event Detail companion/invite leaf cards directly: booked-user
+  invite loop, Event Success companion entry card, and guest sign-in booking
+  dock. This keeps the event-detail action surfaces reviewable below the full
+  `EventDetailBody` composition.
 
 ### 2.5.524
 
@@ -5814,6 +5821,9 @@ Generated 2026-05-06.
 | `EventLocationMapRouteScreen` | `lib/events/presentation/event_location_map_screen.dart:26` | Route-facing single-event map entry registered as `screen.event.location_map` and aligned `ARCH-SCREEN-001` adopter. Reuses `EventDetailViewModel` by `eventId`, owns the chromeless route `Scaffold`, floating back controls, load/error/not-found states, exact-coordinate gate, retry invalidation, `EventLocationMapState` creation, and external directions side effect before delegating provider-free map content to `EventLocationMapScreen`. |
 | `EventDetailBody` | `lib/events/presentation/widgets/event_detail_body.dart:107` | Scrollable event detail composition. It receives shell state plus explicit save/share/calendar/back callbacks, companion state, host state, location/companion/club/message callbacks, and retry callbacks from `EventDetailScreen`, then composes the source-aware hero app bar, flush ticket-stub band, handoff-ordered overview stack, optional saved-plan companion entry, booked-attendee invite card, hosts, and social sections. It no longer owns a direct `Scaffold`, bottom navigation, route-level booking/cancel mutation listeners, provider reads, or route side effects; direct Widgetbook/test states are body-only review states with explicit no-op or assertion callbacks. |
 | `EventCompanionEntry` | `lib/events/presentation/widgets/event_detail_body.dart:343` | Provider-free Event Detail companion section adapter. Switches explicit `EventDetailCompanionState` into hidden/loading/error/available rendering, delegates retry and open-companion effects to route callbacks, and keeps the Event Success provider watch in `EventDetailScreen`. Widgetbook covers hidden, loading, available, and error states. |
+| `EventInviteLoopCard` | `lib/events/presentation/widgets/event_detail_body.dart:302` | Provider-free booked-attendee invite card for Event Detail. Receives the event, share callback, and `EventDetailSurfaceStyle`, then renders the friend-invite prompt and full-width invite action without reading route/controller state directly. |
+| `EventCompanionCard` | `lib/events/presentation/widgets/event_detail_body.dart:404` | Leaf Event Detail companion card rendered by `EventCompanionEntry` when Event Success setup is available. Uses explicit surface styling and open callback props to present the companion explanation and action without owning provider or navigation state. |
+| `GuestBookCta` | `lib/events/presentation/widgets/event_detail_body.dart:462` | Guest-only Event Detail booking dock CTA. Renders the sign-in-to-book action inside the light or dark footer surface while the route/body owner supplies the navigation callback. |
 | `EventDetailHostsSection` | `lib/events/presentation/widgets/event_detail_body.dart:472` | Provider-free Event Detail host section adapter. Switches explicit `EventDetailHostState` into hidden/loading/error/content rendering, renders `EventDetailHostCard` from preformatted display data, and delegates View club, Message host, and retry effects to route callbacks. Widgetbook covers hidden, loading, content, and error states. |
 | `EventDetailHeroAppBar` | `lib/events/presentation/widgets/event_detail_hero_app_bar.dart:10` | Event detail hero app bar. Uses the shared event photo header for standard routes and a full-bleed ticket-mode visual band for card-opened routes; both paths prefer uploaded photos and fall back to activity artwork. Standard and ticket/spotlight expanded heights resolve through named `CatchLayout.eventDetailHero*` constants; ticket mode keeps the perforated ticket seam, shares the event display font with cards, and owns floating back/share/save/calendar actions without adding the club-detail viewport-curve inset. |
 | `LegacyEventHeroSurface` | `lib/events/presentation/widgets/event_detail_hero_app_bar.dart:171` | Standard event-detail hero surface used by `EventDetailHeroAppBar` for non-ticket routes. Composes the uploaded-photo header with the activity badge and display-title overlay while keeping route actions in the sliver app bar. Widgetbook covers the exact surface state directly. |
