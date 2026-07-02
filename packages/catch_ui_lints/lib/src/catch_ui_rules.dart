@@ -909,7 +909,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     InstanceCreationExpression node,
     String typeName,
   ) {
-    if (typeName == 'Duration') return true;
+    if (typeName == 'Duration') return !isCatchUiDateArithmeticDuration(node);
     if (typeName != 'CurveTween') return false;
     return node.toSource().contains('Curves.');
   }
@@ -1508,6 +1508,20 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 String _constructorTypeName(InstanceCreationExpression node) {
   final raw = node.constructorName.type.toSource();
   return raw.split('<').first;
+}
+
+bool isCatchUiDateArithmeticDuration(InstanceCreationExpression node) {
+  final parent = node.parent;
+  if (parent is! ArgumentList) return false;
+  if (parent.arguments.length != 1 || parent.arguments.first != node) {
+    return false;
+  }
+
+  final invocation = parent.parent;
+  if (invocation is! MethodInvocation) return false;
+  final methodName = invocation.methodName.name;
+  if (methodName != 'add' && methodName != 'subtract') return false;
+  return invocation.target != null;
 }
 
 bool _isEdgeInsetsConstructor(String typeName) {
