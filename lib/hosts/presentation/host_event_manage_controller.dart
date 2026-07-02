@@ -10,8 +10,8 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/presentation/attendance_sheet_view_model.dart';
-import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/domain/host_report_export.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -174,7 +174,7 @@ class HostEventManageController implements HostEventManageActions {
   @override
   Future<void> cancelHostedEvent({required Event event}) async {
     await _ref
-        .read(eventBookingControllerProvider.notifier)
+        .read(hostEventBookingControllerProvider.notifier)
         .cancelHostedEvent(event: event);
     _invalidateHostedEvent(event.id);
   }
@@ -182,7 +182,7 @@ class HostEventManageController implements HostEventManageActions {
   @override
   Future<void> deleteUnusedEvent({required Event event}) async {
     await _ref
-        .read(eventBookingControllerProvider.notifier)
+        .read(hostEventBookingControllerProvider.notifier)
         .deleteHostedEvent(event: event);
     _invalidateHostedEvent(event.id);
   }

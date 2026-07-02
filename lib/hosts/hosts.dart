@@ -35,6 +35,7 @@ export 'presentation/event_management/create/create_event_wizard_state.dart';
 export 'presentation/event_management/host_create_event_route_state.dart';
 export 'presentation/event_management/host_create_event_screen.dart';
 export 'presentation/event_management/widgets/event_policy_step.dart';
+export 'presentation/host_event_booking_controller.dart';
 export 'presentation/host_event_manage_controller.dart';
 export 'presentation/host_event_manage_screen.dart';
 export 'presentation/host_event_manage_screen_state.dart';
