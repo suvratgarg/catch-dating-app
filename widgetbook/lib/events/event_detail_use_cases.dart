@@ -65,7 +65,7 @@ import 'package:catch_dating_app/events/shared/event_tiles/event_date_rail_card.
 import 'package:catch_dating_app/events/shared/event_tiles/event_tile_data.dart';
 import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
 import 'package:catch_dating_app/events/presentation/widgets/map_overlay_controls.dart';
-import 'package:catch_dating_app/events/presentation/widgets/map_pin_tile.dart';
+import 'package:catch_dating_app/events/shared/map_pin_tile.dart';
 import 'package:catch_dating_app/events/presentation/widgets/requirements_row.dart';
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
