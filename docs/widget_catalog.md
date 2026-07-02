@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.527
+version: 2.5.528
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.528
+
+- Cataloged the Explore map peek-rail leaf renderers directly: collapsed map
+  summary, selected/rail ticket card, and rail loading skeleton. This keeps the
+  map sheet's exact public widget surface reviewable below the lead sliver
+  dispatcher.
 
 ### 2.5.527
 
@@ -5760,6 +5767,9 @@ Generated 2026-05-06.
 | `ActivityDot` | `lib/explore/presentation/widgets/explore_event_type_browse_grid.dart:309` | Fixed-size pill-radius activity accent dot rendered through `CatchSurface` so Browse by activity rows use tokenized shape and sizing. |
 | `EventTypeBrowseSkeleton` | `lib/explore/presentation/widgets/explore_event_type_browse_grid.dart:327` | Loading placeholder for the Browse by activity grid with kicker text skeleton plus two stable row skeletons. |
 | `ExplorePeekRail` | `lib/explore/presentation/widgets/explore_peek_rail.dart:13` | Lead sliver builder for the Explore map sheet. `buildExploreMapSheetLeadSlivers` renders aggregate count/scope copy in collapsed mode, a selected-pin lead that branches between `CatchEventCard.ticket` and `CatchEventCard.spotlight` based on the feed's featured event id, and the nearby horizontal rail with `CatchEventCard.ticket` items, spatial reordering, and a semantic "See all" action in unselected half/full mode. |
+| `CollapsedMapSummary` | `lib/explore/presentation/widgets/explore_peek_rail.dart:192` | Collapsed Explore map sheet summary. Receives count, scope label, and active filters, derives concise title/scope copy through `ExploreCollapsedMapSummaryState`, and renders centered one-line text inside the sheet lead padding. |
+| `ExploreEventTicketCard` | `lib/explore/presentation/widgets/explore_peek_rail.dart:297` | Ticket-style Explore map event card used for selected pins and the nearby peek rail. Converts an `ExploreEventItem` into `ExploreMapEventTicketState`, then delegates title, time, countdown, price, capacity, status, hero tag, width, and tap handling to `CatchEventCard.ticket`. |
+| `PeekRailSkeleton` | `lib/explore/presentation/widgets/explore_peek_rail.dart:540` | Loading skeleton for the Explore map nearby rail. Reserves the lead title and two horizontal ticket-card placeholders with the same rail height/spacing as the loaded peek rail. |
 | `ClubDiscoverList` | `lib/clubs/presentation/discovery/widgets/club_discover_list.dart:8` | Club directory section of Explore with a real `SliverList` of directory cards. Passes joined and hosted club IDs separately so host-owned clubs are not mislabeled as ordinary joined clubs. |
 | `ClubIdentityAtoms` | `lib/clubs/presentation/shared/club_identity_atoms.dart:11` | Shared club-card identity helpers and widgets: member-count label, tag filtering, member seal, tag wrap, hosted-by line, host avatar, host role badge, and rating pill. Use this before adding club-card-local member labels, tag wraps, host rows, or rating chips. |
 | `ClubListTile` | `lib/clubs/presentation/discovery/widgets/club_list_tile.dart:33` | Club tile rendered as directory card or avatar chip. Directory cards now use the productionized concept-lab club language and shared club identity atoms: image-backed clubs get a bounded photo card with member seal, centrally themed `CatchTextStyles.clubDisplay` title, tags, host row, and role sash; no-image clubs get an identity card that reuses the shared fallback palette. Display-only tile rendering does not watch provider state; only the join button owns the mutation provider. |

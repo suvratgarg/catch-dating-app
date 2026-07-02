@@ -3475,6 +3475,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CollapsedMapSummary',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Collapsed map summary',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .collapsedMapSummaryStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'EventTypeBrowseContent',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3531,6 +3541,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Empty states',
                 builder: _widgetbook_workspace_explore_explore_use_cases
                     .exploreEmptyStateStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ExploreEventTicketCard',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Event ticket card',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .exploreEventTicketCardStates,
               ),
             ],
           ),
@@ -3641,6 +3661,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Route empty states',
                 builder: _widgetbook_workspace_explore_explore_use_cases
                     .exploreScreenEmptyStateStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'PeekRailSkeleton',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Peek rail skeleton',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .peekRailSkeletonStates,
               ),
             ],
           ),

@@ -617,6 +617,111 @@ Widget explorePeekRailContentStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Collapsed map summary',
+  type: CollapsedMapSummary,
+  path: '[Explore]/Sections',
+)
+Widget collapsedMapSummaryStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'CollapsedMapSummary',
+    catalogId: 'section.explore.map.collapsed_summary',
+    children: [
+      _StateCard(
+        label: 'default city scope',
+        child: const _SheetFrame(
+          child: SizedBox(
+            height: 104,
+            child: CollapsedMapSummary(
+              count: 12,
+              scopeLabel: 'Mumbai',
+              filters: ExploreFilterSelection(),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'filtered map area',
+        child: const _SheetFrame(
+          child: SizedBox(
+            height: 104,
+            child: CollapsedMapSummary(
+              count: 4,
+              scopeLabel: 'Map area',
+              filters: ExploreFilterSelection(
+                distanceFilter: ExploreDistanceFilter.threeKm,
+                activityTag: 'dinner',
+              ),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Event ticket card',
+  type: ExploreEventTicketCard,
+  path: '[Explore]/Sections',
+)
+Widget exploreEventTicketCardStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreEventTicketCard',
+    catalogId: 'section.explore.map.event_ticket_card',
+    children: [
+      _StateCard(
+        label: 'map pick',
+        child: _SheetFrame(
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ExploreEventTicketCard(
+              item: _feedItems.first,
+              statusLabel: 'Map pick',
+              onTap: _noop,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'selected with width',
+        child: _SheetFrame(
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ExploreEventTicketCard(
+              item: _feedItems[1],
+              statusLabel: 'Selected',
+              width: 260,
+              heroTag: 'widgetbook-explore-ticket',
+              onTap: _noop,
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Peek rail skeleton',
+  type: PeekRailSkeleton,
+  path: '[Explore]/Sections',
+)
+Widget peekRailSkeletonStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'PeekRailSkeleton',
+    catalogId: 'section.explore.map.peek_rail_skeleton',
+    children: [
+      _StateCard(
+        label: 'loading rail',
+        child: const _SheetFrame(
+          child: SizedBox(height: 180, child: PeekRailSkeleton()),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Map sheet lead states',
   type: ExploreMapSheetLead,
   path: '[Explore]/Sections',
