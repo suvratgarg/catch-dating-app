@@ -10059,12 +10059,32 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'PhotoSlotMainBadge',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Main badge states',
+                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                    .photoSlotMainBadgeStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'ProfilePhotoEditorScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Editor states',
                 builder: _widgetbook_workspace_utility_p3_utility_use_cases
                     .profilePhotoEditorScreenStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'StripedPhotoPlaceholder',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Striped placeholder states',
+                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                    .stripedPhotoPlaceholderStates,
               ),
             ],
           ),

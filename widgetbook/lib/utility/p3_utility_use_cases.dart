@@ -614,6 +614,56 @@ Widget photoSlotStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Main badge states',
+  type: PhotoSlotMainBadge,
+  path: '[P3 utility surfaces]/Image uploads',
+)
+Widget photoSlotMainBadgeStates(BuildContext context) {
+  return const _UtilityCatalog(
+    title: 'PhotoSlotMainBadge',
+    contractId: 'component.image_uploads.photo_slot_main_badge',
+    children: [
+      _StateCard(
+        label: 'main badge',
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: PhotoSlotMainBadge(label: 'MAIN'),
+        ),
+      ),
+      _StateCard(
+        label: 'cover badge',
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: PhotoSlotMainBadge(label: 'Cover'),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Striped placeholder states',
+  type: StripedPhotoPlaceholder,
+  path: '[P3 utility surfaces]/Image uploads',
+)
+Widget stripedPhotoPlaceholderStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'StripedPhotoPlaceholder',
+    contractId: 'component.image_uploads.striped_photo_placeholder',
+    children: [
+      _StateCard(
+        label: 'first slot',
+        child: _photoSlotFrame(child: const StripedPhotoPlaceholder(index: 0)),
+      ),
+      _StateCard(
+        label: 'sixth slot',
+        child: _photoSlotFrame(child: const StripedPhotoPlaceholder(index: 5)),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Editor states',
   type: ProfilePhotoEditorScreen,
   path: '[P3 utility surfaces]/Image uploads',

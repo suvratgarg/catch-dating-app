@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.533
+version: 2.5.534
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.534
+
+- Cataloged the public `PhotoSlot` leaf renderers
+  `PhotoSlotMainBadge` and `StripedPhotoPlaceholder` directly in the P3
+  utility Widgetbook surface so upload slot badge and pending-placeholder states
+  are reviewable without relying only on the composed slot.
 
 ### 2.5.533
 
@@ -5750,6 +5757,8 @@ Generated 2026-05-06.
 |---|---|---|
 | `PhotoGrid` | `lib/image_uploads/presentation/photo_grid.dart:10` | Dense 3x2 profile photo grid over normalized `ProfilePhoto` objects. Uses `maximumProfilePhotoCount`, keyed slots, guarded delete callbacks, optional reorder, and a hideable leading `MAIN` label; callers own opening `ProfilePhotoEditorScreen` and enforcing the completed-profile minimum. |
 | `PhotoSlot` | `lib/image_uploads/presentation/widgets/photo_slot.dart:6` | Single keyed profile-photo slot. Renders through `CatchSurface`, grades filled photos with `GradedImage`, shows DS striped material for pending uploads, dashed hairline targets for empty slots, semantic labels/tooltips for add/edit/delete/uploading/unavailable states, optional prompt and main-label overlays, reorder target affordance, and blocked taps while inactive or loading. |
+| `StripedPhotoPlaceholder` | `lib/image_uploads/presentation/widgets/photo_slot.dart:219` | Pending-upload placeholder used by `PhotoSlot` before a local or remote image is available. Paints the raised background with subtle diagonal stripes and mono slot copy while semantics stay owned by the parent photo slot. |
+| `PhotoSlotMainBadge` | `lib/image_uploads/presentation/widgets/photo_slot.dart:260` | Compact pill badge used by `PhotoSlot` and ordered media pickers for leading/main/cover labels. Receives display copy explicitly, uppercases it, and renders through `CatchSurface` token chrome without owning upload or reorder state. |
 
 ---
 
