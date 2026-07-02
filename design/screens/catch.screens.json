@@ -22126,7 +22126,7 @@
               "file": "lib/reviews/presentation/reviews_history_screen.dart",
               "symbol": "ReviewHistoryItem"
             },
-            "currentOwner": "provider-free _ReviewHistoryItem + ReviewsHistoryRow",
+            "currentOwner": "provider-free ReviewHistoryItem + ReviewsHistoryRow",
             "targetOwner": "provider-free review history row",
             "dependencies": [
               "catch.surface"

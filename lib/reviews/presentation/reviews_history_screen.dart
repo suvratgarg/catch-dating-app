@@ -3,7 +3,6 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -13,7 +12,6 @@ import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
-import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_state.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_section.dart';
 import 'package:catch_dating_app/reviews/presentation/write_review_sheet.dart';
@@ -28,69 +26,14 @@ class ReviewsHistoryScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final uidAsync = ref.watch(uidProvider);
-
-    return Scaffold(
-      appBar: const CatchTopBar(title: 'Review history', border: true),
-      body: CatchAsyncValueView<String?>(
-        value: uidAsync,
-        loadingBuilder: (_) => const ReviewsHistorySkeleton(),
-        errorBuilder: (_, _, _) => const ReviewsHistoryEmptyState(
-          title: 'Sign in to see reviews',
-          message: 'Your past event reviews will appear here.',
-        ),
-        builder: (context, uid) {
-          if (uid == null) {
-            return const ReviewsHistoryEmptyState(
-              title: 'Sign in to see reviews',
-              message: 'Your past event reviews will appear here.',
-            );
-          }
-          return ReviewsHistoryProfileGate(uid: uid);
-        },
-      ),
-    );
-  }
-}
-
-class ReviewsHistoryProfileGate extends ConsumerWidget {
-  const ReviewsHistoryProfileGate({super.key, required this.uid});
-
-  final String uid;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final userAsync = ref.watch(watchUserProfileProvider);
-
-    return CatchAsyncValueView(
-      value: userAsync,
-      loadingBuilder: (_) => const ReviewsHistorySkeleton(),
-      errorBuilder: (_, _, _) => CatchErrorState(
-        title: 'Reviews unavailable',
-        message: 'Could not load your profile.',
-        onRetry: () => ref.invalidate(watchUserProfileProvider),
-      ),
-      builder: (context, user) {
-        if (user == null) return const ReviewsHistorySkeleton();
-        return ReviewsHistoryReviewsGate(uid: uid, user: user);
-      },
-    );
-  }
-}
-
-class ReviewsHistoryReviewsGate extends ConsumerWidget {
-  const ReviewsHistoryReviewsGate({
-    super.key,
-    required this.uid,
-    required this.user,
-  });
-
-  final String uid;
-  final UserProfile user;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final reviewsAsync = ref.watch(watchReviewsByUserProvider(uid));
-    final reviews = reviewsAsync.asData?.value;
+    final uid = uidAsync.asData?.value;
+    final userAsync = uid == null
+        ? const AsyncData<UserProfile?>(null)
+        : ref.watch(watchUserProfileProvider);
+    final reviewsAsync = uid == null
+        ? null
+        : ref.watch(watchReviewsByUserProvider(uid));
+    final reviews = reviewsAsync?.asData?.value;
     AsyncValue<List<Event>> eventsAsync = const AsyncData<List<Event>>([]);
     if (reviews != null && reviews.isNotEmpty) {
       final eventIds = ReviewsHistoryState.eventIdsFor(reviews);
@@ -100,32 +43,36 @@ class ReviewsHistoryReviewsGate extends ConsumerWidget {
         );
       }
     }
-    void onRetryReviews() => ref.invalidate(watchReviewsByUserProvider(uid));
 
-    return CatchAsyncValueView<List<Review>>(
-      value: reviewsAsync,
-      loadingBuilder: (_) => const ReviewsHistorySkeleton(),
-      errorBuilder: (_, _, _) => CatchErrorState(
-        title: 'Reviews unavailable',
-        message: 'Could not load your reviews.',
-        onRetry: onRetryReviews,
+    final state = uidAsync.when<ReviewsHistoryState>(
+      loading: () => const ReviewsHistoryLoading(),
+      error: (_, _) => const ReviewsHistoryEmpty(
+        title: 'Sign in to see reviews',
+        message: 'Your past event reviews will appear here.',
       ),
-      builder: (context, reviews) {
-        final state = ReviewsHistoryState.fromAsync(
-          uid: uid,
-          user: AsyncData(user),
-          reviews: AsyncData(reviews),
-          events: eventsAsync,
-        );
-        return ReviewsHistoryBody(
-          state: state,
-          onRetryProfile: () => ref.invalidate(watchUserProfileProvider),
-          onRetryReviews: onRetryReviews,
-          onEditReview: state is ReviewsHistoryContent
-              ? (row) => _showEditReviewSheet(context, state, row)
-              : null,
-        );
-      },
+      data: (uid) => ReviewsHistoryState.fromAsync(
+        uid: uid,
+        user: userAsync,
+        reviews: reviewsAsync,
+        events: eventsAsync,
+      ),
+    );
+    void onRetryProfile() => ref.invalidate(watchUserProfileProvider);
+    VoidCallback? onRetryReviews;
+    if (uid != null) {
+      onRetryReviews = () => ref.invalidate(watchReviewsByUserProvider(uid));
+    }
+
+    return Scaffold(
+      appBar: const CatchTopBar(title: 'Review history', border: true),
+      body: ReviewsHistoryBody(
+        state: state,
+        onRetryProfile: onRetryProfile,
+        onRetryReviews: onRetryReviews,
+        onEditReview: state is ReviewsHistoryContent
+            ? (row) => _showEditReviewSheet(context, state, row)
+            : null,
+      ),
     );
   }
 }

@@ -11222,26 +11222,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ReviewsHistoryProfileGate',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Profile provider states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
-                    .reviewsHistoryProfileGateStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ReviewsHistoryReviewsGate',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Reviews provider states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
-                    .reviewsHistoryReviewsGateStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'ReviewsHistoryScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(
