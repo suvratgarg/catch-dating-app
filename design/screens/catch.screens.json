@@ -16277,7 +16277,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "OnboardingScreen watches OnboardingController state, owns route entry flags, schedules initStep, calculates back/progress bounds, renders _OnboardingTopBar for non-welcome steps, and delegates visible forms to step pages that own local controllers and validation UI.",
+        "currentLayout": "OnboardingScreen watches OnboardingController state, owns route entry flags, schedules initStep, calculates back/progress bounds, renders OnboardingTopBar for non-welcome steps, and delegates visible forms to step pages that own local controllers and validation UI.",
         "targetLayout": "Onboarding should expose an OnboardingFlowState adapter that owns entry mode, current step, progress, back intent, draft data, validation, mutation state, and step display data before composing provider-free step sections and shared step frames.",
         "sections": [
           {
@@ -16316,7 +16316,7 @@
             ],
             "flutter": {
               "file": "lib/onboarding/presentation/onboarding_screen.dart",
-              "symbol": "_OnboardingTopBar"
+              "symbol": "OnboardingTopBar"
             },
             "currentOwner": "OnboardingScreen",
             "targetOwner": "provider-free onboarding step header section",
