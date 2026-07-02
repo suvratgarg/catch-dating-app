@@ -20,6 +20,7 @@ import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_corner_sash.dart';
+import 'package:catch_dating_app/core/widgets/catch_detail_hero_backdrop.dart';
 import 'package:catch_dating_app/core/widgets/catch_distance_ring.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
@@ -1185,6 +1186,36 @@ void main() {
       expect(find.text('Ticket meta'), findsOneWidget);
     },
   );
+
+  testWidgets('CatchDetailHeroBackdrop composes fallback and scrim renderers', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const SizedBox(
+          width: 220,
+          height: 140,
+          child: CatchDetailHeroBackdrop(),
+        ),
+      ),
+    );
+
+    expect(find.byType(CatchDetailHeroFallback), findsOneWidget);
+    expect(find.byType(CatchDetailHeroScrim), findsOneWidget);
+
+    await tester.pumpWidget(
+      _wrap(
+        const SizedBox(
+          width: 220,
+          height: 140,
+          child: CatchDetailHeroBackdrop(showScrim: false),
+        ),
+      ),
+    );
+
+    expect(find.byType(CatchDetailHeroFallback), findsOneWidget);
+    expect(find.byType(CatchDetailHeroScrim), findsNothing);
+  });
 
   testWidgets('CatchMetricStrip renders compact labeled data pairs', (
     tester,

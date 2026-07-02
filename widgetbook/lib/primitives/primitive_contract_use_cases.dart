@@ -4748,6 +4748,48 @@ Widget catchDetailHeroBackdropContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
+  type: CatchDetailHeroFallback,
+  path: '[Core primitives]/Media',
+)
+Widget catchDetailHeroFallbackContractStates(BuildContext context) {
+  return const _ContractScreen(
+    title: 'CatchDetailHeroFallback',
+    contractId: 'catch.detail_media.fallback',
+    states: ['gradient'],
+    children: [
+      _StateCard(
+        label: 'gradient',
+        child: SizedBox(
+          width: 340,
+          height: 180,
+          child: CatchDetailHeroFallback(),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchDetailHeroScrim,
+  path: '[Core primitives]/Media',
+)
+Widget catchDetailHeroScrimContractStates(BuildContext context) {
+  return const _ContractScreen(
+    title: 'CatchDetailHeroScrim',
+    contractId: 'catch.detail_media.scrim',
+    states: ['vertical-gradient'],
+    children: [
+      _StateCard(
+        label: 'vertical-gradient',
+        child: SizedBox(width: 340, height: 180, child: CatchDetailHeroScrim()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
   type: CatchActivityMapPin,
   path: '[Core primitives]/Activity',
 )
