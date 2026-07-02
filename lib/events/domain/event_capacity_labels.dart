@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 
-class EventCapacityPresenter {
-  const EventCapacityPresenter(this.event);
+class EventCapacityLabels {
+  const EventCapacityLabels(this.event);
 
   final Event event;
 

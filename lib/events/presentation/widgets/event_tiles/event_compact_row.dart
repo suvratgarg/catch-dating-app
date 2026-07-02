@@ -7,8 +7,8 @@ import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_capacity_labels.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
-import 'package:catch_dating_app/events/presentation/event_capacity_presenter.dart';
 import 'package:flutter/material.dart';
 
 const double _chevronIconSize = CatchSpacing.s5;
@@ -37,7 +37,7 @@ class EventCompactRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final visual = eventActivityVisual(event.activityKind, context: context);
-    final capacity = EventCapacityPresenter(event);
+    final capacity = EventCapacityLabels(event);
     final effectiveStatus = statusLabel?.trim();
     final entries =
         metaEntries ??

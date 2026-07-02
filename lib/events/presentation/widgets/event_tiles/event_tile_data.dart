@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_capacity_labels.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
-import 'package:catch_dating_app/events/presentation/event_capacity_presenter.dart';
 
 enum EventTileStatus {
   open,
@@ -59,7 +59,7 @@ class EventTileData {
   String get distanceLabel => event.distanceLabel;
   String get paceLabel => event.pace.label;
   String get activitySummaryLabel => event.activitySummaryLabel;
-  EventCapacityPresenter get capacity => EventCapacityPresenter(event);
+  EventCapacityLabels get capacity => EventCapacityLabels(event);
   String get signupLabel => capacity.signedUpFractionLabel;
   String get spotsLabel => capacity.spotsFractionLabel;
   String get capacityLabel => capacity.goingAvailabilityLabel();

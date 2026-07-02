@@ -2,12 +2,12 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_arrival_action.dart';
+import 'package:catch_dating_app/events/domain/event_capacity_labels.dart';
 import 'package:catch_dating_app/events/domain/event_domain_readiness.dart';
 import 'package:catch_dating_app/events/domain/event_eligibility.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_service.dart';
-import 'package:catch_dating_app/events/presentation/event_capacity_presenter.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_readiness.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -290,7 +290,7 @@ EventDetailBookingDockState _eligibleBookingDockState({
   required EventDetailBookingDockMutationState mutationState,
 }) {
   final paidUnsupported = !isFreeForViewer && !supportsPaidBookings;
-  final presenter = EventCapacityPresenter(event);
+  final presenter = EventCapacityLabels(event);
   final spotsRemaining = presenter.spotsRemaining;
   final isScarce = spotsRemaining > 0 && spotsRemaining <= 3;
 

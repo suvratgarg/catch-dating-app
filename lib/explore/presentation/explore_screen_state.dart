@@ -658,7 +658,7 @@ String _rowSupportingLabel(ExploreEventItem item) {
 }
 
 String _capacityLabel(ExploreEventItem item) {
-  return EventCapacityPresenter(
+  return EventCapacityLabels(
     item.event,
   ).goingAvailabilityLabel(availabilityLabel: item.availabilityLabel);
 }
@@ -791,7 +791,7 @@ String? _mapEventTicketStatusLabel(ExploreEventItem item) {
 }
 
 String _mapEventCapacityLabel(ExploreEventItem item) {
-  return EventCapacityPresenter(
+  return EventCapacityLabels(
     item.event,
   ).activityGoingAvailabilityLabel(availabilityLabel: item.availabilityLabel);
 }

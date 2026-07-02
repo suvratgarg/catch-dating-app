@@ -55,11 +55,6 @@
     },
     {
       "rule": "crossFeaturePresentationImport",
-      "path": "lib/dashboard/presentation/widgets/recommend_card.dart",
-      "import": "package:catch_dating_app/events/presentation/event_capacity_presenter.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
       "path": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
       "import": "package:catch_dating_app/events/presentation/attendance_sheet_view_model.dart"
     },

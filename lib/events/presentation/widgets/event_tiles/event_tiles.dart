@@ -1,5 +1,5 @@
 export 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
-export 'package:catch_dating_app/events/presentation/event_capacity_presenter.dart';
+export 'package:catch_dating_app/events/domain/event_capacity_labels.dart';
 
 export 'event_action_card.dart';
 export 'event_agenda_tile.dart';
