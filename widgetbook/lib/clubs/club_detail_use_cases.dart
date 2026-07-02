@@ -23,6 +23,7 @@ import 'package:catch_dating_app/clubs/presentation/shared/catch_polaroid.dart';
 import 'package:catch_dating_app/clubs/presentation/shared/club_identity_atoms.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -542,6 +543,70 @@ Widget clubMembershipDockStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Dock count states',
+  type: DockCount,
+  path: '[Club Detail]/Dock',
+)
+Widget dockCountStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'DockCount',
+    catalogId: 'section.club.dock.count',
+    children: [
+      _StateCard(
+        label: 'member count',
+        child: DockCount(members: 214, label: 'MEMBERS'),
+      ),
+      _StateCard(
+        label: 'short label',
+        child: DockCount(members: 8, label: 'GOING'),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Dock bell states',
+  type: DockBell,
+  path: '[Club Detail]/Dock',
+)
+Widget dockBellStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+  return _CatalogScreen(
+    title: 'DockBell',
+    catalogId: 'section.club.dock.bell',
+    children: [
+      _StateCard(
+        label: 'active',
+        child: DockBell(
+          active: true,
+          accent: t.primary,
+          isLoading: false,
+          onPressed: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'inactive',
+        child: DockBell(
+          active: false,
+          accent: t.primary,
+          isLoading: false,
+          onPressed: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'loading',
+        child: DockBell(
+          active: true,
+          accent: t.primary,
+          isLoading: true,
+          onPressed: _noop,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Avatar rail states',
   type: ClubAvatarRail,
   path: '[Club Discovery]/Sections',
@@ -606,6 +671,56 @@ Widget clubListTileStates(BuildContext context) {
           variant: ClubListTileVariant.avatarChip,
           showLiveBadge: true,
         ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Avatar chip states',
+  type: AvatarChip,
+  path: '[Club Discovery]/Atoms',
+)
+Widget avatarChipStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'AvatarChip',
+    catalogId: 'atom.club.avatar_chip',
+    children: [
+      _StateCard(
+        label: 'default',
+        child: AvatarChip(club: _logoClub),
+      ),
+      _StateCard(
+        label: 'event soon',
+        child: AvatarChip(club: _minimalClub, showLiveBadge: true),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Club image states',
+  type: ClubImage,
+  path: '[Club Discovery]/Atoms',
+)
+Widget clubImageStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ClubImage',
+    catalogId: 'atom.club.image',
+    children: [
+      _StateCard(
+        label: 'cover first',
+        child: _ClubMediaFrame(child: ClubImage(club: _club)),
+      ),
+      _StateCard(
+        label: 'profile first',
+        child: _ClubMediaFrame(
+          child: ClubImage(club: _logoClub, preferProfileImage: true),
+        ),
+      ),
+      _StateCard(
+        label: 'fallback',
+        child: _ClubMediaFrame(child: ClubImage(club: _minimalClub)),
       ),
     ],
   );
@@ -1170,6 +1285,56 @@ Widget clubDetailBodyComposition(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Next run banner states',
+  type: ClubNextRunBanner,
+  path: '[Club Detail]/Sections',
+)
+Widget clubNextRunBannerStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ClubNextRunBanner',
+    catalogId: 'section.club.next_run_banner',
+    children: [
+      _StateCard(
+        label: 'tap target',
+        child: ClubNextRunBanner(event: _events.first, onTap: _noop),
+      ),
+      _StateCard(
+        label: 'display only',
+        child: ClubNextRunBanner(event: _events[1]),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Activity section states',
+  type: ClubActivitySection,
+  path: '[Club Detail]/Sections',
+)
+Widget clubActivitySectionStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ClubActivitySection',
+    catalogId: 'section.club.activity',
+    children: [
+      _StateCard(
+        label: 'activity and tags',
+        child: ClubActivitySection(
+          club: _club,
+          tags: visibleClubTags(_club, limit: 6),
+        ),
+      ),
+      _StateCard(
+        label: 'generic dinner tags',
+        child: ClubActivitySection(
+          club: _minimalClub,
+          tags: visibleClubTags(_minimalClub, limit: 4),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Host section states',
   type: ClubHostSection,
   path: '[Club Detail]/Sections',
@@ -1362,6 +1527,44 @@ Widget clubHeroAppBarStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Hero module states',
+  type: ClubHeroModule,
+  path: '[Club Detail]/Sections',
+)
+Widget clubHeroModuleStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ClubHeroModule',
+    catalogId: 'section.club.hero.module',
+    children: [
+      _StateCard(
+        label: 'cover module',
+        child: _DeviceFrame(
+          height: 460,
+          child: ClubHeroModule(
+            club: _club,
+            mediaHeight: 280,
+            kickerLabel: 'BANDRA · MUMBAI',
+            locationLabel: 'Bandstand promenade',
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'fallback module',
+        child: _DeviceFrame(
+          height: 420,
+          child: ClubHeroModule(
+            club: _minimalClub,
+            mediaHeight: 220,
+            kickerLabel: 'DINNER · MUMBAI',
+            locationLabel: 'Khar Social',
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Share card states',
   type: ClubShareCard,
   path: '[Club Detail]/Cards',
@@ -1378,6 +1581,56 @@ Widget clubShareCardStates(BuildContext context) {
       _StateCard(
         label: 'polaroid fallback',
         child: ClubShareCard(club: _minimalClub),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Share artwork states',
+  type: ClubShareArtwork,
+  path: '[Club Detail]/Cards',
+)
+Widget clubShareArtworkStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ClubShareArtwork',
+    catalogId: 'card.club.share.artwork',
+    children: [
+      _StateCard(
+        label: 'cover photo',
+        child: _ClubMediaFrame(child: ClubShareArtwork(club: _club)),
+      ),
+      _StateCard(
+        label: 'polaroid fallback',
+        child: _ClubMediaFrame(child: ClubShareArtwork(club: _minimalClub)),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Share meta row states',
+  type: ClubShareMetaRow,
+  path: '[Club Detail]/Cards',
+)
+Widget clubShareMetaRowStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ClubShareMetaRow',
+    catalogId: 'card.club.share.meta_row',
+    children: [
+      _StateCard(
+        label: 'location',
+        child: ClubShareMetaRow(
+          icon: CatchIcons.locationOnOutlined,
+          label: 'Bandra, Mumbai',
+        ),
+      ),
+      _StateCard(
+        label: 'member count',
+        child: ClubShareMetaRow(
+          icon: CatchIcons.group,
+          label: clubMemberCountLabel(_club),
+        ),
       ),
     ],
   );

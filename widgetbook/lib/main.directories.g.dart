@@ -111,12 +111,57 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Cards',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'ClubShareArtwork',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Share artwork states',
+                builder: _widgetbook_workspace_clubs_club_detail_use_cases
+                    .clubShareArtworkStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'ClubShareCard',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Share card states',
                 builder: _widgetbook_workspace_clubs_club_detail_use_cases
                     .clubShareCardStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ClubShareMetaRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Share meta row states',
+                builder: _widgetbook_workspace_clubs_club_detail_use_cases
+                    .clubShareMetaRowStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Dock',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'DockBell',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Dock bell states',
+                builder: _widgetbook_workspace_clubs_club_detail_use_cases
+                    .dockBellStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'DockCount',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Dock count states',
+                builder: _widgetbook_workspace_clubs_club_detail_use_cases
+                    .dockCountStates,
               ),
             ],
           ),
@@ -226,6 +271,16 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Sections',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'ClubActivitySection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Activity section states',
+                builder: _widgetbook_workspace_clubs_club_detail_use_cases
+                    .clubActivitySectionStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'ClubContactSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -266,6 +321,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'ClubHeroModule',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Hero module states',
+                builder: _widgetbook_workspace_clubs_club_detail_use_cases
+                    .clubHeroModuleStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'ClubHostRow',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -292,6 +357,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Provider dock states',
                 builder: _widgetbook_workspace_clubs_club_detail_use_cases
                     .clubMembershipDockStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ClubNextRunBanner',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Next run banner states',
+                builder: _widgetbook_workspace_clubs_club_detail_use_cases
+                    .clubNextRunBannerStates,
               ),
             ],
           ),
@@ -335,6 +410,16 @@ final directories = <_widgetbook.WidgetbookNode>[
       _widgetbook.WidgetbookFolder(
         name: 'Atoms',
         children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'AvatarChip',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Avatar chip states',
+                builder: _widgetbook_workspace_clubs_club_detail_use_cases
+                    .avatarChipStates,
+              ),
+            ],
+          ),
           _widgetbook.WidgetbookComponent(
             name: 'ClubDirectoryFooter',
             useCases: [
@@ -382,6 +467,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Role badge states',
                 builder: _widgetbook_workspace_clubs_club_detail_use_cases
                     .clubHostRoleBadgeStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ClubImage',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Club image states',
+                builder: _widgetbook_workspace_clubs_club_detail_use_cases
+                    .clubImageStates,
               ),
             ],
           ),
