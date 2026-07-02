@@ -19261,7 +19261,7 @@
             "symbol": "EventRepository"
           }
         ],
-        "notes": "EditHostedEventRouteScreen resolves uid, club, and event, handles loading/error/not-found/unauthorized route states, and delegates loaded state to EditHostedEventScreen. HostEventEditScreenState now owns loaded editability, schedule/policy lock derivation, save footer enabled/loading state, save error exposure, success/missing-location feedback copy, and pop-on-success policy. HostEventEditSaveRequest owns validated save payload construction. HostEventEditPrivateAccessState owns invite-only private-access watch and invite-code seed policy. EditHostedEventScreen still owns local form controllers, location picker, validation, EventBookingController.updateHostedEventMutation execution, and Navigator/snackbar side effects."
+        "notes": "EditHostedEventRouteScreen resolves uid, club, and event, handles loading/error/not-found/unauthorized route states, and delegates loaded state to EditHostedEventScreen. HostEventEditScreenState now owns loaded editability, schedule/policy lock derivation, save footer enabled/loading state, save error exposure, success/missing-location feedback copy, and pop-on-success policy. HostEventEditSaveRequest owns validated save payload construction. HostEventEditPrivateAccessState owns invite-only private-access watch and invite-code seed policy. HostEventEditLocationState owns selected-location display and picker initial-label state. EditHostedEventScreen still owns local form controllers, location picker navigation, validation, EventBookingController.updateHostedEventMutation execution, and Navigator/snackbar side effects."
       },
       "designRefs": [
         {
@@ -19597,8 +19597,8 @@
         }
       ],
       "composition": {
-        "currentLayout": "EditHostedEventRouteScreen owns provider loading/access through HostEventEditState. EditHostedEventScreen owns form controllers, validation, location picker, mutation execution, snackbar, and Navigator side effects while HostEventEditScreenState owns loaded editability, schedule/policy locks, save footer state, save error display input, feedback copy, and pop-on-success policy; HostEventEditSaveRequest owns validated save payload construction; HostEventEditPrivateAccessState owns invite-only private-access watch and invite-code seed policy.",
-        "targetLayout": "Host Edit Event should keep route access in HostEventEditState, continue expanding HostEventEditScreenState into field values, validation, selected-location, and typed callbacks, then compose provider-free form sections.",
+        "currentLayout": "EditHostedEventRouteScreen owns provider loading/access through HostEventEditState. EditHostedEventScreen owns form controllers, validation, location picker navigation, mutation execution, snackbar, and Navigator side effects while HostEventEditScreenState owns loaded editability, schedule/policy locks, save footer state, save error display input, feedback copy, and pop-on-success policy; HostEventEditSaveRequest owns validated save payload construction; HostEventEditPrivateAccessState owns invite-only private-access watch and invite-code seed policy; HostEventEditLocationState owns selected-location display and picker initial-label state.",
+        "targetLayout": "Host Edit Event should keep route access in HostEventEditState, continue expanding HostEventEditScreenState into field values, validation, and typed callbacks, then compose provider-free form sections.",
         "sections": [
           {
             "id": "section.host.event_edit.route_adapter",
@@ -19769,7 +19769,7 @@
         {
           "id": "DS-HOST-EVENT-EDIT-003",
           "status": "open",
-          "nextAction": "HostEventEditScreenState now owns loaded editability, schedule/policy locks, save footer state, save error input, feedback copy, and pop-on-success policy. HostEventEditSaveRequest owns validated save payload construction, and HostEventEditPrivateAccessState owns invite-only private-access watch and invite-code seed policy. Remaining adapter work is validation, selected-location, field display values, and typed callbacks so the screen no longer owns form-side effects."
+          "nextAction": "HostEventEditScreenState now owns loaded editability, schedule/policy locks, save footer state, save error input, feedback copy, and pop-on-success policy. HostEventEditSaveRequest owns validated save payload construction, HostEventEditPrivateAccessState owns invite-only private-access watch and invite-code seed policy, and HostEventEditLocationState owns selected-location display and picker initial-label state. Remaining adapter work is validation, field display values, and typed callbacks so the screen no longer owns form-side effects."
         },
         {
           "id": "DS-HOST-EVENT-EDIT-004",

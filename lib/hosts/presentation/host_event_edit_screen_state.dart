@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
+import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -125,7 +126,42 @@ class HostEventEditPrivateAccessState {
   }
 }
 
+@immutable
+class HostEventEditLocationState {
+  const HostEventEditLocationState({
+    required this.canPick,
+    required this.startingPoint,
+    required this.selectedLabel,
+    required this.pickerInitialLabel,
+  });
+
+  final bool canPick;
+  final LocationCoordinate? startingPoint;
+  final String selectedLabel;
+  final String? pickerInitialLabel;
+
+  bool get hasStartingPoint => startingPoint != null;
+
+  factory HostEventEditLocationState.from({
+    required bool canEdit,
+    required LocationCoordinate? startingPoint,
+    required String meetingPoint,
+  }) {
+    final normalizedMeetingPoint = meetingPoint.trim();
+    return HostEventEditLocationState(
+      canPick: canEdit,
+      startingPoint: startingPoint,
+      selectedLabel: normalizedMeetingPoint,
+      pickerInitialLabel: _trimTextToNull(normalizedMeetingPoint),
+    );
+  }
+}
+
 String? _trimInviteCode(String? value) {
+  return _trimTextToNull(value);
+}
+
+String? _trimTextToNull(String? value) {
   final normalized = value?.trim();
   if (normalized == null || normalized.isEmpty) return null;
   return normalized;

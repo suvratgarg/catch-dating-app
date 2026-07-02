@@ -306,6 +306,31 @@ void main() {
     expect(openCapacity.inviteCodeSeed, isNull);
   });
 
+  test('HostEventEditLocationState maps selected location display', () {
+    const coordinate = LocationCoordinate(19.08, 72.88);
+
+    final ready = HostEventEditLocationState.from(
+      canEdit: true,
+      startingPoint: coordinate,
+      meetingPoint: ' New gate ',
+    );
+    expect(ready.canPick, isTrue);
+    expect(ready.startingPoint, coordinate);
+    expect(ready.hasStartingPoint, isTrue);
+    expect(ready.selectedLabel, 'New gate');
+    expect(ready.pickerInitialLabel, 'New gate');
+
+    final empty = HostEventEditLocationState.from(
+      canEdit: false,
+      startingPoint: null,
+      meetingPoint: ' ',
+    );
+    expect(empty.canPick, isFalse);
+    expect(empty.hasStartingPoint, isFalse);
+    expect(empty.selectedLabel, isEmpty);
+    expect(empty.pickerInitialLabel, isNull);
+  });
+
   testWidgets('saves host-editable event details through updateEvent', (
     tester,
   ) async {

@@ -468,6 +468,11 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
       savePending: mutation.isPending,
       saveError: saveError,
     );
+    final locationState = HostEventEditLocationState.from(
+      canEdit: screenState.canEdit,
+      startingPoint: _startingPoint,
+      meetingPoint: _meetingPointController.text,
+    );
     final privateAccessAsync =
         _selectedAdmissionPreset == EventAdmissionPreset.inviteOnly
         ? ref.watch(watchEventPrivateAccessProvider(widget.event.id))
@@ -581,9 +586,9 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
               gapH16,
               MapPinTile(
                 key: CreateEventFormKeys.mapPicker,
-                startingPoint: _startingPoint,
-                selectedLabel: _meetingPointController.text,
-                enabled: screenState.canEdit,
+                startingPoint: locationState.startingPoint,
+                selectedLabel: locationState.selectedLabel,
+                enabled: locationState.canPick,
                 onTap: _pickLocation,
               ),
               gapH16,
@@ -759,13 +764,18 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
 
   Future<void> _pickLocation() async {
     final deviceLocation = ref.read(deviceLocationProvider).asData?.value;
+    final locationState = HostEventEditLocationState.from(
+      canEdit: true,
+      startingPoint: _startingPoint,
+      meetingPoint: _meetingPointController.text,
+    );
     final result = await Navigator.of(context).push<LocationPickerResult>(
       MaterialPageRoute(
         builder: (_) => LocationPickerScreen(
           countryIsoCode: countryIsoCodeForCityName(widget.club.location),
-          initialLocation: _startingPoint,
-          initialCenter: _startingPoint ?? deviceLocation,
-          initialLabel: _trimToNull(_meetingPointController.text),
+          initialLocation: locationState.startingPoint,
+          initialCenter: locationState.startingPoint ?? deviceLocation,
+          initialLabel: locationState.pickerInitialLabel,
           loadMapTiles: widget.loadMapTiles,
         ),
         fullscreenDialog: true,
