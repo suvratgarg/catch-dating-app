@@ -4198,6 +4198,79 @@ Widget catchSheetContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
+  type: CatchPlainSheetHeader,
+  path: '[Core primitives]/Sheets and footers',
+)
+Widget catchPlainSheetHeaderContractStates(BuildContext context) {
+  return const _ContractScreen(
+    title: 'CatchPlainSheetHeader',
+    contractId: 'catch.sheet.plain_header',
+    states: ['title-subtitle', 'trailing', 'title-only'],
+    children: [
+      _StateCard(
+        label: 'title-subtitle',
+        child: CatchPlainSheetHeader(
+          title: 'Invite guests',
+          subtitle: 'Share this event with people who fit the format.',
+        ),
+      ),
+      _StateCard(
+        label: 'trailing',
+        child: CatchPlainSheetHeader(
+          title: 'Filters',
+          subtitle: 'Tune what shows up first.',
+          trailing: CatchBadge(label: '2', tone: CatchBadgeTone.gold),
+        ),
+      ),
+      _StateCard(
+        label: 'title-only',
+        child: CatchPlainSheetHeader(title: 'Embedded sheet'),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchBrandedSheetHeader,
+  path: '[Core primitives]/Sheets and footers',
+)
+Widget catchBrandedSheetHeaderContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'CatchBrandedSheetHeader',
+    contractId: 'catch.sheet.branded_header',
+    states: const ['title-subtitle', 'trailing', 'title-only'],
+    children: [
+      _StateCard(
+        label: 'title-subtitle',
+        child: CatchBrandedSheetHeader(
+          glyph: CatchIcons.sparkle,
+          title: 'Good fit',
+          subtitle: 'Guests will see this before joining.',
+        ),
+      ),
+      _StateCard(
+        label: 'trailing',
+        child: CatchBrandedSheetHeader(
+          glyph: CatchIcons.hostBadge,
+          title: 'Set up payouts',
+          subtitle: 'Powered by Stripe',
+          trailing: Text('Soon'),
+        ),
+      ),
+      _StateCard(
+        label: 'title-only',
+        child: CatchBrandedSheetHeader(
+          glyph: CatchIcons.settingsOutlined,
+          title: 'Sheet settings',
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
   type: CatchTabDock,
   path: '[Core primitives]/Navigation',
 )

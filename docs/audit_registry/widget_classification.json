@@ -10,14 +10,14 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1153,
-    "widgetClasses": 1049,
+    "total": 1155,
+    "widgetClasses": 1051,
     "stateClasses": 104,
-    "publicClasses": 1047,
+    "publicClasses": 1049,
     "privateClasses": 106,
     "byRole": {
       "atom": 48,
-      "composition": 315,
+      "composition": 317,
       "feature-adapter": 318,
       "pattern": 14,
       "screen": 354,
@@ -28,11 +28,11 @@
       "keep-public-cataloged": 880,
       "keep-widget-state": 104,
       "review-catalog-coverage": 5,
-      "review-promote-or-consolidate": 37,
+      "review-promote-or-consolidate": 39,
       "review-promote-or-inline": 2
     },
     "byCatalogStatus": {
-      "cataloged": 844,
+      "cataloged": 846,
       "contracted": 125,
       "not-applicable": 104,
       "route-covered": 72,
@@ -2969,6 +2969,60 @@
         "mergeIntoCanonical"
       ],
       "flags": []
+    },
+    {
+      "name": "CatchBrandedSheetHeader",
+      "file": "lib/core/widgets/catch_bottom_sheet.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.branded_sheet_header",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract"
+      ]
+    },
+    {
+      "name": "CatchPlainSheetHeader",
+      "file": "lib/core/widgets/catch_bottom_sheet.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.plain_sheet_header",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract"
+      ]
     },
     {
       "name": "_CatchButtonState",
