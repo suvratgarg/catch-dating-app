@@ -5,11 +5,6 @@
   "allowedFindings": [
     {
       "rule": "crossFeaturePresentationImport",
-      "path": "lib/chats/presentation/inbox/chats_list_celebration_controller.dart",
-      "import": "package:catch_dating_app/matches/presentation/widgets/match_celebration_dialog.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
       "path": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
       "import": "package:catch_dating_app/reviews/presentation/reviews_section.dart"
     },

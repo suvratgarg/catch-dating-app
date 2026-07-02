@@ -141,7 +141,7 @@ import 'package:catch_dating_app/labs/design_fixtures/utility_surface_fixtures.d
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
-import 'package:catch_dating_app/matches/presentation/widgets/match_celebration_dialog.dart';
+import 'package:catch_dating_app/matches/shared/match_celebration_dialog.dart';
 import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:catch_dating_app/onboarding/data/onboarding_draft_repository.dart';

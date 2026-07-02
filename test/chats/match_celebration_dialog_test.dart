@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/celebration/celebration_effects_controller.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
-import 'package:catch_dating_app/matches/presentation/widgets/match_celebration_dialog.dart';
+import 'package:catch_dating_app/matches/shared/match_celebration_dialog.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

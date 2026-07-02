@@ -35,7 +35,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/labs/design_fixtures/matches_chat_surface_fixtures.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
-import 'package:catch_dating_app/matches/presentation/widgets/match_celebration_dialog.dart';
+import 'package:catch_dating_app/matches/shared/match_celebration_dialog.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';

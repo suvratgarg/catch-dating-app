@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/matches/domain/match.dart';
-import 'package:catch_dating_app/matches/presentation/widgets/match_celebration_dialog.dart';
+import 'package:catch_dating_app/matches/presentation/match_celebration_controller.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
