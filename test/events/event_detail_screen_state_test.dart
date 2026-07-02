@@ -155,6 +155,32 @@ void main() {
       expect(state.isSecondaryActionEnabled, false);
     });
 
+    test('does not treat expired accepted waitlist offers as approved', () {
+      final now = DateTime(2099, 1, 1, 12);
+      final event = events.buildEvent(
+        startTime: now.add(const Duration(days: 1)),
+      );
+
+      final state = eventDetailBookingDockStateFrom(
+        event: event,
+        userProfile: events.buildUser(),
+        participation: events.buildEventParticipation(
+          event: event,
+          uid: 'runner-1',
+          status: EventParticipationStatus.waitlisted,
+          waitlistOfferStatus: EventWaitlistOfferStatus.accepted,
+          waitlistOfferAcceptedAt: now.subtract(const Duration(days: 3)),
+          waitlistOfferExpiresAt: now.subtract(const Duration(days: 1)),
+        ),
+        now: now,
+        hasInviteCode: false,
+        supportsPaidBookings: true,
+      );
+
+      expect(state.label, 'Leave waitlist');
+      expect(state.primaryAction, EventDetailBookingDockAction.leaveWaitlist);
+    });
+
     test('hides signed-up dock during the self check-in window', () {
       final startTime = DateTime(2026, 1, 1, 9);
       final event = events.buildEvent(startTime: startTime, bookedCount: 1);

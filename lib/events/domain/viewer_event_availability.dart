@@ -107,7 +107,10 @@ ViewerEventAvailability resolveViewerEventAvailability({
       return base.build(ViewerEventAvailabilityStatus.joined);
     case EventParticipationStatus.waitlisted:
       if (participation != null &&
-          EventService.participationStatus(participation).hasHostApproval) {
+          EventService.participationStatus(
+            participation,
+            now: referenceNow,
+          ).hasHostApproval) {
         return base.build(
           _hasEventStarted(event, referenceNow)
               ? ViewerEventAvailabilityStatus.past

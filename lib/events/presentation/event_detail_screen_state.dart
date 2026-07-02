@@ -169,7 +169,7 @@ EventDetailBookingDockState eventDetailBookingDockStateFrom({
       requiresHostApproval &&
       participation?.status == EventParticipationStatus.waitlisted &&
       participation != null &&
-      EventService.participationStatus(participation).hasHostApproval;
+      EventService.participationStatus(participation, now: now).hasHostApproval;
   final hasActiveWaitlistOffer = participation != null
       ? EventService.participationStatus(
           participation,
@@ -369,7 +369,10 @@ EventEligibility _eventDetailEligibilityForParticipation({
     EventParticipationStatus.signedUp => const AlreadySignedUp(),
     EventParticipationStatus.waitlisted
         when participation != null &&
-            EventService.participationStatus(participation).hasHostApproval =>
+            EventService.participationStatus(
+              participation,
+              now: now,
+            ).hasHostApproval =>
       _hasEventStarted(event, now) ? const EventPast() : const Eligible(),
     EventParticipationStatus.waitlisted => const OnWaitlist(),
     EventParticipationStatus.cancelled ||
