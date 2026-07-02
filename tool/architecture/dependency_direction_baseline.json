@@ -61,7 +61,7 @@
     {
       "rule": "crossFeaturePresentationImport",
       "path": "lib/dashboard/presentation/widgets/recommend_card.dart",
-      "import": "package:catch_dating_app/events/presentation/widgets/event_tiles/event_capacity_presenter.dart"
+      "import": "package:catch_dating_app/events/presentation/event_capacity_presenter.dart"
     },
     {
       "rule": "crossFeaturePresentationImport",

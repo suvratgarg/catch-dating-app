@@ -10,7 +10,7 @@ import 'package:catch_dating_app/core/widgets/event_ticket_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_capacity_presenter.dart';
+import 'package:catch_dating_app/events/presentation/event_capacity_presenter.dart';
 import 'package:flutter/material.dart';
 
 const double _dateRailWidth = CatchLayout.eventDateRailWidth;
@@ -86,10 +86,7 @@ class EventDateRailCard extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  DateRail(
-                    startTime: event.startTime,
-                    color: visual.accent,
-                  ),
+                  DateRail(startTime: event.startTime, color: visual.accent),
                   Expanded(
                     child: Padding(
                       padding: CatchInsets.listBody,
@@ -408,11 +405,7 @@ class _PerforationPainter extends CustomPainter {
 }
 
 class DateRail extends StatelessWidget {
-  const DateRail({
-    super.key,
-    required this.startTime,
-    required this.color,
-  });
+  const DateRail({super.key, required this.startTime, required this.color});
 
   final DateTime startTime;
   final Color color;

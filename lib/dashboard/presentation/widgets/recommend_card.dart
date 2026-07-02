@@ -2,7 +2,7 @@ import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_capacity_presenter.dart';
+import 'package:catch_dating_app/events/presentation/event_capacity_presenter.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
