@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
@@ -7,7 +8,6 @@ import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum HostEventManageSection { setup, guests, live, report }
 
@@ -158,11 +158,11 @@ class HostPrivateLinkActionState {
   factory HostPrivateLinkActionState.resolve({
     required Club club,
     required Event event,
-    required AsyncValue<EventPrivateAccess?>? accessAsync,
-    required AsyncValue<List<EventInviteLink>>? inviteLinksAsync,
+    required CatchAsyncState<EventPrivateAccess?>? accessState,
+    required CatchAsyncState<List<EventInviteLink>>? inviteLinksState,
     required bool sharePending,
   }) {
-    final inviteCode = accessAsync?.asData?.value?.inviteCode.trim();
+    final inviteCode = accessState?.value?.inviteCode.trim();
     final inviteLink = inviteCode == null || inviteCode.isEmpty
         ? null
         : AppDeepLinks.event(
@@ -174,8 +174,8 @@ class HostPrivateLinkActionState {
       inviteCode: inviteCode,
       inviteLink: inviteLink,
       shareDetail: hostPrivateShareDetail(
-        accessAsync: accessAsync,
-        inviteLinksAsync: inviteLinksAsync,
+        accessState: accessState,
+        inviteLinksState: inviteLinksState,
         sharePending: sharePending,
       ),
       canShare: inviteLink != null && !sharePending,
@@ -200,14 +200,14 @@ class HostPrivateAccessDisplayState {
     required Club club,
     required Event event,
     required EventPrivateAccess? access,
-    required AsyncValue<List<EventInviteLink>>? inviteLinksAsync,
+    required CatchAsyncState<List<EventInviteLink>>? inviteLinksState,
     required bool sharePending,
   }) {
     final linkAction = HostPrivateLinkActionState.resolve(
       club: club,
       event: event,
-      accessAsync: AsyncData<EventPrivateAccess?>(access),
-      inviteLinksAsync: inviteLinksAsync,
+      accessState: CatchAsyncState<EventPrivateAccess?>.data(access),
+      inviteLinksState: inviteLinksState,
       sharePending: sharePending,
     );
     return HostPrivateAccessDisplayState(
@@ -345,7 +345,7 @@ class HostParticipantProfilesLookupState {
 
   factory HostParticipantProfilesLookupState.resolve({
     required List<String> profileIds,
-    required AsyncValue<Map<String, (String, String?)>>? profilesAsync,
+    required CatchAsyncState<Map<String, (String, String?)>>? profilesState,
   }) {
     if (profileIds.isEmpty) {
       return const HostParticipantProfilesLookupState(
@@ -354,7 +354,7 @@ class HostParticipantProfilesLookupState {
         profiles: <String, (String, String?)>{},
       );
     }
-    final profiles = profilesAsync?.asData?.value;
+    final profiles = profilesState?.value;
     if (profiles != null) {
       return HostParticipantProfilesLookupState(
         status: HostParticipantProfilesLookupStatus.ready,
@@ -362,12 +362,12 @@ class HostParticipantProfilesLookupState {
         profiles: profiles,
       );
     }
-    if (profilesAsync?.hasError ?? false) {
+    if (profilesState?.status == CatchAsyncStatus.error) {
       return HostParticipantProfilesLookupState(
         status: HostParticipantProfilesLookupStatus.error,
         profileIds: profileIds,
         profiles: const <String, (String, String?)>{},
-        error: profilesAsync!.error,
+        error: profilesState!.error,
       );
     }
     return HostParticipantProfilesLookupState(
@@ -918,22 +918,26 @@ int hostManageWaitlistedCount(Event event, EventParticipationRoster? roster) {
 }
 
 String hostPrivateShareDetail({
-  required AsyncValue<EventPrivateAccess?>? accessAsync,
-  required AsyncValue<List<EventInviteLink>>? inviteLinksAsync,
+  required CatchAsyncState<EventPrivateAccess?>? accessState,
+  required CatchAsyncState<List<EventInviteLink>>? inviteLinksState,
   required bool sharePending,
 }) {
   if (sharePending) return 'Sharing...';
-  if (accessAsync == null) return 'Public event link';
-  if (accessAsync.isLoading) return 'Loading link';
-  if (accessAsync.hasError || accessAsync.asData?.value == null) {
+  if (accessState == null) return 'Public event link';
+  if (accessState.status == CatchAsyncStatus.loading) return 'Loading link';
+  if (accessState.status == CatchAsyncStatus.error ||
+      accessState.value == null) {
     return 'Invite setup unavailable';
   }
 
-  if (inviteLinksAsync == null || inviteLinksAsync.isLoading) {
+  if (inviteLinksState == null ||
+      inviteLinksState.status == CatchAsyncStatus.loading) {
     return 'Private invite link';
   }
-  if (inviteLinksAsync.hasError) return 'Invite links unavailable';
-  final count = inviteLinksAsync.asData?.value.length ?? 0;
+  if (inviteLinksState.status == CatchAsyncStatus.error) {
+    return 'Invite links unavailable';
+  }
+  final count = inviteLinksState.value?.length ?? 0;
   if (count == 1) return '1 invite link';
   return '$count invite links';
 }

@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -146,7 +147,9 @@ class HostEventParticipantsPanel extends ConsumerWidget {
             : ref.watch(attendeeProfilesProvider(profileIds));
         final profileLookupState = HostParticipantProfilesLookupState.resolve(
           profileIds: profileIds,
-          profilesAsync: profilesAsync,
+          profilesState: profilesAsync == null
+              ? null
+              : _catchAsyncState(profilesAsync),
         );
 
         return HostEventParticipantsList(
@@ -182,6 +185,14 @@ class HostEventParticipantsPanel extends ConsumerWidget {
       },
     );
   }
+}
+
+CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
+  return value.when(
+    data: CatchAsyncState<T>.data,
+    loading: () => const CatchAsyncState.loading(),
+    error: (error, stackTrace) => CatchAsyncState<T>.error(error),
+  );
 }
 
 void _toggleAttendance(

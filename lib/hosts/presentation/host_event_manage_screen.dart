@@ -4,6 +4,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -238,8 +239,8 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         ? HostPrivateLinkActionState.resolve(
             club: club,
             event: event,
-            accessAsync: accessAsync,
-            inviteLinksAsync: inviteLinksAsync,
+            accessState: _nullableCatchAsyncState(accessAsync),
+            inviteLinksState: _nullableCatchAsyncState(inviteLinksAsync),
             sharePending: shareMutation.isPending,
           )
         : null;
@@ -251,7 +252,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         showBackButton: true,
         onBack: onBackToSuccess,
         border: true,
-        height: CatchLayout.topBarLargeHeight + CatchSpacing.s4,
+        height: CatchLayout.hostEventManageTopBarHeight,
         titleWidget: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -832,7 +833,7 @@ class HostPrivateAccessCard extends StatelessWidget {
           club: club,
           event: event,
           access: access,
-          inviteLinksAsync: inviteLinksAsync,
+          inviteLinksState: _catchAsyncState(inviteLinksAsync),
           sharePending: shareMutation.isPending,
         );
         return HostPrivateAccessBody(
@@ -851,6 +852,18 @@ class HostPrivateAccessCard extends StatelessWidget {
       },
     );
   }
+}
+
+CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
+  return value.when(
+    data: CatchAsyncState<T>.data,
+    loading: () => const CatchAsyncState.loading(),
+    error: (error, stackTrace) => CatchAsyncState<T>.error(error),
+  );
+}
+
+CatchAsyncState<T>? _nullableCatchAsyncState<T>(AsyncValue<T>? value) {
+  return value == null ? null : _catchAsyncState(value);
 }
 
 class HostPrivateAccessShell extends StatelessWidget {

@@ -1864,6 +1864,8 @@ abstract final class CatchLayout {
   static const double tabDockLabelFontSize = 8.5;
   static const double topBarHeight = 56.0;
   static const double topBarLargeHeight = 104.0;
+  static const double hostEventManageTopBarHeight =
+      topBarLargeHeight + CatchSpacing.s4;
   static const double topBarTabHeight = CatchSpacing.s12;
   static const double topBarCollapsedFadeExtent = 72.0;
   static const double topBarCompactSearchBottomHeight = 68.0;

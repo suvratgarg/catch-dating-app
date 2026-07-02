@@ -1,9 +1,9 @@
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';
@@ -151,29 +151,29 @@ void main() {
     final ready = HostPrivateLinkActionState.resolve(
       club: club,
       event: event,
-      accessAsync: AsyncData(access),
-      inviteLinksAsync: AsyncData([inviteLink]),
+      accessState: CatchAsyncState.data(access),
+      inviteLinksState: CatchAsyncState.data([inviteLink]),
       sharePending: false,
     );
     final loading = HostPrivateLinkActionState.resolve(
       club: club,
       event: event,
-      accessAsync: const AsyncLoading(),
-      inviteLinksAsync: null,
+      accessState: const CatchAsyncState.loading(),
+      inviteLinksState: null,
       sharePending: false,
     );
     final errored = HostPrivateLinkActionState.resolve(
       club: club,
       event: event,
-      accessAsync: AsyncError(StateError('missing'), StackTrace.current),
-      inviteLinksAsync: null,
+      accessState: CatchAsyncState.error(StateError('missing')),
+      inviteLinksState: null,
       sharePending: false,
     );
     final pending = HostPrivateLinkActionState.resolve(
       club: club,
       event: event,
-      accessAsync: AsyncData(access),
-      inviteLinksAsync: AsyncData([inviteLink]),
+      accessState: CatchAsyncState.data(access),
+      inviteLinksState: CatchAsyncState.data([inviteLink]),
       sharePending: true,
     );
 
@@ -207,14 +207,14 @@ void main() {
       club: club,
       event: event,
       access: access,
-      inviteLinksAsync: const AsyncData([]),
+      inviteLinksState: const CatchAsyncState.data([]),
       sharePending: false,
     );
     final missing = HostPrivateAccessDisplayState.resolve(
       club: club,
       event: event,
       access: null,
-      inviteLinksAsync: const AsyncData([]),
+      inviteLinksState: const CatchAsyncState.data([]),
       sharePending: false,
     );
 
@@ -363,19 +363,19 @@ void main() {
 
     final empty = HostParticipantProfilesLookupState.resolve(
       profileIds: const [],
-      profilesAsync: null,
+      profilesState: null,
     );
     final loading = HostParticipantProfilesLookupState.resolve(
       profileIds: const ['uid-a'],
-      profilesAsync: const AsyncLoading(),
+      profilesState: const CatchAsyncState.loading(),
     );
     final ready = HostParticipantProfilesLookupState.resolve(
       profileIds: const ['uid-a', 'uid-b'],
-      profilesAsync: const AsyncData(profiles),
+      profilesState: const CatchAsyncState.data(profiles),
     );
     final errored = HostParticipantProfilesLookupState.resolve(
       profileIds: const ['uid-a'],
-      profilesAsync: AsyncError(error, StackTrace.empty),
+      profilesState: CatchAsyncState.error(error),
     );
 
     expect(empty.status, HostParticipantProfilesLookupStatus.ready);
