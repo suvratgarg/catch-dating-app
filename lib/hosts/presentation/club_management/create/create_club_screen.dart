@@ -178,6 +178,131 @@ class HostClubEditValidationState {
 }
 
 @immutable
+class HostClubCreateDraftRequest {
+  const HostClubCreateDraftRequest({
+    required this.name,
+    required this.area,
+    required this.description,
+    required this.location,
+    required this.instagramHandle,
+    required this.phoneNumber,
+    required this.email,
+    required this.hostDefaults,
+  });
+
+  factory HostClubCreateDraftRequest.fromForm({
+    required String name,
+    required String area,
+    required String description,
+    required String? selectedCity,
+    required String instagramHandle,
+    required String phoneNumber,
+    required String email,
+    required ClubHostDefaults hostDefaults,
+  }) {
+    return HostClubCreateDraftRequest(
+      name: _trimmedTextOrNull(name),
+      area: _trimmedTextOrNull(area),
+      description: _trimmedTextOrNull(description),
+      location: selectedCity,
+      instagramHandle: _trimmedTextOrNull(instagramHandle),
+      phoneNumber: _trimmedTextOrNull(phoneNumber),
+      email: _trimmedTextOrNull(email),
+      hostDefaults: hostDefaults,
+    );
+  }
+
+  final String? name;
+  final String? area;
+  final String? description;
+  final String? location;
+  final String? instagramHandle;
+  final String? phoneNumber;
+  final String? email;
+  final ClubHostDefaults hostDefaults;
+
+  ClubDraft toDraft({required DateTime savedAt}) {
+    return ClubDraft(
+      savedAt: savedAt,
+      name: name,
+      area: area,
+      description: description,
+      location: location,
+      instagramHandle: instagramHandle,
+      phoneNumber: phoneNumber,
+      email: email,
+      hostDefaults: hostDefaults,
+    );
+  }
+}
+
+@immutable
+class HostClubCreateSubmitRequest {
+  const HostClubCreateSubmitRequest({
+    required this.name,
+    required this.location,
+    required this.area,
+    required this.description,
+    required this.existingClub,
+    required this.clubPhotoInputs,
+    required this.profileImage,
+    required this.instagramHandle,
+    required this.phoneNumber,
+    required this.email,
+    required this.hostDefaults,
+  });
+
+  factory HostClubCreateSubmitRequest.fromForm({
+    required String name,
+    required String? selectedCity,
+    required String area,
+    required String description,
+    required Club? existingClub,
+    required List<ClubPhotoInput>? clubPhotoInputs,
+    required PickedClubProfileImage? profileImage,
+    required String instagramHandle,
+    required String phoneNumber,
+    required String email,
+    required ClubHostDefaults hostDefaults,
+  }) {
+    final location = selectedCity?.trim();
+    if (location == null || location.isEmpty) {
+      throw StateError('Missing selected city');
+    }
+    return HostClubCreateSubmitRequest(
+      name: name.trim(),
+      location: location,
+      area: area.trim(),
+      description: description.trim(),
+      existingClub: existingClub,
+      clubPhotoInputs: clubPhotoInputs,
+      profileImage: profileImage,
+      instagramHandle: _trimmedTextOrNull(instagramHandle),
+      phoneNumber: _trimmedTextOrNull(phoneNumber),
+      email: _trimmedTextOrNull(email),
+      hostDefaults: hostDefaults,
+    );
+  }
+
+  final String name;
+  final String location;
+  final String area;
+  final String description;
+  final Club? existingClub;
+  final List<ClubPhotoInput>? clubPhotoInputs;
+  final PickedClubProfileImage? profileImage;
+  final String? instagramHandle;
+  final String? phoneNumber;
+  final String? email;
+  final ClubHostDefaults hostDefaults;
+}
+
+String? _trimmedTextOrNull(String text) {
+  final trimmed = text.trim();
+  return trimmed.isEmpty ? null : trimmed;
+}
+
+@immutable
 class HostClubCreateState {
   const HostClubCreateState({
     required this.isEditing,
@@ -637,22 +762,22 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
   Future<void> _saveDraft() async {
     if (_isEditing) return;
 
-    final draft = ClubDraft(
-      savedAt: DateTime.now(),
-      name: _trimmedTextOrNull(_nameController),
-      area: _trimmedTextOrNull(_areaController),
-      description: _trimmedTextOrNull(_descriptionController),
-      location: _selectedCity,
-      instagramHandle: _trimmedTextOrNull(_instagramController),
-      phoneNumber: _trimmedTextOrNull(_phoneController),
-      email: _trimmedTextOrNull(_emailController),
+    final draftRequest = HostClubCreateDraftRequest.fromForm(
+      name: _nameController.text,
+      area: _areaController.text,
+      description: _descriptionController.text,
+      selectedCity: _selectedCity,
+      instagramHandle: _instagramController.text,
+      phoneNumber: _phoneController.text,
+      email: _emailController.text,
       hostDefaults: _hostDefaults,
     );
 
     final savedDraft = await CreateClubDraftController.saveDraftMutation.run(
       ref,
-      (tx) async =>
-          tx.get(createClubDraftControllerProvider.notifier).saveDraft(draft),
+      (tx) async => tx
+          .get(createClubDraftControllerProvider.notifier)
+          .saveDraft(draftRequest.toDraft(savedAt: DateTime.now())),
     );
     if (!mounted || savedDraft == null) return;
 
@@ -667,20 +792,33 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
     unawaited(
       CreateClubController.submitMutation
           .run(ref, (transaction) async {
+            final request = HostClubCreateSubmitRequest.fromForm(
+              name: _nameController.text,
+              selectedCity: _selectedCity,
+              area: _areaController.text,
+              description: _descriptionController.text,
+              existingClub: widget.initialClub,
+              clubPhotoInputs: _clubPhotoInputsForSubmit,
+              profileImage: _profileImage,
+              instagramHandle: _instagramController.text,
+              phoneNumber: _phoneController.text,
+              email: _emailController.text,
+              hostDefaults: _hostDefaults,
+            );
             await transaction
                 .get(createClubControllerProvider.notifier)
                 .submit(
-                  name: _nameController.text.trim(),
-                  location: _selectedCity!,
-                  area: _areaController.text.trim(),
-                  description: _descriptionController.text.trim(),
-                  existingClub: widget.initialClub,
-                  clubPhotoInputs: _clubPhotoInputsForSubmit,
-                  profileImage: _profileImage?.image,
-                  instagramHandle: _trimmedTextOrNull(_instagramController),
-                  phoneNumber: _trimmedTextOrNull(_phoneController),
-                  email: _trimmedTextOrNull(_emailController),
-                  hostDefaults: _hostDefaults,
+                  name: request.name,
+                  location: request.location,
+                  area: request.area,
+                  description: request.description,
+                  existingClub: request.existingClub,
+                  clubPhotoInputs: request.clubPhotoInputs,
+                  profileImage: request.profileImage?.image,
+                  instagramHandle: request.instagramHandle,
+                  phoneNumber: request.phoneNumber,
+                  email: request.email,
+                  hostDefaults: request.hostDefaults,
                 );
 
             if (!_isEditing) {
@@ -699,11 +837,6 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                 );
           }),
     );
-  }
-
-  static String? _trimmedTextOrNull(TextEditingController controller) {
-    final text = controller.text.trim();
-    return text.isEmpty ? null : text;
   }
 
   List<OrderedPhotoPreview> get _clubPhotoPreviews => [

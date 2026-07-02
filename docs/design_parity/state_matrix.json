@@ -8263,7 +8263,7 @@
             {
               "id": "DP-HOST-CLUB-CREATE-002",
               "status": "open",
-              "nextAction": "HostClubCreateState now owns footer action labels/enabled state, media/edit-scaffold enabled state, media display values, edit validation display state, mutation error copy, and typed primary/save-draft intents. Continue moving draft-load retry, save request construction, field/city value display, and typed route callbacks into the adapter, then align with Claude/Figma references."
+              "nextAction": "HostClubCreateState now owns footer action labels/enabled state, media/edit-scaffold enabled state, media display values, edit validation display state, mutation error copy, and typed primary/save-draft intents. HostClubCreateDraftRequest and HostClubCreateSubmitRequest own draft/submit request construction. Continue moving draft-load retry, field/city value display, and typed route callbacks into the adapter, then align with Claude/Figma references."
             }
           ]
         },

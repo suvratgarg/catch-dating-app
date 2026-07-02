@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_flow.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_screen.dart';
@@ -204,6 +205,72 @@ void main() {
     expect(state.editValidation.shouldShowErrors, isTrue);
     expect(state.editValidation.autovalidateMode, AutovalidateMode.always);
     expect(state.editValidation.identityHasError, isTrue);
+  });
+
+  test('HostClubCreateDraftRequest trims optional draft fields', () {
+    final request = HostClubCreateDraftRequest.fromForm(
+      name: '  Sea Face Social  ',
+      area: '   ',
+      description: '  Hosted social formats. ',
+      selectedCity: 'Mumbai',
+      instagramHandle: '  seaface ',
+      phoneNumber: '',
+      email: ' host@example.com ',
+      hostDefaults: const ClubHostDefaults(),
+    );
+    final draft = request.toDraft(savedAt: DateTime(2026));
+
+    expect(draft.name, 'Sea Face Social');
+    expect(draft.area, isNull);
+    expect(draft.description, 'Hosted social formats.');
+    expect(draft.location, 'Mumbai');
+    expect(draft.instagramHandle, 'seaface');
+    expect(draft.phoneNumber, isNull);
+    expect(draft.email, 'host@example.com');
+    expect(draft.savedAt, DateTime(2026));
+  });
+
+  test('HostClubCreateSubmitRequest trims submit fields', () {
+    final request = HostClubCreateSubmitRequest.fromForm(
+      name: '  Sea Face Social  ',
+      selectedCity: ' Mumbai ',
+      area: ' Bandra ',
+      description: '  Hosted social formats. ',
+      existingClub: null,
+      clubPhotoInputs: null,
+      profileImage: null,
+      instagramHandle: ' seaface ',
+      phoneNumber: ' ',
+      email: ' host@example.com ',
+      hostDefaults: const ClubHostDefaults(),
+    );
+
+    expect(request.name, 'Sea Face Social');
+    expect(request.location, 'Mumbai');
+    expect(request.area, 'Bandra');
+    expect(request.description, 'Hosted social formats.');
+    expect(request.instagramHandle, 'seaface');
+    expect(request.phoneNumber, isNull);
+    expect(request.email, 'host@example.com');
+  });
+
+  test('HostClubCreateSubmitRequest rejects missing city', () {
+    expect(
+      () => HostClubCreateSubmitRequest.fromForm(
+        name: 'Sea Face Social',
+        selectedCity: ' ',
+        area: 'Bandra',
+        description: 'Hosted social formats.',
+        existingClub: null,
+        clubPhotoInputs: null,
+        profileImage: null,
+        instagramHandle: '',
+        phoneNumber: '',
+        email: '',
+        hostDefaults: const ClubHostDefaults(),
+      ),
+      throwsStateError,
+    );
   });
 
   test(
