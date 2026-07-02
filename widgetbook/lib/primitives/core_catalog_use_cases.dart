@@ -2378,6 +2378,74 @@ Widget catchMetaDotRowCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
+  type: CatchMetaEntryFlow,
+  path: '[Core catalog]/Data display',
+)
+Widget catchMetaEntryFlowCatalogStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'CatchMetaEntryFlow',
+    catalogId: 'core.widgets.catch_meta_dot_row.flow',
+    children: [
+      _StateCard(
+        label: 'entries / truncation',
+        child: SizedBox(
+          width: 260,
+          child: CatchMetaEntryFlow(
+            entries: [
+              CatchMetaEntry(label: 'Tonight', icon: CatchIcons.calendarAdd),
+              CatchMetaEntry(
+                label: 'Bandra West',
+                icon: CatchIcons.pinOutlined,
+              ),
+              CatchMetaEntry(label: 'Easy pace'),
+            ],
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: CatchMetaEntryView,
+  path: '[Core catalog]/Data display',
+)
+Widget catchMetaEntryViewCatalogStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  return _CatalogScreen(
+    title: 'CatchMetaEntryView',
+    catalogId: 'core.widgets.catch_meta_dot_row.entry',
+    children: [
+      _StateCard(
+        label: 'plain / icon / strong',
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CatchMetaEntryView(entry: CatchMetaEntry(label: 'Tonight')),
+            const SizedBox(width: CatchSpacing.s4),
+            CatchMetaEntryView(
+              entry: CatchMetaEntry(
+                label: 'Bandra',
+                icon: CatchIcons.pinOutlined,
+                iconColor: t.primary,
+              ),
+            ),
+            const SizedBox(width: CatchSpacing.s4),
+            const CatchMetaEntryView(
+              entry: CatchMetaEntry(label: '2.4 km'),
+              isStrong: true,
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
   type: CatchBottomDock,
   path: '[Core catalog]/Sheets and footers',
 )

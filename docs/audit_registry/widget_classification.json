@@ -10,14 +10,14 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1138,
-    "widgetClasses": 1034,
+    "total": 1140,
+    "widgetClasses": 1036,
     "stateClasses": 104,
-    "publicClasses": 1032,
+    "publicClasses": 1034,
     "privateClasses": 106,
     "byRole": {
       "atom": 45,
-      "composition": 303,
+      "composition": 305,
       "feature-adapter": 318,
       "pattern": 14,
       "screen": 354,
@@ -28,7 +28,7 @@
       "keep-public-cataloged": 880,
       "keep-widget-state": 104,
       "review-catalog-coverage": 5,
-      "review-promote-or-consolidate": 22,
+      "review-promote-or-consolidate": 24,
       "review-promote-or-inline": 2
     },
     "byCatalogStatus": {
@@ -36,7 +36,7 @@
       "contracted": 125,
       "not-applicable": 104,
       "route-covered": 72,
-      "uncataloged": 8
+      "uncataloged": 10
     }
   },
   "widgets": [
@@ -4134,6 +4134,62 @@
         "mergeIntoCanonical"
       ],
       "flags": []
+    },
+    {
+      "name": "CatchMetaEntryFlow",
+      "file": "lib/core/widgets/catch_meta_row.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.meta_entry_flow",
+      "publicApi": true,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract",
+        "public-widget-missing-widgetbook"
+      ]
+    },
+    {
+      "name": "CatchMetaEntryView",
+      "file": "lib/core/widgets/catch_meta_row.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.meta_entry_view",
+      "publicApi": true,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract",
+        "public-widget-missing-widgetbook"
+      ]
     },
     {
       "name": "CatchMetricStrip",

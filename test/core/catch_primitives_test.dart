@@ -1629,6 +1629,8 @@ void main() {
     expect(find.text('Tonight'), findsOneWidget);
     expect(find.text('Bandra'), findsOneWidget);
     expect(find.text('2.3 km'), findsOneWidget);
+    expect(find.byType(CatchMetaEntryFlow), findsOneWidget);
+    expect(find.byType(CatchMetaEntryView), findsNWidgets(3));
     expect(find.text('Payment ID'), findsOneWidget);
     expect(find.text('pay_123'), findsOneWidget);
     expect(find.text('24'), findsOneWidget);
