@@ -299,6 +299,9 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             club: club,
             event: event,
             roster: roster,
+            privateAccessAsync: accessAsync,
+            inviteLinksAsync: inviteLinksAsync,
+            shareMutation: shareMutation,
             onDeleted: onBackToSuccess,
             actionState: actionState,
             actionError: _firstMutationError([cancelMutation, deleteMutation]),
@@ -314,6 +317,9 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
     required Club club,
     required Event event,
     required EventParticipationRoster? roster,
+    required AsyncValue<EventPrivateAccess?>? privateAccessAsync,
+    required AsyncValue<List<EventInviteLink>>? inviteLinksAsync,
+    required MutationState<dynamic> shareMutation,
     required VoidCallback onDeleted,
     required HostEventActionDisplayState actionState,
     required Object? actionError,
@@ -362,7 +368,24 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         ),
         if (event.effectiveEventPolicy.usesInviteOnly) ...[
           gapH20,
-          HostPrivateAccessCard(club: club, event: event),
+          HostPrivateAccessCard(
+            club: club,
+            event: event,
+            accessAsync: privateAccessAsync!,
+            inviteLinksAsync: inviteLinksAsync!,
+            shareMutation: shareMutation,
+            onRetryPrivateAccess: () =>
+                ref.invalidate(watchEventPrivateAccessProvider(event.id)),
+            onRetryInviteLinks: () =>
+                ref.invalidate(watchEventInviteLinksProvider(event.id)),
+            onSharePrivateLink: (inviteLink) => _shareHostPrivateLink(
+              context: context,
+              ref: ref,
+              club: club,
+              event: event,
+              inviteLink: inviteLink,
+            ),
+          ),
         ],
         gapH20,
         HostEventSummaryCard(club: club, event: event),
@@ -602,20 +625,31 @@ class HostManageSectionPicker extends StatelessWidget {
   }
 }
 
-class HostPrivateAccessCard extends ConsumerWidget {
+class HostPrivateAccessCard extends StatelessWidget {
   const HostPrivateAccessCard({
     super.key,
     required this.club,
     required this.event,
+    required this.accessAsync,
+    required this.inviteLinksAsync,
+    required this.shareMutation,
+    required this.onRetryPrivateAccess,
+    required this.onRetryInviteLinks,
+    required this.onSharePrivateLink,
   });
 
   final Club club;
   final Event event;
+  final AsyncValue<EventPrivateAccess?> accessAsync;
+  final AsyncValue<List<EventInviteLink>> inviteLinksAsync;
+  final MutationState<dynamic> shareMutation;
+  final VoidCallback onRetryPrivateAccess;
+  final VoidCallback onRetryInviteLinks;
+  final ValueChanged<String> onSharePrivateLink;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final accessAsync = ref.watch(watchEventPrivateAccessProvider(event.id));
     return CatchAsyncValueView<EventPrivateAccess?>(
       value: accessAsync,
       loadingBuilder: (_) => HostPrivateAccessShell(
@@ -638,11 +672,25 @@ class HostPrivateAccessCard extends ConsumerWidget {
         error,
         context: AppErrorContext.event,
         compact: true,
-        onRetry: () =>
-            ref.invalidate(watchEventPrivateAccessProvider(event.id)),
+        onRetry: onRetryPrivateAccess,
       ),
-      builder: (context, access) =>
-          HostPrivateAccessBody(club: club, event: event, access: access),
+      builder: (context, access) {
+        final privateAccessState = HostPrivateAccessDisplayState.resolve(
+          club: club,
+          event: event,
+          access: access,
+          inviteLinksAsync: inviteLinksAsync,
+          sharePending: shareMutation.isPending,
+        );
+        return HostPrivateAccessBody(
+          event: event,
+          state: privateAccessState,
+          inviteLinksAsync: inviteLinksAsync,
+          shareMutation: shareMutation,
+          onRetryInviteLinks: onRetryInviteLinks,
+          onSharePrivateLink: onSharePrivateLink,
+        );
+      },
     );
   }
 }
@@ -663,32 +711,28 @@ class HostPrivateAccessShell extends StatelessWidget {
   }
 }
 
-class HostPrivateAccessBody extends ConsumerWidget {
+class HostPrivateAccessBody extends StatelessWidget {
   const HostPrivateAccessBody({
     super.key,
-    required this.club,
     required this.event,
-    required this.access,
+    required this.state,
+    required this.inviteLinksAsync,
+    required this.shareMutation,
+    required this.onRetryInviteLinks,
+    required this.onSharePrivateLink,
   });
 
-  final Club club;
   final Event event;
-  final EventPrivateAccess? access;
+  final HostPrivateAccessDisplayState state;
+  final AsyncValue<List<EventInviteLink>> inviteLinksAsync;
+  final MutationState<dynamic> shareMutation;
+  final VoidCallback onRetryInviteLinks;
+  final ValueChanged<String> onSharePrivateLink;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final shareMutation = ref.watch(
-      HostEventManageController.sharePrivateLinkMutation,
-    );
-    final inviteLinksAsync = ref.watch(watchEventInviteLinksProvider(event.id));
-    final privateAccessState = HostPrivateAccessDisplayState.resolve(
-      club: club,
-      event: event,
-      access: access,
-      inviteLinksAsync: inviteLinksAsync,
-      sharePending: shareMutation.isPending,
-    );
+    final privateAccessState = state;
     final linkAction = privateAccessState.linkAction;
 
     return HostPrivateAccessShell(
@@ -745,13 +789,7 @@ class HostPrivateAccessBody extends ConsumerWidget {
               label: 'Share private link',
               onPressed: !linkAction.canShare
                   ? null
-                  : () => _shareHostPrivateLink(
-                      context: context,
-                      ref: ref,
-                      club: club,
-                      event: event,
-                      inviteLink: linkAction.inviteLink!,
-                    ),
+                  : () => onSharePrivateLink(linkAction.inviteLink!),
               variant: CatchButtonVariant.secondary,
               icon: Icon(
                 CatchIcons.platformShare(platform: Theme.of(context).platform),
@@ -764,6 +802,7 @@ class HostPrivateAccessBody extends ConsumerWidget {
               event: event,
               inviteCode: linkAction.inviteCode!,
               linksAsync: inviteLinksAsync,
+              onRetry: onRetryInviteLinks,
             ),
           ],
         ],
@@ -815,11 +854,13 @@ class HostInviteLinksList extends ConsumerWidget {
     required this.event,
     required this.inviteCode,
     required this.linksAsync,
+    required this.onRetry,
   });
 
   final Event event;
   final String inviteCode;
   final AsyncValue<List<EventInviteLink>> linksAsync;
+  final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -907,8 +948,7 @@ class HostInviteLinksList extends ConsumerWidget {
             error,
             context: AppErrorContext.event,
             compact: true,
-            onRetry: () =>
-                ref.invalidate(watchEventInviteLinksProvider(event.id)),
+            onRetry: onRetry,
           ),
           builder: (context, links) => links.isEmpty
               ? Text(

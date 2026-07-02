@@ -1483,6 +1483,7 @@ Widget _hostEventManagePreviewFor(String focus) {
       linksAsync: AsyncData<List<EventInviteLink>>(
         HostOperationsFixtures.inviteLinks,
       ),
+      onRetry: () {},
     ),
     'HostManageMetaItem' => Builder(
       builder: (context) => HostManageMetaItem(
@@ -1525,12 +1526,49 @@ Widget _hostEventManagePreviewFor(String focus) {
       onSearchChanged: (_) {},
       onFilterChanged: (_) {},
     ),
-    'HostPrivateAccessBody' => HostPrivateAccessBody(
-      club: club,
-      event: event,
-      access: HostOperationsFixtures.privateAccess,
+    'HostPrivateAccessBody' => Consumer(
+      builder: (context, ref, _) {
+        final shareMutation = ref.watch(
+          HostEventManageController.sharePrivateLinkMutation,
+        );
+        return HostPrivateAccessBody(
+          event: event,
+          state: HostPrivateAccessDisplayState.resolve(
+            club: club,
+            event: event,
+            access: HostOperationsFixtures.privateAccess,
+            inviteLinksAsync: AsyncData<List<EventInviteLink>>(
+              HostOperationsFixtures.inviteLinks,
+            ),
+            sharePending: shareMutation.isPending,
+          ),
+          inviteLinksAsync: AsyncData<List<EventInviteLink>>(
+            HostOperationsFixtures.inviteLinks,
+          ),
+          shareMutation: shareMutation,
+          onRetryInviteLinks: () {},
+          onSharePrivateLink: (_) {},
+        );
+      },
     ),
-    'HostPrivateAccessCard' => HostPrivateAccessCard(club: club, event: event),
+    'HostPrivateAccessCard' => Consumer(
+      builder: (context, ref, _) => HostPrivateAccessCard(
+        club: club,
+        event: event,
+        accessAsync: AsyncData<EventPrivateAccess?>(
+          HostOperationsFixtures.privateAccess,
+        ),
+        inviteLinksAsync: AsyncData<List<EventInviteLink>>(
+          HostOperationsFixtures.inviteLinks,
+        ),
+        shareMutation: ref.watch(
+          HostEventManageController.sharePrivateLinkMutation,
+        ),
+        onRetryPrivateAccess: () {},
+        onRetryInviteLinks: () {},
+        onSharePrivateLink: (_) {},
+      ),
+    ),
     'HostPrivateAccessShell' => const HostPrivateAccessShell(
       child: Text('Private access preview shell'),
     ),
