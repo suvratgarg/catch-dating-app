@@ -6,7 +6,7 @@ import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_hero_app
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_host_section.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_photo_strip.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_schedule_section.dart';
-import 'package:catch_dating_app/clubs/presentation/shared/club_identity_atoms.dart';
+import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
@@ -23,6 +23,14 @@ import 'package:catch_dating_app/reviews/presentation/reviews_section.dart';
 import 'package:flutter/material.dart';
 
 typedef ClubEventSelectionHandler = void Function(Event event);
+
+const EdgeInsets _clubDetailSectionStackPadding = EdgeInsets.only(
+  top: CatchSpacing.screenPt,
+);
+const EdgeInsets _clubActivityTilePadding = EdgeInsets.symmetric(
+  horizontal: CatchSpacing.s4,
+  vertical: CatchSpacing.s3,
+);
 
 class ClubDetailBody extends StatelessWidget {
   const ClubDetailBody({
@@ -80,7 +88,7 @@ class ClubDetailBody extends StatelessWidget {
                 ],
                 CatchMetricStrip(items: _clubMetricItems(club)),
                 CatchSectionStack(
-                  padding: const EdgeInsets.only(top: CatchSpacing.screenPt),
+                  padding: _clubDetailSectionStackPadding,
                   children: [
                     CatchSection.divided(
                       title: 'About',
@@ -226,10 +234,7 @@ class ClubNextRunBanner extends StatelessWidget {
               borderRadius: BorderRadius.circular(CatchRadius.md),
             ),
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: CatchSpacing.s4,
-                vertical: CatchSpacing.s3,
-              ),
+              padding: _clubActivityTilePadding,
               child: Row(
                 children: [
                   Icon(

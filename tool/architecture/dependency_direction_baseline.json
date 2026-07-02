@@ -90,11 +90,6 @@
     },
     {
       "rule": "crossFeaturePresentationImport",
-      "path": "lib/explore/presentation/explore_screen_state.dart",
-      "import": "package:catch_dating_app/clubs/presentation/shared/club_identity_atoms.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
       "path": "lib/explore/presentation/widgets/explore_body.dart",
       "import": "package:catch_dating_app/clubs/presentation/discovery/widgets/club_avatar_rail.dart"
     },
@@ -102,21 +97,6 @@
       "rule": "crossFeaturePresentationImport",
       "path": "lib/explore/presentation/widgets/explore_body.dart",
       "import": "package:catch_dating_app/clubs/presentation/discovery/widgets/club_discover_list.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/explore/presentation/widgets/explore_events_section.dart",
-      "import": "package:catch_dating_app/clubs/presentation/shared/catch_polaroid.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/explore/presentation/widgets/explore_events_section.dart",
-      "import": "package:catch_dating_app/clubs/presentation/shared/club_identity_atoms.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/explore/presentation/widgets/explore_events_section.dart",
-      "import": "package:catch_dating_app/clubs/presentation/shared/club_transition_tags.dart"
     },
     {
       "rule": "crossFeaturePresentationImport",
@@ -182,11 +162,6 @@
       "rule": "crossFeaturePresentationImport",
       "path": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
       "import": "package:catch_dating_app/events/presentation/widgets/who_is_going.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-      "import": "package:catch_dating_app/clubs/presentation/shared/club_identity_atoms.dart"
     },
     {
       "rule": "crossFeaturePresentationImport",

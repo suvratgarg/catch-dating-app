@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/clubs/presentation/shared/catch_polaroid.dart';
-import 'package:catch_dating_app/clubs/presentation/shared/club_identity_atoms.dart';
+import 'package:catch_dating_app/clubs/shared/catch_polaroid.dart';
+import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
@@ -151,11 +151,7 @@ class ClubShareArtwork extends StatelessWidget {
 }
 
 class ClubShareMetaRow extends StatelessWidget {
-  const ClubShareMetaRow({
-    super.key,
-    required this.icon,
-    required this.label,
-  });
+  const ClubShareMetaRow({super.key, required this.icon, required this.label});
 
   final IconData icon;
   final String label;

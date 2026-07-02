@@ -19,8 +19,8 @@ import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_share_ca
 import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_avatar_rail.dart';
 import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_discover_list.dart';
 import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_list_tile.dart';
-import 'package:catch_dating_app/clubs/presentation/shared/catch_polaroid.dart';
-import 'package:catch_dating_app/clubs/presentation/shared/club_identity_atoms.dart';
+import 'package:catch_dating_app/clubs/shared/catch_polaroid.dart';
+import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';

@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/clubs/presentation/shared/catch_polaroid.dart';
-import 'package:catch_dating_app/clubs/presentation/shared/club_identity_atoms.dart';
-import 'package:catch_dating_app/clubs/presentation/shared/club_transition_tags.dart';
+import 'package:catch_dating_app/clubs/shared/catch_polaroid.dart';
+import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart';
+import 'package:catch_dating_app/clubs/shared/club_transition_tags.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
@@ -37,6 +37,18 @@ import 'package:go_router/go_router.dart';
 const int _syntheticExploreTargetEventCount = 10;
 const int _syntheticExploreTargetClubCount = 2;
 const String _syntheticExploreIdPrefix = 'synthetic-explore-';
+const EdgeInsets _exploreEventsErrorPadding = EdgeInsets.fromLTRB(
+  CatchSpacing.s5,
+  CatchSpacing.s3,
+  CatchSpacing.s5,
+  CatchSpacing.s3,
+);
+const EdgeInsets _exploreEventsLoadingPadding = EdgeInsets.fromLTRB(
+  CatchSpacing.s5,
+  CatchSpacing.s3,
+  CatchSpacing.s5,
+  CatchSpacing.s3,
+);
 
 /// Builds the Explore feed slivers: a mixed event/club discovery stream.
 ///
@@ -70,12 +82,7 @@ List<Widget> buildExploreEventsSlivers(
               minHeight: 0,
               maxHeight: 1200,
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  CatchSpacing.s5,
-                  CatchSpacing.s3,
-                  CatchSpacing.s5,
-                  CatchSpacing.s3,
-                ),
+                padding: _exploreEventsErrorPadding,
                 child: CatchInlineErrorState.fromError(
                   error,
                   context: AppErrorContext.event,
@@ -174,16 +181,32 @@ List<Widget> _exploreContentSlivers(
   if (sectionState.isEmpty) {
     return const [SliverToBoxAdapter(child: SizedBox.shrink())];
   }
+  final resultCountPadding = EdgeInsets.fromLTRB(
+    CatchSpacing.s5,
+    pinnedDayHeaders ? CatchSpacing.s4 : CatchSpacing.s3,
+    CatchSpacing.s5,
+    CatchSpacing.s1,
+  );
+  final thisWeekPadding = EdgeInsets.fromLTRB(
+    CatchSpacing.s5,
+    CatchSpacing.s3,
+    CatchSpacing.s5,
+    sectionState.cards.isEmpty ? CatchSpacing.s4 : CatchSpacing.s2,
+  );
+  final feedListPadding = EdgeInsets.fromLTRB(
+    CatchSpacing.s5,
+    sectionState.thisWeekItems.isEmpty
+        ? (pinnedDayHeaders ? CatchSpacing.s4 : CatchSpacing.s3)
+        : CatchSpacing.s4,
+    CatchSpacing.s5,
+    CatchSpacing.s2,
+  );
+
   return [
     if (sectionState.bodyViewModel.count > 0)
       SliverToBoxAdapter(
         child: Padding(
-          padding: EdgeInsets.fromLTRB(
-            CatchSpacing.s5,
-            pinnedDayHeaders ? CatchSpacing.s4 : CatchSpacing.s3,
-            CatchSpacing.s5,
-            CatchSpacing.s1,
-          ),
+          padding: resultCountPadding,
           child: Builder(
             builder: (context) => ExploreMonoLabel(
               sectionState.resultCountLabel,
@@ -195,12 +218,7 @@ List<Widget> _exploreContentSlivers(
     if (sectionState.thisWeekItems.isNotEmpty)
       SliverToBoxAdapter(
         child: Padding(
-          padding: EdgeInsets.fromLTRB(
-            CatchSpacing.s5,
-            CatchSpacing.s3,
-            CatchSpacing.s5,
-            sectionState.cards.isEmpty ? CatchSpacing.s4 : CatchSpacing.s2,
-          ),
+          padding: thisWeekPadding,
           child: Builder(
             builder: (context) => ThisWeekRecommendationsSection(
               items: sectionState.thisWeekItems,
@@ -209,14 +227,7 @@ List<Widget> _exploreContentSlivers(
         ),
       ),
     SliverPadding(
-      padding: EdgeInsets.fromLTRB(
-        CatchSpacing.s5,
-        sectionState.thisWeekItems.isEmpty
-            ? (pinnedDayHeaders ? CatchSpacing.s4 : CatchSpacing.s3)
-            : CatchSpacing.s4,
-        CatchSpacing.s5,
-        CatchSpacing.s2,
-      ),
+      padding: feedListPadding,
       sliver: SliverList.separated(
         itemCount: sectionState.cards.length,
         separatorBuilder: (_, _) => const SizedBox(height: CatchSpacing.s4),
@@ -568,18 +579,20 @@ class ExploreDarkPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final pillPadding = EdgeInsets.symmetric(
+      horizontal: compact
+          ? CatchLayout.compactDarkPillHorizontalPadding
+          : CatchSpacing.s3,
+      vertical: compact
+          ? CatchLayout.compactDarkPillVerticalPadding
+          : CatchSpacing.s2,
+    );
+
     return CatchSurface(
       radius: CatchRadius.pill,
       backgroundColor: t.ink,
       borderWidth: 0,
-      padding: EdgeInsets.symmetric(
-        horizontal: compact
-            ? CatchLayout.compactDarkPillHorizontalPadding
-            : CatchSpacing.s3,
-        vertical: compact
-            ? CatchLayout.compactDarkPillVerticalPadding
-            : CatchSpacing.s2,
-      ),
+      padding: pillPadding,
       child: Text(
         label,
         style: CatchTextStyles.labelM(context, color: t.primaryInk),
@@ -621,12 +634,7 @@ class ExploreEventsLoadingSliver extends StatelessWidget {
     final t = CatchTokens.of(context);
     return SliverToBoxAdapter(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          CatchSpacing.s5,
-          CatchSpacing.s3,
-          CatchSpacing.s5,
-          CatchSpacing.s3,
-        ),
+        padding: _exploreEventsLoadingPadding,
         child: CatchSurface(
           clipBehavior: Clip.antiAlias,
           borderColor: t.line,

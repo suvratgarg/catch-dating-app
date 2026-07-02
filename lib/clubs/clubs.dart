@@ -42,9 +42,9 @@ export 'presentation/detail/widgets/club_share_card.dart';
 export 'presentation/discovery/widgets/club_avatar_rail.dart';
 export 'presentation/discovery/widgets/club_discover_list.dart';
 export 'presentation/discovery/widgets/club_list_tile.dart';
-export 'presentation/shared/catch_polaroid.dart';
-export 'presentation/shared/club_identity_atoms.dart';
-export 'presentation/shared/club_transition_tags.dart';
+export 'shared/catch_polaroid.dart';
+export 'shared/club_identity_atoms.dart';
+export 'shared/club_transition_tags.dart';
 
 // ── Presentation — value types & formatters ─────────────────────────────────
 export 'presentation/club_action_keys.dart';
