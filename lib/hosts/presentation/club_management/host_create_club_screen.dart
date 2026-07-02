@@ -29,7 +29,7 @@ class HostEditClubRouteScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (initialClub != null) {
-      return _buildHostClubEditor(ref, initialClub!);
+      return HostClubEditorStateView(club: initialClub!);
     }
 
     final clubAsync = ref.watch(fetchClubProvider(clubId));
@@ -46,11 +46,18 @@ class HostEditClubRouteScreen extends ConsumerWidget {
               title: 'Club not found',
               message: 'This club is no longer available.',
             )
-          : _buildHostClubEditor(ref, club),
+          : HostClubEditorStateView(club: club),
     );
   }
+}
 
-  Widget _buildHostClubEditor(WidgetRef ref, Club club) {
+class HostClubEditorStateView extends ConsumerWidget {
+  const HostClubEditorStateView({super.key, required this.club});
+
+  final Club club;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     final state = HostClubEditState.resolve(
       club: club,
       uid: ref.watch(uidProvider),

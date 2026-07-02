@@ -18665,11 +18665,15 @@
         "symbol": "HostEditClubRouteScreen"
       },
       "stateController": {
-        "primary": "HostEditClubRouteScreen + fetchClubProvider + CreateClubScreen(initialClub) + CreateClubController",
+        "primary": "HostEditClubRouteScreen + fetchClubProvider + HostClubEditorStateView + CreateClubScreen(initialClub) + CreateClubController",
         "files": [
           {
             "file": "lib/hosts/presentation/club_management/host_create_club_screen.dart",
             "symbol": "HostEditClubRouteScreen"
+          },
+          {
+            "file": "lib/hosts/presentation/club_management/host_create_club_screen.dart",
+            "symbol": "HostClubEditorStateView"
           },
           {
             "file": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
@@ -18710,7 +18714,7 @@
             "symbol": "ImageUploadRepository"
           }
         ],
-        "notes": "HostEditClubRouteScreen resolves the club by route id unless an initial Club extra is supplied, handles loading/error/not-found states, and delegates loaded state to CreateClubScreen(initialClub). CreateClubScreen renders owner edit as a single long form using compact logo/photo-strip media variants and grouped CatchField identity/contact rows; co-host edit remains media-only when the current uid is a host but not owner. CreateClubController enforces owner-only full edits and allows non-owner hosts to update media only. HostClubSubmitOutcomeState owns submit-success close-route policy shared with create; remaining work is field/media display data, validation, mutation request data, and typed callbacks."
+        "notes": "HostEditClubRouteScreen resolves the club by route id unless an initial Club extra is supplied and handles loading/error/not-found states. HostClubEditorStateView renders loaded club branches by resolving uid/access mode through HostClubEditState, then composes CreateClubScreen(initialClub) for owner full edit or co-host media-only editing. CreateClubScreen renders owner edit as a single long form using compact logo/photo-strip media variants and grouped CatchField identity/contact rows. CreateClubController enforces owner-only full edits and allows non-owner hosts to update media only. HostClubSubmitOutcomeState owns submit-success close-route policy shared with create; remaining work is field/media display data, validation, mutation request data, and typed callbacks."
       },
       "designRefs": [
         {
@@ -19007,7 +19011,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "HostEditClubRouteScreen owns route club loading and CreateClubScreen owns edit mode, compact media variants, grouped CatchField identity/contact rows, validation, mutation state, and footer rendering.",
+        "currentLayout": "HostEditClubRouteScreen owns route club loading and delegates loaded uid/access-mode rendering to HostClubEditorStateView over HostClubEditState. CreateClubScreen owns edit mode, compact media variants, grouped CatchField identity/contact rows, validation, mutation state, and footer rendering.",
         "targetLayout": "Host Edit Club should keep route fetch/access in HostClubEditState, share HostClubSubmitOutcomeState for submit-success close policy, and continue moving field/media display data, validation, mutation request data, and typed callbacks before composing provider-free edit sections.",
         "sections": [
           {
@@ -19022,7 +19026,7 @@
               "file": "lib/hosts/presentation/club_management/host_create_club_screen.dart",
               "symbol": "HostEditClubRouteScreen"
             },
-            "currentOwner": "HostEditClubRouteScreen + CreateClubScreen",
+            "currentOwner": "HostEditClubRouteScreen + HostClubEditorStateView + HostClubEditState",
             "targetOwner": "HostClubEditState adapter",
             "dependencies": [
               "catch.surface"
@@ -19033,7 +19037,7 @@
               "club_not_found",
               "prefilled_owner_edit"
             ],
-            "migration": "Move route fetch/access and owner/co-host mode into an adapter before visual refactors."
+            "migration": "HostEditClubRouteScreen owns club fetch branches while HostClubEditorStateView resolves uid/access through HostClubEditState; continue moving loaded field/media/edit callbacks out of CreateClubScreen."
           },
           {
             "id": "section.host.club_edit.edit_scaffold",
