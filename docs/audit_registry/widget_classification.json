@@ -10,14 +10,14 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1156,
-    "widgetClasses": 1052,
+    "total": 1157,
+    "widgetClasses": 1053,
     "stateClasses": 104,
-    "publicClasses": 1050,
+    "publicClasses": 1051,
     "privateClasses": 106,
     "byRole": {
       "atom": 48,
-      "composition": 318,
+      "composition": 319,
       "feature-adapter": 318,
       "pattern": 14,
       "screen": 354,
@@ -28,11 +28,11 @@
       "keep-public-cataloged": 880,
       "keep-widget-state": 104,
       "review-catalog-coverage": 5,
-      "review-promote-or-consolidate": 40,
+      "review-promote-or-consolidate": 41,
       "review-promote-or-inline": 2
     },
     "byCatalogStatus": {
-      "cataloged": 847,
+      "cataloged": 848,
       "contracted": 125,
       "not-applicable": 104,
       "route-covered": 72,
@@ -4465,6 +4465,33 @@
         "mergeIntoCanonical"
       ],
       "flags": []
+    },
+    {
+      "name": "CatchNetworkImageFallback",
+      "file": "lib/core/widgets/catch_network_image.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.network_image_fallback",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract"
+      ]
     },
     {
       "name": "_CatchNoticeHostState",

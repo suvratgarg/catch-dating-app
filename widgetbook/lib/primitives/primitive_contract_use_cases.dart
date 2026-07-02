@@ -3534,6 +3534,49 @@ Widget catchNetworkImageContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
+  type: CatchNetworkImageFallback,
+  path: '[Core primitives]/Media',
+)
+Widget catchNetworkImageFallbackContractStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  return _ContractScreen(
+    title: 'CatchNetworkImageFallback',
+    contractId: 'catch.network_image.fallback',
+    states: const ['default', 'custom-icon', 'custom-color'],
+    children: [
+      const _StateCard(
+        label: 'default',
+        child: SizedBox.square(
+          dimension: 96,
+          child: CatchNetworkImageFallback(),
+        ),
+      ),
+      _StateCard(
+        label: 'custom-icon',
+        child: SizedBox.square(
+          dimension: 96,
+          child: CatchNetworkImageFallback(
+            icon: CatchIcons.photoLibraryOutlined,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'custom-color',
+        child: SizedBox.square(
+          dimension: 96,
+          child: CatchNetworkImageFallback(
+            backgroundColor: t.primarySoft,
+            iconColor: t.primary,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
   type: CatchActivityChip,
   path: '[Core primitives]/Activity',
 )

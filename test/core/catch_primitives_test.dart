@@ -42,6 +42,7 @@ import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_mono_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
+import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
 import 'package:catch_dating_app/core/widgets/catch_otp_code_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
@@ -1238,6 +1239,23 @@ void main() {
       expect(find.text('Ticket meta'), findsOneWidget);
     },
   );
+
+  testWidgets('CatchNetworkImage composes branded fallback renderer', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const SizedBox.square(
+          dimension: 48,
+          child: CatchNetworkImage('assets/branding/not-found.png'),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.byType(CatchNetworkImageFallback), findsOneWidget);
+    expect(find.byIcon(CatchIcons.imageOutlined), findsOneWidget);
+  });
 
   testWidgets('CatchDetailHeroBackdrop composes fallback and scrim renderers', (
     tester,
