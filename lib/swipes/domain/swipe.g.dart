@@ -19,9 +19,7 @@ _Swipe _$SwipeFromJson(Map<String, dynamic> json) => _Swipe(
   reactionTargetLabel: json['reactionTargetLabel'] as String?,
   reactionTargetPreview: json['reactionTargetPreview'] as String?,
   comment: json['comment'] as String?,
-  createdAt: const TimestampConverter().fromJson(
-    json['createdAt'] as Timestamp,
-  ),
+  createdAt: const TimestampConverter().fromJson(json['createdAt']),
 );
 
 Map<String, dynamic> _$SwipeToJson(_Swipe instance) => <String, dynamic>{

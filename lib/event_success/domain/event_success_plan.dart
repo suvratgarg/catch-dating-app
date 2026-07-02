@@ -12,7 +12,6 @@ import 'package:catch_dating_app/event_success/domain/event_success_preference.d
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'event_success_plan.freezed.dart';

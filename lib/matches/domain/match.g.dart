@@ -15,11 +15,9 @@ _Match _$MatchFromJson(Map<String, dynamic> json) => _Match(
           ?.map((e) => e as String)
           .toList() ??
       const <String>[],
-  createdAt: const TimestampConverter().fromJson(
-    json['createdAt'] as Timestamp,
-  ),
+  createdAt: const TimestampConverter().fromJson(json['createdAt']),
   lastMessageAt: const NullableTimestampConverter().fromJson(
-    json['lastMessageAt'] as Timestamp?,
+    json['lastMessageAt'],
   ),
   lastMessagePreview: json['lastMessagePreview'] as String?,
   lastMessageSenderId: json['lastMessageSenderId'] as String?,
@@ -32,9 +30,7 @@ _Match _$MatchFromJson(Map<String, dynamic> json) => _Match(
       $enumDecodeNullable(_$MatchStatusEnumMap, json['status']) ??
       MatchStatus.active,
   blockedBy: json['blockedBy'] as String?,
-  blockedAt: const NullableTimestampConverter().fromJson(
-    json['blockedAt'] as Timestamp?,
-  ),
+  blockedAt: const NullableTimestampConverter().fromJson(json['blockedAt']),
   conversationType:
       $enumDecodeNullable(
         _$MatchConversationTypeEnumMap,

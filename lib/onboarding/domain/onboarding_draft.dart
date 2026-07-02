@@ -2,7 +2,6 @@ import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'onboarding_draft.freezed.dart';
@@ -17,7 +16,7 @@ abstract class OnboardingDraft with _$OnboardingDraft {
     @Default(0) int draftVersion,
     @Default('') String firstName,
     @Default('') String lastName,
-    @TimestampConverter() DateTime? dateOfBirth,
+    @NullableTimestampConverter() DateTime? dateOfBirth,
     @Default('') String phoneNumber,
     @Default(defaultCountryDialCode) String countryCode,
     Gender? gender,

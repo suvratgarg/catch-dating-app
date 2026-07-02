@@ -12,9 +12,7 @@ _EventPrivateAccess _$EventPrivateAccessFromJson(Map<String, dynamic> json) =>
       eventId: json['eventId'] as String,
       clubId: json['clubId'] as String,
       inviteCode: json['inviteCode'] as String,
-      createdAt: const TimestampConverter().fromJson(
-        json['createdAt'] as Timestamp,
-      ),
+      createdAt: const TimestampConverter().fromJson(json['createdAt']),
     );
 
 Map<String, dynamic> _$EventPrivateAccessToJson(_EventPrivateAccess instance) =>

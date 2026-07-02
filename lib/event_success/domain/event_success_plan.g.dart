@@ -45,21 +45,13 @@ _EventSuccessPlan _$EventSuccessPlanFromJson(
   activeRevealRoundIndex:
       (json['activeRevealRoundIndex'] as num?)?.toInt() ?? 0,
   revealStartedAt: const NullableTimestampConverter().fromJson(
-    json['revealStartedAt'] as Timestamp?,
+    json['revealStartedAt'],
   ),
   attendeePrompt: json['attendeePrompt'] as String?,
-  createdAt: const TimestampConverter().fromJson(
-    json['createdAt'] as Timestamp,
-  ),
-  updatedAt: const TimestampConverter().fromJson(
-    json['updatedAt'] as Timestamp,
-  ),
-  frozenAt: const NullableTimestampConverter().fromJson(
-    json['frozenAt'] as Timestamp?,
-  ),
-  completedAt: const NullableTimestampConverter().fromJson(
-    json['completedAt'] as Timestamp?,
-  ),
+  createdAt: const TimestampConverter().fromJson(json['createdAt']),
+  updatedAt: const TimestampConverter().fromJson(json['updatedAt']),
+  frozenAt: const NullableTimestampConverter().fromJson(json['frozenAt']),
+  completedAt: const NullableTimestampConverter().fromJson(json['completedAt']),
 );
 
 Map<String, dynamic> _$EventSuccessPlanToJson(_EventSuccessPlan instance) =>
@@ -115,12 +107,8 @@ _EventSuccessFeedback _$EventSuccessFeedbackFromJson(
   metNewPeopleCount: (json['metNewPeopleCount'] as num).toInt(),
   safetyConcern: json['safetyConcern'] as bool? ?? false,
   privateNote: json['privateNote'] as String?,
-  createdAt: const TimestampConverter().fromJson(
-    json['createdAt'] as Timestamp,
-  ),
-  updatedAt: const TimestampConverter().fromJson(
-    json['updatedAt'] as Timestamp,
-  ),
+  createdAt: const TimestampConverter().fromJson(json['createdAt']),
+  updatedAt: const TimestampConverter().fromJson(json['updatedAt']),
 );
 
 Map<String, dynamic> _$EventSuccessFeedbackToJson(

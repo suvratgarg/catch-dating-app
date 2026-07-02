@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'club.freezed.dart';
@@ -38,14 +37,14 @@ abstract class Club with _$Club {
     @Default(0) int memberCount,
     @Default(0.0) double rating,
     @Default(0) int reviewCount,
-    @TimestampConverter() DateTime? nextEventAt,
+    @NullableTimestampConverter() DateTime? nextEventAt,
     String? nextEventLabel,
     String? instagramHandle,
     String? phoneNumber,
     String? email,
     @Default(ClubLifecycleStatus.active) ClubLifecycleStatus status,
     @Default(false) bool archived,
-    @TimestampConverter() DateTime? archivedAt,
+    @NullableTimestampConverter() DateTime? archivedAt,
     String? archiveReason,
     @Default(ClubAppVisibility.discoverable) ClubAppVisibility appVisibility,
     @Default(ClubHostDefaults()) ClubHostDefaults hostDefaults,

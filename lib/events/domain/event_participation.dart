@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/events/domain/event_service.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'event_participation.freezed.dart';

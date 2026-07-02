@@ -14,12 +14,8 @@ _ActivityNotification _$ActivityNotificationFromJson(
   type: $enumDecode(_$ActivityNotificationTypeEnumMap, json['type']),
   title: json['title'] as String,
   body: json['body'] as String,
-  createdAt: const TimestampConverter().fromJson(
-    json['createdAt'] as Timestamp,
-  ),
-  readAt: const NullableTimestampConverter().fromJson(
-    json['readAt'] as Timestamp?,
-  ),
+  createdAt: const TimestampConverter().fromJson(json['createdAt']),
+  readAt: const NullableTimestampConverter().fromJson(json['readAt']),
   matchId: json['matchId'] as String?,
   eventId: json['eventId'] as String?,
   clubId: json['clubId'] as String?,

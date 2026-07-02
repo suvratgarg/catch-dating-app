@@ -12,7 +12,6 @@ import 'package:catch_dating_app/events/domain/event_eligibility.dart';
 import 'package:catch_dating_app/events/domain/event_meeting_location.dart';
 import 'package:catch_dating_app/events/domain/event_service.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 // Re-export so existing `import '.../event.dart'` call sites keep working

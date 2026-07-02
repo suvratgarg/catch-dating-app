@@ -91,9 +91,7 @@ _UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => _UserProfile(
   firstName: json['firstName'] as String? ?? '',
   lastName: json['lastName'] as String? ?? '',
   displayName: json['displayName'] as String? ?? '',
-  dateOfBirth: const TimestampConverter().fromJson(
-    json['dateOfBirth'] as Timestamp,
-  ),
+  dateOfBirth: const TimestampConverter().fromJson(json['dateOfBirth']),
   gender: $enumDecode(_$GenderEnumMap, json['gender']),
   phoneNumber: json['phoneNumber'] as String,
   countryCode: json['countryCode'] as String? ?? defaultCountryDialCode,

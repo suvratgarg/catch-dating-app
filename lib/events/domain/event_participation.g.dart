@@ -6,68 +6,54 @@ part of 'event_participation.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_EventParticipation _$EventParticipationFromJson(Map<String, dynamic> json) =>
-    _EventParticipation(
-      id: json['id'] as String,
-      eventId: json['eventId'] as String,
-      clubId: json['clubId'] as String,
-      uid: json['uid'] as String,
-      status: $enumDecode(_$EventParticipationStatusEnumMap, json['status']),
-      createdAt: const TimestampConverter().fromJson(
-        json['createdAt'] as Timestamp,
-      ),
-      updatedAt: const TimestampConverter().fromJson(
-        json['updatedAt'] as Timestamp,
-      ),
-      signedUpAt: const NullableTimestampConverter().fromJson(
-        json['signedUpAt'] as Timestamp?,
-      ),
-      waitlistedAt: const NullableTimestampConverter().fromJson(
-        json['waitlistedAt'] as Timestamp?,
-      ),
-      attendedAt: const NullableTimestampConverter().fromJson(
-        json['attendedAt'] as Timestamp?,
-      ),
-      cancelledAt: const NullableTimestampConverter().fromJson(
-        json['cancelledAt'] as Timestamp?,
-      ),
-      deletedAt: const NullableTimestampConverter().fromJson(
-        json['deletedAt'] as Timestamp?,
-      ),
-      genderAtSignup: $enumDecodeNullable(
-        _$GenderEnumMap,
-        json['genderAtSignup'],
-      ),
-      cohortAtSignup: json['cohortAtSignup'] as String?,
-      paymentId: json['paymentId'] as String?,
-      hostApprovalStatus: $enumDecodeNullable(
-        _$EventJoinRequestStatusEnumMap,
-        json['hostApprovalStatus'],
-      ),
-      hostApprovalDecidedAt: const NullableTimestampConverter().fromJson(
-        json['hostApprovalDecidedAt'] as Timestamp?,
-      ),
-      hostApprovalDecidedBy: json['hostApprovalDecidedBy'] as String?,
-      waitlistOfferStatus: $enumDecodeNullable(
-        _$EventWaitlistOfferStatusEnumMap,
-        json['waitlistOfferStatus'],
-      ),
-      waitlistOfferedAt: const NullableTimestampConverter().fromJson(
-        json['waitlistOfferedAt'] as Timestamp?,
-      ),
-      waitlistOfferExpiresAt: const NullableTimestampConverter().fromJson(
-        json['waitlistOfferExpiresAt'] as Timestamp?,
-      ),
-      waitlistOfferAcceptedAt: const NullableTimestampConverter().fromJson(
-        json['waitlistOfferAcceptedAt'] as Timestamp?,
-      ),
-      waitlistOfferId: json['waitlistOfferId'] as String?,
-      inviteLinkId: json['inviteLinkId'] as String?,
-      inviteSource: json['inviteSource'] as String?,
-      inviteCapturedAt: const NullableTimestampConverter().fromJson(
-        json['inviteCapturedAt'] as Timestamp?,
-      ),
-    );
+_EventParticipation _$EventParticipationFromJson(
+  Map<String, dynamic> json,
+) => _EventParticipation(
+  id: json['id'] as String,
+  eventId: json['eventId'] as String,
+  clubId: json['clubId'] as String,
+  uid: json['uid'] as String,
+  status: $enumDecode(_$EventParticipationStatusEnumMap, json['status']),
+  createdAt: const TimestampConverter().fromJson(json['createdAt']),
+  updatedAt: const TimestampConverter().fromJson(json['updatedAt']),
+  signedUpAt: const NullableTimestampConverter().fromJson(json['signedUpAt']),
+  waitlistedAt: const NullableTimestampConverter().fromJson(
+    json['waitlistedAt'],
+  ),
+  attendedAt: const NullableTimestampConverter().fromJson(json['attendedAt']),
+  cancelledAt: const NullableTimestampConverter().fromJson(json['cancelledAt']),
+  deletedAt: const NullableTimestampConverter().fromJson(json['deletedAt']),
+  genderAtSignup: $enumDecodeNullable(_$GenderEnumMap, json['genderAtSignup']),
+  cohortAtSignup: json['cohortAtSignup'] as String?,
+  paymentId: json['paymentId'] as String?,
+  hostApprovalStatus: $enumDecodeNullable(
+    _$EventJoinRequestStatusEnumMap,
+    json['hostApprovalStatus'],
+  ),
+  hostApprovalDecidedAt: const NullableTimestampConverter().fromJson(
+    json['hostApprovalDecidedAt'],
+  ),
+  hostApprovalDecidedBy: json['hostApprovalDecidedBy'] as String?,
+  waitlistOfferStatus: $enumDecodeNullable(
+    _$EventWaitlistOfferStatusEnumMap,
+    json['waitlistOfferStatus'],
+  ),
+  waitlistOfferedAt: const NullableTimestampConverter().fromJson(
+    json['waitlistOfferedAt'],
+  ),
+  waitlistOfferExpiresAt: const NullableTimestampConverter().fromJson(
+    json['waitlistOfferExpiresAt'],
+  ),
+  waitlistOfferAcceptedAt: const NullableTimestampConverter().fromJson(
+    json['waitlistOfferAcceptedAt'],
+  ),
+  waitlistOfferId: json['waitlistOfferId'] as String?,
+  inviteLinkId: json['inviteLinkId'] as String?,
+  inviteSource: json['inviteSource'] as String?,
+  inviteCapturedAt: const NullableTimestampConverter().fromJson(
+    json['inviteCapturedAt'],
+  ),
+);
 
 Map<String, dynamic> _$EventParticipationToJson(
   _EventParticipation instance,

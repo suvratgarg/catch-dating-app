@@ -4,22 +4,30 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 typedef FirestoreFromJson<T> = T Function(Map<String, dynamic> json);
 typedef FirestoreToJson<T> = Map<String, dynamic> Function(T value);
 
-class TimestampConverter implements JsonConverter<DateTime, Timestamp> {
+class TimestampConverter implements JsonConverter<DateTime, Object?> {
   const TimestampConverter();
 
   @override
-  DateTime fromJson(Timestamp ts) => ts.toDate();
+  DateTime fromJson(Object? value) {
+    if (value is Timestamp) return value.toDate();
+    if (value is DateTime) return value;
+    throw FormatException('Expected Firestore Timestamp, got $value.');
+  }
 
   @override
   Timestamp toJson(DateTime dt) => Timestamp.fromDate(dt);
 }
 
-class NullableTimestampConverter
-    implements JsonConverter<DateTime?, Timestamp?> {
+class NullableTimestampConverter implements JsonConverter<DateTime?, Object?> {
   const NullableTimestampConverter();
 
   @override
-  DateTime? fromJson(Timestamp? ts) => ts?.toDate();
+  DateTime? fromJson(Object? value) {
+    if (value == null) return null;
+    if (value is Timestamp) return value.toDate();
+    if (value is DateTime) return value;
+    throw FormatException('Expected Firestore Timestamp or null, got $value.');
+  }
 
   @override
   Timestamp? toJson(DateTime? dt) => dt != null ? Timestamp.fromDate(dt) : null;

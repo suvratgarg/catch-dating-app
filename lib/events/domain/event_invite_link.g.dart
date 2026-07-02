@@ -23,14 +23,10 @@ _EventInviteLink _$EventInviteLinkFromJson(Map<String, dynamic> json) =>
       matchCount: (json['matchCount'] as num?)?.toInt() ?? 0,
       chatStartedCount: (json['chatStartedCount'] as num?)?.toInt() ?? 0,
       disabledAt: const NullableTimestampConverter().fromJson(
-        json['disabledAt'] as Timestamp?,
+        json['disabledAt'],
       ),
-      createdAt: const TimestampConverter().fromJson(
-        json['createdAt'] as Timestamp,
-      ),
-      updatedAt: const TimestampConverter().fromJson(
-        json['updatedAt'] as Timestamp,
-      ),
+      createdAt: const TimestampConverter().fromJson(json['createdAt']),
+      updatedAt: const TimestampConverter().fromJson(json['updatedAt']),
     );
 
 Map<String, dynamic> _$EventInviteLinkToJson(

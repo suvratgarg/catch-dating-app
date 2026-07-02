@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'profile_photo.freezed.dart';
@@ -46,6 +45,7 @@ abstract class ProfilePhoto with _$ProfilePhoto {
     );
   }
 
+  @override
   Map<String, dynamic> toJson() => <String, dynamic>{
     'id': id,
     'url': url,
@@ -70,7 +70,7 @@ abstract class ProfilePhotoModeration with _$ProfilePhotoModeration {
   const factory ProfilePhotoModeration({
     required String status,
     String? reason,
-    @TimestampConverter() DateTime? reviewedAt,
+    @NullableTimestampConverter() DateTime? reviewedAt,
   }) = _ProfilePhotoModeration;
 
   factory ProfilePhotoModeration.fromJson(Map<String, dynamic> json) =>

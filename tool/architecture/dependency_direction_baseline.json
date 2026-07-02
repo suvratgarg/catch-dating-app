@@ -350,21 +350,6 @@
     },
     {
       "rule": "domainFrameworkImport",
-      "path": "lib/chats/domain/chat_message.dart",
-      "import": "package:cloud_firestore/cloud_firestore.dart"
-    },
-    {
-      "rule": "domainFrameworkImport",
-      "path": "lib/clubs/domain/club_membership.dart",
-      "import": "package:cloud_firestore/cloud_firestore.dart"
-    },
-    {
-      "rule": "domainFrameworkImport",
-      "path": "lib/clubs/domain/club.dart",
-      "import": "package:cloud_firestore/cloud_firestore.dart"
-    },
-    {
-      "rule": "domainFrameworkImport",
       "path": "lib/clubs/domain/update_club_patch.dart",
       "import": "package:cloud_firestore/cloud_firestore.dart"
     },
@@ -385,11 +370,6 @@
     },
     {
       "rule": "domainFrameworkImport",
-      "path": "lib/event_success/domain/event_success_plan.dart",
-      "import": "package:cloud_firestore/cloud_firestore.dart"
-    },
-    {
-      "rule": "domainFrameworkImport",
       "path": "lib/event_success/domain/event_success_preference.dart",
       "import": "package:cloud_firestore/cloud_firestore.dart"
     },
@@ -400,32 +380,7 @@
     },
     {
       "rule": "domainFrameworkImport",
-      "path": "lib/events/domain/event_invite_link.dart",
-      "import": "package:cloud_firestore/cloud_firestore.dart"
-    },
-    {
-      "rule": "domainFrameworkImport",
-      "path": "lib/events/domain/event_participation.dart",
-      "import": "package:cloud_firestore/cloud_firestore.dart"
-    },
-    {
-      "rule": "domainFrameworkImport",
-      "path": "lib/events/domain/event_private_access.dart",
-      "import": "package:cloud_firestore/cloud_firestore.dart"
-    },
-    {
-      "rule": "domainFrameworkImport",
-      "path": "lib/events/domain/event.dart",
-      "import": "package:cloud_firestore/cloud_firestore.dart"
-    },
-    {
-      "rule": "domainFrameworkImport",
       "path": "lib/events/domain/external_event.dart",
-      "import": "package:cloud_firestore/cloud_firestore.dart"
-    },
-    {
-      "rule": "domainFrameworkImport",
-      "path": "lib/events/domain/saved_event.dart",
       "import": "package:cloud_firestore/cloud_firestore.dart"
     },
     {
@@ -440,52 +395,7 @@
     },
     {
       "rule": "domainFrameworkImport",
-      "path": "lib/launch_access/domain/launch_access_application.dart",
-      "import": "package:cloud_firestore/cloud_firestore.dart"
-    },
-    {
-      "rule": "domainFrameworkImport",
-      "path": "lib/matches/domain/match.dart",
-      "import": "package:cloud_firestore/cloud_firestore.dart"
-    },
-    {
-      "rule": "domainFrameworkImport",
-      "path": "lib/notifications/domain/activity_notification.dart",
-      "import": "package:cloud_firestore/cloud_firestore.dart"
-    },
-    {
-      "rule": "domainFrameworkImport",
-      "path": "lib/onboarding/domain/onboarding_draft.dart",
-      "import": "package:cloud_firestore/cloud_firestore.dart"
-    },
-    {
-      "rule": "domainFrameworkImport",
-      "path": "lib/payments/domain/payment.dart",
-      "import": "package:cloud_firestore/cloud_firestore.dart"
-    },
-    {
-      "rule": "domainFrameworkImport",
-      "path": "lib/reviews/domain/review.dart",
-      "import": "package:cloud_firestore/cloud_firestore.dart"
-    },
-    {
-      "rule": "domainFrameworkImport",
       "path": "lib/safety/domain/blocked_user.dart",
-      "import": "package:cloud_firestore/cloud_firestore.dart"
-    },
-    {
-      "rule": "domainFrameworkImport",
-      "path": "lib/swipes/domain/swipe.dart",
-      "import": "package:cloud_firestore/cloud_firestore.dart"
-    },
-    {
-      "rule": "domainFrameworkImport",
-      "path": "lib/user_profile/domain/profile_photo.dart",
-      "import": "package:cloud_firestore/cloud_firestore.dart"
-    },
-    {
-      "rule": "domainFrameworkImport",
-      "path": "lib/user_profile/domain/user_profile.dart",
       "import": "package:cloud_firestore/cloud_firestore.dart"
     }
   ]

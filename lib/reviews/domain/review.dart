@@ -5,7 +5,6 @@
 // Data shape emitted from contracts/firestore/reviews.schema.json.
 // Derived behavior, if any, lives in a hand-written companion extension file.
 import 'package:catch_dating_app/core/firestore_converters.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'review.freezed.dart';
