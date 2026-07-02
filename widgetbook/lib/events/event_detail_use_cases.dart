@@ -2742,17 +2742,14 @@ Widget eventDetailGuestWhoIsGoingState(BuildContext context) {
   path: '[Event Detail]/Sections',
 )
 Widget eventHypeAvatarStackState(BuildContext context) {
-  return _EventScope(
-    event: _event,
+  return EventHypeAvatarStack(
+    eventId: _event.id,
+    totalCount: 12,
+    viewerInterestedInGenders: _viewer.interestedInGenders,
     avatarItems: _avatarItems,
-    child: EventHypeAvatarStack(
-      eventId: _event.id,
-      totalCount: 12,
-      viewerInterestedInGenders: _viewer.interestedInGenders,
-      obscured: false,
-      showOverflowCount: true,
-      activityKind: _event.activityKind,
-    ),
+    obscured: false,
+    showOverflowCount: true,
+    activityKind: _event.activityKind,
   );
 }
 
@@ -2799,15 +2796,11 @@ Widget whoIsGoingContentStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'upcoming roster',
-        child: _EventScope(
+        child: WhoIsGoingContent(
           event: _event,
           roster: _roster(),
           avatarItems: _avatarItems,
-          child: WhoIsGoingContent(
-            event: _event,
-            roster: _roster(),
-            userProfile: _viewer,
-          ),
+          userProfile: _viewer,
         ),
       ),
       _StateCard(
@@ -2820,16 +2813,12 @@ Widget whoIsGoingContentStates(BuildContext context) {
       ),
       _StateCard(
         label: 'post-event closed window',
-        child: _EventScope(
+        child: WhoIsGoingContent(
           event: _pastEvent,
           roster: _roster(event: _pastEvent, count: 5),
           avatarItems: _avatarItems.take(5).toList(growable: false),
-          child: WhoIsGoingContent(
-            event: _pastEvent,
-            roster: _roster(event: _pastEvent, count: 5),
-            userProfile: _viewer,
-            showHeader: false,
-          ),
+          userProfile: _viewer,
+          showHeader: false,
         ),
       ),
     ],

@@ -14074,7 +14074,7 @@
       "name": "EventHypeAvatarStack",
       "file": "lib/events/presentation/widgets/event_hype_avatar_stack.dart",
       "classKind": "widget",
-      "baseClass": "ConsumerWidget",
+      "baseClass": "StatelessWidget",
       "visibility": "public",
       "role": "feature-adapter",
       "canonicalFamily": "catch.event_detail_sections",

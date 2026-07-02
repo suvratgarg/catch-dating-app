@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -20,6 +21,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'who_is_going.g.dart';
+
+const _whoIsGoingAvatarLimit = 7;
 
 @riverpod
 Future<Map<String, (String name, String? photoUrl)>> attendeeProfiles(
@@ -73,14 +76,37 @@ class WhoIsGoing extends ConsumerWidget {
         onRetry: () =>
             ref.invalidate(watchEventParticipationRosterProvider(event.id)),
       ),
-      builder: (context, roster) => WhoIsGoingContent(
-        event: event,
-        roster: roster,
-        userProfile: userProfile,
-        surfaceStyle: surfaceStyle,
-        showHeader: showHeader,
-      ),
+      builder: (context, roster) {
+        final avatarItems = _avatarItemsFor(ref, roster);
+        return WhoIsGoingContent(
+          event: event,
+          roster: roster,
+          userProfile: userProfile,
+          avatarItems: avatarItems,
+          surfaceStyle: surfaceStyle,
+          showHeader: showHeader,
+        );
+      },
     );
+  }
+
+  List<CatchPersonAvatarItem>? _avatarItemsFor(
+    WidgetRef ref,
+    EventParticipationRoster roster,
+  ) {
+    if (event.isUpcoming || roster.bookedCount <= 0) return null;
+    return ref
+        .watch(
+          eventHypeAvatarsProvider(
+            EventHypeAvatarQuery(
+              eventId: event.id,
+              viewerInterestedInGenders: userProfile.interestedInGenders,
+              limit: _whoIsGoingAvatarLimit,
+            ),
+          ),
+        )
+        .asData
+        ?.value;
   }
 }
 
@@ -90,6 +116,7 @@ class WhoIsGoingContent extends StatelessWidget {
     required this.event,
     required this.roster,
     required this.userProfile,
+    this.avatarItems,
     this.fallbackTotal,
     this.surfaceStyle,
     this.showHeader = true,
@@ -98,6 +125,7 @@ class WhoIsGoingContent extends StatelessWidget {
   final Event event;
   final EventParticipationRoster roster;
   final UserProfile userProfile;
+  final List<CatchPersonAvatarItem>? avatarItems;
   final int? fallbackTotal;
   final EventDetailSurfaceStyle? surfaceStyle;
   final bool showHeader;
@@ -136,7 +164,9 @@ class WhoIsGoingContent extends StatelessWidget {
         ],
         if (total == 0)
           EmptyRosterMessage(
-            title: event.isUpcoming ? 'No attendees yet' : 'No attendees booked',
+            title: event.isUpcoming
+                ? 'No attendees yet'
+                : 'No attendees booked',
             message: event.isUpcoming
                 ? 'Be the first to book this event.'
                 : 'This event did not have any booked attendees.',
@@ -147,9 +177,10 @@ class WhoIsGoingContent extends StatelessWidget {
             eventId: event.id,
             totalCount: total,
             viewerInterestedInGenders: userProfile.interestedInGenders,
+            avatarItems: avatarItems,
             activityKind: event.activityKind,
             size: 44,
-            limit: 7,
+            limit: _whoIsGoingAvatarLimit,
             obscured: event.isUpcoming,
             showOverflowCount: true,
           ),
