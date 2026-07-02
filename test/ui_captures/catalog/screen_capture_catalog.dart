@@ -131,7 +131,7 @@ import 'package:catch_dating_app/hosts/presentation/payments/host_payment_accoun
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
-import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
+import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/labs/design_fixtures/catches_surface_fixtures.dart';
 import 'package:catch_dating_app/labs/design_fixtures/event_success_companion_fixtures.dart';
 import 'package:catch_dating_app/labs/design_fixtures/host_operations_fixtures.dart';

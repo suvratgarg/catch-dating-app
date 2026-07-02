@@ -196,11 +196,6 @@
     {
       "rule": "crossFeaturePresentationImport",
       "path": "lib/onboarding/presentation/pages/photos_page.dart",
-      "import": "package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/onboarding/presentation/pages/photos_page.dart",
       "import": "package:catch_dating_app/image_uploads/presentation/profile_photo_editor_screen.dart"
     },
     {
@@ -230,18 +225,8 @@
     },
     {
       "rule": "crossFeaturePresentationImport",
-      "path": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
-      "import": "package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
       "path": "lib/user_profile/presentation/self_profile_photo_action_controller.dart",
       "import": "package:catch_dating_app/image_uploads/presentation/profile_photo_editor_screen.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/user_profile/presentation/self_profile_screen_state.dart",
-      "import": "package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart"
     },
     {
       "rule": "crossFeaturePresentationImport",
@@ -257,11 +242,6 @@
       "rule": "crossFeaturePresentationImport",
       "path": "lib/user_profile/presentation/widgets/profile_tab.dart",
       "import": "package:catch_dating_app/image_uploads/presentation/photo_grid.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/user_profile/presentation/widgets/profile_tab.dart",
-      "import": "package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart"
     }
   ]
 }
