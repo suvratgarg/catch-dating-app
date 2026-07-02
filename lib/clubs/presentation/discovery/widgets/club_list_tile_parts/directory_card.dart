@@ -391,25 +391,28 @@ class MembershipTrailingController extends ConsumerWidget {
 
     // Key by clubId so each tile observes only its own join state; an unkeyed
     // shared mutation would spin/disable every visible Join button at once.
-    final joinMutation = ref.watch(
-      ClubMembershipController.joinMutation(clubId),
-    );
-    return MembershipTrailing(
-      isJoined: false,
-      isPending: joinMutation.isPending,
-      onJoinPressed: () {
-        final uid = ref.read(uidProvider).asData?.value;
-        if (uid == null) {
-          context.go(
-            Uri(
-              path: Routes.authScreen.path,
-              queryParameters: {'from': '/clubs/$clubId'},
-            ).toString(),
-          );
-          return;
-        }
-        _joinClub(ref, clubId);
-      },
+    final mutation = ClubMembershipController.joinMutation(clubId);
+    final joinMutation = ref.watch(mutation);
+    return CatchMutationErrorListener(
+      mutation: mutation,
+      errorContext: AppErrorContext.club,
+      child: MembershipTrailing(
+        isJoined: false,
+        isPending: joinMutation.isPending,
+        onJoinPressed: () {
+          final uid = ref.read(uidProvider).asData?.value;
+          if (uid == null) {
+            context.go(
+              Uri(
+                path: Routes.authScreen.path,
+                queryParameters: {'from': '/clubs/$clubId'},
+              ).toString(),
+            );
+            return;
+          }
+          _joinClub(ref, clubId);
+        },
+      ),
     );
   }
 }
@@ -447,9 +450,21 @@ class MembershipTrailing extends StatelessWidget {
 }
 
 void _joinClub(WidgetRef ref, String clubId) {
-  ClubMembershipController.joinMutation(clubId).run(ref, (transaction) async {
-    await transaction
-        .get(clubMembershipControllerProvider.notifier)
-        .join(clubId);
-  });
+  unawaited(
+    ClubMembershipController.joinMutation(clubId)
+        .run(ref, (transaction) async {
+          await transaction
+              .get(clubMembershipControllerProvider.notifier)
+              .join(clubId);
+        })
+        .catchError((Object error, StackTrace stackTrace) {
+          ref
+              .read(errorLoggerProvider)
+              .logError(
+                error,
+                stackTrace,
+                reason: 'MembershipTrailingController._joinClub failed',
+              );
+        }),
+  );
 }

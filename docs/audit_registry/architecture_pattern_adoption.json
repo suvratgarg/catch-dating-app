@@ -180,6 +180,7 @@
         "flutter test test/hosts/host_create_event_screen_test.dart test/hosts/host_event_manage_controller_test.dart",
         "flutter analyze --no-fatal-infos lib/hosts/presentation/host_event_manage_screen.dart lib/hosts/presentation/host_event_manage_controller.dart lib/hosts/presentation/widgets/host_event_attendance_panel.dart test/hosts/host_create_event_screen_test.dart test/hosts/host_event_manage_controller_test.dart test/ui_captures/catalog/screen_capture_catalog.dart",
         "node tool/design/check_new_widget_inventory.mjs --no-write",
+        "node tool/architecture/check_mutation_error_surfaces.mjs",
         "node tool/architecture/check_adopted_architecture_boundaries.mjs",
         "node tool/agent/check_agent_readiness.mjs"
       ],

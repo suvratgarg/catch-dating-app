@@ -1953,6 +1953,52 @@ void main() {
       expect(find.text('SIGNAL HILL / MUMBAI'), findsOneWidget);
     });
 
+    testWidgets('ClubListTile surfaces directory join failures', (
+      tester,
+    ) async {
+      final fakeRepository = FakeClubsRepository()
+        ..joinError = StateError('join failed');
+      final container = ProviderContainer(
+        retry: (_, _) => null,
+        overrides: [
+          clubsRepositoryProvider.overrideWith((ref) => fakeRepository),
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+        ],
+      );
+      addTearDown(container.dispose);
+      final uidSubscription = container.listen(
+        uidProvider,
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(uidSubscription.close);
+      await container.pump();
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: Scaffold(
+              body: Center(
+                child: ClubListTile(
+                  club: buildClub(id: 'club-fail', name: 'Fail Club'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await _pumpClubUi(tester);
+
+      await tester.tap(find.widgetWithText(CatchButton, 'Join'));
+      await tester.pump();
+      await _pumpClubUi(tester);
+
+      expect(fakeRepository.joinedClubId, isNull);
+      expect(find.text('join failed'), findsOneWidget);
+    });
+
     testWidgets('ClubDetailBody host view stays a public club profile', (
       tester,
     ) async {
