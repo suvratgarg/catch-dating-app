@@ -94,7 +94,9 @@ class WhoIsGoing extends ConsumerWidget {
     WidgetRef ref,
     EventParticipationRoster roster,
   ) {
-    if (event.isUpcoming || roster.bookedCount <= 0) return null;
+    if (event.isUpcomingAt(DateTime.now()) || roster.bookedCount <= 0) {
+      return null;
+    }
     return ref
         .watch(
           eventHypeAvatarsProvider(

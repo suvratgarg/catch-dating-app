@@ -112,7 +112,6 @@ abstract class Event with _$Event {
   bool get isFull => signedUpCount >= capacityLimit;
   bool get isFree => priceInPaise == 0;
   bool get isCancelled => status == EventLifecycleStatus.cancelled;
-  bool get isUpcoming => isUpcomingAt(DateTime.now());
   bool isUpcomingAt(DateTime now) => !isCancelled && startTime.isAfter(now);
   bool get hasRequirements => constraints.hasRequirements;
   bool get hasExactStartingPoint =>
