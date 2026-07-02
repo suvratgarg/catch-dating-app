@@ -125,11 +125,6 @@
     },
     {
       "rule": "crossFeaturePresentationImport",
-      "path": "lib/onboarding/presentation/pages/photos_page.dart",
-      "import": "package:catch_dating_app/image_uploads/presentation/profile_photo_editor_screen.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
       "path": "lib/payments/presentation/payment_confirmation_screen.dart",
       "import": "package:catch_dating_app/dashboard/presentation/widgets/quick_actions.dart"
     },
@@ -152,11 +147,6 @@
       "rule": "crossFeaturePresentationImport",
       "path": "lib/user_profile/presentation/profile_screen.dart",
       "import": "package:catch_dating_app/swipes/presentation/profile_surface.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/user_profile/presentation/self_profile_photo_action_controller.dart",
-      "import": "package:catch_dating_app/image_uploads/presentation/profile_photo_editor_screen.dart"
     },
     {
       "rule": "crossFeaturePresentationImport",

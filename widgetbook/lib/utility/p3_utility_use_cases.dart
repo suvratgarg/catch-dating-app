@@ -35,7 +35,7 @@ import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
 import 'package:catch_dating_app/force_update/domain/app_version_config.dart';
 import 'package:catch_dating_app/force_update/presentation/update_required_screen.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
-import 'package:catch_dating_app/image_uploads/presentation/profile_photo_editor_screen.dart';
+import 'package:catch_dating_app/image_uploads/shared/profile_photo_editor_screen.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_slot.dart';
 import 'package:catch_dating_app/labs/design_fixtures/profile_surface_fixtures.dart';
