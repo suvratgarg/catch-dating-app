@@ -358,6 +358,12 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
     severity: DiagnosticSeverity.WARNING,
   );
 
+  static const mutationPendingRequiresError = LintCode(
+    'catch_mutation_pending_requires_error',
+    'Mutation "{0}" is used for isPending without hasError or a Catch mutation error surface.',
+    severity: DiagnosticSeverity.INFO,
+  );
+
   @override
   bool get canUseParsedResult => true;
 
@@ -391,6 +397,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
     noWidgetReturningMethod,
     useNamedCatchFieldConstructor,
     useNamedCatchSectionConstructor,
+    mutationPendingRequiresError,
   ];
 
   @override
@@ -677,6 +684,16 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     if (!isFeaturePresentationPath) return;
 
     final name = node.name.lexeme;
+    if (name == 'build') {
+      for (final finding in catchUiMutationPendingWithoutErrorFindings(node)) {
+        _reportAtNode(
+          finding.node,
+          CatchUiLayoutRules.mutationPendingRequiresError,
+          arguments: [finding.label],
+        );
+      }
+      return;
+    }
     if (!name.startsWith('_') || name == 'build') return;
 
     final returnType = node.returnType?.toSource().replaceAll(
@@ -1522,6 +1539,193 @@ bool isCatchUiDateArithmeticDuration(InstanceCreationExpression node) {
   final methodName = invocation.methodName.name;
   if (methodName != 'add' && methodName != 'subtract') return false;
   return invocation.target != null;
+}
+
+List<CatchUiMutationPendingFinding> catchUiMutationPendingWithoutErrorFindings(
+  MethodDeclaration node,
+) {
+  if (node.name.lexeme != 'build') return const [];
+
+  final source = node.body.toSource();
+  if (_hasCatchMutationErrorSurface(source)) return const [];
+
+  final findings = <CatchUiMutationPendingFinding>[
+    for (final label in _directMutationPendingLabels(source))
+      CatchUiMutationPendingFinding(
+        node: node,
+        label: label,
+        variableName: null,
+      ),
+  ];
+
+  final mutationVariables = _MutationVariableVisitor();
+  node.body.accept(mutationVariables);
+  if (mutationVariables.names.isEmpty) return findings;
+
+  final errorVariables = _MutationPropertyReadVisitor('hasError');
+  node.body.accept(errorVariables);
+
+  final pendingReads = _MutationPendingReadVisitor(mutationVariables.names);
+  node.body.accept(pendingReads);
+
+  findings.addAll([
+    for (final read in pendingReads.reads)
+      if (read.variableName == null ||
+          !errorVariables.names.contains(read.variableName))
+        read,
+  ]);
+
+  return findings;
+}
+
+Iterable<String> _directMutationPendingLabels(String source) {
+  return RegExp(
+    r'\bref\.(?:watch|read)\s*\([^;]*?(?:Mutation|mutation)[^;]*?\)\.isPending\b',
+  ).allMatches(source).map((match) => match.group(0)!);
+}
+
+class CatchUiMutationPendingFinding {
+  const CatchUiMutationPendingFinding({
+    required this.node,
+    required this.label,
+    required this.variableName,
+  });
+
+  final AstNode node;
+  final String label;
+  final String? variableName;
+}
+
+class _MutationVariableVisitor extends RecursiveAstVisitor<void> {
+  final names = <String>{};
+
+  @override
+  void visitVariableDeclaration(VariableDeclaration node) {
+    final initializer = node.initializer;
+    if (initializer == null) {
+      super.visitVariableDeclaration(node);
+      return;
+    }
+
+    final parent = node.parent;
+    final declaredType = parent is VariableDeclarationList
+        ? parent.type?.toSource() ?? ''
+        : '';
+    if (_isMutationWatchExpression(
+      initializer,
+      declaredType: declaredType,
+      variableName: node.name.lexeme,
+    )) {
+      names.add(node.name.lexeme);
+    }
+
+    super.visitVariableDeclaration(node);
+  }
+}
+
+class _MutationPropertyReadVisitor extends RecursiveAstVisitor<void> {
+  _MutationPropertyReadVisitor(this.propertyName);
+
+  final String propertyName;
+  final names = <String>{};
+
+  @override
+  void visitPrefixedIdentifier(PrefixedIdentifier node) {
+    if (node.identifier.name == propertyName) {
+      names.add(node.prefix.name);
+    }
+    super.visitPrefixedIdentifier(node);
+  }
+
+  @override
+  void visitPropertyAccess(PropertyAccess node) {
+    if (node.propertyName.name == propertyName) {
+      final target = node.target;
+      if (target is SimpleIdentifier) names.add(target.name);
+    }
+    super.visitPropertyAccess(node);
+  }
+}
+
+class _MutationPendingReadVisitor extends RecursiveAstVisitor<void> {
+  _MutationPendingReadVisitor(this.mutationVariables);
+
+  final Set<String> mutationVariables;
+  final reads = <CatchUiMutationPendingFinding>[];
+
+  @override
+  void visitPrefixedIdentifier(PrefixedIdentifier node) {
+    if (node.identifier.name == 'isPending' &&
+        mutationVariables.contains(node.prefix.name)) {
+      reads.add(
+        CatchUiMutationPendingFinding(
+          node: node.identifier,
+          label: node.prefix.name,
+          variableName: node.prefix.name,
+        ),
+      );
+    }
+    super.visitPrefixedIdentifier(node);
+  }
+
+  @override
+  void visitPropertyAccess(PropertyAccess node) {
+    if (node.propertyName.name != 'isPending') {
+      super.visitPropertyAccess(node);
+      return;
+    }
+
+    final target = node.target;
+    if (target is SimpleIdentifier && mutationVariables.contains(target.name)) {
+      reads.add(
+        CatchUiMutationPendingFinding(
+          node: node.propertyName,
+          label: target.name,
+          variableName: target.name,
+        ),
+      );
+    } else if (target != null && _isDirectMutationWatchExpression(target)) {
+      reads.add(
+        CatchUiMutationPendingFinding(
+          node: node.propertyName,
+          label: target.toSource(),
+          variableName: null,
+        ),
+      );
+    }
+
+    super.visitPropertyAccess(node);
+  }
+}
+
+bool _hasCatchMutationErrorSurface(String source) {
+  return [
+    RegExp(r'\.hasError\b'),
+    RegExp(r'\bCatchMutationErrorBanner\b'),
+    RegExp(r'\bCatchMutationErrorListener(?:s)?\b'),
+    RegExp(r'\bmutationErrorMessage\s*\('),
+    RegExp(r'\bshowCatchErrorSnackBar\s*\('),
+  ].any((pattern) => pattern.hasMatch(source));
+}
+
+bool _isMutationWatchExpression(
+  Expression expression, {
+  required String declaredType,
+  required String variableName,
+}) {
+  final text = expression.toSource();
+  if (!RegExp(r'\bref\.(?:watch|read)\s*\(').hasMatch(text)) return false;
+  final lowerVariableName = variableName.toLowerCase();
+  return declaredType.contains('Mutation') ||
+      text.contains('Mutation') ||
+      text.contains('mutation') ||
+      lowerVariableName.contains('mutation');
+}
+
+bool _isDirectMutationWatchExpression(Expression expression) {
+  final text = expression.toSource();
+  return RegExp(r'\bref\.(?:watch|read)\s*\(').hasMatch(text) &&
+      (text.contains('Mutation') || text.contains('mutation'));
 }
 
 bool _isEdgeInsetsConstructor(String typeName) {
