@@ -22,6 +22,7 @@ import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/catch_cover_story.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/catch_cross_paths_card.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_body.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_city_picker.dart';
@@ -516,6 +517,45 @@ Widget exploreCityPickerStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Trigger states',
+  type: CityTrigger,
+  path: '[Explore]/Controls',
+)
+Widget exploreCityTriggerStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+  return _CatalogScreen(
+    title: 'CityTrigger',
+    catalogId: 'control.explore.city_trigger',
+    children: [
+      _StateCard(
+        label: 'icon ready',
+        child: Center(
+          child: CityTrigger(city: _mumbai, focused: false, onTap: _noop),
+        ),
+      ),
+      _StateCard(
+        label: 'icon focused',
+        child: Center(
+          child: CityTrigger(city: _delhi, focused: true, onTap: _noop),
+        ),
+      ),
+      _StateCard(
+        label: 'scope label disabled',
+        child: Center(
+          child: CityTrigger(
+            city: _mumbai,
+            focused: false,
+            enabled: false,
+            presentation: ExploreCityPickerPresentation.scopeLabel,
+            foregroundColor: t.ink,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Cover header states',
   type: ExploreDiscoveryCoverHeader,
   path: '[Explore]/Sections',
@@ -539,6 +579,116 @@ Widget exploreDiscoveryCoverHeaderStates(BuildContext context) {
           child: _ExploreScope(
             feed: const AsyncData(ExploreFeedViewModel(items: [])),
             child: const ExploreDiscoveryCoverHeader(),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Cover chrome states',
+  type: CoverStoryChrome,
+  path: '[Explore]/Sections',
+)
+Widget exploreCoverStoryChromeStates(BuildContext context) {
+  const d = CatchTokens.dark;
+  final locationStory = CatchCoverStory(
+    title: 'Tonight in Mumbai',
+    location: 'Mumbai',
+    showSearch: true,
+    onLocation: _noop,
+    onSearch: _noop,
+  );
+  const searchStory = CatchCoverStory(
+    title: 'Tonight in Mumbai',
+    showSearch: true,
+  );
+
+  Widget frame(Widget child) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: d.bg,
+        borderRadius: BorderRadius.circular(CatchRadius.lg),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: CatchSpacing.s3),
+        child: child,
+      ),
+    );
+  }
+
+  return _CatalogScreen(
+    title: 'CoverStoryChrome',
+    catalogId: 'section.explore.cover_story_chrome',
+    children: [
+      _StateCard(
+        label: 'location and search',
+        child: frame(CoverStoryChrome(paper: d.ink, story: locationStory)),
+      ),
+      _StateCard(
+        label: 'search only',
+        child: frame(CoverStoryChrome(paper: d.ink, story: searchStory)),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Cover content states',
+  type: CoverStoryContent,
+  path: '[Explore]/Sections',
+)
+Widget exploreCoverStoryContentStates(BuildContext context) {
+  const d = CatchTokens.dark;
+  final dinner = ActivityPalette.resolve(context, ActivityKind.dinner);
+  final dinnerStory = CatchCoverStory(
+    activityKind: ActivityKind.dinner,
+    kicker: 'Tonight',
+    title: 'Jazz supper table',
+    body: 'Eight seats, one long table, and an easy first round.',
+    cta: 'Book',
+    onCta: _noop,
+    data: '8:00 PM · Rs 1,800',
+    data2: '8 going · 4 left',
+  );
+  const neutralStory = CatchCoverStory(
+    title: 'Plans that feel warm before they feel crowded',
+    body: 'Browse hosted tables, runs, games, and coffee walks nearby.',
+    data: 'Mumbai',
+  );
+
+  Widget frame(Widget child) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: d.bg,
+        borderRadius: BorderRadius.circular(CatchRadius.lg),
+      ),
+      child: Padding(padding: CatchInsets.contentRelaxed, child: child),
+    );
+  }
+
+  return _CatalogScreen(
+    title: 'CoverStoryContent',
+    catalogId: 'section.explore.cover_story_content',
+    children: [
+      _StateCard(
+        label: 'event CTA',
+        child: frame(
+          CoverStoryContent(
+            paper: d.ink,
+            accent: dinner.accent,
+            story: dinnerStory,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'neutral hook',
+        child: frame(
+          CoverStoryContent(
+            paper: d.ink,
+            accent: d.primary,
+            story: neutralStory,
           ),
         ),
       ),
@@ -904,6 +1054,73 @@ Widget exploreFilterRailStates(BuildContext context) {
               joinedOnly: true,
             ),
             child: const AbsorbPointer(child: ExploreFilterSheet()),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Rail label states',
+  type: ExploreRailLabel,
+  path: '[Explore]/Controls',
+)
+Widget exploreRailLabelStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreRailLabel',
+    catalogId: 'control.explore.filter_rail_label',
+    children: [
+      _StateCard(
+        label: 'time scope options',
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ExploreRailLabel(label: 'Tonight', selected: true, onTap: _noop),
+            gapW12,
+            ExploreRailLabel(label: 'Weekend', selected: false, onTap: _noop),
+          ],
+        ),
+      ),
+      _StateCard(
+        label: 'long copy',
+        child: ExploreRailLabel(
+          label: 'This week',
+          selected: false,
+          onTap: _noop,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Filter glyph states',
+  type: ExploreFilterGlyphButton,
+  path: '[Explore]/Controls',
+)
+Widget exploreFilterGlyphButtonStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreFilterGlyphButton',
+    catalogId: 'control.explore.filter_glyph_button',
+    children: [
+      _StateCard(
+        label: 'inactive',
+        child: Center(
+          child: ExploreFilterGlyphButton(
+            activeCount: 0,
+            semanticLabel: 'Filters',
+            onTap: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'active count',
+        child: Center(
+          child: ExploreFilterGlyphButton(
+            activeCount: 3,
+            semanticLabel: 'Filters, 3 active',
+            onTap: _noop,
           ),
         ),
       ),

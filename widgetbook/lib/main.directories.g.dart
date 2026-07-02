@@ -3405,6 +3405,16 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Controls',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'CityTrigger',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Trigger states',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .exploreCityTriggerStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'ExploreCityPicker',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3425,12 +3435,32 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'ExploreFilterGlyphButton',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Filter glyph states',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .exploreFilterGlyphButtonStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'ExploreFilterSheet',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Filter sheet states',
                 builder: _widgetbook_workspace_explore_explore_use_cases
                     .exploreFilterSheetStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ExploreRailLabel',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Rail label states',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .exploreRailLabelStates,
               ),
             ],
           ),
@@ -3576,6 +3606,26 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Collapsed map summary',
                 builder: _widgetbook_workspace_explore_explore_use_cases
                     .collapsedMapSummaryStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CoverStoryChrome',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Cover chrome states',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .exploreCoverStoryChromeStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CoverStoryContent',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Cover content states',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .exploreCoverStoryContentStates,
               ),
             ],
           ),
