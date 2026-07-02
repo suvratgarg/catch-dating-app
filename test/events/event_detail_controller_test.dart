@@ -80,6 +80,63 @@ void main() {
       expect(result.requireValue!.isHost, isTrue);
     });
 
+    test(
+      'host role waits for club ownership before rendering detail state',
+      () {
+        AppConfig.configureEntrypointRole(AppRole.host);
+
+        final result = buildEventDetailViewModel(
+          eventAsync: AsyncData(buildEvent()),
+          userProfileAsync: AsyncData(buildUser(uid: 'host-1')),
+          reviewsAsync: const AsyncData(<Review>[]),
+          clubAsync: const AsyncLoading(),
+          savedEventAsync: const AsyncData(null),
+          participationAsync: const AsyncData(null),
+          currentUid: 'host-1',
+          isAuthenticated: true,
+        );
+
+        expect(result.isLoading, isTrue);
+      },
+    );
+
+    test(
+      'host role surfaces club errors before falling back to consumer state',
+      () {
+        AppConfig.configureEntrypointRole(AppRole.host);
+
+        final result = buildEventDetailViewModel(
+          eventAsync: AsyncData(buildEvent()),
+          userProfileAsync: AsyncData(buildUser(uid: 'host-1')),
+          reviewsAsync: const AsyncData(<Review>[]),
+          clubAsync: AsyncError(StateError('club failed'), StackTrace.empty),
+          savedEventAsync: const AsyncData(null),
+          participationAsync: const AsyncData(null),
+          currentUid: 'host-1',
+          isAuthenticated: true,
+        );
+
+        expect(result.hasError, isTrue);
+        expect(result.error, isA<StateError>());
+      },
+    );
+
+    test('consumer role keeps detail available when club ownership fails', () {
+      final result = buildEventDetailViewModel(
+        eventAsync: AsyncData(buildEvent()),
+        userProfileAsync: AsyncData(buildUser()),
+        reviewsAsync: const AsyncData(<Review>[]),
+        clubAsync: AsyncError(StateError('club failed'), StackTrace.empty),
+        savedEventAsync: const AsyncData(null),
+        participationAsync: const AsyncData(null),
+        currentUid: 'runner-1',
+        isAuthenticated: true,
+      );
+
+      expect(result.hasError, isFalse);
+      expect(result.requireValue!.isHost, isFalse);
+    });
+
     test('returns saved state from the saved event relationship doc', () {
       final result = buildEventDetailViewModel(
         eventAsync: AsyncData(buildEvent()),
