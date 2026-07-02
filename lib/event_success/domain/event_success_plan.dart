@@ -56,8 +56,10 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
   factory EventSuccessPlan.fromJson(Map<String, dynamic> json) =>
       _$EventSuccessPlanFromJson(json);
 
-  factory EventSuccessPlan.defaultForEvent(Event event, {DateTime? now}) {
-    final createdAt = now ?? DateTime.now();
+  factory EventSuccessPlan.defaultForEvent(
+    Event event, {
+    required DateTime now,
+  }) {
     final draft = EventSuccessHostDraft.fromFormat(
       event.eventFormat,
       targetAttendeeCount: math.max(1, event.capacityLimit),
@@ -67,8 +69,8 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
       eventId: event.id,
       clubId: event.clubId,
       draft: draft,
-      createdAt: createdAt,
-      updatedAt: createdAt,
+      createdAt: now,
+      updatedAt: now,
     );
   }
 

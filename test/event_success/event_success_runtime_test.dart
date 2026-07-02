@@ -12,15 +12,16 @@ void main() {
   group('EventSuccessRuntime', () {
     test('gates capabilities from selected modules and feature toggles', () {
       final event = buildEvent();
-      final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
-        selectedModuleIds: [
-          EventSuccessModuleCatalog.checkIn.id,
-          EventSuccessModuleCatalog.hostScript.id,
-          EventSuccessModuleCatalog.decomposedFeedback.id,
-        ],
-        wingmanRequestsEnabled: true,
-        contextualOpenersEnabled: true,
-      );
+      final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime)
+          .copyWith(
+            selectedModuleIds: [
+              EventSuccessModuleCatalog.checkIn.id,
+              EventSuccessModuleCatalog.hostScript.id,
+              EventSuccessModuleCatalog.decomposedFeedback.id,
+            ],
+            wingmanRequestsEnabled: true,
+            contextualOpenersEnabled: true,
+          );
       final runtime = EventSuccessRuntime(
         plan: plan,
         event: event,
@@ -50,12 +51,13 @@ void main() {
           ActivityKind.pickleball,
         ),
       );
-      final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
-        selectedModuleIds: [
-          EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
-        ],
-        compatibilityAffectsRanking: true,
-      );
+      final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime)
+          .copyWith(
+            selectedModuleIds: [
+              EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
+            ],
+            compatibilityAffectsRanking: true,
+          );
       final runtime = EventSuccessRuntime(
         plan: plan,
         event: event,
@@ -86,13 +88,14 @@ void main() {
           ActivityKind.singlesMixer,
         ),
       );
-      final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
-        selectedModuleIds: [
-          EventSuccessModuleCatalog.checkIn.id,
-          EventSuccessModuleCatalog.firstHelloCheckIn.id,
-          EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
-        ],
-      );
+      final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime)
+          .copyWith(
+            selectedModuleIds: [
+              EventSuccessModuleCatalog.checkIn.id,
+              EventSuccessModuleCatalog.firstHelloCheckIn.id,
+              EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
+            ],
+          );
       final runtime = EventSuccessRuntime(
         plan: plan,
         event: event,
@@ -124,12 +127,13 @@ void main() {
 
     test('requires a booked arrival state for First Hello mission', () {
       final event = buildEvent();
-      final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
-        selectedModuleIds: [
-          EventSuccessModuleCatalog.checkIn.id,
-          EventSuccessModuleCatalog.firstHelloCheckIn.id,
-        ],
-      );
+      final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime)
+          .copyWith(
+            selectedModuleIds: [
+              EventSuccessModuleCatalog.checkIn.id,
+              EventSuccessModuleCatalog.firstHelloCheckIn.id,
+            ],
+          );
       final runtime = EventSuccessRuntime(
         plan: plan,
         event: event,
@@ -171,16 +175,17 @@ void main() {
           ActivityKind.pickleball,
         ),
       );
-      final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
-        playbookId: EventSuccessPlaybookLibrary.pickleball.id,
-        selectedModuleIds: [
-          EventSuccessModuleCatalog.checkIn.id,
-          EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
-          EventSuccessModuleCatalog.guidedRotations.id,
-          EventSuccessModuleCatalog.liveReveal.id,
-        ],
-        activeStepIndex: 0,
-      );
+      final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime)
+          .copyWith(
+            playbookId: EventSuccessPlaybookLibrary.pickleball.id,
+            selectedModuleIds: [
+              EventSuccessModuleCatalog.checkIn.id,
+              EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
+              EventSuccessModuleCatalog.guidedRotations.id,
+              EventSuccessModuleCatalog.liveReveal.id,
+            ],
+            activeStepIndex: 0,
+          );
       final runtime = EventSuccessRuntime(
         plan: plan,
         event: event,
@@ -212,16 +217,17 @@ void main() {
           ActivityKind.pickleball,
         ),
       );
-      final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
-        playbookId: EventSuccessPlaybookLibrary.pickleball.id,
-        selectedModuleIds: [
-          EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
-          EventSuccessModuleCatalog.guidedRotations.id,
-          EventSuccessModuleCatalog.liveReveal.id,
-        ],
-        activeStepIndex: 1,
-        revealStatus: EventSuccessRevealStatus.countingDown,
-      );
+      final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime)
+          .copyWith(
+            playbookId: EventSuccessPlaybookLibrary.pickleball.id,
+            selectedModuleIds: [
+              EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
+              EventSuccessModuleCatalog.guidedRotations.id,
+              EventSuccessModuleCatalog.liveReveal.id,
+            ],
+            activeStepIndex: 1,
+            revealStatus: EventSuccessRevealStatus.countingDown,
+          );
       final runtime = EventSuccessRuntime(
         plan: plan,
         event: event,
@@ -239,12 +245,13 @@ void main() {
 
     test('gates live reveal behind assignment modules', () {
       final event = buildEvent();
-      final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
-        selectedModuleIds: [
-          EventSuccessModuleCatalog.liveReveal.id,
-          EventSuccessModuleCatalog.guidedRotations.id,
-        ],
-      );
+      final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime)
+          .copyWith(
+            selectedModuleIds: [
+              EventSuccessModuleCatalog.liveReveal.id,
+              EventSuccessModuleCatalog.guidedRotations.id,
+            ],
+          );
       final runtime = EventSuccessRuntime(
         plan: plan,
         event: event,
@@ -258,14 +265,15 @@ void main() {
 
     test('keeps booked attendees in pre-arrival planning state', () {
       final event = buildEvent();
-      final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
-        selectedModuleIds: [
-          EventSuccessModuleCatalog.microPods.id,
-          EventSuccessModuleCatalog.guidedRotations.id,
-          EventSuccessModuleCatalog.socialMissions.id,
-          EventSuccessModuleCatalog.liveReveal.id,
-        ],
-      );
+      final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime)
+          .copyWith(
+            selectedModuleIds: [
+              EventSuccessModuleCatalog.microPods.id,
+              EventSuccessModuleCatalog.guidedRotations.id,
+              EventSuccessModuleCatalog.socialMissions.id,
+              EventSuccessModuleCatalog.liveReveal.id,
+            ],
+          );
       final runtime = EventSuccessRuntime(
         plan: plan,
         event: event,
@@ -299,6 +307,7 @@ void main() {
       final event = buildEvent();
       final plan = EventSuccessPlan.defaultForEvent(
         event,
+        now: event.startTime,
       ).copyWith(activeStepIndex: 3);
       final runtime = EventSuccessRuntime(
         plan: plan,
@@ -322,14 +331,15 @@ void main() {
           ActivityKind.pickleball,
         ),
       );
-      final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
-        playbookId: EventSuccessPlaybookLibrary.pickleball.id,
-        selectedModuleIds: [
-          EventSuccessModuleCatalog.guidedRotations.id,
-          EventSuccessModuleCatalog.liveReveal.id,
-        ],
-        activeStepIndex: 0,
-      );
+      final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime)
+          .copyWith(
+            playbookId: EventSuccessPlaybookLibrary.pickleball.id,
+            selectedModuleIds: [
+              EventSuccessModuleCatalog.guidedRotations.id,
+              EventSuccessModuleCatalog.liveReveal.id,
+            ],
+            activeStepIndex: 0,
+          );
       final runtime = EventSuccessRuntime(
         plan: plan,
         event: event,
@@ -360,12 +370,13 @@ void main() {
 
     test('filters run-of-show steps to selected live modules', () {
       final event = buildEvent();
-      final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
-        selectedModuleIds: [
-          EventSuccessModuleCatalog.microPods.id,
-          EventSuccessModuleCatalog.safetyControls.id,
-        ],
-      );
+      final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime)
+          .copyWith(
+            selectedModuleIds: [
+              EventSuccessModuleCatalog.microPods.id,
+              EventSuccessModuleCatalog.safetyControls.id,
+            ],
+          );
       final runtime = EventSuccessRuntime(
         plan: plan,
         event: event,
@@ -383,9 +394,10 @@ void main() {
 
     test('returns no live plan when selected modules have no live steps', () {
       final event = buildEvent();
-      final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
-        selectedModuleIds: [EventSuccessModuleCatalog.hostAnalytics.id],
-      );
+      final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime)
+          .copyWith(
+            selectedModuleIds: [EventSuccessModuleCatalog.hostAnalytics.id],
+          );
       final runtime = EventSuccessRuntime(
         plan: plan,
         event: event,
@@ -398,13 +410,14 @@ void main() {
 
     test('gates live prompts and post-match openers separately', () {
       final event = buildEvent();
-      final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
-        selectedModuleIds: [
-          EventSuccessModuleCatalog.socialMissions.id,
-          EventSuccessModuleCatalog.contextualOpeners.id,
-        ],
-        contextualOpenersEnabled: true,
-      );
+      final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime)
+          .copyWith(
+            selectedModuleIds: [
+              EventSuccessModuleCatalog.socialMissions.id,
+              EventSuccessModuleCatalog.contextualOpeners.id,
+            ],
+            contextualOpenersEnabled: true,
+          );
       final runtime = EventSuccessRuntime(
         plan: plan,
         event: event,
@@ -441,7 +454,10 @@ void main() {
 
     test('returns post-event attendee moment only when a surface exists', () {
       final event = buildEvent();
-      final basePlan = EventSuccessPlan.defaultForEvent(event);
+      final basePlan = EventSuccessPlan.defaultForEvent(
+        event,
+        now: event.startTime,
+      );
 
       final withoutSurface =
           EventSuccessRuntime(

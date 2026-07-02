@@ -202,6 +202,7 @@ class EventSuccessHostSectionState {
 
   factory EventSuccessHostSectionState.resolve({
     required Event event,
+    required DateTime now,
     required AsyncValue<EventSuccessPlan?> planAsync,
     required AsyncValue<EventParticipationRoster> rosterAsync,
     required AsyncValue<EventSuccessScorecard?> scorecardAsync,
@@ -214,7 +215,8 @@ class EventSuccessHostSectionState {
     required AsyncValue<List<PublicProfile>> wingmanProfilesAsync,
   }) {
     final persistedPlan = planAsync.asData?.value;
-    final plan = persistedPlan ?? EventSuccessPlan.defaultForEvent(event);
+    final plan =
+        persistedPlan ?? EventSuccessPlan.defaultForEvent(event, now: now);
     final fallback = EventSuccessHostSectionState._(
       status: EventSuccessHostSectionStatus.ready,
       plan: plan,
@@ -509,6 +511,7 @@ class EventSuccessHostSection extends ConsumerWidget {
 
     final state = EventSuccessHostSectionState.resolve(
       event: event,
+      now: DateTime.now(),
       planAsync: planAsync,
       rosterAsync: rosterAsync,
       scorecardAsync: scorecardAsync,

@@ -17,7 +17,10 @@ void main() {
         startTime: start,
         endTime: start.add(const Duration(hours: 2)),
       );
-      final plan = EventSuccessPlan.defaultForEvent(event);
+      final plan = EventSuccessPlan.defaultForEvent(
+        event,
+        now: event.startTime,
+      );
 
       final state = EventSuccessCompanionScreenState.from(
         event: event,
@@ -48,12 +51,13 @@ void main() {
         startTime: start,
         endTime: start.add(const Duration(hours: 2)),
       );
-      final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
-        selectedModuleIds: [
-          EventSuccessModuleCatalog.checkIn.id,
-          EventSuccessModuleCatalog.firstHelloCheckIn.id,
-        ],
-      );
+      final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime)
+          .copyWith(
+            selectedModuleIds: [
+              EventSuccessModuleCatalog.checkIn.id,
+              EventSuccessModuleCatalog.firstHelloCheckIn.id,
+            ],
+          );
 
       final state = EventSuccessCompanionScreenState.from(
         event: event,
@@ -89,7 +93,7 @@ void main() {
 
       final state = EventSuccessCompanionScreenState.from(
         event: event,
-        plan: EventSuccessPlan.defaultForEvent(event),
+        plan: EventSuccessPlan.defaultForEvent(event, now: event.startTime),
         userProfile: viewer,
         participation: buildEventParticipation(
           event: event,

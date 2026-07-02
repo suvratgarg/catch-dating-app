@@ -51,7 +51,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
 
     final event = buildEvent(bookedCount: 10, checkedInCount: 6);
-    final plan = EventSuccessPlan.defaultForEvent(event);
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
 
     await tester.pumpWidget(
       ProviderScope(
@@ -157,7 +157,7 @@ void main() {
       checkedInCount: 0,
       waitlistedCount: 0,
     );
-    final plan = EventSuccessPlan.defaultForEvent(event);
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
 
     await tester.pumpWidget(
       ProviderScope(
@@ -241,7 +241,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
 
     final event = buildEvent();
-    final plan = EventSuccessPlan.defaultForEvent(event);
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
 
     await tester.pumpWidget(
       ProviderScope(
@@ -369,7 +369,7 @@ void main() {
 
   test('host section state maps provider waves to status and retry intent', () {
     final event = buildEvent(id: 'event-host-section-state');
-    final plan = EventSuccessPlan.defaultForEvent(event);
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
     const roster = EventParticipationRoster(
       bookedIds: ['runner-1'],
       checkedInIds: [],
@@ -390,6 +390,7 @@ void main() {
     }) {
       return EventSuccessHostSectionState.resolve(
         event: event,
+        now: event.startTime,
         planAsync: planAsync ?? AsyncData<EventSuccessPlan?>(plan),
         rosterAsync: rosterAsync ?? const AsyncData(roster),
         scorecardAsync:
@@ -468,11 +469,12 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
 
     final event = buildEvent();
-    final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
-      selectedModuleIds: EventSuccessPlaybookLibrary.socialRun.moduleIds
-          .where((id) => id != EventSuccessModuleCatalog.hostAnalytics.id)
-          .toList(),
-    );
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime)
+        .copyWith(
+          selectedModuleIds: EventSuccessPlaybookLibrary.socialRun.moduleIds
+              .where((id) => id != EventSuccessModuleCatalog.hostAnalytics.id)
+              .toList(),
+        );
 
     await tester.pumpWidget(
       ProviderScope(
@@ -508,7 +510,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
 
     final event = buildEvent(bookedCount: 6, checkedInCount: 5);
-    final plan = EventSuccessPlan.defaultForEvent(event);
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
     final now = DateTime(2026, 5, 21, 8);
 
     await tester.pumpWidget(
@@ -614,7 +616,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
 
     final event = buildEvent();
-    final plan = EventSuccessPlan.defaultForEvent(event);
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
     final now = DateTime(2026, 5, 21, 8);
 
     await tester.pumpWidget(
@@ -698,7 +700,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
 
     final event = buildEvent();
-    final plan = EventSuccessPlan.defaultForEvent(event);
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
     final now = DateTime(2026, 5, 21, 8);
 
     await tester.pumpWidget(
@@ -789,7 +791,7 @@ void main() {
       startTime: start,
       endTime: start.add(const Duration(hours: 1)),
     );
-    final plan = EventSuccessPlan.defaultForEvent(event);
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
 
     await tester.pumpWidget(
       ProviderScope(
@@ -922,7 +924,7 @@ void main() {
       startTime: start,
       endTime: start.add(const Duration(minutes: 60)),
     );
-    final plan = EventSuccessPlan.defaultForEvent(event);
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
     final assignments = [
       EventSuccessAssignment(
         id: eventSuccessAssignmentId(
@@ -1427,6 +1429,7 @@ void main() {
       );
       final plan = EventSuccessPlan.defaultForEvent(
         event,
+        now: event.startTime,
       ).copyWith(activeStepIndex: 4);
 
       await tester.pumpWidget(
@@ -1526,6 +1529,7 @@ void main() {
       );
       final plan = EventSuccessPlan.defaultForEvent(
         event,
+        now: event.startTime,
       ).copyWith(activeStepIndex: 4);
 
       await tester.pumpWidget(
@@ -1584,7 +1588,9 @@ void main() {
       endTime: start.add(const Duration(hours: 1)),
     );
     final plan = _withLiveReveal(
-      _withGuidedRotations(EventSuccessPlan.defaultForEvent(event)),
+      _withGuidedRotations(
+        EventSuccessPlan.defaultForEvent(event, now: event.startTime),
+      ),
     );
     final assignment = _rotationAssignment(
       event: event,
@@ -1646,13 +1652,14 @@ void main() {
       startTime: start,
       endTime: start.add(const Duration(hours: 2)),
     );
-    final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
-      selectedModuleIds: [
-        EventSuccessModuleCatalog.checkIn.id,
-        EventSuccessModuleCatalog.firstHelloCheckIn.id,
-        EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
-      ],
-    );
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime)
+        .copyWith(
+          selectedModuleIds: [
+            EventSuccessModuleCatalog.checkIn.id,
+            EventSuccessModuleCatalog.firstHelloCheckIn.id,
+            EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
+          ],
+        );
     final mission = EventSuccessArrivalMission(
       id: eventSuccessArrivalMissionId(eventId: event.id, uid: 'runner-1'),
       eventId: event.id,
@@ -1733,12 +1740,13 @@ void main() {
       startTime: start,
       endTime: start.add(const Duration(hours: 2)),
     );
-    final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
-      selectedModuleIds: [
-        EventSuccessModuleCatalog.checkIn.id,
-        EventSuccessModuleCatalog.firstHelloCheckIn.id,
-      ],
-    );
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime)
+        .copyWith(
+          selectedModuleIds: [
+            EventSuccessModuleCatalog.checkIn.id,
+            EventSuccessModuleCatalog.firstHelloCheckIn.id,
+          ],
+        );
     var startCalls = 0;
     var skipCalls = 0;
 
@@ -1789,12 +1797,13 @@ void main() {
       startTime: start,
       endTime: start.add(const Duration(hours: 2)),
     );
-    final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
-      selectedModuleIds: [
-        EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
-      ],
-      compatibilityAffectsRanking: true,
-    );
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime)
+        .copyWith(
+          selectedModuleIds: [
+            EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
+          ],
+          compatibilityAffectsRanking: true,
+        );
 
     await tester.pumpWidget(
       ProviderScope(
@@ -1873,12 +1882,13 @@ void main() {
       startTime: start,
       endTime: start.add(const Duration(hours: 2)),
     );
-    final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
-      selectedModuleIds: [
-        EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
-      ],
-      compatibilityAffectsRanking: true,
-    );
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime)
+        .copyWith(
+          selectedModuleIds: [
+            EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
+          ],
+          compatibilityAffectsRanking: true,
+        );
 
     await tester.pumpWidget(
       ProviderScope(
@@ -1939,7 +1949,7 @@ void main() {
       startTime: start,
       endTime: start.add(const Duration(hours: 1)),
     );
-    final plan = EventSuccessPlan.defaultForEvent(event);
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
 
     await tester.pumpWidget(
       ProviderScope(
@@ -2019,7 +2029,9 @@ void main() {
               ),
             ),
             watchEventSuccessPlanProvider(event.id).overrideWithValue(
-              AsyncData(EventSuccessPlan.defaultForEvent(event)),
+              AsyncData(
+                EventSuccessPlan.defaultForEvent(event, now: event.startTime),
+              ),
             ),
           ],
           child: MaterialApp(
@@ -2050,7 +2062,10 @@ void main() {
         startTime: start,
         endTime: start.add(const Duration(hours: 1)),
       );
-      final plan = EventSuccessPlan.defaultForEvent(event);
+      final plan = EventSuccessPlan.defaultForEvent(
+        event,
+        now: event.startTime,
+      );
 
       await tester.pumpWidget(
         ProviderScope(
@@ -2152,7 +2167,7 @@ void main() {
       startTime: start,
       endTime: start.add(const Duration(hours: 1)),
     );
-    final plan = EventSuccessPlan.defaultForEvent(event);
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
     final assignment = EventSuccessAssignment(
       id: eventSuccessAssignmentId(
         eventId: event.id,
@@ -2221,7 +2236,7 @@ void main() {
       startTime: start,
       endTime: start.add(const Duration(hours: 1)),
     );
-    final plan = EventSuccessPlan.defaultForEvent(event);
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
     final assignment = EventSuccessAssignment(
       id: eventSuccessAssignmentId(
         eventId: event.id,
@@ -2617,7 +2632,7 @@ void main() {
       startTime: start,
       endTime: start.add(const Duration(hours: 1)),
     );
-    final plan = EventSuccessPlan.defaultForEvent(event);
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
     final assignment = _assignment(
       event: event,
       uid: 'runner-1',
@@ -2666,7 +2681,7 @@ void main() {
 
     final firestore = FakeFirebaseFirestore();
     final event = buildEvent();
-    final plan = EventSuccessPlan.defaultForEvent(event);
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
     final assignment = _assignment(
       event: event,
       uid: 'runner-1',
@@ -2839,6 +2854,7 @@ void main() {
       );
       final plan = EventSuccessPlan.defaultForEvent(
         event,
+        now: event.startTime,
       ).copyWith(selectedModuleIds: [EventSuccessModuleCatalog.checkIn.id]);
 
       await tester.pumpWidget(
@@ -2956,7 +2972,7 @@ EventSuccessPlan _racketPlan(Event event) {
           )
           .toList()
         ..sort();
-  return EventSuccessPlan.defaultForEvent(event).copyWith(
+  return EventSuccessPlan.defaultForEvent(event, now: event.startTime).copyWith(
     playbookId: EventSuccessPlaybookLibrary.pickleball.id,
     selectedModuleIds: moduleIds,
   );

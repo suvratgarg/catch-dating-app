@@ -848,6 +848,7 @@ void main() {
       ];
       final plan = EventSuccessPlan.defaultForEvent(
         event,
+        now: event.startTime,
       ).copyWith(status: EventSuccessPlanStatus.live);
 
       await pumpEventsTestApp(

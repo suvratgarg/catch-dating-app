@@ -110,7 +110,7 @@ void main() {
       await _pumpLauncherHarness(
         tester,
         event: event,
-        plan: EventSuccessPlan.defaultForEvent(event),
+        plan: EventSuccessPlan.defaultForEvent(event, now: event.startTime),
         resultCompleter: resultCompleter,
       );
 
@@ -156,7 +156,7 @@ void main() {
         tester,
         event: event,
         uid: 'host-1',
-        plan: EventSuccessPlan.defaultForEvent(event),
+        plan: EventSuccessPlan.defaultForEvent(event, now: event.startTime),
         resultCompleter: resultCompleter,
       );
 
@@ -182,6 +182,7 @@ void main() {
       );
       final plan = EventSuccessPlan.defaultForEvent(
         event,
+        now: event.startTime,
       ).copyWith(selectedModuleIds: [EventSuccessModuleCatalog.hostScript.id]);
       final resultCompleter = Completer<EventSuccessCompanionLaunchResult>();
 
@@ -218,7 +219,7 @@ void main() {
       await _pumpLauncherHarness(
         tester,
         event: event,
-        plan: EventSuccessPlan.defaultForEvent(event),
+        plan: EventSuccessPlan.defaultForEvent(event, now: event.startTime),
         resultCompleter: resultCompleter,
         participation: participation,
       );
