@@ -7,7 +7,7 @@ import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/saved_events_screen.dart';
 import 'package:catch_dating_app/events/presentation/saved_events_state.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tile_data.dart';
+import 'package:catch_dating_app/events/shared/event_tiles/event_tile_data.dart';
 import 'package:catch_dating_app/routing/go_router.dart' as app_router;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

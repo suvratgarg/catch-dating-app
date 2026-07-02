@@ -65,8 +65,8 @@ export 'presentation/widgets/event_share_card.dart';
 export 'presentation/widgets/event_stats_grid.dart';
 export 'package:catch_dating_app/core/widgets/event_ticket_surface.dart';
 export 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
-export 'presentation/widgets/event_tiles/event_tile_data.dart';
-export 'presentation/widgets/event_tiles/event_tiles.dart';
+export 'shared/event_tiles/event_tile_data.dart';
+export 'shared/event_tiles/event_tiles.dart';
 
 // ── Presentation — value types & formatters ─────────────────────────────────
 export 'presentation/event_action_keys.dart';

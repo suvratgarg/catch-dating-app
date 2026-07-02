@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tile_data.dart';
+import 'package:catch_dating_app/events/shared/event_tiles/event_tile_data.dart';
 import 'package:flutter/material.dart';
 
 String eventTileStatusLabel(EventTileStatus status) {

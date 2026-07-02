@@ -57,12 +57,12 @@ import 'package:catch_dating_app/events/presentation/widgets/event_photo_header.
 import 'package:catch_dating_app/events/presentation/widgets/event_pins_map.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_share_card.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_stats_grid.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_action_card.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_agenda_tile.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_compact_row.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_date_marker.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_date_rail_card.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tile_data.dart';
+import 'package:catch_dating_app/events/shared/event_tiles/event_action_card.dart';
+import 'package:catch_dating_app/events/shared/event_tiles/event_agenda_tile.dart';
+import 'package:catch_dating_app/events/shared/event_tiles/event_compact_row.dart';
+import 'package:catch_dating_app/events/shared/event_tiles/event_date_marker.dart';
+import 'package:catch_dating_app/events/shared/event_tiles/event_date_rail_card.dart';
+import 'package:catch_dating_app/events/shared/event_tiles/event_tile_data.dart';
 import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
 import 'package:catch_dating_app/events/presentation/widgets/map_overlay_controls.dart';
 import 'package:catch_dating_app/events/presentation/widgets/map_pin_tile.dart';
@@ -2429,22 +2429,28 @@ Widget eventAgendaDayGroupState(BuildContext context) {
     child: AgendaDayGroup(
       date: DateUtils.dateOnly(_event.startTime),
       today: DateUtils.dateOnly(_now),
-      events: [
-        _event,
-        _eventDetailEvent(
-          id: 'widgetbook-event-agenda-day-dinner',
-          activityKind: ActivityKind.dinner,
-          startTime: _event.startTime.add(const Duration(hours: 2)),
-          capacityLimit: 10,
-          bookedCount: 8,
-          priceInPaise: 180000,
+      rows: [
+        EventAgendaRow(
+          event: _event,
+          badgeLabel: 'OPEN',
+          clubName: _club.name,
+          status: EventTileStatus.saved,
+        ),
+        EventAgendaRow(
+          event: _eventDetailEvent(
+            id: 'widgetbook-event-agenda-day-dinner',
+            activityKind: ActivityKind.dinner,
+            startTime: _event.startTime.add(const Duration(hours: 2)),
+            capacityLimit: 10,
+            bookedCount: 8,
+            priceInPaise: 180000,
+          ),
+          badgeLabel: 'OPEN',
+          clubName: _club.name,
+          status: EventTileStatus.saved,
         ),
       ],
       onEventSelected: (_) {},
-      badgeLabel: 'OPEN',
-      badgeLabelBuilder: null,
-      clubNameBuilder: (_) => _club.name,
-      statusBuilder: (_) => EventTileStatus.saved,
       showClubName: true,
       dayLabelBottomGap: CatchLayout.agendaDayLabelBottomGap,
       itemGap: CatchLayout.agendaItemGap,

@@ -13,7 +13,7 @@ import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_arrival_action.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
+import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';

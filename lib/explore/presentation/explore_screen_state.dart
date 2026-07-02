@@ -5,7 +5,7 @@ import 'package:catch_dating_app/clubs/presentation/shared/club_identity_atoms.d
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
+import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:flutter/material.dart';

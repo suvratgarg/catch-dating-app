@@ -30,11 +30,6 @@
     },
     {
       "rule": "crossFeaturePresentationImport",
-      "path": "lib/clubs/presentation/detail/widgets/club_schedule_section.dart",
-      "import": "package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
       "path": "lib/dashboard/presentation/widgets/dashboard_full.dart",
       "import": "package:catch_dating_app/clubs/presentation/discovery/widgets/club_avatar_rail.dart"
     },
@@ -47,11 +42,6 @@
       "rule": "crossFeaturePresentationImport",
       "path": "lib/dashboard/presentation/widgets/dashboard_full.dart",
       "import": "package:catch_dating_app/reviews/presentation/write_review_sheet.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/dashboard/presentation/widgets/event_focus_rail.dart",
-      "import": "package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart"
     },
     {
       "rule": "crossFeaturePresentationImport",
@@ -90,11 +80,6 @@
     },
     {
       "rule": "crossFeaturePresentationImport",
-      "path": "lib/explore/presentation/explore_feed_view_model.dart",
-      "import": "package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
       "path": "lib/explore/presentation/explore_map_screen.dart",
       "import": "package:catch_dating_app/events/presentation/event_detail_route_transition.dart"
     },
@@ -112,11 +97,6 @@
       "rule": "crossFeaturePresentationImport",
       "path": "lib/explore/presentation/explore_screen_state.dart",
       "import": "package:catch_dating_app/clubs/presentation/shared/club_identity_atoms.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/explore/presentation/explore_screen_state.dart",
-      "import": "package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart"
     },
     {
       "rule": "crossFeaturePresentationImport",
@@ -147,11 +127,6 @@
       "rule": "crossFeaturePresentationImport",
       "path": "lib/explore/presentation/widgets/explore_events_section.dart",
       "import": "package:catch_dating_app/events/presentation/event_detail_route_transition.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/explore/presentation/widgets/explore_events_section.dart",
-      "import": "package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart"
     },
     {
       "rule": "crossFeaturePresentationImport",
@@ -227,11 +202,6 @@
       "rule": "crossFeaturePresentationImport",
       "path": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
       "import": "package:catch_dating_app/events/presentation/widgets/who_is_going.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/hosts/presentation/widgets/host_event_tools.dart",
-      "import": "package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart"
     },
     {
       "rule": "crossFeaturePresentationImport",

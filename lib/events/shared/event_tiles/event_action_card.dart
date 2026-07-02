@@ -227,7 +227,9 @@ class EventActionCardActions extends StatelessWidget {
             fullWidth: true,
             isLoading: actions[index].isLoading,
             semanticsLabel: actions[index].semanticsLabel,
-            onPressed: actions[index].isLoading ? null : actions[index].onPressed,
+            onPressed: actions[index].isLoading
+                ? null
+                : actions[index].onPressed,
           ),
         ],
       ],

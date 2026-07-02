@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_date_rail_card.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tile_atoms.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tile_data.dart';
+import 'package:catch_dating_app/events/shared/event_tiles/event_date_rail_card.dart';
+import 'package:catch_dating_app/events/shared/event_tiles/event_tile_atoms.dart';
+import 'package:catch_dating_app/events/shared/event_tiles/event_tile_data.dart';
 import 'package:flutter/material.dart';
 
 class EventAgendaTile extends StatelessWidget {

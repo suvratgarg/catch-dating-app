@@ -16,8 +16,8 @@ import 'package:catch_dating_app/events/presentation/event_location_map_state.da
 import 'package:catch_dating_app/events/presentation/event_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_pins_map.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tile_data.dart';
 import 'package:catch_dating_app/events/presentation/widgets/map_overlay_controls.dart';
+import 'package:catch_dating_app/events/shared/event_tiles/event_tile_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

@@ -20,7 +20,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/external_event.dart';
 import 'package:catch_dating_app/events/domain/saved_event.dart';
 import 'package:catch_dating_app/events/domain/viewer_event_availability.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
+import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/explore/data/explore_search_repository.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_filter_logic.dart';

@@ -24,10 +24,10 @@ import 'package:catch_dating_app/events/presentation/widgets/event_agenda_list.d
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_photo_header.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_stats_grid.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/events/presentation/widgets/map_pin_tile.dart';
 import 'package:catch_dating_app/events/presentation/widgets/requirements_row.dart';
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
+import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/when_step.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';

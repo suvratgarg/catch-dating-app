@@ -5,7 +5,7 @@ import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
+import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:flutter/material.dart';
 
 typedef EventBadgeLabelBuilder = String? Function(Event event);
