@@ -191,8 +191,7 @@ abstract class EventSuccessDefaults with _$EventSuccessDefaults {
     );
   }
 
-  EventSuccessPlan toPlanForEvent(Event event, {DateTime? now}) {
-    final createdAt = now ?? DateTime.now();
+  EventSuccessPlan toPlanForEvent(Event event, {required DateTime now}) {
     final normalized = normalizedForFormat(
       event.eventFormat,
       targetAttendeeCount: math.max(1, event.capacityLimit),
@@ -204,8 +203,8 @@ abstract class EventSuccessDefaults with _$EventSuccessDefaults {
       draft: normalized.toDraft(
         targetAttendeeCount: math.max(1, event.capacityLimit),
       ),
-      createdAt: createdAt,
-      updatedAt: createdAt,
+      createdAt: now,
+      updatedAt: now,
       attendeePrompt: _trimToNull(normalized.attendeePrompt),
     );
   }

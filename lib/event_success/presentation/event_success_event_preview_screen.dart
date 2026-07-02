@@ -131,7 +131,7 @@ class EventSuccessEventPreviewLoadingBody extends StatelessWidget {
 }
 
 class EventPreviewHeroSkeleton extends StatelessWidget {
-  const EventPreviewHeroSkeleton();
+  const EventPreviewHeroSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -190,7 +190,7 @@ class EventPreviewHeroSkeleton extends StatelessWidget {
 }
 
 class EventPreviewNotesSkeleton extends StatelessWidget {
-  const EventPreviewNotesSkeleton();
+  const EventPreviewNotesSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -203,7 +203,7 @@ class EventPreviewNotesSkeleton extends StatelessWidget {
 }
 
 class EventPreviewSetupSkeleton extends StatelessWidget {
-  const EventPreviewSetupSkeleton();
+  const EventPreviewSetupSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -216,7 +216,7 @@ class EventPreviewSetupSkeleton extends StatelessWidget {
 }
 
 class EventPreviewLiveSkeleton extends StatelessWidget {
-  const EventPreviewLiveSkeleton();
+  const EventPreviewLiveSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -229,7 +229,7 @@ class EventPreviewLiveSkeleton extends StatelessWidget {
 }
 
 class EventPreviewCompanionSkeleton extends StatelessWidget {
-  const EventPreviewCompanionSkeleton();
+  const EventPreviewCompanionSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -242,7 +242,7 @@ class EventPreviewCompanionSkeleton extends StatelessWidget {
 }
 
 class EventPreviewReportSkeleton extends StatelessWidget {
-  const EventPreviewReportSkeleton();
+  const EventPreviewReportSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -256,6 +256,7 @@ class EventPreviewReportSkeleton extends StatelessWidget {
 
 class EventPreviewSectionSkeleton extends StatelessWidget {
   const EventPreviewSectionSkeleton({
+    super.key,
     required this.titleWidth,
     required this.textLines,
     required this.actionCount,
@@ -317,12 +318,13 @@ class EventSuccessEventPreviewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final referenceNow = now ?? DateTime.now();
     final preview = EventSuccessEventPreview.fromEvent(
       event: event,
       club: club,
       roster: roster,
       viewer: userProfile,
-      now: now,
+      now: referenceNow,
     );
     final t = CatchTokens.of(context);
 
@@ -372,7 +374,7 @@ class EventSuccessEventPreviewScreen extends StatelessWidget {
 }
 
 class EventPreviewHero extends StatelessWidget {
-  const EventPreviewHero({required this.preview});
+  const EventPreviewHero({super.key, required this.preview});
 
   final EventSuccessEventPreview preview;
 
@@ -454,7 +456,7 @@ class EventPreviewHero extends StatelessWidget {
 }
 
 class IntegrationNotesCard extends StatelessWidget {
-  const IntegrationNotesCard({required this.notes});
+  const IntegrationNotesCard({super.key, required this.notes});
 
   final List<String> notes;
 

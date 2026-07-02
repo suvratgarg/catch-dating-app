@@ -85,14 +85,6 @@
     },
     {
       "rule": "domainClockAccess",
-      "path": "lib/event_success/domain/event_success_defaults.dart"
-    },
-    {
-      "rule": "domainClockAccess",
-      "path": "lib/event_success/domain/event_success_event_preview.dart"
-    },
-    {
-      "rule": "domainClockAccess",
       "path": "lib/event_success/domain/event_success_plan.dart"
     },
     {

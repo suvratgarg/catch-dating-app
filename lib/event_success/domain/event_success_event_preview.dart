@@ -33,7 +33,7 @@ class EventSuccessEventPreview {
     Club? club,
     EventParticipationRoster? roster,
     UserProfile? viewer,
-    DateTime? now,
+    required DateTime now,
     EventSuccessPlaybook? playbook,
   }) {
     final profile = EventSuccessActivityProfile.forFormat(
@@ -46,7 +46,6 @@ class EventSuccessEventPreview {
       roster?.checkedInCount ?? 0,
       event.attendedCount,
     );
-    final referenceNow = now ?? DateTime.now();
     final hostDraft = playbook == null
         ? EventSuccessHostDraft.fromFormat(
             event.eventFormat,
@@ -71,7 +70,7 @@ class EventSuccessEventPreview {
         activeStepIndex: _activeStepIndex(
           playbook: resolvedPlaybook,
           event: event,
-          now: referenceNow,
+          now: now,
         ),
         bookedCount: bookedCount,
         checkedInCount: checkedInCount,
@@ -81,7 +80,7 @@ class EventSuccessEventPreview {
         viewer: viewer,
         profile: profile,
         checkedInCount: checkedInCount,
-        now: referenceNow,
+        now: now,
       ),
       scorecard: scorecard,
       brief: const EventSuccessCoach().analyze(
