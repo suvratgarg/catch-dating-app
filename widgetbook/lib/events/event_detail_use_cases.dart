@@ -36,7 +36,7 @@ import 'package:catch_dating_app/events/presentation/event_location_map_screen.d
 import 'package:catch_dating_app/events/presentation/event_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
-import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
+import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
 import 'package:catch_dating_app/events/presentation/location_picker_screen.dart';

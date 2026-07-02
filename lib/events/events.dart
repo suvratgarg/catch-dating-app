@@ -76,5 +76,5 @@ export 'domain/event_check_in_qr_payload.dart';
 export 'domain/event_formatters.dart';
 export 'domain/event_location_links.dart';
 export 'data/event_calendar_links.dart';
-export 'presentation/event_detail_route_transition.dart';
+export 'shared/event_detail_route_transition.dart';
 export 'presentation/event_map_center.dart';

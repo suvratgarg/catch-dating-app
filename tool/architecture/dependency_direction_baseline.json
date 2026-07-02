@@ -81,11 +81,6 @@
     {
       "rule": "crossFeaturePresentationImport",
       "path": "lib/explore/presentation/explore_map_screen.dart",
-      "import": "package:catch_dating_app/events/presentation/event_detail_route_transition.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/explore/presentation/explore_map_screen.dart",
       "import": "package:catch_dating_app/events/presentation/event_map_screen.dart"
     },
     {
@@ -125,23 +120,8 @@
     },
     {
       "rule": "crossFeaturePresentationImport",
-      "path": "lib/explore/presentation/widgets/explore_events_section.dart",
-      "import": "package:catch_dating_app/events/presentation/event_detail_route_transition.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/explore/presentation/widgets/explore_header.dart",
-      "import": "package:catch_dating_app/events/presentation/event_detail_route_transition.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
       "path": "lib/explore/presentation/widgets/explore_list.dart",
       "import": "package:catch_dating_app/clubs/presentation/detail/club_membership_controller.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/explore/presentation/widgets/explore_peek_rail.dart",
-      "import": "package:catch_dating_app/events/presentation/event_detail_route_transition.dart"
     },
     {
       "rule": "crossFeaturePresentationImport",
