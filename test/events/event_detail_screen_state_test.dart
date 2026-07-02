@@ -62,9 +62,9 @@ void main() {
         now: event.startTime.subtract(const Duration(hours: 1)),
         hasInviteCode: false,
         supportsPaidBookings: true,
-        mutationState: const EventDetailBookingDockMutationState(
+        mutationState: EventDetailBookingDockMutationState(
           bookPending: true,
-          errorMessage: 'Booking failed',
+          error: StateError('Booking failed'),
         ),
       );
 
@@ -72,7 +72,7 @@ void main() {
       expect(state.primaryAction, EventDetailBookingDockAction.book);
       expect(state.isLoading, true);
       expect(state.isPrimaryActionEnabled, false);
-      expect(state.errorMessage, 'Booking failed');
+      expect(state.error, isA<StateError>());
     });
 
     test('derives request-to-join and run preference gate actions', () {

@@ -141,11 +141,8 @@ class EventDetailCta extends ConsumerWidget {
       acceptOfferMutation,
       declineOfferMutation,
     ].firstWhere((m) => m.hasError, orElse: () => bookMutation);
-    final errorMessage = errorMutation.hasError
-        ? appErrorMessage(
-            (errorMutation as MutationError).error,
-            context: AppErrorContext.event,
-          )
+    final mutationError = errorMutation.hasError
+        ? (errorMutation as MutationError).error
         : null;
     final dockState = eventDetailBookingDockStateFrom(
       event: event,
@@ -161,11 +158,15 @@ class EventDetailCta extends ConsumerWidget {
         leaveWaitlistPending: leaveWMutation.isPending,
         acceptWaitlistOfferPending: acceptOfferMutation.isPending,
         declineWaitlistOfferPending: declineOfferMutation.isPending,
-        errorMessage: errorMessage,
+        error: mutationError,
       ),
     );
 
     if (!dockState.visible) return const SizedBox.shrink();
+
+    final errorMessage = dockState.error == null
+        ? null
+        : appErrorMessage(dockState.error!, context: AppErrorContext.event);
 
     return EventBookingDock(
       buttonKey: _buttonKeyFor(dockState.buttonKey),
@@ -180,7 +181,7 @@ class EventDetailCta extends ConsumerWidget {
       leadingContent: _leadingContentFor(context, ref, dockState),
       backgroundColor: ctaBackground,
       dividerColor: ctaDivider,
-      errorMessage: dockState.errorMessage,
+      errorMessage: errorMessage,
     );
   }
 

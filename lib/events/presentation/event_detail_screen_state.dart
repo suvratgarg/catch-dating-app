@@ -49,7 +49,7 @@ class EventDetailBookingDockState {
     this.secondaryAction = EventDetailBookingDockAction.none,
     this.isSecondaryLoading = false,
     this.catchLine,
-    this.errorMessage,
+    this.error,
   });
 
   const EventDetailBookingDockState.hidden()
@@ -79,7 +79,7 @@ class EventDetailBookingDockState {
         EventDetailBookingDockAction.none,
     bool isSecondaryLoading = false,
     String? catchLine,
-    String? errorMessage,
+    Object? error,
   }) : this._(
          visible: true,
          label: label,
@@ -95,7 +95,7 @@ class EventDetailBookingDockState {
          secondaryAction: secondaryAction,
          isSecondaryLoading: isSecondaryLoading,
          catchLine: catchLine,
-         errorMessage: errorMessage,
+         error: error,
        );
 
   final bool visible;
@@ -112,7 +112,7 @@ class EventDetailBookingDockState {
   final EventDetailBookingDockAction secondaryAction;
   final bool isSecondaryLoading;
   final String? catchLine;
-  final String? errorMessage;
+  final Object? error;
 
   bool get isPrimaryActionEnabled =>
       visible &&
@@ -133,7 +133,7 @@ class EventDetailBookingDockMutationState {
     this.leaveWaitlistPending = false,
     this.acceptWaitlistOfferPending = false,
     this.declineWaitlistOfferPending = false,
-    this.errorMessage,
+    this.error,
   });
 
   final bool bookPending;
@@ -142,7 +142,7 @@ class EventDetailBookingDockMutationState {
   final bool leaveWaitlistPending;
   final bool acceptWaitlistOfferPending;
   final bool declineWaitlistOfferPending;
-  final String? errorMessage;
+  final Object? error;
 }
 
 EventDetailBookingDockState eventDetailBookingDockStateFrom({
@@ -200,7 +200,7 @@ EventDetailBookingDockState eventDetailBookingDockStateFrom({
       isLoading: mutationState.acceptWaitlistOfferPending,
       isSecondaryLoading: mutationState.declineWaitlistOfferPending,
       useAccent: true,
-      errorMessage: mutationState.errorMessage,
+      error: mutationState.error,
     );
   }
 
@@ -213,7 +213,7 @@ EventDetailBookingDockState eventDetailBookingDockStateFrom({
       buttonKey: EventDetailBookingDockButtonKey.joinWaitlist,
       isLoading: mutationState.joinWaitlistPending,
       useAccent: true,
-      errorMessage: mutationState.errorMessage,
+      error: mutationState.error,
     );
   }
 
@@ -244,24 +244,24 @@ EventDetailBookingDockState eventDetailBookingDockStateFrom({
           : EventDetailBookingDockAction.joinWaitlist,
       buttonKey: EventDetailBookingDockButtonKey.joinWaitlist,
       isLoading: mutationState.joinWaitlistPending,
-      errorMessage: mutationState.errorMessage,
+      error: mutationState.error,
     ),
     EventSignUpStatus.waitlisted => EventDetailBookingDockState(
       label: requiresHostApproval ? 'Withdraw request' : 'Leave waitlist',
       primaryAction: EventDetailBookingDockAction.leaveWaitlist,
       isLoading: mutationState.leaveWaitlistPending,
-      errorMessage: mutationState.errorMessage,
+      error: mutationState.error,
     ),
     EventSignUpStatus.attended => EventDetailBookingDockState(
       label: 'You attended this event',
       primaryAction: EventDetailBookingDockAction.none,
       leadingKind: EventDetailBookingDockLeadingKind.attended,
-      errorMessage: mutationState.errorMessage,
+      error: mutationState.error,
     ),
     EventSignUpStatus.past => EventDetailBookingDockState(
       label: 'This event has ended',
       primaryAction: EventDetailBookingDockAction.none,
-      errorMessage: mutationState.errorMessage,
+      error: mutationState.error,
     ),
     EventSignUpStatus.ineligible => EventDetailBookingDockState(
       label: switch (eligibility) {
@@ -275,7 +275,7 @@ EventDetailBookingDockState eventDetailBookingDockStateFrom({
         _ => 'Not eligible for this event',
       },
       primaryAction: EventDetailBookingDockAction.none,
-      errorMessage: mutationState.errorMessage,
+      error: mutationState.error,
     ),
   };
 }
@@ -328,7 +328,7 @@ EventDetailBookingDockState _eligibleBookingDockState({
     isLoading: mutationState.bookPending,
     useAccent: true,
     catchLine: 'Matching opens for everyone who goes',
-    errorMessage: mutationState.errorMessage,
+    error: mutationState.error,
   );
 }
 
@@ -352,7 +352,7 @@ EventDetailBookingDockState _signedUpBookingDockState({
     buttonKey: EventDetailBookingDockButtonKey.cancelBooking,
     leadingKind: EventDetailBookingDockLeadingKind.booked,
     isLoading: mutationState.cancelPending,
-    errorMessage: mutationState.errorMessage,
+    error: mutationState.error,
   );
 }
 
