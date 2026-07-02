@@ -30,8 +30,8 @@ import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
-import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
@@ -198,10 +198,10 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
     );
     final roster = rosterAsync.asData?.value;
     final cancelMutation = ref.watch(
-      EventBookingController.hostCancelEventMutation,
+      HostEventBookingController.hostCancelEventMutation,
     );
     final deleteMutation = ref.watch(
-      EventBookingController.deleteEventMutation,
+      HostEventBookingController.deleteEventMutation,
     );
     final isInviteOnly = event.effectiveEventPolicy.usesInviteOnly;
     final accessAsync = isInviteOnly
@@ -522,7 +522,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
     if (confirmed != true || !mounted) return;
 
     unawaited(
-      EventBookingController.hostCancelEventMutation.run(ref, (tx) async {
+      HostEventBookingController.hostCancelEventMutation.run(ref, (tx) async {
         await tx
             .get(hostEventManageActionsProvider)
             .cancelHostedEvent(event: event);
@@ -550,7 +550,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
     if (confirmed != true || !mounted) return;
 
     unawaited(
-      EventBookingController.deleteEventMutation.run(ref, (tx) async {
+      HostEventBookingController.deleteEventMutation.run(ref, (tx) async {
         await tx
             .get(hostEventManageActionsProvider)
             .deleteUnusedEvent(event: event);

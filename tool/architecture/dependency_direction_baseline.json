@@ -76,7 +76,7 @@
     {
       "rule": "crossFeaturePresentationImport",
       "path": "lib/event_success/presentation/event_success_host_screen.dart",
-      "import": "package:catch_dating_app/events/presentation/event_booking_controller.dart"
+      "import": "package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart"
     },
     {
       "rule": "crossFeaturePresentationImport",
@@ -226,11 +226,6 @@
     {
       "rule": "crossFeaturePresentationImport",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "import": "package:catch_dating_app/events/presentation/event_booking_controller.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
       "import": "package:catch_dating_app/events/presentation/location_picker_screen.dart"
     },
     {
@@ -285,11 +280,6 @@
     },
     {
       "rule": "crossFeaturePresentationImport",
-      "path": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "import": "package:catch_dating_app/events/presentation/event_booking_controller.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
       "path": "lib/hosts/presentation/host_operations_screen.dart",
       "import": "package:catch_dating_app/auth/presentation/auth_session_controller.dart"
     },
@@ -307,11 +297,6 @@
       "rule": "crossFeaturePresentationImport",
       "path": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
       "import": "package:catch_dating_app/events/presentation/attendance_sheet_view_model.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
-      "import": "package:catch_dating_app/events/presentation/event_booking_controller.dart"
     },
     {
       "rule": "crossFeaturePresentationImport",

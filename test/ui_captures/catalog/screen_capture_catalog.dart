@@ -121,6 +121,7 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/crea
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_success_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/draft_picker_sheet.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
@@ -3310,14 +3311,14 @@ class _HostEditEventMutationCaptureState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || _started) return;
       _started = true;
-      EventBookingController.updateHostedEventMutation.reset(ref);
+      HostEventBookingController.updateHostedEventMutation.reset(ref);
       switch (widget.mode) {
         case _HostEditEventMutationCaptureMode.submitPending:
-          _runPending(EventBookingController.updateHostedEventMutation);
+          _runPending(HostEventBookingController.updateHostedEventMutation);
           break;
         case _HostEditEventMutationCaptureMode.submitError:
           _runError(
-            EventBookingController.updateHostedEventMutation,
+            HostEventBookingController.updateHostedEventMutation,
             StateError('Capture host event update failed'),
           );
           break;
@@ -3888,11 +3889,11 @@ class _HostManageAttendanceMutationCaptureState
     _resetMutations();
     switch (widget.mode) {
       case _HostManageAttendanceMutationCaptureMode.pending:
-        _runPending(EventBookingController.createWaitlistOfferMutation);
+        _runPending(HostEventBookingController.createWaitlistOfferMutation);
         break;
       case _HostManageAttendanceMutationCaptureMode.error:
         _runError(
-          EventBookingController.markAttendanceMutation,
+          HostEventBookingController.markAttendanceMutation,
           StateError('Capture Host Manage attendance mutation failed'),
         );
         break;
@@ -3900,10 +3901,10 @@ class _HostManageAttendanceMutationCaptureState
   }
 
   void _resetMutations() {
-    EventBookingController.markAttendanceMutation.reset(ref);
-    EventBookingController.approveJoinRequestMutation.reset(ref);
-    EventBookingController.declineJoinRequestMutation.reset(ref);
-    EventBookingController.createWaitlistOfferMutation.reset(ref);
+    HostEventBookingController.markAttendanceMutation.reset(ref);
+    HostEventBookingController.approveJoinRequestMutation.reset(ref);
+    HostEventBookingController.declineJoinRequestMutation.reset(ref);
+    HostEventBookingController.createWaitlistOfferMutation.reset(ref);
   }
 
   void _runPending<T>(Mutation<T> mutation) {
@@ -4165,20 +4166,20 @@ class _HostManageActionMutationCaptureState
     _resetMutations();
     switch (widget.mode) {
       case _HostManageActionMutationCaptureMode.cancelPending:
-        _runPending(EventBookingController.hostCancelEventMutation);
+        _runPending(HostEventBookingController.hostCancelEventMutation);
         break;
       case _HostManageActionMutationCaptureMode.cancelError:
         _runError(
-          EventBookingController.hostCancelEventMutation,
+          HostEventBookingController.hostCancelEventMutation,
           StateError('Capture Host Manage cancel event failed'),
         );
         break;
       case _HostManageActionMutationCaptureMode.deletePending:
-        _runPending(EventBookingController.deleteEventMutation);
+        _runPending(HostEventBookingController.deleteEventMutation);
         break;
       case _HostManageActionMutationCaptureMode.deleteError:
         _runError(
-          EventBookingController.deleteEventMutation,
+          HostEventBookingController.deleteEventMutation,
           StateError('Capture Host Manage delete event failed'),
         );
         break;
@@ -4186,8 +4187,8 @@ class _HostManageActionMutationCaptureState
   }
 
   void _resetMutations() {
-    EventBookingController.hostCancelEventMutation.reset(ref);
-    EventBookingController.deleteEventMutation.reset(ref);
+    HostEventBookingController.hostCancelEventMutation.reset(ref);
+    HostEventBookingController.deleteEventMutation.reset(ref);
   }
 
   void _runPending<T>(Mutation<T> mutation) {

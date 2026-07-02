@@ -18,10 +18,10 @@ import 'package:catch_dating_app/events/data/event_participation_repository.dart
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/presentation/attendance_sheet_view_model.dart';
-import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_action_keys.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/catch_roster_board.dart';
@@ -109,16 +109,16 @@ class HostEventParticipantsPanel extends ConsumerWidget {
           );
         }
         final markAttendanceMutation = ref.watch(
-          EventBookingController.markAttendanceMutation,
+          HostEventBookingController.markAttendanceMutation,
         );
         final approveMutation = ref.watch(
-          EventBookingController.approveJoinRequestMutation,
+          HostEventBookingController.approveJoinRequestMutation,
         );
         final declineMutation = ref.watch(
-          EventBookingController.declineJoinRequestMutation,
+          HostEventBookingController.declineJoinRequestMutation,
         );
         final offerMutation = ref.watch(
-          EventBookingController.createWaitlistOfferMutation,
+          HostEventBookingController.createWaitlistOfferMutation,
         );
         final opsExportMutation = ref.watch(
           HostEventManageController.shareOpsReportMutation,
@@ -200,12 +200,12 @@ void _toggleAttendance(
   AttendanceSheetViewModel viewModel,
   String uid,
 ) {
-  final mutation = ref.read(EventBookingController.markAttendanceMutation);
+  final mutation = ref.read(HostEventBookingController.markAttendanceMutation);
   if (mutation.isPending) return;
-  EventBookingController.markAttendanceMutation.run(
+  HostEventBookingController.markAttendanceMutation.run(
     ref,
     (tx) async => tx
-        .get(eventBookingControllerProvider.notifier)
+        .get(hostEventBookingControllerProvider.notifier)
         .markAttendance(eventId: viewModel.event.id, userId: uid),
   );
 }
@@ -215,12 +215,14 @@ void _approveJoinRequest(
   AttendanceSheetViewModel viewModel,
   String uid,
 ) {
-  final mutation = ref.read(EventBookingController.approveJoinRequestMutation);
+  final mutation = ref.read(
+    HostEventBookingController.approveJoinRequestMutation,
+  );
   if (mutation.isPending) return;
-  EventBookingController.approveJoinRequestMutation.run(
+  HostEventBookingController.approveJoinRequestMutation.run(
     ref,
     (tx) async => tx
-        .get(eventBookingControllerProvider.notifier)
+        .get(hostEventBookingControllerProvider.notifier)
         .approveJoinRequest(eventId: viewModel.event.id, userId: uid),
   );
 }
@@ -230,12 +232,14 @@ void _declineJoinRequest(
   AttendanceSheetViewModel viewModel,
   String uid,
 ) {
-  final mutation = ref.read(EventBookingController.declineJoinRequestMutation);
+  final mutation = ref.read(
+    HostEventBookingController.declineJoinRequestMutation,
+  );
   if (mutation.isPending) return;
-  EventBookingController.declineJoinRequestMutation.run(
+  HostEventBookingController.declineJoinRequestMutation.run(
     ref,
     (tx) async => tx
-        .get(eventBookingControllerProvider.notifier)
+        .get(hostEventBookingControllerProvider.notifier)
         .declineJoinRequest(eventId: viewModel.event.id, userId: uid),
   );
 }
@@ -246,12 +250,14 @@ void _createWaitlistOffers(
   List<String> userIds,
 ) {
   if (userIds.isEmpty) return;
-  final mutation = ref.read(EventBookingController.createWaitlistOfferMutation);
+  final mutation = ref.read(
+    HostEventBookingController.createWaitlistOfferMutation,
+  );
   if (mutation.isPending) return;
-  EventBookingController.createWaitlistOfferMutation.run(
+  HostEventBookingController.createWaitlistOfferMutation.run(
     ref,
     (tx) async => tx
-        .get(eventBookingControllerProvider.notifier)
+        .get(hostEventBookingControllerProvider.notifier)
         .createWaitlistOffers(eventId: viewModel.event.id, userIds: userIds),
   );
 }

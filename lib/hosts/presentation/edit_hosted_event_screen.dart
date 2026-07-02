@@ -33,11 +33,11 @@ import 'package:catch_dating_app/events/data/event_participation_repository.dart
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
-import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/location_picker_screen.dart';
 import 'package:catch_dating_app/events/presentation/widgets/map_pin_tile.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_edit_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/validators.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
@@ -331,7 +331,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final mutation = ref.watch(
-      EventBookingController.updateHostedEventMutation,
+      HostEventBookingController.updateHostedEventMutation,
     );
     final saveError = mutation.hasError
         ? (mutation as MutationError).error
@@ -739,9 +739,9 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
     );
 
     unawaited(
-      EventBookingController.updateHostedEventMutation.run(ref, (tx) async {
+      HostEventBookingController.updateHostedEventMutation.run(ref, (tx) async {
         await tx
-            .get(eventBookingControllerProvider.notifier)
+            .get(hostEventBookingControllerProvider.notifier)
             .updateHostedEvent(
               event: nextEvent,
               includePolicy: includePolicy,

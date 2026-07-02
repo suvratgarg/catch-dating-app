@@ -226,64 +226,6 @@ void main() {
       expect(fakeEventRepository.cancelledEventId, 'event-9');
     });
 
-    test('cancelHostedEvent delegates to the event repository', () async {
-      final fakeEventRepository = FakeEventRepository();
-      final container = ProviderContainer(
-        overrides: [
-          eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
-          uidProvider.overrideWith((ref) => Stream.value('host-1')),
-        ],
-      );
-      addTearDown(container.dispose);
-      await primeUidProvider(container);
-
-      await container
-          .read(eventBookingControllerProvider.notifier)
-          .cancelHostedEvent(
-            event: buildEvent(id: 'event-10'),
-            reason: 'Weather warning',
-          );
-
-      expect(fakeEventRepository.hostCancelledEventId, 'event-10');
-      expect(fakeEventRepository.hostCancelReason, 'Weather warning');
-    });
-
-    test('deleteHostedEvent delegates to the event repository', () async {
-      final fakeEventRepository = FakeEventRepository();
-      final container = ProviderContainer(
-        overrides: [
-          eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
-          uidProvider.overrideWith((ref) => Stream.value('host-1')),
-        ],
-      );
-      addTearDown(container.dispose);
-      await primeUidProvider(container);
-
-      await container
-          .read(eventBookingControllerProvider.notifier)
-          .deleteHostedEvent(event: buildEvent(id: 'event-11'));
-
-      expect(fakeEventRepository.deletedEventId, 'event-11');
-    });
-
-    test('deleteHostedEvent throws when the user is not signed in', () async {
-      final container = ProviderContainer(
-        overrides: [
-          eventRepositoryProvider.overrideWith((ref) => FakeEventRepository()),
-          uidProvider.overrideWith((ref) => Stream.value(null)),
-        ],
-      );
-      addTearDown(container.dispose);
-      await primeUidProvider(container);
-
-      await expectLater(
-        container
-            .read(eventBookingControllerProvider.notifier)
-            .deleteHostedEvent(event: buildEvent()),
-        throwsA(isA<SignInRequiredException>()),
-      );
-    });
-
     test(
       'joinWaitlist delegates to the server-side waitlist function',
       () async {
@@ -327,50 +269,6 @@ void main() {
           .leaveWaitlist(event: buildEvent(id: 'event-42'));
 
       expect(fakeEventRepository.leftWaitlistEventId, 'event-42');
-    });
-
-    test('createWaitlistOffer delegates to the event repository', () async {
-      final fakeEventRepository = FakeEventRepository();
-      final container = ProviderContainer(
-        overrides: [
-          eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
-          uidProvider.overrideWith((ref) => Stream.value('host-1')),
-        ],
-      );
-      addTearDown(container.dispose);
-      await primeUidProvider(container);
-
-      await container
-          .read(eventBookingControllerProvider.notifier)
-          .createWaitlistOffer(eventId: 'event-42', userId: 'runner-9');
-
-      expect(fakeEventRepository.createdWaitlistOfferEventId, 'event-42');
-      expect(fakeEventRepository.createdWaitlistOfferUserIds, ['runner-9']);
-    });
-
-    test('createWaitlistOffers delegates bulk offers in order', () async {
-      final fakeEventRepository = FakeEventRepository();
-      final container = ProviderContainer(
-        overrides: [
-          eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
-          uidProvider.overrideWith((ref) => Stream.value('host-1')),
-        ],
-      );
-      addTearDown(container.dispose);
-      await primeUidProvider(container);
-
-      await container
-          .read(eventBookingControllerProvider.notifier)
-          .createWaitlistOffers(
-            eventId: 'event-42',
-            userIds: ['runner-2', 'runner-3'],
-          );
-
-      expect(fakeEventRepository.createdWaitlistOfferEventId, 'event-42');
-      expect(fakeEventRepository.createdWaitlistOfferUserIds, [
-        'runner-2',
-        'runner-3',
-      ]);
     });
 
     test('acceptWaitlistOffer keeps free accepted offers in-app', () async {
@@ -457,46 +355,6 @@ void main() {
           .declineWaitlistOffer(event: buildEvent(id: 'event-42'));
 
       expect(fakeEventRepository.declinedWaitlistOfferEventId, 'event-42');
-    });
-
-    test('approveJoinRequest delegates to the event repository', () async {
-      final fakeEventRepository = FakeEventRepository();
-      final container = ProviderContainer(
-        overrides: [
-          eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
-          uidProvider.overrideWith((ref) => Stream.value('host-1')),
-        ],
-      );
-      addTearDown(container.dispose);
-      await primeUidProvider(container);
-
-      await container
-          .read(eventBookingControllerProvider.notifier)
-          .approveJoinRequest(eventId: 'event-42', userId: 'runner-9');
-
-      expect(fakeEventRepository.decidedJoinRequestEventId, 'event-42');
-      expect(fakeEventRepository.decidedJoinRequestUserId, 'runner-9');
-      expect(fakeEventRepository.decidedJoinRequestDecision, 'approve');
-    });
-
-    test('declineJoinRequest delegates to the event repository', () async {
-      final fakeEventRepository = FakeEventRepository();
-      final container = ProviderContainer(
-        overrides: [
-          eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
-          uidProvider.overrideWith((ref) => Stream.value('host-1')),
-        ],
-      );
-      addTearDown(container.dispose);
-      await primeUidProvider(container);
-
-      await container
-          .read(eventBookingControllerProvider.notifier)
-          .declineJoinRequest(eventId: 'event-42', userId: 'runner-9');
-
-      expect(fakeEventRepository.decidedJoinRequestEventId, 'event-42');
-      expect(fakeEventRepository.decidedJoinRequestUserId, 'runner-9');
-      expect(fakeEventRepository.decidedJoinRequestDecision, 'decline');
     });
 
     test('joinWaitlist surfaces repository errors', () async {
