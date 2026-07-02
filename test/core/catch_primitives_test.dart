@@ -44,6 +44,7 @@ import 'package:catch_dating_app/core/widgets/catch_mono_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_otp_code_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
@@ -938,6 +939,53 @@ void main() {
 
     expect(find.text('Agenda'), findsOneWidget);
     await tester.tap(find.text('Agenda'));
+    expect(tapped, isTrue);
+  });
+
+  testWidgets('CatchOptionGroup composes public option items', (tester) async {
+    var selected = 'all';
+
+    await tester.pumpWidget(
+      _wrap(
+        StatefulBuilder(
+          builder: (context, setState) => CatchOptionGroup<String>(
+            selected: selected,
+            onChanged: (value) => setState(() => selected = value),
+            options: const [
+              CatchOption(value: 'all', label: 'All'),
+              CatchOption(value: 'saved', label: 'Saved'),
+              CatchOption(value: 'nearby', label: 'Nearby'),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(CatchOptionGroupItem<String>), findsNWidgets(3));
+    await tester.tap(find.text('Saved'));
+    await tester.pump();
+    expect(selected, 'saved');
+  });
+
+  testWidgets('CatchOptionGroupItem renders mono uppercase label and tap', (
+    tester,
+  ) async {
+    var tapped = false;
+
+    await tester.pumpWidget(
+      _wrap(
+        CatchOptionGroupItem<String>(
+          option: const CatchOption(value: 'mine', label: 'Mine'),
+          selected: true,
+          selectedRule: Colors.black,
+          variant: CatchOptionGroupVariant.mono,
+          onTap: () => tapped = true,
+        ),
+      ),
+    );
+
+    expect(find.text('MINE'), findsOneWidget);
+    await tester.tap(find.text('MINE'));
     expect(tapped, isTrue);
   });
 

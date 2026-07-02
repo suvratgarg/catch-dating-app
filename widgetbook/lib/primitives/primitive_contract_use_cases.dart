@@ -3987,6 +3987,53 @@ Widget catchOptionGroupContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
+  type: CatchOptionGroupItem,
+  path: '[Core primitives]/Selection',
+)
+Widget catchOptionGroupItemContractStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  return _ContractScreen(
+    title: 'CatchOptionGroupItem',
+    contractId: 'catch.option_group.item',
+    states: const ['selected', 'unselected', 'mono'],
+    children: [
+      _StateCard(
+        label: 'selected',
+        child: CatchOptionGroupItem<String>(
+          option: const CatchOption(value: 'all', label: 'All'),
+          selected: true,
+          selectedRule: t.ink,
+          variant: CatchOptionGroupVariant.label,
+          onTap: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'unselected',
+        child: CatchOptionGroupItem<String>(
+          option: const CatchOption(value: 'saved', label: 'Saved'),
+          selected: false,
+          selectedRule: t.ink,
+          variant: CatchOptionGroupVariant.label,
+          onTap: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'mono',
+        child: CatchOptionGroupItem<String>(
+          option: const CatchOption(value: 'nearby', label: 'Nearby'),
+          selected: true,
+          selectedRule: t.primary,
+          variant: CatchOptionGroupVariant.mono,
+          onTap: _noop,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
   type: CatchSearchField,
   path: '[Core primitives]/Inputs',
 )

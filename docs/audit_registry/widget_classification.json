@@ -10,21 +10,21 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1161,
-    "widgetClasses": 1056,
+    "total": 1162,
+    "widgetClasses": 1057,
     "stateClasses": 105,
-    "publicClasses": 1054,
+    "publicClasses": 1055,
     "privateClasses": 107,
     "byRole": {
       "atom": 54,
-      "composition": 316,
+      "composition": 317,
       "feature-adapter": 318,
       "pattern": 14,
       "screen": 354,
       "widget-state": 105
     },
     "byDecision": {
-      "keep-canonical-contract": 159,
+      "keep-canonical-contract": 160,
       "keep-public-cataloged": 880,
       "keep-widget-state": 105,
       "review-catalog-coverage": 5,
@@ -33,7 +33,7 @@
     },
     "byCatalogStatus": {
       "cataloged": 817,
-      "contracted": 159,
+      "contracted": 160,
       "not-applicable": 105,
       "route-covered": 72,
       "uncataloged": 8
@@ -4628,6 +4628,29 @@
       "publicApi": true,
       "catalogStatus": "contracted",
       "contractId": "catch.option_group",
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "keep-canonical-contract",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "CatchOptionGroupItem",
+      "file": "lib/core/widgets/catch_option_group.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.option_group",
+      "publicApi": true,
+      "catalogStatus": "contracted",
+      "contractId": "catch.option_group.item",
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",

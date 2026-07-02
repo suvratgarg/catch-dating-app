@@ -5524,7 +5524,20 @@
           "CatchTextStyles.monoLabel",
           "CatchMotion.fast"
         ],
-        "goldens": []
+        "goldens": [],
+        "members": [
+          {
+            "id": "catch.option_group.item",
+            "symbol": "CatchOptionGroupItem",
+            "file": "lib/core/widgets/catch_option_group.dart",
+            "summary": "Direct underline option renderer used by CatchOptionGroup.",
+            "states": [
+              "selected",
+              "unselected",
+              "mono"
+            ]
+          }
+        ]
       },
       "handoff": {
         "allowedChildren": [
