@@ -5,6 +5,7 @@ import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
@@ -265,6 +266,44 @@ void main() {
     expect(request.nextEvent.constraints, event.constraints);
     expect(request.nextEvent.meetingPoint, 'New gate');
     expect(request.nextEvent.description, 'Updated route notes');
+  });
+
+  test('HostEventEditPrivateAccessState maps invite-code seed policy', () {
+    final access = EventPrivateAccess(
+      id: 'private-access-1',
+      eventId: 'event-1',
+      clubId: 'club-1',
+      inviteCode: ' SOCIAL2026 ',
+      createdAt: DateTime(2026),
+    );
+
+    final firstLoad = HostEventEditPrivateAccessState.from(
+      admissionPreset: EventAdmissionPreset.inviteOnly,
+      loadedPrivateAccess: false,
+      privateAccess: AsyncData(access),
+    );
+    expect(firstLoad.shouldWatch, isTrue);
+    expect(firstLoad.shouldMarkLoaded, isTrue);
+    expect(firstLoad.inviteCodeSeed, 'SOCIAL2026');
+    expect(firstLoad.privateAccess.isLoading, isFalse);
+
+    final alreadyLoaded = HostEventEditPrivateAccessState.from(
+      admissionPreset: EventAdmissionPreset.inviteOnly,
+      loadedPrivateAccess: true,
+      privateAccess: AsyncData(access),
+    );
+    expect(alreadyLoaded.shouldWatch, isTrue);
+    expect(alreadyLoaded.shouldMarkLoaded, isFalse);
+    expect(alreadyLoaded.inviteCodeSeed, isNull);
+
+    final openCapacity = HostEventEditPrivateAccessState.from(
+      admissionPreset: EventAdmissionPreset.openCapacity,
+      loadedPrivateAccess: false,
+      privateAccess: AsyncData(access),
+    );
+    expect(openCapacity.shouldWatch, isFalse);
+    expect(openCapacity.shouldMarkLoaded, isFalse);
+    expect(openCapacity.inviteCodeSeed, isNull);
   });
 
   testWidgets('saves host-editable event details through updateEvent', (

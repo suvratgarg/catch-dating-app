@@ -8723,7 +8723,7 @@
             {
               "id": "DP-HOST-EVENT-EDIT-002",
               "status": "open",
-              "nextAction": "Host Edit Event owner-edit visual comparison is within threshold at 9.25% mismatch / 10.93 meanDelta. HostEventEditScreenState owns save feedback/pop policy and HostEventEditSaveRequest owns validated save payload construction. Extend the adapter into private-access, validation, selected-location, field display values, and typed callbacks before closing the architecture gap."
+              "nextAction": "Host Edit Event owner-edit visual comparison is within threshold at 9.25% mismatch / 10.93 meanDelta. HostEventEditScreenState owns save feedback/pop policy, HostEventEditSaveRequest owns validated save payload construction, and HostEventEditPrivateAccessState owns invite-only private-access watch and invite-code seed policy. Extend the adapter into validation, selected-location, field display values, and typed callbacks before closing the architecture gap."
             }
           ]
         },

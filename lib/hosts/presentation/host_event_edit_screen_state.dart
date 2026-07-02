@@ -1,5 +1,8 @@
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_private_access.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 @immutable
 class HostEventEditScreenState {
@@ -86,4 +89,44 @@ class HostEventEditSaveOutcomeState {
   final bool popRouteOnSuccess;
   final String missingStartingPointMessage;
   final String invalidScheduleMessage;
+}
+
+@immutable
+class HostEventEditPrivateAccessState {
+  const HostEventEditPrivateAccessState({
+    required this.shouldWatch,
+    required this.shouldMarkLoaded,
+    required this.privateAccess,
+    required this.inviteCodeSeed,
+  });
+
+  final bool shouldWatch;
+  final bool shouldMarkLoaded;
+  final AsyncValue<EventPrivateAccess?> privateAccess;
+  final String? inviteCodeSeed;
+
+  factory HostEventEditPrivateAccessState.from({
+    required EventAdmissionPreset admissionPreset,
+    required bool loadedPrivateAccess,
+    required AsyncValue<EventPrivateAccess?> privateAccess,
+  }) {
+    final shouldWatch = admissionPreset == EventAdmissionPreset.inviteOnly;
+    final AsyncValue<EventPrivateAccess?> resolvedPrivateAccess = shouldWatch
+        ? privateAccess
+        : const AsyncData<EventPrivateAccess?>(null);
+    return HostEventEditPrivateAccessState(
+      shouldWatch: shouldWatch,
+      shouldMarkLoaded: shouldWatch && !loadedPrivateAccess,
+      privateAccess: resolvedPrivateAccess,
+      inviteCodeSeed: shouldWatch && !loadedPrivateAccess
+          ? _trimInviteCode(privateAccess.asData?.value?.inviteCode)
+          : null,
+    );
+  }
+}
+
+String? _trimInviteCode(String? value) {
+  final normalized = value?.trim();
+  if (normalized == null || normalized.isEmpty) return null;
+  return normalized;
 }

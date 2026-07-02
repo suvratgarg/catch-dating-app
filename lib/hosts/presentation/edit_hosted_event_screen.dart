@@ -33,6 +33,7 @@ import 'package:catch_dating_app/events/data/event_participation_repository.dart
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/events/events.dart'
     show LocationPickerResult, LocationPickerScreen;
 import 'package:catch_dating_app/events/shared/map_pin_tile.dart';
@@ -470,12 +471,17 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
     final privateAccessAsync =
         _selectedAdmissionPreset == EventAdmissionPreset.inviteOnly
         ? ref.watch(watchEventPrivateAccessProvider(widget.event.id))
-        : const AsyncData(null);
-    privateAccessAsync.whenData((access) {
-      if (_loadedPrivateAccess) return;
+        : const AsyncData<EventPrivateAccess?>(null);
+    final privateAccessState = HostEventEditPrivateAccessState.from(
+      admissionPreset: _selectedAdmissionPreset,
+      loadedPrivateAccess: _loadedPrivateAccess,
+      privateAccess: privateAccessAsync,
+    );
+    privateAccessState.privateAccess.whenData((_) {
+      if (!privateAccessState.shouldMarkLoaded) return;
       _loadedPrivateAccess = true;
-      final inviteCode = access?.inviteCode.trim();
-      if (inviteCode != null && inviteCode.isNotEmpty) {
+      final inviteCode = privateAccessState.inviteCodeSeed;
+      if (inviteCode != null) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted && _inviteCodeController.text.isEmpty) {
             _inviteCodeController.text = inviteCode;
@@ -700,7 +706,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                   cancellationPolicyId: _selectedCancellationPolicyId,
                   onCancellationPolicyChanged: (policyId) =>
                       setState(() => _selectedCancellationPolicyId = policyId),
-                  privateAccessAsync: privateAccessAsync,
+                  privateAccessAsync: privateAccessState.privateAccess,
                 ),
             ],
           ),
@@ -1047,7 +1053,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
   final ValueChanged<bool> onDynamicPricingChanged;
   final EventCancellationPolicyId cancellationPolicyId;
   final ValueChanged<EventCancellationPolicyId> onCancellationPolicyChanged;
-  final AsyncValue<Object?> privateAccessAsync;
+  final AsyncValue<EventPrivateAccess?> privateAccessAsync;
 
   @override
   Widget build(BuildContext context) {
