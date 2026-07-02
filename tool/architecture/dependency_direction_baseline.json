@@ -350,52 +350,12 @@
     },
     {
       "rule": "domainFrameworkImport",
-      "path": "lib/clubs/domain/update_club_patch.dart",
-      "import": "package:cloud_firestore/cloud_firestore.dart"
-    },
-    {
-      "rule": "domainFrameworkImport",
-      "path": "lib/event_success/domain/event_success_arrival_mission.dart",
-      "import": "package:cloud_firestore/cloud_firestore.dart"
-    },
-    {
-      "rule": "domainFrameworkImport",
-      "path": "lib/event_success/domain/event_success_assignment.dart",
-      "import": "package:cloud_firestore/cloud_firestore.dart"
-    },
-    {
-      "rule": "domainFrameworkImport",
-      "path": "lib/event_success/domain/event_success_compatibility_response.dart",
-      "import": "package:cloud_firestore/cloud_firestore.dart"
-    },
-    {
-      "rule": "domainFrameworkImport",
-      "path": "lib/event_success/domain/event_success_preference.dart",
-      "import": "package:cloud_firestore/cloud_firestore.dart"
-    },
-    {
-      "rule": "domainFrameworkImport",
-      "path": "lib/event_success/domain/event_success_wingman_request.dart",
-      "import": "package:cloud_firestore/cloud_firestore.dart"
-    },
-    {
-      "rule": "domainFrameworkImport",
-      "path": "lib/events/domain/external_event.dart",
-      "import": "package:cloud_firestore/cloud_firestore.dart"
-    },
-    {
-      "rule": "domainFrameworkImport",
       "path": "lib/force_update/domain/platform_build_resolver.dart",
       "import": "package:flutter/foundation.dart"
     },
     {
       "rule": "domainFrameworkImport",
       "path": "lib/hosts/domain/host_profile.dart",
-      "import": "package:cloud_firestore/cloud_firestore.dart"
-    },
-    {
-      "rule": "domainFrameworkImport",
-      "path": "lib/safety/domain/blocked_user.dart",
       "import": "package:cloud_firestore/cloud_firestore.dart"
     }
   ]

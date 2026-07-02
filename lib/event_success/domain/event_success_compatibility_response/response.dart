@@ -40,8 +40,8 @@ final class EventSuccessCompatibilityResponse {
     'clubId': clubId,
     'uid': uid,
     'answerIds': answerIds,
-    'createdAt': Timestamp.fromDate(createdAt),
-    'updatedAt': Timestamp.fromDate(updatedAt),
+    'createdAt': firestoreTimestampFromDateTime(createdAt),
+    'updatedAt': firestoreTimestampFromDateTime(updatedAt),
   };
 
   String? answerIdFor(String questionId) =>

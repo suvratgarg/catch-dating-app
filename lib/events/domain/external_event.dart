@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'external_event.freezed.dart';
@@ -59,8 +58,7 @@ abstract class ExternalEvent with _$ExternalEvent {
           _string(json['meetingPoint']) ??
           '',
       locationDetails:
-          _string(meetingLocation['notes']) ??
-          _string(json['locationDetails']),
+          _string(meetingLocation['notes']) ?? _string(json['locationDetails']),
       photoUrl: _string(json['photoUrl']),
       latitude: _number(meetingLocation['latitude']),
       longitude: _number(meetingLocation['longitude']),
@@ -148,20 +146,11 @@ String platformDisplayLabel(String? platform) {
 }
 
 DateTime _requiredTimestamp(Object? value, String field) {
-  final parsed = _nullableTimestamp(value);
-  if (parsed == null) {
-    throw FormatException('Missing timestamp field "$field".');
-  }
-  return parsed;
+  return dateTimeFromFirestoreValue(value, field: field);
 }
 
 DateTime? _nullableTimestamp(Object? value) {
-  return switch (value) {
-    null => null,
-    Timestamp() => value.toDate(),
-    DateTime() => value,
-    _ => null,
-  };
+  return nullableDateTimeFromFirestoreValue(value);
 }
 
 Map<String, dynamic> _map(Object? value) {

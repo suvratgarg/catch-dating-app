@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:catch_dating_app/core/firestore_converters.dart';
 
 enum EventSuccessWingmanRequestStatus {
   active,
@@ -37,8 +37,14 @@ final class EventSuccessWingmanRequest {
       status: EventSuccessWingmanRequestStatus.fromJson(json['status']),
       hostVisibleConsent: json['hostVisibleConsent'] as bool? ?? false,
       note: json['note'] as String?,
-      createdAt: _requiredTimestamp(json['createdAt'], 'createdAt'),
-      updatedAt: _requiredTimestamp(json['updatedAt'], 'updatedAt'),
+      createdAt: dateTimeFromFirestoreValue(
+        json['createdAt'],
+        field: 'createdAt',
+      ),
+      updatedAt: dateTimeFromFirestoreValue(
+        json['updatedAt'],
+        field: 'updatedAt',
+      ),
     );
   }
 
@@ -64,8 +70,8 @@ final class EventSuccessWingmanRequest {
     'status': status.name,
     'hostVisibleConsent': hostVisibleConsent,
     'note': note,
-    'createdAt': Timestamp.fromDate(createdAt),
-    'updatedAt': Timestamp.fromDate(updatedAt),
+    'createdAt': firestoreTimestampFromDateTime(createdAt),
+    'updatedAt': firestoreTimestampFromDateTime(updatedAt),
   };
 }
 
@@ -73,9 +79,3 @@ String eventSuccessWingmanRequestId({
   required String eventId,
   required String uid,
 }) => '${eventId}_$uid';
-
-DateTime _requiredTimestamp(Object? value, String field) {
-  if (value is Timestamp) return value.toDate();
-  if (value is DateTime) return value;
-  throw StateError('Missing timestamp field $field.');
-}

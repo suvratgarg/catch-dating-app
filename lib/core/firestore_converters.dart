@@ -8,11 +8,7 @@ class TimestampConverter implements JsonConverter<DateTime, Object?> {
   const TimestampConverter();
 
   @override
-  DateTime fromJson(Object? value) {
-    if (value is Timestamp) return value.toDate();
-    if (value is DateTime) return value;
-    throw FormatException('Expected Firestore Timestamp, got $value.');
-  }
+  DateTime fromJson(Object? value) => dateTimeFromFirestoreValue(value);
 
   @override
   Timestamp toJson(DateTime dt) => Timestamp.fromDate(dt);
@@ -24,13 +20,51 @@ class NullableTimestampConverter implements JsonConverter<DateTime?, Object?> {
   @override
   DateTime? fromJson(Object? value) {
     if (value == null) return null;
-    if (value is Timestamp) return value.toDate();
-    if (value is DateTime) return value;
+    final parsed = nullableDateTimeFromFirestoreValue(value);
+    if (parsed != null) return parsed;
     throw FormatException('Expected Firestore Timestamp or null, got $value.');
   }
 
   @override
   Timestamp? toJson(DateTime? dt) => dt != null ? Timestamp.fromDate(dt) : null;
+}
+
+DateTime dateTimeFromFirestoreValue(Object? value, {String? field}) {
+  final parsed = nullableDateTimeFromFirestoreValue(value);
+  if (parsed != null) return parsed;
+  final suffix = field == null ? '' : ' for "$field"';
+  throw FormatException('Expected Firestore Timestamp$suffix, got $value.');
+}
+
+DateTime? nullableDateTimeFromFirestoreValue(Object? value) {
+  if (value == null) return null;
+  if (value is Timestamp) return value.toDate();
+  if (value is DateTime) return value;
+  return null;
+}
+
+Object firestoreTimestampFromDateTime(DateTime value) =>
+    Timestamp.fromDate(value);
+
+Object? nullableFirestoreTimestampFromDateTime(DateTime? value) =>
+    value == null ? null : firestoreTimestampFromDateTime(value);
+
+Object? firestoreCallableJsonValue(Object? value) {
+  if (value is Timestamp) {
+    return {'_seconds': value.seconds, '_nanoseconds': value.nanoseconds};
+  }
+  if (value is DateTime) {
+    return firestoreCallableJsonValue(Timestamp.fromDate(value));
+  }
+  if (value is Iterable) {
+    return value.map(firestoreCallableJsonValue).toList();
+  }
+  if (value is Map) {
+    return value.map(
+      (key, child) => MapEntry(key, firestoreCallableJsonValue(child)),
+    );
+  }
+  return value;
 }
 
 extension DocumentIdCollectionConverter

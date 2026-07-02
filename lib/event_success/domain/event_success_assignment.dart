@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:catch_dating_app/core/firestore_converters.dart';
 
 final class EventSuccessAssignment {
   const EventSuccessAssignment({
@@ -76,8 +76,14 @@ final class EventSuccessAssignment {
           )
           .toList(growable: false),
       source: json['source'] as String? ?? 'server',
-      createdAt: _requiredTimestamp(json['createdAt'], 'createdAt'),
-      updatedAt: _requiredTimestamp(json['updatedAt'], 'updatedAt'),
+      createdAt: dateTimeFromFirestoreValue(
+        json['createdAt'],
+        field: 'createdAt',
+      ),
+      updatedAt: dateTimeFromFirestoreValue(
+        json['updatedAt'],
+        field: 'updatedAt',
+      ),
     );
   }
 
@@ -133,8 +139,8 @@ final class EventSuccessAssignment {
         .toList(),
     'sitOutSlots': sitOutSlots.map((slot) => slot.toJson()).toList(),
     'source': source,
-    'createdAt': Timestamp.fromDate(createdAt),
-    'updatedAt': Timestamp.fromDate(updatedAt),
+    'createdAt': firestoreTimestampFromDateTime(createdAt),
+    'updatedAt': firestoreTimestampFromDateTime(updatedAt),
   };
 }
 
@@ -189,8 +195,8 @@ final class EventSuccessRotationSlot {
       slotId: json['slotId'] as String?,
       roundIndex: json['roundIndex'] as int? ?? 0,
       label: json['label'] as String? ?? 'Round',
-      startsAt: _requiredTimestamp(json['startsAt'], 'startsAt'),
-      endsAt: _requiredTimestamp(json['endsAt'], 'endsAt'),
+      startsAt: dateTimeFromFirestoreValue(json['startsAt'], field: 'startsAt'),
+      endsAt: dateTimeFromFirestoreValue(json['endsAt'], field: 'endsAt'),
       peerUid: json['peerUid'] as String,
       unitKind: json['unitKind'] as String?,
       unitIndex: json['unitIndex'] as int?,
@@ -220,8 +226,8 @@ final class EventSuccessRotationSlot {
     'slotId': slotId,
     'roundIndex': roundIndex,
     'label': label,
-    'startsAt': Timestamp.fromDate(startsAt),
-    'endsAt': Timestamp.fromDate(endsAt),
+    'startsAt': firestoreTimestampFromDateTime(startsAt),
+    'endsAt': firestoreTimestampFromDateTime(endsAt),
     'peerUid': peerUid,
     'unitKind': unitKind,
     'unitIndex': unitIndex,
@@ -257,8 +263,8 @@ final class EventSuccessGroupRotationSlot {
       unitLabel: json['unitLabel'] as String? ?? 'Group',
       unitKind: json['unitKind'] as String?,
       unitIndex: json['unitIndex'] as int?,
-      startsAt: _requiredTimestamp(json['startsAt'], 'startsAt'),
-      endsAt: _requiredTimestamp(json['endsAt'], 'endsAt'),
+      startsAt: dateTimeFromFirestoreValue(json['startsAt'], field: 'startsAt'),
+      endsAt: dateTimeFromFirestoreValue(json['endsAt'], field: 'endsAt'),
       peerUids: (json['peerUids'] as List<dynamic>? ?? const [])
           .whereType<String>()
           .toList(growable: false),
@@ -292,8 +298,8 @@ final class EventSuccessGroupRotationSlot {
     'unitLabel': unitLabel,
     'unitKind': unitKind,
     'unitIndex': unitIndex,
-    'startsAt': Timestamp.fromDate(startsAt),
-    'endsAt': Timestamp.fromDate(endsAt),
+    'startsAt': firestoreTimestampFromDateTime(startsAt),
+    'endsAt': firestoreTimestampFromDateTime(endsAt),
     'peerUids': peerUids,
     'peerCount': peerCount,
     'compatibility': compatibility,
@@ -316,8 +322,8 @@ final class EventSuccessSitOutSlot {
     return EventSuccessSitOutSlot(
       roundIndex: json['roundIndex'] as int? ?? 0,
       label: json['label'] as String? ?? 'Round',
-      startsAt: _requiredTimestamp(json['startsAt'], 'startsAt'),
-      endsAt: _requiredTimestamp(json['endsAt'], 'endsAt'),
+      startsAt: dateTimeFromFirestoreValue(json['startsAt'], field: 'startsAt'),
+      endsAt: dateTimeFromFirestoreValue(json['endsAt'], field: 'endsAt'),
       whySummary: json['whySummary'] as String? ?? 'Planned break.',
       whyCodes: (json['whyCodes'] as List<dynamic>? ?? const [])
           .whereType<String>()
@@ -335,8 +341,8 @@ final class EventSuccessSitOutSlot {
   Map<String, Object?> toJson() => {
     'roundIndex': roundIndex,
     'label': label,
-    'startsAt': Timestamp.fromDate(startsAt),
-    'endsAt': Timestamp.fromDate(endsAt),
+    'startsAt': firestoreTimestampFromDateTime(startsAt),
+    'endsAt': firestoreTimestampFromDateTime(endsAt),
     'whySummary': whySummary,
     'whyCodes': whyCodes,
   };
@@ -404,9 +410,3 @@ String eventSuccessAssignmentId({
   required String moduleId,
   required String uid,
 }) => '${eventId}_${moduleId}_$uid';
-
-DateTime _requiredTimestamp(Object? value, String field) {
-  if (value is Timestamp) return value.toDate();
-  if (value is DateTime) return value;
-  throw StateError('Missing timestamp field $field.');
-}
