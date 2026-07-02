@@ -2869,6 +2869,42 @@ Widget paymentConfirmationScreenStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Loading state',
+  type: PaymentConfirmationLoadingScreen,
+  path: '[P3 utility surfaces]/Payment confirmation',
+)
+Widget paymentConfirmationLoadingScreenStates(BuildContext context) {
+  return const _UtilityCatalog(
+    title: 'PaymentConfirmationLoadingScreen',
+    contractId: 'screen.payments.confirmation.loading',
+    children: [
+      _StateCard(
+        label: 'event loading',
+        child: _DeviceFrame(child: PaymentConfirmationLoadingScreen()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Backdrop states',
+  type: PaymentCheckoutEventBackdrop,
+  path: '[P3 utility surfaces]/Payment confirmation',
+)
+Widget paymentCheckoutEventBackdropStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'PaymentCheckoutEventBackdrop',
+    contractId: 'screen.payments.confirmation.checkout_backdrop',
+    children: [
+      _StateCard(
+        label: 'event summary',
+        child: _DeviceFrame(child: PaymentCheckoutEventBackdrop(event: _event)),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Provider states',
   type: PaymentPendingCheckoutController,
   path: '[P3 utility surfaces]/Payment confirmation',

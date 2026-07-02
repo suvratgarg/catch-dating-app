@@ -42,7 +42,7 @@ class PaymentConfirmationScreen extends ConsumerWidget {
 
     return CatchAsyncValueView<Event?>(
       value: eventAsync,
-      loadingBuilder: (_) => paymentConfirmationLoadingScreen(),
+      loadingBuilder: (_) => const PaymentConfirmationLoadingScreen(),
       errorBuilder: (_, e, _) => Scaffold(
         body: CatchErrorState.fromError(
           e,
@@ -68,72 +68,71 @@ class PaymentConfirmationScreen extends ConsumerWidget {
   }
 }
 
-Widget paymentConfirmationLoadingScreen() {
-  return Builder(
-    builder: (context) {
-      final t = CatchTokens.of(context);
-      return Scaffold(
-        backgroundColor: t.bg,
-        body: SafeArea(
-          child: SingleChildScrollView(
-            padding: CatchInsets.pageBody,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Center(
-                  child: CatchSkeleton.circle(size: CatchIcon.forceUpdate),
+class PaymentConfirmationLoadingScreen extends StatelessWidget {
+  const PaymentConfirmationLoadingScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Scaffold(
+      backgroundColor: t.bg,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: CatchInsets.pageBody,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(child: CatchSkeleton.circle(size: CatchIcon.forceUpdate)),
+              gapH24,
+              Center(
+                child: CatchSkeleton.text(
+                  width: CatchLayout.skeletonTextTitleWidth,
                 ),
-                gapH24,
-                Center(
-                  child: CatchSkeleton.text(
-                    width: CatchLayout.skeletonTextTitleWidth,
-                  ),
-                ),
-                gapH12,
-                CatchSkeleton.textBlock(lines: 2),
-                gapH24,
-                CatchSurface(
-                  padding: CatchInsets.content,
-                  borderColor: t.line,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CatchSkeleton.text(
-                        width: CatchLayout.skeletonTextTitleWidth,
-                      ),
-                      gapH8,
-                      CatchSkeleton.text(
-                        width: CatchLayout.skeletonTextShortWidth,
-                      ),
-                      gapH16,
-                      CatchSkeleton.card(
-                        height: CatchLayout.skeletonCardCompactHeight,
-                      ),
-                    ],
-                  ),
-                ),
-                gapH20,
-                Row(
+              ),
+              gapH12,
+              CatchSkeleton.textBlock(lines: 2),
+              gapH24,
+              CatchSurface(
+                padding: CatchInsets.content,
+                borderColor: t.line,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    for (var index = 0; index < 3; index++) ...[
-                      Expanded(
-                        child: CatchSkeleton.card(
-                          height: CatchLayout.skeletonCardCompactHeight,
-                        ),
-                      ),
-                      if (index < 2) gapW8,
-                    ],
+                    CatchSkeleton.text(
+                      width: CatchLayout.skeletonTextTitleWidth,
+                    ),
+                    gapH8,
+                    CatchSkeleton.text(
+                      width: CatchLayout.skeletonTextShortWidth,
+                    ),
+                    gapH16,
+                    CatchSkeleton.card(
+                      height: CatchLayout.skeletonCardCompactHeight,
+                    ),
                   ],
                 ),
-                gapH20,
-                CatchSkeleton.card(height: CatchLayout.buttonLgHeight),
-              ],
-            ),
+              ),
+              gapH20,
+              Row(
+                children: [
+                  for (var index = 0; index < 3; index++) ...[
+                    Expanded(
+                      child: CatchSkeleton.card(
+                        height: CatchLayout.skeletonCardCompactHeight,
+                      ),
+                    ),
+                    if (index < 2) gapW8,
+                  ],
+                ],
+              ),
+              gapH20,
+              CatchSkeleton.card(height: CatchLayout.buttonLgHeight),
+            ],
           ),
         ),
-      );
-    },
-  );
+      ),
+    );
+  }
 }
 
 class PaymentPendingCheckoutController extends ConsumerWidget {
@@ -217,7 +216,7 @@ class PaymentPendingCheckoutBody extends StatelessWidget {
       backgroundColor: t.bg,
       body: Stack(
         children: [
-          Positioned.fill(child: paymentCheckoutEventBackdrop(event: event)),
+          Positioned.fill(child: PaymentCheckoutEventBackdrop(event: event)),
           Positioned.fill(
             child: ColoredBox(
               color: t.ink.withValues(alpha: CatchOpacity.paymentCheckoutScrim),
@@ -247,61 +246,61 @@ class PaymentPendingCheckoutBody extends StatelessWidget {
   }
 }
 
-Widget paymentCheckoutEventBackdrop({required Event event}) {
-  return Builder(
-    builder: (context) {
-      final t = CatchTokens.of(context);
-      final visual = eventActivityVisual(event.activityKind, context: context);
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          SizedBox(
-            height: CatchLayout.paymentCheckoutBackdropHeight,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [visual.accent, visual.deep],
-                ),
+class PaymentCheckoutEventBackdrop extends StatelessWidget {
+  const PaymentCheckoutEventBackdrop({super.key, required this.event});
+
+  final Event event;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final visual = eventActivityVisual(event.activityKind, context: context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SizedBox(
+          height: CatchLayout.paymentCheckoutBackdropHeight,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [visual.accent, visual.deep],
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(CatchSpacing.s5),
-                child: Align(
-                  alignment: Alignment.bottomLeft,
-                  child: Text(
-                    event.title,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.headline(
-                      context,
-                      color: t.primaryInk,
-                    ),
-                  ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(CatchSpacing.s5),
+              child: Align(
+                alignment: Alignment.bottomLeft,
+                child: Text(
+                  event.title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: CatchTextStyles.headline(context, color: t.primaryInk),
                 ),
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              CatchSpacing.s5,
-              CatchSpacing.s4,
-              CatchSpacing.s5,
-              0,
-            ),
-            child: Text(
-              '${event.longDateLabel} · ${event.timeRangeLabel} · '
-              '${event.locationName}. '
-              '${EventFormatters.priceInPaise(event.priceInPaise, currencyCode: event.currency)} · '
-              '${event.capacityLimit} spots.',
-              style: CatchTextStyles.proseM(context, color: t.ink2),
-            ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            CatchSpacing.s5,
+            CatchSpacing.s4,
+            CatchSpacing.s5,
+            0,
           ),
-          const Spacer(),
-        ],
-      );
-    },
-  );
+          child: Text(
+            '${event.longDateLabel} · ${event.timeRangeLabel} · '
+            '${event.locationName}. '
+            '${EventFormatters.priceInPaise(event.priceInPaise, currencyCode: event.currency)} · '
+            '${event.capacityLimit} spots.',
+            style: CatchTextStyles.proseM(context, color: t.ink2),
+          ),
+        ),
+        const Spacer(),
+      ],
+    );
+  }
 }
 
 class PaymentCheckoutSheet extends StatelessWidget {

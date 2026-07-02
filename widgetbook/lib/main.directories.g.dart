@@ -10316,6 +10316,16 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Payment confirmation',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'PaymentCheckoutEventBackdrop',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Backdrop states',
+                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                    .paymentCheckoutEventBackdropStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'PaymentCheckoutSheet',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -10352,6 +10362,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Info surfaces',
                 builder: _widgetbook_workspace_utility_p3_utility_use_cases
                     .paymentConfirmationInfoStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'PaymentConfirmationLoadingScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Loading state',
+                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                    .paymentConfirmationLoadingScreenStates,
               ),
             ],
           ),

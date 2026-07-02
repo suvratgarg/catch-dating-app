@@ -10,26 +10,26 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1085,
-    "widgetClasses": 985,
+    "total": 1087,
+    "widgetClasses": 987,
     "stateClasses": 100,
-    "publicClasses": 985,
+    "publicClasses": 987,
     "privateClasses": 100,
     "byRole": {
       "atom": 37,
       "composition": 280,
       "feature-adapter": 308,
       "pattern": 14,
-      "screen": 346,
+      "screen": 348,
       "widget-state": 100
     },
     "byDecision": {
       "keep-canonical-contract": 121,
-      "keep-public-cataloged": 864,
+      "keep-public-cataloged": 866,
       "keep-widget-state": 100
     },
     "byCatalogStatus": {
-      "cataloged": 792,
+      "cataloged": 794,
       "contracted": 121,
       "not-applicable": 100,
       "route-covered": 72
@@ -21281,6 +21281,29 @@
       "flags": []
     },
     {
+      "name": "PaymentCheckoutEventBackdrop",
+      "file": "lib/payments/presentation/payment_confirmation_screen.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.payment_checkout_event_backdrop",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
       "name": "PaymentCheckoutSheet",
       "file": "lib/payments/presentation/payment_confirmation_screen.dart",
       "classKind": "widget",
@@ -21357,6 +21380,29 @@
       "visibility": "public",
       "role": "screen",
       "canonicalFamily": "screen.payment_confirmation_heads_up",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "PaymentConfirmationLoadingScreen",
+      "file": "lib/payments/presentation/payment_confirmation_screen.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.payment_confirmation_loading_screen",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,
