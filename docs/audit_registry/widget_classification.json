@@ -10,26 +10,26 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1066,
-    "widgetClasses": 966,
+    "total": 1067,
+    "widgetClasses": 967,
     "stateClasses": 100,
-    "publicClasses": 966,
+    "publicClasses": 967,
     "privateClasses": 100,
     "byRole": {
       "atom": 37,
       "composition": 280,
       "feature-adapter": 307,
       "pattern": 14,
-      "screen": 328,
+      "screen": 329,
       "widget-state": 100
     },
     "byDecision": {
       "keep-canonical-contract": 121,
-      "keep-public-cataloged": 845,
+      "keep-public-cataloged": 846,
       "keep-widget-state": 100
     },
     "byCatalogStatus": {
-      "cataloged": 774,
+      "cataloged": 775,
       "contracted": 121,
       "not-applicable": 100,
       "route-covered": 71
@@ -21307,10 +21307,33 @@
       "name": "PaymentReferralBanner",
       "file": "lib/payments/presentation/payment_confirmation_screen.dart",
       "classKind": "widget",
-      "baseClass": "ConsumerWidget",
+      "baseClass": "StatelessWidget",
       "visibility": "public",
       "role": "screen",
       "canonicalFamily": "screen.payment_referral_banner",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "PaymentReferralBannerController",
+      "file": "lib/payments/presentation/payment_confirmation_screen.dart",
+      "classKind": "widget",
+      "baseClass": "ConsumerWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.payment_referral_banner_controller",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,

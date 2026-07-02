@@ -2598,9 +2598,7 @@ Widget paymentConfirmationInfoStates(BuildContext context) {
       const _StateCard(label: 'heads up', child: PaymentConfirmationHeadsUp()),
       _StateCard(
         label: 'referral banner',
-        child: _PaymentScope(
-          child: IgnorePointer(child: PaymentReferralBanner(event: _event)),
-        ),
+        child: IgnorePointer(child: PaymentReferralBanner(onShare: _noop)),
       ),
     ],
   );
@@ -2618,8 +2616,36 @@ Widget paymentReferralBannerStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'event referral prompt',
+        child: IgnorePointer(child: PaymentReferralBanner(onShare: _noop)),
+      ),
+      _StateCard(
+        label: 'provider wired',
         child: _PaymentScope(
-          child: IgnorePointer(child: PaymentReferralBanner(event: _event)),
+          child: IgnorePointer(
+            child: PaymentReferralBannerController(event: _event),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Referral banner controller',
+  type: PaymentReferralBannerController,
+  path: '[P3 utility surfaces]/Payment confirmation',
+)
+Widget paymentReferralBannerControllerStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'PaymentReferralBannerController',
+    contractId: 'component.payments.referral_banner.controller',
+    children: [
+      _StateCard(
+        label: 'provider wired',
+        child: _PaymentScope(
+          child: IgnorePointer(
+            child: PaymentReferralBannerController(event: _event),
+          ),
         ),
       ),
     ],

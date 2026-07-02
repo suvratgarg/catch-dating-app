@@ -10345,6 +10345,16 @@ final directories = <_widgetbook.WidgetbookNode>[
               ),
             ],
           ),
+          _widgetbook.WidgetbookComponent(
+            name: 'PaymentReferralBannerController',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Referral banner controller',
+                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                    .paymentReferralBannerControllerStates,
+              ),
+            ],
+          ),
         ],
       ),
       _widgetbook.WidgetbookFolder(

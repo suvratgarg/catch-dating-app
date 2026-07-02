@@ -14,10 +14,10 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/quick_actions.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/event_joined_celebration_screen.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_share_card.dart';
@@ -483,7 +483,7 @@ Widget confirmationBody({
             ],
           ),
           const PaymentConfirmationHeadsUp(),
-          PaymentReferralBanner(event: event),
+          PaymentReferralBannerController(event: event),
         ],
         backHomeKey: PaymentConfirmationKeys.backHome,
         onViewEvent: () => context.goNamed(
@@ -528,21 +528,34 @@ class PaymentConfirmationHeadsUp extends StatelessWidget {
   }
 }
 
-class PaymentReferralBanner extends ConsumerWidget {
-  const PaymentReferralBanner({super.key, required this.event});
+class PaymentReferralBannerController extends ConsumerWidget {
+  const PaymentReferralBannerController({super.key, required this.event});
 
   final Event event;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final t = CatchTokens.of(context);
     final share = ref.watch(externalShareControllerProvider);
+    return PaymentReferralBanner(
+      onShare: () => unawaited(
+        showEventShareCardSheet(context, event: event, share: share),
+      ),
+    );
+  }
+}
+
+class PaymentReferralBanner extends StatelessWidget {
+  const PaymentReferralBanner({super.key, required this.onShare});
+
+  final VoidCallback onShare;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
 
     return CatchSurface(
       key: PaymentConfirmationKeys.referralShare,
-      onTap: () => unawaited(
-        showEventShareCardSheet(context, event: event, share: share),
-      ),
+      onTap: onShare,
       padding: CatchInsets.tileContentCompact,
       radius: CatchRadius.md,
       borderColor: t.primary.withValues(
