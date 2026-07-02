@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
@@ -104,6 +105,79 @@ class HostClubEditScaffoldState {
 }
 
 @immutable
+class HostClubCreateMediaState {
+  const HostClubCreateMediaState({
+    required this.enabled,
+    required this.clubPhotoPreviews,
+    required this.existingCoverImageUrl,
+    required this.profileImageBytes,
+    required this.existingProfileImageUrl,
+  });
+
+  factory HostClubCreateMediaState.resolve({
+    required bool enabled,
+    required Club? initialClub,
+    required List<OrderedPhotoPreview> clubPhotoPreviews,
+    required PickedClubProfileImage? profileImage,
+  }) {
+    return HostClubCreateMediaState(
+      enabled: enabled,
+      clubPhotoPreviews: List.unmodifiable(clubPhotoPreviews),
+      existingCoverImageUrl: clubPhotoPreviews.isEmpty
+          ? initialClub?.imageUrl
+          : null,
+      profileImageBytes: profileImage?.bytes,
+      existingProfileImageUrl: initialClub?.profileImageUrl,
+    );
+  }
+
+  final bool enabled;
+  final List<OrderedPhotoPreview> clubPhotoPreviews;
+  final String? existingCoverImageUrl;
+  final Uint8List? profileImageBytes;
+  final String? existingProfileImageUrl;
+}
+
+@immutable
+class HostClubEditValidationState {
+  const HostClubEditValidationState({
+    required this.shouldShowErrors,
+    required this.autovalidateMode,
+    required this.identityHasError,
+  });
+
+  factory HostClubEditValidationState.resolve({
+    required bool editSubmitAttempted,
+    required AutovalidateMode formAutovalidateMode,
+    required String name,
+    required String? selectedCity,
+    required String area,
+    required String description,
+  }) {
+    final shouldShowErrors =
+        editSubmitAttempted ||
+        formAutovalidateMode != AutovalidateMode.disabled;
+    return HostClubEditValidationState(
+      shouldShowErrors: shouldShowErrors,
+      autovalidateMode: editSubmitAttempted
+          ? AutovalidateMode.always
+          : formAutovalidateMode,
+      identityHasError:
+          shouldShowErrors &&
+          (name.trim().isEmpty ||
+              selectedCity == null ||
+              selectedCity.trim().isEmpty ||
+              area.trim().isEmpty ||
+              description.trim().isEmpty),
+    );
+  }
+
+  final bool shouldShowErrors;
+  final AutovalidateMode autovalidateMode;
+  final bool identityHasError;
+}
+
+@immutable
 class HostClubCreateState {
   const HostClubCreateState({
     required this.isEditing,
@@ -117,6 +191,8 @@ class HostClubCreateState {
     required this.canPickMedia,
     required this.footer,
     required this.editScaffold,
+    required this.media,
+    required this.editValidation,
     required this.mutationError,
   });
 
@@ -131,6 +207,8 @@ class HostClubCreateState {
   final bool canPickMedia;
   final HostClubCreateFooterState footer;
   final HostClubEditScaffoldState? editScaffold;
+  final HostClubCreateMediaState media;
+  final HostClubEditValidationState editValidation;
   final String? mutationError;
 
   bool get canSaveDraft => footer.canSaveDraft;
@@ -146,6 +224,14 @@ class HostClubCreateState {
     required bool submitPending,
     required bool saveDraftPending,
     required String? mutationError,
+    List<OrderedPhotoPreview> clubPhotoPreviews = const [],
+    PickedClubProfileImage? profileImage,
+    bool editSubmitAttempted = false,
+    AutovalidateMode formAutovalidateMode = AutovalidateMode.disabled,
+    String name = '',
+    String? selectedCity,
+    String area = '',
+    String description = '',
   }) {
     final totalSteps = activeSteps.length;
     final clampedStep = totalSteps == 0
@@ -176,6 +262,20 @@ class HostClubCreateState {
           ? HostClubCreateSaveDraftIntent.saveDraft
           : null,
     );
+    final media = HostClubCreateMediaState.resolve(
+      enabled: canPickMedia,
+      initialClub: initialClub,
+      clubPhotoPreviews: clubPhotoPreviews,
+      profileImage: profileImage,
+    );
+    final editValidation = HostClubEditValidationState.resolve(
+      editSubmitAttempted: editSubmitAttempted,
+      formAutovalidateMode: formAutovalidateMode,
+      name: name,
+      selectedCity: selectedCity,
+      area: area,
+      description: description,
+    );
     return HostClubCreateState(
       isEditing: isEditing,
       mediaOnly: mediaOnly,
@@ -194,6 +294,8 @@ class HostClubCreateState {
               footer: footer,
             )
           : null,
+      media: media,
+      editValidation: editValidation,
       mutationError: mutationError,
     );
   }
@@ -241,15 +343,15 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
   ClubHostDefaults _hostDefaults = const ClubHostDefaults();
 
   bool get _isEditing => widget.initialClub != null;
-  bool get _shouldShowEditSectionErrors =>
-      _editSubmitAttempted ||
-      widget.formAutovalidateMode != AutovalidateMode.disabled;
-  bool get _editIdentityHasError =>
-      _shouldShowEditSectionErrors &&
-      (_nameController.text.trim().isEmpty ||
-          (_selectedCity == null || _selectedCity!.trim().isEmpty) ||
-          _areaController.text.trim().isEmpty ||
-          _descriptionController.text.trim().isEmpty);
+  HostClubEditValidationState get _editValidationState =>
+      HostClubEditValidationState.resolve(
+        editSubmitAttempted: _editSubmitAttempted,
+        formAutovalidateMode: widget.formAutovalidateMode,
+        name: _nameController.text,
+        selectedCity: _selectedCity,
+        area: _areaController.text,
+        description: _descriptionController.text,
+      );
 
   List<CatchFormStepSpec> get _activeSteps {
     final uid = ref.read(uidProvider).asData?.value;
@@ -529,7 +631,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
   }
 
   void _handleEditIdentityChanged(String _) {
-    if (_shouldShowEditSectionErrors) setState(() {});
+    if (_editValidationState.shouldShowErrors) setState(() {});
   }
 
   Future<void> _saveDraft() async {
@@ -648,6 +750,14 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
       submitPending: submitMutation.isPending,
       saveDraftPending: saveDraftMutation.isPending,
       mutationError: mutationError,
+      clubPhotoPreviews: _clubPhotoPreviews,
+      profileImage: _profileImage,
+      editSubmitAttempted: _editSubmitAttempted,
+      formAutovalidateMode: widget.formAutovalidateMode,
+      name: _nameController.text,
+      selectedCity: _selectedCity,
+      area: _areaController.text,
+      description: _descriptionController.text,
     );
 
     ref.listen(CreateClubController.submitMutation, (previous, current) {
@@ -664,18 +774,13 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
     if (editScaffold != null) {
       return HostClubEditScaffold(
         scaffoldState: editScaffold,
+        media: screenState.media,
         mutationError: screenState.mutationError,
-        initialClub: widget.initialClub!,
-        profileImage: _profileImage,
-        clubPhotoPreviews: _clubPhotoPreviews,
-        showExistingCoverImage: _clubPhotos.isEmpty,
         basicsFormKey: _basicsFormKey,
         defaultsFormKey: _defaultsFormKey,
         eventSuccessFormKey: _eventSuccessFormKey,
-        autovalidateMode: _editSubmitAttempted
-            ? AutovalidateMode.always
-            : widget.formAutovalidateMode,
-        editIdentityHasError: _editIdentityHasError,
+        autovalidateMode: screenState.editValidation.autovalidateMode,
+        editIdentityHasError: screenState.editValidation.identityHasError,
         nameController: _nameController,
         selectedCity: cityOptionByName(_selectedCity),
         rawCityName: _selectedCity,
@@ -727,23 +832,21 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                     }),
                     areaController: _areaController,
                     detailsEnabled: !screenState.mediaOnly,
-                    clubPhotoPreviews: _clubPhotoPreviews,
-                    existingImageUrl: _clubPhotos.isEmpty
-                        ? widget.initialClub?.imageUrl
-                        : null,
-                    profileImageBytes: _profileImage?.bytes,
+                    clubPhotoPreviews: screenState.media.clubPhotoPreviews,
+                    existingImageUrl: screenState.media.existingCoverImageUrl,
+                    profileImageBytes: screenState.media.profileImageBytes,
                     existingProfileImageUrl:
-                        widget.initialClub?.profileImageUrl,
-                    onPickClubPhotos: screenState.canPickMedia
+                        screenState.media.existingProfileImageUrl,
+                    onPickClubPhotos: screenState.media.enabled
                         ? _pickClubPhotos
                         : null,
-                    onRemoveClubPhoto: screenState.canPickMedia
+                    onRemoveClubPhoto: screenState.media.enabled
                         ? _removeClubPhoto
                         : null,
-                    onReorderClubPhoto: screenState.canPickMedia
+                    onReorderClubPhoto: screenState.media.enabled
                         ? _reorderClubPhoto
                         : null,
-                    onPickProfileImage: screenState.canPickMedia
+                    onPickProfileImage: screenState.media.enabled
                         ? _pickProfileImage
                         : null,
                   ),
@@ -797,11 +900,8 @@ class HostClubEditScaffold extends StatelessWidget {
   const HostClubEditScaffold({
     super.key,
     required this.scaffoldState,
+    required this.media,
     required this.mutationError,
-    required this.initialClub,
-    required this.profileImage,
-    required this.clubPhotoPreviews,
-    required this.showExistingCoverImage,
     required this.basicsFormKey,
     required this.defaultsFormKey,
     required this.eventSuccessFormKey,
@@ -829,11 +929,8 @@ class HostClubEditScaffold extends StatelessWidget {
   });
 
   final HostClubEditScaffoldState scaffoldState;
+  final HostClubCreateMediaState media;
   final String? mutationError;
-  final Club initialClub;
-  final PickedClubProfileImage? profileImage;
-  final List<OrderedPhotoPreview> clubPhotoPreviews;
-  final bool showExistingCoverImage;
   final GlobalKey<FormState> basicsFormKey;
   final GlobalKey<FormState> defaultsFormKey;
   final GlobalKey<FormState> eventSuccessFormKey;
@@ -878,8 +975,8 @@ class HostClubEditScaffold extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   CreateClubProfileImagePicker(
-                    imageBytes: profileImage?.bytes,
-                    existingImageUrl: initialClub.profileImageUrl,
+                    imageBytes: media.profileImageBytes,
+                    existingImageUrl: media.existingProfileImageUrl,
                     onTap: scaffoldState.mediaEnabled
                         ? onPickProfileImage
                         : null,
@@ -887,10 +984,8 @@ class HostClubEditScaffold extends StatelessWidget {
                   ),
                   gapH20,
                   CreateClubPhotosPicker(
-                    photos: clubPhotoPreviews,
-                    existingImageUrl: showExistingCoverImage
-                        ? initialClub.imageUrl
-                        : null,
+                    photos: media.clubPhotoPreviews,
+                    existingImageUrl: media.existingCoverImageUrl,
                     onAddPhotos: scaffoldState.mediaEnabled
                         ? onPickClubPhotos
                         : null,

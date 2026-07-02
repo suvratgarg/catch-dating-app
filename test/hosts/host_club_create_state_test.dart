@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_flow.dart';
+import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_screen.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -57,6 +59,8 @@ void main() {
       hostName: 'Mira',
       ownerUserId: 'host-1',
       hostUserIds: const ['host-1'],
+      imageUrl: 'https://example.com/cover.jpg',
+      profileImageUrl: 'https://example.com/profile.jpg',
       createdAt: DateTime(2026),
     );
 
@@ -85,6 +89,15 @@ void main() {
     expect(ownerEdit.editScaffold?.mediaEnabled, isTrue);
     expect(ownerEdit.editScaffold?.cityPickerEnabled, isTrue);
     expect(ownerEdit.editScaffold?.footer.primaryLabel, 'Save changes');
+    expect(ownerEdit.media.enabled, isTrue);
+    expect(ownerEdit.media.clubPhotoPreviews, isEmpty);
+    expect(ownerEdit.media.existingCoverImageUrl, club.imageUrl);
+    expect(ownerEdit.media.existingProfileImageUrl, club.profileImageUrl);
+    expect(
+      ownerEdit.editValidation.autovalidateMode,
+      AutovalidateMode.disabled,
+    );
+    expect(ownerEdit.editValidation.identityHasError, isFalse);
   });
 
   test('HostClubCreateState maps media-only edit state', () {
@@ -98,6 +111,8 @@ void main() {
       hostName: 'Mira',
       ownerUserId: 'host-1',
       hostUserIds: const ['host-1'],
+      imageUrl: 'https://example.com/cover.jpg',
+      profileImageUrl: 'https://example.com/profile.jpg',
       createdAt: DateTime(2026),
     );
 
@@ -122,6 +137,73 @@ void main() {
     expect(mediaOnly.footer.primaryEnabled, isFalse);
     expect(mediaOnly.footer.primaryIntent, HostClubCreatePrimaryIntent.submit);
     expect(mediaOnly.footer.saveDraftIntent, isNull);
+    expect(mediaOnly.media.enabled, isFalse);
+  });
+
+  test('HostClubCreateState maps selected media display state', () {
+    final club = Club(
+      id: 'club-1',
+      name: 'Sea Face Social',
+      description: 'Hosted social formats.',
+      location: 'Mumbai',
+      area: 'Bandra',
+      hostUserId: 'host-1',
+      hostName: 'Mira',
+      ownerUserId: 'host-1',
+      hostUserIds: const ['host-1'],
+      imageUrl: 'https://example.com/cover.jpg',
+      profileImageUrl: 'https://example.com/profile.jpg',
+      createdAt: DateTime(2026),
+    );
+    const pickedPreview = OrderedPhotoPreview(id: 'picked-1');
+
+    final state = HostClubCreateState.resolve(
+      isEditing: true,
+      mediaOnly: false,
+      currentStep: 0,
+      activeSteps: steps,
+      initialClub: club,
+      submitPending: false,
+      saveDraftPending: false,
+      mutationError: null,
+      clubPhotoPreviews: const [pickedPreview],
+    );
+
+    expect(state.media.clubPhotoPreviews, const [pickedPreview]);
+    expect(state.media.existingCoverImageUrl, isNull);
+    expect(state.media.existingProfileImageUrl, club.profileImageUrl);
+  });
+
+  test('HostClubCreateState maps edit validation display state', () {
+    final club = Club(
+      id: 'club-1',
+      name: 'Sea Face Social',
+      description: 'Hosted social formats.',
+      location: 'Mumbai',
+      area: 'Bandra',
+      hostUserId: 'host-1',
+      hostName: 'Mira',
+      ownerUserId: 'host-1',
+      hostUserIds: const ['host-1'],
+      createdAt: DateTime(2026),
+    );
+
+    final state = HostClubCreateState.resolve(
+      isEditing: true,
+      mediaOnly: false,
+      currentStep: 0,
+      activeSteps: steps,
+      initialClub: club,
+      submitPending: false,
+      saveDraftPending: false,
+      mutationError: null,
+      editSubmitAttempted: true,
+      selectedCity: '',
+    );
+
+    expect(state.editValidation.shouldShowErrors, isTrue);
+    expect(state.editValidation.autovalidateMode, AutovalidateMode.always);
+    expect(state.editValidation.identityHasError, isTrue);
   });
 
   test(
