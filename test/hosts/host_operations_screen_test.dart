@@ -1180,7 +1180,7 @@ Future<void> _pumpHostScreen(
     await pumpFeatureUi(tester);
   } else {
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 50));
+    await tester.pump();
   }
 }
 
