@@ -127,6 +127,7 @@ void main() {
           ),
           GoRoute(
             path: app_router.Routes.savedEventDetailScreen.path,
+            name: app_router.Routes.savedEventDetailScreen.name,
             builder: (context, state) => Scaffold(
               body: Text(
                 'Event detail ${state.pathParameters['clubId']}/${state.pathParameters['eventId']}',

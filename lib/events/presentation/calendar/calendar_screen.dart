@@ -19,6 +19,7 @@ import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/calendar/calendar_screen_state.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_agenda_list.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -157,7 +158,11 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   }
 
   void _openEventDetail(BuildContext context, Event event) {
-    GoRouter.of(context).push(_calendarEventDetailPath(event), extra: event);
+    context.pushNamed(
+      Routes.calendarEventDetailScreen.name,
+      pathParameters: {'clubId': event.clubId, 'eventId': event.id},
+      extra: event,
+    );
   }
 
   void _selectDate(DateTime date) {
@@ -252,12 +257,6 @@ CalendarClubNameLookupState _calendarClubNameLookupState(
   if (names != null) return CalendarClubNameLookupState.ready(names);
   if (value.hasError) return CalendarClubNameLookupState.failure(value.error!);
   return const CalendarClubNameLookupState.loading();
-}
-
-String _calendarEventDetailPath(Event event) {
-  final clubId = Uri.encodeComponent(event.clubId);
-  final eventId = Uri.encodeComponent(event.id);
-  return '/calendar/clubs/$clubId/events/$eventId';
 }
 
 class CalendarLoadingScreen extends StatelessWidget {
