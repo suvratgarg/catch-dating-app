@@ -29,14 +29,50 @@ test("scanFile flags data/domain imports of feature presentation", () => {
   ]);
 });
 
-test("scanFile flags sibling feature presentation imports", () => {
+test("scanFile flags sibling feature widget imports", () => {
   const findings = scanFile({
-    relativePath: "lib/hosts/presentation/host_event_manage_screen.dart",
+    relativePath: "lib/dashboard/presentation/widgets/dashboard_full.dart",
     source:
-      "import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';\n",
+      "import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';\n",
   });
 
   assert.deepEqual(findings.map((finding) => finding.rule), [
+    "crossFeaturePresentationImport",
+  ]);
+});
+
+test("scanFile allows sanctioned cross-feature controller seams from screens and controllers", () => {
+  const screenFindings = scanFile({
+    relativePath: "lib/events/presentation/event_detail_screen.dart",
+    source:
+      "import 'package:catch_dating_app/clubs/presentation/detail/club_host_contact_controller.dart';\n",
+  });
+  const controllerFindings = scanFile({
+    relativePath: "lib/auth/presentation/auth_session_controller.dart",
+    source:
+      "import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';\n",
+  });
+
+  assert.deepEqual(screenFindings, []);
+  assert.deepEqual(controllerFindings, []);
+});
+
+test("scanFile keeps widget and state imports of sibling controllers as debt", () => {
+  const widgetFindings = scanFile({
+    relativePath: "lib/dashboard/presentation/widgets/dashboard_full.dart",
+    source:
+      "import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';\n",
+  });
+  const stateFindings = scanFile({
+    relativePath: "lib/user_profile/presentation/self_profile_screen_state.dart",
+    source:
+      "import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';\n",
+  });
+
+  assert.deepEqual(widgetFindings.map((finding) => finding.rule), [
+    "crossFeaturePresentationImport",
+  ]);
+  assert.deepEqual(stateFindings.map((finding) => finding.rule), [
     "crossFeaturePresentationImport",
   ]);
 });
@@ -63,7 +99,7 @@ test("scanDependencyDirection ratchets baseline findings", () => {
   writeFile(
     root,
     "lib/hosts/presentation/host_event_manage_screen.dart",
-    "import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';\n",
+    "import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';\n",
   );
 
   const baseline = {

@@ -109,7 +109,11 @@ export function scanFile({relativePath, source}) {
       sourceFeature != null &&
       targetFeature != null &&
       targetFeature !== "core" &&
-      targetFeature !== sourceFeature
+      targetFeature !== sourceFeature &&
+      !isSanctionedCrossFeaturePresentationSeam({
+        sourcePath: relativePath,
+        targetImport: uri,
+      })
     ) {
       findings.push({
         rule: "crossFeaturePresentationImport",
@@ -191,6 +195,23 @@ function isDataOrDomainFile(relativePath) {
 
 function presentationSourceFeature(relativePath) {
   return /^lib\/([^/]+)\/presentation\//u.exec(relativePath)?.[1] ?? null;
+}
+
+function isSanctionedCrossFeaturePresentationSeam({sourcePath, targetImport}) {
+  return (
+    isScreenOrControllerFile(sourcePath) &&
+    isPresentationControllerImport(targetImport)
+  );
+}
+
+function isScreenOrControllerFile(relativePath) {
+  return /(?:^|\/)[^/]+_(?:screen|controller)\.dart$/u.test(relativePath);
+}
+
+function isPresentationControllerImport(uri) {
+  return /^package:catch_dating_app\/[^/]+\/presentation\/.+_controller\.dart$/u.test(
+    uri,
+  );
 }
 
 function featurePresentationImportTarget(uri) {
