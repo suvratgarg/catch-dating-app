@@ -2750,6 +2750,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'EventDetailOptimisticBody',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Optimistic body states',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventDetailOptimisticBodyStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'EventDetailOverviewSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(

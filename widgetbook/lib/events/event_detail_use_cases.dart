@@ -598,6 +598,36 @@ Widget eventWhatToExpectState(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Optimistic body states',
+  type: EventDetailOptimisticBody,
+  path: '[Event Detail]/Sections',
+)
+Widget eventDetailOptimisticBodyStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'EventDetailOptimisticBody',
+    catalogId: 'section.event.optimistic_body',
+    children: [
+      _StateCard(
+        label: 'standard loading bridge',
+        child: _DeviceFrame(
+          child: EventDetailOptimisticBody(event: _event, clubId: _clubId),
+        ),
+      ),
+      _StateCard(
+        label: 'spotlight bridge',
+        child: _DeviceFrame(
+          child: EventDetailOptimisticBody(
+            event: _event,
+            clubId: _clubId,
+            presentationMode: EventDetailPresentationMode.spotlightDark,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Optimistic hosts skeleton',
   type: OptimisticHostsSkeleton,
   path: '[Event Detail]/Sections',

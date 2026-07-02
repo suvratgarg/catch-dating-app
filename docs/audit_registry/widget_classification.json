@@ -25,16 +25,16 @@
     },
     "byDecision": {
       "keep-canonical-contract": 121,
-      "keep-public-cataloged": 826,
+      "keep-public-cataloged": 827,
       "keep-widget-state": 101,
-      "review-catalog-coverage": 16
+      "review-catalog-coverage": 15
     },
     "byCatalogStatus": {
-      "cataloged": 755,
+      "cataloged": 756,
       "contracted": 121,
       "not-applicable": 101,
       "route-covered": 71,
-      "uncataloged": 16
+      "uncataloged": 15
     }
   },
   "widgets": [
@@ -13849,23 +13849,20 @@
       "role": "composition",
       "canonicalFamily": "catch.event_detail_optimistic_body",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
       "flags": [
-        "primitive-imports-routing-layer",
-        "public-widget-missing-widgetbook"
+        "primitive-imports-routing-layer"
       ]
     },
     {

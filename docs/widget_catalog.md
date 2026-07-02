@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.532
+version: 2.5.533
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,12 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.533
+
+- Cataloged `EventDetailOptimisticBody` directly in Widgetbook so the fallback
+  event-detail bridge is reviewed as a body composition, not only through its
+  host/social skeleton leaves.
 
 ### 2.5.532
 
@@ -5899,6 +5905,7 @@ Generated 2026-05-06.
 | `EventDetailScreen` | `lib/events/presentation/event_detail_screen.dart:40` | Route-facing event detail entry and `ARCH-SCREEN-001` reference screen. Watches `EventDetailViewModel`, records invite-link opens through `EventDetailController`, renders scaffolded loading/error/not-found states, preserves optional route-provided fallback event data plus source presentation mode/Hero tag, and owns the loaded `Scaffold`, bottom navigation, route-level mutation listeners, share/calendar/save callbacks, Event Success companion state, host club state, location/companion/club/message navigation, guest sign-in navigation, and retry invalidation before delegating embedded scroll content to `EventDetailBody`. Widgetbook exposes route-level Screen states for loading, not-found, fatal error, member, guest, host app, offline, text-scale, reduced-motion, ticket, and spotlight review. |
 | `EventLocationMapRouteScreen` | `lib/events/presentation/event_location_map_screen.dart:26` | Route-facing single-event map entry registered as `screen.event.location_map` and aligned `ARCH-SCREEN-001` adopter. Reuses `EventDetailViewModel` by `eventId`, owns the chromeless route `Scaffold`, floating back controls, load/error/not-found states, exact-coordinate gate, retry invalidation, `EventLocationMapState` creation, and external directions side effect before delegating provider-free map content to `EventLocationMapScreen`. |
 | `EventDetailBody` | `lib/events/presentation/widgets/event_detail_body.dart:107` | Scrollable event detail composition. It receives shell state plus explicit save/share/calendar/back callbacks, companion state, host state, location/companion/club/message callbacks, and retry callbacks from `EventDetailScreen`, then composes the source-aware hero app bar, flush ticket-stub band, handoff-ordered overview stack, optional saved-plan companion entry, booked-attendee invite card, hosts, and social sections. It no longer owns a direct `Scaffold`, bottom navigation, route-level booking/cancel mutation listeners, provider reads, or route side effects; direct Widgetbook/test states are body-only review states with explicit no-op or assertion callbacks. |
+| `EventDetailOptimisticBody` | `lib/events/presentation/widgets/event_detail_optimistic_body.dart:24` | Optimistic event-detail body rendered from raw route fallback event data while `EventDetailViewModel` resolves. It owns a temporary scaffold with hero, ticket stub, overview, host skeleton, and social skeleton, disables user-specific share/calendar actions, and routes guest save intent through auth until the full loaded `EventDetailBody` can replace it. |
 | `EventCompanionEntry` | `lib/events/presentation/widgets/event_detail_body.dart:343` | Provider-free Event Detail companion section adapter. Switches explicit `EventDetailCompanionState` into hidden/loading/error/available rendering, delegates retry and open-companion effects to route callbacks, and keeps the Event Success provider watch in `EventDetailScreen`. Widgetbook covers hidden, loading, available, and error states. |
 | `EventInviteLoopCard` | `lib/events/presentation/widgets/event_detail_body.dart:302` | Provider-free booked-attendee invite card for Event Detail. Receives the event, share callback, and `EventDetailSurfaceStyle`, then renders the friend-invite prompt and full-width invite action without reading route/controller state directly. |
 | `EventCompanionCard` | `lib/events/presentation/widgets/event_detail_body.dart:404` | Leaf Event Detail companion card rendered by `EventCompanionEntry` when Event Success setup is available. Uses explicit surface styling and open callback props to present the companion explanation and action without owning provider or navigation state. |
