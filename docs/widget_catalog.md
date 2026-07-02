@@ -5827,7 +5827,7 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `PhonePage` | `lib/auth/presentation/phone_page.dart:24` | Handoff phone entry step. Uses `CatchScreenBody`, `CatchStepHeader`, country selector + phone input row, sticky Send code footer, and stable auth form keys while keeping `AuthController.sendOtpMutation` behavior. |
+| `PhonePage` | `lib/auth/presentation/phone_page.dart:25` | Handoff phone entry step. Uses `OnboardingStepLayout`, `CatchStepHeader`, country selector + phone input row, sticky Send code footer, and stable auth form keys while keeping `AuthController.sendOtpMutation` behavior. |
 | `OtpPage` | `lib/auth/presentation/otp_page.dart:19` | Handoff OTP entry step. Uses `CatchOtpCodeField`, resend countdown, Resend/Change number actions, sticky Verify footer, and existing auto-submit plus auth mutation behavior. |
 
 ### StatelessWidget
@@ -5835,7 +5835,7 @@ Generated 2026-05-06.
 | Widget | File | Purpose |
 |---|---|---|
 | `AuthFormKeys` | `lib/auth/presentation/auth_form_keys.dart:3` | Stable semantic keys for auth form controls and actions. |
-| `_CountryCodeSelector` | `lib/auth/presentation/phone_page.dart:143` | Country-code picker shell used by `PhonePage`; keeps the flag selector in the handoff's fixed-width control lane and applies Catch dialog/search styling. |
+| `CountryCodeSelector` | `lib/auth/presentation/phone_page.dart:146` | Provider-free country-code picker shell used by `PhonePage`; keeps the flag selector in the handoff's fixed-width control lane, maps dial codes through supported country markets, and applies Catch dialog/search styling. |
 | `CatchCodeInput` | `lib/core/widgets/catch_otp_code_field.dart:9` | Shared handoff `CodeInput` visual row used by `CatchOtpCodeField` and static OTP/code mocks. |
 | `CatchOtpCodeField` | `lib/core/widgets/catch_otp_code_field.dart:50` | Shared OTP primitive used by `OtpPage`; owns hidden platform input and delegates six visual cells to `CatchCodeInput` styling. |
 

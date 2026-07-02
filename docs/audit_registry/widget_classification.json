@@ -10,26 +10,26 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1092,
-    "widgetClasses": 992,
+    "total": 1093,
+    "widgetClasses": 993,
     "stateClasses": 100,
-    "publicClasses": 992,
+    "publicClasses": 993,
     "privateClasses": 100,
     "byRole": {
       "atom": 37,
       "composition": 283,
-      "feature-adapter": 308,
+      "feature-adapter": 309,
       "pattern": 14,
       "screen": 350,
       "widget-state": 100
     },
     "byDecision": {
       "keep-canonical-contract": 121,
-      "keep-public-cataloged": 871,
+      "keep-public-cataloged": 872,
       "keep-widget-state": 100
     },
     "byCatalogStatus": {
-      "cataloged": 799,
+      "cataloged": 800,
       "contracted": 121,
       "not-applicable": 100,
       "route-covered": 72
@@ -217,6 +217,29 @@
       "remediationOptions": [
         "moveStateToController",
         "routeThroughScreenState"
+      ],
+      "flags": []
+    },
+    {
+      "name": "CountryCodeSelector",
+      "file": "lib/auth/presentation/phone_page.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "feature-adapter",
+      "canonicalFamily": "feature.auth.country_code_selector",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "feature-display-models",
+      "stateOwnership": "feature-display-state",
+      "asyncOwnership": "display-state-only",
+      "layoutOwnership": "feature-section-layout",
+      "actionOwnership": "feature-callbacks",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
       "flags": []
     },

@@ -324,6 +324,34 @@ Widget phonePageStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Country code selector states',
+  type: CountryCodeSelector,
+  path: '[P3 utility surfaces]/Auth',
+)
+Widget countryCodeSelectorStates(BuildContext context) {
+  return const _UtilityCatalog(
+    title: 'CountryCodeSelector',
+    contractId: 'component.auth.country_code_selector',
+    children: [
+      _StateCard(
+        label: 'India default',
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: CountryCodeSelector(countryCode: '+91', onChanged: _noopCode),
+        ),
+      ),
+      _StateCard(
+        label: 'US default',
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: CountryCodeSelector(countryCode: '+1', onChanged: _noopCode),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'OTP entry states',
   type: OtpPage,
   path: '[P3 utility surfaces]/Auth',
@@ -4384,3 +4412,5 @@ Widget _photoSlotFrame({required Widget child}) {
 }
 
 void _noop() {}
+
+void _noopCode(String _) {}

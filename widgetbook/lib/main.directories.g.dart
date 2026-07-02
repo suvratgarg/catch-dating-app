@@ -9851,6 +9851,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CountryCodeSelector',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Country code selector states',
+                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                    .countryCodeSelectorStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'OtpPage',
             useCases: [
               _widgetbook.WidgetbookUseCase(
