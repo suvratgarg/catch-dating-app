@@ -350,11 +350,6 @@
     },
     {
       "rule": "domainFrameworkImport",
-      "path": "lib/force_update/domain/platform_build_resolver.dart",
-      "import": "package:flutter/foundation.dart"
-    },
-    {
-      "rule": "domainFrameworkImport",
       "path": "lib/hosts/domain/host_profile.dart",
       "import": "package:cloud_firestore/cloud_firestore.dart"
     }

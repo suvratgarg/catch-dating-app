@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/force_update/domain/app_version_config.dart';
 import 'package:catch_dating_app/force_update/domain/platform_build_resolver.dart';
 import 'package:catch_dating_app/force_update/domain/version.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -75,7 +74,7 @@ void main() {
     });
   });
 
-  group('minimumBuildForCurrentPlatform', () {
+  group('minimumBuildForPlatform', () {
     const config = AppVersionConfig(
       minBuildAndroid: 10,
       minBuildIos: 20,
@@ -83,42 +82,14 @@ void main() {
       minBuildMacos: 40,
     );
 
-    test('uses web gate before target platform', () {
-      expect(
-        minimumBuildForCurrentPlatform(
-          config,
-          platform: TargetPlatform.iOS,
-          isWeb: true,
-        ),
-        30,
-      );
+    test('selects web gate explicitly', () {
+      expect(minimumBuildForPlatform(config, AppBuildPlatform.web), 30);
     });
 
     test('selects native platform gates', () {
-      expect(
-        minimumBuildForCurrentPlatform(
-          config,
-          platform: TargetPlatform.android,
-          isWeb: false,
-        ),
-        10,
-      );
-      expect(
-        minimumBuildForCurrentPlatform(
-          config,
-          platform: TargetPlatform.iOS,
-          isWeb: false,
-        ),
-        20,
-      );
-      expect(
-        minimumBuildForCurrentPlatform(
-          config,
-          platform: TargetPlatform.macOS,
-          isWeb: false,
-        ),
-        40,
-      );
+      expect(minimumBuildForPlatform(config, AppBuildPlatform.android), 10);
+      expect(minimumBuildForPlatform(config, AppBuildPlatform.ios), 20);
+      expect(minimumBuildForPlatform(config, AppBuildPlatform.macos), 40);
     });
   });
 }

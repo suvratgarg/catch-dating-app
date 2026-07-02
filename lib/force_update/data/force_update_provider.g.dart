@@ -113,4 +113,4 @@ final class ForceUpdateRequiredProvider
 }
 
 String _$forceUpdateRequiredHash() =>
-    r'0c415fd42fccb7463c50ec0072d7c7ecb597481f';
+    r'28c8852a5756de309c0713e8773d0aefad64f7b2';

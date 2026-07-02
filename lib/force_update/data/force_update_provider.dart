@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/force_update/data/app_version_config_provider.dart';
 import 'package:catch_dating_app/force_update/domain/platform_build_resolver.dart';
 import 'package:catch_dating_app/force_update/domain/version.dart';
+import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -35,7 +36,7 @@ AsyncValue<bool> forceUpdateRequired(Ref ref) {
 
   final (:version, :buildNumber) = packageAsync.requireValue;
 
-  final minimumBuild = minimumBuildForCurrentPlatform(config);
+  final minimumBuild = minimumBuildForPlatform(config, _currentBuildPlatform());
   if (minimumBuild > 0) {
     return AsyncValue.data(
       isBuildUpdateRequired(
@@ -48,4 +49,15 @@ AsyncValue<bool> forceUpdateRequired(Ref ref) {
   return AsyncValue.data(
     isUpdateRequired(current: version, minimum: config.minVersion),
   );
+}
+
+AppBuildPlatform _currentBuildPlatform() {
+  if (kIsWeb) return AppBuildPlatform.web;
+
+  return switch (defaultTargetPlatform) {
+    TargetPlatform.android => AppBuildPlatform.android,
+    TargetPlatform.iOS => AppBuildPlatform.ios,
+    TargetPlatform.macOS => AppBuildPlatform.macos,
+    _ => AppBuildPlatform.other,
+  };
 }
