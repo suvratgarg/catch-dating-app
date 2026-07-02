@@ -10,26 +10,26 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1093,
-    "widgetClasses": 993,
+    "total": 1096,
+    "widgetClasses": 996,
     "stateClasses": 100,
-    "publicClasses": 993,
+    "publicClasses": 996,
     "privateClasses": 100,
     "byRole": {
       "atom": 37,
-      "composition": 283,
-      "feature-adapter": 309,
+      "composition": 285,
+      "feature-adapter": 310,
       "pattern": 14,
       "screen": 350,
       "widget-state": 100
     },
     "byDecision": {
       "keep-canonical-contract": 121,
-      "keep-public-cataloged": 872,
+      "keep-public-cataloged": 875,
       "keep-widget-state": 100
     },
     "byCatalogStatus": {
-      "cataloged": 800,
+      "cataloged": 803,
       "contracted": 121,
       "not-applicable": 100,
       "route-covered": 72
@@ -15112,6 +15112,32 @@
       "flags": []
     },
     {
+      "name": "CityOptionTile",
+      "file": "lib/explore/presentation/widgets/explore_city_picker.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.city_option_tile",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": [
+        "primitive-imports-data-layer",
+        "primitive-imports-provider-layer"
+      ]
+    },
+    {
       "name": "CityTrigger",
       "file": "lib/explore/presentation/widgets/explore_city_picker.dart",
       "classKind": "widget",
@@ -15156,6 +15182,32 @@
         "mergeIntoCanonical"
       ],
       "flags": []
+    },
+    {
+      "name": "ExploreCityPickerSheet",
+      "file": "lib/explore/presentation/widgets/explore_city_picker.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.explore_city_picker_sheet",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": [
+        "primitive-imports-data-layer",
+        "primitive-imports-provider-layer"
+      ]
     },
     {
       "name": "ExploreEmptyState",
@@ -16056,6 +16108,29 @@
       "visibility": "public",
       "role": "feature-adapter",
       "canonicalFamily": "feature.explore.explore_peek_rail_content",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "feature-display-models",
+      "stateOwnership": "feature-display-state",
+      "asyncOwnership": "display-state-only",
+      "layoutOwnership": "feature-section-layout",
+      "actionOwnership": "feature-callbacks",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "ExploreSelectedEventLead",
+      "file": "lib/explore/presentation/widgets/explore_peek_rail.dart",
+      "classKind": "widget",
+      "baseClass": "ConsumerWidget",
+      "visibility": "public",
+      "role": "feature-adapter",
+      "canonicalFamily": "feature.explore.explore_selected_event_lead",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,

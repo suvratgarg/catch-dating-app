@@ -556,6 +556,62 @@ Widget exploreCityTriggerStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'City picker sheet states',
+  type: ExploreCityPickerSheet,
+  path: '[Explore]/Controls',
+)
+Widget exploreCityPickerSheetStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreCityPickerSheet',
+    catalogId: 'control.explore.city_picker_sheet',
+    children: [
+      _StateCard(
+        label: 'default',
+        child: _SheetFrame(
+          child: ExploreCityPickerSheet(
+            cities: const [_mumbai, _delhi],
+            selectedCity: _mumbai,
+            onSelected: (_) {},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'empty list',
+        child: _SheetFrame(
+          child: ExploreCityPickerSheet(
+            cities: const [],
+            selectedCity: _mumbai,
+            onSelected: (_) {},
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'City option tile states',
+  type: CityOptionTile,
+  path: '[Explore]/Controls',
+)
+Widget cityOptionTileStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'CityOptionTile',
+    catalogId: 'control.explore.city_option_tile',
+    children: [
+      _StateCard(
+        label: 'selected',
+        child: CityOptionTile(city: _mumbai, selected: true, onTap: _noop),
+      ),
+      _StateCard(
+        label: 'unselected',
+        child: CityOptionTile(city: _delhi, selected: false, onTap: _noop),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Cover header states',
   type: ExploreDiscoveryCoverHeader,
   path: '[Explore]/Sections',
@@ -801,6 +857,42 @@ Widget collapsedMapSummaryStates(BuildContext context) {
                 distanceFilter: ExploreDistanceFilter.threeKm,
                 activityTag: 'dinner',
               ),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Selected event lead',
+  type: ExploreSelectedEventLead,
+  path: '[Explore]/Sections',
+)
+Widget exploreSelectedEventLeadStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreSelectedEventLead',
+    catalogId: 'section.explore.map.selected_event_lead',
+    children: [
+      _StateCard(
+        label: 'ticket',
+        child: _SheetFrame(
+          child: _ExploreScope(
+            child: ExploreSelectedEventLead(
+              item: _feedItems[1],
+              spotlightEventId: _feedItems.first.event.id,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'spotlight',
+        child: _SheetFrame(
+          child: _ExploreScope(
+            child: ExploreSelectedEventLead(
+              item: _feedItems.first,
+              spotlightEventId: _feedItems.first.event.id,
             ),
           ),
         ),

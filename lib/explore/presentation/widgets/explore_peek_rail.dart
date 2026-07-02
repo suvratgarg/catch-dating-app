@@ -161,8 +161,7 @@ class ExploreMapSheetLead extends ConsumerWidget {
     if (leadMode == ExploreMapSheetLeadMode.selectedEvent) {
       final selectedItem = _selectedItem(items, selectedEventId);
       if (selectedItem != null) {
-        return _buildSelectedEventLead(
-          ref,
+        return ExploreSelectedEventLead(
           item: selectedItem,
           spotlightEventId: spotlightEventId,
         );
@@ -235,63 +234,67 @@ class CollapsedMapSummary extends StatelessWidget {
   }
 }
 
-Widget _buildSelectedEventLead(
-  WidgetRef ref, {
-  required ExploreEventItem item,
-  required String? spotlightEventId,
-}) {
-  return Builder(
-    builder: (context) {
-      final event = item.event;
-      final isSpotlight = event.id == spotlightEventId;
-      final source = 'map_selected_card';
-      final state = ExploreMapEventTicketState.from(
-        item,
-        statusLabel: item.distanceFromUserLabel ?? 'Map pick',
-        spotlightKicker: item.distanceFromUserLabel ?? 'Spotlight pick',
-      );
-      return Padding(
-        padding: _mapSheetLeadPadding,
-        child: isSpotlight
-            ? CatchEventCard.spotlight(
-                key: ValueKey('explore-selected-${event.id}'),
-                title: state.title,
-                supportingLabel: state.subtitle,
-                timeLabel: state.timeLabel,
-                countdownLabel: state.countdownLabel,
-                priceLabel: state.priceLabel,
-                capacityLabel: state.capacityLabel,
-                activityKind: event.activityKind,
-                kicker: state.spotlightKicker,
+class ExploreSelectedEventLead extends ConsumerWidget {
+  const ExploreSelectedEventLead({
+    super.key,
+    required this.item,
+    required this.spotlightEventId,
+  });
+
+  final ExploreEventItem item;
+  final String? spotlightEventId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final event = item.event;
+    final isSpotlight = event.id == spotlightEventId;
+    final source = 'map_selected_card';
+    final state = ExploreMapEventTicketState.from(
+      item,
+      statusLabel: item.distanceFromUserLabel ?? 'Map pick',
+      spotlightKicker: item.distanceFromUserLabel ?? 'Spotlight pick',
+    );
+    return Padding(
+      padding: _mapSheetLeadPadding,
+      child: isSpotlight
+          ? CatchEventCard.spotlight(
+              key: ValueKey('explore-selected-${event.id}'),
+              title: state.title,
+              supportingLabel: state.subtitle,
+              timeLabel: state.timeLabel,
+              countdownLabel: state.countdownLabel,
+              priceLabel: state.priceLabel,
+              capacityLabel: state.capacityLabel,
+              activityKind: event.activityKind,
+              kicker: state.spotlightKicker,
+              heroTag: eventSpotlightHeroTag(event.id, source),
+              onTap: () => _openEvent(
+                context,
+                ref,
+                item,
+                source,
+                presentationMode: EventDetailPresentationMode.spotlightDark,
+                transition: EventDetailRouteTransition.spotlightCard,
                 heroTag: eventSpotlightHeroTag(event.id, source),
-                onTap: () => _openEvent(
-                  context,
-                  ref,
-                  item,
-                  source,
-                  presentationMode: EventDetailPresentationMode.spotlightDark,
-                  transition: EventDetailRouteTransition.spotlightCard,
-                  heroTag: eventSpotlightHeroTag(event.id, source),
-                ),
-              )
-            : ExploreEventTicketCard(
-                key: ValueKey('explore-selected-${event.id}'),
-                item: item,
-                statusLabel: item.distanceFromUserLabel ?? 'Map pick',
-                heroTag: eventTicketHeroTag(event.id, source),
-                onTap: () => _openEvent(
-                  context,
-                  ref,
-                  item,
-                  source,
-                  presentationMode: EventDetailPresentationMode.ticket,
-                  transition: EventDetailRouteTransition.mapSelectedCard,
-                  heroTag: eventTicketHeroTag(event.id, source),
-                ),
               ),
-      );
-    },
-  );
+            )
+          : ExploreEventTicketCard(
+              key: ValueKey('explore-selected-${event.id}'),
+              item: item,
+              statusLabel: item.distanceFromUserLabel ?? 'Map pick',
+              heroTag: eventTicketHeroTag(event.id, source),
+              onTap: () => _openEvent(
+                context,
+                ref,
+                item,
+                source,
+                presentationMode: EventDetailPresentationMode.ticket,
+                transition: EventDetailRouteTransition.mapSelectedCard,
+                heroTag: eventTicketHeroTag(event.id, source),
+              ),
+            ),
+    );
+  }
 }
 
 class ExploreEventTicketCard extends StatelessWidget {

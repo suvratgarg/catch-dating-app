@@ -3425,6 +3425,16 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Controls',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'CityOptionTile',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'City option tile states',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .cityOptionTileStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CityTrigger',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3441,6 +3451,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'City picker states',
                 builder: _widgetbook_workspace_explore_explore_use_cases
                     .exploreCityPickerStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ExploreCityPickerSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'City picker sheet states',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .exploreCityPickerSheetStates,
               ),
             ],
           ),
@@ -3826,6 +3846,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Route empty states',
                 builder: _widgetbook_workspace_explore_explore_use_cases
                     .exploreScreenEmptyStateStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ExploreSelectedEventLead',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Selected event lead',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .exploreSelectedEventLeadStates,
               ),
             ],
           ),
