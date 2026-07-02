@@ -17,6 +17,34 @@ test("scanFile flags domain framework imports", () => {
   assert.equal(findings[0].import, "package:cloud_firestore/cloud_firestore.dart");
 });
 
+test("scanFile flags newly introduced non-allowlisted domain packages", () => {
+  const findings = scanFile({
+    relativePath: "lib/events/domain/event.dart",
+    source: "import 'package:url_launcher/url_launcher.dart';\n",
+  });
+
+  assert.deepEqual(findings.map((finding) => finding.rule), [
+    "domainFrameworkImport",
+  ]);
+});
+
+test("scanFile allows domain pure Dart, annotation, collection, and app imports", () => {
+  const findings = scanFile({
+    relativePath: "lib/events/domain/event.dart",
+    source: [
+      "import 'dart:convert';",
+      "import 'package:catch_dating_app/core/firestore_converters.dart';",
+      "import 'package:collection/collection.dart';",
+      "import 'package:freezed_annotation/freezed_annotation.dart';",
+      "import 'package:json_annotation/json_annotation.dart';",
+      "import 'package:meta/meta.dart';",
+      "import 'package:pub_semver/pub_semver.dart';",
+    ].join("\n"),
+  });
+
+  assert.deepEqual(findings, []);
+});
+
 test("scanFile flags data/domain imports of feature presentation", () => {
   const findings = scanFile({
     relativePath: "lib/events/data/event_repository.dart",

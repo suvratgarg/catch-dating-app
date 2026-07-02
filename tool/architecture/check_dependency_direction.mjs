@@ -8,32 +8,13 @@ const defaultBaselinePath = fromRepo(
   "tool/architecture/dependency_direction_baseline.json",
 );
 
-const disallowedDomainPackages = new Set([
-  "cloud_firestore",
-  "connectivity_plus",
-  "device_info_plus",
-  "firebase_auth",
-  "firebase_core",
-  "firebase_functions",
-  "firebase_storage",
-  "flutter",
-  "flutter_riverpod",
-  "geocoding",
-  "geolocator",
-  "go_router",
-  "google_maps_flutter",
-  "google_sign_in",
-  "hooks_riverpod",
-  "image_picker",
-  "in_app_purchase",
-  "map_launcher",
-  "package_info_plus",
-  "permission_handler",
-  "riverpod",
-  "share_plus",
-  "shared_preferences",
-  "sign_in_with_apple",
-  "url_launcher",
+const allowedDomainPackages = new Set([
+  "catch_dating_app",
+  "collection",
+  "freezed_annotation",
+  "json_annotation",
+  "meta",
+  "pub_semver",
 ]);
 
 const isCliEntrypoint =
@@ -80,15 +61,14 @@ export function scanFile({relativePath, source}) {
     const uri = match[1];
     const line = lineForOffset(source, match.index ?? 0);
     if (isDomainFile(relativePath)) {
-      const packageName = packageNameFor(uri);
-      if (disallowedDomainPackages.has(packageName)) {
+      if (!isAllowedDomainImport(uri)) {
         findings.push({
           rule: "domainFrameworkImport",
           path: relativePath,
           import: uri,
           line,
           reason:
-            "domain files must not import Flutter, Firebase, Riverpod, routing, or plugin packages directly",
+            "domain files must import only dart SDK, app domain/core primitives, and approved pure Dart annotation/value packages",
         });
       }
     }
@@ -225,6 +205,12 @@ function isFeaturePresentationImport(uri) {
   return /^package:catch_dating_app\/[^/]+\/presentation\//u.test(uri);
 }
 
+function isAllowedDomainImport(uri) {
+  if (uri.startsWith("dart:")) return true;
+  if (!uri.startsWith("package:")) return true;
+  return allowedDomainPackages.has(packageNameFor(uri));
+}
+
 function packageNameFor(uri) {
   return /^package:([^/']+)/u.exec(uri)?.[1] ?? "";
 }
@@ -310,7 +296,7 @@ function printHelp() {
   node tool/architecture/check_dependency_direction.mjs --write-baseline
 
 Scans lib/**/*.dart for dependency-direction violations:
-- domain files importing Flutter, Firebase, Riverpod, routing, or plugin packages;
+- domain files importing packages outside the small domain allowlist;
 - data/domain files importing feature presentation code;
 - feature presentation files importing sibling feature presentation internals.
 
