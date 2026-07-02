@@ -196,6 +196,22 @@ class HostClubCreateState {
   }
 }
 
+@immutable
+class HostClubSubmitOutcomeState {
+  const HostClubSubmitOutcomeState({required this.shouldCloseRoute});
+
+  final bool shouldCloseRoute;
+
+  factory HostClubSubmitOutcomeState.fromTransition({
+    required bool wasPending,
+    required bool isSuccess,
+  }) {
+    return HostClubSubmitOutcomeState(
+      shouldCloseRoute: wasPending && isSuccess,
+    );
+  }
+}
+
 class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
   late final PageController _pageController;
   final _basicsFormKey = GlobalKey<FormState>();
@@ -621,7 +637,11 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
     );
 
     ref.listen(CreateClubController.submitMutation, (previous, current) {
-      if (previous?.isPending == true && current.isSuccess) {
+      final submitOutcome = HostClubSubmitOutcomeState.fromTransition(
+        wasPending: previous?.isPending == true,
+        isSuccess: current.isSuccess,
+      );
+      if (submitOutcome.shouldCloseRoute) {
         Navigator.of(context).pop();
       }
     });

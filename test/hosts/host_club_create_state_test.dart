@@ -123,4 +123,31 @@ void main() {
     expect(mediaOnly.footer.primaryIntent, HostClubCreatePrimaryIntent.submit);
     expect(mediaOnly.footer.saveDraftIntent, isNull);
   });
+
+  test(
+    'HostClubSubmitOutcomeState closes only after pending submit success',
+    () {
+      expect(
+        HostClubSubmitOutcomeState.fromTransition(
+          wasPending: true,
+          isSuccess: true,
+        ).shouldCloseRoute,
+        isTrue,
+      );
+      expect(
+        HostClubSubmitOutcomeState.fromTransition(
+          wasPending: false,
+          isSuccess: true,
+        ).shouldCloseRoute,
+        isFalse,
+      );
+      expect(
+        HostClubSubmitOutcomeState.fromTransition(
+          wasPending: true,
+          isSuccess: false,
+        ).shouldCloseRoute,
+        isFalse,
+      );
+    },
+  );
 }
