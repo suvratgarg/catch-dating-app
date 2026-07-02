@@ -156,9 +156,11 @@ class PhotoUploadController extends _$PhotoUploadController {
           'Keep at least $minimumProfilePhotoCount profile photos.',
         );
       }
+      final updatedAt = DateTime.now();
       final updatedPhotos = removeProfilePhotoAtPosition(
         profilePhotos: basePhotos,
         position: index,
+        updatedAt: updatedAt,
       );
       await userProfileRepository.updateProfilePhotos(
         uid: uid,
@@ -185,10 +187,12 @@ class PhotoUploadController extends _$PhotoUploadController {
       final userProfileRepository = ref.read(userProfileRepositoryProvider);
       final latestUser = await userProfileRepository.fetchUserProfile(uid: uid);
       if (latestUser == null) throw const DocumentNotFoundException('users');
+      final updatedAt = DateTime.now();
       final updatedPhotos = reorderProfilePhoto(
         profilePhotos: latestUser.effectiveProfilePhotos,
         fromPosition: fromIndex,
         toPosition: toIndex,
+        updatedAt: updatedAt,
       );
       await userProfileRepository.updateProfilePhotos(
         uid: uid,
@@ -255,16 +259,19 @@ class PhotoUploadController extends _$PhotoUploadController {
           .where((photo) => photo.position == index)
           .firstOrNull
           ?.prompt;
+      final updatedAt = DateTime.now();
       final uploadedPhoto = ProfilePhoto.uploaded(
         position: index,
         url: upload.url,
         storagePath: upload.storagePath,
         prompt: prompt ?? existingPrompt,
+        now: updatedAt,
       );
       final replacedPhotos = replaceProfilePhotoAtPosition(
         profilePhotos: basePhotos,
         position: index,
         photo: uploadedPhoto,
+        updatedAt: updatedAt,
       );
       final updatedPhotos = ensureUniquePhotoPrompts(
         replacedPhotos,
@@ -287,10 +294,12 @@ class PhotoUploadController extends _$PhotoUploadController {
       final userProfileRepository = ref.read(userProfileRepositoryProvider);
       final latestUser = await userProfileRepository.fetchUserProfile(uid: uid);
       if (latestUser == null) throw const DocumentNotFoundException('users');
+      final updatedAt = DateTime.now();
       final updatedPhotos = replaceProfilePhotoPromptAtPosition(
         profilePhotos: latestUser.effectiveProfilePhotos,
         position: index,
         prompt: prompt,
+        updatedAt: updatedAt,
       );
       await userProfileRepository.updateProfilePhotos(
         uid: uid,
