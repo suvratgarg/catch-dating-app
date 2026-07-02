@@ -34,6 +34,7 @@ import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_framework_error_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_journey_steps.dart';
 import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
@@ -1313,6 +1314,23 @@ void main() {
     );
 
     expect(find.byType(CatchDaySectionHeaderCount), findsNothing);
+  });
+
+  testWidgets('CatchJourneySteps composes public step nodes', (tester) async {
+    await tester.pumpWidget(
+      _wrap(
+        const CatchJourneySteps(
+          steps: [
+            CatchJourneyStep(title: 'Arrive', body: 'Check in with the host.'),
+            CatchJourneyStep(title: 'Meet', body: 'Start the first round.'),
+          ],
+        ),
+      ),
+    );
+
+    expect(find.text('01'), findsOneWidget);
+    expect(find.text('02'), findsOneWidget);
+    expect(find.byType(CatchJourneyStepNode), findsNWidgets(2));
   });
 
   testWidgets('CatchSection section variant renders row variants', (

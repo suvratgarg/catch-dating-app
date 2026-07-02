@@ -2768,6 +2768,34 @@ Widget catchJourneyStepsContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
+  type: CatchJourneyStepNode,
+  path: '[Core primitives]/Sections',
+)
+Widget catchJourneyStepNodeContractStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  return _ContractScreen(
+    title: 'CatchJourneyStepNode',
+    contractId: 'catch.journey_steps.node',
+    states: const ['default', 'accented'],
+    children: [
+      _StateCard(
+        label: 'node colors',
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CatchJourneyStepNode(),
+            const SizedBox(width: CatchSpacing.s4),
+            CatchJourneyStepNode(accent: t.like),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
   type: CatchScreenBody,
   path: '[Core primitives]/Sections',
 )

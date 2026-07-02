@@ -10,14 +10,14 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1113,
-    "widgetClasses": 1013,
+    "total": 1114,
+    "widgetClasses": 1014,
     "stateClasses": 100,
-    "publicClasses": 1013,
+    "publicClasses": 1014,
     "privateClasses": 100,
     "byRole": {
       "atom": 41,
-      "composition": 294,
+      "composition": 295,
       "feature-adapter": 311,
       "pattern": 14,
       "screen": 353,
@@ -27,10 +27,10 @@
       "keep-canonical-contract": 121,
       "keep-public-cataloged": 879,
       "keep-widget-state": 100,
-      "review-promote-or-consolidate": 13
+      "review-promote-or-consolidate": 14
     },
     "byCatalogStatus": {
-      "cataloged": 819,
+      "cataloged": 820,
       "contracted": 121,
       "not-applicable": 100,
       "route-covered": 72,
@@ -3090,7 +3090,7 @@
       "role": "composition",
       "canonicalFamily": "catch.day_section_header_count",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
@@ -3105,8 +3105,7 @@
         "inlineDelete"
       ],
       "flags": [
-        "core-widget-without-contract",
-        "public-widget-missing-widgetbook"
+        "core-widget-without-contract"
       ]
     },
     {
@@ -3830,6 +3829,34 @@
         "mergeIntoCanonical"
       ],
       "flags": []
+    },
+    {
+      "name": "CatchJourneyStepNode",
+      "file": "lib/core/widgets/catch_journey_steps.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.journey_step_node",
+      "publicApi": true,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract",
+        "public-widget-missing-widgetbook"
+      ]
     },
     {
       "name": "CatchJourneySteps",
