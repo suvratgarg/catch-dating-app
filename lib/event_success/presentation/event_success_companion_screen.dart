@@ -41,11 +41,11 @@ import 'package:catch_dating_app/event_success/presentation/event_success_live_r
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_arrival_action.dart';
-import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/domain/event_check_in_qr_payload.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -106,7 +106,7 @@ class CompanionLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CompanionScaffold(body: const EventSuccessCompanionLoadingBody());
+    return const CompanionScaffold(body: EventSuccessCompanionLoadingBody());
   }
 }
 
@@ -122,14 +122,14 @@ class EventSuccessCompanionLoadingBody extends StatelessWidget {
           constraints: const BoxConstraints(
             maxWidth: CatchLayout.maxContentWidth,
           ),
-          child: Column(
+          child: const Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const CompanionStageSkeleton(),
+              CompanionStageSkeleton(),
               gapH16,
-              const CompanionPrimaryActionSkeleton(),
+              CompanionPrimaryActionSkeleton(),
               gapH16,
-              const CompanionPeerListSkeleton(),
+              CompanionPeerListSkeleton(),
             ],
           ),
         ),
@@ -346,13 +346,13 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
       );
     }
     if (event == null) {
-      return CompanionMessage(
+      return const CompanionMessage(
         title: 'Event not found',
         message: 'This event is no longer available.',
       );
     }
     if (uid == null) {
-      return CompanionMessage(
+      return const CompanionMessage(
         title: 'Sign in required',
         message: 'Sign in to open your event companion.',
       );
@@ -388,7 +388,7 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
     final profile = profileAsync.asData?.value;
     final participation = participationAsync.asData?.value;
     if (profile == null || participation == null) {
-      return CompanionMessage(
+      return const CompanionMessage(
         title: 'No booking found',
         message: 'Book this event before opening the companion.',
       );
@@ -396,7 +396,7 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
 
     final plan = planAsync.asData?.value;
     if (plan == null) {
-      return CompanionMessage(
+      return const CompanionMessage(
         title: 'Companion not available',
         message:
             'The host has not enabled the live event guide for this event yet.',
@@ -1026,6 +1026,34 @@ class _EventSuccessCompanionScreenState
     final feedbackActionState = EventSuccessFeedbackActionState(
       isSaving: feedbackMutation.isPending,
     );
+    void setMicroPodsIncluded(bool include) {
+      final override = widget.onSetMicroPodsIncluded;
+      if (override != null) {
+        override(include);
+        return;
+      }
+      EventSuccessController.microPodsOptOutMutation.run(
+        ref,
+        (tx) => tx
+            .get(eventSuccessControllerProvider.notifier)
+            .setMicroPodsOptOut(event: event, optedOut: !include),
+      );
+    }
+
+    void setGuidedRotationsIncluded(bool include) {
+      final override = widget.onSetGuidedRotationsIncluded;
+      if (override != null) {
+        override(include);
+        return;
+      }
+      EventSuccessController.guidedRotationsOptOutMutation.run(
+        ref,
+        (tx) => tx
+            .get(eventSuccessControllerProvider.notifier)
+            .setGuidedRotationsOptOut(event: event, optedOut: !include),
+      );
+    }
+
     _playMomentEffectOnce(screenState);
 
     final stageTheme = _CompanionStageTheme.forMoment(
@@ -1170,16 +1198,7 @@ class _EventSuccessCompanionScreenState
           peerProfiles: widget.assignmentPeerProfiles,
           peersLoading: widget.assignmentPeersLoading,
           actionState: microPodsActionState,
-          onIncludeChanged:
-              widget.onSetMicroPodsIncluded ??
-              (include) {
-                EventSuccessController.microPodsOptOutMutation.run(
-                  ref,
-                  (tx) => tx
-                      .get(eventSuccessControllerProvider.notifier)
-                      .setMicroPodsOptOut(event: event, optedOut: !include),
-                );
-              },
+          onIncludeChanged: setMicroPodsIncluded,
         ),
         momentKey: screenState.transitionKey('micro-pod'),
       );
@@ -1194,19 +1213,7 @@ class _EventSuccessCompanionScreenState
           peerProfiles: widget.rotationPeerProfiles,
           peersLoading: widget.rotationPeersLoading,
           actionState: guidedRotationsActionState,
-          onIncludeChanged:
-              widget.onSetGuidedRotationsIncluded ??
-              (include) {
-                EventSuccessController.guidedRotationsOptOutMutation.run(
-                  ref,
-                  (tx) => tx
-                      .get(eventSuccessControllerProvider.notifier)
-                      .setGuidedRotationsOptOut(
-                        event: event,
-                        optedOut: !include,
-                      ),
-                );
-              },
+          onIncludeChanged: setGuidedRotationsIncluded,
         ),
         momentKey: screenState.transitionKey('rotation-schedule'),
       );
@@ -1233,6 +1240,12 @@ class _EventSuccessCompanionScreenState
           optedOut: isRotations
               ? widget.guidedRotationsOptedOut
               : widget.microPodsOptedOut,
+          isSavingOptOut: isRotations
+              ? guidedRotationsActionState.isSaving
+              : microPodsActionState.isSaving,
+          onIncludeChanged: isRotations
+              ? setGuidedRotationsIncluded
+              : setMicroPodsIncluded,
           now: widget.now,
         ),
         momentKey: screenState.transitionKey('live-reveal'),

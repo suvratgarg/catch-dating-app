@@ -3035,6 +3035,7 @@ class _LiveRevealCoverageStates extends StatelessWidget {
           peerProfiles: const [EventSuccessCompanionFixtures.peer],
           peersLoading: false,
           optedOut: false,
+          onIncludeChanged: (_) {},
           now: now,
         ),
       ],

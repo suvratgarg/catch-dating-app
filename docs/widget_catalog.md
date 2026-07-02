@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.545
+version: 2.5.546
 updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,14 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.546
+
+- Lifted companion live-reveal opt-out mutation display and execution out of
+  `EventSuccessLiveRevealAttendeeCard`. `EventSuccessCompanionScreen` now
+  reuses its existing micro-pod and guided-rotation include callbacks and
+  pending state for the reveal attendee card, keeping reveal rendering
+  provider-free.
 
 ### 2.5.545
 
@@ -6138,7 +6146,7 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `EventSuccessCompanionScreen` | `lib/event_success/presentation/event_success_companion_screen.dart:722` | Attendee companion surface that resolves the runtime-selected live moment into a full-screen stage with moment-specific color, motif, privacy copy, keyed transitions, native live effects, optional First Hello arrival missions, reveal-safe assignment display, and a private post-event afterglow recap. Live assignment opt-in controls use `CatchToggle`, and copied cue/opener feedback uses `showCatchSnackBar`. Keeps the single-moment runtime model intact rather than restoring a stacked dashboard. |
+| `EventSuccessCompanionScreen` | `lib/event_success/presentation/event_success_companion_screen.dart:883` | Attendee companion surface that resolves the runtime-selected live moment into a full-screen stage with moment-specific color, motif, privacy copy, keyed transitions, native live effects, optional First Hello arrival missions, reveal-safe assignment display, and a private post-event afterglow recap. Live assignment opt-in controls use explicit `AssignmentOptOutActionState` plus shared include callbacks across micro-pod, rotation, and live-reveal surfaces; copied cue/opener feedback uses `showCatchSnackBar`. Keeps the single-moment runtime model intact rather than restoring a stacked dashboard. |
 
 ### ConsumerWidget
 
@@ -6147,7 +6155,6 @@ Generated 2026-05-06.
 | `EventSuccessHostSectionState` | `lib/event_success/presentation/event_success_host_screen.dart:185` | Provider-wave adapter for the host Event Success section. Resolves saved-plan presence, fallback default plan, roster, assignments, assignment profiles, rotation assignments, rotation profiles, preferences, wingman requests, wingman profiles, and scorecard into loading/error/ready state plus `EventSuccessHostRetryIntent` before the section composes the provider-free host panel. `EventSuccessSetupActionState`, `EventSuccessLiveActionState`, `EventSuccessAssignmentGenerationActionState`, and `EventSuccessRevealActionState` separately map setup save/ensure, live step/complete, embedded attendance, assignment generation, and reveal mutation display for setup/live tabs. |
 | `EventSuccessHostSection` | `lib/event_success/presentation/event_success_host_screen.dart:337` | Host Manage section loader for event-success data. It watches the required Event Success provider waves, setup-save mutations, live step/complete mutations, assignment generation mutations, reveal mutations, and embedded-roster attendance mutations at the route edge; delegates branch selection to `EventSuccessHostSectionState`; synthesizes a default plan until setup is saved; skips roster/report/assignment/preference/wingman streams while no saved guide exists; renders tab-shaped skeletons for loading; maps typed retry intents back to the failing provider; and executes setup-save, live step, live-complete, micro-pod generation, guided-rotation generation, group override save, rotation override save, countdown start, round reveal, and reveal reset requests through `EventSuccessController`. Host Manage can pass an embedded live roster when needed, or request compact live controls so the route-level Live workspace prioritizes the live console, navigation, and check-in summary strip while attendance correction remains covered by dedicated roster states. Widgetbook and deterministic captures may mount the non-compact section directly for rich live-card substates such as QR, cues, reveal, and host-edited overrides without changing the production compact Live workspace. |
 | `EventSuccessEventPreviewRouteScreen` | `lib/event_success/presentation/event_success_event_preview_screen.dart:27` | Dev/staging route that previews the future Event Success layer against current event data without creating live event-success documents. It keeps the preview app bar visible and renders `EventSuccessEventPreviewLoadingScreen` while event data loads. |
-| `EventSuccessLiveRevealAttendeeCard` | `lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_attendee.dart:3` | Companion-side reveal surface for pods and rotations. Hides assignment details until the host reveal state unlocks the round, uses a stronger countdown/waiting/unlocked presentation, then shows partners or podmates with opt-out controls intact. |
 
 ### StatelessWidget
 
@@ -6156,6 +6163,7 @@ Generated 2026-05-06.
 | `EventSuccessLabScreen` | `lib/event_success/presentation/event_success_lab_screen.dart:34` | Dev/staging-only event-success product lab. Labels the route as preview-only WIP, renders playbook cards, the module grid, actual feature blocks, and host-coach samples without Firestore writes or booking changes. Playbook module metadata uses shared `CatchBadge` labels while interactive setup choices remain on their own handoff controls. |
 | `CompanionPaperScaffold` | `lib/event_success/presentation/companion_parts/event_success_companion_shared.dart:121` | Provider-free paper-ticket companion shell for pre-arrival and self-check-in moments. Receives moment presentation, self-check-in state, and a typed self-check-in callback from `EventSuccessCompanionScreen` while keeping the paper ticket layout stable. |
 | `EventSuccessLiveRevealHostCard` | `lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_host.dart:3` | Provider-free host Live-mode reveal console for structured assignment flows. Receives `EventSuccessRevealActionState` plus typed countdown/reveal/reset callbacks, shows pending/error state, and composes the kinetic countdown, round queue, assignment clues, and `HostRevealActions` without watching providers or executing controller writes directly. |
+| `EventSuccessLiveRevealAttendeeCard` | `lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_attendee.dart:3` | Provider-free companion-side reveal surface for pods and rotations. Receives explicit opt-out state, pending state, and include/exclude callback from `EventSuccessCompanionScreen`, hides assignment details until the host reveal unlocks the round, and then shows partners or podmates without watching providers or executing controller writes directly. |
 | `HostRevealActions` | `lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_actions.dart:3` | Provider-free reveal action row used by `EventSuccessLiveRevealHostCard`. Renders generate-first, countdown, reveal-now, all-revealed reset, and disabled/pending states from explicit inputs while delegating countdown/reveal/reset effects to typed callbacks supplied by the host panel. |
 | `EventSuccessHostSectionSkeleton` | `lib/event_success/presentation/event_success_host_screen.dart:779` | Tab-aware Event Success host-section loading body. Mirrors Setup with configuration controls, Live with roster/assignment surfaces, and Report with metric/report cards, while respecting fixed Host Manage sections that hide the inner tab picker. |
 | `EventSuccessCompanionLoadingBody` | `lib/event_success/presentation/event_success_companion_screen.dart:114` | Companion route loading body rendered inside stable companion chrome. Shows stage, primary action, and peer-list skeletons so event/profile/plan/mission/assignment provider waves do not collapse back to a centered spinner. |

@@ -1,6 +1,6 @@
 part of '../event_success_live_reveal_card.dart';
 
-class EventSuccessLiveRevealAttendeeCard extends ConsumerWidget {
+class EventSuccessLiveRevealAttendeeCard extends StatelessWidget {
   const EventSuccessLiveRevealAttendeeCard({
     super.key,
     required this.event,
@@ -10,6 +10,8 @@ class EventSuccessLiveRevealAttendeeCard extends ConsumerWidget {
     required this.peerProfiles,
     required this.peersLoading,
     required this.optedOut,
+    this.isSavingOptOut = false,
+    this.onIncludeChanged,
     this.now,
   });
 
@@ -20,29 +22,24 @@ class EventSuccessLiveRevealAttendeeCard extends ConsumerWidget {
   final List<PublicProfile> peerProfiles;
   final bool peersLoading;
   final bool optedOut;
+  final bool isSavingOptOut;
+  final ValueChanged<bool>? onIncludeChanged;
   final DateTime? now;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return RevealTicker(
       enabled: now == null && plan.isRevealCountdownRunning(DateTime.now()),
       builder: (context, tickNow) {
         final referenceNow = now ?? tickNow;
-        return _buildCard(context, ref, referenceNow);
+        return _buildCard(context, referenceNow);
       },
     );
   }
 
-  Widget _buildCard(
-    BuildContext context,
-    WidgetRef ref,
-    DateTime referenceNow,
-  ) {
+  Widget _buildCard(BuildContext context, DateTime referenceNow) {
     final t = CatchTokens.of(context);
     final assigned = assignment;
-    final mutation = kind == EventSuccessRevealAssignmentKind.rotations
-        ? ref.watch(EventSuccessController.guidedRotationsOptOutMutation)
-        : ref.watch(EventSuccessController.microPodsOptOutMutation);
     final groupSlots =
         assigned?.groupRotationSlots ?? const <EventSuccessGroupRotationSlot>[];
     final roundCount = assigned == null
@@ -190,10 +187,10 @@ class EventSuccessLiveRevealAttendeeCard extends ConsumerWidget {
               variant: optedOut
                   ? CatchButtonVariant.primary
                   : CatchButtonVariant.secondary,
-              isLoading: mutation.isPending,
-              onPressed: mutation.isPending
+              isLoading: isSavingOptOut,
+              onPressed: isSavingOptOut || onIncludeChanged == null
                   ? null
-                  : () => _toggleOptOut(ref, optedOut: !optedOut),
+                  : () => onIncludeChanged!(optedOut),
               fullWidth: true,
             ),
           ),
@@ -260,23 +257,5 @@ class EventSuccessLiveRevealAttendeeCard extends ConsumerWidget {
       return 'Clue: the next pairing is ready.';
     }
     return 'Clue: ${_compatibilityLabel(slot.compatibility).toLowerCase()}.';
-  }
-
-  void _toggleOptOut(WidgetRef ref, {required bool optedOut}) {
-    if (kind == EventSuccessRevealAssignmentKind.rotations) {
-      EventSuccessController.guidedRotationsOptOutMutation.run(
-        ref,
-        (tx) => tx
-            .get(eventSuccessControllerProvider.notifier)
-            .setGuidedRotationsOptOut(event: event, optedOut: optedOut),
-      );
-      return;
-    }
-    EventSuccessController.microPodsOptOutMutation.run(
-      ref,
-      (tx) => tx
-          .get(eventSuccessControllerProvider.notifier)
-          .setMicroPodsOptOut(event: event, optedOut: optedOut),
-    );
   }
 }

@@ -11308,7 +11308,7 @@
       "name": "EventSuccessLiveRevealAttendeeCard",
       "file": "lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_attendee.dart",
       "classKind": "widget",
-      "baseClass": "ConsumerWidget",
+      "baseClass": "StatelessWidget",
       "visibility": "public",
       "role": "composition",
       "canonicalFamily": "catch.event_success_live_reveal_attendee_card",
