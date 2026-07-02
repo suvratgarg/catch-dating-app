@@ -239,10 +239,11 @@ void main() {
     'HostParticipantsMutationDisplayState maps pending and error policy',
     () {
       HostParticipantsMutationDisplayState resolve({
-        bool markAttendancePending = false,
-        bool approveJoinRequestPending = false,
-        bool declineJoinRequestPending = false,
-        bool createWaitlistOfferPending = false,
+        Set<String> markAttendancePendingIds = const <String>{},
+        Set<String> approveJoinRequestPendingIds = const <String>{},
+        Set<String> declineJoinRequestPendingIds = const <String>{},
+        Set<String> createWaitlistOfferPendingIds = const <String>{},
+        bool bulkWaitlistOfferPending = false,
         bool opsReportPending = false,
         bool revenueReportPending = false,
         Object? markAttendanceError,
@@ -253,10 +254,11 @@ void main() {
         Object? revenueReportError,
       }) {
         return HostParticipantsMutationDisplayState.resolve(
-          markAttendancePending: markAttendancePending,
-          approveJoinRequestPending: approveJoinRequestPending,
-          declineJoinRequestPending: declineJoinRequestPending,
-          createWaitlistOfferPending: createWaitlistOfferPending,
+          markAttendancePendingIds: markAttendancePendingIds,
+          approveJoinRequestPendingIds: approveJoinRequestPendingIds,
+          declineJoinRequestPendingIds: declineJoinRequestPendingIds,
+          createWaitlistOfferPendingIds: createWaitlistOfferPendingIds,
+          bulkWaitlistOfferPending: bulkWaitlistOfferPending,
           opsReportPending: opsReportPending,
           revenueReportPending: revenueReportPending,
           markAttendanceError: markAttendanceError,
@@ -269,10 +271,19 @@ void main() {
       }
 
       final idle = resolve();
-      final approvePending = resolve(approveJoinRequestPending: true);
-      final declinePending = resolve(declineJoinRequestPending: true);
-      final waitlistPending = resolve(createWaitlistOfferPending: true);
-      final attendancePending = resolve(markAttendancePending: true);
+      final approvePending = resolve(
+        approveJoinRequestPendingIds: const {'runner-1'},
+      );
+      final declinePending = resolve(
+        declineJoinRequestPendingIds: const {'runner-2'},
+      );
+      final waitlistPending = resolve(
+        createWaitlistOfferPendingIds: const {'runner-3'},
+      );
+      final bulkWaitlistPending = resolve(bulkWaitlistOfferPending: true);
+      final attendancePending = resolve(
+        markAttendancePendingIds: const {'runner-4'},
+      );
       final reportsPending = resolve(
         opsReportPending: true,
         revenueReportPending: true,
@@ -281,14 +292,27 @@ void main() {
       expect(idle.requestActionPending, isFalse);
       expect(idle.waitlistOfferPending, isFalse);
       expect(idle.attendanceActionPending, isFalse);
+      expect(idle.isRequestActionPending('runner-1'), isFalse);
+      expect(idle.isWaitlistOfferPending('runner-3'), isFalse);
+      expect(idle.isAttendanceActionPending('runner-4'), isFalse);
       expect(idle.opsReportExportPending, isFalse);
       expect(idle.revenueReportExportPending, isFalse);
       expect(idle.participantActionError, isNull);
       expect(idle.reportExportError, isNull);
       expect(approvePending.requestActionPending, isTrue);
+      expect(approvePending.isRequestActionPending('runner-1'), isTrue);
+      expect(approvePending.isRequestActionPending('runner-2'), isFalse);
       expect(declinePending.requestActionPending, isTrue);
+      expect(declinePending.isRequestActionPending('runner-2'), isTrue);
       expect(waitlistPending.waitlistOfferPending, isTrue);
+      expect(waitlistPending.isWaitlistOfferPending('runner-3'), isTrue);
+      expect(waitlistPending.isWaitlistOfferPending('runner-4'), isFalse);
+      expect(bulkWaitlistPending.waitlistOfferPending, isTrue);
+      expect(bulkWaitlistPending.isWaitlistOfferPending('runner-3'), isTrue);
+      expect(bulkWaitlistPending.isWaitlistOfferPending('runner-4'), isTrue);
       expect(attendancePending.attendanceActionPending, isTrue);
+      expect(attendancePending.isAttendanceActionPending('runner-4'), isTrue);
+      expect(attendancePending.isAttendanceActionPending('runner-5'), isFalse);
       expect(reportsPending.opsReportExportPending, isTrue);
       expect(reportsPending.revenueReportExportPending, isTrue);
 

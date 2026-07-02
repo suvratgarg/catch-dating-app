@@ -334,6 +334,53 @@ class EventSuccessHostSectionState {
   return null;
 }
 
+MutationState<void>? _firstHostRosterMutationError(
+  WidgetRef ref, {
+  required String eventId,
+  required EventParticipationRoster? roster,
+}) {
+  if (roster == null) return null;
+  final participantIds = <String>{...roster.bookedIds, ...roster.waitlistedIds};
+  for (final uid in participantIds) {
+    final mutations = <Mutation<void>>[
+      HostEventBookingController.markAttendanceMutation(
+        HostEventBookingController.markAttendanceMutationKey(
+          eventId: eventId,
+          userId: uid,
+        ),
+      ),
+      HostEventBookingController.approveJoinRequestMutation(
+        HostEventBookingController.approveJoinRequestMutationKey(
+          eventId: eventId,
+          userId: uid,
+        ),
+      ),
+      HostEventBookingController.declineJoinRequestMutation(
+        HostEventBookingController.declineJoinRequestMutationKey(
+          eventId: eventId,
+          userId: uid,
+        ),
+      ),
+      HostEventBookingController.createWaitlistOfferMutation(
+        HostEventBookingController.waitlistOfferMutationKey(
+          eventId: eventId,
+          userId: uid,
+        ),
+      ),
+    ];
+    for (final mutation in mutations) {
+      final state = ref.watch(mutation);
+      if (state.hasError) return state;
+    }
+  }
+  final bulkOfferState = ref.watch(
+    HostEventBookingController.createWaitlistOfferMutation(
+      HostEventBookingController.bulkWaitlistOfferMutationKey(eventId: eventId),
+    ),
+  );
+  return bulkOfferState.hasError ? bulkOfferState : null;
+}
+
 class EventSuccessHostSection extends ConsumerWidget {
   const EventSuccessHostSection({
     super.key,
@@ -380,14 +427,6 @@ class EventSuccessHostSection extends ConsumerWidget {
     final resetRevealMutation = ref.watch(
       EventSuccessController.resetRevealMutation,
     );
-    final attendanceErrorMutation = liveRoster == null
-        ? null
-        : _firstMutationError(<MutationState<void>>[
-            ref.watch(HostEventBookingController.markAttendanceMutation),
-            ref.watch(HostEventBookingController.approveJoinRequestMutation),
-            ref.watch(HostEventBookingController.declineJoinRequestMutation),
-            ref.watch(HostEventBookingController.createWaitlistOfferMutation),
-          ]);
     final persistedPlan = planAsync.asData?.value;
     final hasSavedGuide = persistedPlan != null;
     final shouldLoadRoster =
@@ -401,6 +440,13 @@ class EventSuccessHostSection extends ConsumerWidget {
     final AsyncValue<EventParticipationRoster> rosterAsync = shouldLoadRoster
         ? ref.watch(watchEventParticipationRosterProvider(event.id))
         : AsyncData(EventParticipationRoster.empty());
+    final attendanceErrorMutation = liveRoster == null
+        ? null
+        : _firstHostRosterMutationError(
+            ref,
+            eventId: event.id,
+            roster: rosterAsync.asData?.value,
+          );
     final AsyncValue<EventSuccessScorecard?> scorecardAsync =
         shouldLoadScorecard
         ? ref.watch(watchEventSuccessScorecardProvider(event.id))

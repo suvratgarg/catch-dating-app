@@ -228,9 +228,10 @@ enum HostInviteLinksMutationMode { idle, creating, copying, disabling }
 
 class HostParticipantsMutationDisplayState {
   const HostParticipantsMutationDisplayState({
-    required this.requestActionPending,
-    required this.waitlistOfferPending,
-    required this.attendanceActionPending,
+    required this.requestActionPendingIds,
+    required this.waitlistOfferPendingIds,
+    required this.bulkWaitlistOfferPending,
+    required this.attendanceActionPendingIds,
     required this.opsReportExportPending,
     required this.revenueReportExportPending,
     this.participantActionError,
@@ -238,10 +239,11 @@ class HostParticipantsMutationDisplayState {
   });
 
   factory HostParticipantsMutationDisplayState.resolve({
-    required bool markAttendancePending,
-    required bool approveJoinRequestPending,
-    required bool declineJoinRequestPending,
-    required bool createWaitlistOfferPending,
+    required Set<String> markAttendancePendingIds,
+    required Set<String> approveJoinRequestPendingIds,
+    required Set<String> declineJoinRequestPendingIds,
+    required Set<String> createWaitlistOfferPendingIds,
+    required bool bulkWaitlistOfferPending,
     required bool opsReportPending,
     required bool revenueReportPending,
     Object? markAttendanceError,
@@ -252,10 +254,13 @@ class HostParticipantsMutationDisplayState {
     Object? revenueReportError,
   }) {
     return HostParticipantsMutationDisplayState(
-      requestActionPending:
-          approveJoinRequestPending || declineJoinRequestPending,
-      waitlistOfferPending: createWaitlistOfferPending,
-      attendanceActionPending: markAttendancePending,
+      requestActionPendingIds: Set.unmodifiable({
+        ...approveJoinRequestPendingIds,
+        ...declineJoinRequestPendingIds,
+      }),
+      waitlistOfferPendingIds: Set.unmodifiable(createWaitlistOfferPendingIds),
+      bulkWaitlistOfferPending: bulkWaitlistOfferPending,
+      attendanceActionPendingIds: Set.unmodifiable(markAttendancePendingIds),
       opsReportExportPending: opsReportPending,
       revenueReportExportPending: revenueReportPending,
       participantActionError:
@@ -267,13 +272,28 @@ class HostParticipantsMutationDisplayState {
     );
   }
 
-  final bool requestActionPending;
-  final bool waitlistOfferPending;
-  final bool attendanceActionPending;
+  final Set<String> requestActionPendingIds;
+  final Set<String> waitlistOfferPendingIds;
+  final bool bulkWaitlistOfferPending;
+  final Set<String> attendanceActionPendingIds;
   final bool opsReportExportPending;
   final bool revenueReportExportPending;
   final Object? participantActionError;
   final Object? reportExportError;
+
+  bool get requestActionPending => requestActionPendingIds.isNotEmpty;
+  bool get waitlistOfferPending =>
+      bulkWaitlistOfferPending || waitlistOfferPendingIds.isNotEmpty;
+  bool get attendanceActionPending => attendanceActionPendingIds.isNotEmpty;
+
+  bool isRequestActionPending(String uid) =>
+      requestActionPendingIds.contains(uid);
+
+  bool isWaitlistOfferPending(String uid) =>
+      bulkWaitlistOfferPending || waitlistOfferPendingIds.contains(uid);
+
+  bool isAttendanceActionPending(String uid) =>
+      attendanceActionPendingIds.contains(uid);
 }
 
 class HostParticipantLifecycleActions {

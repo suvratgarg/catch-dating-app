@@ -1,15 +1,19 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/external_share.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_action_keys.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -330,6 +334,56 @@ void main() {
     expect(fakeEventRepository.markedAttendanceUserId, 'runner-1');
   });
 
+  testWidgets('live mode scopes attendance pending state to one row', (
+    tester,
+  ) async {
+    final event = buildEvent(id: 'attendance-cardinality-event');
+    final fakePublicProfileRepository = FakePublicProfileRepository()
+      ..profiles = [
+        buildPublicProfile(name: 'Asha'),
+        buildPublicProfile(uid: 'runner-2', name: 'Kabir'),
+      ];
+
+    await pumpEventsTestApp(
+      tester,
+      Scaffold(
+        body: _PendingHostAttendanceMutation(
+          eventId: event.id,
+          uid: 'runner-1',
+          child: HostEventParticipantsPanel(
+            eventId: event.id,
+            mode: HostEventParticipantsMode.live,
+          ),
+        ),
+      ),
+      overrides: [
+        watchEventProvider(event.id).overrideWith((ref) => Stream.value(event)),
+        watchEventParticipationsForEventProvider(event.id).overrideWith(
+          (ref) => Stream.value([
+            buildEventParticipation(event: event, uid: 'runner-1'),
+            buildEventParticipation(event: event, uid: 'runner-2'),
+          ]),
+        ),
+        publicProfileRepositoryProvider.overrideWith(
+          (ref) => fakePublicProfileRepository,
+        ),
+      ],
+      signedInUid: 'host-1',
+    );
+    await _settleAttendanceSheet(tester);
+    await tester.pump();
+
+    final firstButton = tester.widget<CatchButton>(
+      find.byKey(HostEventActionKeys.attendeeCheckInButton('runner-1')),
+    );
+    final secondButton = tester.widget<CatchButton>(
+      find.byKey(HostEventActionKeys.attendeeCheckInButton('runner-2')),
+    );
+
+    expect(firstButton.onPressed, isNull);
+    expect(secondButton.onPressed, isNotNull);
+  });
+
   testWidgets('participants setup mode shows booked and waitlisted actions', (
     tester,
   ) async {
@@ -522,3 +576,44 @@ void main() {
 
 Future<void> _settleAttendanceSheet(WidgetTester tester) =>
     pumpFeatureUi(tester);
+
+class _PendingHostAttendanceMutation extends ConsumerStatefulWidget {
+  const _PendingHostAttendanceMutation({
+    required this.eventId,
+    required this.uid,
+    required this.child,
+  });
+
+  final String eventId;
+  final String uid;
+  final Widget child;
+
+  @override
+  ConsumerState<_PendingHostAttendanceMutation> createState() =>
+      _PendingHostAttendanceMutationState();
+}
+
+class _PendingHostAttendanceMutationState
+    extends ConsumerState<_PendingHostAttendanceMutation> {
+  final Completer<void> _completer = Completer<void>();
+  bool _started = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _started) return;
+      _started = true;
+      final mutation = HostEventBookingController.markAttendanceMutation(
+        HostEventBookingController.markAttendanceMutationKey(
+          eventId: widget.eventId,
+          userId: widget.uid,
+        ),
+      );
+      unawaited(mutation.run(ref, (_) => _completer.future));
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
+}

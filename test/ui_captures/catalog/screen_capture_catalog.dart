@@ -3889,11 +3889,11 @@ class _HostManageAttendanceMutationCaptureState
     _resetMutations();
     switch (widget.mode) {
       case _HostManageAttendanceMutationCaptureMode.pending:
-        _runPending(HostEventBookingController.createWaitlistOfferMutation);
+        _runPending(_bulkWaitlistOfferMutation);
         break;
       case _HostManageAttendanceMutationCaptureMode.error:
         _runError(
-          HostEventBookingController.markAttendanceMutation,
+          _guestAttendanceMutation,
           StateError('Capture Host Manage attendance mutation failed'),
         );
         break;
@@ -3901,11 +3901,51 @@ class _HostManageAttendanceMutationCaptureState
   }
 
   void _resetMutations() {
-    HostEventBookingController.markAttendanceMutation.reset(ref);
-    HostEventBookingController.approveJoinRequestMutation.reset(ref);
-    HostEventBookingController.declineJoinRequestMutation.reset(ref);
-    HostEventBookingController.createWaitlistOfferMutation.reset(ref);
+    _guestAttendanceMutation.reset(ref);
+    _guestApproveMutation.reset(ref);
+    _guestDeclineMutation.reset(ref);
+    _waitlistOfferMutation.reset(ref);
+    _bulkWaitlistOfferMutation.reset(ref);
   }
+
+  Mutation<void> get _guestAttendanceMutation =>
+      HostEventBookingController.markAttendanceMutation(
+        HostEventBookingController.markAttendanceMutationKey(
+          eventId: HostOperationsFixtures.fullEvent.id,
+          userId: HostOperationsFixtures.guestUid,
+        ),
+      );
+
+  Mutation<void> get _guestApproveMutation =>
+      HostEventBookingController.approveJoinRequestMutation(
+        HostEventBookingController.approveJoinRequestMutationKey(
+          eventId: HostOperationsFixtures.fullEvent.id,
+          userId: HostOperationsFixtures.waitlistUid,
+        ),
+      );
+
+  Mutation<void> get _guestDeclineMutation =>
+      HostEventBookingController.declineJoinRequestMutation(
+        HostEventBookingController.declineJoinRequestMutationKey(
+          eventId: HostOperationsFixtures.fullEvent.id,
+          userId: HostOperationsFixtures.waitlistUid,
+        ),
+      );
+
+  Mutation<void> get _waitlistOfferMutation =>
+      HostEventBookingController.createWaitlistOfferMutation(
+        HostEventBookingController.waitlistOfferMutationKey(
+          eventId: HostOperationsFixtures.fullEvent.id,
+          userId: HostOperationsFixtures.waitlistUid,
+        ),
+      );
+
+  Mutation<void> get _bulkWaitlistOfferMutation =>
+      HostEventBookingController.createWaitlistOfferMutation(
+        HostEventBookingController.bulkWaitlistOfferMutationKey(
+          eventId: HostOperationsFixtures.fullEvent.id,
+        ),
+      );
 
   void _runPending<T>(Mutation<T> mutation) {
     final completer = Completer<T>();
