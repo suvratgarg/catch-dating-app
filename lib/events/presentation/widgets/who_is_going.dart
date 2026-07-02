@@ -134,7 +134,9 @@ class WhoIsGoingContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final total = fallbackTotal ?? roster.bookedCount;
-    final hasActiveSwipeWindow = hasOpenSwipeWindow(event);
+    final referenceNow = DateTime.now();
+    final isUpcoming = event.isUpcomingAt(referenceNow);
+    final hasActiveSwipeWindow = hasOpenSwipeWindow(event, now: referenceNow);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -164,10 +166,8 @@ class WhoIsGoingContent extends StatelessWidget {
         ],
         if (total == 0)
           EmptyRosterMessage(
-            title: event.isUpcoming
-                ? 'No attendees yet'
-                : 'No attendees booked',
-            message: event.isUpcoming
+            title: isUpcoming ? 'No attendees yet' : 'No attendees booked',
+            message: isUpcoming
                 ? 'Be the first to book this event.'
                 : 'This event did not have any booked attendees.',
             surfaceStyle: surfaceStyle,
@@ -181,11 +181,11 @@ class WhoIsGoingContent extends StatelessWidget {
             activityKind: event.activityKind,
             size: 44,
             limit: _whoIsGoingAvatarLimit,
-            obscured: event.isUpcoming,
+            obscured: isUpcoming,
             showOverflowCount: true,
           ),
           gapH12,
-          if (event.isUpcoming)
+          if (isUpcoming)
             SwipeWindowBanner(
               icon: CatchIcons.lockOutlineRounded,
               message: 'Catches unlock for 24 hours after the event finishes.',

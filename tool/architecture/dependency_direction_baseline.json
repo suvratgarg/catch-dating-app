@@ -113,10 +113,6 @@
     },
     {
       "rule": "domainClockAccess",
-      "path": "lib/swipes/domain/swipe_window.dart"
-    },
-    {
-      "rule": "domainClockAccess",
       "path": "lib/user_profile/domain/profile_photo.dart"
     },
     {

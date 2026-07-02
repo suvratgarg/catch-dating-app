@@ -6,23 +6,24 @@ const swipeWindowDuration = Duration(hours: 24);
 DateTime swipeWindowClosesAt(Event event) =>
     event.endTime.add(swipeWindowDuration);
 
-bool hasOpenSwipeWindow(Event event, {DateTime? now}) {
-  final currentTime = now ?? DateTime.now();
-  if (event.endTime.isAfter(currentTime)) return false;
-  return !swipeWindowClosesAt(event).isBefore(currentTime);
+bool hasOpenSwipeWindow(Event event, {required DateTime now}) {
+  if (event.endTime.isAfter(now)) return false;
+  return !swipeWindowClosesAt(event).isBefore(now);
 }
 
-List<Event> eventsWithOpenSwipeWindow(Iterable<Event> events, {DateTime? now}) {
-  final currentTime = now ?? DateTime.now();
-  return events
-      .where((event) => hasOpenSwipeWindow(event, now: currentTime))
-      .toList();
+List<Event> eventsWithOpenSwipeWindow(
+  Iterable<Event> events, {
+  required DateTime now,
+}) {
+  return events.where((event) => hasOpenSwipeWindow(event, now: now)).toList();
 }
 
-Event? latestEventWithOpenSwipeWindow(Iterable<Event> events, {DateTime? now}) {
-  final currentTime = now ?? DateTime.now();
+Event? latestEventWithOpenSwipeWindow(
+  Iterable<Event> events, {
+  required DateTime now,
+}) {
   return maxBy(
-    events.where((event) => hasOpenSwipeWindow(event, now: currentTime)),
+    events.where((event) => hasOpenSwipeWindow(event, now: now)),
     (event) => event.endTime,
   );
 }
