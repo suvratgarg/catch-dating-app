@@ -1926,6 +1926,145 @@ Widget reviewsHistoryReviewsGateStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'History body states',
+  type: ReviewsHistoryBody,
+  path: '[P3 utility surfaces]/Reviews history',
+)
+Widget reviewsHistoryBodyStates(BuildContext context) {
+  final rows = _reviewHistoryRows();
+  return _UtilityCatalog(
+    title: 'ReviewsHistoryBody',
+    contractId: 'screen.reviews.history.body',
+    children: [
+      _StateCard(
+        label: 'content',
+        child: SizedBox(
+          height: 420,
+          child: ReviewsHistoryBody(
+            state: ReviewsHistoryContent(user: _viewer, rows: rows),
+            onRetryProfile: _noop,
+            onRetryReviews: _noop,
+            onEditReview: _noopReviewHistoryEdit,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'empty',
+        child: SizedBox(
+          height: 320,
+          child: ReviewsHistoryBody(
+            state: const ReviewsHistoryEmpty(
+              title: 'No reviews yet',
+              message: 'Reviews you write after events will appear here.',
+            ),
+            onRetryProfile: _noop,
+            onRetryReviews: _noop,
+            onEditReview: _noopReviewHistoryEdit,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'error',
+        child: SizedBox(
+          height: 320,
+          child: ReviewsHistoryBody(
+            state: const ReviewsHistoryError(
+              title: 'Reviews unavailable',
+              message: 'Could not load your reviews.',
+              retryTarget: ReviewsHistoryRetryTarget.reviews,
+            ),
+            onRetryProfile: _noop,
+            onRetryReviews: _noop,
+            onEditReview: _noopReviewHistoryEdit,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'History list states',
+  type: ReviewsHistoryList,
+  path: '[P3 utility surfaces]/Reviews history',
+)
+Widget reviewsHistoryListStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'ReviewsHistoryList',
+    contractId: 'screen.reviews.history.list',
+    children: [
+      _StateCard(
+        label: 'rows',
+        child: SizedBox(
+          height: 360,
+          child: ReviewsHistoryList(
+            rows: _reviewHistoryRows(),
+            onEditReview: _noopReviewHistoryEdit,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'History empty state',
+  type: ReviewsHistoryEmptyState,
+  path: '[P3 utility surfaces]/Reviews history',
+)
+Widget reviewsHistoryEmptyStateStates(BuildContext context) {
+  return const _UtilityCatalog(
+    title: 'ReviewsHistoryEmptyState',
+    contractId: 'screen.reviews.history.empty',
+    children: [
+      _StateCard(
+        label: 'signed out',
+        child: SizedBox(
+          height: 300,
+          child: ReviewsHistoryEmptyState(
+            title: 'Sign in to see reviews',
+            message: 'Your past event reviews will appear here.',
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'History skeleton states',
+  type: ReviewsHistorySkeleton,
+  path: '[P3 utility surfaces]/Reviews history',
+)
+Widget reviewsHistorySkeletonStates(BuildContext context) {
+  return const _UtilityCatalog(
+    title: 'ReviewsHistorySkeleton',
+    contractId: 'screen.reviews.history.skeleton',
+    children: [
+      _StateCard(
+        label: 'loading list',
+        child: SizedBox(height: 360, child: ReviewsHistorySkeleton()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'History row skeleton states',
+  type: ReviewHistoryItemSkeleton,
+  path: '[P3 utility surfaces]/Reviews history',
+)
+Widget reviewHistoryItemSkeletonStates(BuildContext context) {
+  return const _UtilityCatalog(
+    title: 'ReviewHistoryItemSkeleton',
+    contractId: 'screen.reviews.history.row_skeleton',
+    children: [
+      _StateCard(label: 'loading row', child: ReviewHistoryItemSkeleton()),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'History row states',
   type: ReviewHistoryItem,
   path: '[P3 utility surfaces]/Reviews history',
@@ -3949,6 +4088,23 @@ Review _reviewWithOwnerResponse() {
       updatedAt: _calendarNow,
     ),
   );
+}
+
+List<ReviewsHistoryRow> _reviewHistoryRows() {
+  final editableReview = _reviews.first;
+  final responseReview = _reviewWithOwnerResponse();
+  return [
+    ReviewsHistoryRow(
+      review: editableReview,
+      contextLabel: 'Sunday Sea Face Crew · Jun 22',
+      editEventId: editableReview.eventId,
+    ),
+    ReviewsHistoryRow(
+      review: responseReview,
+      contextLabel: 'Bandra afterglow run · missing event context',
+      editEventId: null,
+    ),
+  ];
 }
 
 void _noopReviewEdit(Review review) {}

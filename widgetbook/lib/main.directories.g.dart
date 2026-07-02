@@ -10486,6 +10486,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'ReviewHistoryItemSkeleton',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'History row skeleton states',
+                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                    .reviewHistoryItemSkeletonStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'ReviewOwnerResponseBlock',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -10502,6 +10512,36 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Response sheet states',
                 builder: _widgetbook_workspace_utility_p3_utility_use_cases
                     .reviewResponseSheetStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ReviewsHistoryBody',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'History body states',
+                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                    .reviewsHistoryBodyStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ReviewsHistoryEmptyState',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'History empty state',
+                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                    .reviewsHistoryEmptyStateStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ReviewsHistoryList',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'History list states',
+                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                    .reviewsHistoryListStates,
               ),
             ],
           ),
@@ -10532,6 +10572,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Screen states',
                 builder: _widgetbook_workspace_utility_p3_utility_use_cases
                     .reviewsHistoryScreenStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ReviewsHistorySkeleton',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'History skeleton states',
+                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                    .reviewsHistorySkeletonStates,
               ),
             ],
           ),
