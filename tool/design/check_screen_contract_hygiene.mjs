@@ -10,6 +10,10 @@ const args = process.argv.slice(2);
 const command = args[0] ?? "--help";
 const maxRows = Number(valueAfter(args, "--max") ?? 25);
 
+const primitiveImplementationPrefixes = [
+  "lib/core/widgets/",
+];
+
 const rawMaterialPatterns = [
   /\bElevatedButton\b/gu,
   /\bOutlinedButton\b/gu,
@@ -54,7 +58,13 @@ function printSummary() {
 
   for (const file of files) {
     const absolute = fromRepo(file);
-    if (!fs.existsSync(absolute) || !file.endsWith(".dart")) continue;
+    if (
+      !fs.existsSync(absolute) ||
+      !file.endsWith(".dart") ||
+      isPrimitiveImplementation(file)
+    ) {
+      continue;
+    }
     const source = fs.readFileSync(absolute, "utf8");
     const maskedSource = maskDartCommentsAndStrings(source);
     const rawMaterial = collectMatches(maskedSource, rawMaterialPatterns);
@@ -117,6 +127,10 @@ function collectContractFiles() {
 
 function addBinding(files, binding) {
   if (binding?.file) files.add(binding.file);
+}
+
+function isPrimitiveImplementation(file) {
+  return primitiveImplementationPrefixes.some((prefix) => file.startsWith(prefix));
 }
 
 function collectMatches(source, patterns, {ignoreMatch = () => false} = {}) {
