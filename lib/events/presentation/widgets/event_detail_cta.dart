@@ -167,6 +167,114 @@ class EventDetailCta extends ConsumerWidget {
     final errorMessage = dockState.error == null
         ? null
         : appErrorMessage(dockState.error!, context: AppErrorContext.event);
+
+    void handleBookingCompletion({
+      required GoRouter? router,
+      required NavigatorState navigator,
+      required Object? paymentData,
+    }) {
+      _handleBookingCompletion(
+        router: router,
+        navigator: navigator,
+        paymentData: paymentData,
+      );
+    }
+
+    void runBookAction(BuildContext context) {
+      final router = GoRouter.maybeOf(context);
+      final navigator = Navigator.of(context, rootNavigator: true);
+      EventBookingController.bookMutation.run(ref, (tx) async {
+        final data = await tx
+            .get(eventBookingControllerProvider.notifier)
+            .book(
+              event: event,
+              user: userProfile,
+              inviteCode: inviteCode,
+              inviteLinkId: participation?.inviteLinkId ?? inviteLinkId,
+            );
+        handleBookingCompletion(
+          router: router,
+          navigator: navigator,
+          paymentData: data,
+        );
+      });
+    }
+
+    void runAcceptWaitlistOfferAction(BuildContext context) {
+      final router = GoRouter.maybeOf(context);
+      final navigator = Navigator.of(context, rootNavigator: true);
+      EventBookingController.acceptWaitlistOfferMutation.run(ref, (tx) async {
+        final data = await tx
+            .get(eventBookingControllerProvider.notifier)
+            .acceptWaitlistOffer(
+              event: event,
+              user: userProfile,
+              inviteCode: inviteCode,
+              inviteLinkId: participation?.inviteLinkId ?? inviteLinkId,
+            );
+        handleBookingCompletion(
+          router: router,
+          navigator: navigator,
+          paymentData: data,
+        );
+      });
+    }
+
+    void runBookingDockAction(
+      BuildContext context,
+      EventDetailBookingDockAction action,
+    ) {
+      switch (action) {
+        case EventDetailBookingDockAction.none:
+          return;
+        case EventDetailBookingDockAction.openRunPreferences:
+          _openRunPreferencesGate(context);
+          return;
+        case EventDetailBookingDockAction.book:
+          runBookAction(context);
+          return;
+        case EventDetailBookingDockAction.cancelBooking:
+          EventBookingController.cancelMutation.run(
+            ref,
+            (tx) async => tx
+                .get(eventBookingControllerProvider.notifier)
+                .cancelBooking(event: event),
+          );
+          return;
+        case EventDetailBookingDockAction.joinWaitlist:
+          EventBookingController.joinWaitlistMutation.run(
+            ref,
+            (tx) async => tx
+                .get(eventBookingControllerProvider.notifier)
+                .joinWaitlist(
+                  event: event,
+                  inviteCode: inviteCode,
+                  inviteLinkId: inviteLinkId,
+                ),
+          );
+          return;
+        case EventDetailBookingDockAction.leaveWaitlist:
+          EventBookingController.leaveWaitlistMutation.run(
+            ref,
+            (tx) async => tx
+                .get(eventBookingControllerProvider.notifier)
+                .leaveWaitlist(event: event),
+          );
+          return;
+        case EventDetailBookingDockAction.acceptWaitlistOffer:
+          runAcceptWaitlistOfferAction(context);
+          return;
+        case EventDetailBookingDockAction.declineWaitlistOffer:
+          EventBookingController.declineWaitlistOfferMutation.run(
+            ref,
+            (tx) async => tx
+                .get(eventBookingControllerProvider.notifier)
+                .declineWaitlistOffer(event: event),
+          );
+          return;
+      }
+    }
+
     final leadingContent = switch (dockState.leadingKind) {
       EventDetailBookingDockLeadingKind.none => null,
       EventDetailBookingDockLeadingKind.price => PriceLeading(
@@ -179,8 +287,7 @@ class EventDetailCta extends ConsumerWidget {
         expiresAt: dockState.waitlistOfferExpiresAt,
         isDeclining: dockState.isSecondaryLoading,
         onDecline: dockState.isSecondaryActionEnabled
-            ? () =>
-                  _runBookingDockAction(context, ref, dockState.secondaryAction)
+            ? () => runBookingDockAction(context, dockState.secondaryAction)
             : null,
       ),
       EventDetailBookingDockLeadingKind.attended => const AttendedLeading(),
@@ -190,7 +297,7 @@ class EventDetailCta extends ConsumerWidget {
       buttonKey: _buttonKeyFor(dockState.buttonKey),
       label: dockState.label,
       onPressed: dockState.isPrimaryActionEnabled
-          ? () => _runBookingDockAction(context, ref, dockState.primaryAction)
+          ? () => runBookingDockAction(context, dockState.primaryAction)
           : null,
       isLoading: dockState.isLoading,
       buttonAccentColor: dockState.useAccent ? bookingAccent : null,
@@ -212,102 +319,6 @@ class EventDetailCta extends ConsumerWidget {
         EventActionKeys.joinWaitlistButton,
       null => null,
     };
-  }
-
-  void _runBookingDockAction(
-    BuildContext context,
-    WidgetRef ref,
-    EventDetailBookingDockAction action,
-  ) {
-    switch (action) {
-      case EventDetailBookingDockAction.none:
-        return;
-      case EventDetailBookingDockAction.openRunPreferences:
-        _openRunPreferencesGate(context);
-        return;
-      case EventDetailBookingDockAction.book:
-        _runBookAction(context, ref);
-        return;
-      case EventDetailBookingDockAction.cancelBooking:
-        EventBookingController.cancelMutation.run(
-          ref,
-          (tx) async => tx
-              .get(eventBookingControllerProvider.notifier)
-              .cancelBooking(event: event),
-        );
-        return;
-      case EventDetailBookingDockAction.joinWaitlist:
-        EventBookingController.joinWaitlistMutation.run(
-          ref,
-          (tx) async => tx
-              .get(eventBookingControllerProvider.notifier)
-              .joinWaitlist(
-                event: event,
-                inviteCode: inviteCode,
-                inviteLinkId: inviteLinkId,
-              ),
-        );
-        return;
-      case EventDetailBookingDockAction.leaveWaitlist:
-        EventBookingController.leaveWaitlistMutation.run(
-          ref,
-          (tx) async => tx
-              .get(eventBookingControllerProvider.notifier)
-              .leaveWaitlist(event: event),
-        );
-        return;
-      case EventDetailBookingDockAction.acceptWaitlistOffer:
-        _runAcceptWaitlistOfferAction(context, ref);
-        return;
-      case EventDetailBookingDockAction.declineWaitlistOffer:
-        EventBookingController.declineWaitlistOfferMutation.run(
-          ref,
-          (tx) async => tx
-              .get(eventBookingControllerProvider.notifier)
-              .declineWaitlistOffer(event: event),
-        );
-        return;
-    }
-  }
-
-  void _runBookAction(BuildContext context, WidgetRef ref) {
-    final router = GoRouter.maybeOf(context);
-    final navigator = Navigator.of(context, rootNavigator: true);
-    EventBookingController.bookMutation.run(ref, (tx) async {
-      final data = await tx
-          .get(eventBookingControllerProvider.notifier)
-          .book(
-            event: event,
-            user: userProfile,
-            inviteCode: inviteCode,
-            inviteLinkId: participation?.inviteLinkId ?? inviteLinkId,
-          );
-      _handleBookingCompletion(
-        router: router,
-        navigator: navigator,
-        paymentData: data,
-      );
-    });
-  }
-
-  void _runAcceptWaitlistOfferAction(BuildContext context, WidgetRef ref) {
-    final router = GoRouter.maybeOf(context);
-    final navigator = Navigator.of(context, rootNavigator: true);
-    EventBookingController.acceptWaitlistOfferMutation.run(ref, (tx) async {
-      final data = await tx
-          .get(eventBookingControllerProvider.notifier)
-          .acceptWaitlistOffer(
-            event: event,
-            user: userProfile,
-            inviteCode: inviteCode,
-            inviteLinkId: participation?.inviteLinkId ?? inviteLinkId,
-          );
-      _handleBookingCompletion(
-        router: router,
-        navigator: navigator,
-        paymentData: data,
-      );
-    });
   }
 
   void _handleBookingCompletion({

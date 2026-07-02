@@ -110,9 +110,62 @@ class ClubDetailScreen extends ConsumerWidget {
         isClubPushMutating: pushMutation.isPending,
         isMessageHostPending: messageHostMutation.isPending,
       );
+      Future<void> openClubContact(ClubContactAction action) async {
+        final links = ref.read(externalLinkControllerProvider);
+        if (action.openExternally) {
+          await links.openExternal(action.uri);
+        } else {
+          await links.open(action.uri);
+        }
+      }
+
+      Future<void> messageHost(
+        BuildContext buttonContext,
+        Club club,
+        ClubHostProfile host,
+      ) async {
+        final matchId = await ClubHostContactController
+            .startConversationMutation
+            .run(
+              ref,
+              (tx) => tx
+                  .get(clubHostContactControllerProvider.notifier)
+                  .startConversation(clubId: club.id, hostUid: host.uid),
+            );
+        if (!buttonContext.mounted) return;
+        unawaited(
+          buttonContext.pushNamed(
+            Routes.chatScreen.name,
+            pathParameters: {'matchId': matchId},
+          ),
+        );
+      }
+
       return wrapMutationListeners(
         Scaffold(
-          body: _buildBody(context: context, ref: ref, state: bodyState),
+          body: ClubDetailBody(
+            state: bodyState,
+            onShareClub: (buttonContext, club) => showClubShareCardSheet(
+              buttonContext,
+              club: club,
+              share: ref.read(externalShareControllerProvider),
+            ),
+            onEventSelected: (event) => context.pushNamed(
+              _eventDetailRouteName(bodyState.eventRouteTarget),
+              pathParameters: {
+                'clubId': bodyState.club.id,
+                'eventId': event.id,
+              },
+              extra: event,
+            ),
+            onViewHostProfile: (hostUid) => context.pushNamed(
+              Routes.publicProfileScreen.name,
+              pathParameters: {'uid': hostUid},
+            ),
+            onMessageHost: (buttonContext, host) =>
+                messageHost(buttonContext, bodyState.club, host),
+            onContactSelected: openClubContact,
+          ),
           bottomNavigationBar: _buildDock(bodyState.dockState),
         ),
       );
@@ -125,7 +178,12 @@ class ClubDetailScreen extends ConsumerWidget {
           CatchErrorState.fromError(
             error,
             context: AppErrorContext.club,
-            onRetry: () => _retryHostClubDetail(ref, clubId, retryIntent),
+            onRetry: () {
+              switch (retryIntent) {
+                case HostClubDetailRetryIntent.reloadDetail:
+                  ref.invalidate(clubDetailViewModelProvider(clubId));
+              }
+            },
           ),
         HostClubDetailNotFound() => CatchErrorState(
           title: 'Club not found',
@@ -134,64 +192,6 @@ class ClubDetailScreen extends ConsumerWidget {
         ),
         HostClubDetailContent() => const SizedBox.shrink(),
       },
-    );
-  }
-
-  Widget _buildBody({
-    required BuildContext context,
-    required WidgetRef ref,
-    required ClubDetailBodyState state,
-  }) {
-    return ClubDetailBody(
-      state: state,
-      onShareClub: (buttonContext, club) => showClubShareCardSheet(
-        buttonContext,
-        club: club,
-        share: ref.read(externalShareControllerProvider),
-      ),
-      onEventSelected: (event) => context.pushNamed(
-        _eventDetailRouteName(state.eventRouteTarget),
-        pathParameters: {'clubId': state.club.id, 'eventId': event.id},
-        extra: event,
-      ),
-      onViewHostProfile: (hostUid) => context.pushNamed(
-        Routes.publicProfileScreen.name,
-        pathParameters: {'uid': hostUid},
-      ),
-      onMessageHost: (buttonContext, host) =>
-          _messageHost(buttonContext, ref, state.club, host),
-      onContactSelected: (action) => _openClubContact(ref, action),
-    );
-  }
-
-  Future<void> _openClubContact(WidgetRef ref, ClubContactAction action) async {
-    final links = ref.read(externalLinkControllerProvider);
-    if (action.openExternally) {
-      await links.openExternal(action.uri);
-    } else {
-      await links.open(action.uri);
-    }
-  }
-
-  Future<void> _messageHost(
-    BuildContext context,
-    WidgetRef ref,
-    Club club,
-    ClubHostProfile host,
-  ) async {
-    final matchId = await ClubHostContactController.startConversationMutation
-        .run(
-          ref,
-          (tx) => tx
-              .get(clubHostContactControllerProvider.notifier)
-              .startConversation(clubId: club.id, hostUid: host.uid),
-        );
-    if (!context.mounted) return;
-    unawaited(
-      context.pushNamed(
-        Routes.chatScreen.name,
-        pathParameters: {'matchId': matchId},
-      ),
     );
   }
 
@@ -215,17 +215,6 @@ String _eventDetailRouteName(ClubDetailEventRouteTarget target) {
     ClubDetailEventRouteTarget.hostEventDetail =>
       Routes.hostAppEventDetailScreen.name,
   };
-}
-
-void _retryHostClubDetail(
-  WidgetRef ref,
-  String clubId,
-  HostClubDetailRetryIntent intent,
-) {
-  switch (intent) {
-    case HostClubDetailRetryIntent.reloadDetail:
-      ref.invalidate(clubDetailViewModelProvider(clubId));
-  }
 }
 
 CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {

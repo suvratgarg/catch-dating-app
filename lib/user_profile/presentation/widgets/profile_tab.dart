@@ -10,11 +10,13 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
+import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
+import 'package:catch_dating_app/image_uploads/shared/profile_photo_editor_screen.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_edit_tab_state.dart';
-import 'package:catch_dating_app/user_profile/presentation/self_profile_photo_action_controller.dart';
+import 'package:catch_dating_app/user_profile/presentation/self_profile_photo_intent_factory.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_info_section.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
 import 'package:flutter/material.dart';
@@ -148,7 +150,7 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
       today: DateTime.now(),
       uploadState: uploadState,
     );
-    const photoActions = SelfProfilePhotoActionController();
+    const photoActions = SelfProfilePhotoIntentFactory();
     final prompts = [
       for (final slot in editState.promptSlots)
         ProfilePromptEntry(
@@ -168,23 +170,47 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
           ProfilePhotosSection(
             first: true,
             state: editState.photoGrid,
-            onSlotTapped: (index) => unawaited(
-              photoActions.openEditor(
-                context: context,
-                ref: ref,
+            onSlotTapped: (index) {
+              final request = photoActions.editorRequest(
                 state: editState.photoGrid,
                 index: index,
-              ),
-            ),
-            onDeletePhoto: (index) =>
-                unawaited(photoActions.deletePhoto(ref: ref, index: index)),
-            onReorderPhoto: (fromIndex, toIndex) => unawaited(
-              photoActions.reorderPhoto(
-                ref: ref,
+              );
+              unawaited(
+                openProfilePhotoEditor(
+                  context: context,
+                  ref: ref,
+                  index: request.index,
+                  photo: request.photo,
+                  canDelete: request.canDelete,
+                ),
+              );
+            },
+            onDeletePhoto: (index) {
+              final intent = photoActions.deleteIntent(index);
+              unawaited(
+                PhotoUploadController.uploadPhotoMutation.run(ref, (tx) async {
+                  await tx
+                      .get(photoUploadControllerProvider.notifier)
+                      .deletePhoto(intent.index);
+                }),
+              );
+            },
+            onReorderPhoto: (fromIndex, toIndex) {
+              final intent = photoActions.reorderIntent(
                 fromIndex: fromIndex,
                 toIndex: toIndex,
-              ),
-            ),
+              );
+              unawaited(
+                PhotoUploadController.uploadPhotoMutation.run(ref, (tx) async {
+                  await tx
+                      .get(photoUploadControllerProvider.notifier)
+                      .reorderPhoto(
+                        fromIndex: intent.fromIndex,
+                        toIndex: intent.toIndex,
+                      );
+                }),
+              );
+            },
           ),
           ProfileInfoSection(
             title: 'Prompts',

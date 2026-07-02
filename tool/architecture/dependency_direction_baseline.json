@@ -73,22 +73,6 @@
     },
     {
       "rule": "widgetRefParameter",
-      "path": "lib/chats/presentation/inbox/widgets/chats_list.dart"
-    },
-    {
-      "rule": "widgetRefParameter",
-      "path": "lib/clubs/presentation/detail/club_detail_screen.dart"
-    },
-    {
-      "rule": "widgetRefParameter",
-      "path": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart"
-    },
-    {
-      "rule": "widgetRefParameter",
-      "path": "lib/dashboard/presentation/dashboard_screen.dart"
-    },
-    {
-      "rule": "widgetRefParameter",
       "path": "lib/dashboard/presentation/widgets/dashboard_full.dart"
     },
     {
@@ -97,23 +81,7 @@
     },
     {
       "rule": "widgetRefParameter",
-      "path": "lib/events/presentation/event_detail_screen.dart"
-    },
-    {
-      "rule": "widgetRefParameter",
-      "path": "lib/events/presentation/widgets/event_detail_cta.dart"
-    },
-    {
-      "rule": "widgetRefParameter",
-      "path": "lib/events/presentation/widgets/who_is_going.dart"
-    },
-    {
-      "rule": "widgetRefParameter",
       "path": "lib/explore/presentation/widgets/explore_peek_rail.dart"
-    },
-    {
-      "rule": "widgetRefParameter",
-      "path": "lib/hosts/presentation/event_management/host_create_event_screen.dart"
     },
     {
       "rule": "widgetRefParameter",
@@ -130,18 +98,6 @@
     {
       "rule": "widgetRefParameter",
       "path": "lib/hosts/presentation/widgets/host_team_management_section.dart"
-    },
-    {
-      "rule": "widgetRefParameter",
-      "path": "lib/public_profile/presentation/public_profile_screen.dart"
-    },
-    {
-      "rule": "widgetRefParameter",
-      "path": "lib/user_profile/presentation/self_profile_photo_intent_factory.dart"
-    },
-    {
-      "rule": "widgetRefParameter",
-      "path": "lib/user_profile/presentation/widgets/inline_editor_save.dart"
     }
   ]
 }

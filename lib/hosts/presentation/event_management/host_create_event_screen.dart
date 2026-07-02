@@ -55,7 +55,14 @@ class HostCreateEventRouteStateView extends ConsumerWidget {
       HostCreateEventRouteStatus.error => CatchErrorScaffold.fromError(
         state.error!,
         context: AppErrorContext.club,
-        onRetry: () => _handleRetry(ref, state.retryIntent),
+        onRetry: () {
+          switch (state.retryIntent) {
+            case HostCreateEventRouteRetryIntent.reloadClub:
+              ref.invalidate(fetchClubProvider(clubId));
+            case null:
+              break;
+          }
+        },
       ),
       HostCreateEventRouteStatus.notFound => const CatchErrorScaffold(
         title: 'Club not found',
@@ -67,15 +74,6 @@ class HostCreateEventRouteStateView extends ConsumerWidget {
       ),
       HostCreateEventRouteStatus.ready => CreateEventScreen(club: state.club!),
     };
-  }
-
-  void _handleRetry(WidgetRef ref, HostCreateEventRouteRetryIntent? intent) {
-    switch (intent) {
-      case HostCreateEventRouteRetryIntent.reloadClub:
-        ref.invalidate(fetchClubProvider(clubId));
-      case null:
-        break;
-    }
   }
 }
 

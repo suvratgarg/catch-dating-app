@@ -64,7 +64,12 @@ class ChatsList extends ConsumerWidget {
         CatchSliverErrorState.fromError(
           error,
           context: AppErrorContext.chat,
-          onRetry: () => _retryChatsList(ref, retryIntent),
+          onRetry: () {
+            switch (retryIntent) {
+              case ChatsListRetryIntent.reloadViewModel:
+                ref.invalidate(chatsListViewModelProvider);
+            }
+          },
         ),
       ChatsListContent(:final viewModel) => ChatsListBody(
         viewModel: viewModel,
@@ -92,13 +97,6 @@ CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
     loading: () => const CatchAsyncState.loading(),
     error: (error, stackTrace) => CatchAsyncState<T>.error(error),
   );
-}
-
-void _retryChatsList(WidgetRef ref, ChatsListRetryIntent intent) {
-  switch (intent) {
-    case ChatsListRetryIntent.reloadViewModel:
-      ref.invalidate(chatsListViewModelProvider);
-  }
 }
 
 class ChatsListSkeleton extends StatelessWidget {

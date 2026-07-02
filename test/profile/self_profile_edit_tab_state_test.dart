@@ -2,7 +2,7 @@ import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_edit_tab_state.dart';
-import 'package:catch_dating_app/user_profile/presentation/self_profile_photo_action_controller.dart';
+import 'package:catch_dating_app/user_profile/presentation/self_profile_photo_intent_factory.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';
@@ -180,9 +180,9 @@ void main() {
   );
 
   test(
-    'SelfProfilePhotoActionController resolves editor and mutation intents',
+    'SelfProfilePhotoIntentFactory resolves editor and mutation intents',
     () {
-      const controller = SelfProfilePhotoActionController();
+      const controller = SelfProfilePhotoIntentFactory();
       final state = SelfProfileEditTabState.fromProfile(
         user: buildUser(
           photoUrls: [

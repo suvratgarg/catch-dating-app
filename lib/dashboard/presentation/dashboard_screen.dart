@@ -34,7 +34,23 @@ class DashboardScreen extends ConsumerWidget {
       DashboardHomeScreenStatus.error => DashboardErrorScreen(
         error: state.error!.error,
         fallbackMessage: state.error!.fallbackMessage,
-        onRetry: () => _retryDashboardLoad(ref, state.error!),
+        onRetry: () {
+          final error = state.error!;
+          switch (error.retryTarget) {
+            case DashboardHomeRetryTarget.userProfile:
+              ref.invalidate(watchUserProfileProvider);
+            case DashboardHomeRetryTarget.memberships:
+              final uid = error.uid;
+              if (uid != null) {
+                ref.invalidate(watchActiveClubMembershipsForUserProvider(uid));
+              }
+            case DashboardHomeRetryTarget.signedUpEvents:
+              final uid = error.uid;
+              if (uid != null) {
+                ref.invalidate(watchSignedUpEventsProvider(uid));
+              }
+          }
+        },
       ),
       DashboardHomeScreenStatus.empty => const DashboardEmptyHomeScreen(),
       DashboardHomeScreenStatus.full => DashboardHomeScreen(
@@ -44,29 +60,9 @@ class DashboardScreen extends ConsumerWidget {
           user: state.user!,
           followedClubIds: state.followedClubIds,
         ),
-        notificationAction: NotificationsAction(
-          ref: ref,
-          uid: state.notificationUid!,
-        ),
+        notificationAction: NotificationsAction(uid: state.notificationUid!),
       ),
     };
-  }
-}
-
-void _retryDashboardLoad(WidgetRef ref, DashboardHomeLoadError error) {
-  switch (error.retryTarget) {
-    case DashboardHomeRetryTarget.userProfile:
-      ref.invalidate(watchUserProfileProvider);
-    case DashboardHomeRetryTarget.memberships:
-      final uid = error.uid;
-      if (uid != null) {
-        ref.invalidate(watchActiveClubMembershipsForUserProvider(uid));
-      }
-    case DashboardHomeRetryTarget.signedUpEvents:
-      final uid = error.uid;
-      if (uid != null) {
-        ref.invalidate(watchSignedUpEventsProvider(uid));
-      }
   }
 }
 
@@ -128,19 +124,16 @@ class DashboardHomeScreen extends StatelessWidget {
   }
 }
 
-class NotificationsAction extends StatelessWidget {
-  const NotificationsAction({
-    super.key,
-    required this.ref,
-    required this.uid,
-  });
+class NotificationsAction extends ConsumerWidget {
+  const NotificationsAction({super.key, required this.uid});
 
-  final WidgetRef ref;
   final String uid;
 
   @override
-  Widget build(BuildContext context) {
-    final notificationsAsync = ref.watch(watchActivityNotificationsProvider(uid));
+  Widget build(BuildContext context, WidgetRef ref) {
+    final notificationsAsync = ref.watch(
+      watchActivityNotificationsProvider(uid),
+    );
     final unreadCount =
         notificationsAsync.asData?.value
             .where((notification) => notification.isUnread)

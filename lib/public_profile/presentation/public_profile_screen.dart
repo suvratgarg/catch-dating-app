@@ -32,58 +32,6 @@ class PublicProfileScreen extends ConsumerWidget {
   final PublicProfile? initialProfile;
   final String? sharedRunTitle;
 
-  Future<void> _confirmBlock({
-    required BuildContext context,
-    required WidgetRef ref,
-    required PublicProfile profile,
-  }) async {
-    final confirmed = await showBlockUserDialog(
-      context: context,
-      name: profile.name,
-    );
-    if (confirmed != true) return;
-    if (!context.mounted) return;
-
-    try {
-      await PublicProfileController.blockUserMutation.run(ref, (tx) async {
-        await tx
-            .get(publicProfileControllerProvider.notifier)
-            .blockUser(targetUserId: profile.uid);
-      });
-    } catch (_) {
-      return;
-    }
-  }
-
-  Future<void> _report({
-    required BuildContext context,
-    required WidgetRef ref,
-    required PublicProfile profile,
-  }) async {
-    final reason = await showModalBottomSheet<String>(
-      context: context,
-      useSafeArea: true,
-      builder: (context) => SafeArea(
-        child: PublicProfileReportSheet(
-          profileName: profile.name,
-          onReasonSelected: (reason) => Navigator.of(context).pop(reason),
-        ),
-      ),
-    );
-    if (reason == null) return;
-    if (!context.mounted) return;
-
-    try {
-      await PublicProfileController.reportUserMutation.run(ref, (tx) async {
-        await tx
-            .get(publicProfileControllerProvider.notifier)
-            .reportUser(targetUserId: profile.uid, reasonCode: reason);
-      });
-    } catch (_) {
-      return;
-    }
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final screenState = ref.watch(
@@ -96,6 +44,50 @@ class PublicProfileScreen extends ConsumerWidget {
       ),
     );
     final profile = screenState.profile;
+
+    Future<void> confirmBlock(PublicProfile profile) async {
+      final confirmed = await showBlockUserDialog(
+        context: context,
+        name: profile.name,
+      );
+      if (confirmed != true) return;
+      if (!context.mounted) return;
+
+      try {
+        await PublicProfileController.blockUserMutation.run(ref, (tx) async {
+          await tx
+              .get(publicProfileControllerProvider.notifier)
+              .blockUser(targetUserId: profile.uid);
+        });
+      } catch (_) {
+        return;
+      }
+    }
+
+    Future<void> report(PublicProfile profile) async {
+      final reason = await showModalBottomSheet<String>(
+        context: context,
+        useSafeArea: true,
+        builder: (context) => SafeArea(
+          child: PublicProfileReportSheet(
+            profileName: profile.name,
+            onReasonSelected: (reason) => Navigator.of(context).pop(reason),
+          ),
+        ),
+      );
+      if (reason == null) return;
+      if (!context.mounted) return;
+
+      try {
+        await PublicProfileController.reportUserMutation.run(ref, (tx) async {
+          await tx
+              .get(publicProfileControllerProvider.notifier)
+              .reportUser(targetUserId: profile.uid, reasonCode: reason);
+        });
+      } catch (_) {
+        return;
+      }
+    }
 
     ref.listen(PublicProfileController.blockUserMutation, (previous, current) {
       if (previous?.isPending == true && current.isSuccess) {
@@ -126,13 +118,9 @@ class PublicProfileScreen extends ConsumerWidget {
                   enabled: screenState.enableSafetyActions,
                   onSelected: (value) {
                     if (value == 'report') {
-                      _report(context: context, ref: ref, profile: profile!);
+                      report(profile!);
                     } else if (value == 'block') {
-                      _confirmBlock(
-                        context: context,
-                        ref: ref,
-                        profile: profile!,
-                      );
+                      confirmBlock(profile!);
                     }
                   },
                   items: [

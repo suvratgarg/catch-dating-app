@@ -393,6 +393,26 @@ class MembershipTrailingController extends ConsumerWidget {
     // shared mutation would spin/disable every visible Join button at once.
     final mutation = ClubMembershipController.joinMutation(clubId);
     final joinMutation = ref.watch(mutation);
+    void joinClub() {
+      unawaited(
+        mutation
+            .run(ref, (transaction) async {
+              await transaction
+                  .get(clubMembershipControllerProvider.notifier)
+                  .join(clubId);
+            })
+            .catchError((Object error, StackTrace stackTrace) {
+              ref
+                  .read(errorLoggerProvider)
+                  .logError(
+                    error,
+                    stackTrace,
+                    reason: 'MembershipTrailingController._joinClub failed',
+                  );
+            }),
+      );
+    }
+
     return CatchMutationErrorListener(
       mutation: mutation,
       errorContext: AppErrorContext.club,
@@ -410,7 +430,7 @@ class MembershipTrailingController extends ConsumerWidget {
             );
             return;
           }
-          _joinClub(ref, clubId);
+          joinClub();
         },
       ),
     );
@@ -447,24 +467,4 @@ class MembershipTrailing extends StatelessWidget {
       foregroundColor: t.primaryInk,
     );
   }
-}
-
-void _joinClub(WidgetRef ref, String clubId) {
-  unawaited(
-    ClubMembershipController.joinMutation(clubId)
-        .run(ref, (transaction) async {
-          await transaction
-              .get(clubMembershipControllerProvider.notifier)
-              .join(clubId);
-        })
-        .catchError((Object error, StackTrace stackTrace) {
-          ref
-              .read(errorLoggerProvider)
-              .logError(
-                error,
-                stackTrace,
-                reason: 'MembershipTrailingController._joinClub failed',
-              );
-        }),
-  );
 }

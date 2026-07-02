@@ -77,7 +77,22 @@ class WhoIsGoing extends ConsumerWidget {
             ref.invalidate(watchEventParticipationRosterProvider(event.id)),
       ),
       builder: (context, roster) {
-        final avatarItems = _avatarItemsFor(ref, roster);
+        final avatarItems =
+            event.isUpcomingAt(DateTime.now()) || roster.bookedCount <= 0
+            ? null
+            : ref
+                  .watch(
+                    eventHypeAvatarsProvider(
+                      EventHypeAvatarQuery(
+                        eventId: event.id,
+                        viewerInterestedInGenders:
+                            userProfile.interestedInGenders,
+                        limit: _whoIsGoingAvatarLimit,
+                      ),
+                    ),
+                  )
+                  .asData
+                  ?.value;
         return WhoIsGoingContent(
           event: event,
           roster: roster,
@@ -88,27 +103,6 @@ class WhoIsGoing extends ConsumerWidget {
         );
       },
     );
-  }
-
-  List<CatchPersonAvatarItem>? _avatarItemsFor(
-    WidgetRef ref,
-    EventParticipationRoster roster,
-  ) {
-    if (event.isUpcomingAt(DateTime.now()) || roster.bookedCount <= 0) {
-      return null;
-    }
-    return ref
-        .watch(
-          eventHypeAvatarsProvider(
-            EventHypeAvatarQuery(
-              eventId: event.id,
-              viewerInterestedInGenders: userProfile.interestedInGenders,
-              limit: _whoIsGoingAvatarLimit,
-            ),
-          ),
-        )
-        .asData
-        ?.value;
   }
 }
 

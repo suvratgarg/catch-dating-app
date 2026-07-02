@@ -201,7 +201,6 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
             ),
             onToggleSaved: () => _toggleSavedEvent(
               context,
-              ref,
               event: vm.event,
               clubId: widget.clubId,
               userProfile: vm.userProfile,
@@ -229,7 +228,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
               pathParameters: {'clubId': clubId},
             ),
             onMessageHost: (clubId, hostUid) => unawaited(
-              _messageHost(context, ref, clubId: clubId, hostUid: hostUid),
+              _messageHost(context, clubId: clubId, hostUid: hostUid),
             ),
             onRetryHosts: () =>
                 ref.invalidate(fetchClubProvider(widget.clubId)),
@@ -299,6 +298,70 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
       widget.initialEvent != null &&
       widget.initialEvent!.id == widget.eventId &&
       widget.initialEvent!.clubId == widget.clubId;
+
+  void _toggleSavedEvent(
+    BuildContext context, {
+    required Event event,
+    required String clubId,
+    required UserProfile? userProfile,
+    required bool isAuthenticated,
+    required bool isSaved,
+  }) {
+    if (!isAuthenticated || userProfile == null) {
+      _openEventSignIn(context, clubId: clubId, eventId: event.id);
+      return;
+    }
+
+    unawaited(
+      EventDetailController.toggleSavedEventMutation
+          .run(ref, (tx) async {
+            final nowSaved = await tx
+                .get(eventDetailControllerProvider.notifier)
+                .toggleSavedEvent(
+                  event: event,
+                  userProfile: userProfile,
+                  isSaved: isSaved,
+                );
+            if (!context.mounted) return nowSaved;
+            showCatchSnackBar(
+              context,
+              nowSaved ? 'Event saved.' : 'Event removed.',
+            );
+            return nowSaved;
+          })
+          .catchError((Object error, StackTrace stackTrace) {
+            ref
+                .read(errorLoggerProvider)
+                .logError(
+                  error,
+                  stackTrace,
+                  reason: 'EventDetailScreen._toggleSavedEvent failed',
+                );
+            return isSaved;
+          }),
+    );
+  }
+
+  Future<void> _messageHost(
+    BuildContext context, {
+    required String clubId,
+    required String hostUid,
+  }) async {
+    final matchId = await ClubHostContactController.startConversationMutation
+        .run(
+          ref,
+          (tx) => tx
+              .get(clubHostContactControllerProvider.notifier)
+              .startConversation(clubId: clubId, hostUid: hostUid),
+        );
+    if (!context.mounted) return;
+    unawaited(
+      context.pushNamed(
+        Routes.chatScreen.name,
+        pathParameters: {'matchId': matchId},
+      ),
+    );
+  }
 }
 
 EventDetailSurfaceStyle _eventDetailSurfaceStyle(
@@ -372,50 +435,6 @@ void _openEventSignIn(
   );
 }
 
-void _toggleSavedEvent(
-  BuildContext context,
-  WidgetRef ref, {
-  required Event event,
-  required String clubId,
-  required UserProfile? userProfile,
-  required bool isAuthenticated,
-  required bool isSaved,
-}) {
-  if (!isAuthenticated || userProfile == null) {
-    _openEventSignIn(context, clubId: clubId, eventId: event.id);
-    return;
-  }
-
-  unawaited(
-    EventDetailController.toggleSavedEventMutation
-        .run(ref, (tx) async {
-          final nowSaved = await tx
-              .get(eventDetailControllerProvider.notifier)
-              .toggleSavedEvent(
-                event: event,
-                userProfile: userProfile,
-                isSaved: isSaved,
-              );
-          if (!context.mounted) return nowSaved;
-          showCatchSnackBar(
-            context,
-            nowSaved ? 'Event saved.' : 'Event removed.',
-          );
-          return nowSaved;
-        })
-        .catchError((Object error, StackTrace stackTrace) {
-          ref
-              .read(errorLoggerProvider)
-              .logError(
-                error,
-                stackTrace,
-                reason: 'EventDetailScreen._toggleSavedEvent failed',
-              );
-          return isSaved;
-        }),
-  );
-}
-
 Future<void> _shareEvent(
   BuildContext context,
   Event event,
@@ -484,26 +503,5 @@ CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
     data: CatchAsyncState<T>.data,
     loading: () => const CatchAsyncState.loading(),
     error: (error, stackTrace) => CatchAsyncState<T>.error(error),
-  );
-}
-
-Future<void> _messageHost(
-  BuildContext context,
-  WidgetRef ref, {
-  required String clubId,
-  required String hostUid,
-}) async {
-  final matchId = await ClubHostContactController.startConversationMutation.run(
-    ref,
-    (tx) => tx
-        .get(clubHostContactControllerProvider.notifier)
-        .startConversation(clubId: clubId, hostUid: hostUid),
-  );
-  if (!context.mounted) return;
-  unawaited(
-    context.pushNamed(
-      Routes.chatScreen.name,
-      pathParameters: {'matchId': matchId},
-    ),
   );
 }
