@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'lib/audit_registry_gap_classifier.dart';
+
 const registryDir = 'docs/audit_registry';
 const filesPath = '$registryDir/files.jsonl';
 const passesPath = '$registryDir/passes.jsonl';
@@ -326,7 +328,7 @@ List<_ScreenGap> _actionableScreenGaps({bool codeOnly = false}) {
       final status = '${gap['status'] ?? ''}';
       final nextAction = '${gap['nextAction'] ?? ''}';
       if (!_isActionableGap(status, nextAction)) continue;
-      final actionKind = _gapActionKind(nextAction);
+      final actionKind = classifyScreenGapAction(nextAction);
       if (codeOnly && actionKind != 'engineering' && actionKind != 'mixed') {
         continue;
       }
@@ -375,100 +377,6 @@ bool _isActionableGap(String status, String nextAction) {
   if (lowerAction.contains('blocked until')) return false;
   if (lowerAction.contains('blocked:')) return false;
   return true;
-}
-
-String _gapActionKind(String nextAction) {
-  final lowerAction = _remainingActionText(nextAction).toLowerCase();
-  final hasProductOnlySignal = _containsAny(lowerAction, const [
-    'if contractual',
-    'if product keeps',
-    'if product wants',
-    'if that surface keeps growing',
-    'product decision',
-    'product-only',
-    'product review',
-  ]);
-  if (hasProductOnlySignal) {
-    return 'product-only';
-  }
-
-  final hasReferenceOnlySignal = _containsAny(lowerAction, const [
-    'additional pixel-reference',
-    'additional dynamic host data once canonical exports exist',
-    'continue only',
-    'future variant',
-    'if backend data can',
-    'if design exports',
-    'if design requires',
-    'if visually distinct',
-    'keyboard-safe',
-    'manual pass',
-    'missing reference',
-    'pixel comparison',
-    'pixel-reference',
-    'reference-specific variant',
-    'reference-specific variants',
-    'references and masks',
-    'references are',
-    'reference masks',
-    'reference export',
-    'reference variant',
-    'remaining references',
-    'simulator/manual',
-  ]);
-  final hasEngineeringSignal = _containsAny(lowerAction, const [
-    'adapter',
-    'backend',
-    'callback',
-    'controller',
-    'copy',
-    'extract',
-    'implement',
-    'mutation',
-    'provider',
-    'repository',
-    'retry',
-    'route',
-    'scanner',
-    'test',
-    'tool',
-    'widgetbook',
-    'wire',
-    'wiring',
-  ]);
-
-  if (hasReferenceOnlySignal && !hasEngineeringSignal) {
-    return 'reference-only';
-  }
-  if (hasReferenceOnlySignal && hasEngineeringSignal) {
-    return 'mixed';
-  }
-  if (hasEngineeringSignal) {
-    return 'engineering';
-  }
-  return 'engineering';
-}
-
-String _remainingActionText(String nextAction) {
-  final lowerAction = nextAction.toLowerCase();
-  const markers = [
-    'remaining route capture work is ',
-    'remaining capture work is ',
-    'remaining work is ',
-    'remaining references are ',
-    'continue only ',
-    'continue ',
-  ];
-  for (final marker in markers) {
-    final index = lowerAction.indexOf(marker);
-    if (index >= 0) {
-      if (marker.contains('references')) {
-        return nextAction.substring(index);
-      }
-      return nextAction.substring(index + marker.length);
-    }
-  }
-  return nextAction;
 }
 
 bool _containsAny(String value, List<String> needles) {
