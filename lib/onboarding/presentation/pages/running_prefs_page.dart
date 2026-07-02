@@ -10,11 +10,18 @@ import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
-import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_layout.dart';
+import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+const EdgeInsets _pacePreferenceCardPadding = EdgeInsets.fromLTRB(
+  CatchSpacing.s4,
+  CatchSpacing.s4,
+  CatchSpacing.s4,
+  CatchSpacing.s3,
+);
 
 class RunningPrefsPage extends ConsumerStatefulWidget {
   const RunningPrefsPage({
@@ -106,12 +113,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
           radius: CatchRadius.md,
           borderColor: t.line,
           backgroundColor: t.surface,
-          padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.s4,
-            CatchSpacing.s4,
-            CatchSpacing.s4,
-            CatchSpacing.s3,
-          ),
+          padding: _pacePreferenceCardPadding,
           child: Column(
             children: [
               Row(

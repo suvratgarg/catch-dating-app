@@ -16,7 +16,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
-import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_layout.dart';
+import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

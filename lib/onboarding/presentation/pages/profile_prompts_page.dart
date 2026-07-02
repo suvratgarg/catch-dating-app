@@ -8,13 +8,15 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
-import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_layout.dart';
+import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+const EdgeInsets _promptAnswerCardPadding = EdgeInsets.all(CatchSpacing.s3);
 
 class ProfilePromptsPage extends ConsumerStatefulWidget {
   const ProfilePromptsPage({super.key, this.profileCompletionOnly = false});
@@ -216,7 +218,7 @@ class PromptField extends StatelessWidget {
       radius: CatchRadius.md,
       borderColor: t.line,
       backgroundColor: t.surface,
-      padding: const EdgeInsets.all(CatchSpacing.s3),
+      padding: _promptAnswerCardPadding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -246,7 +248,9 @@ class PromptField extends StatelessWidget {
             maxLines: 4,
             minLines: 3,
             inputFormatters: [
-              LengthLimitingTextInputFormatter(maximumProfilePromptAnswerLength),
+              LengthLimitingTextInputFormatter(
+                maximumProfilePromptAnswerLength,
+              ),
             ],
           ),
         ],

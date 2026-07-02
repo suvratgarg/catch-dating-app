@@ -13,7 +13,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_otp_code_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
-import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_layout.dart';
+import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

@@ -13,7 +13,7 @@ import 'package:catch_dating_app/onboarding/presentation/pages/photos_page.dart'
 import 'package:catch_dating_app/onboarding/presentation/pages/profile_prompts_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/running_prefs_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
-import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_layout.dart';
+import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:flutter/material.dart';
