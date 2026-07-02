@@ -6294,12 +6294,18 @@ Generated 2026-05-06.
 
 ## Force Update
 
+### StatelessWidget
+
+| Widget | File | Purpose |
+|---|---|---|
+| `UpdateRequiredContent` | `lib/force_update/presentation/update_required_screen.dart:57` | Provider-free blocking full-screen update prompt for `screen.force_update.required`. Owns the scaffolded update-required copy, force-update icon, and "Update now" CTA while receiving the store-opening action through an explicit `onUpdateNow` callback. Widgetbook mounts this content directly for deterministic screen review without provider overrides. |
+
 ### ConsumerWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `UpdateRequiredScreen` | `lib/force_update/presentation/update_required_screen.dart:15` | Blocking full-screen prompting the user to update the app. Reads store URLs from `AppVersionConfig`, delegates store URL selection/launching to `UpdateRequiredController`, and shows a snackbar if launch fails. The user cannot dismiss this screen. |
-| `UpdateRequiredController` | `lib/force_update/presentation/update_required_controller.dart:18` | Provider-backed controller for choosing the platform store URL and launching it through an injectable `StoreLauncher`. |
+| `UpdateRequiredScreen` | `lib/force_update/presentation/update_required_screen.dart:17` | Route/provider adapter for the undismissable force-update gate. Reads `AppVersionConfig`, delegates store URL selection/launching to `UpdateRequiredController`, handles store-open failures with `showCatchErrorSnackBar`, and passes a pure CTA callback into `UpdateRequiredContent`. |
+| `UpdateRequiredController` | `lib/force_update/presentation/update_required_controller.dart:12` | Provider-backed controller for choosing the platform store URL and launching it through an injectable `StoreLauncher`. |
 
 ---
 

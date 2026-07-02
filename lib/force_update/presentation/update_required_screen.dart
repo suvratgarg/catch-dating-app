@@ -20,6 +20,47 @@ class UpdateRequiredScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final config = ref.watch(appVersionConfigProvider);
+
+    return UpdateRequiredContent(
+      onUpdateNow: () async {
+        final platform = Theme.of(context).platform;
+        final controller = ref.read(updateRequiredControllerProvider);
+
+        try {
+          final opened = await controller.openStore(
+            platform: platform,
+            config: config,
+          );
+          if (!context.mounted) {
+            return;
+          }
+          if (!opened) {
+            showCatchErrorSnackBar(
+              context,
+              const ExternalActionException(
+                'Could not open the app store. Please update Catch '
+                'from your device\'s app store.',
+              ),
+            );
+          }
+        } catch (error) {
+          if (context.mounted) {
+            showCatchErrorSnackBar(context, error);
+          }
+        }
+      },
+    );
+  }
+}
+
+/// Provider-free full-screen update prompt rendered by [UpdateRequiredScreen].
+class UpdateRequiredContent extends StatelessWidget {
+  const UpdateRequiredContent({super.key, required this.onUpdateNow});
+
+  final VoidCallback onUpdateNow;
+
+  @override
+  Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
     return Scaffold(
@@ -54,32 +95,7 @@ class UpdateRequiredScreen extends ConsumerWidget {
               CatchButton(
                 key: UpdateRequiredKeys.updateNowButton,
                 label: 'Update now',
-                onPressed: () async {
-                  // openStore can throw (no store app, platform channel error);
-                  // without this guard the user is stranded on the undismissable
-                  // gate with no feedback.
-                  try {
-                    final opened = await ref
-                        .read(updateRequiredControllerProvider)
-                        .openStore(
-                          platform: Theme.of(context).platform,
-                          config: config,
-                        );
-                    if (!opened && context.mounted) {
-                      showCatchErrorSnackBar(
-                        context,
-                        const ExternalActionException(
-                          'Could not open the app store. Please update Catch '
-                          'from your device\'s app store.',
-                        ),
-                      );
-                    }
-                  } catch (error) {
-                    if (context.mounted) {
-                      showCatchErrorSnackBar(context, error);
-                    }
-                  }
-                },
+                onPressed: onUpdateNow,
                 icon: Icon(CatchIcons.openInNew),
                 fullWidth: true,
               ),

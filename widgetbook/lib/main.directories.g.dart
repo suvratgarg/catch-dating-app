@@ -10176,7 +10176,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'UpdateRequiredScreen',
+            name: 'UpdateRequiredContent',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Screen states',

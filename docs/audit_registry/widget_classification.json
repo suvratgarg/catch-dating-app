@@ -10,29 +10,29 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1067,
-    "widgetClasses": 967,
+    "total": 1068,
+    "widgetClasses": 968,
     "stateClasses": 100,
-    "publicClasses": 967,
+    "publicClasses": 968,
     "privateClasses": 100,
     "byRole": {
       "atom": 37,
       "composition": 280,
       "feature-adapter": 307,
       "pattern": 14,
-      "screen": 329,
+      "screen": 330,
       "widget-state": 100
     },
     "byDecision": {
       "keep-canonical-contract": 121,
-      "keep-public-cataloged": 846,
+      "keep-public-cataloged": 847,
       "keep-widget-state": 100
     },
     "byCatalogStatus": {
       "cataloged": 775,
       "contracted": 121,
       "not-applicable": 100,
-      "route-covered": 71
+      "route-covered": 72
     }
   },
   "widgets": [
@@ -16049,6 +16049,29 @@
       "flags": []
     },
     {
+      "name": "UpdateRequiredContent",
+      "file": "lib/force_update/presentation/update_required_screen.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.update_required_content",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
       "name": "UpdateRequiredScreen",
       "file": "lib/force_update/presentation/update_required_screen.dart",
       "classKind": "widget",
@@ -16057,7 +16080,7 @@
       "role": "screen",
       "canonicalFamily": "screen.update_required_screen",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "route-covered",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",

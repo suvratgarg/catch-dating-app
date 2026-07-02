@@ -779,18 +779,18 @@ Widget forceUpdateCheckErrorScreenStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Screen states',
-  type: UpdateRequiredScreen,
+  type: UpdateRequiredContent,
   path: '[P3 utility surfaces]/Force update',
 )
 Widget updateRequiredScreenStates(BuildContext context) {
   return _UtilityCatalog(
-    title: 'UpdateRequiredScreen',
+    title: 'UpdateRequiredContent',
     contractId: 'screen.force_update.required',
     children: [
       _StateCard(
         label: 'store link configured',
         child: const _DeviceFrame(
-          child: _ForceUpdateStoreScope(child: UpdateRequiredScreen()),
+          child: UpdateRequiredContent(onUpdateNow: _noop),
         ),
       ),
     ],
