@@ -16,22 +16,21 @@
     "publicClasses": 1058,
     "privateClasses": 105,
     "byRole": {
-      "atom": 54,
-      "composition": 318,
+      "atom": 56,
+      "composition": 314,
       "feature-adapter": 318,
-      "pattern": 14,
+      "pattern": 16,
       "screen": 354,
       "widget-state": 105
     },
     "byDecision": {
-      "keep-canonical-contract": 160,
+      "keep-canonical-contract": 171,
       "keep-public-cataloged": 887,
-      "keep-widget-state": 105,
-      "review-promote-or-consolidate": 11
+      "keep-widget-state": 105
     },
     "byCatalogStatus": {
-      "cataloged": 826,
-      "contracted": 160,
+      "cataloged": 815,
+      "contracted": 171,
       "not-applicable": 105,
       "route-covered": 72
     }
@@ -2611,25 +2610,21 @@
       "baseClass": "StatefulWidget",
       "visibility": "public",
       "role": "composition",
-      "canonicalFamily": "catch.action_menu",
+      "canonicalFamily": "catch.menu",
       "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
+      "catalogStatus": "contracted",
+      "contractId": "catch.menu.action_menu",
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "review-promote-or-consolidate",
+      "decision": "keep-canonical-contract",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "core-widget-without-contract"
-      ]
+      "flags": []
     },
     {
       "name": "CatchActivityArt",
@@ -2802,25 +2797,22 @@
       "classKind": "widget",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.async_value_sliver",
+      "role": "pattern",
+      "canonicalFamily": "catch.loading",
       "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
+      "catalogStatus": "contracted",
+      "contractId": "catch.loading.async_value_sliver",
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "review-promote-or-consolidate",
+      "decision": "keep-canonical-contract",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
       "flags": [
-        "core-widget-without-contract",
         "primitive-imports-provider-layer"
       ]
     },
@@ -2830,25 +2822,22 @@
       "classKind": "widget",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.async_value_view",
+      "role": "pattern",
+      "canonicalFamily": "catch.loading",
       "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
+      "catalogStatus": "contracted",
+      "contractId": "catch.loading.async_value_view",
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "review-promote-or-consolidate",
+      "decision": "keep-canonical-contract",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
       "flags": [
-        "core-widget-without-contract",
         "primitive-imports-provider-layer"
       ]
     },
@@ -3135,25 +3124,21 @@
       "baseClass": "StatelessWidget",
       "visibility": "public",
       "role": "atom",
-      "canonicalFamily": "catch.chip_field",
+      "canonicalFamily": "catch.chip",
       "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
+      "catalogStatus": "contracted",
+      "contractId": "catch.chip.field",
       "allowedDependencyLevel": "tokens-and-primitives",
       "stateOwnership": "local-ui-only",
       "asyncOwnership": "none",
       "layoutOwnership": "internal-only",
       "actionOwnership": "callbacks-only",
-      "decision": "review-promote-or-consolidate",
+      "decision": "keep-canonical-contract",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "core-widget-without-contract"
-      ]
+      "flags": []
     },
     {
       "name": "CatchChip",
@@ -3300,25 +3285,21 @@
       "baseClass": "StatelessWidget",
       "visibility": "public",
       "role": "composition",
-      "canonicalFamily": "catch.day_section_header_count",
+      "canonicalFamily": "catch.section",
       "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
+      "catalogStatus": "contracted",
+      "contractId": "catch.section.day_header_count",
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "review-promote-or-consolidate",
+      "decision": "keep-canonical-contract",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "core-widget-without-contract"
-      ]
+      "flags": []
     },
     {
       "name": "CatchDetailHeroBackdrop",
@@ -3952,25 +3933,21 @@
       "baseClass": "StatefulWidget",
       "visibility": "public",
       "role": "composition",
-      "canonicalFamily": "catch.framework_error_debug_details",
+      "canonicalFamily": "catch.error_state",
       "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
+      "catalogStatus": "contracted",
+      "contractId": "catch.error_state.framework_error_debug_details",
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "review-promote-or-consolidate",
+      "decision": "keep-canonical-contract",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "core-widget-without-contract"
-      ]
+      "flags": []
     },
     {
       "name": "CatchFrameworkErrorView",
@@ -4188,23 +4165,19 @@
       "role": "composition",
       "canonicalFamily": "catch.menu",
       "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
+      "catalogStatus": "contracted",
+      "contractId": "catch.menu",
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "review-promote-or-consolidate",
+      "decision": "keep-canonical-contract",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "core-widget-without-contract"
-      ]
+      "flags": []
     },
     {
       "name": "CatchMenuRow",
@@ -4213,25 +4186,21 @@
       "baseClass": "StatelessWidget",
       "visibility": "public",
       "role": "composition",
-      "canonicalFamily": "catch.menu_row",
+      "canonicalFamily": "catch.menu",
       "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
+      "catalogStatus": "contracted",
+      "contractId": "catch.menu.row",
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "review-promote-or-consolidate",
+      "decision": "keep-canonical-contract",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "core-widget-without-contract"
-      ]
+      "flags": []
     },
     {
       "name": "CatchMetaDotRow",
@@ -4262,26 +4231,22 @@
       "classKind": "widget",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.meta_entry_flow",
+      "role": "atom",
+      "canonicalFamily": "catch.metric_strip",
       "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
+      "catalogStatus": "contracted",
+      "contractId": "catch.metric_strip.meta_entry_flow",
+      "allowedDependencyLevel": "tokens-and-primitives",
+      "stateOwnership": "local-ui-only",
       "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
+      "layoutOwnership": "internal-only",
       "actionOwnership": "callbacks-only",
-      "decision": "review-promote-or-consolidate",
+      "decision": "keep-canonical-contract",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "core-widget-without-contract"
-      ]
+      "flags": []
     },
     {
       "name": "CatchMetaEntryView",
@@ -4289,26 +4254,22 @@
       "classKind": "widget",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.meta_entry_view",
+      "role": "atom",
+      "canonicalFamily": "catch.metric_strip",
       "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
+      "catalogStatus": "contracted",
+      "contractId": "catch.metric_strip.meta_entry_view",
+      "allowedDependencyLevel": "tokens-and-primitives",
+      "stateOwnership": "local-ui-only",
       "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
+      "layoutOwnership": "internal-only",
       "actionOwnership": "callbacks-only",
-      "decision": "review-promote-or-consolidate",
+      "decision": "keep-canonical-contract",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "core-widget-without-contract"
-      ]
+      "flags": []
     },
     {
       "name": "CatchMetricStrip",
@@ -6073,25 +6034,21 @@
       "baseClass": "StatelessWidget",
       "visibility": "public",
       "role": "composition",
-      "canonicalFamily": "catch.top_bar_menu_action",
+      "canonicalFamily": "catch.top_bar",
       "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
+      "catalogStatus": "contracted",
+      "contractId": "catch.top_bar.menu_action",
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "review-promote-or-consolidate",
+      "decision": "keep-canonical-contract",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "core-widget-without-contract"
-      ]
+      "flags": []
     },
     {
       "name": "CatchTopBarTabBar",

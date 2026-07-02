@@ -33,6 +33,7 @@ import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_journey_steps.dart';
 import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_mini_bar_chart.dart';
 import 'package:catch_dating_app/core/widgets/catch_mono_label.dart';
@@ -2446,7 +2447,7 @@ Widget catchMetricStripContractStates(BuildContext context) {
       _StateCard(
         label: 'default',
         child: CatchMetricStrip(
-          items: const [
+          items: [
             CatchMetricStripItem(value: '24', label: 'going'),
             CatchMetricStripItem(value: '4', label: 'left'),
             CatchMetricStripItem(value: '8:30', label: 'starts'),
@@ -2456,7 +2457,7 @@ Widget catchMetricStripContractStates(BuildContext context) {
       _StateCard(
         label: 'with-unit',
         child: CatchMetricStrip(
-          items: const [
+          items: [
             CatchMetricStripItem(value: '2.4', unit: 'km', label: 'away'),
             CatchMetricStripItem(value: '12', unit: 'min', label: 'walk'),
             CatchMetricStripItem(value: '6', unit: 'pm', label: 'meet'),
@@ -2466,7 +2467,7 @@ Widget catchMetricStripContractStates(BuildContext context) {
       _StateCard(
         label: 'four-items',
         child: CatchMetricStrip(
-          items: const [
+          items: [
             CatchMetricStripItem(value: '126', label: 'members'),
             CatchMetricStripItem(value: '4.8', label: 'rating'),
             CatchMetricStripItem(value: '12', label: 'reviews'),
@@ -2502,7 +2503,7 @@ Widget catchMetricStripContractStates(BuildContext context) {
           valueColor: t.primaryInk,
           unitColor: t.primaryInk.withValues(alpha: 0.78),
           labelColor: t.primaryInk.withValues(alpha: 0.72),
-          items: const [
+          items: [
             CatchMetricStripItem(value: '8', label: 'matched'),
             CatchMetricStripItem(value: '2', label: 'pending'),
             CatchMetricStripItem(value: '1', label: 'open'),
@@ -2732,6 +2733,88 @@ Widget catchTopBarContractStates(BuildContext context) {
         label: 'bordered',
         child: const _TopBarFrame(
           child: CatchTopBar(title: 'Bordered', border: true),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchMenu,
+  path: '[Core primitives]/Navigation',
+)
+Widget catchMenuContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'CatchMenu',
+    contractId: 'catch.menu',
+    states: const [
+      'default',
+      'selected-row',
+      'disabled-row',
+      'danger-row',
+      'with-icons',
+      'with-sublabels',
+      'anchored-action',
+    ],
+    children: [
+      _StateCard(
+        label: 'panel rows',
+        child: CatchMenu<String>(
+          width: 280,
+          onSelected: (value, _) => _ignoreString(value),
+          items: [
+            CatchMenuItem(
+              value: 'share',
+              label: 'Share card',
+              sublabel: 'Send the event link',
+              icon: CatchIcons.iosShareRounded,
+            ),
+            CatchMenuItem(
+              value: 'going',
+              label: 'Going',
+              selected: true,
+              icon: CatchIcons.checkCircle,
+            ),
+            CatchMenuItem(
+              value: 'host-only',
+              label: 'Host controls',
+              enabled: false,
+              icon: CatchIcons.lockOutlineRounded,
+            ),
+            CatchMenuItem(
+              value: 'remove',
+              label: 'Remove from event',
+              danger: true,
+              icon: CatchIcons.deleteOutline,
+            ),
+          ],
+        ),
+      ),
+      _StateCard(
+        label: 'anchored-action',
+        child: CatchActionMenu<String>(
+          tooltip: 'More actions',
+          onSelected: _ignoreString,
+          items: [
+            CatchActionMenuItem(
+              value: 'share',
+              label: 'Share',
+              icon: CatchIcons.iosShareRounded,
+            ),
+            CatchActionMenuItem(
+              value: 'report',
+              label: 'Report',
+              sublabel: 'Send to safety',
+              icon: CatchIcons.flagOutlined,
+            ),
+            CatchActionMenuItem(
+              value: 'block',
+              label: 'Block',
+              icon: CatchIcons.blockRounded,
+              isDestructive: true,
+            ),
+          ],
         ),
       ),
     ],

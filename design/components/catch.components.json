@@ -490,6 +490,19 @@
             "file": "lib/core/widgets/catch_select_chip.dart"
           },
           {
+            "id": "catch.chip.field",
+            "symbol": "CatchChipField",
+            "file": "lib/core/widgets/catch_chip_field.dart",
+            "summary": "Form-field wrapper for single- and multi-select chip groups.",
+            "states": [
+              "single-select",
+              "multi-select",
+              "selected",
+              "disabled",
+              "semantic-keys"
+            ]
+          },
+          {
             "id": "catch.chip.remove_button",
             "symbol": "CatchChipRemoveButton",
             "file": "lib/core/widgets/catch_chip.dart",
@@ -875,6 +888,18 @@
               "debug-details",
               "collapsed-details",
               "expanded-details"
+            ]
+          },
+          {
+            "id": "catch.error_state.framework_error_debug_details",
+            "symbol": "CatchFrameworkErrorDebugDetails",
+            "file": "lib/core/widgets/catch_framework_error_view.dart",
+            "summary": "Tokenized debug-only framework error disclosure used by CatchFrameworkErrorView.",
+            "states": [
+              "collapsed",
+              "expanded",
+              "long-stack",
+              "debug-only"
             ]
           },
           {
@@ -1830,6 +1855,18 @@
             ]
           },
           {
+            "id": "catch.section.day_header_count",
+            "symbol": "CatchDaySectionHeaderCount",
+            "file": "lib/core/widgets/catch_day_section_header.dart",
+            "summary": "Direct animated numeric count renderer used by CatchDaySectionHeader.",
+            "states": [
+              "single-digit",
+              "double-digit",
+              "color-override",
+              "animated-change"
+            ]
+          },
+          {
             "id": "catch.section.horizontal_rail",
             "symbol": "CatchHorizontalRail",
             "file": "lib/core/widgets/catch_horizontal_rail.dart",
@@ -1997,6 +2034,8 @@
           "CatchSkeleton.custom",
           "CatchSkeletonList",
           "CatchLoadingIndicator",
+          "CatchAsyncValueView",
+          "CatchAsyncValueSliver",
           "CatchAsyncScreenLoading",
           "CatchAsyncSliverLoading",
           "CatchStartupLoadingScreen",
@@ -2051,6 +2090,32 @@
               "custom-padding",
               "custom-count",
               "custom-height"
+            ]
+          },
+          {
+            "id": "catch.loading.async_value_view",
+            "symbol": "CatchAsyncValueView",
+            "file": "lib/core/widgets/catch_async_value_view.dart",
+            "summary": "Generic AsyncValue boundary for route and section bodies with branded loading and error defaults.",
+            "states": [
+              "data",
+              "loading",
+              "error",
+              "skip-loading-on-refresh",
+              "custom-builders"
+            ]
+          },
+          {
+            "id": "catch.loading.async_value_sliver",
+            "symbol": "CatchAsyncValueSliver",
+            "file": "lib/core/widgets/catch_async_value_view.dart",
+            "summary": "Sliver-native AsyncValue boundary for CustomScrollView bodies with branded loading and error defaults.",
+            "states": [
+              "data-sliver",
+              "loading-sliver",
+              "error-sliver",
+              "skip-loading-on-refresh",
+              "custom-builders"
             ]
           },
           {
@@ -2424,6 +2489,8 @@
           "CatchMetricStripItem",
           "CatchStatColumn",
           "CatchMetaDotRow",
+          "CatchMetaEntryFlow",
+          "CatchMetaEntryView",
           "CatchMetaEntry"
         ],
         "goldens": [],
@@ -2451,6 +2518,32 @@
               "entries",
               "with-icons",
               "with-trailing",
+              "custom-color",
+              "truncated"
+            ]
+          },
+          {
+            "id": "catch.metric_strip.meta_entry_flow",
+            "symbol": "CatchMetaEntryFlow",
+            "file": "lib/core/widgets/catch_meta_row.dart",
+            "summary": "Direct dot-separated metadata flow renderer used by CatchMetaDotRow.",
+            "states": [
+              "entries",
+              "with-icons",
+              "with-trailing",
+              "wrapped",
+              "truncated"
+            ]
+          },
+          {
+            "id": "catch.metric_strip.meta_entry_view",
+            "symbol": "CatchMetaEntryView",
+            "file": "lib/core/widgets/catch_meta_row.dart",
+            "summary": "Direct metadata entry renderer for optional icon, color override, strong trailing weight, and ellipsis behavior.",
+            "states": [
+              "label",
+              "with-icon",
+              "strong",
               "custom-color",
               "truncated"
             ]
@@ -2846,6 +2939,141 @@
         "stateOwnership": "local-ui-only",
         "asyncOwnership": "none",
         "layoutOwnership": "internal-only",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "tokens-and-primitives",
+        "reviewPolicy": "contract-page-canonical"
+      }
+    },
+    {
+      "id": "catch.menu",
+      "name": "CatchMenu",
+      "status": "active",
+      "kind": "composite",
+      "summary": "Canonical anchored menu family for overflow actions, row selection, disabled rows, destructive actions, and typed callbacks.",
+      "dart": {
+        "symbol": "CatchMenu",
+        "file": "lib/core/widgets/catch_menu.dart",
+        "constructors": [
+          "CatchMenu"
+        ]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/Menu",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "Menu",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "items",
+            "type": "generic-list",
+            "required": true,
+            "dartType": "List<CatchMenuItem<T>>"
+          },
+          {
+            "name": "onSelected",
+            "type": "callback",
+            "required": false,
+            "dartType": "void Function(T value, CatchMenuItem<T> item)?"
+          },
+          {
+            "name": "selected",
+            "type": "object",
+            "required": false,
+            "dartType": "T?"
+          }
+        ],
+        "states": [
+          "default",
+          "selected-row",
+          "disabled-row",
+          "danger-row",
+          "with-icons",
+          "with-sublabels",
+          "anchored-action"
+        ],
+        "slots": [],
+        "tokens": [
+          "space.s2",
+          "space.s3",
+          "radius.md",
+          "theme.light.color.surface",
+          "theme.light.color.ink",
+          "theme.light.color.ink2",
+          "theme.light.color.ink3",
+          "theme.light.color.line",
+          "theme.light.color.line2",
+          "theme.light.color.danger"
+        ],
+        "dartRoles": [
+          "CatchMenuItem",
+          "CatchActionMenuItem",
+          "CatchMenuRow",
+          "CatchActionMenu",
+          "CatchSurface",
+          "CatchIconButton",
+          "CatchTextStyles.body",
+          "CatchTextStyles.mono"
+        ],
+        "goldens": [],
+        "members": [
+          {
+            "id": "catch.menu.row",
+            "symbol": "CatchMenuRow",
+            "file": "lib/core/widgets/catch_menu.dart",
+            "summary": "Direct menu-row renderer for selected, disabled, danger, icon, sublabel, and checkmark states.",
+            "states": [
+              "default",
+              "selected",
+              "disabled",
+              "danger",
+              "with-icon",
+              "with-sublabel"
+            ]
+          },
+          {
+            "id": "catch.menu.action_menu",
+            "symbol": "CatchActionMenu",
+            "file": "lib/core/widgets/catch_action_menu.dart",
+            "summary": "Anchored overflow trigger that opens CatchMenu from a CatchIconButton.",
+            "states": [
+              "closed",
+              "open",
+              "disabled",
+              "selected-row",
+              "danger-row"
+            ]
+          }
+        ]
+      },
+      "handoff": {
+        "allowedChildren": [
+          "catch.icon_button",
+          "catch.surface"
+        ],
+        "notes": [
+          "Use CatchActionMenu for icon-triggered overflow menus and CatchMenu for direct menu panel review.",
+          "Keep selected, disabled, and destructive row states in this family instead of creating feature-local menu rows."
+        ]
+      },
+      "governance": {
+        "role": "composition",
+        "canonicalFamily": "catch.menu",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "overlay-layout",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical"
@@ -3860,6 +4088,7 @@
           "CatchTextStyles.appBarSubtitle",
           "CatchCollapsedSliverTitle",
           "CatchTopBarIconAction",
+          "CatchTopBarMenuAction",
           "CatchTopBarTextAction",
           "CatchTopBarTabBar"
         ],
@@ -3885,6 +4114,18 @@
               "disabled",
               "custom-color",
               "plain"
+            ]
+          },
+          {
+            "id": "catch.top_bar.menu_action",
+            "symbol": "CatchTopBarMenuAction",
+            "file": "lib/core/widgets/catch_top_bar.dart",
+            "summary": "Top-bar-scoped overflow menu action that delegates to CatchActionMenu.",
+            "states": [
+              "default",
+              "selected-row",
+              "disabled-row",
+              "danger-row"
             ]
           },
           {
