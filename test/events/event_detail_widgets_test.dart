@@ -28,8 +28,8 @@ import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.da
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_app_bar.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_optimistic_body.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_share_card.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
+import 'package:catch_dating_app/events/shared/event_share_card.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/routing/go_router.dart';

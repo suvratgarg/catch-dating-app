@@ -55,7 +55,7 @@ import 'package:catch_dating_app/events/presentation/widgets/event_detail_surfac
 import 'package:catch_dating_app/events/presentation/widgets/event_hype_avatar_stack.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_photo_header.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_pins_map.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_share_card.dart';
+import 'package:catch_dating_app/events/shared/event_share_card.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_stats_grid.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_action_card.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_agenda_tile.dart';

@@ -49,7 +49,7 @@ export 'shared/attendance_sheet_view_model.dart';
 export 'presentation/event_booking_controller.dart';
 export 'presentation/event_detail_controller.dart';
 export 'presentation/event_detail_view_model.dart';
-export 'data/event_invite_share_copy.dart';
+export 'shared/event_invite_share_copy.dart';
 export 'presentation/event_map_view_model.dart';
 
 // ── Presentation — widgets commonly reused outside the feature ──────────────
@@ -61,7 +61,7 @@ export 'presentation/widgets/event_detail_social_section.dart';
 export 'presentation/widgets/event_hype_avatar_stack.dart';
 export 'presentation/widgets/event_photo_header.dart';
 export 'presentation/widgets/event_pins_map.dart';
-export 'presentation/widgets/event_share_card.dart';
+export 'shared/event_share_card.dart';
 export 'presentation/widgets/event_stats_grid.dart';
 export 'package:catch_dating_app/core/widgets/event_ticket_surface.dart';
 export 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';

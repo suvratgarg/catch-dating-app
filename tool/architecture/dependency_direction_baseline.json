@@ -125,11 +125,6 @@
     },
     {
       "rule": "crossFeaturePresentationImport",
-      "path": "lib/payments/presentation/payment_confirmation_screen.dart",
-      "import": "package:catch_dating_app/events/presentation/widgets/event_share_card.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
       "path": "lib/public_profile/presentation/public_profile_screen.dart",
       "import": "package:catch_dating_app/swipes/presentation/profile_surface.dart"
     },
