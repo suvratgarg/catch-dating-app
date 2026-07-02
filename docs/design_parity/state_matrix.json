@@ -1243,7 +1243,7 @@
             "lib/clubs/presentation/detail/widgets/club_photo_strip.dart",
             "lib/clubs/presentation/detail/widgets/club_schedule_section.dart",
             "lib/clubs/presentation/detail/widgets/catch_club_dock.dart",
-            "lib/reviews/presentation/reviews_section.dart"
+            "lib/reviews/shared/reviews_section.dart"
           ],
           "componentIds": [
             "catch.button",
@@ -1645,7 +1645,7 @@
             "lib/dashboard/presentation/widgets/dashboard_sliver_header.dart",
             "lib/dashboard/presentation/widgets/event_focus_rail.dart",
             "lib/dashboard/presentation/widgets/stride_card.dart",
-            "lib/dashboard/presentation/widgets/quick_actions.dart",
+            "lib/dashboard/shared/quick_actions.dart",
             "lib/clubs/presentation/discovery/widgets/club_avatar_rail.dart",
             "lib/dashboard/presentation/widgets/recommendations.dart"
           ],
@@ -2779,8 +2779,8 @@
             "lib/swipes/presentation/catches_event_screen_state.dart",
             "lib/swipes/presentation/swipe_queue_notifier.dart",
             "lib/swipes/presentation/swipe_empty_content.dart",
-            "lib/swipes/presentation/profile_surface.dart",
-            "lib/swipes/presentation/widgets/profile_reaction_controls.dart",
+            "lib/swipes/shared/profile_surface/profile_surface.dart",
+            "lib/swipes/shared/profile_surface/profile_reaction_controls.dart",
             "lib/swipes/presentation/widgets/catches_pass_button.dart",
             "lib/swipes/presentation/widgets/swipe_empty_state.dart"
           ],
@@ -3854,9 +3854,9 @@
             "lib/user_profile/presentation/widgets/profile_info_section.dart",
             "lib/user_profile/presentation/widgets/profile_inline_editors.dart",
             "lib/user_profile/presentation/widgets/preview_tab.dart",
-            "lib/image_uploads/presentation/photo_grid.dart",
-            "lib/image_uploads/presentation/photo_upload_controller.dart",
-            "lib/swipes/presentation/profile_surface.dart"
+            "lib/image_uploads/shared/photo_grid.dart",
+            "lib/image_uploads/shared/photo_upload_controller.dart",
+            "lib/swipes/shared/profile_surface/profile_surface.dart"
           ],
           "componentIds": [
             "catch.button",
@@ -4149,9 +4149,9 @@
             "lib/public_profile/presentation/public_profile_screen.dart",
             "lib/public_profile/presentation/public_profile_controller.dart",
             "lib/public_profile/data/public_profile_repository.dart",
-            "lib/swipes/presentation/profile_surface.dart",
-            "lib/swipes/presentation/profile_redesign/catch_profile_view.dart",
-            "lib/swipes/presentation/profile_redesign/profile_view_mapper.dart"
+            "lib/swipes/shared/profile_surface/profile_surface.dart",
+            "lib/swipes/shared/profile_surface/catch_profile_view.dart",
+            "lib/swipes/shared/profile_surface/profile_view_mapper.dart"
           ],
           "componentIds": [
             "catch.button",
@@ -5182,7 +5182,7 @@
             "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
             "lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart",
             "lib/clubs/presentation/detail/widgets/club_schedule_section.dart",
-            "lib/reviews/presentation/reviews_section.dart"
+            "lib/reviews/shared/reviews_section.dart"
           ],
           "componentIds": [
             "catch.badge",
@@ -6107,7 +6107,7 @@
           "implementationPaths": [
             "lib/hosts/presentation/host_event_manage_screen.dart",
             "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
-            "lib/events/presentation/attendance_sheet_view_model.dart",
+            "lib/events/shared/attendance_sheet_view_model.dart",
             "lib/events/data/event_participation_repository.dart",
             "lib/events/data/event_repository.dart",
             "lib/events/presentation/event_booking_controller.dart",
@@ -10529,7 +10529,7 @@
             "lib/reviews/presentation/reviews_history_state.dart",
             "lib/reviews/data/reviews_repository.dart",
             "lib/events/data/event_repository.dart",
-            "lib/reviews/presentation/write_review_sheet.dart"
+            "lib/reviews/shared/write_review_sheet.dart"
           ],
           "componentIds": [
             "catch.surface",

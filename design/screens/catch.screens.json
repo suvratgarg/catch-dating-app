@@ -1477,7 +1477,7 @@
               "ReviewList"
             ],
             "flutter": {
-              "file": "lib/reviews/presentation/reviews_section.dart",
+              "file": "lib/reviews/shared/reviews_section.dart",
               "symbol": "ClubReviewsSection"
             },
             "currentOwner": "ClubDetailBody",
@@ -3005,7 +3005,7 @@
               "QuickActions"
             ],
             "flutter": {
-              "file": "lib/dashboard/presentation/widgets/quick_actions.dart",
+              "file": "lib/dashboard/shared/quick_actions.dart",
               "symbol": "QuickActions"
             },
             "currentOwner": "DashboardFullSliverBody supplies typed DashboardQuickAction route intents; QuickActions renders the provider-free grid.",
@@ -5132,7 +5132,7 @@
               "ProfilePromptCards"
             ],
             "flutter": {
-              "file": "lib/swipes/presentation/profile_surface.dart",
+              "file": "lib/swipes/shared/profile_surface/profile_surface.dart",
               "symbol": "ProfileSurface"
             },
             "currentOwner": "shared swipes/profile surface",
@@ -5192,7 +5192,7 @@
               "CommentSheet"
             ],
             "flutter": {
-              "file": "lib/swipes/presentation/widgets/profile_reaction_controls.dart",
+              "file": "lib/swipes/shared/profile_surface/profile_reaction_controls.dart",
               "symbol": "ProfileReactionControls"
             },
             "currentOwner": "ProfileSurface/CatchProfileView",
@@ -5844,7 +5844,7 @@
               "MatchCelebrationDialog"
             ],
             "flutter": {
-              "file": "lib/matches/presentation/widgets/match_celebration_dialog.dart",
+              "file": "lib/matches/shared/match_celebration_dialog.dart",
               "symbol": "MatchCelebrationDialog"
             },
             "currentOwner": "ChatsList",
@@ -6763,7 +6763,7 @@
             "symbol": "watchUserProfile"
           },
           {
-            "file": "lib/image_uploads/presentation/photo_upload_controller.dart",
+            "file": "lib/image_uploads/shared/photo_upload_controller.dart",
             "symbol": "PhotoUploadController"
           },
           {
@@ -6781,7 +6781,7 @@
             "symbol": "ProfileEditController"
           },
           {
-            "file": "lib/image_uploads/presentation/photo_upload_controller.dart",
+            "file": "lib/image_uploads/shared/photo_upload_controller.dart",
             "symbol": "PhotoUploadController"
           },
           {
@@ -7235,7 +7235,7 @@
               "PhotoSlot"
             ],
             "flutter": {
-              "file": "lib/image_uploads/presentation/photo_grid.dart",
+              "file": "lib/image_uploads/shared/photo_grid.dart",
               "symbol": "PhotoGrid"
             },
             "currentOwner": "_ProfilePhotosSection",
@@ -7445,7 +7445,7 @@
             "symbol": "PublicProfileController"
           },
           {
-            "file": "lib/swipes/presentation/profile_surface.dart",
+            "file": "lib/swipes/shared/profile_surface/profile_surface.dart",
             "symbol": "ProfileSurface"
           },
           {
@@ -7860,7 +7860,7 @@
               "PublicProfileBody"
             ],
             "flutter": {
-              "file": "lib/swipes/presentation/profile_surface.dart",
+              "file": "lib/swipes/shared/profile_surface/profile_surface.dart",
               "symbol": "ProfileSurface"
             },
             "currentOwner": "PublicProfileScreen",
@@ -9784,7 +9784,7 @@
             "symbol": "CatchMetricStrip"
           },
           {
-            "file": "lib/reviews/presentation/reviews_section.dart",
+            "file": "lib/reviews/shared/reviews_section.dart",
             "symbol": "ClubReviewsSection"
           }
         ],
@@ -10406,7 +10406,7 @@
               "ClubReviewsSection"
             ],
             "flutter": {
-              "file": "lib/reviews/presentation/reviews_section.dart",
+              "file": "lib/reviews/shared/reviews_section.dart",
               "symbol": "ClubReviewsSection"
             },
             "currentOwner": "ClubDetailBody",
@@ -11824,7 +11824,7 @@
             "symbol": "watchEventParticipationRoster"
           },
           {
-            "file": "lib/events/presentation/attendance_sheet_view_model.dart",
+            "file": "lib/events/shared/attendance_sheet_view_model.dart",
             "symbol": "AttendanceSheetViewModel"
           },
           {
@@ -21791,13 +21791,13 @@
             "symbol": "watchEventsByIds"
           },
           {
-            "file": "lib/reviews/presentation/write_review_sheet.dart",
+            "file": "lib/reviews/shared/write_review_sheet.dart",
             "symbol": "showWriteReviewSheet"
           }
         ],
         "mutationOwners": [
           {
-            "file": "lib/reviews/presentation/write_review_sheet.dart",
+            "file": "lib/reviews/shared/write_review_sheet.dart",
             "symbol": "showWriteReviewSheet"
           },
           {

@@ -332,7 +332,7 @@ Widget catchErrorStateContractStates(BuildContext context) {
 Widget catchErrorBodyContractStates(BuildContext context) {
   return _ContractScreen(
     title: 'CatchErrorBody',
-    contractId: 'catch.error_body',
+    contractId: 'catch.error_state.error_body',
     states: const ['full-screen', 'inline', 'compact', 'secondary-action'],
     children: [
       _StateCard(
@@ -1143,7 +1143,7 @@ Widget catchChipRemoveButtonContractStates(BuildContext context) {
 Widget catchFormFieldOptionalBadgeContractStates(BuildContext context) {
   return const _ContractScreen(
     title: 'CatchFormFieldOptionalBadge',
-    contractId: 'catch.form_field_label.optional_badge',
+    contractId: 'catch.field.form_field_label.optional_badge',
     states: ['default', 'error'],
     children: [
       _StateCard(
@@ -5559,7 +5559,7 @@ Widget catchDetailHeroScrimContractStates(BuildContext context) {
 Widget catchEventThumbnailActivityFallbackContractStates(BuildContext context) {
   return const _ContractScreen(
     title: 'CatchEventThumbnailActivityFallback',
-    contractId: 'catch.event_thumbnail.activity_fallback',
+    contractId: 'catch.event_card.event_thumbnail.activity_fallback',
     states: ['run', 'dinner', 'large-icon'],
     children: [
       _StateCard(
@@ -5603,7 +5603,7 @@ Widget catchEventThumbnailActivityFallbackContractStates(BuildContext context) {
 Widget catchEventThumbnailScrimOverlayContractStates(BuildContext context) {
   return const _ContractScreen(
     title: 'CatchEventThumbnailScrimOverlay',
-    contractId: 'catch.event_thumbnail.scrim',
+    contractId: 'catch.event_card.event_thumbnail.scrim',
     states: ['bottom', 'full'],
     children: [
       _StateCard(
