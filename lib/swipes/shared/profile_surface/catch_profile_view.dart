@@ -8,8 +8,8 @@ import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
-import 'package:catch_dating_app/swipes/presentation/profile_redesign/profile_view.dart';
-import 'package:catch_dating_app/swipes/presentation/widgets/profile_reaction_controls.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_reaction_controls.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_view.dart';
 import 'package:flutter/material.dart';
 
 /// PHASE 2 — the flagship profile surface, in the locked editorial language:

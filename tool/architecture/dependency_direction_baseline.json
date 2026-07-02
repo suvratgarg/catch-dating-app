@@ -120,21 +120,6 @@
     },
     {
       "rule": "crossFeaturePresentationImport",
-      "path": "lib/public_profile/presentation/public_profile_screen.dart",
-      "import": "package:catch_dating_app/swipes/presentation/profile_surface.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/user_profile/presentation/profile_screen.dart",
-      "import": "package:catch_dating_app/swipes/presentation/profile_surface.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/user_profile/presentation/widgets/preview_tab.dart",
-      "import": "package:catch_dating_app/swipes/presentation/profile_surface.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
       "path": "lib/user_profile/presentation/widgets/profile_insights_tab.dart",
       "import": "package:catch_dating_app/user_analytics/presentation/user_analytics_panel.dart"
     }

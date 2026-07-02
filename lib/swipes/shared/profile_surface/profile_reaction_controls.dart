@@ -10,7 +10,7 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
-import 'package:catch_dating_app/swipes/presentation/widgets/profile_card_style.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_card_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

@@ -33,14 +33,14 @@ export 'presentation/filters_screen_state.dart';
 export 'presentation/swipe_queue_notifier.dart';
 
 // ── Presentation — widgets commonly reused outside the feature ──────────────
-export 'presentation/profile_card_content.dart';
-export 'presentation/profile_surface.dart';
+export 'shared/profile_surface/profile_card_content.dart';
+export 'shared/profile_surface/profile_surface.dart';
 export 'presentation/swipe_empty_content.dart';
 export 'presentation/widgets/attended_event_tile.dart';
 export 'presentation/widgets/catches_pass_button.dart';
-export 'presentation/widgets/profile_card_style.dart';
-export 'presentation/widgets/profile_info_chip.dart';
-export 'presentation/widgets/profile_reaction_controls.dart';
+export 'shared/profile_surface/profile_card_style.dart';
+export 'shared/profile_surface/profile_info_chip.dart';
+export 'shared/profile_surface/profile_reaction_controls.dart';
 export 'presentation/widgets/swipe_empty_state.dart';
 
 // ── Presentation — value types & formatters ─────────────────────────────────

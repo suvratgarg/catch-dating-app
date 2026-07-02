@@ -9,7 +9,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_pager_focus_boundary.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
-import 'package:catch_dating_app/swipes/presentation/profile_surface.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_screen_state.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/preview_scroll_physics.dart';

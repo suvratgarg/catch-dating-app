@@ -3,10 +3,10 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
-import 'package:catch_dating_app/swipes/presentation/profile_card_content.dart';
-import 'package:catch_dating_app/swipes/presentation/profile_redesign/catch_profile_view.dart';
-import 'package:catch_dating_app/swipes/presentation/profile_redesign/profile_view_mapper.dart';
-import 'package:catch_dating_app/swipes/presentation/widgets/profile_reaction_controls.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/catch_profile_view.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_card_content.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_reaction_controls.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_view_mapper.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 
@@ -119,7 +119,7 @@ class ProfileSurfaceSkeleton extends StatelessWidget {
           controller: scrollController,
           physics: scrollPhysics,
           slivers: [
-            SliverToBoxAdapter(child: const ProfileSurfaceHeroSkeleton()),
+            const SliverToBoxAdapter(child: ProfileSurfaceHeroSkeleton()),
             SliverPadding(
               padding: EdgeInsets.fromLTRB(
                 CatchSpacing.s5,
@@ -128,14 +128,14 @@ class ProfileSurfaceSkeleton extends StatelessWidget {
                 bottomPadding,
               ),
               sliver: SliverList.list(
-                children: [
-                  const ProfileSurfaceSectionSkeleton(lines: 3),
+                children: const [
+                  ProfileSurfaceSectionSkeleton(lines: 3),
                   ProfileSurfaceRule(),
-                  const ProfileSurfaceRunningSkeleton(),
+                  ProfileSurfaceRunningSkeleton(),
                   ProfileSurfaceRule(),
-                  const ProfileSurfacePhotoSkeleton(),
+                  ProfileSurfacePhotoSkeleton(),
                   ProfileSurfaceRule(),
-                  const ProfileSurfaceFactsSkeleton(),
+                  ProfileSurfaceFactsSkeleton(),
                 ],
               ),
             ),

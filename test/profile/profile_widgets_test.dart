@@ -19,8 +19,8 @@ import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart
 import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
-import 'package:catch_dating_app/swipes/presentation/profile_redesign/catch_profile_view.dart';
-import 'package:catch_dating_app/swipes/presentation/profile_surface.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/catch_profile_view.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';

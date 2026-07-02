@@ -14,7 +14,7 @@ import 'package:catch_dating_app/public_profile/data/public_profile_repository.d
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_controller.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_screen_state.dart';
-import 'package:catch_dating_app/swipes/presentation/profile_surface.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
