@@ -3,6 +3,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/labs/design_fixtures/profile_surface_fixtures.dart';
+import 'package:catch_dating_app/onboarding/presentation/onboarding_flow_state.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/gender_interest_page.dart';
@@ -60,15 +61,17 @@ Widget onboardingScreenRouteStates(BuildContext context) {
   path: '[P1 product surfaces]/Onboarding',
 )
 Widget onboardingTopBarState(BuildContext context) {
-  return const _OnboardingCatalog(
+  return _OnboardingCatalog(
     title: 'OnboardingTopBar',
     children: [
       _StateCard(
         label: 'profile completion photos',
         child: OnboardingTopBar(
-          step: OnboardingStep.photos,
-          profileCompletionOnly: true,
-          runPreferencesOnly: false,
+          state: OnboardingTopBarState.from(
+            step: OnboardingStep.photos,
+            entryMode: OnboardingEntryMode.profileCompletion,
+            canGoBack: false,
+          ),
           onBack: null,
         ),
       ),

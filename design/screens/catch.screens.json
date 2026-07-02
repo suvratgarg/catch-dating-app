@@ -15935,6 +15935,14 @@
             "symbol": "OnboardingStep"
           },
           {
+            "file": "lib/onboarding/presentation/onboarding_flow_state.dart",
+            "symbol": "OnboardingFlowState"
+          },
+          {
+            "file": "lib/onboarding/presentation/onboarding_flow_state.dart",
+            "symbol": "OnboardingTopBarState"
+          },
+          {
             "file": "lib/onboarding/presentation/pages/welcome_page.dart",
             "symbol": "WelcomePage"
           },
@@ -15977,7 +15985,7 @@
             "symbol": "UserProfileRepository"
           }
         ],
-        "notes": "OnboardingScreen owns flow entry-mode flags, initStep scheduling, back-step boundaries, top-bar progress, and step selection. OnboardingController owns draft hydration, profile completion/run-preferences entry decisions, saveProfileMutation, completeMutation, and draft persistence. Step pages own local field controllers and validation UI. A future OnboardingFlowState should expose entry mode, current step, progress, validation, draft, photo gate, and mutation modes before visual parity edits."
+        "notes": "OnboardingScreen owns initStep scheduling and visible step composition. OnboardingFlowState owns flow entry mode, current step, previous-step/back boundary, welcome-vs-progress shell, and OnboardingTopBarState header/progress copy. OnboardingController owns draft hydration, profile completion/run-preferences entry decisions, saveProfileMutation, completeMutation, and draft persistence. Step pages still own local field controllers, validation UI, photo gates, and mutation surfaces."
       },
       "designRefs": [
         {
@@ -16285,8 +16293,8 @@
         }
       ],
       "composition": {
-        "currentLayout": "OnboardingScreen watches OnboardingController state, owns route entry flags, schedules initStep, calculates back/progress bounds, renders OnboardingTopBar for non-welcome steps, and delegates visible forms to step pages that own local controllers and validation UI.",
-        "targetLayout": "Onboarding should expose an OnboardingFlowState adapter that owns entry mode, current step, progress, back intent, draft data, validation, mutation state, and step display data before composing provider-free step sections and shared step frames.",
+        "currentLayout": "OnboardingScreen watches OnboardingController state, schedules initStep, builds OnboardingFlowState for route shell/back/progress/header policy, renders OnboardingTopBar from OnboardingTopBarState for non-welcome steps, and delegates visible forms to step pages that own local controllers and validation UI.",
+        "targetLayout": "Onboarding should keep route-shell policy in OnboardingFlowState, then continue extracting page-level draft data, validation, photo gate, mutation state, and typed callbacks before composing provider-free step sections and shared step frames.",
         "sections": [
           {
             "id": "section.onboarding.flow_adapter",
@@ -16297,10 +16305,10 @@
               "OnboardingFlowState"
             ],
             "flutter": {
-              "file": "lib/onboarding/presentation/onboarding_screen.dart",
-              "symbol": "OnboardingScreen"
+              "file": "lib/onboarding/presentation/onboarding_flow_state.dart",
+              "symbol": "OnboardingFlowState"
             },
-            "currentOwner": "OnboardingScreen + OnboardingController",
+            "currentOwner": "OnboardingFlowState + OnboardingController",
             "targetOwner": "OnboardingFlowState adapter backed by OnboardingController",
             "dependencies": [
               "catch.surface"
@@ -16312,7 +16320,7 @@
               "save_profile_mutation",
               "complete_mutation"
             ],
-            "migration": "Move entry-mode derivation, progress/back bounds, step display data, mutation modes, and typed callbacks into a fixtureable adapter before visual parity edits."
+            "migration": "Route-shell entry-mode derivation, progress/back bounds, current-step identity, and header display data now live in OnboardingFlowState. Continue moving page-level validation, photo gate, mutation modes, and typed callbacks into follow-on step adapters."
           },
           {
             "id": "section.onboarding.step_header",
@@ -16326,7 +16334,7 @@
               "file": "lib/onboarding/presentation/onboarding_screen.dart",
               "symbol": "OnboardingTopBar"
             },
-            "currentOwner": "OnboardingScreen",
+            "currentOwner": "OnboardingTopBar over OnboardingTopBarState",
             "targetOwner": "provider-free onboarding step header section",
             "dependencies": [
               "catch.top_bar"
@@ -16338,7 +16346,7 @@
               "running_prefs_step",
               "text_scale_2"
             ],
-            "migration": "Keep CatchStepFlowHeader as the visual primitive while adapter-owned copy/progress decides the header state."
+            "migration": "OnboardingTopBar now receives OnboardingTopBarState so copy, progress, and back availability are adapter-owned while CatchStepFlowHeader remains the visual primitive."
           },
           {
             "id": "section.onboarding.welcome_step",
@@ -16481,11 +16489,11 @@
           "status": "open",
           "nextAction": "Remaining deterministic capture work is upload-failure transition coverage, prompt partial/complete/long-answer variants, Instagram filled/invalid/skipped variants, and step-specific text-scale/reduced-motion variants where layout diverges."
         },
-        {
-          "id": "DS-ONBOARDING-003",
-          "status": "open",
-          "nextAction": "Evaluate promoting the capture seeder into an OnboardingFlowState adapter so entry mode, current step, progress, draft, validation, mutation state, and typed callbacks can render without capture-only side effects."
-        },
+      {
+        "id": "DS-ONBOARDING-003",
+        "status": "open",
+        "nextAction": "Route-shell adapter landed: OnboardingFlowState now owns entry mode, current step, previous-step/back boundary, welcome/progress shell, and OnboardingTopBarState copy/progress with focused tests. Remaining adapter work is page-level draft display data, validation, photo gate state, mutation modes, and typed callbacks so capture seeders no longer need page-local side effects."
+      },
         {
           "id": "DS-ONBOARDING-004",
           "status": "open",

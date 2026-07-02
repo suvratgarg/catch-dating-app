@@ -279,6 +279,18 @@
           "role": "AuthPhoneEntryViewState and AuthOtpEntryViewState display-policy behavior coverage",
           "status": "aligned",
           "lastReviewedPass": "2026-07-02-auth-presentation-state-adapter"
+        },
+        {
+          "path": "lib/onboarding/presentation/onboarding_flow_state.dart",
+          "role": "provider-free OnboardingFlowState and OnboardingTopBarState adapters for onboarding entry mode, current step, previous-step/back boundary, welcome/progress shell, and header copy/progress display policy",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-02-onboarding-flow-state-adapter"
+        },
+        {
+          "path": "test/onboarding/onboarding_flow_state_test.dart",
+          "role": "OnboardingFlowState and OnboardingTopBarState route-shell display-policy behavior coverage",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-02-onboarding-flow-state-adapter"
         }
       ],
       "variantPatterns": [],
