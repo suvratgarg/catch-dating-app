@@ -325,6 +325,63 @@ Widget catchErrorStateContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
+  type: CatchErrorBody,
+  path: '[Core primitives]/Feedback',
+)
+Widget catchErrorBodyContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'CatchErrorBody',
+    contractId: 'catch.error_body',
+    states: const ['full-screen', 'inline', 'compact', 'secondary-action'],
+    children: [
+      _StateCard(
+        label: 'full-screen',
+        child: SizedBox(
+          height: 220,
+          child: CatchErrorBody(
+            title: 'Unable to load events',
+            message: 'Check your connection and try again.',
+            onRetry: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'inline',
+        child: CatchErrorBody(
+          title: 'Section failed',
+          message: 'The recommendations rail could not refresh.',
+          mode: CatchErrorStateMode.inline,
+          onRetry: _noop,
+        ),
+      ),
+      const _StateCard(
+        label: 'compact',
+        child: CatchErrorBody(
+          title: 'Not available',
+          message: 'This event is no longer open.',
+          mode: CatchErrorStateMode.compact,
+        ),
+      ),
+      _StateCard(
+        label: 'secondary-action',
+        child: CatchErrorBody(
+          title: 'Could not save',
+          message: 'Your changes are still local.',
+          mode: CatchErrorStateMode.inline,
+          onRetry: _noop,
+          secondaryAction: CatchButton(
+            label: 'Dismiss',
+            variant: CatchButtonVariant.secondary,
+            onPressed: _noop,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
   type: CatchErrorIcon,
   path: '[Core primitives]/Feedback',
 )

@@ -2070,6 +2070,7 @@ void main() {
 
     expect(find.text('Something went wrong'), findsOneWidget);
     expect(find.text('Could not load profile'), findsOneWidget);
+    expect(find.byType(CatchErrorBody), findsOneWidget);
     expect(find.text('Try again'), findsOneWidget);
     expect(find.textContaining('StackTrace'), findsNothing);
 
@@ -2115,6 +2116,7 @@ void main() {
 
     expect(find.text('Messages unavailable'), findsOneWidget);
     expect(find.text('Unable to load messages.'), findsOneWidget);
+    expect(find.byType(CatchErrorBody), findsOneWidget);
   });
 
   testWidgets('CatchAsyncValueView uses branded default error state', (
