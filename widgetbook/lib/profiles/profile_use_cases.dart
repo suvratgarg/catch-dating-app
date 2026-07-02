@@ -28,7 +28,11 @@ import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_edit_tab_state.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_screen_state.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor_choice.dart'
-    show ProfileChipPlaceholder;
+    show
+        ProfileChipOptions,
+        ProfileChipPlaceholder,
+        ProfileMultiChipValue,
+        ProfileSingleChipValue;
 import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor_height.dart'
     show ProfileHeightStepButton, ProfileHeightStepperControls;
 import 'package:catch_dating_app/user_profile/presentation/widgets/preview_tab.dart';
@@ -1201,7 +1205,7 @@ Widget profileHeightStepButtonStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Inline single choice editor states',
-  type: ProfileInlineRelationshipGoalChoiceEntryEditor,
+  type: ProfileInlineSingleChoiceEntryEditor,
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
 Widget profileInlineSingleChoiceEntryEditorStates(BuildContext context) {
@@ -1222,7 +1226,7 @@ Widget profileInlineSingleChoiceEntryEditorStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Inline multi choice editor states',
-  type: ProfileInlineLanguageMultiChoiceEntryEditor,
+  type: ProfileInlineMultiChoiceEntryEditor,
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
 Widget profileInlineMultiChoiceEntryEditorStates(BuildContext context) {
@@ -1235,6 +1239,145 @@ Widget profileInlineMultiChoiceEntryEditorStates(BuildContext context) {
         child: _SectionFrame(
           height: 260,
           child: const ProfileInlineLanguageMultiChoiceEntryEditor(),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Single chip value states',
+  type: ProfileSingleChipValue,
+  path: '[P1 product surfaces]/Profiles/Inline Editors',
+)
+Widget profileSingleChipValueStates(BuildContext context) {
+  return _ProfileCatalog(
+    title: 'ProfileSingleChipValue',
+    contractId: 'screen.profile.inline.single_chip_value',
+    children: [
+      _StateCard(
+        label: 'collapsed selected',
+        child: _SectionFrame(
+          height: 120,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfileSingleChipValue<RelationshipGoal>(
+              emptyValue: 'Looking for',
+              displayValue: RelationshipGoal.relationship.label,
+              isEditing: false,
+              selected: RelationshipGoal.relationship,
+              enabled: true,
+              isAddAffordance: false,
+              allowEmptySelection: true,
+              onSelectedTap: (_) {},
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'editing empty',
+        child: _SectionFrame(
+          height: 120,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfileSingleChipValue<RelationshipGoal>(
+              emptyValue: 'Looking for',
+              displayValue: 'Looking for',
+              isEditing: true,
+              selected: null,
+              enabled: true,
+              isAddAffordance: true,
+              allowEmptySelection: true,
+              onSelectedTap: (_) {},
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'editing selected disabled',
+        child: _SectionFrame(
+          height: 120,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfileSingleChipValue<RelationshipGoal>(
+              emptyValue: 'Looking for',
+              displayValue: RelationshipGoal.relationship.label,
+              isEditing: true,
+              selected: RelationshipGoal.relationship,
+              enabled: false,
+              isAddAffordance: false,
+              allowEmptySelection: true,
+              onSelectedTap: (_) {},
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Multi chip value states',
+  type: ProfileMultiChipValue,
+  path: '[P1 product surfaces]/Profiles/Inline Editors',
+)
+Widget profileMultiChipValueStates(BuildContext context) {
+  return _ProfileCatalog(
+    title: 'ProfileMultiChipValue',
+    contractId: 'screen.profile.inline.multi_chip_value',
+    children: [
+      _StateCard(
+        label: 'collapsed selected',
+        child: _SectionFrame(
+          height: 120,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfileMultiChipValue<Language>(
+              emptyValue: 'Languages',
+              displayValue: 'English, Hindi',
+              isEditing: false,
+              selected: const {Language.english, Language.hindi},
+              enabled: true,
+              isAddAffordance: false,
+              onSelectedTap: (_) {},
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'editing selected',
+        child: _SectionFrame(
+          height: 120,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfileMultiChipValue<Language>(
+              emptyValue: 'Languages',
+              displayValue: 'English, Hindi',
+              isEditing: true,
+              selected: const {Language.english, Language.hindi},
+              enabled: true,
+              isAddAffordance: false,
+              onSelectedTap: (_) {},
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'editing empty disabled',
+        child: _SectionFrame(
+          height: 120,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfileMultiChipValue<Language>(
+              emptyValue: 'Languages',
+              displayValue: 'Languages',
+              isEditing: true,
+              selected: const {},
+              enabled: false,
+              isAddAffordance: true,
+              onSelectedTap: (_) {},
+            ),
+          ),
         ),
       ),
     ],
@@ -1270,6 +1413,58 @@ Widget profileChipPlaceholderStates(BuildContext context) {
                   isAddAffordance: false,
                 ),
               ],
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Chip option states',
+  type: ProfileChipOptions,
+  path: '[P1 product surfaces]/Profiles/Inline Editors',
+)
+Widget profileChipOptionsStates(BuildContext context) {
+  return _ProfileCatalog(
+    title: 'ProfileChipOptions',
+    contractId: 'screen.profile.inline.chip_options',
+    children: [
+      _StateCard(
+        label: 'enabled selected',
+        child: _SectionFrame(
+          height: 140,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfileChipOptions<Language>(
+              values: const [
+                Language.english,
+                Language.hindi,
+                Language.marathi,
+              ],
+              selected: const {Language.english},
+              enabled: true,
+              onTap: (_) {},
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'disabled',
+        child: _SectionFrame(
+          height: 140,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfileChipOptions<Language>(
+              values: const [
+                Language.english,
+                Language.hindi,
+                Language.marathi,
+              ],
+              selected: const {Language.english, Language.hindi},
+              enabled: false,
+              onTap: (_) {},
             ),
           ),
         ),

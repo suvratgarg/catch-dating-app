@@ -9670,6 +9670,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Inline Editors',
             children: [
               _widgetbook.WidgetbookComponent(
+                name: 'ProfileChipOptions<Labelled>',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Chip option states',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .profileChipOptionsStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'ProfileChipPlaceholder',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -9720,7 +9730,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'ProfileInlineLanguageMultiChoiceEntryEditor',
+                name: 'ProfileInlineMultiChoiceEntryEditor<Labelled>',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Inline multi choice editor states',
@@ -9750,7 +9760,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'ProfileInlineRelationshipGoalChoiceEntryEditor',
+                name: 'ProfileInlineSingleChoiceEntryEditor<Labelled>',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Inline single choice editor states',
@@ -9766,6 +9776,26 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Inline text value states',
                     builder: _widgetbook_workspace_profiles_profile_use_cases
                         .profileInlineTextValueStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProfileMultiChipValue<Labelled>',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Multi chip value states',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .profileMultiChipValueStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ProfileSingleChipValue<Labelled>',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Single chip value states',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .profileSingleChipValueStates,
                   ),
                 ],
               ),
