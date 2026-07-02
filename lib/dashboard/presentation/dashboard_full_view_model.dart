@@ -489,7 +489,7 @@ List<DashboardEventRecommendation> rankDashboardEventRecommendations({
         event.isFull) {
       continue;
     }
-    if (viewer != null && !_isEligibleForRecommendation(event, viewer)) {
+    if (viewer != null && !_isEligibleForRecommendation(event, viewer, now)) {
       continue;
     }
 
@@ -510,9 +510,14 @@ List<DashboardEventRecommendation> rankDashboardEventRecommendations({
   return recommendations.take(limit).toList(growable: false);
 }
 
-bool _isEligibleForRecommendation(Event event, UserProfile viewer) {
-  if (viewer.age < event.constraints.minAge ||
-      viewer.age > event.constraints.maxAge) {
+bool _isEligibleForRecommendation(
+  Event event,
+  UserProfile viewer,
+  DateTime now,
+) {
+  final viewerAge = viewer.ageOn(now);
+  if (viewerAge < event.constraints.minAge ||
+      viewerAge > event.constraints.maxAge) {
     return false;
   }
   final genderCap = event.constraints.maxForGender(viewer.gender);

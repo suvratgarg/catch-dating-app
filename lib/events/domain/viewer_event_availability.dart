@@ -151,14 +151,15 @@ ViewerEventAvailability resolveViewerEventAvailability({
     );
   }
 
-  if (userProfile.age < event.constraints.minAge) {
+  final userAge = userProfile.ageOn(referenceNow);
+  if (userAge < event.constraints.minAge) {
     return base.build(
       ViewerEventAvailabilityStatus.ageRestricted,
       eligibility: AgeTooYoung(event.constraints.minAge),
       ageLimit: event.constraints.minAge,
     );
   }
-  if (userProfile.age > event.constraints.maxAge) {
+  if (userAge > event.constraints.maxAge) {
     return base.build(
       ViewerEventAvailabilityStatus.ageRestricted,
       eligibility: AgeTooOld(event.constraints.maxAge),

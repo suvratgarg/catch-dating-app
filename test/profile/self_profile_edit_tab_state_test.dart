@@ -11,6 +11,7 @@ const PhotoUploadState _idleUploadState = (
   loadingIndices: <int>{},
   uploadError: null,
 );
+final _today = DateTime(2026, 6, 24);
 
 void main() {
   test('SelfProfileEditTabState maps photo grid delete and loading state', () {
@@ -23,6 +24,7 @@ void main() {
 
     final state = SelfProfileEditTabState.fromProfile(
       user: user,
+      today: _today,
       uploadState: (loadingIndices: {2}, uploadError: null),
     );
 
@@ -44,6 +46,7 @@ void main() {
 
     final state = SelfProfileEditTabState.fromProfile(
       user: user,
+      today: _today,
       uploadState: _idleUploadState,
     );
 
@@ -67,6 +70,7 @@ void main() {
 
     final state = SelfProfileEditTabState.fromProfile(
       user: user,
+      today: _today,
       uploadState: _idleUploadState,
     );
 
@@ -103,6 +107,7 @@ void main() {
 
       final state = SelfProfileEditTabState.fromProfile(
         user: user,
+        today: _today,
         uploadState: _idleUploadState,
       );
 
@@ -186,6 +191,7 @@ void main() {
             'https://example.com/photo_2.jpg',
           ],
         ),
+        today: _today,
         uploadState: _idleUploadState,
       );
 

@@ -14,6 +14,7 @@ final selfProfileScreenStateProvider = Provider<SelfProfileScreenState>((ref) {
 
   return SelfProfileScreenState.fromAsync(
     profileAsync: profileAsync,
+    today: DateTime.now(),
     uploadState: uploadState,
     uploadMutationPending: uploadMutation.isPending,
     saveMutationPending: saveMutation.isPending,
@@ -44,6 +45,7 @@ class SelfProfileScreenState {
 
   factory SelfProfileScreenState.fromAsync({
     required AsyncValue<UserProfile?> profileAsync,
+    required DateTime today,
     required PhotoUploadState uploadState,
     required bool uploadMutationPending,
     required bool saveMutationPending,
@@ -77,7 +79,10 @@ class SelfProfileScreenState {
             : SelfProfileScreenState(
                 status: SelfProfileRouteStatus.ready,
                 user: value,
-                previewProfile: publicProfileFromUserProfile(value),
+                previewProfile: publicProfileFromUserProfile(
+                  value,
+                  today: today,
+                ),
                 uploadState: uploadState,
                 mutationMode: mutationMode,
               ),

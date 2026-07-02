@@ -84,10 +84,6 @@
       "import": "package:catch_dating_app/events/presentation/widgets/who_is_going.dart"
     },
     {
-      "rule": "domainClockAccess",
-      "path": "lib/user_profile/domain/profile_validation.dart"
-    },
-    {
       "rule": "presentationPluginImport",
       "path": "lib/event_success/presentation/event_success_companion_screen.dart",
       "import": "package:mobile_scanner/mobile_scanner.dart"

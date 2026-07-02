@@ -200,6 +200,7 @@ Widget profileScreenSelfTabBodyStates(BuildContext context) {
           child: _SelfProfileTabBodyPreview(
             state: SelfProfileScreenState.fromAsync(
               profileAsync: AsyncData<UserProfile?>(_viewer),
+              today: ProfileSurfaceFixtures.now,
               uploadState: idleUploadState,
               uploadMutationPending: false,
               saveMutationPending: false,
@@ -549,6 +550,7 @@ Widget profilePhotosSectionStates(BuildContext context) {
 Widget profileFieldRowStates(BuildContext context) {
   final editState = SelfProfileEditTabState.fromProfile(
     user: _viewer,
+    today: ProfileSurfaceFixtures.now,
     uploadState: (loadingIndices: <int>{}, uploadError: null),
   );
   final rows = [
@@ -833,6 +835,7 @@ Widget profileMultiEnumEntryStates(BuildContext context) {
 Widget profilePromptEntryStates(BuildContext context) {
   final editState = SelfProfileEditTabState.fromProfile(
     user: _viewer,
+    today: ProfileSurfaceFixtures.now,
     uploadState: (loadingIndices: <int>{}, uploadError: null),
   );
   final slot = editState.promptSlots.first;

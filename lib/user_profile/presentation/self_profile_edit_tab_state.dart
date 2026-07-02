@@ -33,6 +33,7 @@ class SelfProfileEditTabState {
 
   factory SelfProfileEditTabState.fromProfile({
     required UserProfile user,
+    required DateTime today,
     required PhotoUploadState uploadState,
   }) {
     final promptAnswers = normalizeProfilePromptAnswers(user.profilePrompts);
@@ -76,7 +77,11 @@ class SelfProfileEditTabState {
         },
         growable: false,
       ),
-      basicRows: _basicRows(user: user, patchFactory: patchFactory),
+      basicRows: _basicRows(
+        user: user,
+        today: today,
+        patchFactory: patchFactory,
+      ),
       aboutRows: _aboutRows(user: user, patchFactory: patchFactory),
       runningRows: _runningRows(user: user, patchFactory: patchFactory),
       lifestyleRows: _lifestyleRows(user: user, patchFactory: patchFactory),
@@ -348,6 +353,7 @@ class SelfProfileRangeFieldRowDescriptor extends SelfProfileFieldRowDescriptor {
 
 List<SelfProfileFieldRowDescriptor> _basicRows({
   required UserProfile user,
+  required DateTime today,
   required SelfProfileInlineEditPatchFactory patchFactory,
 }) {
   return [
@@ -374,7 +380,7 @@ List<SelfProfileFieldRowDescriptor> _basicRows({
       body:
           '${user.dateOfBirth.day.toString().padLeft(2, '0')}/'
           '${user.dateOfBirth.month.toString().padLeft(2, '0')}/'
-          '${user.dateOfBirth.year}  (${user.age} years)',
+          '${user.dateOfBirth.year}  (${user.ageOn(today)} years)',
     ),
     SelfProfileReadOnlyFieldRowDescriptor(
       id: 'gender',

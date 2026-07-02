@@ -145,6 +145,7 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
     final uploadState = widget.uploadState;
     final editState = SelfProfileEditTabState.fromProfile(
       user: user,
+      today: DateTime.now(),
       uploadState: uploadState,
     );
     const photoActions = SelfProfilePhotoActionController();

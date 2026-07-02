@@ -285,7 +285,7 @@ abstract class UserProfile with _$UserProfile {
   factory UserProfile.fromJson(Map<String, dynamic> json) =>
       _$UserProfileFromJson(_migrateUserProfileJson(json));
 
-  int get age => calculateAge(dateOfBirth);
+  int ageOn(DateTime today) => calculateAge(dateOfBirth, today: today);
 
   String get accountDisplayName {
     final parts = [

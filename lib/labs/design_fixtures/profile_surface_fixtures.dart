@@ -144,7 +144,10 @@ final class ProfileSurfaceFixtures {
     ),
   );
 
-  static final ownPublicProfile = publicProfileFromUserProfile(viewer);
+  static final ownPublicProfile = publicProfileFromUserProfile(
+    viewer,
+    today: now,
+  );
 
   static final noPromptPublicProfile = targetPublicProfile.copyWith(
     uid: 'design-profile-no-prompts',

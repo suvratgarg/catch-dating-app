@@ -9,11 +9,13 @@ const PhotoUploadState _idleUploadState = (
   loadingIndices: <int>{},
   uploadError: null,
 );
+final _today = DateTime(2026, 6, 24);
 
 void main() {
   test('SelfProfileScreenState maps loading profile state', () {
     final state = SelfProfileScreenState.fromAsync(
       profileAsync: const AsyncLoading(),
+      today: _today,
       uploadState: _idleUploadState,
       uploadMutationPending: false,
       saveMutationPending: false,
@@ -31,6 +33,7 @@ void main() {
 
     final state = SelfProfileScreenState.fromAsync(
       profileAsync: AsyncError(error, StackTrace.empty),
+      today: _today,
       uploadState: _idleUploadState,
       uploadMutationPending: false,
       saveMutationPending: false,
@@ -46,6 +49,7 @@ void main() {
     () {
       final state = SelfProfileScreenState.fromAsync(
         profileAsync: const AsyncData(null),
+        today: _today,
         uploadState: _idleUploadState,
         uploadMutationPending: false,
         saveMutationPending: false,
@@ -67,6 +71,7 @@ void main() {
 
     final state = SelfProfileScreenState.fromAsync(
       profileAsync: AsyncData(user),
+      today: _today,
       uploadState: uploadState,
       uploadMutationPending: true,
       saveMutationPending: true,

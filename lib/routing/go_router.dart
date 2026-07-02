@@ -880,8 +880,9 @@ String? appRedirect({
       onOnboarding &&
       uri.queryParameters[_onboardingIntentQueryParam] ==
           _completeRunPreferencesIntent;
+  final today = DateTime.now();
 
-  if (userProfile == null || !userProfile.hasBookingReadyIdentity) {
+  if (userProfile == null || !userProfile.hasBookingReadyIdentityOn(today)) {
     if (onOnboarding) return null;
     return _locationWithFrom(
       Routes.onboardingScreen.path,
@@ -890,7 +891,7 @@ String? appRedirect({
   }
 
   if (onProfileCompletionOnboarding) {
-    if (!userProfile.hasSocialReadyProfile) return null;
+    if (!userProfile.hasSocialReadyProfileOn(today)) return null;
     return _resumeDestination(uri);
   }
 
@@ -900,7 +901,7 @@ String? appRedirect({
   }
 
   if (_requiresSocialProfile(matchedLocation) &&
-      !userProfile.hasSocialReadyProfile) {
+      !userProfile.hasSocialReadyProfileOn(today)) {
     return _profileCompletionLocation(
       from: _pendingDestination(uri: uri, matchedLocation: matchedLocation),
     );

@@ -23,10 +23,11 @@ class EventService {
     bool hasValidInvite = false,
   }) {
     if (!event.isUpcomingAt(now)) return const EventPast();
-    if (user.age < event.constraints.minAge) {
+    final userAge = user.ageOn(now);
+    if (userAge < event.constraints.minAge) {
       return AgeTooYoung(event.constraints.minAge);
     }
-    if (user.age > event.constraints.maxAge) {
+    if (userAge > event.constraints.maxAge) {
       return AgeTooOld(event.constraints.maxAge);
     }
 

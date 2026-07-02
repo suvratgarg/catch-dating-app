@@ -41,11 +41,12 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
   }
 
   Future<void> _pickDate() async {
+    final today = DateTime.now();
     final picked = await showCatchDatePicker(
       context: context,
       initialDate: _selectedDate ?? DateTime(2000),
       firstDate: DateTime(1920),
-      lastDate: latestAllowedDateOfBirth(),
+      lastDate: latestAllowedDateOfBirth(today: today),
       title: 'Date of birth',
     );
     if (picked != null) {
@@ -56,9 +57,9 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
     }
   }
 
-  int? _age() {
+  int? _age(DateTime today) {
     if (_selectedDate == null) return null;
-    return calculateAge(_selectedDate!);
+    return calculateAge(_selectedDate!, today: today);
   }
 
   void _seedDraft(OnboardingData data) {
@@ -111,7 +112,8 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
   Widget build(BuildContext context) {
     final data = ref.watch(onboardingControllerProvider);
     final shouldAutofocus = data.step == OnboardingStep.nameDob;
-    final age = _age();
+    final today = DateTime.now();
+    final age = _age(today);
 
     return Form(
       key: _formKey,
@@ -154,7 +156,8 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
             prefixIcon: Icon(CatchIcons.calendarTodayOutlined),
             suffixText: age != null ? 'AGE $age' : null,
             helperText: 'We never show your birth year.',
-            validator: (_) => validateRequiredDateOfBirth(_selectedDate),
+            validator: (_) =>
+                validateRequiredDateOfBirth(_selectedDate, today: today),
           ),
           gapH16,
           CatchField.input(
