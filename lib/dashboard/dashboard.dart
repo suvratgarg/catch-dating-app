@@ -13,7 +13,7 @@ export 'presentation/widgets/dashboard_section_state_card.dart';
 export 'presentation/widgets/dashboard_sliver_header.dart';
 export 'presentation/widgets/empty_hero_card.dart';
 export 'presentation/widgets/event_focus_rail.dart';
-export 'presentation/widgets/quick_actions.dart';
 export 'presentation/widgets/recommend_card.dart';
 export 'presentation/widgets/recommendations.dart';
 export 'presentation/widgets/stride_card.dart';
+export 'shared/quick_actions.dart';

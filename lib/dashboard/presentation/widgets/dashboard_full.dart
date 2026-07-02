@@ -18,9 +18,9 @@ import 'package:catch_dating_app/dashboard/presentation/dashboard_stride_actions
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_section_state_card.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_sliver_header.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_rail.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/quick_actions.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/recommendations.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/stride_card.dart';
+import 'package:catch_dating_app/dashboard/shared/quick_actions.dart';
 import 'package:catch_dating_app/event_success/event_success_companion_launcher.dart';
 import 'package:catch_dating_app/events/data/event_calendar_links.dart';
 import 'package:catch_dating_app/events/domain/event.dart';

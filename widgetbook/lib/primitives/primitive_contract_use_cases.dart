@@ -63,7 +63,7 @@ import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/core/widgets/event_ticket_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/quick_actions.dart';
+import 'package:catch_dating_app/dashboard/shared/quick_actions.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/catch_cover_story.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/catch_cross_paths_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/catch_roster_board.dart';

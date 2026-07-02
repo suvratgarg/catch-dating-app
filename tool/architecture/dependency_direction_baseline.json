@@ -111,11 +111,6 @@
     {
       "rule": "crossFeaturePresentationImport",
       "path": "lib/payments/presentation/payment_confirmation_screen.dart",
-      "import": "package:catch_dating_app/dashboard/presentation/widgets/quick_actions.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/payments/presentation/payment_confirmation_screen.dart",
       "import": "package:catch_dating_app/events/presentation/event_joined_celebration_screen.dart"
     }
   ]

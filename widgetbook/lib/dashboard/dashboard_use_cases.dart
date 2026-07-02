@@ -21,7 +21,7 @@ import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_sectio
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_sliver_header.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/empty_hero_card.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_rail.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/quick_actions.dart';
+import 'package:catch_dating_app/dashboard/shared/quick_actions.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/recommend_card.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/recommendations.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/stride_card.dart';
