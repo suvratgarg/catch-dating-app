@@ -87,6 +87,7 @@ import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart'
 import 'package:catch_dating_app/hosts/presentation/host_settings_state.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_card.dart';
+import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/catch_roster_board.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_club_tools.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
@@ -1334,10 +1335,16 @@ Widget _hostClubPreviewFor(String focus) {
       activeEventCount: events.length,
       onTap: () {},
     ),
-    'HostPaymentAccountCard' => HostPaymentAccountCard(club: club),
+    'HostPaymentAccountCard' => HostPaymentAccountCard(
+      club: club,
+      account: payment,
+    ),
+    'HostPaymentAccountControllerCard' => HostPaymentAccountControllerCard(
+      club: club,
+    ),
     'HostPaymentAccountContentCard' => HostPaymentAccountContentCard(
       account: payment,
-      actionError: null,
+      actionErrorMessage: null,
       onboardingPending: false,
       refreshPending: false,
       onShowPayoutsHandoff: (_, _) async {},
@@ -1880,6 +1887,11 @@ String _hostComponentSlug(String name) {
 @widgetbook.UseCase(
   name: 'Covered by host clubs route states',
   type: HostPaymentAccountCard,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostPaymentAccountControllerCard,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 @widgetbook.UseCase(
@@ -6136,6 +6148,15 @@ Widget hostStrictHostParticipationLifecycleBoardCatalogStates(
 )
 Widget hostStrictHostPaymentAccountCardCatalogStates(BuildContext context) =>
     _hostClubExactCatalog(context, 'HostPaymentAccountCard');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostPaymentAccountControllerCard,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostPaymentAccountControllerCardCatalogStates(
+  BuildContext context,
+) => _hostClubExactCatalog(context, 'HostPaymentAccountControllerCard');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',

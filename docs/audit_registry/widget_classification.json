@@ -11,27 +11,27 @@
   },
   "summary": {
     "total": 1064,
-    "widgetClasses": 963,
-    "stateClasses": 101,
-    "publicClasses": 963,
-    "privateClasses": 101,
+    "widgetClasses": 964,
+    "stateClasses": 100,
+    "publicClasses": 964,
+    "privateClasses": 100,
     "byRole": {
       "atom": 37,
-      "composition": 279,
+      "composition": 280,
       "feature-adapter": 305,
       "pattern": 14,
       "screen": 328,
-      "widget-state": 101
+      "widget-state": 100
     },
     "byDecision": {
       "keep-canonical-contract": 121,
-      "keep-public-cataloged": 842,
-      "keep-widget-state": 101
+      "keep-public-cataloged": 843,
+      "keep-widget-state": 100
     },
     "byCatalogStatus": {
-      "cataloged": 771,
+      "cataloged": 772,
       "contracted": 121,
-      "not-applicable": 101,
+      "not-applicable": 100,
       "route-covered": 71
     }
   },
@@ -19269,33 +19269,10 @@
       "flags": []
     },
     {
-      "name": "_HostPaymentAccountCardState",
-      "file": "lib/hosts/presentation/payments/host_payment_account_card.dart",
-      "classKind": "widget-state",
-      "baseClass": "ConsumerState<HostPaymentAccountCard>",
-      "visibility": "private",
-      "role": "widget-state",
-      "canonicalFamily": "state.host_payment_account_card",
-      "publicApi": false,
-      "catalogStatus": "not-applicable",
-      "contractId": null,
-      "allowedDependencyLevel": "owning-widget-state",
-      "stateOwnership": "owning-widget-state",
-      "asyncOwnership": "owning-widget-state",
-      "layoutOwnership": "owning-widget-state",
-      "actionOwnership": "owning-widget-state",
-      "decision": "keep-widget-state",
-      "remediationOptions": [
-        "moveStateToController",
-        "routeThroughScreenState"
-      ],
-      "flags": []
-    },
-    {
       "name": "HostPaymentAccountCard",
       "file": "lib/hosts/presentation/payments/host_payment_account_card.dart",
       "classKind": "widget",
-      "baseClass": "ConsumerStatefulWidget",
+      "baseClass": "StatelessWidget",
       "visibility": "public",
       "role": "composition",
       "canonicalFamily": "catch.host_payment_account_card",
@@ -19312,10 +19289,7 @@
         "keepPublicCataloged",
         "mergeIntoCanonical"
       ],
-      "flags": [
-        "primitive-imports-data-layer",
-        "primitive-imports-provider-layer"
-      ]
+      "flags": []
     },
     {
       "name": "HostPaymentAccountContentCard",
@@ -19338,10 +19312,7 @@
         "keepPublicCataloged",
         "mergeIntoCanonical"
       ],
-      "flags": [
-        "primitive-imports-data-layer",
-        "primitive-imports-provider-layer"
-      ]
+      "flags": []
     },
     {
       "name": "HostPaymentAccountErrorCard",
@@ -19364,10 +19335,7 @@
         "keepPublicCataloged",
         "mergeIntoCanonical"
       ],
-      "flags": [
-        "primitive-imports-data-layer",
-        "primitive-imports-provider-layer"
-      ]
+      "flags": []
     },
     {
       "name": "HostPaymentAccountLoadingCard",
@@ -19377,6 +19345,29 @@
       "visibility": "public",
       "role": "composition",
       "canonicalFamily": "catch.host_payment_account_loading_card",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "HostPaymentAccountControllerCard",
+      "file": "lib/hosts/presentation/payments/host_payment_account_controller_card.dart",
+      "classKind": "widget",
+      "baseClass": "ConsumerWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.host_payment_account_controller_card",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,

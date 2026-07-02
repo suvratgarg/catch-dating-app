@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
@@ -8,7 +7,6 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -18,35 +16,53 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
-import 'package:catch_dating_app/exceptions/error_logger.dart';
-import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller.dart';
-import 'package:catch_dating_app/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/experimental/mutation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class HostPaymentAccountCard extends ConsumerStatefulWidget {
-  const HostPaymentAccountCard({super.key, required this.club});
+typedef HostPaymentStartOnboarding =
+    Future<void> Function({required String country, required String currency});
+
+Future<void> _noopStartOnboarding({
+  required String country,
+  required String currency,
+}) async {}
+
+Future<void> _noopRefresh() async {}
+
+class HostPaymentAccountCard extends StatelessWidget {
+  const HostPaymentAccountCard({
+    super.key,
+    required this.club,
+    this.account,
+    this.loading = false,
+    this.error,
+    this.actionErrorMessage,
+    this.onboardingPending = false,
+    this.refreshPending = false,
+    this.onRetry,
+    this.onStartOnboarding = _noopStartOnboarding,
+    this.onRefresh = _noopRefresh,
+  });
 
   final Club club;
+  final HostPaymentAccount? account;
+  final bool loading;
+  final Object? error;
+  final String? actionErrorMessage;
+  final bool onboardingPending;
+  final bool refreshPending;
+  final VoidCallback? onRetry;
+  final HostPaymentStartOnboarding onStartOnboarding;
+  final Future<void> Function() onRefresh;
 
-  @override
-  ConsumerState<HostPaymentAccountCard> createState() =>
-      _HostPaymentAccountCardState();
-}
-
-class _HostPaymentAccountCardState
-    extends ConsumerState<HostPaymentAccountCard> {
   Future<void> _showPayoutsHandoff(
+    BuildContext context,
     HostPaymentAccount? account,
     HostPaymentPresentation presentation,
-    bool onboardingPending,
   ) async {
     final t = CatchTokens.of(context);
-    final derivedCountry = countryIsoCodeForCityName(widget.club.location);
-    final derivedCurrency = currencyCodeForCityName(widget.club.location);
+    final derivedCountry = countryIsoCodeForCityName(club.location);
+    final derivedCurrency = currencyCodeForCityName(club.location);
     final country = account?.country ?? derivedCountry;
     final currency = account?.defaultCurrency ?? derivedCurrency;
 
@@ -75,7 +91,7 @@ class _HostPaymentAccountCardState
                 : () {
                     Navigator.of(sheetContext).pop();
                     unawaited(
-                      _startOnboarding(country: country, currency: currency),
+                      onStartOnboarding(country: country, currency: currency),
                     );
                   },
           ),
@@ -136,86 +152,22 @@ class _HostPaymentAccountCardState
     );
   }
 
-  Future<void> _startOnboarding({
-    required String country,
-    required String currency,
-  }) async {
-    if (ref
-        .read(HostPaymentAccountController.startOnboardingMutation)
-        .isPending) {
-      return;
-    }
-    try {
-      await HostPaymentAccountController.startOnboardingMutation.run(
-        ref,
-        (tx) => tx
-            .get(hostPaymentAccountControllerProvider)
-            .startOnboarding(country: country, defaultCurrency: currency),
-      );
-    } catch (error, stackTrace) {
-      ref.read(errorLoggerProvider).logError(error, stackTrace, reason: '_HostPaymentAccountCardState._startOnboarding failed');
-    }
-  }
-
-  Future<void> _refresh() async {
-    if (ref
-        .read(HostPaymentAccountController.refreshStatusMutation)
-        .isPending) {
-      return;
-    }
-    try {
-      await HostPaymentAccountController.refreshStatusMutation.run(
-        ref,
-        (tx) => tx.get(hostPaymentAccountControllerProvider).refreshStatus(),
-      );
-    } catch (error, stackTrace) {
-      ref.read(errorLoggerProvider).logError(error, stackTrace, reason: '_HostPaymentAccountCardState._refresh failed');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final uid = ref.watch(uidProvider).asData?.value;
-    final accountAsync = uid == null
-        ? const AsyncValue<HostPaymentAccount?>.data(null)
-        : ref.watch(watchHostPaymentAccountProvider(uid));
-    final onboardingMutation = ref.watch(
-      HostPaymentAccountController.startOnboardingMutation,
+    final error = this.error;
+    if (loading) return const HostPaymentAccountLoadingCard();
+    if (error != null) {
+      return HostPaymentAccountErrorCard(error: error, onRetry: onRetry);
+    }
+    return HostPaymentAccountContentCard(
+      account: account,
+      actionErrorMessage: actionErrorMessage,
+      onboardingPending: onboardingPending,
+      refreshPending: refreshPending,
+      onShowPayoutsHandoff: (account, presentation) =>
+          _showPayoutsHandoff(context, account, presentation),
+      onRefresh: onRefresh,
     );
-    final refreshMutation = ref.watch(
-      HostPaymentAccountController.refreshStatusMutation,
-    );
-    return CatchAsyncValueView<HostPaymentAccount?>(
-      value: accountAsync,
-      loadingBuilder: (_) => const HostPaymentAccountLoadingCard(),
-      errorBuilder: (_, error, _) => HostPaymentAccountErrorCard(
-        error: error,
-        onRetry: uid == null
-            ? null
-            : () => ref.invalidate(watchHostPaymentAccountProvider(uid)),
-      ),
-      builder: (context, account) => HostPaymentAccountContentCard(
-        account: account,
-        actionError: _firstErrorMutation(onboardingMutation, refreshMutation),
-        onboardingPending: onboardingMutation.isPending,
-        refreshPending: refreshMutation.isPending,
-        onShowPayoutsHandoff: (account, presentation) => _showPayoutsHandoff(
-          account,
-          presentation,
-          onboardingMutation.isPending,
-        ),
-        onRefresh: _refresh,
-      ),
-    );
-  }
-
-  MutationState? _firstErrorMutation(
-    MutationState onboardingMutation,
-    MutationState refreshMutation,
-  ) {
-    if (onboardingMutation.hasError) return onboardingMutation;
-    if (refreshMutation.hasError) return refreshMutation;
-    return null;
   }
 }
 
@@ -223,7 +175,7 @@ class HostPaymentAccountContentCard extends StatelessWidget {
   const HostPaymentAccountContentCard({
     super.key,
     required this.account,
-    required this.actionError,
+    this.actionErrorMessage,
     required this.onboardingPending,
     required this.refreshPending,
     required this.onShowPayoutsHandoff,
@@ -231,7 +183,7 @@ class HostPaymentAccountContentCard extends StatelessWidget {
   });
 
   final HostPaymentAccount? account;
-  final MutationState? actionError;
+  final String? actionErrorMessage;
   final bool onboardingPending;
   final bool refreshPending;
   final Future<void> Function(
@@ -289,14 +241,9 @@ class HostPaymentAccountContentCard extends StatelessWidget {
               ],
             ),
           ],
-          if (actionError != null) ...[
+          if (actionErrorMessage != null) ...[
             gapH12,
-            CatchErrorBanner(
-              message: mutationErrorMessage(
-                actionError!,
-                context: AppErrorContext.payments,
-              ),
-            ),
+            CatchErrorBanner(message: actionErrorMessage!),
           ],
           gapH12,
           Row(

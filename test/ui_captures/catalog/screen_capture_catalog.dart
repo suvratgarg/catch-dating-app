@@ -126,8 +126,8 @@ import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dar
 import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_profile_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_card.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
@@ -2579,7 +2579,7 @@ Widget _hostPayoutCardCapture() {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: HostPaymentAccountCard(
+          child: HostPaymentAccountControllerCard(
             club: HostOperationsFixtures.primaryClub,
           ),
         ),

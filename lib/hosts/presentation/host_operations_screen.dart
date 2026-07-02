@@ -44,7 +44,7 @@ import 'package:catch_dating_app/hosts/presentation/club_management/host_club_ed
 import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_profile_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_settings_state.dart';
-import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_card.dart';
+import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
 import 'package:catch_dating_app/payments/data/host_payment_account_repository.dart';
@@ -3404,7 +3404,7 @@ class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
         if (isOwner) ...[
           HostSettingsSection(
             label: 'Payouts',
-            children: [HostPaymentAccountCard(club: club)],
+            children: [HostPaymentAccountControllerCard(club: club)],
           ),
           HostSettingsSection(
             label: 'Host team',

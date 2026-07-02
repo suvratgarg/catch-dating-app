@@ -8263,6 +8263,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostPaymentAccountControllerCard',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Exact catalog',
+                    builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                        .hostStrictHostPaymentAccountControllerCardCatalogStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostPaymentAccountErrorCard',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
