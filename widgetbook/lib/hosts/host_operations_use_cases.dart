@@ -97,7 +97,7 @@ import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_payou
 import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_payout_prompt_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
-import 'package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart';
+import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/labs/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/payments/data/host_payment_account_repository.dart';
