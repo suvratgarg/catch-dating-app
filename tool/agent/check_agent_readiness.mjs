@@ -1,81 +1,150 @@
 #!/usr/bin/env node
 import fs from "node:fs";
+import path from "node:path";
+import {fileURLToPath} from "node:url";
+import {scanDependencyDirection} from "../architecture/check_dependency_direction.mjs";
 import {fromRepo} from "../lib/repo_paths.mjs";
 
-const args = parseArgs(process.argv.slice(2));
+const isCliEntrypoint =
+  process.argv[1] != null &&
+  path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+
 const checks = [];
 
-const docVersions = readJson("docs/audit_registry/doc_versions.json");
-const toolsManifest = readJson("tool/tools_manifest.json");
-const regressionLedger = readJson("docs/agent_regression_ledger.json");
-const skillsManifest = readJson("docs/agent_skills/skills_manifest.json");
+if (isCliEntrypoint) runCli();
 
-checkPath("AGENTS.md", "Agent entrypoint exists.");
-checkPath("docs/agent_operating_model.md", "Agent operating model exists.");
-checkPath("docs/agent_regression_ledger.json", "Regression ledger exists.");
-checkPath("docs/agent_skills/skills_manifest.json", "Skill manifest exists.");
-checkPath("docs/audit_registry/agent_metrics.jsonl", "Agent metrics ledger exists.");
-checkPath("tool/agent/context_pack.mjs", "Context pack tool exists.");
-checkPath("tool/agent/check_agent_readiness.mjs", "Readiness tool exists.");
-checkPath("tool/agent/record_delegation_outcome.mjs", "Delegation outcome recorder exists.");
+function runCli() {
+  const args = parseArgs(process.argv.slice(2));
+  const docVersions = readJson("docs/audit_registry/doc_versions.json");
+  const toolsManifest = readJson("tool/tools_manifest.json");
+  const regressionLedger = readJson("docs/agent_regression_ledger.json");
+  const skillsManifest = readJson("docs/agent_skills/skills_manifest.json");
+  const metricsPath = "docs/audit_registry/agent_metrics.jsonl";
 
-checkContains("AGENTS.md", "docs/agent_operating_model.md", "AGENTS.md routes to the operating model.");
-checkContains("AGENTS.md", "tool/agent/context_pack.mjs", "AGENTS.md names the context-pack tool.");
-checkContains("AGENTS.md", "tool/agent/check_agent_readiness.mjs", "AGENTS.md names the readiness tool.");
-checkContains("AGENTS.md", "tool/agent/record_delegation_outcome.mjs", "AGENTS.md names the delegation recorder.");
-checkContains("docs/agent_operating_model.md", "Parallel Worktree Delegation Contract", "Operating model defines parallel worktree delegation.");
-checkContains("docs/agent_operating_model.md", "pattern_delta", "Operating model requires pattern_delta in subagent results.");
-checkContains("docs/README.md", "agent_operating_model.md", "Docs index includes the operating model.");
-checkContains("docs/README.md", "agent_skills/", "Docs index includes project-local skills.");
+  checkPath("AGENTS.md", "Agent entrypoint exists.");
+  checkPath("docs/agent_operating_model.md", "Agent operating model exists.");
+  checkPath("docs/agent_regression_ledger.json", "Regression ledger exists.");
+  checkPath("docs/agent_skills/skills_manifest.json", "Skill manifest exists.");
+  checkPath(metricsPath, "Agent metrics ledger exists.");
+  checkPath("tool/agent/context_pack.mjs", "Context pack tool exists.");
+  checkPath("tool/agent/check_agent_readiness.mjs", "Readiness tool exists.");
+  checkPath(
+    "tool/agent/record_delegation_outcome.mjs",
+    "Delegation outcome recorder exists.",
+  );
 
-for (const [docId, expectedPath] of Object.entries({
-  agent_entrypoint: "AGENTS.md",
-  agent_operating_model: "docs/agent_operating_model.md",
-  agent_regression_ledger: "docs/agent_regression_ledger.json",
-  agent_skills: "docs/agent_skills/README.md",
-})) {
-  const entry = docVersions?.[docId];
-  check(Boolean(entry), `doc_versions includes ${docId}.`);
-  if (entry) check(entry.path === expectedPath, `${docId} points to ${expectedPath}.`);
-}
+  checkContains(
+    "AGENTS.md",
+    "docs/agent_operating_model.md",
+    "AGENTS.md routes to the operating model.",
+  );
+  checkContains(
+    "AGENTS.md",
+    "tool/agent/context_pack.mjs",
+    "AGENTS.md names the context-pack tool.",
+  );
+  checkContains(
+    "AGENTS.md",
+    "tool/agent/check_agent_readiness.mjs",
+    "AGENTS.md names the readiness tool.",
+  );
+  checkContains(
+    "AGENTS.md",
+    "tool/agent/record_delegation_outcome.mjs",
+    "AGENTS.md names the delegation recorder.",
+  );
+  checkContains(
+    "docs/agent_operating_model.md",
+    "Parallel Worktree Delegation Contract",
+    "Operating model defines parallel worktree delegation.",
+  );
+  checkContains(
+    "docs/agent_operating_model.md",
+    "pattern_delta",
+    "Operating model requires pattern_delta in subagent results.",
+  );
+  checkContains(
+    "docs/README.md",
+    "agent_operating_model.md",
+    "Docs index includes the operating model.",
+  );
+  checkContains(
+    "docs/README.md",
+    "agent_skills/",
+    "Docs index includes project-local skills.",
+  );
 
-const toolIds = new Set((toolsManifest?.tools ?? []).map((tool) => tool.id));
-for (const id of ["agent:context-pack", "agent:readiness"]) {
-  check(toolIds.has(id), `Tool manifest includes ${id}.`);
-}
-check(toolIds.has("agent:record-delegation"), "Tool manifest includes agent:record-delegation.");
-
-validateRegressionLedger(regressionLedger);
-validateSkills(skillsManifest, toolIds);
-validateMetrics("docs/audit_registry/agent_metrics.jsonl");
-
-const passed = checks.filter((entry) => entry.ok).length;
-const failed = checks.length - passed;
-const score = checks.length === 0 ? 0 : Math.round((passed / checks.length) * 100);
-
-const result = {
-  score,
-  passed,
-  failed,
-  total: checks.length,
-  failures: checks.filter((entry) => !entry.ok).map((entry) => entry.message),
-};
-
-if (args.recordMetric) {
-  appendMetric(result);
-}
-
-if (args.json) {
-  console.log(JSON.stringify(result, null, 2));
-} else {
-  console.log(`Agent readiness score: ${score}/100 (${passed}/${checks.length} checks passed)`);
-  for (const failure of result.failures) {
-    console.error(`- ${failure}`);
+  for (const [docId, expectedPath] of Object.entries({
+    agent_entrypoint: "AGENTS.md",
+    agent_operating_model: "docs/agent_operating_model.md",
+    agent_regression_ledger: "docs/agent_regression_ledger.json",
+    agent_skills: "docs/agent_skills/README.md",
+  })) {
+    const entry = docVersions?.[docId];
+    check(Boolean(entry), `doc_versions includes ${docId}.`);
+    if (entry) {
+      check(entry.path === expectedPath, `${docId} points to ${expectedPath}.`);
+    }
   }
-}
 
-if (failed > 0) {
-  process.exitCode = 1;
+  const toolIds = new Set((toolsManifest?.tools ?? []).map((tool) => tool.id));
+  for (const id of ["agent:context-pack", "agent:readiness"]) {
+    check(toolIds.has(id), `Tool manifest includes ${id}.`);
+  }
+  check(
+    toolIds.has("agent:record-delegation"),
+    "Tool manifest includes agent:record-delegation.",
+  );
+
+  const dependencyDirectionBaseline = readDependencyDirectionBaselineSnapshot();
+  const metricsEntries = readMetricEntries(metricsPath);
+  const warnings = dependencyBaselineGrowthWarnings(
+    metricsEntries,
+    dependencyDirectionBaseline,
+  );
+
+  validateRegressionLedger(regressionLedger);
+  validateSkills(skillsManifest, toolIds);
+  validateMetrics(metricsPath);
+
+  const passed = checks.filter((entry) => entry.ok).length;
+  const failed = checks.length - passed;
+  const score =
+    checks.length === 0 ? 0 : Math.round((passed / checks.length) * 100);
+
+  const result = {
+    score,
+    passed,
+    failed,
+    total: checks.length,
+    failures: checks.filter((entry) => !entry.ok).map((entry) => entry.message),
+    warnings,
+    architecture_baselines: {
+      dependency_direction: dependencyDirectionBaseline,
+    },
+  };
+
+  if (args.recordMetric) {
+    appendMetric(result);
+  }
+
+  if (args.json) {
+    console.log(JSON.stringify(result, null, 2));
+  } else {
+    console.log(
+      `Agent readiness score: ${score}/100 (${passed}/${checks.length} checks passed)`,
+    );
+    for (const failure of result.failures) {
+      console.error(`- ${failure}`);
+    }
+    for (const warning of result.warnings) {
+      console.error(`! ${warning}`);
+    }
+  }
+
+  if (failed > 0) {
+    process.exitCode = 1;
+  }
 }
 
 function validateRegressionLedger(ledger) {
@@ -147,6 +216,10 @@ function validateMetrics(relativePath) {
 }
 
 function validateMetricEntry(entry, label) {
+  if (entry?.event === "agent_readiness_check") {
+    validateReadinessMetric(entry, label);
+    return;
+  }
   if (entry?.event !== "agent_delegation_outcome") return;
   for (const field of ["task_id", "mode", "status", "parent_review_outcome", "timestamp"]) {
     check(Boolean(entry[field]), `${label} delegation metric declares ${field}.`);
@@ -156,6 +229,99 @@ function validateMetricEntry(entry, label) {
   check(Array.isArray(entry.checks_failed), `${label} delegation metric checks_failed is an array.`);
   check(Number.isFinite(entry.conflicts_count), `${label} delegation metric conflicts_count is numeric.`);
   check(Number.isFinite(entry.parent_edits_required), `${label} delegation metric parent_edits_required is numeric.`);
+}
+
+function validateReadinessMetric(entry, label) {
+  const snapshot = extractDependencyBaselineSnapshot(entry);
+  if (snapshot == null) return;
+  check(
+    Number.isFinite(snapshot.baseline_total),
+    `${label} readiness metric dependency baseline total is numeric.`,
+  );
+  check(
+    Number.isFinite(snapshot.new_findings_total),
+    `${label} readiness metric dependency new findings total is numeric.`,
+  );
+  check(
+    Number.isFinite(snapshot.checked_files),
+    `${label} readiness metric dependency checked files is numeric.`,
+  );
+  check(
+    snapshot.baseline_by_rule &&
+      Object.values(snapshot.baseline_by_rule).every(Number.isFinite),
+    `${label} readiness metric dependency baseline by-rule counts are numeric.`,
+  );
+}
+
+function readDependencyDirectionBaselineSnapshot() {
+  const baseline = readJson("tool/architecture/dependency_direction_baseline.json");
+  const result = scanDependencyDirection({
+    root: fromRepo(),
+    baseline: baseline ?? {allowedFindings: []},
+  });
+  return {
+    baseline_total: result.baselineFindings.length,
+    baseline_by_rule: result.summary.baselineFindingsByRule,
+    new_findings_total: result.findings.length,
+    checked_files: result.checkedFiles,
+  };
+}
+
+function readMetricEntries(relativePath) {
+  const fullPath = fromRepo(relativePath);
+  if (!fs.existsSync(fullPath)) return [];
+  const entries = [];
+  for (const line of fs.readFileSync(fullPath, "utf8").split(/\r?\n/)) {
+    if (!line.trim()) continue;
+    try {
+      entries.push(JSON.parse(line));
+    } catch {
+      // validateMetrics reports malformed JSON; growth warnings ignore it.
+    }
+  }
+  return entries;
+}
+
+export function extractDependencyBaselineSnapshot(entry) {
+  const snapshot = entry?.architecture_baselines?.dependency_direction;
+  if (snapshot == null) return null;
+  return {
+    baseline_total: Number(snapshot.baseline_total),
+    baseline_by_rule: Object.fromEntries(
+      Object.entries(snapshot.baseline_by_rule ?? {}).map(([rule, count]) => [
+        rule,
+        Number(count),
+      ]),
+    ),
+    new_findings_total: Number(snapshot.new_findings_total ?? 0),
+    checked_files: Number(snapshot.checked_files ?? 0),
+  };
+}
+
+export function dependencyBaselineGrowthWarnings(entries, currentSnapshot) {
+  const previousSnapshot = entries
+    .map(extractDependencyBaselineSnapshot)
+    .filter(Boolean)
+    .at(-1);
+  if (previousSnapshot == null) return [];
+  if (currentSnapshot.baseline_total <= previousSnapshot.baseline_total) {
+    return [];
+  }
+
+  const ruleGrowth = [];
+  const rules = new Set([
+    ...Object.keys(previousSnapshot.baseline_by_rule),
+    ...Object.keys(currentSnapshot.baseline_by_rule),
+  ]);
+  for (const rule of [...rules].sort()) {
+    const previous = previousSnapshot.baseline_by_rule[rule] ?? 0;
+    const current = currentSnapshot.baseline_by_rule[rule] ?? 0;
+    if (current > previous) ruleGrowth.push(`${rule} ${previous}->${current}`);
+  }
+  const detail = ruleGrowth.length > 0 ? ` (${ruleGrowth.join(", ")})` : "";
+  return [
+    `Dependency direction baseline grew ${previousSnapshot.baseline_total}->${currentSnapshot.baseline_total}${detail}. Burn down or update the baseline intentionally.`,
+  ];
 }
 
 function extractCommandPaths(command) {
@@ -178,6 +344,7 @@ function appendMetric(result) {
     checks_passed: result.passed,
     checks_failed: result.failed,
     checks_total: result.total,
+    architecture_baselines: result.architecture_baselines,
   };
   fs.appendFileSync(fromRepo("docs/audit_registry/agent_metrics.jsonl"), `${JSON.stringify(entry)}\n`);
 }
