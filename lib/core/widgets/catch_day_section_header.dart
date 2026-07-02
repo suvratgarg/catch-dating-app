@@ -46,7 +46,8 @@ class CatchDaySectionHeader extends StatelessWidget {
               style: CatchTextStyles.kickerLg(context, color: t.primary),
             ),
           ),
-          if (count != null) _buildAnimatedCount(context, count!, t.ink2),
+          if (count != null)
+            CatchDaySectionHeaderCount(count: count!, color: t.ink2),
         ],
       ),
     );
@@ -56,38 +57,50 @@ class CatchDaySectionHeader extends StatelessWidget {
   }
 }
 
-Widget _buildAnimatedCount(BuildContext context, int count, Color color) {
-  return AnimatedSwitcher(
-    duration: CatchMotion.base,
-    switchInCurve: CatchMotion.springCurve,
-    switchOutCurve: CatchMotion.standardCurve,
-    transitionBuilder: (child, animation) {
-      final slide = Tween<Offset>(
-        begin: const Offset(0, 0.4),
-        end: Offset.zero,
-      ).animate(animation);
-      return ClipRect(
-        child: FadeTransition(
-          opacity: animation,
-          child: SlideTransition(position: slide, child: child),
-        ),
-      );
-    },
-    layoutBuilder: (currentChild, previousChildren) {
-      return Stack(
-        alignment: Alignment.centerRight,
-        children: [...previousChildren, ?currentChild],
-      );
-    },
-    child: Text(
-      count.toString(),
-      key: ValueKey<int>(count),
-      style: CatchTextStyles.numericMeta(
-        context,
-        color: color,
-      ).copyWith(fontWeight: FontWeight.w700),
-    ),
-  );
+class CatchDaySectionHeaderCount extends StatelessWidget {
+  const CatchDaySectionHeaderCount({
+    super.key,
+    required this.count,
+    this.color,
+  });
+
+  final int count;
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSwitcher(
+      duration: CatchMotion.base,
+      switchInCurve: CatchMotion.springCurve,
+      switchOutCurve: CatchMotion.standardCurve,
+      transitionBuilder: (child, animation) {
+        final slide = Tween<Offset>(
+          begin: const Offset(0, 0.4),
+          end: Offset.zero,
+        ).animate(animation);
+        return ClipRect(
+          child: FadeTransition(
+            opacity: animation,
+            child: SlideTransition(position: slide, child: child),
+          ),
+        );
+      },
+      layoutBuilder: (currentChild, previousChildren) {
+        return Stack(
+          alignment: Alignment.centerRight,
+          children: [...previousChildren, ?currentChild],
+        );
+      },
+      child: Text(
+        count.toString(),
+        key: ValueKey<int>(count),
+        style: CatchTextStyles.numericMeta(
+          context,
+          color: color ?? CatchTokens.of(context).ink2,
+        ).copyWith(fontWeight: FontWeight.w700),
+      ),
+    );
+  }
 }
 
 /// Sliver persistent-header delegate that pins a [CatchDaySectionHeader].

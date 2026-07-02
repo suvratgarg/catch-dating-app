@@ -20,6 +20,7 @@ import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_corner_sash.dart';
+import 'package:catch_dating_app/core/widgets/catch_day_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_detail_hero_backdrop.dart';
 import 'package:catch_dating_app/core/widgets/catch_distance_ring.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
@@ -1296,6 +1297,22 @@ void main() {
     expect(find.text('rating'), findsOneWidget);
     expect(find.byType(CatchMetricStripCell), findsNWidgets(3));
     expect(find.byType(CatchMetricStripDivider), findsNWidgets(2));
+  });
+
+  testWidgets('CatchDaySectionHeader composes count renderer', (tester) async {
+    await tester.pumpWidget(
+      _wrap(const CatchDaySectionHeader(label: 'Today', count: 3)),
+    );
+
+    expect(find.text('TODAY'), findsOneWidget);
+    expect(find.byType(CatchDaySectionHeaderCount), findsOneWidget);
+    expect(find.text('3'), findsOneWidget);
+
+    await tester.pumpWidget(
+      _wrap(const CatchDaySectionHeader(label: 'Tomorrow')),
+    );
+
+    expect(find.byType(CatchDaySectionHeaderCount), findsNothing);
   });
 
   testWidgets('CatchSection section variant renders row variants', (

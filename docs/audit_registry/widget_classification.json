@@ -10,14 +10,14 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1112,
-    "widgetClasses": 1012,
+    "total": 1113,
+    "widgetClasses": 1013,
     "stateClasses": 100,
-    "publicClasses": 1012,
+    "publicClasses": 1013,
     "privateClasses": 100,
     "byRole": {
       "atom": 41,
-      "composition": 293,
+      "composition": 294,
       "feature-adapter": 311,
       "pattern": 14,
       "screen": 353,
@@ -27,14 +27,14 @@
       "keep-canonical-contract": 121,
       "keep-public-cataloged": 879,
       "keep-widget-state": 100,
-      "review-promote-or-consolidate": 12
+      "review-promote-or-consolidate": 13
     },
     "byCatalogStatus": {
-      "cataloged": 817,
+      "cataloged": 819,
       "contracted": 121,
       "not-applicable": 100,
       "route-covered": 72,
-      "uncataloged": 2
+      "uncataloged": 1
     }
   },
   "widgets": [
@@ -3082,6 +3082,34 @@
       "flags": []
     },
     {
+      "name": "CatchDaySectionHeaderCount",
+      "file": "lib/core/widgets/catch_day_section_header.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.day_section_header_count",
+      "publicApi": true,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract",
+        "public-widget-missing-widgetbook"
+      ]
+    },
+    {
       "name": "CatchDetailHeroBackdrop",
       "file": "lib/core/widgets/catch_detail_hero_backdrop.dart",
       "classKind": "widget",
@@ -3927,7 +3955,7 @@
       "role": "composition",
       "canonicalFamily": "catch.metric_strip_cell",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
@@ -3942,8 +3970,7 @@
         "inlineDelete"
       ],
       "flags": [
-        "core-widget-without-contract",
-        "public-widget-missing-widgetbook"
+        "core-widget-without-contract"
       ]
     },
     {
@@ -3955,7 +3982,7 @@
       "role": "composition",
       "canonicalFamily": "catch.metric_strip_divider",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
@@ -3970,8 +3997,7 @@
         "inlineDelete"
       ],
       "flags": [
-        "core-widget-without-contract",
-        "public-widget-missing-widgetbook"
+        "core-widget-without-contract"
       ]
     },
     {

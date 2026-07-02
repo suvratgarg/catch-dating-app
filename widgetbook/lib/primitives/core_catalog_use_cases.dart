@@ -2677,6 +2677,33 @@ Widget catchDaySectionHeaderCatalogStates(BuildContext context) {
   );
 }
 
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: CatchDaySectionHeaderCount,
+  path: '[Core catalog]/Sections',
+)
+Widget catchDaySectionHeaderCountCatalogStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  return _CatalogScreen(
+    title: 'CatchDaySectionHeaderCount',
+    catalogId: 'core.widgets.catch_day_section_header.count',
+    children: [
+      _StateCard(
+        label: 'default / color override',
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CatchDaySectionHeaderCount(count: 3),
+            const SizedBox(width: CatchSpacing.s6),
+            CatchDaySectionHeaderCount(count: 12, color: t.primary),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
 Widget catchPersonAvatarCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
   return _CatalogScreen(
