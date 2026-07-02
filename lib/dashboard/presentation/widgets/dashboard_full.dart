@@ -11,6 +11,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/dashboard/presentation/dashboard_event_focus_controller.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_stride_actions.dart';
@@ -24,7 +25,6 @@ import 'package:catch_dating_app/event_success/event_success_companion_launcher.
 import 'package:catch_dating_app/events/data/event_calendar_links.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_location_links.dart';
-import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_check_in_celebration_screen.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
@@ -130,7 +130,7 @@ class _DashboardFullSliverBodyState
     );
     final clubNames = clubNamesAsync.asData?.value;
     final checkInMutation = ref.watch(
-      EventBookingController.selfCheckInMutation,
+      DashboardEventFocusController.selfCheckInMutation,
     );
 
     return SliverToBoxAdapter(
@@ -221,7 +221,7 @@ class _DashboardFullSliverBodyState
       onOpenDirections: (event) => _openDirections(ref, event),
       onAddToCalendar: (event) => _addToCalendar(ref, event),
       onResetCheckInError: () =>
-          EventBookingController.selfCheckInMutation.reset(ref),
+          DashboardEventFocusController(ref: ref).resetSelfCheckInError(),
     );
   }
 
@@ -269,12 +269,11 @@ class _DashboardFullSliverBodyState
   }
 
   void _checkIn(BuildContext context, WidgetRef ref, Event event) {
+    final controller = DashboardEventFocusController(ref: ref);
     unawaited(
-      EventBookingController.selfCheckInMutation
+      DashboardEventFocusController.selfCheckInMutation
           .run(ref, (tx) async {
-            await tx
-                .get(eventBookingControllerProvider.notifier)
-                .selfCheckIn(eventId: event.id);
+            await controller.selfCheckIn(tx, event);
             if (!context.mounted) return;
             final launchResult = await launchEventSuccessCompanionIfAvailable(
               context: context,
