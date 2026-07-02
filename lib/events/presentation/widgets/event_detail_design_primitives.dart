@@ -16,6 +16,7 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
 import 'package:flutter/material.dart';
 
 class EventDetailTicketStubBand extends StatelessWidget {
@@ -904,20 +905,6 @@ String _admissionSummary(EventAdmissionPolicy policy) {
     EventAdmissionFormat.membersOnly =>
       'Only active club members can book this event.',
   };
-}
-
-/// One value/label data pair in an [EventDetailHostCard] stat strip
-/// (design-system `HostStat`). [value] and [label] are pre-formatted; [label]
-/// is rendered uppercased mono.
-@immutable
-class EventDetailHostStat {
-  const EventDetailHostStat({required this.value, required this.label});
-
-  /// Mono figure, e.g. `"23"` or `"92%"`.
-  final String value;
-
-  /// Mono label, e.g. `"RUNS"` (rendered uppercased).
-  final String label;
 }
 
 /// Design-system "your hosts" card (`components/events/HostCard`): a graded

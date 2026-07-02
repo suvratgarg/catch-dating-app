@@ -1,5 +1,5 @@
 {
-  "version": "1.5.23",
+  "version": "1.5.24",
   "updated": "2026-07-02",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Tracks architecture reference exhibits, prototype files, adopter files, candidate status, and back-propagation obligations so migrations stay aligned with the latest pattern.",
@@ -13,6 +13,7 @@
       "prototypeFiles": [
         "lib/events/presentation/event_detail_screen.dart",
         "lib/events/presentation/event_detail_screen_state.dart",
+        "lib/events/presentation/event_detail_display_state.dart",
         "lib/events/presentation/event_detail_controller.dart",
         "lib/events/presentation/widgets/event_detail_cta.dart",
         "lib/events/presentation/widgets/event_detail_body.dart",
@@ -33,6 +34,13 @@
           "providerFree": true,
           "status": "aligned",
           "lastReviewedPass": "2026-07-01-event-detail-booking-dock-state"
+        },
+        {
+          "path": "lib/events/presentation/event_detail_display_state.dart",
+          "role": "provider-free Event Detail display-state definitions for companion availability, host card data, host stats, section visibility, invite-loop visibility, and social/review access",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-02-event-detail-display-state-ownership"
         },
         {
           "path": "lib/events/presentation/event_detail_controller.dart",
@@ -193,6 +201,7 @@
       "architectureExhibit": "docs/app_architecture.md#exhibit-arch-ui-state-001-provider-free-presentation-state-model",
       "prototypeFiles": [
         "lib/events/presentation/calendar/calendar_screen_state.dart",
+        "lib/events/presentation/event_detail_display_state.dart",
         "test/calendar/calendar_screen_state_test.dart"
       ],
       "adopters": [
@@ -227,6 +236,13 @@
           "providerFree": true,
           "status": "aligned",
           "lastReviewedPass": "2026-07-01-event-detail-booking-dock-state"
+        },
+        {
+          "path": "lib/events/presentation/event_detail_display_state.dart",
+          "role": "provider-free Event Detail display-state definitions shared by the route adapter, body widget, social section, and Widgetbook states",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-02-event-detail-display-state-ownership"
         },
         {
           "path": "test/events/event_detail_screen_state_test.dart",

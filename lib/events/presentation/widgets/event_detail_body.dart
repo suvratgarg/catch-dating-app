@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_app_bar.dart';
@@ -21,123 +22,6 @@ import 'package:flutter/material.dart';
 
 typedef EventDetailMessageHostCallback =
     void Function(String clubId, String hostUid);
-
-enum EventDetailCompanionStatus { hidden, loading, available, error }
-
-@immutable
-class EventDetailCompanionState {
-  const EventDetailCompanionState._({required this.status, this.error});
-
-  const EventDetailCompanionState.hidden()
-    : this._(status: EventDetailCompanionStatus.hidden);
-
-  const EventDetailCompanionState.loading()
-    : this._(status: EventDetailCompanionStatus.loading);
-
-  const EventDetailCompanionState.available()
-    : this._(status: EventDetailCompanionStatus.available);
-
-  const EventDetailCompanionState.error(Object error)
-    : this._(status: EventDetailCompanionStatus.error, error: error);
-
-  final EventDetailCompanionStatus status;
-  final Object? error;
-}
-
-enum EventDetailHostStatus { hidden, loading, content, error }
-
-@immutable
-class EventDetailHostState {
-  const EventDetailHostState._({
-    required this.status,
-    this.error,
-    this.clubId,
-    this.hostUid,
-    this.hostName,
-    this.photoUrl,
-    this.meta,
-    this.verified = false,
-    this.stats = const <EventDetailHostStat>[],
-    this.canMessage = false,
-  });
-
-  const EventDetailHostState.hidden()
-    : this._(status: EventDetailHostStatus.hidden);
-
-  const EventDetailHostState.loading()
-    : this._(status: EventDetailHostStatus.loading);
-
-  const EventDetailHostState.error(Object error)
-    : this._(status: EventDetailHostStatus.error, error: error);
-
-  const EventDetailHostState.content({
-    required String clubId,
-    required String hostName,
-    String? hostUid,
-    String? photoUrl,
-    String? meta,
-    bool verified = false,
-    List<EventDetailHostStat> stats = const <EventDetailHostStat>[],
-    bool canMessage = false,
-  }) : this._(
-         status: EventDetailHostStatus.content,
-         clubId: clubId,
-         hostUid: hostUid,
-         hostName: hostName,
-         photoUrl: photoUrl,
-         meta: meta,
-         verified: verified,
-         stats: stats,
-         canMessage: canMessage,
-       );
-
-  final EventDetailHostStatus status;
-  final Object? error;
-  final String? clubId;
-  final String? hostUid;
-  final String? hostName;
-  final String? photoUrl;
-  final String? meta;
-  final bool verified;
-  final List<EventDetailHostStat> stats;
-  final bool canMessage;
-}
-
-@immutable
-class EventDetailSectionVisibilityState {
-  const EventDetailSectionVisibilityState({
-    required this.showConsumerActions,
-    required this.renderSocialAsHost,
-    required this.showInviteLoop,
-    required this.showBottomNavigation,
-  });
-
-  final bool showConsumerActions;
-  final bool renderSocialAsHost;
-  final bool showInviteLoop;
-  final bool showBottomNavigation;
-}
-
-EventDetailSectionVisibilityState eventDetailSectionVisibilityStateFrom({
-  required Event event,
-  required EventParticipation? participation,
-  required bool isHostApp,
-  required bool isHost,
-  required DateTime now,
-}) {
-  final showConsumerActions = !isHostApp && !isHost;
-  return EventDetailSectionVisibilityState(
-    showConsumerActions: showConsumerActions,
-    renderSocialAsHost: isHostApp || isHost,
-    showInviteLoop: eventDetailCanShowInviteLoop(
-      event: event,
-      participation: participation,
-      showConsumerActions: showConsumerActions,
-      now: now,
-    ),
-    showBottomNavigation: !isHostApp,
-  );
-}
 
 class EventDetailBody extends StatelessWidget {
   const EventDetailBody({
@@ -283,20 +167,6 @@ class EventDetailBody extends StatelessWidget {
       ],
     );
   }
-}
-
-bool eventDetailCanShowInviteLoop({
-  required Event event,
-  required EventParticipation? participation,
-  required bool showConsumerActions,
-  required DateTime now,
-}) {
-  if (!showConsumerActions ||
-      event.isCancelled ||
-      !event.startTime.isAfter(now)) {
-    return false;
-  }
-  return participation?.status == EventParticipationStatus.signedUp;
 }
 
 class EventInviteLoopCard extends StatelessWidget {

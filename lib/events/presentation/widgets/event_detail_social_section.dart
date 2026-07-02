@@ -4,44 +4,13 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_section.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
-
-@immutable
-class EventDetailSocialState {
-  const EventDetailSocialState({
-    required this.showMemberContext,
-    required this.renderAsHost,
-    required this.hasReviewAccess,
-  });
-
-  final bool showMemberContext;
-  final bool renderAsHost;
-  final bool hasReviewAccess;
-}
-
-EventDetailSocialState eventDetailSocialStateFrom({
-  required Event event,
-  required UserProfile? userProfile,
-  required bool isAuthenticated,
-  required bool renderAsHost,
-  required EventParticipation? participation,
-  required DateTime now,
-}) {
-  final reviewAccessStarted = !event.endTime.isAfter(now);
-  return EventDetailSocialState(
-    showMemberContext: isAuthenticated && userProfile != null,
-    renderAsHost: renderAsHost,
-    hasReviewAccess:
-        participation?.status == EventParticipationStatus.attended &&
-        reviewAccessStarted,
-  );
-}
 
 class EventDetailSocialSection extends StatelessWidget {
   const EventDetailSocialSection({
@@ -105,11 +74,7 @@ class EventDetailSocialSection extends StatelessWidget {
 }
 
 class GuestWhoIsGoing extends StatelessWidget {
-  const GuestWhoIsGoing({
-    super.key,
-    this.surfaceStyle,
-    this.showHeader = true,
-  });
+  const GuestWhoIsGoing({super.key, this.surfaceStyle, this.showHeader = true});
 
   final EventDetailSurfaceStyle? surfaceStyle;
   final bool showHeader;
