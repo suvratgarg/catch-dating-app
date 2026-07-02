@@ -10526,7 +10526,7 @@
       "name": "LiveTab",
       "file": "lib/event_success/presentation/host_parts/event_success_host_live.dart",
       "classKind": "widget",
-      "baseClass": "ConsumerWidget",
+      "baseClass": "StatelessWidget",
       "visibility": "public",
       "role": "feature-adapter",
       "canonicalFamily": "feature.event_success.live_tab",

@@ -1,7 +1,8 @@
 part of '../event_success_host_screen.dart';
 
-class LiveTab extends ConsumerWidget {
+class LiveTab extends StatelessWidget {
   const LiveTab({
+    super.key,
     required this.event,
     required this.plan,
     required this.planIsPersisted,
@@ -15,6 +16,10 @@ class LiveTab extends ConsumerWidget {
     required this.wingmanProfiles,
     this.liveRoster,
     required this.compactLiveControls,
+    required this.actionState,
+    required this.onPreviousStep,
+    required this.onNextStep,
+    required this.onCompleteGuide,
     required this.fixtureActions,
     required this.shrinkWrap,
     required this.physics,
@@ -34,25 +39,17 @@ class LiveTab extends ConsumerWidget {
   final List<PublicProfile> wingmanProfiles;
   final Widget? liveRoster;
   final bool compactLiveControls;
+  final EventSuccessLiveActionState actionState;
+  final Future<void> Function(int stepIndex)? onPreviousStep;
+  final Future<void> Function(int stepIndex)? onNextStep;
+  final Future<void> Function()? onCompleteGuide;
   final EventSuccessHostFixtureActions? fixtureActions;
   final bool shrinkWrap;
   final ScrollPhysics physics;
   final EdgeInsetsGeometry padding;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final mutation = ref.watch(EventSuccessController.updateStepMutation);
-    final completeMutation = ref.watch(
-      EventSuccessController.completePlanMutation,
-    );
-    final attendanceErrorMutation = liveRoster == null
-        ? null
-        : _firstMutationError(<MutationState<void>>[
-            ref.watch(EventBookingController.markAttendanceMutation),
-            ref.watch(EventBookingController.approveJoinRequestMutation),
-            ref.watch(EventBookingController.declineJoinRequestMutation),
-            ref.watch(EventBookingController.createWaitlistOfferMutation),
-          ]);
+  Widget build(BuildContext context) {
     if (!planIsPersisted) {
       final isPreEvent = event.startTime.isAfter(DateTime.now());
       return ListView(
@@ -259,23 +256,23 @@ class LiveTab extends ConsumerWidget {
       physics: physics,
       padding: padding,
       children: [
-        if (mutation.hasError) ...[
+        if (actionState.stepError != null) ...[
           CatchErrorBanner.fromError(
-            (mutation as MutationError).error,
+            actionState.stepError!,
             context: AppErrorContext.event,
           ),
           gapH16,
         ],
-        if (completeMutation.hasError) ...[
+        if (actionState.completeError != null) ...[
           CatchErrorBanner.fromError(
-            (completeMutation as MutationError).error,
+            actionState.completeError!,
             context: AppErrorContext.event,
           ),
           gapH16,
         ],
-        if (attendanceErrorMutation != null) ...[
+        if (actionState.attendanceError != null) ...[
           CatchErrorBanner.fromError(
-            (attendanceErrorMutation as MutationError).error,
+            actionState.attendanceError!,
             context: AppErrorContext.event,
           ),
           gapH16,
@@ -288,23 +285,18 @@ class LiveTab extends ConsumerWidget {
           bookedCount: livePlan.bookedCount,
           checkedInCount: livePlan.checkedInCount,
           currentStepControls: currentStepCards,
-          onPrevious: mutation.isPending || activeStepIndex == 0
+          onPrevious:
+              actionState.isChangingStep ||
+                  activeStepIndex == 0 ||
+                  onPreviousStep == null
               ? null
-              : () => _advanceStep(
-                  ref,
-                  event.id,
-                  previousIndex,
-                  fixtureActions?.onPreviousStep,
-                ),
+              : () => unawaited(onPreviousStep!(previousIndex)),
           onNext:
-              mutation.isPending || activeStepIndex >= livePlan.steps.length - 1
+              actionState.isChangingStep ||
+                  activeStepIndex >= livePlan.steps.length - 1 ||
+                  onNextStep == null
               ? null
-              : () => _advanceStep(
-                  ref,
-                  event.id,
-                  nextIndex,
-                  fixtureActions?.onNextStep,
-                ),
+              : () => unawaited(onNextStep!(nextIndex)),
         ),
         if (supportingCards.isNotEmpty) ...[
           gapH20,
@@ -321,68 +313,14 @@ class LiveTab extends ConsumerWidget {
           CatchButton(
             label: 'Mark live guide complete',
             variant: CatchButtonVariant.secondary,
-            isLoading:
-                fixtureActions?.onCompletePlan == null &&
-                completeMutation.isPending,
-            onPressed: completeMutation.isPending
+            isLoading: actionState.isCompleting,
+            onPressed: actionState.isCompleting || onCompleteGuide == null
                 ? null
-                : () => _completeGuide(
-                    ref,
-                    event.id,
-                    fixtureActions?.onCompletePlan,
-                  ),
+                : () => unawaited(onCompleteGuide!()),
             fullWidth: true,
           ),
         ],
       ],
-    );
-  }
-
-  void _advanceStep(
-    WidgetRef ref,
-    String eventId,
-    int index,
-    VoidCallback? fixtureAction,
-  ) {
-    unawaited(
-      ref
-          .read(eventSuccessLiveEffectsControllerProvider)
-          .play(EventSuccessLiveEffectKind.stepChange),
-    );
-    if (fixtureAction != null) {
-      fixtureAction();
-      return;
-    }
-    _setStep(ref, eventId, index);
-  }
-
-  void _setStep(WidgetRef ref, String eventId, int index) {
-    EventSuccessController.updateStepMutation.run(
-      ref,
-      (tx) => tx
-          .get(eventSuccessControllerProvider.notifier)
-          .updateActiveStep(eventId: eventId, activeStepIndex: index),
-    );
-  }
-
-  void _completeGuide(
-    WidgetRef ref,
-    String eventId,
-    VoidCallback? fixtureAction,
-  ) {
-    unawaited(
-      ref
-          .read(eventSuccessLiveEffectsControllerProvider)
-          .play(EventSuccessLiveEffectKind.guideComplete),
-    );
-    if (fixtureAction != null) {
-      fixtureAction();
-      return;
-    }
-    EventSuccessController.completePlanMutation.run(
-      ref,
-      (tx) =>
-          tx.get(eventSuccessControllerProvider.notifier).completePlan(eventId),
     );
   }
 }
@@ -398,6 +336,7 @@ MutationState<void>? _firstMutationError(
 
 class LiveNowConsole extends StatelessWidget {
   const LiveNowConsole({
+    super.key,
     required this.plan,
     required this.event,
     required this.liveRoster,
@@ -604,6 +543,7 @@ class _CompactLiveConsolePresenter {
 
 class LiveCheckInSummaryStrip extends StatelessWidget {
   const LiveCheckInSummaryStrip({
+    super.key,
     required this.bookedCount,
     required this.checkedInCount,
   });
@@ -662,7 +602,7 @@ class LiveCheckInSummaryStrip extends StatelessWidget {
 }
 
 class LiveCheckInQrCard extends StatelessWidget {
-  const LiveCheckInQrCard({required this.event});
+  const LiveCheckInQrCard({super.key, required this.event});
 
   final Event event;
 
@@ -703,7 +643,11 @@ class LiveCheckInQrCard extends StatelessWidget {
 /// The "LIVE NOW" status pill of the live console — a gold dot on a dim-fill
 /// pill, per the design-system `LiveConsole` header.
 class LiveNowPill extends StatelessWidget {
-  const LiveNowPill({required this.foreground, required this.accent});
+  const LiveNowPill({
+    super.key,
+    required this.foreground,
+    required this.accent,
+  });
 
   final Color foreground;
   final Color accent;
@@ -734,6 +678,7 @@ class LiveNowPill extends StatelessWidget {
 
 class LiveStepNavigation extends StatelessWidget {
   const LiveStepNavigation({
+    super.key,
     required this.plan,
     required this.onPrevious,
     required this.onNext,
@@ -778,7 +723,11 @@ class LiveStepNavigation extends StatelessWidget {
 }
 
 class LiveSectionHeader extends StatelessWidget {
-  const LiveSectionHeader({required this.title, required this.subtitle});
+  const LiveSectionHeader({
+    super.key,
+    required this.title,
+    required this.subtitle,
+  });
 
   final String title;
   final String subtitle;

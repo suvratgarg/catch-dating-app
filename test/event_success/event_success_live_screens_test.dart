@@ -1118,6 +1118,7 @@ void main() {
                     onNextStep: () => nextPressed++,
                     onCompletePlan: () => completePressed++,
                   ),
+                  onPlayLiveEffect: effects.play,
                   initialTab: EventSuccessHostTab.live,
                   showTabs: false,
                 ),

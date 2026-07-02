@@ -127,6 +127,42 @@ class EventSuccessSetupSaveRequest {
   final String attendeePrompt;
 }
 
+class EventSuccessLiveActionState {
+  const EventSuccessLiveActionState({
+    this.isChangingStep = false,
+    this.isCompleting = false,
+    this.stepError,
+    this.completeError,
+    this.attendanceError,
+  });
+
+  factory EventSuccessLiveActionState.resolve({
+    required MutationState<void> stepMutation,
+    required MutationState<void> completeMutation,
+    MutationState<void>? attendanceErrorMutation,
+  }) {
+    return EventSuccessLiveActionState(
+      isChangingStep: stepMutation.isPending,
+      isCompleting: completeMutation.isPending,
+      stepError: stepMutation.hasError
+          ? (stepMutation as MutationError).error
+          : null,
+      completeError: completeMutation.hasError
+          ? (completeMutation as MutationError).error
+          : null,
+      attendanceError: attendanceErrorMutation == null
+          ? null
+          : (attendanceErrorMutation as MutationError).error,
+    );
+  }
+
+  final bool isChangingStep;
+  final bool isCompleting;
+  final Object? stepError;
+  final Object? completeError;
+  final Object? attendanceError;
+}
+
 class EventSuccessHostSectionState {
   const EventSuccessHostSectionState._({
     required this.status,
@@ -304,6 +340,20 @@ class EventSuccessHostSection extends ConsumerWidget {
     final saveSetupMutation = ref.watch(
       EventSuccessController.saveSetupMutation,
     );
+    final updateStepMutation = ref.watch(
+      EventSuccessController.updateStepMutation,
+    );
+    final completePlanMutation = ref.watch(
+      EventSuccessController.completePlanMutation,
+    );
+    final attendanceErrorMutation = liveRoster == null
+        ? null
+        : _firstMutationError(<MutationState<void>>[
+            ref.watch(EventBookingController.markAttendanceMutation),
+            ref.watch(EventBookingController.approveJoinRequestMutation),
+            ref.watch(EventBookingController.declineJoinRequestMutation),
+            ref.watch(EventBookingController.createWaitlistOfferMutation),
+          ]);
     final persistedPlan = planAsync.asData?.value;
     final hasSavedGuide = persistedPlan != null;
     final shouldLoadRoster =
@@ -437,6 +487,15 @@ class EventSuccessHostSection extends ConsumerWidget {
         saveMutation: saveSetupMutation,
       ),
       onSaveSetup: (request) => _saveEventSuccessSetup(ref, request),
+      liveActionState: EventSuccessLiveActionState.resolve(
+        stepMutation: updateStepMutation,
+        completeMutation: completePlanMutation,
+        attendanceErrorMutation: attendanceErrorMutation,
+      ),
+      onSetLiveStep: (index) =>
+          _setEventSuccessLiveStep(ref: ref, eventId: event.id, index: index),
+      onCompleteLiveGuide: () =>
+          _completeEventSuccessLiveGuide(ref: ref, eventId: event.id),
       fixtureActions: fixtureActions,
     );
   }
@@ -460,6 +519,40 @@ Future<void> _saveEventSuccessSetup(
           attendeePrompt: request.attendeePrompt,
         );
   });
+}
+
+Future<void> _setEventSuccessLiveStep({
+  required WidgetRef ref,
+  required String eventId,
+  required int index,
+}) {
+  unawaited(
+    ref
+        .read(eventSuccessLiveEffectsControllerProvider)
+        .play(EventSuccessLiveEffectKind.stepChange),
+  );
+  return EventSuccessController.updateStepMutation.run(
+    ref,
+    (tx) => tx
+        .get(eventSuccessControllerProvider.notifier)
+        .updateActiveStep(eventId: eventId, activeStepIndex: index),
+  );
+}
+
+Future<void> _completeEventSuccessLiveGuide({
+  required WidgetRef ref,
+  required String eventId,
+}) {
+  unawaited(
+    ref
+        .read(eventSuccessLiveEffectsControllerProvider)
+        .play(EventSuccessLiveEffectKind.guideComplete),
+  );
+  return EventSuccessController.completePlanMutation.run(
+    ref,
+    (tx) =>
+        tx.get(eventSuccessControllerProvider.notifier).completePlan(eventId),
+  );
 }
 
 AppErrorContext _eventSuccessHostRetryContext(
@@ -833,6 +926,10 @@ class EventSuccessHostPanel extends StatefulWidget {
     this.compactLiveControls = false,
     this.setupActionState = const EventSuccessSetupActionState(),
     this.onSaveSetup,
+    this.liveActionState = const EventSuccessLiveActionState(),
+    this.onSetLiveStep,
+    this.onCompleteLiveGuide,
+    this.onPlayLiveEffect,
     this.fixtureActions,
   });
 
@@ -856,6 +953,11 @@ class EventSuccessHostPanel extends StatefulWidget {
   final EventSuccessSetupActionState setupActionState;
   final Future<void> Function(EventSuccessSetupSaveRequest request)?
   onSaveSetup;
+  final EventSuccessLiveActionState liveActionState;
+  final Future<void> Function(int stepIndex)? onSetLiveStep;
+  final Future<void> Function()? onCompleteLiveGuide;
+  final Future<void> Function(EventSuccessLiveEffectKind kind)?
+  onPlayLiveEffect;
   final EventSuccessHostFixtureActions? fixtureActions;
 
   @override
@@ -933,6 +1035,12 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         wingmanProfiles: widget.wingmanProfiles,
         liveRoster: widget.liveRoster,
         compactLiveControls: widget.compactLiveControls,
+        actionState: widget.liveActionState,
+        onPreviousStep: _liveStepCallback(
+          widget.fixtureActions?.onPreviousStep,
+        ),
+        onNextStep: _liveStepCallback(widget.fixtureActions?.onNextStep),
+        onCompleteGuide: _liveCompleteCallback(),
         fixtureActions: widget.fixtureActions,
         shrinkWrap: shrinkWrap,
         physics: physics,
@@ -961,6 +1069,33 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
       return (_) async => fixtureAction();
     }
     return widget.onSaveSetup;
+  }
+
+  Future<void> Function(int stepIndex)? _liveStepCallback(
+    VoidCallback? fixtureAction,
+  ) {
+    if (fixtureAction != null) {
+      return (_) async {
+        await widget.onPlayLiveEffect?.call(
+          EventSuccessLiveEffectKind.stepChange,
+        );
+        fixtureAction();
+      };
+    }
+    return widget.onSetLiveStep;
+  }
+
+  Future<void> Function()? _liveCompleteCallback() {
+    final fixtureAction = widget.fixtureActions?.onCompletePlan;
+    if (fixtureAction != null) {
+      return () async {
+        await widget.onPlayLiveEffect?.call(
+          EventSuccessLiveEffectKind.guideComplete,
+        );
+        fixtureAction();
+      };
+    }
+    return widget.onCompleteLiveGuide;
   }
 }
 
