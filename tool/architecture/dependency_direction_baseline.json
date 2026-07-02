@@ -46,11 +46,6 @@
     {
       "rule": "crossFeaturePresentationImport",
       "path": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
-      "import": "package:catch_dating_app/events/presentation/attendance_sheet_view_model.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
       "import": "package:catch_dating_app/events/presentation/widgets/who_is_going.dart"
     },
     {
@@ -135,11 +130,6 @@
     },
     {
       "rule": "crossFeaturePresentationImport",
-      "path": "lib/hosts/presentation/host_event_manage_controller.dart",
-      "import": "package:catch_dating_app/events/presentation/attendance_sheet_view_model.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
       "path": "lib/hosts/presentation/host_event_manage_screen.dart",
       "import": "package:catch_dating_app/event_success/presentation/event_success_host_screen.dart"
     },
@@ -152,11 +142,6 @@
       "rule": "crossFeaturePresentationImport",
       "path": "lib/hosts/presentation/widgets/host_club_tools.dart",
       "import": "package:catch_dating_app/clubs/presentation/club_action_keys.dart"
-    },
-    {
-      "rule": "crossFeaturePresentationImport",
-      "path": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
-      "import": "package:catch_dating_app/events/presentation/attendance_sheet_view_model.dart"
     },
     {
       "rule": "crossFeaturePresentationImport",

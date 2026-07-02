@@ -45,7 +45,7 @@ export 'presentation/location_picker_screen.dart';
 export 'presentation/saved_events_screen.dart';
 
 // ── Presentation — view models & controllers ────────────────────────────────
-export 'presentation/attendance_sheet_view_model.dart';
+export 'shared/attendance_sheet_view_model.dart';
 export 'presentation/event_booking_controller.dart';
 export 'presentation/event_detail_controller.dart';
 export 'presentation/event_detail_view_model.dart';
