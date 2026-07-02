@@ -264,6 +264,58 @@ Widget catchMenuCatalogStates(BuildContext context) {
   );
 }
 
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: CatchMenuRow,
+  path: '[Core catalog]/Menus',
+)
+Widget catchMenuRowCatalogStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'CatchMenuRow',
+    catalogId: 'core.widgets.catch_menu_row',
+    children: [
+      _StateCard(
+        label: 'selected',
+        child: CatchMenuRow<String>(
+          item: CatchMenuItem(
+            value: 'going',
+            label: 'Going',
+            sublabel: 'Confirmed attendee view',
+            icon: CatchIcons.checkCircle,
+            selected: true,
+          ),
+          onSelected: (value, _) => _ignoreString(value),
+        ),
+      ),
+      _StateCard(
+        label: 'disabled',
+        child: CatchMenuRow<String>(
+          item: CatchMenuItem(
+            value: 'disabled',
+            label: 'Host controls',
+            sublabel: 'Unavailable for guests',
+            icon: CatchIcons.lockOutlineRounded,
+            enabled: false,
+          ),
+          onSelected: (value, _) => _ignoreString(value),
+        ),
+      ),
+      _StateCard(
+        label: 'danger',
+        child: CatchMenuRow<String>(
+          item: CatchMenuItem(
+            value: 'remove',
+            label: 'Remove from event',
+            icon: CatchIcons.deleteOutline,
+            danger: true,
+          ),
+          onSelected: (value, _) => _ignoreString(value),
+        ),
+      ),
+    ],
+  );
+}
+
 Widget catchSearchFieldCatalogStates(BuildContext context) {
   return _CatalogScreen(
     title: 'CatchSearchField',

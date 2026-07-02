@@ -3456,11 +3456,34 @@ void main() {
     expect(find.text('OWNER'), findsOneWidget);
     expect(find.byIcon(CatchIcons.check), findsOneWidget);
     expect(find.byType(Divider), findsOneWidget);
+    expect(find.byType(CatchMenuRow<String>), findsNWidgets(2));
 
     await tester.tap(find.text('Delete club'));
     await tester.pump();
 
     expect(selected, 'delete');
+  });
+
+  testWidgets('CatchMenuRow disables selection when item is disabled', (
+    tester,
+  ) async {
+    var selected = false;
+
+    await tester.pumpWidget(
+      _wrap(
+        CatchMenuRow<String>(
+          item: const CatchMenuItem(
+            value: 'locked',
+            label: 'Locked',
+            enabled: false,
+          ),
+          onSelected: (_, _) => selected = true,
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Locked'));
+    expect(selected, isFalse);
   });
 
   testWidgets('CatchActionMenu opens the shared handoff menu panel', (
