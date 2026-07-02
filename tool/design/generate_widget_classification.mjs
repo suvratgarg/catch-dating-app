@@ -72,11 +72,13 @@ function listDartFiles(root) {
 function readWidgetbookNames() {
   if (!fs.existsSync(widgetbookPath)) return new Set();
   const source = fs.readFileSync(widgetbookPath, "utf8");
-  return new Set(
-    [...source.matchAll(/WidgetbookComponent\(\s*name: '([^']+)'/gu)].map(
-      (match) => match[1],
-    ),
-  );
+  const names = new Set();
+  for (const match of source.matchAll(/WidgetbookComponent\(\s*name: '([^']+)'/gu)) {
+    const name = match[1];
+    names.add(name);
+    names.add(name.replace(/<.*>$/u, ""));
+  }
+  return names;
 }
 
 function buildContractSymbolMap(components) {

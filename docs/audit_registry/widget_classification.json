@@ -25,17 +25,17 @@
     },
     "byDecision": {
       "keep-canonical-contract": 160,
-      "keep-public-cataloged": 880,
+      "keep-public-cataloged": 882,
       "keep-widget-state": 105,
-      "review-catalog-coverage": 7,
+      "review-catalog-coverage": 5,
       "review-promote-or-consolidate": 11
     },
     "byCatalogStatus": {
-      "cataloged": 818,
+      "cataloged": 821,
       "contracted": 160,
       "not-applicable": 105,
       "route-covered": 72,
-      "uncataloged": 8
+      "uncataloged": 5
     }
   },
   "widgets": [
@@ -3139,7 +3139,7 @@
       "role": "atom",
       "canonicalFamily": "catch.chip_field",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "tokens-and-primitives",
       "stateOwnership": "local-ui-only",
@@ -3154,8 +3154,7 @@
         "inlineDelete"
       ],
       "flags": [
-        "core-widget-without-contract",
-        "public-widget-missing-widgetbook"
+        "core-widget-without-contract"
       ]
     },
     {
@@ -26905,23 +26904,19 @@
       "role": "feature-adapter",
       "canonicalFamily": "feature.user_profile.profile_multi_enum_entry",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "public-widget-missing-widgetbook"
-      ]
+      "flags": []
     },
     {
       "name": "ProfilePhotosSection",
@@ -26980,23 +26975,19 @@
       "role": "feature-adapter",
       "canonicalFamily": "feature.user_profile.profile_single_enum_entry",
       "publicApi": true,
-      "catalogStatus": "uncataloged",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
-      "decision": "review-catalog-coverage",
+      "decision": "keep-public-cataloged",
       "remediationOptions": [
-        "promoteToCanonicalContract",
-        "promoteToPublicCatalog",
-        "mergeIntoCanonical",
-        "inlineDelete"
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
-      "flags": [
-        "public-widget-missing-widgetbook"
-      ]
+      "flags": []
     },
     {
       "name": "ProfileTab",
