@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/data/conversation_repository.dart';
 import 'package:catch_dating_app/chats/data/suvbot_repository.dart';
-import 'package:catch_dating_app/chats/domain/suvbot_action_item.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
+import 'package:catch_dating_app/chats/domain/suvbot_action_item.dart';
 import 'package:catch_dating_app/chats/presentation/chat_controller.dart';
 import 'package:catch_dating_app/chats/presentation/chat_thread_lookup_state.dart';
 import 'package:catch_dating_app/chats/presentation/host_chat_screen_state.dart';
@@ -19,7 +19,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final chatRouteStateProvider =
     Provider.family<ChatRouteState, ChatRouteStateArgs>((ref, args) {
-      final uid = ref.watch(uidProvider.select((value) => value.value));
+      final uidAsync = ref.watch(uidProvider);
+      final uid = uidAsync.asData?.value;
       final messagesAsync = ref.watch(
         watchConversationMessagesProvider(args.matchId),
       );
@@ -75,6 +76,7 @@ final chatRouteStateProvider =
       );
 
       return ChatRouteState(
+        uidAsync: uidAsync,
         uid: uid,
         matchAsync: matchAsync,
         messagesAsync: messagesAsync,
@@ -114,6 +116,7 @@ class ChatRouteStateArgs {
 
 class ChatRouteState {
   const ChatRouteState({
+    required this.uidAsync,
     required this.uid,
     required this.matchAsync,
     required this.messagesAsync,
@@ -127,6 +130,7 @@ class ChatRouteState {
     required this.sendImagePending,
   });
 
+  final AsyncValue<String?> uidAsync;
   final String? uid;
   final AsyncValue<Match?> matchAsync;
   final AsyncValue<List<ChatMessage>> messagesAsync;
@@ -143,8 +147,15 @@ class ChatRouteState {
   List<ChatMessage> get messages => initialMessages ?? const [];
   Event? get event => eventAsync.asData?.value;
   bool get isSuvbot => lookupState.isSuvbot;
+  bool get isAuthLoading => uidAsync.isLoading;
+  Object? get authError => uidAsync.hasError ? uidAsync.error : null;
+  bool get _blocksThreadUi => isAuthLoading || authError != null;
+  AsyncValue<List<ChatMessage>> get displayMessagesAsync =>
+      isAuthLoading ? const AsyncValue.loading() : messagesAsync;
   HostChatRouteError? get routeError => chatState.routeError;
-  bool get showEventContextHeader => !isSuvbot && routeError == null;
-  bool get showSuvbotActionBar => isSuvbot && routeError == null;
-  bool get showComposer => !isSuvbot && routeError == null;
+  bool get showEventContextHeader =>
+      !_blocksThreadUi && !isSuvbot && routeError == null;
+  bool get showSuvbotActionBar =>
+      !_blocksThreadUi && isSuvbot && routeError == null;
+  bool get showComposer => !_blocksThreadUi && !isSuvbot && routeError == null;
 }

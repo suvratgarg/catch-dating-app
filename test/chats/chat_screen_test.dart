@@ -1062,6 +1062,46 @@ void main() {
   });
 
   group('ChatRouteState', () {
+    testWidgets('keeps thread UI loading while uid resolves', (tester) async {
+      ChatRouteState? state;
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            uidProvider.overrideWithValue(const AsyncLoading<String?>()),
+            matchRepositoryProvider.overrideWithValue(
+              FakeMatchRepository(match: buildMatch()),
+            ),
+            conversationRepositoryProvider.overrideWithValue(
+              FakeConversationRepository(),
+            ),
+          ],
+          child: MaterialApp(
+            home: Consumer(
+              builder: (context, ref, child) {
+                state = ref.watch(
+                  chatRouteStateProvider(
+                    const ChatRouteStateArgs(
+                      matchId: 'match-1',
+                      initialProfile: null,
+                    ),
+                  ),
+                );
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
+        ),
+      );
+      await pumpFeatureUi(tester);
+
+      expect(state?.uidAsync.isLoading, isTrue);
+      expect(state?.displayMessagesAsync.isLoading, isTrue);
+      expect(state?.showEventContextHeader, isFalse);
+      expect(state?.showSuvbotActionBar, isFalse);
+      expect(state?.showComposer, isFalse);
+    });
+
     testWidgets('centralizes host inquiry provider lookups for the route', (
       tester,
     ) async {

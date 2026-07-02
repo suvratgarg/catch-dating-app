@@ -262,6 +262,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     );
     final chatState = routeState.chatState;
     final routeError = routeState.routeError;
+    final authError = routeState.authError;
     if (!_scrollCoordinator.didScrollToLatestMessage &&
         routeState.initialMessages != null &&
         routeState.initialMessages!.isNotEmpty) {
@@ -317,9 +318,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             if (routeState.showEventContextHeader)
               ChatEventContextHeader(event: routeState.event),
             Expanded(
-              child: routeError == null
+              child: authError != null
+                  ? CatchErrorState.fromError(
+                      authError,
+                      context: AppErrorContext.auth,
+                      onRetry: () => ref.invalidate(uidProvider),
+                    )
+                  : routeError == null
                   ? ChatMessageList(
-                      messagesAsync: routeState.messagesAsync,
+                      messagesAsync: routeState.displayMessagesAsync,
                       currentUid: routeState.uid,
                       event: routeState.event,
                       otherName: chatState.messageOtherName,
