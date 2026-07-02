@@ -274,6 +274,47 @@ void main() {
     expect(loadedState.clubs, [club]);
   });
 
+  testWidgets('Host clubs shows loading while uid resolves', (tester) async {
+    await _pumpHostScreen(
+      tester,
+      const HostClubsScreen(),
+      overrides: [uidProvider.overrideWithValue(const AsyncLoading<String?>())],
+      settle: false,
+    );
+
+    expect(find.byType(HostLoadingScreen), findsOneWidget);
+    expect(find.text('Clubs'), findsOneWidget);
+    expect(find.text('Sign in required'), findsNothing);
+  });
+
+  testWidgets('Host account shows loading while uid resolves', (tester) async {
+    await _pumpHostScreen(
+      tester,
+      const HostAccountScreen(),
+      overrides: [uidProvider.overrideWithValue(const AsyncLoading<String?>())],
+      settle: false,
+    );
+
+    expect(find.byType(HostLoadingScreen), findsOneWidget);
+    expect(find.text('Host profile'), findsOneWidget);
+    expect(find.text('Sign in required'), findsNothing);
+  });
+
+  testWidgets('Host profile route shows loading while uid resolves', (
+    tester,
+  ) async {
+    await _pumpHostScreen(
+      tester,
+      const HostProfileScreen(),
+      overrides: [uidProvider.overrideWithValue(const AsyncLoading<String?>())],
+      settle: false,
+    );
+
+    expect(find.byType(HostLoadingScreen), findsOneWidget);
+    expect(find.text('Professional profile'), findsOneWidget);
+    expect(find.text('Sign in required'), findsNothing);
+  });
+
   test(
     'HostHomeEventRowsState sorts, limits, and filters cancelled events',
     () {
@@ -1071,6 +1112,7 @@ Future<void> _pumpHostScreen(
   WidgetTester tester,
   Widget child, {
   List overrides = const [],
+  bool settle = true,
 }) async {
   final router = GoRouter(
     initialLocation: '/',
@@ -1116,7 +1158,12 @@ Future<void> _pumpHostScreen(
       child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
     ),
   );
-  await pumpFeatureUi(tester);
+  if (settle) {
+    await pumpFeatureUi(tester);
+  } else {
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
+  }
 }
 
 class _FakeHostProfileRepository implements HostProfileRepository {

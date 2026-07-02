@@ -118,7 +118,19 @@ class HostClubsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final uid = ref.watch(uidProvider).asData?.value;
+    final uidAsync = ref.watch(uidProvider);
+    if (uidAsync.isLoading) {
+      return const HostLoadingScreen(title: 'Clubs', showTabRail: true);
+    }
+    if (uidAsync.hasError) {
+      return CatchErrorScaffold.fromError(
+        uidAsync.error!,
+        context: AppErrorContext.auth,
+        onRetry: () => ref.invalidate(uidProvider),
+      );
+    }
+
+    final uid = uidAsync.asData?.value;
     if (uid == null) return const HostAuthRequiredScreen();
 
     final clubsAsync = ref.watch(_hostClubsForUserProvider(uid));
@@ -351,7 +363,19 @@ class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final uid = ref.watch(uidProvider).asData?.value;
+    final uidAsync = ref.watch(uidProvider);
+    if (uidAsync.isLoading) {
+      return const HostLoadingScreen(title: 'Host profile', showTabRail: true);
+    }
+    if (uidAsync.hasError) {
+      return CatchErrorScaffold.fromError(
+        uidAsync.error!,
+        context: AppErrorContext.auth,
+        onRetry: () => ref.invalidate(uidProvider),
+      );
+    }
+
+    final uid = uidAsync.asData?.value;
     final hostProfileAsync = uid == null
         ? const AsyncData<HostProfile?>(null)
         : ref.watch(watchHostProfileProvider(uid));
@@ -885,7 +909,19 @@ class _HostProfileScreenState extends ConsumerState<HostProfileScreen> {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final compactTextScale = MediaQuery.textScalerOf(context).scale(1) >= 1.4;
-    final uid = ref.watch(uidProvider).asData?.value;
+    final uidAsync = ref.watch(uidProvider);
+    if (uidAsync.isLoading) {
+      return const HostLoadingScreen(title: 'Professional profile');
+    }
+    if (uidAsync.hasError) {
+      return CatchErrorScaffold.fromError(
+        uidAsync.error!,
+        context: AppErrorContext.auth,
+        onRetry: () => ref.invalidate(uidProvider),
+      );
+    }
+
+    final uid = uidAsync.asData?.value;
     final profileAsync = uid == null
         ? const AsyncData<HostProfile?>(null)
         : ref.watch(watchHostProfileProvider(uid));
