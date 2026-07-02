@@ -88,7 +88,14 @@ class HostOperationsHomeScreen extends ConsumerWidget {
       HostHomeRouteStatus.error => CatchErrorScaffold.fromError(
         routeState.error!,
         context: routeState.errorContext,
-        onRetry: () => _retryHostHomeRoute(ref, routeState),
+        onRetry: () {
+          final uid = routeState.uid;
+          if (routeState.errorContext == AppErrorContext.auth || uid == null) {
+            ref.invalidate(uidProvider);
+            return;
+          }
+          ref.invalidate(_hostClubsForUserProvider(uid));
+        },
       ),
       HostHomeRouteStatus.empty => HostEventsScaffold(
         clubs: routeState.clubs,
@@ -154,15 +161,6 @@ class HostClubsScreen extends ConsumerWidget {
       ),
     );
   }
-}
-
-void _retryHostHomeRoute(WidgetRef ref, HostHomeRouteState state) {
-  final uid = state.uid;
-  if (state.errorContext == AppErrorContext.auth || uid == null) {
-    ref.invalidate(uidProvider);
-    return;
-  }
-  ref.invalidate(_hostClubsForUserProvider(uid));
 }
 
 enum HostSettingsMode { edit, preview }
@@ -420,7 +418,7 @@ class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {
                 icon: CatchIcons.logoutRounded,
                 onPressed: signOutMutation.isPending
                     ? null
-                    : () => unawaited(_signOut(context, ref)),
+                    : () => unawaited(_signOut()),
               ),
             ],
             bottom: HostSettingsTabRail(
@@ -498,7 +496,7 @@ class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {
     );
   }
 
-  Future<void> _signOut(BuildContext context, WidgetRef ref) async {
+  Future<void> _signOut() async {
     final mutation = ref.read(AuthSessionController.signOutMutation);
     if (mutation.isPending) return;
     try {
@@ -510,7 +508,7 @@ class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {
       // CatchMutationErrorListener owns user-facing error display.
       return;
     }
-    if (context.mounted) context.go(Routes.startScreen.path);
+    if (mounted) context.go(Routes.startScreen.path);
   }
 }
 
