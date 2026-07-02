@@ -167,6 +167,24 @@ class EventDetailCta extends ConsumerWidget {
     final errorMessage = dockState.error == null
         ? null
         : appErrorMessage(dockState.error!, context: AppErrorContext.event);
+    final leadingContent = switch (dockState.leadingKind) {
+      EventDetailBookingDockLeadingKind.none => null,
+      EventDetailBookingDockLeadingKind.price => PriceLeading(
+        price: dockState.price ?? '',
+        note: dockState.priceNote,
+        warn: dockState.priceWarn,
+      ),
+      EventDetailBookingDockLeadingKind.booked => const BookedLeading(),
+      EventDetailBookingDockLeadingKind.waitlistOffer => WaitlistOfferLeading(
+        expiresAt: dockState.waitlistOfferExpiresAt,
+        isDeclining: dockState.isSecondaryLoading,
+        onDecline: dockState.isSecondaryActionEnabled
+            ? () =>
+                  _runBookingDockAction(context, ref, dockState.secondaryAction)
+            : null,
+      ),
+      EventDetailBookingDockLeadingKind.attended => const AttendedLeading(),
+    };
 
     return EventBookingDock(
       buttonKey: _buttonKeyFor(dockState.buttonKey),
@@ -178,7 +196,7 @@ class EventDetailCta extends ConsumerWidget {
       buttonAccentColor: dockState.useAccent ? bookingAccent : null,
       catchLine: dockState.catchLine,
       catchLineAccent: dockState.catchLine == null ? null : bookingAccent,
-      leadingContent: _leadingContentFor(context, ref, dockState),
+      leadingContent: leadingContent,
       backgroundColor: ctaBackground,
       dividerColor: ctaDivider,
       errorMessage: errorMessage,
@@ -193,30 +211,6 @@ class EventDetailCta extends ConsumerWidget {
       EventDetailBookingDockButtonKey.joinWaitlist =>
         EventActionKeys.joinWaitlistButton,
       null => null,
-    };
-  }
-
-  Widget? _leadingContentFor(
-    BuildContext context,
-    WidgetRef ref,
-    EventDetailBookingDockState state,
-  ) {
-    return switch (state.leadingKind) {
-      EventDetailBookingDockLeadingKind.none => null,
-      EventDetailBookingDockLeadingKind.price => PriceLeading(
-        price: state.price ?? '',
-        note: state.priceNote,
-        warn: state.priceWarn,
-      ),
-      EventDetailBookingDockLeadingKind.booked => const BookedLeading(),
-      EventDetailBookingDockLeadingKind.waitlistOffer => WaitlistOfferLeading(
-        expiresAt: state.waitlistOfferExpiresAt,
-        isDeclining: state.isSecondaryLoading,
-        onDecline: state.isSecondaryActionEnabled
-            ? () => _runBookingDockAction(context, ref, state.secondaryAction)
-            : null,
-      ),
-      EventDetailBookingDockLeadingKind.attended => const AttendedLeading(),
     };
   }
 
