@@ -1,7 +1,7 @@
 ---
 doc_id: schema_contracts
-version: 0.2.4
-updated: 2026-05-25
+version: 0.2.5
+updated: 2026-07-03
 owner: data_contracts
 status: active
 ---
@@ -105,6 +105,8 @@ Schema:
 - `callables/`: callable Function request payload schemas.
 - `callable_responses/`: callable Function response payload schemas decoded by
   typed Flutter response objects.
+- `bigquery/`: BigQuery table schemas that generate typed Functions runtime
+  shapes for analytics tables.
 - `patches/`: patch-only payload schemas, currently profile updates.
 - `client_writes/`: direct client-write operation payload schemas that pair
   Firestore rule behavior with schema validation.
@@ -134,6 +136,8 @@ The current contract layer covers:
 - profile patch payloads backed by typed Dart patch classes;
 - selected callable response payloads that the Flutter app decodes into typed
   client response objects;
+- BigQuery table schemas for host analytics events and user profile exposure
+  events consumed by analytics Functions and marts;
 - direct client-write operation payloads for contextual profile decisions,
   chat messages, saved-event edges, notification read updates, and match unread
   resets;
