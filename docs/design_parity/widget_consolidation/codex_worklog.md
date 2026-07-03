@@ -494,16 +494,15 @@ Add one widgetbook use-case file for the three new compositions under
 icon, box-row, chips).
 
 - [x] catch_skeleton_layouts.dart + widgetbook entry
-- [ ] 10 migrations + deletions (8 completed; 2 escalated below)
+- [x] 10 migrations + deletions (8 completed in WO-006; 2 resolved by WO-016)
 - [x] event_success skeleton surface merge
 - [x] regen + registries + receipts
 
 Escalations:
 
-- `HostEventRowsSkeleton` and `HostSettingsRowsSkeleton` were not migrated to
-  `CatchSkeletonRows`: full-body review showed divider separators between
-  rows, while `CatchSkeletonRows` only models gap-separated rows. Per the order,
-  these members were skipped rather than forcing a structural visual change.
+- Resolved by WO-016: `HostEventRowsSkeleton` and
+  `HostSettingsRowsSkeleton` were migrated after `CatchSkeletonRows.divided`
+  added the divider behavior that WO-006 correctly refused to invent inline.
 
 Receipt: 2026-07-03 Codex WO-006 created `CatchSkeletonRows`,
 `CatchSkeletonBoxRow`, and `CatchSkeletonChips`, added their Widgetbook catalog
