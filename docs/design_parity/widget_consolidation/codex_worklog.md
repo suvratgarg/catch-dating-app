@@ -702,7 +702,19 @@ CatchConfirmDialog's public API unchanged. If the shells differ structurally
 (e.g. different insets, width, or action layout that is load-bearing), do NOT
 force it: record the diff under Escalations. Both classes stay public.
 
-- [ ] inspect + delegate (or escalate) + regen + receipts
+- [x] inspect + delegate (or escalate) + regen + receipts
+
+Completed by Codex as an escalation, not a merge: `CatchConfirmDialog` and
+`CatchFormDialog` share the same outer `Dialog` + overlay `CatchSurface` shell,
+but their inner contracts differ in load-bearing ways. Confirm dialogs center
+the title/body copy and render two or fewer actions as equal-width full-width
+buttons, falling back to a stacked column for longer action lists. Form dialogs
+left-align the title, reserve a child content slot after `gapH16`, and
+right-align arbitrary action widgets in a trailing row. Delegating
+`CatchConfirmDialog` directly to `CatchFormDialog` would either wrap the
+confirm action row in an unconstrained trailing row or change its button layout,
+so both public classes stay distinct pending a later decision to introduce a
+private shared shell.
 
 ## WO-011 — CatchTabRail<T>
 

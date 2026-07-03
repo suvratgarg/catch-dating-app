@@ -947,3 +947,33 @@ Known blockers / inherited debt:
 - The dedupe-probe script needed unsandboxed access because Flutter's Dart
   wrapper attempted SDK cache writes outside the workspace before reporting
   `Widget dedupe probes passed`.
+
+## 2026-07-03 — WO-010 CatchConfirmDialog shell delegation inspection
+
+Scope:
+
+- Inspected `CatchConfirmDialog` and `CatchFormDialog` in
+  `lib/core/widgets/catch_adaptive_dialog.dart`.
+- Did not delegate `CatchConfirmDialog` to `CatchFormDialog` because the shared
+  outer shell hides load-bearing differences in title alignment, content slot
+  shape, and action layout.
+
+Commands:
+
+- `node tool/agent/context_pack.mjs --task widget-consolidation-wo-010 --paths lib/core/widgets/catch_adaptive_dialog.dart,widgetbook/lib/primitives/primitive_contract_use_cases.dart,docs/design_parity/widget_consolidation/codex_worklog.md,docs/widget_catalog.md,docs/audit_registry/widget_consolidation_receipts.md`
+- `nl -ba lib/core/widgets/catch_adaptive_dialog.dart | sed -n '1,260p'`
+- `rg -n "CatchConfirmDialog|CatchFormDialog|showCatchConfirm|catchConfirm|catchFormDialog" lib widgetbook/lib test --glob '*.dart'`
+- `flutter analyze --no-fatal-infos lib/core/widgets/catch_adaptive_dialog.dart`
+
+Escalation:
+
+`CatchConfirmDialog` and `CatchFormDialog` share the same outer `Dialog` plus
+overlay `CatchSurface` shell, but their inner contracts differ. Confirm dialogs
+center title/body text, omit the body when the message is empty, and render
+action buttons as equal-width full-width buttons for one or two actions or as a
+full-width stack for longer action lists. Form dialogs left-align the title,
+reserve a child content slot, and right-align arbitrary action widgets in a
+trailing row. A direct delegation would either change confirm button layout or
+place the confirm action row inside an unconstrained trailing form-action row.
+Both public classes stay distinct pending a later explicit decision to extract a
+private shared dialog shell.
