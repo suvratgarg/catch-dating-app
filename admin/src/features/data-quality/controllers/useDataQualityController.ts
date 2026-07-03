@@ -1,8 +1,10 @@
 import {useCallback, useEffect, useMemo, useState} from "react";
+import {useQuery} from "@tanstack/react-query";
 import {
   loadDataQualitySnapshot,
   type DataQualitySnapshot,
 } from "../api/dataQualityRepository";
+import {adminQueryKeys} from "../../../shared/query/queryKeys";
 
 export type DataQualityState =
   | "ok"
@@ -32,45 +34,75 @@ export interface DataQualityMetrics {
   sources: number;
 }
 
+export interface DataQualityController {
+  filteredRows: DataQualityRow[];
+  generatedAt: string | null;
+  isLoading: boolean;
+  metrics: DataQualityMetrics;
+  query: string;
+  rows: DataQualityRow[];
+  selected: DataQualityRow | null;
+  stateFilter: DataQualityStateFilter;
+  refresh: () => Promise<void>;
+  select: (row: DataQualityRow) => void;
+  setQuery: (value: string) => void;
+  setStateFilter: (value: DataQualityStateFilter) => void;
+}
+
 export function useDataQualityController({
   onError,
 }: {
   onError: (message: string | null) => void;
-}) {
-  const [rows, setRows] = useState<DataQualityRow[]>([]);
-  const [generatedAt, setGeneratedAt] = useState<string | null>(null);
+}): DataQualityController {
   const [query, setQuery] = useState("");
   const [stateFilter, setStateFilter] =
     useState<DataQualityStateFilter>("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
-  const refresh = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const snapshot = await loadDataQualitySnapshot();
-      const nextRows = buildDataQualityRows(snapshot);
-      setRows(nextRows);
-      setGeneratedAt(snapshot.generatedAt);
-      setSelectedId((current) => {
-        if (current && nextRows.some((row) => row.id === current)) {
-          return current;
-        }
-        return nextRows.find((row) => row.state !== "ok")?.id ??
-          nextRows[0]?.id ??
-          null;
-      });
-      onError(null);
-    } catch (error) {
-      onError(messageFromError(error, "Unable to load data-quality signals."));
-    } finally {
-      setIsLoading(false);
-    }
-  }, [onError]);
+  const snapshotQuery = useQuery({
+    queryKey: adminQueryKeys.dataQuality.snapshot(),
+    queryFn: loadDataQualitySnapshot,
+  });
+
+  const rows = useMemo(
+    () => snapshotQuery.data ? buildDataQualityRows(snapshotQuery.data) : [],
+    [snapshotQuery.data]
+  );
+  const generatedAt = snapshotQuery.data?.generatedAt ?? null;
+  const isLoading = snapshotQuery.isPending || snapshotQuery.isFetching;
 
   useEffect(() => {
-    void refresh();
-  }, [refresh]);
+    if (snapshotQuery.isError) {
+      onError(messageFromError(
+        snapshotQuery.error,
+        "Unable to load data-quality signals."
+      ));
+      return;
+    }
+    if (snapshotQuery.isSuccess) {
+      onError(null);
+    }
+  }, [
+    onError,
+    snapshotQuery.error,
+    snapshotQuery.isError,
+    snapshotQuery.isSuccess,
+  ]);
+
+  useEffect(() => {
+    setSelectedId((current) => {
+      if (current && rows.some((row) => row.id === current)) {
+        return current;
+      }
+      return rows.find((row) => row.state !== "ok")?.id ??
+        rows[0]?.id ??
+        null;
+    });
+  }, [rows]);
+
+  const refresh = useCallback(async () => {
+    await snapshotQuery.refetch();
+  }, [snapshotQuery]);
 
   const filteredRows = useMemo(
     () => filterRows(rows, stateFilter, query),

@@ -4,9 +4,8 @@ import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
-import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
-import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_layout.dart';
-import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/name_dob_page_state.dart';
+import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -40,25 +39,20 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
     super.dispose();
   }
 
-  Future<void> _pickDate() async {
+  Future<void> _pickDate(OnboardingNameDobDatePickerRequest request) async {
     final picked = await showCatchDatePicker(
       context: context,
-      initialDate: _selectedDate ?? DateTime(2000),
-      firstDate: DateTime(1920),
-      lastDate: latestAllowedDateOfBirth(),
-      title: 'Date of birth',
+      initialDate: request.initialDate,
+      firstDate: request.firstDate,
+      lastDate: request.lastDate,
+      title: request.title,
     );
     if (picked != null) {
       setState(() {
         _selectedDate = picked;
-        _dateController.text = _formatDate(picked);
+        _dateController.text = OnboardingNameDobState.formatDate(picked);
       });
     }
-  }
-
-  int? _age() {
-    if (_selectedDate == null) return null;
-    return calculateAge(_selectedDate!);
   }
 
   void _seedDraft(OnboardingData data) {
@@ -66,110 +60,141 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
     _lastNameController.text = data.lastName;
     _selectedDate = data.dateOfBirth;
     _dateController.text = data.dateOfBirth != null
-        ? _formatDate(data.dateOfBirth!)
+        ? OnboardingNameDobState.formatDate(data.dateOfBirth!)
         : '';
 
     _phoneController.text = data.phoneNumber;
   }
 
-  String _formatDate(DateTime date) {
-    final day = date.day.toString().padLeft(2, '0');
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    return '$day ${months[date.month - 1]} ${date.year}';
+  OnboardingNameDobState _stateFor(OnboardingData data) {
+    return OnboardingNameDobState.fromDraft(
+      firstName: _firstNameController.text,
+      lastName: _lastNameController.text,
+      phoneNumber: _phoneController.text,
+      countryCode: data.countryCode,
+      dateOfBirth: _selectedDate,
+      step: data.step,
+      today: DateTime.now(),
+    );
   }
 
   void _submit() {
-    if (_formKey.currentState!.validate()) {
-      if (_selectedDate == null) return;
-      final data = ref.read(onboardingControllerProvider);
-      ref
-          .read(onboardingControllerProvider.notifier)
-          .advanceToGenderInterest(
-            firstName: _firstNameController.text.trim(),
-            lastName: _lastNameController.text.trim(),
-            dateOfBirth: _selectedDate!,
-            phoneNumber: _phoneController.text.trim(),
-            countryCode: data.countryCode,
-          );
-    }
+    final data = ref.read(onboardingControllerProvider);
+    final state = _stateFor(data);
+    if (!_formKey.currentState!.validate()) return;
+    final intent = state.submitIntent(
+      firstName: _firstNameController.text,
+      lastName: _lastNameController.text,
+      phoneNumber: _phoneController.text,
+    );
+    if (intent == null) return;
+
+    ref
+        .read(onboardingControllerProvider.notifier)
+        .advanceToGenderInterest(
+          firstName: intent.firstName,
+          lastName: intent.lastName,
+          dateOfBirth: intent.dateOfBirth,
+          phoneNumber: intent.phoneNumber,
+          countryCode: intent.countryCode,
+        );
   }
 
   @override
   Widget build(BuildContext context) {
     final data = ref.watch(onboardingControllerProvider);
-    final shouldAutofocus = data.step == OnboardingStep.nameDob;
-    final age = _age();
+    final state = _stateFor(data);
 
+    return OnboardingNameDobStep(
+      formKey: _formKey,
+      state: state,
+      controllers: OnboardingNameDobTextControllers(
+        firstName: _firstNameController,
+        lastName: _lastNameController,
+        phone: _phoneController,
+        date: _dateController,
+      ),
+      callbacks: OnboardingNameDobCallbacks(
+        onPickDate: (request) {
+          _pickDate(request);
+        },
+        onContinue: _submit,
+      ),
+    );
+  }
+}
+
+class OnboardingNameDobStep extends StatelessWidget {
+  const OnboardingNameDobStep({
+    super.key,
+    required this.formKey,
+    required this.state,
+    required this.controllers,
+    required this.callbacks,
+  });
+
+  final GlobalKey<FormState> formKey;
+  final OnboardingNameDobState state;
+  final OnboardingNameDobTextControllers controllers;
+  final OnboardingNameDobCallbacks callbacks;
+
+  @override
+  Widget build(BuildContext context) {
     return Form(
-      key: _formKey,
+      key: formKey,
       child: OnboardingStepLayout(
         footer: CatchButton(
           label: 'Continue',
-          onPressed: _submit,
+          onPressed: callbacks.onContinue,
           fullWidth: true,
           size: CatchButtonSize.lg,
         ),
         children: [
           CatchField.input(
             title: 'FIRST NAME',
-            controller: _firstNameController,
-            autofocus: shouldAutofocus,
+            controller: controllers.firstName,
+            autofocus: state.shouldAutofocus,
             textCapitalization: TextCapitalization.words,
             textInputAction: TextInputAction.next,
             autofillHints: const [AutofillHints.givenName],
             helperText: 'Displayed on your profile.',
-            validator: (v) =>
-                validateRequiredProfileName(v, label: 'First name'),
+            validator: state.validateFirstName,
           ),
           gapH16,
           CatchField.input(
             title: 'LAST NAME',
-            controller: _lastNameController,
+            controller: controllers.lastName,
             textCapitalization: TextCapitalization.words,
             textInputAction: TextInputAction.next,
             autofillHints: const [AutofillHints.familyName],
             helperText: 'Private. We never show this on your public profile.',
-            validator: (v) =>
-                validateRequiredProfileName(v, label: 'Last name'),
+            validator: state.validateLastName,
           ),
           gapH16,
           CatchField.input(
             title: 'DATE OF BIRTH',
-            controller: _dateController,
+            controller: controllers.date,
             readOnly: true,
-            onTap: _pickDate,
+            onTap: () => callbacks.onPickDate(state.datePickerRequest),
             prefixIcon: Icon(CatchIcons.calendarTodayOutlined),
-            suffixText: age != null ? 'AGE $age' : null,
+            suffixText: state.ageSuffix,
             helperText: 'We never show your birth year.',
-            validator: (_) => validateRequiredDateOfBirth(_selectedDate),
+            validator: (_) => state.validateDateOfBirth(),
           ),
           gapH16,
           CatchField.input(
             title: 'PHONE',
-            controller: _phoneController,
+            controller: controllers.phone,
             readOnly: true,
             keyboardType: TextInputType.phone,
             textInputAction: TextInputAction.done,
             autofillHints: const [AutofillHints.telephoneNumberNational],
             prefixIcon: Icon(CatchIcons.phoneOutlined),
-            prefixText: '${data.countryCode} ',
+            prefixText: state.phonePrefix,
             suffixIcon: Icon(CatchIcons.verifiedRounded),
             helperText: 'Verified via OTP.',
             helperTone: CatchFieldSupportTone.success,
-            validator: validateRequiredPhoneNumber,
+            validator: state.validatePhoneNumber,
           ),
         ],
       ),

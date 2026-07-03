@@ -1,8 +1,10 @@
+import {useQuery} from "@tanstack/react-query";
 import {useCallback, useEffect, useMemo, useState} from "react";
 import type {
   AdminQueueItem,
   HostAnalyticsEventRow,
 } from "../../../shared/types/adminTypes";
+import {adminQueryKeys} from "../../../shared/query/queryKeys";
 import {loadFinanceOpsSnapshot} from "../api/financeOpsRepository";
 
 export type FinanceIssueKind =
@@ -51,50 +53,87 @@ export interface FinanceMetrics {
   revenueMinor: number;
 }
 
+export interface FinanceOpsController {
+  filteredRows: FinanceIssueRow[];
+  isLoading: boolean;
+  kindFilter: FinanceIssueKind;
+  loadedAt: string | null;
+  metrics: FinanceMetrics;
+  query: string;
+  rows: FinanceIssueRow[];
+  selected: FinanceIssueRow | null;
+  selectedReview: FinanceIssueReview | null;
+  refresh: () => Promise<boolean>;
+  select: (row: FinanceIssueRow) => void;
+  setKindFilter: (value: FinanceIssueKind) => void;
+  setQuery: (value: string) => void;
+}
+
+const emptyFinanceMetrics: FinanceMetrics = {
+  completedPayments: 0,
+  failedPayments: 0,
+  signupFailedPayments: 0,
+  payoutRestrictedHosts: 0,
+  revenueMinor: 0,
+};
+
 export function useFinanceOpsController({
   onError,
 }: {
   onError: (message: string | null) => void;
-}) {
-  const [rows, setRows] = useState<FinanceIssueRow[]>([]);
-  const [metrics, setMetrics] = useState<FinanceMetrics>({
-    completedPayments: 0,
-    failedPayments: 0,
-    signupFailedPayments: 0,
-    payoutRestrictedHosts: 0,
-    revenueMinor: 0,
+}): FinanceOpsController {
+  const snapshotQuery = useQuery({
+    queryKey: adminQueryKeys.finance.overview(),
+    queryFn: loadFinanceOpsSnapshot,
+    placeholderData: (previousData) => previousData,
   });
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [kindFilter, setKindFilter] = useState<FinanceIssueKind>("all");
   const [query, setQuery] = useState("");
-  const [loadedAt, setLoadedAt] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const rows = useMemo(
+    () => snapshotQuery.data ? buildFinanceRows(snapshotQuery.data) : [],
+    [snapshotQuery.data]
+  );
+  const metrics = useMemo(
+    () => snapshotQuery.data ?
+      buildFinanceMetrics(snapshotQuery.data) :
+      emptyFinanceMetrics,
+    [snapshotQuery.data]
+  );
+  const loadedAt = snapshotQuery.data?.loadedAt ?? null;
 
   const refresh = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const snapshot = await loadFinanceOpsSnapshot();
-      const nextRows = buildFinanceRows(snapshot);
-      setRows(nextRows);
-      setMetrics(buildFinanceMetrics(snapshot));
-      setLoadedAt(snapshot.loadedAt);
-      setSelectedId((current) => {
-        if (current && nextRows.some((row) => row.id === current)) {
-          return current;
-        }
-        return null;
-      });
-      onError(null);
-    } catch (error) {
-      onError(messageFromError(error, "Unable to load finance signals."));
-    } finally {
-      setIsLoading(false);
+    const result = await snapshotQuery.refetch();
+    if (result.error) {
+      onError(messageFromError(result.error, "Unable to load finance signals."));
+      return false;
     }
-  }, [onError]);
+    onError(null);
+    return true;
+  }, [onError, snapshotQuery]);
 
   useEffect(() => {
-    void refresh();
-  }, [refresh]);
+    if (snapshotQuery.isError) {
+      onError(messageFromError(
+        snapshotQuery.error,
+        "Unable to load finance signals."
+      ));
+      return;
+    }
+    if (snapshotQuery.isSuccess) onError(null);
+  }, [
+    onError,
+    snapshotQuery.error,
+    snapshotQuery.isError,
+    snapshotQuery.isSuccess,
+  ]);
+
+  useEffect(() => {
+    setSelectedId((current) => {
+      if (current && rows.some((row) => row.id === current)) return current;
+      return null;
+    });
+  }, [rows]);
 
   const filteredRows = useMemo(
     () => filterRows(rows, kindFilter, query),
@@ -116,7 +155,7 @@ export function useFinanceOpsController({
 
   return {
     filteredRows,
-    isLoading,
+    isLoading: snapshotQuery.isPending || snapshotQuery.isFetching,
     kindFilter,
     loadedAt,
     metrics,

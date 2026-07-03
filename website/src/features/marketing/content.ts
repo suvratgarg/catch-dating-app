@@ -1,4 +1,9 @@
-export type StorePlatform = "ios" | "android";
+import type {
+  AppDownloadCtaItem,
+  AppDownloadStorePlatform,
+} from "../../shared/ui/primitives";
+
+export type StorePlatform = AppDownloadStorePlatform;
 export interface OrganizerEventHighlight {
   id: string;
   title: string;
@@ -7,12 +12,8 @@ export interface OrganizerEventHighlight {
   href: string;
   activityToken: string;
 }
-export interface StoreCta {
-  platform: StorePlatform;
-  kicker: string;
-  label: string;
+export interface StoreCta extends AppDownloadCtaItem {
   shortLabel: string;
-  href: string;
 }
 
 export interface ActivityMeta {

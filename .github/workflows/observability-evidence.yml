@@ -36,15 +36,21 @@ jobs:
 
     steps:
       - name: Write evidence summary
+        env:
+          OBSERVABILITY_ENVIRONMENT: ${{ inputs.environment }}
+          APP_BUILD: ${{ inputs.app_build }}
+          CRASHLYTICS_EVIDENCE: ${{ inputs.crashlytics_evidence }}
+          ANALYTICS_EVIDENCE: ${{ inputs.analytics_evidence }}
+          GA4_BIGQUERY_EVIDENCE: ${{ inputs.ga4_bigquery_evidence }}
         run: |
           {
             echo "## Observability evidence"
             echo
-            echo "- Environment: \`${{ inputs.environment }}\`"
-            echo "- App build: ${{ inputs.app_build }}"
-            echo "- Crashlytics: ${{ inputs.crashlytics_evidence }}"
-            echo "- Analytics DebugView: ${{ inputs.analytics_evidence }}"
-            echo "- GA4 BigQuery: ${{ inputs.ga4_bigquery_evidence }}"
+            echo "- Environment: \`$OBSERVABILITY_ENVIRONMENT\`"
+            echo "- App build: $APP_BUILD"
+            echo "- Crashlytics: $CRASHLYTICS_EVIDENCE"
+            echo "- Analytics DebugView: $ANALYTICS_EVIDENCE"
+            echo "- GA4 BigQuery: $GA4_BIGQUERY_EVIDENCE"
             echo
             echo "This workflow records dashboard evidence in the Actions run summary."
           } >> "$GITHUB_STEP_SUMMARY"

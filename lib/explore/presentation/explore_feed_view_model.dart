@@ -13,18 +13,20 @@ import 'package:catch_dating_app/events/data/external_event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_eligibility.dart';
+import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/external_event.dart';
 import 'package:catch_dating_app/events/domain/saved_event.dart';
 import 'package:catch_dating_app/events/domain/viewer_event_availability.dart';
-import 'package:catch_dating_app/events/domain/event_formatters.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
+import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
+import 'package:catch_dating_app/explore/data/explore_search_repository.dart';
 import 'package:catch_dating_app/explore/presentation/explore_filter_logic.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
-import 'package:catch_dating_app/explore/data/explore_search_repository.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'explore_feed_view_model.g.dart';
 
 class ExploreFeedViewModel {
   const ExploreFeedViewModel({
@@ -266,7 +268,8 @@ String _ageRestrictedLabel(ViewerEventAvailability availability) {
   };
 }
 
-final exploreViewerCohortIdProvider = Provider<AsyncValue<String?>>((ref) {
+@riverpod
+AsyncValue<String?> exploreViewerCohortId(Ref ref) {
   final uidAsync = ref.watch(uidProvider);
   if (uidAsync.isLoading) return const AsyncLoading();
   if (uidAsync.hasError) {
@@ -291,11 +294,10 @@ final exploreViewerCohortIdProvider = Provider<AsyncValue<String?>>((ref) {
       .resolve(EventAttendeeProfile.fromUserProfile(userProfile))
       .id;
   return AsyncData(cohortId);
-});
+}
 
-final exploreFeedViewModelProvider = Provider<AsyncValue<ExploreFeedViewModel>>((
-  ref,
-) {
+@riverpod
+AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
   final city = ref.watch(selectedExploreCityProvider);
   final query = ref.watch(exploreSearchQueryProvider);
   final filters = ref.watch(exploreFiltersProvider);
@@ -608,7 +610,7 @@ final exploreFeedViewModelProvider = Provider<AsyncValue<ExploreFeedViewModel>>(
       externalItems: List.unmodifiable(externalItems),
     ),
   );
-});
+}
 
 bool _matchesClubScopeFilters({
   required Club club,

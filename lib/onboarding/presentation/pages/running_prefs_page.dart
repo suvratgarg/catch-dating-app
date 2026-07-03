@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/core/format_utils.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -10,11 +9,19 @@ import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
-import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_layout.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/running_prefs_page_state.dart';
+import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+const EdgeInsets _pacePreferenceCardPadding = EdgeInsets.fromLTRB(
+  CatchSpacing.s4,
+  CatchSpacing.s4,
+  CatchSpacing.s4,
+  CatchSpacing.s3,
+);
 
 class RunningPrefsPage extends ConsumerStatefulWidget {
   const RunningPrefsPage({
@@ -65,16 +72,32 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
     });
   }
 
+  OnboardingRunningPrefsState _stateFor({
+    required bool isCompleting,
+    String? completeErrorMessage,
+  }) {
+    return OnboardingRunningPrefsState.fromDraft(
+      paceRange: _paceRange,
+      distances: _distances,
+      reasons: _reasons,
+      runTimes: _runTimes,
+      runPreferencesOnly: widget.runPreferencesOnly,
+      isCompleting: isCompleting,
+      completeErrorMessage: completeErrorMessage,
+    );
+  }
+
   void _submit() {
+    final intent = _stateFor(isCompleting: false).submitIntent();
     OnboardingController.completeMutation.run(ref, (tx) async {
       await tx
           .get(onboardingControllerProvider.notifier)
           .completeRunPreferences(
-            paceMinSecsPerKm: _paceRange.start.round(),
-            paceMaxSecsPerKm: _paceRange.end.round(),
-            preferredDistances: _distances.toList(),
-            runningReasons: _reasons.toList(),
-            preferredRunTimes: _runTimes.toList(),
+            paceMinSecsPerKm: intent.paceMinSecsPerKm,
+            paceMaxSecsPerKm: intent.paceMaxSecsPerKm,
+            preferredDistances: intent.preferredDistances,
+            runningReasons: intent.runningReasons,
+            preferredRunTimes: intent.preferredRunTimes,
           );
     });
   }
@@ -82,15 +105,69 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
   @override
   Widget build(BuildContext context) {
     final mutation = ref.watch(OnboardingController.completeMutation);
+    final state = _stateFor(
+      isCompleting: mutation.isPending,
+      completeErrorMessage: mutation.hasError
+          ? mutationErrorMessage(mutation)
+          : null,
+    );
+
+    return OnboardingRunningPrefsStep(
+      state: state,
+      callbacks: OnboardingRunningPrefsCallbacks(
+        onPaceChanged: (next) {
+          OnboardingController.completeMutation.reset(ref);
+          setState(() => _paceRange = next);
+        },
+        onDistancesChanged: (next) {
+          OnboardingController.completeMutation.reset(ref);
+          setState(() {
+            _distances
+              ..clear()
+              ..addAll(next);
+          });
+        },
+        onReasonsChanged: (next) {
+          OnboardingController.completeMutation.reset(ref);
+          setState(() {
+            _reasons
+              ..clear()
+              ..addAll(next);
+          });
+        },
+        onRunTimesChanged: (next) {
+          OnboardingController.completeMutation.reset(ref);
+          setState(() {
+            _runTimes
+              ..clear()
+              ..addAll(next);
+          });
+        },
+        onContinue: _submit,
+      ),
+    );
+  }
+}
+
+class OnboardingRunningPrefsStep extends StatelessWidget {
+  const OnboardingRunningPrefsStep({
+    super.key,
+    required this.state,
+    required this.callbacks,
+  });
+
+  final OnboardingRunningPrefsState state;
+  final OnboardingRunningPrefsCallbacks callbacks;
+
+  @override
+  Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
     return OnboardingStepLayout(
       footer: CatchButton(
-        label: widget.runPreferencesOnly
-            ? 'Continue booking'
-            : 'Save run preferences',
-        onPressed: _submit,
-        isLoading: mutation.isPending,
+        label: state.footerLabel,
+        onPressed: state.canSubmit ? callbacks.onContinue : null,
+        isLoading: state.isCompleting,
         icon: Icon(CatchIcons.checkRounded),
         fullWidth: true,
         size: CatchButtonSize.lg,
@@ -106,12 +183,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
           radius: CatchRadius.md,
           borderColor: t.line,
           backgroundColor: t.surface,
-          padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.s4,
-            CatchSpacing.s4,
-            CatchSpacing.s4,
-            CatchSpacing.s3,
-          ),
+          padding: _pacePreferenceCardPadding,
           child: Column(
             children: [
               Row(
@@ -119,7 +191,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
                 children: [
                   Flexible(
                     child: Text(
-                      '${formatPace(_paceRange.start)}/km',
+                      state.minPaceLabel,
                       style: CatchTextStyles.statDisplay(context, color: t.ink),
                     ),
                   ),
@@ -129,7 +201,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
                   ),
                   Flexible(
                     child: Text(
-                      '${formatPace(_paceRange.end)}/km',
+                      state.maxPaceLabel,
                       style: CatchTextStyles.statDisplay(context, color: t.ink),
                       textAlign: TextAlign.end,
                     ),
@@ -138,14 +210,11 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
               ),
               gapH12,
               CatchRangeSlider(
-                values: _paceRange,
+                values: state.paceRange,
                 min: 240, // 4:00/km
                 max: 540, // 9:00/km
                 divisions: 20,
-                onChanged: (next) {
-                  OnboardingController.completeMutation.reset(ref);
-                  setState(() => _paceRange = next);
-                },
+                onChanged: callbacks.onPaceChanged,
               ),
               gapH4,
               Row(
@@ -171,61 +240,36 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
           label: 'FAVOURITE DISTANCES',
           isOptional: true,
           values: PreferredDistance.values,
-          selected: _distances,
+          selected: state.distances,
           multiSelect: true,
-          onChanged: (next) {
-            OnboardingController.completeMutation.reset(ref);
-            setState(() {
-              _distances
-                ..clear()
-                ..addAll(next);
-            });
-          },
+          onChanged: callbacks.onDistancesChanged,
         ),
         gapH20,
 
         // ── Event reasons ───────────────────────────────────────────────────
         CatchChipField<RunReason>(
-          label: widget.runPreferencesOnly
-              ? 'Why do you run?'
-              : 'WHY DO YOU RUN?',
+          label: state.reasonLabel,
           isOptional: true,
           values: RunReason.values,
-          selected: _reasons,
+          selected: state.reasons,
           multiSelect: true,
-          onChanged: (next) {
-            OnboardingController.completeMutation.reset(ref);
-            setState(() {
-              _reasons
-                ..clear()
-                ..addAll(next);
-            });
-          },
+          onChanged: callbacks.onReasonsChanged,
         ),
         gapH20,
 
         // ── Time of day ───────────────────────────────────────────────────
         CatchChipField<PreferredRunTime>(
-          label: widget.runPreferencesOnly
-              ? 'FAVOURITE RUN TIMES'
-              : 'FAVOURITE EVENT TIMES',
+          label: state.runTimesLabel,
           isOptional: true,
           values: PreferredRunTime.values,
-          selected: _runTimes,
+          selected: state.runTimes,
           multiSelect: true,
-          onChanged: (next) {
-            OnboardingController.completeMutation.reset(ref);
-            setState(() {
-              _runTimes
-                ..clear()
-                ..addAll(next);
-            });
-          },
+          onChanged: callbacks.onRunTimesChanged,
         ),
 
-        if (mutation.hasError) ...[
+        if (state.hasCompleteError) ...[
           gapH16,
-          CatchErrorBanner(message: mutationErrorMessage(mutation)),
+          CatchErrorBanner(message: state.completeErrorMessage!),
         ],
       ],
     );

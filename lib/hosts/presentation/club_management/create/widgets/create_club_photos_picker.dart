@@ -8,7 +8,7 @@ import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart';
+import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:flutter/material.dart';
 
 enum CreateClubPhotosPickerVariant { standard, editStrip }
@@ -158,7 +158,10 @@ class EditClubPhotosLabel extends StatelessWidget {
       children: [
         Text('PHOTOS', style: CatchTextStyles.kicker(context)),
         const Spacer(),
-        Text('$count', style: CatchTextStyles.monoLabel(context, color: t.ink3)),
+        Text(
+          '$count',
+          style: CatchTextStyles.monoLabel(context, color: t.ink3),
+        ),
       ],
     );
   }
@@ -225,7 +228,7 @@ class ClubProfileImageTile extends StatelessWidget {
                           children: [
                             Icon(
                               CatchIcons.addPhotoAlternateOutlined,
-                              size: 30,
+                              size: CatchIcon.hero,
                               color: t.ink2,
                             ),
                             if (showLabel) ...[

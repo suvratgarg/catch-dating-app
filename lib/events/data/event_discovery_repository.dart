@@ -9,7 +9,9 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'event_discovery_repository.g.dart';
 
 const double eventDiscoveryGeoCellSizeDegrees = 0.08;
 
@@ -361,13 +363,14 @@ List<String> eventDiscoveryGeoCellsForRadius({
   return cells;
 }
 
-final eventDiscoveryRepositoryProvider = Provider<EventDiscoveryRepository>(
-  (ref) => EventDiscoveryRepository(ref.watch(firebaseFirestoreProvider)),
-);
+@riverpod
+EventDiscoveryRepository eventDiscoveryRepository(Ref ref) {
+  return EventDiscoveryRepository(ref.watch(firebaseFirestoreProvider));
+}
 
-final discoverableEventsProvider =
-    FutureProvider.family<List<Event>, EventDiscoveryQuery>(
-      (ref, query) => ref
-          .watch(eventDiscoveryRepositoryProvider)
-          .fetchDiscoverableEvents(query),
-    );
+@riverpod
+Future<List<Event>> discoverableEvents(Ref ref, EventDiscoveryQuery query) {
+  return ref
+      .watch(eventDiscoveryRepositoryProvider)
+      .fetchDiscoverableEvents(query);
+}

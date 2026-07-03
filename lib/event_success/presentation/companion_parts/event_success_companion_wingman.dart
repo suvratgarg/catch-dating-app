@@ -4,29 +4,43 @@ const EdgeInsets _wingmanCandidateRowGap = EdgeInsets.only(
   bottom: CatchSpacing.s2,
 );
 
-class WingmanRequestSection extends ConsumerStatefulWidget {
+@immutable
+class WingmanRequestActionState {
+  const WingmanRequestActionState({this.isSaving = false});
+
+  final bool isSaving;
+}
+
+class WingmanRequestSection extends StatefulWidget {
   const WingmanRequestSection({
     required this.event,
     required this.candidates,
+    required this.actionState,
+    required this.onSaveRequest,
+    required this.onWithdrawRequest,
     this.existingRequest,
   });
 
   final Event event;
   final List<PublicProfile> candidates;
+  final WingmanRequestActionState actionState;
+  final Future<void> Function(PublicProfile target, String note) onSaveRequest;
+  final Future<void> Function() onWithdrawRequest;
   final EventSuccessWingmanRequest? existingRequest;
 
   @override
-  ConsumerState<WingmanRequestSection> createState() =>
-      _WingmanRequestSectionState();
+  State<WingmanRequestSection> createState() => _WingmanRequestSectionState();
 }
 
-class _WingmanRequestSectionState extends ConsumerState<WingmanRequestSection> {
+class _WingmanRequestSectionState extends State<WingmanRequestSection> {
   late final TextEditingController _noteController = TextEditingController(
     text: widget.existingRequest?.isActive == true
         ? widget.existingRequest?.note ?? ''
         : '',
   );
   String? _optimisticTargetUid;
+  String? _savingTargetUid;
+  bool _withdrawing = false;
 
   @override
   void dispose() {
@@ -36,7 +50,8 @@ class _WingmanRequestSectionState extends ConsumerState<WingmanRequestSection> {
 
   @override
   Widget build(BuildContext context) {
-    final mutation = ref.watch(EventSuccessController.wingmanRequestMutation);
+    final saving = widget.actionState.isSaving || _savingTargetUid != null;
+    final withdrawing = widget.actionState.isSaving || _withdrawing;
     final activeRequest = widget.existingRequest?.isActive == true
         ? widget.existingRequest
         : null;
@@ -82,21 +97,8 @@ class _WingmanRequestSectionState extends ConsumerState<WingmanRequestSection> {
                     label: 'Withdraw',
                     size: CatchButtonSize.sm,
                     variant: CatchButtonVariant.secondary,
-                    isLoading: mutation.isPending,
-                    onPressed: mutation.isPending
-                        ? null
-                        : () => EventSuccessController.wingmanRequestMutation
-                              .run(ref, (tx) async {
-                                await tx
-                                    .get(
-                                      eventSuccessControllerProvider.notifier,
-                                    )
-                                    .withdrawWingmanRequest(
-                                      event: widget.event,
-                                    );
-                                if (!mounted) return;
-                                setState(() => _optimisticTargetUid = null);
-                              }),
+                    isLoading: withdrawing,
+                    onPressed: withdrawing ? null : _withdrawRequest,
                   ),
                 ],
               ),
@@ -139,12 +141,8 @@ class _WingmanRequestSectionState extends ConsumerState<WingmanRequestSection> {
                         : 'Switch',
                     size: CatchButtonSize.sm,
                     variant: CatchButtonVariant.secondary,
-                    isLoading:
-                        mutation.isPending &&
-                        candidate.uid != requestedTargetUid,
-                    onPressed:
-                        mutation.isPending ||
-                            candidate.uid == requestedTargetUid
+                    isLoading: saving && candidate.uid != requestedTargetUid,
+                    onPressed: saving || candidate.uid == requestedTargetUid
                         ? null
                         : () => _saveRequest(candidate),
                   ),
@@ -155,18 +153,26 @@ class _WingmanRequestSectionState extends ConsumerState<WingmanRequestSection> {
     );
   }
 
-  void _saveRequest(PublicProfile candidate) {
-    EventSuccessController.wingmanRequestMutation.run(ref, (tx) async {
-      await tx
-          .get(eventSuccessControllerProvider.notifier)
-          .saveWingmanRequest(
-            event: widget.event,
-            target: candidate,
-            note: _noteController.text,
-          );
+  Future<void> _saveRequest(PublicProfile candidate) async {
+    setState(() => _savingTargetUid = candidate.uid);
+    try {
+      await widget.onSaveRequest(candidate, _noteController.text);
       if (!mounted) return;
       setState(() => _optimisticTargetUid = candidate.uid);
-    });
+    } finally {
+      if (mounted) setState(() => _savingTargetUid = null);
+    }
+  }
+
+  Future<void> _withdrawRequest() async {
+    setState(() => _withdrawing = true);
+    try {
+      await widget.onWithdrawRequest();
+      if (!mounted) return;
+      setState(() => _optimisticTargetUid = null);
+    } finally {
+      if (mounted) setState(() => _withdrawing = false);
+    }
   }
 }
 
@@ -175,18 +181,4 @@ String? _profileNameForUid(List<PublicProfile> profiles, String uid) {
     if (profile.uid == uid) return profile.name;
   }
   return null;
-}
-
-List<PublicProfile> _wingmanCandidatesForViewer({
-  required UserProfile viewer,
-  required List<PublicProfile> candidates,
-}) {
-  final interestedIn = viewer.interestedInGenders.toSet();
-  if (interestedIn.isEmpty) return const [];
-  return [
-    for (final candidate in candidates)
-      if (candidate.uid != viewer.uid &&
-          interestedIn.contains(candidate.gender))
-        candidate,
-  ];
 }

@@ -203,6 +203,8 @@ class ErrorLogger {
 // ── Provider ─────────────────────────────────────────────────────────────────
 
 /// A no-op default that must be overridden in [main] with the real instance.
+// keepalive: error logger is app infrastructure and must remain available for
+// providers even when no screen watches it.
 @Riverpod(keepAlive: true)
 ErrorLogger errorLogger(Ref ref) => ErrorLogger();
 

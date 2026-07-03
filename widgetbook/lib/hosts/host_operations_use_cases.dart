@@ -11,9 +11,11 @@ import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
@@ -25,7 +27,14 @@ import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_playbooks/modules.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_preference.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_runtime.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -35,10 +44,9 @@ import 'package:catch_dating_app/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
-import 'package:catch_dating_app/events/presentation/attendance_sheet_view_model.dart';
-import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
+import 'package:catch_dating_app/events/shared/attendance_sheet_view_model.dart';
 import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_profile_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_attendance_window.dart';
@@ -58,8 +66,10 @@ import 'package:catch_dating_app/hosts/presentation/club_management/host_team_ma
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_success_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_route_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/create_event_photo_picker.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/create_event_step_header.dart';
@@ -70,23 +80,35 @@ import 'package:catch_dating_app/hosts/presentation/event_management/widgets/eve
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/when_step.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/where_step.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_home_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_settings_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_settings_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_card.dart';
+import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/catch_roster_board.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_club_tools.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_tools.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_payout_prompt.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_payout_prompt_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
-import 'package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
+import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/labs/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
+import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
+import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -130,6 +152,21 @@ final _selectedLocationEvent = _editableEvent.copyWith(
   startingPointLng: 72.8223,
   locationDetails: 'Meet by the sea-facing steps',
 );
+final _longNameOwnerClub = HostOperationsFixtures.primaryClub.copyWith(
+  id: 'design-host-long-owner-club',
+  name: 'Bandra Sea Face Morning Run Club for New Members',
+  area: 'Bandra West Promenade',
+);
+final _longNameCoHostedClub = HostOperationsFixtures.coHostedClub.copyWith(
+  id: 'design-host-long-cohost-club',
+  name: 'South Mumbai Rooftop Dinner Collective With Guest Hosts',
+  area: 'Fort and Kala Ghoda',
+);
+final _longNameEvent = HostOperationsFixtures.upcomingEvent.copyWith(
+  id: 'design-host-long-name-event',
+  clubId: _longNameOwnerClub.id,
+  meetingPoint: 'Bandra West Promenade amphitheatre',
+);
 final _customActivityEventDraft = HostOperationsFixtures.eventDraft.copyWith(
   id: 'design-host-event-custom-activity-draft',
   activityKind: 'openActivity',
@@ -138,6 +175,36 @@ final _customActivityEventDraft = HostOperationsFixtures.eventDraft.copyWith(
   distance: null,
   paceName: null,
 );
+final _hostManageDisabledInviteLinks = <EventInviteLink>[
+  HostOperationsFixtures.inviteLinks.first.copyWith(
+    id: 'design-host-link-disabled-edge',
+    label: 'Alumni WhatsApp paused',
+    source: 'whatsapp alumni',
+    openCount: 88,
+    requestCount: 14,
+    confirmedCount: 6,
+    checkedInCount: 3,
+    catcherCount: 2,
+    chatStartedCount: 2,
+    disabledAt: HostOperationsFixtures.now.subtract(const Duration(hours: 3)),
+    updatedAt: HostOperationsFixtures.now.subtract(const Duration(hours: 3)),
+  ),
+];
+final _hostManageLongLabelInviteLinks = <EventInviteLink>[
+  HostOperationsFixtures.inviteLinks.first.copyWith(
+    id: 'design-host-link-long-label-source',
+    label: 'Partner newsletter referral with venue concierge follow-up',
+    source: 'partner newsletter / co-working founders circle / June RSVP push',
+    openCount: 214,
+    requestCount: 43,
+    confirmedCount: 18,
+    checkedInCount: 9,
+    catcherCount: 5,
+    chatStartedCount: 7,
+    disabledAt: null,
+    updatedAt: HostOperationsFixtures.now.subtract(const Duration(minutes: 25)),
+  ),
+];
 const _createClubSteps = <int, String>{
   0: 'basics step',
   1: 'details step',
@@ -378,6 +445,41 @@ Widget hostHomeRouteStates(BuildContext context) {
         label: 'populated host dashboard',
         child: const _DeviceFrame(
           child: _HostShellScope(child: HostOperationsHomeScreen()),
+        ),
+      ),
+      _StateCard(
+        label: 'owner and co-host switcher',
+        child: _DeviceFrame(
+          child: _HostShellScope(
+            hostedClubs: HostOperationsFixtures.clubs,
+            ownedClubs: [
+              HostOperationsFixtures.primaryClub,
+              HostOperationsFixtures.dinnerClub,
+            ],
+            child: const HostOperationsHomeScreen(
+              initialClubId: 'design-host-cohost-club',
+              initialTab: HostHomeTab.events,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'long club names',
+        child: _DeviceFrame(
+          child: _HostShellScope(
+            hostedClubs: [_longNameOwnerClub, _longNameCoHostedClub],
+            ownedClubs: [_longNameOwnerClub],
+            clubEventStreams: {
+              _longNameOwnerClub.id: Stream<List<Event>>.value([
+                _longNameEvent,
+              ]),
+              _longNameCoHostedClub.id: Stream<List<Event>>.value(const []),
+            },
+            child: HostOperationsHomeScreen(
+              initialClubId: _longNameOwnerClub.id,
+              initialTab: HostHomeTab.events,
+            ),
+          ),
         ),
       ),
       _StateCard(
@@ -759,6 +861,24 @@ Widget hostLoadingSkeletonCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Metric grid skeleton states',
+  type: HostAnalyticsMetricGridSkeleton,
+  path: '[P1 product surfaces]/Host operations/Components',
+)
+Widget hostAnalyticsMetricGridSkeletonCatalogStates(BuildContext context) {
+  return const _HostCatalog(
+    title: 'HostAnalyticsMetricGridSkeleton',
+    contractId: 'component.host.analytics.metric_grid_skeleton',
+    children: [
+      _StateCard(
+        label: 'two metrics',
+        child: SizedBox(width: 360, child: HostAnalyticsMetricGridSkeleton()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Roster primitive states',
   type: CatchRosterTileCell,
   path: '[P1 product surfaces]/Host operations/Components',
@@ -1021,7 +1141,7 @@ Widget _hostHomePreviewFor(String focus) {
   final club = HostOperationsFixtures.primaryClub;
   final event = HostOperationsFixtures.upcomingEvent;
   final clubs = HostOperationsFixtures.clubs;
-  final state = HostHomeTodayDashboardState.fromAsync(
+  final state = buildHostHomeTodayDashboardState(
     AsyncData<List<Event>>([event, HostOperationsFixtures.privateEvent]),
   );
   final tasks = HostHomeTodayTaskData.forEvent(event);
@@ -1142,11 +1262,26 @@ Widget _hostClubPreviewFor(String focus) {
       isOwner: true,
       clubs: HostOperationsFixtures.clubs,
       showClubPicker: true,
+      eventsLoaded: true,
+      eventCount: events.length,
+      activeEventCount: events.where((event) => !event.isCancelled).length,
       onSelectClubIndex: (_) {},
       onSelectTab: (_) {},
       onPreviewClub: (_) {},
       onOpenSettings: () {},
     ),
+    'HostClubOrganizerOverviewController' =>
+      HostClubOrganizerOverviewController(
+        club: club,
+        currentUid: _hostUid,
+        isOwner: true,
+        clubs: HostOperationsFixtures.clubs,
+        showClubPicker: true,
+        onSelectClubIndex: (_) {},
+        onSelectTab: (_) {},
+        onPreviewClub: (_) {},
+        onOpenSettings: () {},
+      ),
     'HostClubPreviewPane' => HostClubPreviewPane(
       club: club,
       onPreviewClub: (_) {},
@@ -1200,9 +1335,14 @@ Widget _hostClubPreviewFor(String focus) {
       item: metricItems.first,
     ),
     'HostOrganizerPayoutPrompt' => HostOrganizerPayoutPrompt(
-      uid: _hostUid,
+      state: const HostOrganizerPayoutPromptState.setupRequired(),
       onManagePayouts: () {},
     ),
+    'HostOrganizerPayoutPromptController' =>
+      HostOrganizerPayoutPromptController(
+        uid: _hostUid,
+        onManagePayouts: () {},
+      ),
     'HostOrganizerSectionHeader' => const HostOrganizerSectionHeader(
       label: 'Team',
       actionLabel: 'Manage',
@@ -1221,10 +1361,16 @@ Widget _hostClubPreviewFor(String focus) {
       activeEventCount: events.length,
       onTap: () {},
     ),
-    'HostPaymentAccountCard' => HostPaymentAccountCard(club: club),
+    'HostPaymentAccountCard' => HostPaymentAccountCard(
+      club: club,
+      account: payment,
+    ),
+    'HostPaymentAccountControllerCard' => HostPaymentAccountControllerCard(
+      club: club,
+    ),
     'HostPaymentAccountContentCard' => HostPaymentAccountContentCard(
       account: payment,
-      actionError: null,
+      actionErrorMessage: null,
       onboardingPending: false,
       refreshPending: false,
       onShowPayoutsHandoff: (_, _) async {},
@@ -1274,6 +1420,11 @@ Widget _hostEventManagePreviewFor(String focus) {
   final viewModel = _hostAttendanceViewModel();
   final profiles = _hostAttendeeProfiles();
   final inviteCode = HostOperationsFixtures.privateAccess.inviteCode;
+  final inviteLink = AppDeepLinks.event(
+    clubId: club.id,
+    eventId: event.id,
+    inviteCode: inviteCode,
+  ).toString();
   final filters = const [
     HostRosterFilterSpec(
       filter: HostRosterFilter.all,
@@ -1308,13 +1459,27 @@ Widget _hostEventManagePreviewFor(String focus) {
     'HostEventActionsSection' => HostEventActionsSection(
       club: club,
       event: event,
-      hasKnownActivity: true,
-      cancelEventPending: false,
-      deleteEventPending: false,
+      actionState: HostEventActionDisplayState.resolve(
+        event: event,
+        roster: roster,
+        cancelEventPending: false,
+        deleteEventPending: false,
+      ),
       actionError: null,
+      privateLinkActionState: HostPrivateLinkActionState.resolve(
+        accessState: CatchAsyncState<EventPrivateAccess?>.data(
+          HostOperationsFixtures.privateAccess,
+        ),
+        inviteLinksState: CatchAsyncState<List<EventInviteLink>>.data(
+          HostOperationsFixtures.inviteLinks,
+        ),
+        inviteLink: inviteLink,
+        sharePending: false,
+      ),
       onEditEvent: () {},
       onCancelEvent: () async {},
       onDeleteEvent: () async {},
+      onSharePrivateLink: (_) {},
     ),
     'HostEventAttendancePanel' => HostEventAttendancePanel(eventId: event.id),
     'HostEventParticipantsList' => HostEventParticipantsList(
@@ -1323,6 +1488,30 @@ Widget _hostEventManagePreviewFor(String focus) {
       scrollable: false,
       showSummaryHeader: true,
       initialSearchQuery: '',
+      profileLookupState: HostParticipantProfilesLookupState(
+        status: HostParticipantProfilesLookupStatus.ready,
+        profileIds: viewModel.profileIds,
+        profiles: profiles,
+      ),
+      mutationState: HostParticipantsMutationDisplayState.resolve(
+        markAttendancePendingIds: const {},
+        approveJoinRequestPendingIds: const {},
+        declineJoinRequestPendingIds: const {},
+        createWaitlistOfferPendingIds: const {},
+        bulkWaitlistOfferPending: false,
+        opsReportPending: false,
+        revenueReportPending: false,
+      ),
+      actions: HostParticipantLifecycleActions(
+        openProfile: (_) {},
+        approveJoinRequest: (_) {},
+        declineJoinRequest: (_) {},
+        toggleAttendance: (_) {},
+        createWaitlistOffers: (_) {},
+        shareOpsReport: () async {},
+        shareRevenueReport: () async {},
+      ),
+      onRetryProfiles: () {},
     ),
     'HostEventParticipantsPanel' => HostEventParticipantsPanel(
       eventId: event.id,
@@ -1349,6 +1538,8 @@ Widget _hostEventManagePreviewFor(String focus) {
       inviteCode: inviteCode,
       link: HostOperationsFixtures.inviteLinks.first,
       actionsDisabled: false,
+      onCopyInviteLink: (_, _) {},
+      onDisableInviteLink: (_) {},
     ),
     'HostInviteLinksList' => HostInviteLinksList(
       event: event,
@@ -1356,6 +1547,16 @@ Widget _hostEventManagePreviewFor(String focus) {
       linksAsync: AsyncData<List<EventInviteLink>>(
         HostOperationsFixtures.inviteLinks,
       ),
+      state: HostInviteLinksListDisplayState.resolve(
+        createPending: false,
+        copyPending: false,
+        disablePending: false,
+      ),
+      mutationError: null,
+      onRetry: () {},
+      onCreateInviteLink: (_) async {},
+      onCopyInviteLink: (_, _) {},
+      onDisableInviteLink: (_) {},
     ),
     'HostManageMetaItem' => Builder(
       builder: (context) => HostManageMetaItem(
@@ -1376,17 +1577,89 @@ Widget _hostEventManagePreviewFor(String focus) {
       scrollable: false,
       showHeader: true,
       usesRequestApproval: false,
+      mutationState: HostParticipantsMutationDisplayState.resolve(
+        markAttendancePendingIds: const {},
+        approveJoinRequestPendingIds: const {},
+        declineJoinRequestPendingIds: const {},
+        createWaitlistOfferPendingIds: const {},
+        bulkWaitlistOfferPending: false,
+        opsReportPending: false,
+        revenueReportPending: false,
+      ),
+      actions: HostParticipantLifecycleActions(
+        openProfile: (_) {},
+        approveJoinRequest: (_) {},
+        declineJoinRequest: (_) {},
+        toggleAttendance: (_) {},
+        createWaitlistOffers: (_) {},
+        shareOpsReport: () async {},
+        shareRevenueReport: () async {},
+      ),
       searchQuery: '',
       selectedFilter: HostRosterFilter.all,
       onSearchChanged: (_) {},
       onFilterChanged: (_) {},
     ),
-    'HostPrivateAccessBody' => HostPrivateAccessBody(
-      club: club,
-      event: event,
-      access: HostOperationsFixtures.privateAccess,
+    'HostPrivateAccessBody' => Consumer(
+      builder: (context, ref, _) {
+        final shareMutation = ref.watch(
+          HostEventManageController.sharePrivateLinkMutation,
+        );
+        return HostPrivateAccessBody(
+          event: event,
+          state: HostPrivateAccessDisplayState.resolve(
+            access: HostOperationsFixtures.privateAccess,
+            inviteLinksState: CatchAsyncState<List<EventInviteLink>>.data(
+              HostOperationsFixtures.inviteLinks,
+            ),
+            inviteLink: inviteLink,
+            sharePending: shareMutation.isPending,
+          ),
+          inviteLinksAsync: AsyncData<List<EventInviteLink>>(
+            HostOperationsFixtures.inviteLinks,
+          ),
+          shareMutation: shareMutation,
+          inviteLinksListState: HostInviteLinksListDisplayState.resolve(
+            createPending: false,
+            copyPending: false,
+            disablePending: false,
+          ),
+          inviteLinksMutationError: null,
+          onRetryInviteLinks: () {},
+          onSharePrivateLink: (_) {},
+          onCreateInviteLink: (_) async {},
+          onCopyInviteLink: (_, _) {},
+          onDisableInviteLink: (_) {},
+        );
+      },
     ),
-    'HostPrivateAccessCard' => HostPrivateAccessCard(club: club, event: event),
+    'HostPrivateAccessCard' => Consumer(
+      builder: (context, ref, _) => HostPrivateAccessCard(
+        club: club,
+        event: event,
+        accessAsync: AsyncData<EventPrivateAccess?>(
+          HostOperationsFixtures.privateAccess,
+        ),
+        inviteLinksAsync: AsyncData<List<EventInviteLink>>(
+          HostOperationsFixtures.inviteLinks,
+        ),
+        shareMutation: ref.watch(
+          HostEventManageController.sharePrivateLinkMutation,
+        ),
+        inviteLinksListState: HostInviteLinksListDisplayState.resolve(
+          createPending: false,
+          copyPending: false,
+          disablePending: false,
+        ),
+        inviteLinksMutationError: null,
+        onRetryPrivateAccess: () {},
+        onRetryInviteLinks: () {},
+        onSharePrivateLink: (_) {},
+        onCreateInviteLink: (_) async {},
+        onCopyInviteLink: (_, _) {},
+        onDisableInviteLink: (_) {},
+      ),
+    ),
     'HostPrivateAccessShell' => const HostPrivateAccessShell(
       child: Text('Private access preview shell'),
     ),
@@ -1499,12 +1772,22 @@ String _hostComponentSlug(String name) {
 )
 @widgetbook.UseCase(
   name: 'Covered by host clubs route states',
+  type: HostClubOrganizerOverviewController,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
   type: HostOrganizerHeader,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 @widgetbook.UseCase(
   name: 'Covered by host clubs route states',
   type: HostOrganizerPayoutPrompt,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostOrganizerPayoutPromptController,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 @widgetbook.UseCase(
@@ -1645,6 +1928,11 @@ String _hostComponentSlug(String name) {
 @widgetbook.UseCase(
   name: 'Covered by host clubs route states',
   type: HostPaymentAccountCard,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+@widgetbook.UseCase(
+  name: 'Covered by host clubs route states',
+  type: HostPaymentAccountControllerCard,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 @widgetbook.UseCase(
@@ -2037,27 +2325,30 @@ Widget hostTeamAddHostSheetStates(BuildContext context) {
       _StateCard(
         label: 'add pending',
         child: const _DeviceFrame(
-          child: _HostClubsMutationPreview(
-            mode: _HostClubsMutationPreviewMode.teamAddPending,
-            child: _HostShellScope(child: _HostTeamAddHostSheetPreview()),
+          child: _HostShellScope(
+            child: _HostTeamAddHostSheetPreview(
+              mode: _HostTeamAddHostSheetPreviewMode.pending,
+            ),
           ),
         ),
       ),
       _StateCard(
         label: 'add error',
         child: const _DeviceFrame(
-          child: _HostClubsMutationPreview(
-            mode: _HostClubsMutationPreviewMode.teamAddError,
-            child: _HostShellScope(child: _HostTeamAddHostSheetPreview()),
+          child: _HostShellScope(
+            child: _HostTeamAddHostSheetPreview(
+              mode: _HostTeamAddHostSheetPreviewMode.error,
+            ),
           ),
         ),
       ),
       _StateCard(
         label: 'add offline',
         child: const _DeviceFrame(
-          child: _HostClubsMutationPreview(
-            mode: _HostClubsMutationPreviewMode.teamAddOffline,
-            child: _HostShellScope(child: _HostTeamAddHostSheetPreview()),
+          child: _HostShellScope(
+            child: _HostTeamAddHostSheetPreview(
+              mode: _HostTeamAddHostSheetPreviewMode.offline,
+            ),
           ),
         ),
       ),
@@ -3528,6 +3819,31 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Route state renderer',
+  type: HostCreateEventRouteStateView,
+  path: '[P1 product surfaces]/Host create event',
+)
+Widget hostCreateEventRouteStateViewCatalogStates(BuildContext context) {
+  return _HostCatalog(
+    title: 'HostCreateEventRouteStateView',
+    contractId: 'component.host.event.create_route_state_view',
+    children: [
+      _StateCard(
+        label: 'ready',
+        child: _DeviceFrame(
+          child: _HostCreateEventScope(
+            child: HostCreateEventRouteStateView(
+              clubId: _club.id,
+              state: HostCreateEventRouteState.initial(_club),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Route and section states',
   type: EditHostedEventRouteScreen,
   path: '[P1 product surfaces]/Host operations',
@@ -3879,6 +4195,28 @@ Widget createClubPhotosPickerCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Photos label states',
+  type: EditClubPhotosLabel,
+  path: '[P1 product surfaces]/Host create club',
+)
+Widget editClubPhotosLabelCatalogStates(BuildContext context) {
+  return const _HostCatalog(
+    title: 'EditClubPhotosLabel',
+    contractId: 'component.host.club.edit_photos_label',
+    children: [
+      _StateCard(
+        label: 'three photos',
+        child: SizedBox(width: 320, child: EditClubPhotosLabel(count: 3)),
+      ),
+      _StateCard(
+        label: 'empty strip',
+        child: SizedBox(width: 320, child: EditClubPhotosLabel(count: 0)),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Image states',
   type: CreateClubProfileImagePicker,
   path: '[P1 product surfaces]/Host create club',
@@ -3905,6 +4243,39 @@ Widget createClubProfileImagePickerCatalogStates(BuildContext context) {
             onTap: () {},
             variant: CreateClubProfileImagePickerVariant.editLogo,
           ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Profile image tile states',
+  type: ClubProfileImageTile,
+  path: '[P1 product surfaces]/Host create club',
+)
+Widget clubProfileImageTileCatalogStates(BuildContext context) {
+  return _HostCatalog(
+    title: 'ClubProfileImageTile',
+    contractId: 'component.host.club.profile_image_tile',
+    children: [
+      _StateCard(
+        label: 'empty large',
+        child: ClubProfileImageTile(
+          imageBytes: null,
+          existingImageUrl: null,
+          onTap: () {},
+          size: CatchLayout.clubProfileImagePickerExtent,
+          showEmptyLabel: true,
+        ),
+      ),
+      _StateCard(
+        label: 'logo filled',
+        child: ClubProfileImageTile(
+          imageBytes: _createClubPngBytes(),
+          existingImageUrl: null,
+          onTap: () {},
+          size: 64,
         ),
       ),
     ],
@@ -4069,6 +4440,97 @@ Widget createEventStepHeaderCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Footer states',
+  type: StepperFooter,
+  path: '[P1 product surfaces]/Host shared',
+)
+Widget stepperFooterCatalogStates(BuildContext context) {
+  return _HostCatalog(
+    title: 'StepperFooter',
+    contractId: 'component.host.stepper_footer',
+    children: [
+      _StateCard(
+        label: 'save and next',
+        child: _DeviceFrame(
+          child: Column(
+            children: [
+              const Expanded(child: SizedBox.shrink()),
+              StepperFooter(
+                isLastStep: false,
+                isLoading: false,
+                onPrimary: () {},
+                onSaveDraft: () {},
+              ),
+            ],
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'last step loading',
+        child: _DeviceFrame(
+          child: Column(
+            children: [
+              const Expanded(child: SizedBox.shrink()),
+              StepperFooter(
+                isLastStep: true,
+                isLoading: true,
+                onPrimary: () {},
+                onSaveDraft: null,
+                lastStepLabel: 'Schedule event',
+              ),
+            ],
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Dialog states',
+  type: CreateEventUnsavedChangesDialog,
+  path: '[P1 product surfaces]/Host create event',
+)
+Widget createEventUnsavedChangesDialogCatalogStates(BuildContext context) {
+  return _HostCatalog(
+    title: 'CreateEventUnsavedChangesDialog',
+    contractId: 'component.host.event.unsaved_changes_dialog',
+    children: [
+      _StateCard(
+        label: 'save or discard',
+        child: const _DeviceFrame(
+          child: Center(child: CreateEventUnsavedChangesDialog()),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Delete confirmation',
+  type: DraftDeleteConfirmationDialog,
+  path: '[P1 product surfaces]/Host create event',
+)
+Widget draftDeleteConfirmationDialogCatalogStates(BuildContext context) {
+  return _HostCatalog(
+    title: 'DraftDeleteConfirmationDialog',
+    contractId: 'component.host.event.draft_delete_dialog',
+    children: [
+      _StateCard(
+        label: 'saved draft',
+        child: _DeviceFrame(
+          child: Center(
+            child: DraftDeleteConfirmationDialog(
+              draft: HostOperationsFixtures.eventDraft,
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Photo picker states',
   type: CreateEventPhotoPicker,
   path: '[P1 product surfaces]/Host create event',
@@ -4134,6 +4596,38 @@ Widget draftPickerSheetCatalogStates(BuildContext context) {
             onStartFresh: () {},
             onDeleteDraft: (_) async {},
           ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Draft card states',
+  type: DraftCard,
+  path: '[P1 product surfaces]/Host create event',
+)
+Widget draftCardCatalogStates(BuildContext context) {
+  return _HostCatalog(
+    title: 'DraftCard',
+    contractId: 'component.host.event.draft_card',
+    children: [
+      _StateCard(
+        label: 'saved draft',
+        child: DraftCard(
+          draft: HostOperationsFixtures.eventDraft,
+          isDeleting: false,
+          onSelect: () {},
+          onDelete: () {},
+        ),
+      ),
+      _StateCard(
+        label: 'delete pending',
+        child: DraftCard(
+          draft: HostOperationsFixtures.eventDraft,
+          isDeleting: true,
+          onSelect: () {},
+          onDelete: () {},
         ),
       ),
     ],
@@ -4518,6 +5012,65 @@ Widget readOnlyHostedEventScheduleCardCatalogStates(BuildContext context) {
   path: '[P1 product surfaces]/Host operations',
 )
 Widget hostEventManageRouteAndSectionStates(BuildContext context) {
+  final eventSuccessNow = DateTime(2026, 6, 1, 18);
+  final eventSuccessLivePlan =
+      EventSuccessPlan.defaultForEvent(
+        _privateEvent,
+        now: eventSuccessNow,
+      ).copyWith(
+        activeStepIndex: 1,
+        status: EventSuccessPlanStatus.live,
+        frozenAt: eventSuccessNow,
+      );
+  final eventSuccessReportPlan = eventSuccessLivePlan.copyWith(
+    activeStepIndex: 3,
+    status: EventSuccessPlanStatus.complete,
+    completedAt: eventSuccessNow.add(const Duration(hours: 2)),
+  );
+  final eventSuccessCheckInPlan = _hostManageLivePlanForModule(
+    event: _privateEvent,
+    now: eventSuccessNow,
+    moduleId: EventSuccessModuleCatalog.checkIn.id,
+  );
+  final eventSuccessCuePlan = _hostManageLivePlanForModule(
+    event: _privateEvent,
+    now: eventSuccessNow,
+    moduleId: EventSuccessModuleCatalog.socialMissions.id,
+  );
+  final eventSuccessHostOverridePlan = _hostManageLivePlanForModule(
+    event: _privateEvent,
+    now: eventSuccessNow,
+    moduleId: EventSuccessModuleCatalog.microPods.id,
+  );
+  final eventSuccessRevealEvent = _hostManageLiveRevealEvent(_privateEvent);
+  final eventSuccessRevealPlan =
+      _hostManageLivePlanForModule(
+        event: eventSuccessRevealEvent,
+        now: eventSuccessNow,
+        moduleId: EventSuccessModuleCatalog.liveReveal.id,
+      ).copyWith(
+        revealStatus: EventSuccessRevealStatus.revealed,
+        activeRevealRoundIndex: 0,
+        revealStartedAt: eventSuccessNow.subtract(const Duration(minutes: 2)),
+      );
+  final microPodAssignments = _hostManageMicroPodAssignments(
+    event: _privateEvent,
+    now: eventSuccessNow,
+  );
+  final hostOverrideAssignments = _hostManageMicroPodAssignments(
+    event: _privateEvent,
+    now: eventSuccessNow,
+    source: 'host_override_v1',
+  );
+  final rotationAssignments = _hostManageRotationAssignments(
+    event: _privateEvent,
+    now: eventSuccessNow,
+  );
+  final wingmanRequests = _hostManageWingmanRequests(
+    event: _privateEvent,
+    now: eventSuccessNow,
+  );
+
   return _HostCatalog(
     title: 'HostEventManageRouteScreen',
     contractId: 'screen.host.event.manage',
@@ -4622,10 +5175,193 @@ Widget hostEventManageRouteAndSectionStates(BuildContext context) {
         ),
       ),
       _StateCard(
+        label: 'live plan loading',
+        child: const _DeviceFrame(
+          child: _HostManageRouteScope(
+            initialSection: HostEventManageSection.live,
+            planValue: AsyncLoading<EventSuccessPlan?>(),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'live plan error',
+        child: _DeviceFrame(
+          child: _HostManageRouteScope(
+            initialSection: HostEventManageSection.live,
+            planValue: AsyncError<EventSuccessPlan?>(
+              StateError('Event Success setup failed'),
+              StackTrace.empty,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'live plan offline',
+        child: _DeviceFrame(
+          child: _HostManageRouteScope(
+            initialSection: HostEventManageSection.live,
+            planValue: AsyncError<EventSuccessPlan?>(
+              obviousOfflineException(),
+              StackTrace.empty,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'live wingman requests',
+        child: _DeviceFrame(
+          child: _HostManageRouteScope(
+            initialSection: HostEventManageSection.live,
+            planValue: AsyncData<EventSuccessPlan?>(eventSuccessLivePlan),
+            wingmanRequests: wingmanRequests,
+            wingmanProfiles: _hostManageProfilesFor([
+              for (final request in wingmanRequests) ...[
+                request.requesterUid,
+                request.targetUid,
+              ],
+            ]),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'live check-in QR',
+        child: _DeviceFrame(
+          child: _HostManageRouteScope(
+            initialSection: HostEventManageSection.live,
+            planValue: AsyncData<EventSuccessPlan?>(eventSuccessCheckInPlan),
+            child: _hostManageLiveSectionPreview(
+              event: _privateEvent,
+              liveRoster: const SizedBox.shrink(),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'live conversation cues',
+        child: _DeviceFrame(
+          child: _HostManageRouteScope(
+            initialSection: HostEventManageSection.live,
+            planValue: AsyncData<EventSuccessPlan?>(eventSuccessCuePlan),
+            child: _hostManageLiveSectionPreview(event: _privateEvent),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'live micro-pods assigned',
+        child: _DeviceFrame(
+          child: _HostManageRouteScope(
+            initialSection: HostEventManageSection.live,
+            planValue: AsyncData<EventSuccessPlan?>(eventSuccessLivePlan),
+            assignments: microPodAssignments,
+            assignmentPeerProfiles: _hostManageProfilesFor(
+              _hostManageAssignmentParticipantUids(microPodAssignments),
+            ),
+            preferences: _hostManagePreferences(
+              event: _privateEvent,
+              now: eventSuccessNow,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'live reveal round revealed',
+        child: _DeviceFrame(
+          child: _HostManageRouteScope(
+            event: eventSuccessRevealEvent,
+            initialSection: HostEventManageSection.live,
+            planValue: AsyncData<EventSuccessPlan?>(eventSuccessRevealPlan),
+            assignments: microPodAssignments,
+            assignmentPeerProfiles: _hostManageProfilesFor(
+              _hostManageAssignmentParticipantUids(microPodAssignments),
+            ),
+            preferences: _hostManagePreferences(
+              event: eventSuccessRevealEvent,
+              now: eventSuccessNow,
+            ),
+            child: _hostManageLiveSectionPreview(
+              event: eventSuccessRevealEvent,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'live host override edited',
+        child: _DeviceFrame(
+          child: _HostManageRouteScope(
+            initialSection: HostEventManageSection.live,
+            planValue: AsyncData<EventSuccessPlan?>(
+              eventSuccessHostOverridePlan,
+            ),
+            assignments: hostOverrideAssignments,
+            assignmentPeerProfiles: _hostManageProfilesFor(
+              _hostManageAssignmentParticipantUids(hostOverrideAssignments),
+            ),
+            preferences: _hostManagePreferences(
+              event: _privateEvent,
+              now: eventSuccessNow,
+            ),
+            child: _hostManageLiveSectionPreview(event: _privateEvent),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'live guided rotations assigned',
+        child: _DeviceFrame(
+          child: _HostManageRouteScope(
+            initialSection: HostEventManageSection.live,
+            planValue: AsyncData<EventSuccessPlan?>(eventSuccessLivePlan),
+            rotationAssignments: rotationAssignments,
+            rotationPeerProfiles: _hostManageProfilesFor(
+              _hostManageAssignmentParticipantUids(rotationAssignments),
+            ),
+            preferences: _hostManagePreferences(
+              event: _privateEvent,
+              now: eventSuccessNow,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
         label: 'report workspace',
         child: const _DeviceFrame(
           child: _HostManageRouteScope(
             initialSection: HostEventManageSection.report,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'report scorecard loading',
+        child: _DeviceFrame(
+          child: _HostManageRouteScope(
+            initialSection: HostEventManageSection.report,
+            planValue: AsyncData<EventSuccessPlan?>(eventSuccessReportPlan),
+            scorecardValue: const AsyncLoading<EventSuccessScorecard?>(),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'report scorecard error',
+        child: _DeviceFrame(
+          child: _HostManageRouteScope(
+            initialSection: HostEventManageSection.report,
+            planValue: AsyncData<EventSuccessPlan?>(eventSuccessReportPlan),
+            scorecardValue: AsyncError<EventSuccessScorecard?>(
+              StateError('Scorecard failed'),
+              StackTrace.empty,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'report scorecard offline',
+        child: _DeviceFrame(
+          child: _HostManageRouteScope(
+            initialSection: HostEventManageSection.report,
+            planValue: AsyncData<EventSuccessPlan?>(eventSuccessReportPlan),
+            scorecardValue: AsyncError<EventSuccessScorecard?>(
+              obviousOfflineException(),
+              StackTrace.empty,
+            ),
           ),
         ),
       ),
@@ -4726,6 +5462,27 @@ Widget hostEventManageRouteAndSectionStates(BuildContext context) {
         ),
       ),
       _StateCard(
+        label: 'private access offline',
+        child: _DeviceFrame(
+          child: _HostManageRouteScope(
+            privateAccessValue: AsyncError<EventPrivateAccess?>(
+              obviousOfflineException(),
+              StackTrace.empty,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'private access missing code',
+        child: _DeviceFrame(
+          child: _HostManageRouteScope(
+            privateAccessValue: AsyncData<EventPrivateAccess?>(
+              HostOperationsFixtures.privateAccess.copyWith(inviteCode: ''),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
         label: 'invite links loading',
         child: const _DeviceFrame(
           child: _HostManageRouteScope(
@@ -4745,11 +5502,42 @@ Widget hostEventManageRouteAndSectionStates(BuildContext context) {
         ),
       ),
       _StateCard(
+        label: 'invite links offline',
+        child: _DeviceFrame(
+          child: _HostManageRouteScope(
+            inviteLinksValue: AsyncError<List<EventInviteLink>>(
+              obviousOfflineException(),
+              StackTrace.empty,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
         label: 'invite links empty',
         child: const _DeviceFrame(
           child: _HostManageRouteScope(
             inviteLinksValue: AsyncData<List<EventInviteLink>>(
               <EventInviteLink>[],
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'invite links disabled row',
+        child: _DeviceFrame(
+          child: _HostManageRouteScope(
+            inviteLinksValue: AsyncData<List<EventInviteLink>>(
+              _hostManageDisabledInviteLinks,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'invite links long label source',
+        child: _DeviceFrame(
+          child: _HostManageRouteScope(
+            inviteLinksValue: AsyncData<List<EventInviteLink>>(
+              _hostManageLongLabelInviteLinks,
             ),
           ),
         ),
@@ -5055,6 +5843,15 @@ Widget hostStrictHostClubOrganizerOverviewCatalogStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
+  type: HostClubOrganizerOverviewController,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostClubOrganizerOverviewControllerCatalogStates(
+  BuildContext context,
+) => _hostClubExactCatalog(context, 'HostClubOrganizerOverviewController');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
   type: HostClubPreviewPane,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
@@ -5354,6 +6151,15 @@ Widget hostStrictHostOrganizerPayoutPromptCatalogStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
+  type: HostOrganizerPayoutPromptController,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostOrganizerPayoutPromptControllerCatalogStates(
+  BuildContext context,
+) => _hostClubExactCatalog(context, 'HostOrganizerPayoutPromptController');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
   type: HostOrganizerSectionHeader,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
@@ -5401,6 +6207,15 @@ Widget hostStrictHostParticipationLifecycleBoardCatalogStates(
 )
 Widget hostStrictHostPaymentAccountCardCatalogStates(BuildContext context) =>
     _hostClubExactCatalog(context, 'HostPaymentAccountCard');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostPaymentAccountControllerCard,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostPaymentAccountControllerCardCatalogStates(
+  BuildContext context,
+) => _hostClubExactCatalog(context, 'HostPaymentAccountControllerCard');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -6348,7 +7163,9 @@ class _EditableHostedEventPolicyCardFrameState
         cancellationPolicyId: _cancellationPolicyId,
         onCancellationPolicyChanged: (policyId) =>
             setState(() => _cancellationPolicyId = policyId),
-        privateAccessAsync: const AsyncData<Object?>(null),
+        privateAccessAsync: const CatchAsyncState<EventPrivateAccess?>.data(
+          null,
+        ),
       ),
     );
   }
@@ -6427,7 +7244,7 @@ class _HostSettingsClubsFrame extends StatelessWidget {
                       ? HostSettingsClubsError(error: error!)
                       : loading
                       ? const HostSettingsClubsLoading()
-                      : HostSettingsClubsState.fromAsync(
+                      : buildHostSettingsClubsState(
                           AsyncData<List<Club>>(
                             clubs ?? HostOperationsFixtures.clubs,
                           ),
@@ -6790,6 +7607,12 @@ class _HostShellScope extends StatelessWidget {
         ownedClubs ??
         [HostOperationsFixtures.primaryClub, HostOperationsFixtures.dinnerClub];
     final effectiveUid = uid ?? _hostUid;
+    final eventClubIds = <String>{
+      for (final club in HostOperationsFixtures.clubs) club.id,
+      for (final club in effectiveHostedClubs) club.id,
+      for (final club in effectiveOwnedClubs) club.id,
+      ...clubEventStreams.keys,
+    };
     final overrides = [
       uidProvider.overrideWithValue(AsyncData<String?>(uid)),
       watchHostProfileProvider(effectiveUid).overrideWith(
@@ -6816,13 +7639,13 @@ class _HostShellScope extends StatelessWidget {
       ),
       hostAnalyticsRepositoryProvider.overrideWithValue(analyticsRepository),
     ];
-    for (final club in HostOperationsFixtures.clubs) {
+    for (final clubId in eventClubIds) {
       overrides.add(
-        watchEventsForClubProvider(club.id).overrideWith(
+        watchEventsForClubProvider(clubId).overrideWith(
           (ref) =>
-              clubEventStreams[club.id] ??
+              clubEventStreams[clubId] ??
               Stream<List<Event>>.value(
-                HostOperationsFixtures.eventsByClub[club.id] ?? const [],
+                HostOperationsFixtures.eventsByClub[clubId] ?? const [],
               ),
         ),
       );
@@ -6848,9 +7671,6 @@ enum _HostClubsMutationPreviewMode {
   payoutRefreshPending,
   payoutRefreshError,
   payoutRefreshOffline,
-  teamAddPending,
-  teamAddError,
-  teamAddOffline,
   teamPending,
   teamError,
   teamOffline,
@@ -6952,21 +7772,6 @@ class _HostClubsMutationPreviewState
           obviousOfflineException(),
         );
         break;
-      case _HostClubsMutationPreviewMode.teamAddPending:
-        _runPending(HostTeamManagementController.addHostMutation);
-        break;
-      case _HostClubsMutationPreviewMode.teamAddError:
-        _runError(
-          HostTeamManagementController.addHostMutation,
-          StateError('Widgetbook add host failed'),
-        );
-        break;
-      case _HostClubsMutationPreviewMode.teamAddOffline:
-        _runError(
-          HostTeamManagementController.addHostMutation,
-          obviousOfflineException(),
-        );
-        break;
       case _HostClubsMutationPreviewMode.teamPending:
         _runPending(HostTeamManagementController.removeHostMutation);
         break;
@@ -7017,14 +7822,42 @@ class _HostTeamSectionPreview extends StatelessWidget {
   }
 }
 
+enum _HostTeamAddHostSheetPreviewMode { ready, pending, error, offline }
+
 class _HostTeamAddHostSheetPreview extends StatelessWidget {
-  const _HostTeamAddHostSheetPreview();
+  const _HostTeamAddHostSheetPreview({
+    this.mode = _HostTeamAddHostSheetPreviewMode.ready,
+  });
+
+  final _HostTeamAddHostSheetPreviewMode mode;
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    final actionState = switch (mode) {
+      _HostTeamAddHostSheetPreviewMode.ready =>
+        const HostTeamAddHostActionState(),
+      _HostTeamAddHostSheetPreviewMode.pending =>
+        const HostTeamAddHostActionState(isSaving: true),
+      _HostTeamAddHostSheetPreviewMode.error => HostTeamAddHostActionState(
+        errorMessage: appErrorMessage(
+          StateError('Widgetbook add host failed'),
+          context: AppErrorContext.club,
+        ),
+      ),
+      _HostTeamAddHostSheetPreviewMode.offline => HostTeamAddHostActionState(
+        errorMessage: appErrorMessage(
+          obviousOfflineException(),
+          context: AppErrorContext.club,
+        ),
+      ),
+    };
+
+    return Scaffold(
       body: SafeArea(
-        child: HostTeamAddHostSheet(clubId: 'design-host-sea-face'),
+        child: HostTeamAddHostSheet(
+          clubId: 'design-host-sea-face',
+          actionState: actionState,
+        ),
       ),
     );
   }
@@ -7319,11 +8152,11 @@ class _HostManageAttendanceMutationPreviewState
     _resetMutations();
     switch (widget.mode) {
       case _HostManageAttendanceMutationPreviewMode.pending:
-        _runPending(EventBookingController.createWaitlistOfferMutation);
+        _runPending(HostEventBookingController.createWaitlistOfferMutation);
         break;
       case _HostManageAttendanceMutationPreviewMode.error:
         _runError(
-          EventBookingController.markAttendanceMutation,
+          HostEventBookingController.markAttendanceMutation,
           StateError('Widgetbook attendance mutation failed'),
         );
         break;
@@ -7331,10 +8164,10 @@ class _HostManageAttendanceMutationPreviewState
   }
 
   void _resetMutations() {
-    EventBookingController.markAttendanceMutation.reset(ref);
-    EventBookingController.approveJoinRequestMutation.reset(ref);
-    EventBookingController.declineJoinRequestMutation.reset(ref);
-    EventBookingController.createWaitlistOfferMutation.reset(ref);
+    HostEventBookingController.markAttendanceMutation.reset(ref);
+    HostEventBookingController.approveJoinRequestMutation.reset(ref);
+    HostEventBookingController.declineJoinRequestMutation.reset(ref);
+    HostEventBookingController.createWaitlistOfferMutation.reset(ref);
   }
 
   void _runPending<T>(Mutation<T> mutation) {
@@ -7596,20 +8429,20 @@ class _HostManageActionMutationPreviewState
     _resetMutations();
     switch (widget.mode) {
       case _HostManageActionMutationPreviewMode.cancelPending:
-        _runPending(EventBookingController.hostCancelEventMutation);
+        _runPending(HostEventBookingController.hostCancelEventMutation);
         break;
       case _HostManageActionMutationPreviewMode.cancelError:
         _runError(
-          EventBookingController.hostCancelEventMutation,
+          HostEventBookingController.hostCancelEventMutation,
           StateError('Widgetbook cancel event failed'),
         );
         break;
       case _HostManageActionMutationPreviewMode.deletePending:
-        _runPending(EventBookingController.deleteEventMutation);
+        _runPending(HostEventBookingController.deleteEventMutation);
         break;
       case _HostManageActionMutationPreviewMode.deleteError:
         _runError(
-          EventBookingController.deleteEventMutation,
+          HostEventBookingController.deleteEventMutation,
           StateError('Widgetbook delete event failed'),
         );
         break;
@@ -7617,8 +8450,8 @@ class _HostManageActionMutationPreviewState
   }
 
   void _resetMutations() {
-    EventBookingController.hostCancelEventMutation.reset(ref);
-    EventBookingController.deleteEventMutation.reset(ref);
+    HostEventBookingController.hostCancelEventMutation.reset(ref);
+    HostEventBookingController.deleteEventMutation.reset(ref);
   }
 
   void _runPending<T>(Mutation<T> mutation) {
@@ -7638,6 +8471,313 @@ class _HostManageActionMutationPreviewState
   Widget build(BuildContext context) => widget.child;
 }
 
+Widget _hostManageLiveSectionPreview({
+  required Event event,
+  Widget? liveRoster,
+}) {
+  return EventSuccessHostSection(
+    event: event,
+    initialTab: EventSuccessHostTab.live,
+    showTabs: false,
+    liveRoster: liveRoster,
+  );
+}
+
+Event _hostManageLiveRevealEvent(Event event) {
+  return event.copyWith(
+    eventFormat: EventFormatSnapshot.custom(
+      label: 'trivia night',
+      interactionModel: EventInteractionModel.teamRotations,
+    ),
+    distanceKm: 0,
+    capacityLimit: 30,
+    bookedCount: 24,
+    checkedInCount: 18,
+  );
+}
+
+EventSuccessPlan _hostManageLivePlanForModule({
+  required Event event,
+  required DateTime now,
+  required String moduleId,
+}) {
+  final basePlan = EventSuccessPlan.defaultForEvent(
+    event,
+    now: now,
+  ).copyWith(status: EventSuccessPlanStatus.live, frozenAt: now);
+  final runtime = EventSuccessRuntime(plan: basePlan, event: event, now: now);
+  final steps = runtime.runOfShowSteps;
+  final activeIndex = steps.indexWhere(
+    (step) => step.moduleIds.contains(moduleId),
+  );
+  return basePlan.copyWith(activeStepIndex: activeIndex < 0 ? 0 : activeIndex);
+}
+
+List<EventSuccessAssignment> _hostManageMicroPodAssignments({
+  required Event event,
+  required DateTime now,
+  String source = 'widgetbook_fixture',
+}) {
+  return [
+    _hostManageAssignment(
+      event: event,
+      uid: HostOperationsFixtures.guestUid,
+      label: 'Pod A',
+      title: 'Pace Pod A',
+      peerUids: const [
+        HostOperationsFixtures.secondGuestUid,
+        HostOperationsFixtures.waitlistUid,
+      ],
+      now: now,
+      source: source,
+    ),
+    _hostManageAssignment(
+      event: event,
+      uid: HostOperationsFixtures.secondGuestUid,
+      label: 'Pod A',
+      title: 'Pace Pod A',
+      peerUids: const [
+        HostOperationsFixtures.guestUid,
+        HostOperationsFixtures.waitlistUid,
+      ],
+      now: now,
+      source: source,
+    ),
+    _hostManageAssignment(
+      event: event,
+      uid: HostOperationsFixtures.waitlistUid,
+      label: 'Pod B',
+      title: 'Pace Pod B',
+      peerUids: const [HostOperationsFixtures.guestUid],
+      now: now,
+      source: source,
+    ),
+  ];
+}
+
+EventSuccessAssignment _hostManageAssignment({
+  required Event event,
+  required String uid,
+  required String label,
+  required String title,
+  required List<String> peerUids,
+  required DateTime now,
+  String source = 'widgetbook_fixture',
+}) {
+  return EventSuccessAssignment(
+    id: eventSuccessAssignmentId(
+      eventId: event.id,
+      moduleId: EventSuccessModuleCatalog.microPods.id,
+      uid: uid,
+    ),
+    eventId: event.id,
+    clubId: event.clubId,
+    uid: uid,
+    moduleId: EventSuccessModuleCatalog.microPods.id,
+    label: label,
+    displayTitle: title,
+    displaySubtitle: 'Start here, then follow the host cue.',
+    peerUids: peerUids,
+    unitKind: 'pods',
+    unitLabel: label,
+    source: source,
+    createdAt: now.subtract(const Duration(minutes: 12)),
+    updatedAt: now,
+  );
+}
+
+List<EventSuccessAssignment> _hostManageRotationAssignments({
+  required Event event,
+  required DateTime now,
+}) {
+  final round0 = event.startTime.add(const Duration(minutes: 15));
+  final round1 = round0.add(const Duration(minutes: 15));
+  return [
+    _hostManageRotationAssignment(
+      event: event,
+      uid: HostOperationsFixtures.guestUid,
+      peerUids: const [
+        HostOperationsFixtures.secondGuestUid,
+        HostOperationsFixtures.waitlistUid,
+      ],
+      slots: [
+        _hostManageRotationSlot(
+          index: 0,
+          startsAt: round0,
+          peerUid: HostOperationsFixtures.secondGuestUid,
+          compatibility: 'mutual_interest',
+        ),
+        _hostManageRotationSlot(
+          index: 1,
+          startsAt: round1,
+          peerUid: HostOperationsFixtures.waitlistUid,
+          compatibility: 'questionnaire_match',
+        ),
+      ],
+      now: now,
+    ),
+    _hostManageRotationAssignment(
+      event: event,
+      uid: HostOperationsFixtures.secondGuestUid,
+      peerUids: const [HostOperationsFixtures.guestUid],
+      slots: [
+        _hostManageRotationSlot(
+          index: 0,
+          startsAt: round0,
+          peerUid: HostOperationsFixtures.guestUid,
+          compatibility: 'mutual_interest',
+        ),
+      ],
+      now: now,
+    ),
+  ];
+}
+
+EventSuccessAssignment _hostManageRotationAssignment({
+  required Event event,
+  required String uid,
+  required List<String> peerUids,
+  required List<EventSuccessRotationSlot> slots,
+  required DateTime now,
+}) {
+  return EventSuccessAssignment(
+    id: eventSuccessAssignmentId(
+      eventId: event.id,
+      moduleId: EventSuccessModuleCatalog.guidedRotations.id,
+      uid: uid,
+    ),
+    eventId: event.id,
+    clubId: event.clubId,
+    uid: uid,
+    moduleId: EventSuccessModuleCatalog.guidedRotations.id,
+    label: 'Rotation schedule',
+    displayTitle: 'Guided rotation schedule',
+    displaySubtitle: 'Host-edited preview schedule.',
+    peerUids: peerUids,
+    rotationSlots: slots,
+    source: 'host_override_v1',
+    createdAt: now.subtract(const Duration(minutes: 12)),
+    updatedAt: now,
+  );
+}
+
+EventSuccessRotationSlot _hostManageRotationSlot({
+  required int index,
+  required DateTime startsAt,
+  required String peerUid,
+  required String compatibility,
+}) {
+  return EventSuccessRotationSlot(
+    roundIndex: index,
+    label: 'Round ${index + 1}',
+    startsAt: startsAt,
+    endsAt: startsAt.add(const Duration(minutes: 15)),
+    peerUid: peerUid,
+    compatibility: compatibility,
+  );
+}
+
+List<EventSuccessPreference> _hostManagePreferences({
+  required Event event,
+  required DateTime now,
+}) {
+  return [
+    EventSuccessPreference(
+      id: eventSuccessPreferenceId(
+        eventId: event.id,
+        uid: HostOperationsFixtures.waitlistUid,
+      ),
+      eventId: event.id,
+      clubId: event.clubId,
+      uid: HostOperationsFixtures.waitlistUid,
+      microPodsOptedOut: false,
+      guidedRotationsOptedOut: false,
+      createdAt: now.subtract(const Duration(minutes: 20)),
+      updatedAt: now.subtract(const Duration(minutes: 3)),
+    ),
+  ];
+}
+
+List<EventSuccessWingmanRequest> _hostManageWingmanRequests({
+  required Event event,
+  required DateTime now,
+}) {
+  return [
+    EventSuccessWingmanRequest(
+      id: eventSuccessWingmanRequestId(
+        eventId: event.id,
+        uid: HostOperationsFixtures.guestUid,
+      ),
+      eventId: event.id,
+      clubId: event.clubId,
+      requesterUid: HostOperationsFixtures.guestUid,
+      targetUid: HostOperationsFixtures.secondGuestUid,
+      status: EventSuccessWingmanRequestStatus.active,
+      hostVisibleConsent: true,
+      note: 'Pair me if it feels natural.',
+      createdAt: now.subtract(const Duration(minutes: 8)),
+      updatedAt: now.subtract(const Duration(minutes: 2)),
+    ),
+    EventSuccessWingmanRequest(
+      id: eventSuccessWingmanRequestId(
+        eventId: event.id,
+        uid: HostOperationsFixtures.waitlistUid,
+      ),
+      eventId: event.id,
+      clubId: event.clubId,
+      requesterUid: HostOperationsFixtures.waitlistUid,
+      targetUid: HostOperationsFixtures.guestUid,
+      status: EventSuccessWingmanRequestStatus.active,
+      hostVisibleConsent: true,
+      note: 'I would like a quick intro near the host table.',
+      createdAt: now.subtract(const Duration(minutes: 5)),
+      updatedAt: now.subtract(const Duration(minutes: 1)),
+    ),
+  ];
+}
+
+List<String> _hostManageAssignmentParticipantUids(
+  List<EventSuccessAssignment> assignments,
+) {
+  final uids = <String>{
+    for (final assignment in assignments) ...[
+      assignment.uid,
+      ...assignment.allPeerUids,
+    ],
+  }.toList()..sort();
+  return uids;
+}
+
+List<String> _hostManageWingmanProfileUids(
+  List<EventSuccessWingmanRequest> requests,
+) {
+  final uids = <String>{
+    for (final request in requests) ...[
+      request.requesterUid,
+      request.targetUid,
+    ],
+  }.toList()..sort();
+  return uids;
+}
+
+List<PublicProfile> _hostManageProfilesFor(List<String> uids) {
+  const names = <String, String>{
+    HostOperationsFixtures.guestUid: 'Aarav Mehta',
+    HostOperationsFixtures.secondGuestUid: 'Rhea Kapoor',
+    HostOperationsFixtures.waitlistUid: 'Kabir Jain',
+  };
+  return [
+    for (final uid in uids.toSet())
+      PublicProfile(
+        uid: uid,
+        name: names[uid] ?? 'Guest',
+        age: 29,
+        gender: Gender.man,
+        city: 'Mumbai',
+      ),
+  ];
+}
+
 class _HostManageRouteScope extends StatelessWidget {
   const _HostManageRouteScope({
     this.child,
@@ -7651,6 +8791,14 @@ class _HostManageRouteScope extends StatelessWidget {
     this.privateAccessValue,
     this.inviteLinksValue,
     this.planValue,
+    this.scorecardValue,
+    this.assignments = const <EventSuccessAssignment>[],
+    this.rotationAssignments = const <EventSuccessAssignment>[],
+    this.preferences = const <EventSuccessPreference>[],
+    this.wingmanRequests = const <EventSuccessWingmanRequest>[],
+    this.assignmentPeerProfiles = const <PublicProfile>[],
+    this.rotationPeerProfiles = const <PublicProfile>[],
+    this.wingmanProfiles = const <PublicProfile>[],
     this.participations,
     this.initialSection = HostEventManageSection.setup,
     this.initialParticipantSearchQuery = '',
@@ -7668,6 +8816,14 @@ class _HostManageRouteScope extends StatelessWidget {
   final AsyncValue<EventPrivateAccess?>? privateAccessValue;
   final AsyncValue<List<EventInviteLink>>? inviteLinksValue;
   final AsyncValue<EventSuccessPlan?>? planValue;
+  final AsyncValue<EventSuccessScorecard?>? scorecardValue;
+  final List<EventSuccessAssignment> assignments;
+  final List<EventSuccessAssignment> rotationAssignments;
+  final List<EventSuccessPreference> preferences;
+  final List<EventSuccessWingmanRequest> wingmanRequests;
+  final List<PublicProfile> assignmentPeerProfiles;
+  final List<PublicProfile> rotationPeerProfiles;
+  final List<PublicProfile> wingmanProfiles;
   final List<EventParticipation>? participations;
   final HostEventManageSection initialSection;
   final String initialParticipantSearchQuery;
@@ -7746,6 +8902,51 @@ class _HostManageRouteScope extends StatelessWidget {
           watchEventSuccessPlanProvider(
             effectiveEvent.id,
           ).overrideWith((ref) => _streamValue(planValue, null)),
+          watchEventSuccessScorecardProvider(
+            effectiveEvent.id,
+          ).overrideWith((ref) => _streamValue(scorecardValue, null)),
+          watchEventSuccessAssignmentsProvider(effectiveEvent.id).overrideWith((
+            ref,
+          ) {
+            return Stream<List<EventSuccessAssignment>>.value(assignments);
+          }),
+          watchEventSuccessRotationAssignmentsProvider(
+            effectiveEvent.id,
+          ).overrideWith((ref) {
+            return Stream<List<EventSuccessAssignment>>.value(
+              rotationAssignments,
+            );
+          }),
+          watchEventSuccessPreferencesProvider(effectiveEvent.id).overrideWith((
+            ref,
+          ) {
+            return Stream<List<EventSuccessPreference>>.value(preferences);
+          }),
+          watchEventSuccessWingmanRequestsProvider(
+            effectiveEvent.id,
+          ).overrideWith((ref) {
+            return Stream<List<EventSuccessWingmanRequest>>.value(
+              wingmanRequests,
+            );
+          }),
+          if (assignments.isNotEmpty)
+            eventSuccessAssignmentPeerProfilesProvider(
+              eventSuccessPeerUidsKey(
+                _hostManageAssignmentParticipantUids(assignments),
+              ),
+            ).overrideWith((ref) async => assignmentPeerProfiles),
+          if (rotationAssignments.isNotEmpty)
+            eventSuccessAssignmentPeerProfilesProvider(
+              eventSuccessPeerUidsKey(
+                _hostManageAssignmentParticipantUids(rotationAssignments),
+              ),
+            ).overrideWith((ref) async => rotationPeerProfiles),
+          if (wingmanRequests.isNotEmpty)
+            eventSuccessAssignmentPeerProfilesProvider(
+              eventSuccessPeerUidsKey(
+                _hostManageWingmanProfileUids(wingmanRequests),
+              ),
+            ).overrideWith((ref) async => wingmanProfiles),
         ],
         child: _ThemedHostPreview(
           themeMode: themeMode,

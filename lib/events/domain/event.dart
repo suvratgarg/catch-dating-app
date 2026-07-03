@@ -12,7 +12,6 @@ import 'package:catch_dating_app/events/domain/event_eligibility.dart';
 import 'package:catch_dating_app/events/domain/event_meeting_location.dart';
 import 'package:catch_dating_app/events/domain/event_service.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 // Re-export so existing `import '.../event.dart'` call sites keep working
@@ -113,7 +112,6 @@ abstract class Event with _$Event {
   bool get isFull => signedUpCount >= capacityLimit;
   bool get isFree => priceInPaise == 0;
   bool get isCancelled => status == EventLifecycleStatus.cancelled;
-  bool get isUpcoming => isUpcomingAt(DateTime.now());
   bool isUpcomingAt(DateTime now) => !isCancelled && startTime.isAfter(now);
   bool get hasRequirements => constraints.hasRequirements;
   bool get hasExactStartingPoint =>
@@ -189,7 +187,7 @@ abstract class Event with _$Event {
   @Deprecated('Use EventService.eligibilityFor instead')
   EventEligibility eligibilityFor(
     UserProfile user, {
-    DateTime? now,
+    required DateTime now,
     bool hasValidInvite = false,
   }) {
     return EventService.eligibilityFor(
@@ -206,7 +204,7 @@ abstract class Event with _$Event {
   /// edge and are intentionally resolved outside this model.
   EventSignUpStatus statusFor(
     UserProfile user, {
-    DateTime? now,
+    required DateTime now,
     bool hasValidInvite = false,
   }) {
     return switch (EventService.eligibilityFor(

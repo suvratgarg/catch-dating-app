@@ -390,7 +390,7 @@ class CatchSection extends StatelessWidget {
 
   Widget _buildContained(BuildContext context) {
     final t = CatchTokens.of(context);
-    return _CatchSectionFocusSurface(
+    return CatchSectionFocusSurface(
       padding: padding ?? const EdgeInsets.all(CatchSpacing.s4),
       focused: focused,
       hasError: hasError,
@@ -506,8 +506,9 @@ class CatchSection extends StatelessWidget {
   }
 }
 
-class _CatchSectionFocusSurface extends StatefulWidget {
-  const _CatchSectionFocusSurface({
+class CatchSectionFocusSurface extends StatefulWidget {
+  const CatchSectionFocusSurface({
+    super.key,
     required this.child,
     required this.padding,
     required this.focused,
@@ -520,11 +521,11 @@ class _CatchSectionFocusSurface extends StatefulWidget {
   final bool hasError;
 
   @override
-  State<_CatchSectionFocusSurface> createState() =>
+  State<CatchSectionFocusSurface> createState() =>
       _CatchSectionFocusSurfaceState();
 }
 
-class _CatchSectionFocusSurfaceState extends State<_CatchSectionFocusSurface> {
+class _CatchSectionFocusSurfaceState extends State<CatchSectionFocusSurface> {
   bool _descendantFocused = false;
 
   @override

@@ -30,6 +30,8 @@ typedef ForceUpdateRefresh =
       bool Function()? shouldInvalidate,
     });
 
+// keepalive: force-update refresh is the app-wide gate hook used by the app
+// shell and test harness across startup route rebuilds.
 @visibleForTesting
 @Riverpod(keepAlive: true)
 ForceUpdateRefresh forceUpdateRefresh(Ref ref) => _refreshForceUpdateGate;

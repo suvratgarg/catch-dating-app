@@ -1,0 +1,216 @@
+{
+  "$schema": "./website.routes.schema.json",
+  "version": 3,
+  "updated": "2026-07-03",
+  "owner": "marketing_website",
+  "sourceOfTruth": {
+    "architecture": "docs/web_surface_architecture.md",
+    "positioning": "docs/marketing_landing_page_research.md",
+    "media": "docs/marketing_app_media_pipeline.md",
+    "runtimeShell": "website/src/app/App.tsx",
+    "runtimeRouter": "website/src/app/routeRegistry.ts",
+    "metadataRuntime": "website/src/app/pageMeta.ts",
+    "staticOutput": "website/scripts/postbuild.mjs",
+    "generatedListings": "website/src/generated/hostListings.json"
+  },
+  "routes": [
+    {
+      "id": "home",
+      "kind": "static",
+      "path": "/",
+      "pageKey": "home",
+      "source": "website/src/features/home/HomePage.tsx",
+      "metaKey": "home",
+      "staticOutput": "postbuild",
+      "indexing": "index",
+      "sitemap": "included",
+      "notes": "Primary member and public discovery entrypoint.",
+      "review": {
+        "priority": "p0",
+        "status": "ready",
+        "viewports": ["desktop", "mobile"],
+        "states": ["default", "app-download-pending", "waitlist-form"],
+        "stateCoverage": {
+          "storybook": ["default"],
+          "manual": ["app-download-pending", "waitlist-form"]
+        }
+      }
+    },
+    {
+      "id": "host",
+      "kind": "static",
+      "path": "/host/",
+      "pageKey": "host",
+      "source": "website/src/features/host/HostPage.tsx",
+      "metaKey": "host",
+      "staticOutput": "postbuild",
+      "indexing": "index",
+      "sitemap": "included",
+      "notes": "Public host acquisition page.",
+      "review": {
+        "priority": "p0",
+        "status": "ready",
+        "viewports": ["desktop", "mobile"],
+        "states": ["default", "host-application", "capture-placeholders"],
+        "stateCoverage": {
+          "storybook": ["default"],
+          "manual": ["host-application", "capture-placeholders"]
+        }
+      }
+    },
+    {
+      "id": "host_preview",
+      "kind": "clientDynamic",
+      "path": "/host/preview/",
+      "pageKey": "host",
+      "source": "website/src/features/host/HostPreviewPage.tsx",
+      "metaKey": "host",
+      "staticOutput": "spa-rewrite",
+      "indexing": "index",
+      "sitemap": "excluded",
+      "notes": "Client-only founding-host preview under the host page shell; not emitted as separate static HTML yet.",
+      "review": {
+        "priority": "p1",
+        "status": "ready",
+        "viewports": ["desktop", "mobile"],
+        "states": ["default", "founding-host-offer", "create-flow"],
+        "stateCoverage": {
+          "storybook": ["default"],
+          "manual": ["founding-host-offer", "create-flow"]
+        }
+      }
+    },
+    {
+      "id": "organizer_search",
+      "kind": "static",
+      "path": "/organizers/",
+      "pageKey": "organizers",
+      "source": "website/src/features/organizers/OrganizerSearchPage.tsx",
+      "metaKey": "organizers",
+      "staticOutput": "postbuild",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "Search surface for generated organizer profiles; deliberately noindex until public inventory quality is stronger.",
+      "review": {
+        "priority": "p0",
+        "status": "ready",
+        "viewports": ["desktop", "mobile"],
+        "states": ["default", "filtered", "empty-results", "saved-organizers"],
+        "stateCoverage": {
+          "storybook": ["default"],
+          "manual": ["filtered", "empty-results", "saved-organizers"]
+        }
+      }
+    },
+    {
+      "id": "claim",
+      "kind": "static",
+      "path": "/claim/",
+      "pageKey": "claim",
+      "source": "website/src/features/claims/ClaimPage.tsx",
+      "metaKey": "claim",
+      "staticOutput": "postbuild",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "Claim landing route with static noindex output.",
+      "review": {
+        "priority": "p0",
+        "status": "ready",
+        "viewports": ["desktop", "mobile"],
+        "states": ["default", "not-found", "pending-claim", "already-claimed"],
+        "stateCoverage": {
+          "storybook": ["default"],
+          "manual": ["not-found", "pending-claim", "already-claimed"]
+        }
+      }
+    },
+    {
+      "id": "claim_lookup",
+      "kind": "clientDynamic",
+      "pathPattern": "/claim/:listing/",
+      "pageKey": "claim",
+      "source": "website/src/features/claims/ClaimPage.tsx",
+      "metaKey": "claim",
+      "staticOutput": "spa-rewrite",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "Client lookup variant parsed by getClaimListingLookupFromLocation; static output is not generated per listing.",
+      "review": {
+        "priority": "p1",
+        "status": "manual",
+        "viewports": ["desktop", "mobile"],
+        "states": ["known-listing", "not-found", "pending-claim"],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": ["known-listing", "not-found", "pending-claim"]
+        }
+      }
+    },
+    {
+      "id": "not_found",
+      "kind": "static",
+      "path": "/404/",
+      "pageKey": "not_found",
+      "source": "website/src/features/notFound/NotFoundPage.tsx",
+      "metaKey": "not_found",
+      "staticOutput": "postbuild",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "Unknown client routes and unresolved generated organizer paths render a noindex not-found page; postbuild also emits /404.html for static hosting fallbacks.",
+      "review": {
+        "priority": "p1",
+        "status": "ready",
+        "viewports": ["desktop", "mobile"],
+        "states": ["unknown-route", "missing-organizer-listing"],
+        "stateCoverage": {
+          "storybook": ["unknown-route"],
+          "manual": ["missing-organizer-listing"]
+        }
+      }
+    },
+    {
+      "id": "organizer_listing_canonical",
+      "kind": "generatedFamily",
+      "pathPatterns": ["/organizers/:slug/", "/organizers/:citySlug/:slug/"],
+      "pageKey": "listing",
+      "source": "website/src/features/organizers/HostListingPage.tsx",
+      "metaFactory": "pageMetaForListing",
+      "staticOutput": "generated-postbuild",
+      "indexing": "listing-controlled",
+      "sitemap": "listing-controlled",
+      "notes": "Generated canonical organizer profile routes from website/src/generated/hostListings.json. Current inventory contains legacy one-segment canonical paths plus city-scoped canonical paths.",
+      "review": {
+        "priority": "p0",
+        "status": "ready",
+        "viewports": ["desktop", "mobile"],
+        "states": ["indexable", "noindex", "public-api-disabled", "external-events", "claim-cta"],
+        "stateCoverage": {
+          "storybook": ["claim-cta"],
+          "manual": ["indexable", "noindex", "public-api-disabled", "external-events"]
+        }
+      }
+    },
+    {
+      "id": "organizer_listing_legacy",
+      "kind": "generatedFamily",
+      "pathPattern": "hostListing.legacyPaths[]",
+      "pageKey": "listing",
+      "source": "website/src/features/organizers/HostListingPage.tsx",
+      "metaFactory": "pageMetaForListing",
+      "staticOutput": "generated-postbuild",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "Generated legacy organizer routes must preserve canonical URL and noindex after hydration.",
+      "review": {
+        "priority": "p0",
+        "status": "manual",
+        "viewports": ["desktop"],
+        "states": ["legacy-noindex", "canonical-preserved"],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": ["legacy-noindex", "canonical-preserved"]
+        }
+      }
+    }
+  ]
+}

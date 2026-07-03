@@ -5,20 +5,25 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen_state.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/catch_club_dock.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_contact_section.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_body.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_skeleton.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_hero_app_bar.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_host_section.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_photo_strip.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_schedule_section.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_share_card.dart';
 import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_avatar_rail.dart';
 import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_discover_list.dart';
 import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_list_tile.dart';
-import 'package:catch_dating_app/clubs/presentation/shared/catch_polaroid.dart';
-import 'package:catch_dating_app/clubs/presentation/shared/club_identity_atoms.dart';
+import 'package:catch_dating_app/clubs/shared/catch_polaroid.dart';
+import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -26,7 +31,7 @@ import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
-import 'package:catch_dating_app/reviews/presentation/reviews_section.dart';
+import 'package:catch_dating_app/reviews/shared/reviews_section.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
@@ -112,6 +117,11 @@ final _minimalClub = _club.copyWith(
   hostDefaults: const ClubHostDefaults(
     primaryActivityKind: ActivityKind.dinner,
   ),
+);
+
+final _logoClub = _club.copyWith(
+  profileImageUrl:
+      'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=160&q=80',
 );
 
 final _events = [
@@ -363,6 +373,136 @@ Widget clubDetailLoadingBodyStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Hero skeleton states',
+  type: ClubHeroLoadingSkeleton,
+  path: '[Club Detail]/Loading',
+)
+Widget clubHeroLoadingSkeletonStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'ClubHeroLoadingSkeleton',
+    catalogId: 'loading.club.detail.hero',
+    children: [
+      _StateCard(
+        label: 'default',
+        child: _DeviceFrame(height: 260, child: ClubHeroLoadingSkeleton()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Stats skeleton states',
+  type: ClubStatsLoadingSkeleton,
+  path: '[Club Detail]/Loading',
+)
+Widget clubStatsLoadingSkeletonStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'ClubStatsLoadingSkeleton',
+    catalogId: 'loading.club.detail.stats',
+    children: [
+      _StateCard(label: 'four metrics', child: ClubStatsLoadingSkeleton()),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Stat skeleton states',
+  type: ClubStatLoadingSkeleton,
+  path: '[Club Detail]/Loading',
+)
+Widget clubStatLoadingSkeletonStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'ClubStatLoadingSkeleton',
+    catalogId: 'loading.club.detail.stat',
+    children: [
+      _StateCard(label: 'value and label', child: ClubStatLoadingSkeleton()),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Stats divider skeleton states',
+  type: ClubStatsDividerSkeleton,
+  path: '[Club Detail]/Loading',
+)
+Widget clubStatsDividerSkeletonStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'ClubStatsDividerSkeleton',
+    catalogId: 'loading.club.detail.stats_divider',
+    children: [
+      _StateCard(
+        label: 'hairline',
+        child: SizedBox(
+          height: 72,
+          child: Center(child: ClubStatsDividerSkeleton()),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Host skeleton states',
+  type: ClubHostLoadingSkeleton,
+  path: '[Club Detail]/Loading',
+)
+Widget clubHostLoadingSkeletonStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'ClubHostLoadingSkeleton',
+    catalogId: 'loading.club.detail.host',
+    children: [_StateCard(label: 'host row', child: ClubHostLoadingSkeleton())],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Text skeleton states',
+  type: ClubTextLoadingSkeleton,
+  path: '[Club Detail]/Loading',
+)
+Widget clubTextLoadingSkeletonStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'ClubTextLoadingSkeleton',
+    catalogId: 'loading.club.detail.text',
+    children: [
+      _StateCard(
+        label: 'three lines',
+        child: ClubTextLoadingSkeleton(lines: 3),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Tag skeleton states',
+  type: ClubTagLoadingSkeleton,
+  path: '[Club Detail]/Loading',
+)
+Widget clubTagLoadingSkeletonStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'ClubTagLoadingSkeleton',
+    catalogId: 'loading.club.detail.tags',
+    children: [
+      _StateCard(label: 'three chips', child: ClubTagLoadingSkeleton()),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Schedule skeleton states',
+  type: ClubScheduleLoadingSkeleton,
+  path: '[Club Detail]/Loading',
+)
+Widget clubScheduleLoadingSkeletonStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'ClubScheduleLoadingSkeleton',
+    catalogId: 'loading.club.detail.schedule',
+    children: [
+      _StateCard(label: 'two cards', child: ClubScheduleLoadingSkeleton()),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Provider dock states',
   type: ClubMembershipDock,
   path: '[Club Detail]/Sections',
@@ -396,6 +536,70 @@ Widget clubMembershipDockStates(BuildContext context) {
             pushNotificationsEnabled: true,
             isPushMutating: true,
           ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Dock count states',
+  type: DockCount,
+  path: '[Club Detail]/Dock',
+)
+Widget dockCountStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'DockCount',
+    catalogId: 'section.club.dock.count',
+    children: [
+      _StateCard(
+        label: 'member count',
+        child: DockCount(members: 214, label: 'MEMBERS'),
+      ),
+      _StateCard(
+        label: 'short label',
+        child: DockCount(members: 8, label: 'GOING'),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Dock bell states',
+  type: DockBell,
+  path: '[Club Detail]/Dock',
+)
+Widget dockBellStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+  return _CatalogScreen(
+    title: 'DockBell',
+    catalogId: 'section.club.dock.bell',
+    children: [
+      _StateCard(
+        label: 'active',
+        child: DockBell(
+          active: true,
+          accent: t.primary,
+          isLoading: false,
+          onPressed: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'inactive',
+        child: DockBell(
+          active: false,
+          accent: t.primary,
+          isLoading: false,
+          onPressed: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'loading',
+        child: DockBell(
+          active: true,
+          accent: t.primary,
+          isLoading: true,
+          onPressed: _noop,
         ),
       ),
     ],
@@ -467,6 +671,413 @@ Widget clubListTileStates(BuildContext context) {
           variant: ClubListTileVariant.avatarChip,
           showLiveBadge: true,
         ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Avatar chip states',
+  type: AvatarChip,
+  path: '[Club Discovery]/Atoms',
+)
+Widget avatarChipStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'AvatarChip',
+    catalogId: 'atom.club.avatar_chip',
+    children: [
+      _StateCard(
+        label: 'default',
+        child: AvatarChip(club: _logoClub),
+      ),
+      _StateCard(
+        label: 'event soon',
+        child: AvatarChip(club: _minimalClub, showLiveBadge: true),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Club image states',
+  type: ClubImage,
+  path: '[Club Discovery]/Atoms',
+)
+Widget clubImageStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ClubImage',
+    catalogId: 'atom.club.image',
+    children: [
+      _StateCard(
+        label: 'cover first',
+        child: _ClubMediaFrame(child: ClubImage(club: _club)),
+      ),
+      _StateCard(
+        label: 'profile first',
+        child: _ClubMediaFrame(
+          child: ClubImage(club: _logoClub, preferProfileImage: true),
+        ),
+      ),
+      _StateCard(
+        label: 'fallback',
+        child: _ClubMediaFrame(child: ClubImage(club: _minimalClub)),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Directory card states',
+  type: DirectoryCard,
+  path: '[Club Discovery]/Cards',
+)
+Widget directoryCardStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'DirectoryCard',
+    catalogId: 'card.club.directory',
+    children: [
+      _StateCard(
+        label: 'photo / joinable',
+        child: _ClubDiscoveryFrame(
+          child: _ClubDirectoryPreviewScope(
+            child: DirectoryCard(club: _logoClub, isJoined: false),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'identity / joined',
+        child: _ClubDiscoveryFrame(
+          child: DirectoryCard(club: _minimalClub, isJoined: true),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Directory photo card states',
+  type: DirectoryPhotoCard,
+  path: '[Club Discovery]/Cards',
+)
+Widget directoryPhotoCardStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'DirectoryPhotoCard',
+    catalogId: 'card.club.directory_photo',
+    children: [
+      _StateCard(
+        label: 'joinable',
+        child: _ClubDiscoveryFrame(
+          child: _ClubDirectoryPreviewScope(
+            child: DirectoryPhotoCard(
+              club: _logoClub,
+              isJoined: false,
+              sash: null,
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Directory identity card states',
+  type: DirectoryIdentityCard,
+  path: '[Club Discovery]/Cards',
+)
+Widget directoryIdentityCardStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'DirectoryIdentityCard',
+    catalogId: 'card.club.directory_identity',
+    children: [
+      _StateCard(
+        label: 'no cover',
+        child: _ClubDiscoveryFrame(
+          child: _ClubDirectoryPreviewScope(
+            child: DirectoryIdentityCard(
+              club: _minimalClub,
+              isJoined: false,
+              sash: null,
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Directory footer states',
+  type: ClubDirectoryFooter,
+  path: '[Club Discovery]/Atoms',
+)
+Widget clubDirectoryFooterStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ClubDirectoryFooter',
+    catalogId: 'atom.club.directory_footer',
+    children: [
+      _StateCard(
+        label: 'rating / host / tags',
+        child: _ClubDirectoryPreviewScope(
+          child: ClubDirectoryFooter(
+            club: _logoClub,
+            isJoined: false,
+            visibleTags: visibleClubTags(_logoClub, limit: 3),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'joined / no rating',
+        child: ClubDirectoryFooter(
+          club: _minimalClub,
+          isJoined: true,
+          visibleTags: visibleClubTags(_minimalClub, limit: 3),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Host action row states',
+  type: ClubHostActionRow,
+  path: '[Club Discovery]/Atoms',
+)
+Widget clubHostActionRowStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ClubHostActionRow',
+    catalogId: 'atom.club.host_action_row',
+    children: [
+      _StateCard(
+        label: 'joinable',
+        child: _ClubDirectoryPreviewScope(
+          child: ClubHostActionRow(club: _logoClub, isJoined: false),
+        ),
+      ),
+      _StateCard(
+        label: 'joined',
+        child: ClubHostActionRow(club: _minimalClub, isJoined: true),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Membership trailing controller states',
+  type: MembershipTrailingController,
+  path: '[Club Discovery]/Atoms',
+)
+Widget membershipTrailingControllerStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'MembershipTrailingController',
+    catalogId: 'atom.club.membership_trailing_controller',
+    children: [
+      _StateCard(
+        label: 'joinable controller',
+        child: _ClubDirectoryPreviewScope(
+          child: MembershipTrailingController(
+            clubId: _club.id,
+            isJoined: false,
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'joined controller',
+        child: MembershipTrailingController(clubId: _clubId, isJoined: true),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Membership trailing states',
+  type: MembershipTrailing,
+  path: '[Club Discovery]/Atoms',
+)
+Widget membershipTrailingStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'MembershipTrailing',
+    catalogId: 'atom.club.membership_trailing',
+    children: [
+      _StateCard(
+        label: 'join button',
+        child: MembershipTrailing(
+          isJoined: false,
+          isPending: false,
+          onJoinPressed: () {},
+        ),
+      ),
+      const _StateCard(
+        label: 'pending',
+        child: MembershipTrailing(
+          isJoined: false,
+          isPending: true,
+          onJoinPressed: null,
+        ),
+      ),
+      const _StateCard(
+        label: 'joined hidden',
+        child: MembershipTrailing(
+          isJoined: true,
+          isPending: false,
+          onJoinPressed: null,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Photo media overlay states',
+  type: ClubPhotoMediaOverlay,
+  path: '[Club Discovery]/Atoms',
+)
+Widget clubPhotoMediaOverlayStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ClubPhotoMediaOverlay',
+    catalogId: 'atom.club.photo_media_overlay',
+    children: [
+      _StateCard(
+        label: 'cover image',
+        child: _ClubMediaFrame(child: ClubPhotoMediaOverlay(club: _club)),
+      ),
+      _StateCard(
+        label: 'fallback image order',
+        child: _ClubMediaFrame(
+          child: ClubPhotoMediaOverlay(club: _minimalClub),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Photo chrome states',
+  type: ClubPhotoChrome,
+  path: '[Club Discovery]/Atoms',
+)
+Widget clubPhotoChromeStates(BuildContext context) {
+  final palette = ClubCoverVisualPalette.forClub(context, _logoClub);
+  return _CatalogScreen(
+    title: 'ClubPhotoChrome',
+    catalogId: 'atom.club.photo_chrome',
+    children: [
+      _StateCard(
+        label: 'logo / member seal',
+        child: _ClubMediaFrame(
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              ClubPhotoMediaOverlay(club: _club),
+              ClubPhotoChrome(club: _logoClub, sash: null, palette: palette),
+            ],
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Photo scrim states',
+  type: ClubPhotoScrim,
+  path: '[Club Discovery]/Atoms',
+)
+Widget clubPhotoScrimStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ClubPhotoScrim',
+    catalogId: 'atom.club.photo_scrim',
+    children: const [
+      _StateCard(
+        label: 'gradient',
+        child: _ClubMediaFrame(
+          child: DecoratedBox(
+            decoration: BoxDecoration(color: CatchTokens.editorialDark),
+            child: ClubPhotoScrim(),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Logo crest states',
+  type: ClubLogoCrest,
+  path: '[Club Discovery]/Atoms',
+)
+Widget clubLogoCrestStates(BuildContext context) {
+  final palette = ClubCoverVisualPalette.forClub(context, _logoClub);
+  return _CatalogScreen(
+    title: 'ClubLogoCrest',
+    catalogId: 'atom.club.logo_crest',
+    children: [
+      _StateCard(
+        label: 'photo logo',
+        child: ClubLogoCrest(
+          club: _logoClub,
+          palette: palette,
+          size: 64,
+          borderColor: CatchTokens.editorialLight,
+          borderWidth: 2,
+        ),
+      ),
+      _StateCard(
+        label: 'fallback',
+        child: ClubLogoCrest(
+          club: _minimalClub,
+          palette: ClubCoverVisualPalette.forClub(context, _minimalClub),
+          size: 64,
+          borderColor: CatchTokens.editorialLight,
+          borderWidth: 2,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Logo fallback states',
+  type: ClubLogoFallback,
+  path: '[Club Discovery]/Atoms',
+)
+Widget clubLogoFallbackStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+  return _CatalogScreen(
+    title: 'ClubLogoFallback',
+    catalogId: 'atom.club.logo_fallback',
+    children: [
+      _StateCard(
+        label: 'empty mark',
+        child: SizedBox.square(
+          dimension: 64,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: t.primarySoft,
+              shape: BoxShape.circle,
+            ),
+            child: const ClipOval(child: ClubLogoFallback()),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Rule states',
+  type: ClubRule,
+  path: '[Club Discovery]/Atoms',
+)
+Widget clubRuleStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+  return _CatalogScreen(
+    title: 'ClubRule',
+    catalogId: 'atom.club.rule',
+    children: [
+      _StateCard(
+        label: 'hairline',
+        child: ClubRule(color: t.line),
       ),
     ],
   );
@@ -715,6 +1326,192 @@ Widget clubDetailBodyComposition(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Next run banner states',
+  type: ClubNextRunBanner,
+  path: '[Club Detail]/Sections',
+)
+Widget clubNextRunBannerStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ClubNextRunBanner',
+    catalogId: 'section.club.next_run_banner',
+    children: [
+      _StateCard(
+        label: 'tap target',
+        child: ClubNextRunBanner(event: _events.first, onTap: _noop),
+      ),
+      _StateCard(
+        label: 'display only',
+        child: ClubNextRunBanner(event: _events[1]),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Activity section states',
+  type: ClubActivitySection,
+  path: '[Club Detail]/Sections',
+)
+Widget clubActivitySectionStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ClubActivitySection',
+    catalogId: 'section.club.activity',
+    children: [
+      _StateCard(
+        label: 'activity and tags',
+        child: ClubActivitySection(
+          club: _club,
+          tags: visibleClubTags(_club, limit: 6),
+        ),
+      ),
+      _StateCard(
+        label: 'generic dinner tags',
+        child: ClubActivitySection(
+          club: _minimalClub,
+          tags: visibleClubTags(_minimalClub, limit: 4),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Host section states',
+  type: ClubHostSection,
+  path: '[Club Detail]/Sections',
+)
+Widget clubHostSectionStates(BuildContext context) {
+  final messageableState = ClubDetailBodyState.fromDomain(
+    club: _club,
+    uid: _viewerUid,
+    isAuthenticated: true,
+  );
+
+  return _CatalogScreen(
+    title: 'ClubHostSection',
+    catalogId: 'section.club.hosts',
+    children: [
+      _StateCard(
+        label: 'messageable hosts',
+        child: ClubHostSection(
+          club: _club,
+          canViewProfile: true,
+          isMessageHostPending: false,
+          messageableHostUids: messageableState.messageableHostUids,
+          onViewProfile: (_) {},
+          onMessageHost: (_, _) async {},
+        ),
+      ),
+      _StateCard(
+        label: 'public preview',
+        child: ClubHostSection(
+          club: _club,
+          canViewProfile: false,
+          isMessageHostPending: false,
+          messageableHostUids: const {},
+          onViewProfile: null,
+          onMessageHost: null,
+        ),
+      ),
+      _StateCard(
+        label: 'message pending',
+        child: ClubHostSection(
+          club: _club,
+          canViewProfile: true,
+          isMessageHostPending: true,
+          messageableHostUids: messageableState.messageableHostUids,
+          onViewProfile: (_) {},
+          onMessageHost: (_, _) async {},
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Host row states',
+  type: ClubHostRow,
+  path: '[Club Detail]/Sections',
+)
+Widget clubHostRowStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ClubHostRow',
+    catalogId: 'section.club.hosts.row',
+    children: [
+      _StateCard(
+        label: 'owner / message / chevron',
+        child: ClubHostRow(
+          host: _club.displayHostProfiles.first,
+          borderColor: CatchTokens.of(context).primarySoft,
+          showChevron: true,
+          onMessage: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'public profile',
+        child: ClubHostRow(
+          host: _club.displayHostProfiles.last,
+          borderColor: CatchTokens.of(context).primarySoft,
+          showChevron: false,
+          onMessage: null,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contact section states',
+  type: ClubContactSection,
+  path: '[Club Detail]/Sections',
+)
+Widget clubContactSectionStates(BuildContext context) {
+  final contactState = ClubDetailBodyState.fromDomain(club: _club);
+
+  return _CatalogScreen(
+    title: 'ClubContactSection',
+    catalogId: 'section.club.contact',
+    children: [
+      _StateCard(
+        label: 'all channels',
+        child: ClubContactSection(
+          actions: contactState.contactActions,
+          onContactSelected: (_) async {},
+        ),
+      ),
+      const _StateCard(
+        label: 'empty',
+        child: ClubContactSection(actions: []),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Photo strip states',
+  type: ClubPhotoStrip,
+  path: '[Club Detail]/Sections',
+)
+Widget clubPhotoStripStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ClubPhotoStrip',
+    catalogId: 'section.club.photos',
+    children: [
+      _StateCard(
+        label: 'three photos',
+        child: ClubPhotoStrip(club: _club),
+      ),
+      _StateCard(
+        label: 'single photo',
+        child: ClubPhotoStrip(
+          club: _club.copyWith(clubPhotos: [_club.clubPhotos.first]),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Hero states',
   type: ClubHeroAppBar,
   path: '[Club Detail]/Sections',
@@ -771,6 +1568,44 @@ Widget clubHeroAppBarStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Hero module states',
+  type: ClubHeroModule,
+  path: '[Club Detail]/Sections',
+)
+Widget clubHeroModuleStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ClubHeroModule',
+    catalogId: 'section.club.hero.module',
+    children: [
+      _StateCard(
+        label: 'cover module',
+        child: _DeviceFrame(
+          height: 460,
+          child: ClubHeroModule(
+            club: _club,
+            mediaHeight: 280,
+            kickerLabel: 'BANDRA · MUMBAI',
+            locationLabel: 'Bandstand promenade',
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'fallback module',
+        child: _DeviceFrame(
+          height: 420,
+          child: ClubHeroModule(
+            club: _minimalClub,
+            mediaHeight: 220,
+            kickerLabel: 'DINNER · MUMBAI',
+            locationLabel: 'Khar Social',
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Share card states',
   type: ClubShareCard,
   path: '[Club Detail]/Cards',
@@ -787,6 +1622,56 @@ Widget clubShareCardStates(BuildContext context) {
       _StateCard(
         label: 'polaroid fallback',
         child: ClubShareCard(club: _minimalClub),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Share artwork states',
+  type: ClubShareArtwork,
+  path: '[Club Detail]/Cards',
+)
+Widget clubShareArtworkStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ClubShareArtwork',
+    catalogId: 'card.club.share.artwork',
+    children: [
+      _StateCard(
+        label: 'cover photo',
+        child: _ClubMediaFrame(child: ClubShareArtwork(club: _club)),
+      ),
+      _StateCard(
+        label: 'polaroid fallback',
+        child: _ClubMediaFrame(child: ClubShareArtwork(club: _minimalClub)),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Share meta row states',
+  type: ClubShareMetaRow,
+  path: '[Club Detail]/Cards',
+)
+Widget clubShareMetaRowStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ClubShareMetaRow',
+    catalogId: 'card.club.share.meta_row',
+    children: [
+      _StateCard(
+        label: 'location',
+        child: ClubShareMetaRow(
+          icon: CatchIcons.locationOnOutlined,
+          label: 'Bandra, Mumbai',
+        ),
+      ),
+      _StateCard(
+        label: 'member count',
+        child: ClubShareMetaRow(
+          icon: CatchIcons.group,
+          label: clubMemberCountLabel(_club),
+        ),
       ),
     ],
   );
@@ -933,17 +1818,17 @@ class _ClubComposedPreview extends StatelessWidget {
             ),
           Expanded(
             child: ClubDetailBody(
-              club: previewClub,
-              upcoming: previewEvents,
-              reviews: previewReviews,
-              userProfile: isAuthenticated ? _viewer : null,
-              uid: isAuthenticated ? _viewerUid : null,
-              isHost: false,
-              isMember: isMember,
-              isMutating: isMutating,
-              clubPushNotificationsEnabled: isMember,
-              isClubPushMutating: false,
-              isAuthenticated: isAuthenticated,
+              state: ClubDetailBodyState.fromDomain(
+                club: previewClub,
+                upcomingEvents: previewEvents,
+                reviews: previewReviews,
+                userProfile: isAuthenticated ? _viewer : null,
+                uid: isAuthenticated ? _viewerUid : null,
+                isMember: isMember,
+                isMutating: isMutating,
+                clubPushNotificationsEnabled: isMember,
+                isAuthenticated: isAuthenticated,
+              ),
             ),
           ),
         ],
@@ -1068,6 +1953,57 @@ class _DeviceFrame extends StatelessWidget {
             borderRadius: BorderRadius.circular(CatchRadius.lg),
             child: SizedBox(height: height, child: child),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ClubDirectoryPreviewScope extends StatelessWidget {
+  const _ClubDirectoryPreviewScope({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return ProviderScope(
+      overrides: [
+        uidProvider.overrideWith((ref) => Stream<String?>.value(null)),
+      ],
+      child: IgnorePointer(child: child),
+    );
+  }
+}
+
+class _ClubDiscoveryFrame extends StatelessWidget {
+  const _ClubDiscoveryFrame({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 360),
+        child: child,
+      ),
+    );
+  }
+}
+
+class _ClubMediaFrame extends StatelessWidget {
+  const _ClubMediaFrame({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return _ClubDiscoveryFrame(
+      child: AspectRatio(
+        aspectRatio: 1,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(CatchRadius.lg),
+          child: child,
         ),
       ),
     );

@@ -1,25 +1,38 @@
 part of '../event_success_companion_screen.dart';
 
-class CompatibilityQuestionnaireSection extends ConsumerStatefulWidget {
+@immutable
+class CompatibilityQuestionnaireActionState {
+  const CompatibilityQuestionnaireActionState({
+    this.isSaving = false,
+    this.error,
+  });
+
+  final bool isSaving;
+  final Object? error;
+}
+
+class CompatibilityQuestionnaireSection extends StatefulWidget {
   const CompatibilityQuestionnaireSection({
     required this.event,
     required this.plan,
     required this.response,
-    this.onSaveAnswers,
+    required this.actionState,
+    required this.onSaveAnswers,
   });
 
   final Event event;
   final EventSuccessPlan plan;
   final EventSuccessCompatibilityResponse? response;
-  final Future<void> Function(List<String> answerIds)? onSaveAnswers;
+  final CompatibilityQuestionnaireActionState actionState;
+  final Future<void> Function(List<String> answerIds) onSaveAnswers;
 
   @override
-  ConsumerState<CompatibilityQuestionnaireSection> createState() =>
+  State<CompatibilityQuestionnaireSection> createState() =>
       _CompatibilityQuestionnaireSectionState();
 }
 
 class _CompatibilityQuestionnaireSectionState
-    extends ConsumerState<CompatibilityQuestionnaireSection> {
+    extends State<CompatibilityQuestionnaireSection> {
   late List<String> _answerIds = _initialAnswerIds;
   int _activeQuestionIndex = 0;
   bool _fixtureSavePending = false;
@@ -41,9 +54,6 @@ class _CompatibilityQuestionnaireSectionState
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final mutation = ref.watch(
-      EventSuccessController.compatibilityResponseMutation,
-    );
     final rankingOn = widget.plan.compatibilityAffectsRanking;
     final questions = EventSuccessCompatibilityQuestionnaire.questionsFor(
       widget.plan.questionnaireConfig,
@@ -55,7 +65,7 @@ class _CompatibilityQuestionnaireSectionState
         .length;
     final hasAnswers = _answerIds.isNotEmpty;
     final dirty = !_sameAnswers(_answerIds, widget.response?.answerIds);
-    final saving = mutation.isPending || _fixtureSavePending;
+    final saving = widget.actionState.isSaving || _fixtureSavePending;
     return StagePanel(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -146,11 +156,11 @@ class _CompatibilityQuestionnaireSectionState
               ),
             ),
           ),
-          if (mutation.hasError) ...[
+          if (widget.actionState.error != null) ...[
             gapH14,
             Text(
               appErrorMessage(
-                (mutation as MutationError).error,
+                widget.actionState.error!,
                 context: AppErrorContext.event,
               ),
               style: CatchTextStyles.supporting(context, color: t.danger),
@@ -165,30 +175,14 @@ class _CompatibilityQuestionnaireSectionState
               onPressed: !hasAnswers || !dirty || saving
                   ? null
                   : () async {
-                      final fixtureSave = widget.onSaveAnswers;
-                      if (fixtureSave != null) {
-                        setState(() => _fixtureSavePending = true);
-                        try {
-                          await fixtureSave(_answerIds);
-                        } finally {
-                          if (mounted) {
-                            setState(() => _fixtureSavePending = false);
-                          }
+                      setState(() => _fixtureSavePending = true);
+                      try {
+                        await widget.onSaveAnswers(_answerIds);
+                      } finally {
+                        if (mounted) {
+                          setState(() => _fixtureSavePending = false);
                         }
-                        return;
                       }
-                      await EventSuccessController.compatibilityResponseMutation
-                          .run(
-                            ref,
-                            (tx) => tx
-                                .get(eventSuccessControllerProvider.notifier)
-                                .saveCompatibilityResponse(
-                                  event: widget.event,
-                                  answerIds: _answerIds,
-                                  questionnaireConfig:
-                                      widget.plan.questionnaireConfig,
-                                ),
-                          );
                     },
               fullWidth: true,
             ),

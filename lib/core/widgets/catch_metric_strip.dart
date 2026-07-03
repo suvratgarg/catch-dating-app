@@ -57,15 +57,15 @@ class CatchMetricStrip extends StatelessWidget {
       child: Row(
         children: [
           for (final item in items) ...[
-            _buildCatchMetricCell(
-              context,
+            CatchMetricStripCell(
               item: item,
               valueColor: valueColor,
               unitColor: unitColor,
               labelColor: labelColor,
+              expanded: true,
             ),
             if (item != items.last)
-              _buildCatchMetricDivider(dividerColor ?? t.line),
+              CatchMetricStripDivider(color: dividerColor ?? t.line),
           ],
         ],
       ),
@@ -73,17 +73,27 @@ class CatchMetricStrip extends StatelessWidget {
   }
 }
 
-Widget _buildCatchMetricCell(
-  BuildContext context, {
-  required CatchMetricStripItem item,
-  Color? valueColor,
-  Color? unitColor,
-  Color? labelColor,
-}) {
-  final t = CatchTokens.of(context);
+class CatchMetricStripCell extends StatelessWidget {
+  const CatchMetricStripCell({
+    super.key,
+    required this.item,
+    this.valueColor,
+    this.unitColor,
+    this.labelColor,
+    this.expanded = false,
+  });
 
-  return Expanded(
-    child: Column(
+  final CatchMetricStripItem item;
+  final Color? valueColor;
+  final Color? unitColor;
+  final Color? labelColor;
+  final bool expanded;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final cell = Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         FittedBox(
           fit: BoxFit.scaleDown,
@@ -121,14 +131,24 @@ Widget _buildCatchMetricCell(
           overflow: TextOverflow.ellipsis,
         ),
       ],
-    ),
-  );
+    );
+
+    if (!expanded) return cell;
+    return Expanded(child: cell);
+  }
 }
 
-Widget _buildCatchMetricDivider(Color color) {
-  return Container(
-    width: CatchStroke.hairline,
-    height: CatchSpacing.s9,
-    color: color,
-  );
+class CatchMetricStripDivider extends StatelessWidget {
+  const CatchMetricStripDivider({super.key, this.color});
+
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: CatchStroke.hairline,
+      height: CatchSpacing.s9,
+      color: color ?? CatchTokens.of(context).line,
+    );
+  }
 }

@@ -1,6 +1,6 @@
 import type {HostListing} from "../features/organizers/types";
 
-export type PageKey = "home" | "host" | "organizers" | "listing" | "claim";
+export type PageKey = "home" | "host" | "organizers" | "listing" | "claim" | "not_found";
 
 export interface PageMeta {
   title: string;
@@ -42,6 +42,15 @@ export const pageMeta: Record<Exclude<PageKey, "listing">, PageMeta> = {
     twitterDescription: "Claim an organizer profile and unlock Catch host tools.",
     robots: "noindex, follow",
   },
+  not_found: {
+    title: "Page not found | Catch",
+    description:
+      "This Catch page does not exist. Search organizer profiles, browse the member site, or explore host tools.",
+    canonicalPath: "/404/",
+    twitterDescription:
+      "Search organizer profiles, browse the member site, or explore Catch host tools.",
+    robots: "noindex, follow",
+  },
 };
 
 export function pageMetaForListing(
@@ -61,7 +70,8 @@ export function getPageKey(pathname: string = window.location.pathname): Exclude
   if (pathname.startsWith("/claim")) return "claim";
   if (pathname.startsWith("/host")) return "host";
   if (pathname.startsWith("/organizers")) return "organizers";
-  return "home";
+  if (pathname === "/" || pathname === "") return "home";
+  return "not_found";
 }
 
 export function pageClassFor(page: PageKey) {
@@ -69,5 +79,6 @@ export function pageClassFor(page: PageKey) {
   if (page === "listing") return "listing-page";
   if (page === "organizers") return "organizers-page";
   if (page === "claim") return "claim-page";
+  if (page === "not_found") return "not-found-page";
   return "home-page";
 }

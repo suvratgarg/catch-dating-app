@@ -80,8 +80,7 @@ class CatchSegmentedControl<T> extends StatelessWidget {
         mainAxisSize: expanded ? MainAxisSize.max : MainAxisSize.min,
         children: [
           for (final segment in segments)
-            _buildSegmentButton<T>(
-              context,
+            CatchSegmentButton<T>(
               segment: segment,
               selected: segment.value == selected,
               expanded: expanded,
@@ -94,78 +93,89 @@ class CatchSegmentedControl<T> extends StatelessWidget {
   }
 }
 
-Widget _buildSegmentButton<T>(
-  BuildContext context, {
-  required CatchSegment<T> segment,
-  required bool selected,
-  required bool expanded,
-  required CatchSegmentedControlStyle style,
-  required VoidCallback onTap,
-}) {
-  final t = CatchTokens.of(context);
-  final activeBackground = switch (style) {
-    CatchSegmentedControlStyle.filled => t.ink,
-    CatchSegmentedControlStyle.surface => t.surface,
-  };
-  final activeForeground = switch (style) {
-    CatchSegmentedControlStyle.filled => t.surface,
-    CatchSegmentedControlStyle.surface => t.ink,
-  };
-  final foreground = selected ? activeForeground : t.ink2;
-  final labelStyle = CatchTextStyles.sectionTitle(
-    context,
-    color: foreground,
-  ).copyWith(fontWeight: selected ? FontWeight.w700 : FontWeight.w600);
+class CatchSegmentButton<T> extends StatelessWidget {
+  const CatchSegmentButton({
+    super.key,
+    required this.segment,
+    required this.selected,
+    required this.expanded,
+    required this.style,
+    required this.onTap,
+  });
 
-  final content = Row(
-    mainAxisSize: expanded ? MainAxisSize.max : MainAxisSize.min,
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      if (segment.icon != null)
-        Icon(segment.icon, size: CatchIcon.control, color: foreground),
-      if (segment.icon != null && segment.label != null) gapW8,
-      if (segment.label != null)
-        if (expanded)
-          Flexible(
-            child: Text(
-              segment.label!,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: labelStyle,
+  final CatchSegment<T> segment;
+  final bool selected;
+  final bool expanded;
+  final CatchSegmentedControlStyle style;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final activeBackground = switch (style) {
+      CatchSegmentedControlStyle.filled => t.ink,
+      CatchSegmentedControlStyle.surface => t.surface,
+    };
+    final activeForeground = switch (style) {
+      CatchSegmentedControlStyle.filled => t.surface,
+      CatchSegmentedControlStyle.surface => t.ink,
+    };
+    final foreground = selected ? activeForeground : t.ink2;
+    final labelStyle = CatchTextStyles.sectionTitle(
+      context,
+      color: foreground,
+    ).copyWith(fontWeight: selected ? FontWeight.w700 : FontWeight.w600);
+
+    final content = Row(
+      mainAxisSize: expanded ? MainAxisSize.max : MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        if (segment.icon != null)
+          Icon(segment.icon, size: CatchIcon.control, color: foreground),
+        if (segment.icon != null && segment.label != null) gapW8,
+        if (segment.label != null)
+          if (expanded)
+            Flexible(
+              child: Text(
+                segment.label!,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: labelStyle,
+              ),
+            )
+          else
+            Text(segment.label!, maxLines: 1, style: labelStyle),
+      ],
+    );
+
+    final button = Semantics(
+      button: true,
+      selected: selected,
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(CatchRadius.segmentedInner),
+        child: InkWell(
+          onTap: onTap,
+          child: AnimatedContainer(
+            duration: CatchMotion.micro,
+            curve: CatchMotion.easeInOutCurve,
+            padding: EdgeInsets.symmetric(
+              horizontal: expanded ? CatchSpacing.s3 : CatchSpacing.s2,
+              vertical: CatchSpacing.s3,
             ),
-          )
-        else
-          Text(segment.label!, maxLines: 1, style: labelStyle),
-    ],
-  );
-
-  final button = Semantics(
-    button: true,
-    selected: selected,
-    child: Material(
-      color: Colors.transparent,
-      borderRadius: BorderRadius.circular(CatchRadius.segmentedInner),
-      child: InkWell(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: CatchMotion.micro,
-          curve: CatchMotion.easeInOutCurve,
-          padding: EdgeInsets.symmetric(
-            horizontal: expanded ? CatchSpacing.s3 : CatchSpacing.s2,
-            vertical: CatchSpacing.s3,
+            decoration: BoxDecoration(
+              color: selected ? activeBackground : Colors.transparent,
+              borderRadius: BorderRadius.circular(CatchRadius.segmentedInner),
+              boxShadow: selected && style == CatchSegmentedControlStyle.surface
+                  ? CatchElevation.segmentedSelected(t)
+                  : null,
+            ),
+            child: content,
           ),
-          decoration: BoxDecoration(
-            color: selected ? activeBackground : Colors.transparent,
-            borderRadius: BorderRadius.circular(CatchRadius.segmentedInner),
-            boxShadow: selected && style == CatchSegmentedControlStyle.surface
-                ? CatchElevation.segmentedSelected(t)
-                : null,
-          ),
-          child: content,
         ),
       ),
-    ),
-  );
+    );
 
-  return expanded ? Expanded(child: button) : button;
+    return expanded ? Expanded(child: button) : button;
+  }
 }

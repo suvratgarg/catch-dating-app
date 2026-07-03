@@ -2,12 +2,14 @@ import 'dart:typed_data';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
-import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen_state.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_host_contact_controller.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_membership_controller.dart';
 import 'package:catch_dating_app/core/app_config.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_controller.dart';
@@ -340,8 +342,8 @@ void main() {
   group('HostClubDetailScreenState', () {
     test('wraps a live host view model as public preview content', () {
       final club = buildClub();
-      final state = HostClubDetailScreenState.fromAsync(
-        viewModel: AsyncData(
+      final state = HostClubDetailScreenState.fromState(
+        viewModel: CatchAsyncState<ClubDetailViewModel?>.data(
           ClubDetailViewModel(
             club: club,
             isHost: true,
@@ -374,8 +376,8 @@ void main() {
         ownerUserId: 'host-1',
         hostUserIds: const ['host-1'],
       );
-      final state = HostClubDetailScreenState.fromAsync(
-        viewModel: const AsyncLoading<ClubDetailViewModel?>(),
+      final state = HostClubDetailScreenState.fromState(
+        viewModel: const CatchAsyncState<ClubDetailViewModel?>.loading(),
         initialClub: club,
         currentUid: 'host-1',
         currentUserProfile: buildUser(uid: 'host-1'),
@@ -395,8 +397,8 @@ void main() {
 
     test('maps blocking async branches to loading, error, and not found', () {
       expect(
-        HostClubDetailScreenState.fromAsync(
-          viewModel: const AsyncLoading<ClubDetailViewModel?>(),
+        HostClubDetailScreenState.fromState(
+          viewModel: const CatchAsyncState<ClubDetailViewModel?>.loading(),
           initialClub: null,
           currentUid: null,
           currentUserProfile: null,
@@ -407,10 +409,9 @@ void main() {
       );
 
       final errorState =
-          HostClubDetailScreenState.fromAsync(
-                viewModel: AsyncError<ClubDetailViewModel?>(
+          HostClubDetailScreenState.fromState(
+                viewModel: CatchAsyncState<ClubDetailViewModel?>.error(
                   StateError('club failed'),
-                  StackTrace.empty,
                 ),
                 initialClub: null,
                 currentUid: null,
@@ -424,8 +425,8 @@ void main() {
       expect(errorState, isA<HostClubDetailError>());
 
       expect(
-        HostClubDetailScreenState.fromAsync(
-          viewModel: const AsyncData<ClubDetailViewModel?>(null),
+        HostClubDetailScreenState.fromState(
+          viewModel: const CatchAsyncState<ClubDetailViewModel?>.data(null),
           initialClub: null,
           currentUid: null,
           currentUserProfile: null,
@@ -435,6 +436,85 @@ void main() {
         isA<HostClubDetailNotFound>(),
       );
     });
+
+    test('derives consumer body display policy from domain data', () {
+      final club = buildClub(
+        hostProfiles: const [
+          ClubHostProfile(uid: 'owner-1', displayName: 'Owner Host'),
+          ClubHostProfile(uid: 'runner-1', displayName: 'Current Viewer'),
+          ClubHostProfile(uid: 'host-2', displayName: 'Co Host'),
+        ],
+        instagramHandle: '@stridesocial',
+        phoneNumber: '+15551234567',
+        email: 'hello@stridesocial.test',
+      );
+      final earlierEvent = buildEvent(
+        id: 'event-earlier',
+        startTime: DateTime(2026, 1, 1, 8),
+      );
+      final laterEvent = buildEvent(
+        id: 'event-later',
+        startTime: DateTime(2026, 1, 2, 8),
+      );
+
+      final state = ClubDetailBodyState.fromDomain(
+        club: club,
+        upcomingEvents: [laterEvent, earlierEvent],
+        reviews: [buildReview()],
+        userProfile: buildUser(uid: 'runner-1'),
+        uid: 'runner-1',
+        isMember: true,
+        isAuthenticated: true,
+        clubPushNotificationsEnabled: true,
+      );
+
+      expect(state.nextEvent, earlierEvent);
+      expect(state.contactActions.map((action) => action.kind), [
+        ClubContactActionKind.instagram,
+        ClubContactActionKind.phone,
+        ClubContactActionKind.email,
+      ]);
+      expect(state.showReviews, isTrue);
+      expect(state.messageableHostUids, {'owner-1', 'host-2'});
+      expect(state.canMessageHost('runner-1'), isFalse);
+      expect(
+        state.eventRouteTarget,
+        ClubDetailEventRouteTarget.consumerEventDetail,
+      );
+      expect(state.dockState, isNotNull);
+      expect(state.dockState!.isMember, isTrue);
+      expect(state.dockState!.pushNotificationsEnabled, isTrue);
+    });
+
+    test(
+      'derives host body policy without consumer dock or host messaging',
+      () {
+        final club = buildClub(
+          hostProfiles: const [
+            ClubHostProfile(uid: 'owner-1', displayName: 'Owner Host'),
+            ClubHostProfile(uid: 'host-2', displayName: 'Co Host'),
+          ],
+        );
+
+        final state = ClubDetailBodyState.fromDomain(
+          club: club,
+          uid: 'owner-1',
+          isHost: true,
+          isMember: true,
+          isAuthenticated: true,
+          appRole: AppRole.host,
+        );
+
+        expect(state.canMessageHosts, isFalse);
+        expect(state.messageableHostUids, isEmpty);
+        expect(state.dockState, isNull);
+        expect(state.showReviews, isTrue);
+        expect(
+          state.eventRouteTarget,
+          ClubDetailEventRouteTarget.hostEventDetail,
+        );
+      },
+    );
   });
 
   group('CreateClubController', () {

@@ -41,1172 +41,37 @@ import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_profile_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_profile.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_club_edit_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_home_view_model.dart';
+import 'package:catch_dating_app/hosts/presentation/host_operations_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_profile_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_settings_state.dart';
-import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_card.dart';
+import 'package:catch_dating_app/hosts/presentation/host_settings_view_model.dart';
+import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_payout_prompt_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
-import 'package:catch_dating_app/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
+import 'package:catch_dating_app/user_profile/user_profile.dart'
+    show ProfileInlineTextValue;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class HostOperationsHomeScreen extends ConsumerWidget {
-  const HostOperationsHomeScreen({
-    super.key,
-    this.initialClubId,
-    this.initialTab = HostHomeTab.today,
-  });
+export 'package:catch_dating_app/hosts/presentation/host_operations_screen_state.dart';
 
-  final String? initialClubId;
-  final HostHomeTab initialTab;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final uidAsync = ref.watch(uidProvider);
-    final uid = uidAsync.asData?.value;
-    final clubsAsync = uid == null
-        ? null
-        : ref.watch(_hostClubsForUserProvider(uid));
-    final routeState = HostHomeRouteState.fromAsync(
-      uid: uidAsync,
-      clubs: clubsAsync,
-    );
-
-    return switch (routeState.status) {
-      HostHomeRouteStatus.authRequired => const HostAuthRequiredScreen(),
-      HostHomeRouteStatus.loading => const HostLoadingScreen(
-        title: 'Host events',
-      ),
-      HostHomeRouteStatus.error => CatchErrorScaffold.fromError(
-        routeState.error!,
-        context: routeState.errorContext,
-        onRetry: () => _retryHostHomeRoute(ref, routeState),
-      ),
-      HostHomeRouteStatus.empty => HostEventsScaffold(
-        clubs: routeState.clubs,
-        currentUid: routeState.uid!,
-        initialClubId: initialClubId,
-        initialTab: initialTab,
-      ),
-      HostHomeRouteStatus.loaded => HostEventsScaffold(
-        clubs: routeState.clubs,
-        currentUid: routeState.uid!,
-        initialClubId: initialClubId,
-        initialTab: initialTab,
-      ),
-    };
-  }
-}
-
-class HostClubsScreen extends ConsumerWidget {
-  const HostClubsScreen({
-    super.key,
-    this.initialClubId,
-    this.initialTab = HostClubTab.organizer,
-    this.initialExpandedEditField,
-  });
-
-  final String? initialClubId;
-  final HostClubTab initialTab;
-  final String? initialExpandedEditField;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final uid = ref.watch(uidProvider).asData?.value;
-    if (uid == null) return const HostAuthRequiredScreen();
-
-    final clubsAsync = ref.watch(_hostClubsForUserProvider(uid));
-    return CatchAsyncValueView<List<Club>>(
-      value: clubsAsync,
-      loadingBuilder: (_) =>
-          const HostLoadingScreen(title: 'Clubs', showTabRail: true),
-      errorBuilder: (_, error, _) => CatchErrorScaffold.fromError(
-        error,
-        context: AppErrorContext.club,
-        onRetry: () => ref.invalidate(_hostClubsForUserProvider(uid)),
-      ),
-      builder: (context, clubs) => HostClubsScaffold(
-        clubs: clubs,
-        currentUid: uid,
-        initialClubId: initialClubId,
-        initialTab: initialTab,
-        initialExpandedEditField: initialExpandedEditField,
-      ),
-    );
-  }
-}
-
-void _retryHostHomeRoute(WidgetRef ref, HostHomeRouteState state) {
-  final uid = state.uid;
-  if (state.errorContext == AppErrorContext.auth || uid == null) {
-    ref.invalidate(uidProvider);
-    return;
-  }
-  ref.invalidate(_hostClubsForUserProvider(uid));
-}
+part 'host_operations_home_screen.dart';
+part 'host_clubs_screen.dart';
+part 'host_account_screen.dart';
+part 'host_auth_required_screen.dart';
+part 'host_loading_screen.dart';
 
 enum HostSettingsMode { edit, preview }
 
-enum HostClubTab { organizer, edit, insights, preview }
-
-enum HostHomeTab { today, events }
-
-typedef HostHomeCreateEventCallback = void Function(Club club);
-typedef HostHomeManageEventCallback = void Function(Club club, Event event);
 typedef HostClubPreviewCallback = void Function(Club club);
 
-enum HostHomeRouteStatus { authRequired, loading, error, empty, loaded }
-
-@immutable
-class HostHomeRouteState {
-  const HostHomeRouteState._({
-    required this.status,
-    this.uid,
-    this.clubs = const [],
-    this.error,
-    this.stackTrace,
-    this.errorContext = AppErrorContext.club,
-  });
-
-  factory HostHomeRouteState.fromAsync({
-    required AsyncValue<String?> uid,
-    AsyncValue<List<Club>>? clubs,
-  }) {
-    if (uid.hasError) {
-      return HostHomeRouteState._(
-        status: HostHomeRouteStatus.error,
-        error: uid.error,
-        stackTrace: uid.stackTrace,
-        errorContext: AppErrorContext.auth,
-      );
-    }
-
-    final currentUid = uid.asData?.value;
-    if (currentUid == null) {
-      return uid.isLoading
-          ? const HostHomeRouteState._(status: HostHomeRouteStatus.loading)
-          : const HostHomeRouteState._(
-              status: HostHomeRouteStatus.authRequired,
-            );
-    }
-
-    final clubValue = clubs;
-    if (clubValue == null || clubValue.isLoading) {
-      return HostHomeRouteState._(
-        status: HostHomeRouteStatus.loading,
-        uid: currentUid,
-      );
-    }
-    if (clubValue.hasError) {
-      return HostHomeRouteState._(
-        status: HostHomeRouteStatus.error,
-        uid: currentUid,
-        error: clubValue.error,
-        stackTrace: clubValue.stackTrace,
-      );
-    }
-
-    final resolvedClubs = List<Club>.unmodifiable(
-      clubValue.asData?.value ?? const <Club>[],
-    );
-    return HostHomeRouteState._(
-      status: resolvedClubs.isEmpty
-          ? HostHomeRouteStatus.empty
-          : HostHomeRouteStatus.loaded,
-      uid: currentUid,
-      clubs: resolvedClubs,
-    );
-  }
-
-  final HostHomeRouteStatus status;
-  final String? uid;
-  final List<Club> clubs;
-  final Object? error;
-  final StackTrace? stackTrace;
-  final AppErrorContext errorContext;
-}
-
-@immutable
-class HostHomeScreenState {
-  const HostHomeScreenState._({
-    required this.clubs,
-    required this.currentUid,
-    required this.selectedClubIndex,
-    required this.selectedTab,
-  });
-
-  factory HostHomeScreenState.resolve({
-    required List<Club> clubs,
-    required String currentUid,
-    int selectedClubIndex = 0,
-    String? selectedClubId,
-    HostHomeTab selectedTab = HostHomeTab.today,
-  }) {
-    return HostHomeScreenState._(
-      clubs: List<Club>.unmodifiable(clubs),
-      currentUid: currentUid,
-      selectedClubIndex: _resolveSelectedClubIndex(
-        clubs: clubs,
-        selectedClubIndex: selectedClubIndex,
-        selectedClubId: selectedClubId,
-      ),
-      selectedTab: selectedTab,
-    );
-  }
-
-  final List<Club> clubs;
-  final String currentUid;
-  final int selectedClubIndex;
-  final HostHomeTab selectedTab;
-
-  bool get hasClubs => clubs.isNotEmpty;
-  bool get showClubPicker => clubs.length > 1;
-  Club? get selectedClub => hasClubs ? clubs[selectedClubIndex] : null;
-  String get title => selectedClub?.name ?? 'Host events';
-  bool get selectedClubIsOwner => selectedClub?.isOwnedBy(currentUid) ?? false;
-  String get selectedClubRoleLabel =>
-      selectedClubIsOwner ? 'Owner' : 'Host team';
-
-  HostHomeScreenState selectClubIndex(int index) {
-    return HostHomeScreenState.resolve(
-      clubs: clubs,
-      currentUid: currentUid,
-      selectedClubIndex: index,
-      selectedTab: selectedTab,
-    );
-  }
-
-  HostHomeScreenState selectTab(HostHomeTab tab) {
-    return HostHomeScreenState.resolve(
-      clubs: clubs,
-      currentUid: currentUid,
-      selectedClubIndex: selectedClubIndex,
-      selectedTab: tab,
-    );
-  }
-}
-
-@immutable
-class HostHomeEventRowsState {
-  const HostHomeEventRowsState._({required this.rows});
-
-  factory HostHomeEventRowsState.fromEvents(
-    Iterable<Event> events, {
-    int limit = 3,
-  }) {
-    final activeEvents = events.where((event) => !event.isCancelled).toList()
-      ..sort((a, b) => a.startTime.compareTo(b.startTime));
-    final visibleEvents = activeEvents.take(limit).toList(growable: false);
-    return HostHomeEventRowsState._(
-      rows: [
-        for (var index = 0; index < visibleEvents.length; index++)
-          HostHomeEventRowData(event: visibleEvents[index], divider: index > 0),
-      ],
-    );
-  }
-
-  final List<HostHomeEventRowData> rows;
-
-  bool get isEmpty => rows.isEmpty;
-}
-
-@immutable
-class HostHomeEventRowData {
-  const HostHomeEventRowData({required this.event, required this.divider});
-
-  final Event event;
-  final bool divider;
-
-  String get title => event.title;
-  String get timeRangeLabel => event.timeRangeLabel;
-}
-
-enum HostHomeEventsStatus { loading, error, empty, populated }
-
-@immutable
-class HostHomeEventsSectionState {
-  const HostHomeEventsSectionState._({
-    required this.status,
-    this.rows = const HostHomeEventRowsState._(rows: []),
-    this.error,
-    this.stackTrace,
-  });
-
-  factory HostHomeEventsSectionState.fromAsync(AsyncValue<List<Event>> events) {
-    if (events.isLoading) {
-      return const HostHomeEventsSectionState._(
-        status: HostHomeEventsStatus.loading,
-      );
-    }
-    if (events.hasError) {
-      return HostHomeEventsSectionState._(
-        status: HostHomeEventsStatus.error,
-        error: events.error,
-        stackTrace: events.stackTrace,
-      );
-    }
-
-    final rows = HostHomeEventRowsState.fromEvents(
-      events.asData?.value ?? const <Event>[],
-    );
-    return HostHomeEventsSectionState._(
-      status: rows.isEmpty
-          ? HostHomeEventsStatus.empty
-          : HostHomeEventsStatus.populated,
-      rows: rows,
-    );
-  }
-
-  final HostHomeEventsStatus status;
-  final HostHomeEventRowsState rows;
-  final Object? error;
-  final StackTrace? stackTrace;
-}
-
-enum HostHomeTodayStatus { loading, error, empty, content }
-
-@immutable
-class HostHomeTodayDashboardState {
-  const HostHomeTodayDashboardState._({
-    required this.status,
-    this.event,
-    this.tasks = const <HostHomeTodayTaskData>[],
-    this.error,
-    this.stackTrace,
-  });
-
-  factory HostHomeTodayDashboardState.fromAsync(
-    AsyncValue<List<Event>> events,
-  ) {
-    if (events.isLoading) {
-      return const HostHomeTodayDashboardState._(
-        status: HostHomeTodayStatus.loading,
-      );
-    }
-    if (events.hasError) {
-      return HostHomeTodayDashboardState._(
-        status: HostHomeTodayStatus.error,
-        error: events.error,
-        stackTrace: events.stackTrace,
-      );
-    }
-
-    final activeEvents = events.asData?.value
-        .where((event) => !event.isCancelled)
-        .toList();
-    activeEvents?.sort((a, b) => a.startTime.compareTo(b.startTime));
-    final event = activeEvents?.firstOrNull;
-    if (event == null) {
-      return const HostHomeTodayDashboardState._(
-        status: HostHomeTodayStatus.empty,
-      );
-    }
-
-    return HostHomeTodayDashboardState._(
-      status: HostHomeTodayStatus.content,
-      event: event,
-      tasks: HostHomeTodayTaskData.forEvent(event),
-    );
-  }
-
-  final HostHomeTodayStatus status;
-  final Event? event;
-  final List<HostHomeTodayTaskData> tasks;
-  final Object? error;
-  final StackTrace? stackTrace;
-}
-
-@immutable
-class HostHomeTodayTaskData {
-  const HostHomeTodayTaskData({
-    required this.title,
-    required this.body,
-    required this.primaryActionLabel,
-    required this.secondaryActionLabel,
-    required this.icon,
-  });
-
-  factory HostHomeTodayTaskData.approveRequests(Event event) {
-    final waitlistCount = event.waitlistCount;
-    return HostHomeTodayTaskData(
-      title: 'Approve requests',
-      body: waitlistCount > 0
-          ? '$waitlistCount people want into ${event.title}'
-          : 'Review pending guest requests before the event opens.',
-      primaryActionLabel: 'Approve',
-      secondaryActionLabel: 'Later',
-      icon: CatchIcons.personSearchOutlined,
-    );
-  }
-
-  factory HostHomeTodayTaskData.offerWaitlist(Event event) {
-    final waitlistCount = event.waitlistCount;
-    final openCount = event.spotsRemaining;
-    return HostHomeTodayTaskData(
-      title: 'Offer waitlist spots',
-      body: waitlistCount > 0
-          ? '$waitlistCount waiting · $openCount spots open'
-          : 'No waitlist pressure right now.',
-      primaryActionLabel: waitlistCount > 0 ? 'Offer $waitlistCount' : 'Review',
-      secondaryActionLabel: 'Later',
-      icon: CatchIcons.groupAddOutlined,
-    );
-  }
-
-  factory HostHomeTodayTaskData.guestWaiting(Event event) {
-    return HostHomeTodayTaskData(
-      title: 'A guest is waiting on you',
-      body: 'Reply before ${EventFormatters.time(event.startTime)}.',
-      primaryActionLabel: 'Reply',
-      secondaryActionLabel: 'Later',
-      icon: CatchIcons.chatBubbleOutlineRounded,
-    );
-  }
-
-  factory HostHomeTodayTaskData.hostSetup(Event event) {
-    return HostHomeTodayTaskData(
-      title: 'Check host setup',
-      body: 'Confirm entry flow, venue notes, and host cues.',
-      primaryActionLabel: 'Check',
-      secondaryActionLabel: 'Later',
-      icon: CatchIcons.factCheckOutlined,
-    );
-  }
-
-  static List<HostHomeTodayTaskData> forEvent(Event event) {
-    final tasks = <HostHomeTodayTaskData>[];
-    if (event.waitlistCount > 0) {
-      tasks.add(HostHomeTodayTaskData.approveRequests(event));
-      tasks.add(HostHomeTodayTaskData.offerWaitlist(event));
-    }
-    tasks.add(HostHomeTodayTaskData.guestWaiting(event));
-    tasks.add(HostHomeTodayTaskData.hostSetup(event));
-    return tasks;
-  }
-
-  final String title;
-  final String body;
-  final String primaryActionLabel;
-  final String secondaryActionLabel;
-  final IconData icon;
-}
-
-@immutable
-class HostClubsScreenState {
-  const HostClubsScreenState._({
-    required this.clubs,
-    required this.currentUid,
-    required this.selectedClubIndex,
-    required this.selectedTab,
-  });
-
-  factory HostClubsScreenState.resolve({
-    required List<Club> clubs,
-    required String currentUid,
-    int selectedClubIndex = 0,
-    String? selectedClubId,
-    HostClubTab selectedTab = HostClubTab.organizer,
-  }) {
-    return HostClubsScreenState._(
-      clubs: List<Club>.unmodifiable(clubs),
-      currentUid: currentUid,
-      selectedClubIndex: _resolveSelectedClubIndex(
-        clubs: clubs,
-        selectedClubIndex: selectedClubIndex,
-        selectedClubId: selectedClubId,
-      ),
-      selectedTab: selectedTab,
-    );
-  }
-
-  final List<Club> clubs;
-  final String currentUid;
-  final int selectedClubIndex;
-  final HostClubTab selectedTab;
-
-  bool get hasClubs => clubs.isNotEmpty;
-  bool get showClubPicker => clubs.length > 1;
-  Club? get selectedClub => hasClubs ? clubs[selectedClubIndex] : null;
-  String get title => selectedClub?.name ?? 'Clubs';
-  bool get selectedClubIsOwner => selectedClub?.isOwnedBy(currentUid) ?? false;
-
-  HostClubsScreenState selectClubIndex(int index) {
-    return HostClubsScreenState.resolve(
-      clubs: clubs,
-      currentUid: currentUid,
-      selectedClubIndex: index,
-      selectedTab: selectedTab,
-    );
-  }
-
-  HostClubsScreenState selectTab(HostClubTab tab) {
-    return HostClubsScreenState.resolve(
-      clubs: clubs,
-      currentUid: currentUid,
-      selectedClubIndex: selectedClubIndex,
-      selectedTab: tab,
-    );
-  }
-
-  static int _resolveSelectedClubIndex({
-    required List<Club> clubs,
-    required int selectedClubIndex,
-    String? selectedClubId,
-  }) {
-    if (clubs.isEmpty) return 0;
-    final selectedId = selectedClubId;
-    if (selectedId != null) {
-      final index = clubs.indexWhere((club) => club.id == selectedId);
-      if (index != -1) return index;
-    }
-    if (selectedClubIndex < 0) return 0;
-    if (selectedClubIndex >= clubs.length) return clubs.length - 1;
-    return selectedClubIndex;
-  }
-}
-
-@immutable
-class HostClubInsightsState {
-  const HostClubInsightsState._({
-    required this.clubId,
-    required this.rangePreset,
-    required this.granularity,
-    required this.selectedEventId,
-    required this.customStartDate,
-    required this.customEndDate,
-  });
-
-  factory HostClubInsightsState.initial({
-    required String clubId,
-    DateTime? now,
-  }) {
-    final today = DateUtils.dateOnly(now ?? DateTime.now());
-    return HostClubInsightsState._(
-      clubId: clubId,
-      rangePreset: HostAnalyticsRangePreset.thirtyDays,
-      granularity: HostAnalyticsGranularity.day,
-      selectedEventId: null,
-      customStartDate: DateTime(today.year, today.month, today.day - 29),
-      customEndDate: today,
-    );
-  }
-
-  final String clubId;
-  final HostAnalyticsRangePreset rangePreset;
-  final HostAnalyticsGranularity granularity;
-  final String? selectedEventId;
-  final DateTime customStartDate;
-  final DateTime customEndDate;
-
-  HostAnalyticsQuery get query {
-    return HostAnalyticsQuery(
-      clubId: clubId,
-      eventId: selectedEventId,
-      rangePreset: rangePreset,
-      startDate: customStartDate,
-      endDate: customEndDate,
-      granularity: granularity,
-    );
-  }
-
-  HostClubInsightsState selectClub(String clubId) {
-    if (clubId == this.clubId) return this;
-    return _copyWith(clubId: clubId, selectedEventId: null);
-  }
-
-  HostClubInsightsState selectRange(HostAnalyticsRangePreset rangePreset) {
-    return _copyWith(rangePreset: rangePreset);
-  }
-
-  HostClubInsightsState selectGranularity(
-    HostAnalyticsGranularity granularity,
-  ) {
-    return _copyWith(granularity: granularity);
-  }
-
-  HostClubInsightsState selectEvent(String eventId) {
-    return _copyWith(selectedEventId: eventId);
-  }
-
-  HostClubInsightsState clearEvent() {
-    if (selectedEventId == null) return this;
-    return _copyWith(selectedEventId: null);
-  }
-
-  HostClubInsightsState selectCustomStartDate(DateTime date) {
-    return _copyWith(
-      rangePreset: HostAnalyticsRangePreset.custom,
-      customStartDate: DateUtils.dateOnly(date),
-    );
-  }
-
-  HostClubInsightsState selectCustomEndDate(DateTime date) {
-    return _copyWith(
-      rangePreset: HostAnalyticsRangePreset.custom,
-      customEndDate: DateUtils.dateOnly(date),
-    );
-  }
-
-  HostClubInsightsState _copyWith({
-    String? clubId,
-    HostAnalyticsRangePreset? rangePreset,
-    HostAnalyticsGranularity? granularity,
-    Object? selectedEventId = _unchanged,
-    DateTime? customStartDate,
-    DateTime? customEndDate,
-  }) {
-    return HostClubInsightsState._(
-      clubId: clubId ?? this.clubId,
-      rangePreset: rangePreset ?? this.rangePreset,
-      granularity: granularity ?? this.granularity,
-      selectedEventId: selectedEventId == _unchanged
-          ? this.selectedEventId
-          : selectedEventId as String?,
-      customStartDate: customStartDate ?? this.customStartDate,
-      customEndDate: customEndDate ?? this.customEndDate,
-    );
-  }
-}
-
-const Object _unchanged = Object();
-
-int _resolveSelectedClubIndex({
-  required List<Club> clubs,
-  required int selectedClubIndex,
-  String? selectedClubId,
-}) {
-  if (clubs.isEmpty) return 0;
-  final selectedId = selectedClubId;
-  if (selectedId != null) {
-    final index = clubs.indexWhere((club) => club.id == selectedId);
-    if (index != -1) return index;
-  }
-  if (selectedClubIndex < 0) return 0;
-  if (selectedClubIndex >= clubs.length) return clubs.length - 1;
-  return selectedClubIndex;
-}
-
 const _hostClubTabRailKey = ValueKey('host-club-tab-rail');
-
-class HostAccountScreen extends ConsumerStatefulWidget {
-  const HostAccountScreen({super.key});
-
-  @override
-  ConsumerState<HostAccountScreen> createState() => _HostAccountScreenState();
-}
-
-class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {
-  var _selectedTab = HostSettingsMode.edit;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final uid = ref.watch(uidProvider).asData?.value;
-    final hostProfileAsync = uid == null
-        ? const AsyncData<HostProfile?>(null)
-        : ref.watch(watchHostProfileProvider(uid));
-    final clubsAsync = uid == null
-        ? const AsyncData<List<Club>>([])
-        : ref.watch(_hostClubsForUserProvider(uid));
-    final state = HostSettingsState.fromAsync(
-      uid: uid,
-      profile: hostProfileAsync,
-      clubs: clubsAsync,
-    );
-    final profileForEdit = switch (state.profile) {
-      HostSettingsProfileContent(:final profile) => profile,
-      _ => null,
-    };
-    final ensureMutation = ref.watch(
-      HostProfileController.ensureProfileMutation,
-    );
-    final signOutMutation = ref.watch(AuthSessionController.signOutMutation);
-    final isEditMode = _selectedTab == HostSettingsMode.edit;
-
-    return CatchMutationErrorListener(
-      mutation: AuthSessionController.signOutMutation,
-      errorContext: AppErrorContext.auth,
-      child: CatchMutationErrorListeners(
-        mutations: [
-          HostProfileController.ensureProfileMutation,
-          HostProfileController.saveProfileMutation,
-        ],
-        errorContext: AppErrorContext.profile,
-        child: Scaffold(
-          backgroundColor: t.bg,
-          appBar: CatchTopBar(
-            title: 'Host profile',
-            showBackButton: false,
-            border: true,
-            actions: [
-              CatchTopBarIconAction(
-                tooltip: 'Sign out',
-                icon: CatchIcons.logoutRounded,
-                onPressed: signOutMutation.isPending
-                    ? null
-                    : () => unawaited(_signOut(context, ref)),
-              ),
-            ],
-            bottom: HostSettingsTabRail(
-              selected: _selectedTab,
-              onChanged: (tab) => setState(() => _selectedTab = tab),
-            ),
-          ),
-          body: ListView(
-            padding: CatchInsets.pageBodyUnderHeader,
-            children: [
-              HostSettingsProfileSection(
-                state: state.profile,
-                editMode: isEditMode,
-                creatingProfile: ensureMutation.isPending,
-                onRetry: uid == null
-                    ? null
-                    : () => ref.invalidate(watchHostProfileProvider(uid)),
-                onCreateProfile: uid == null
-                    ? null
-                    : () => unawaited(_createHostProfile()),
-                onEditProfile: uid != null && profileForEdit != null
-                    ? () => unawaited(_openProfileEditor(uid, profileForEdit))
-                    : null,
-              ),
-              HostSettingsClubsSection(
-                uid: uid,
-                state: state.clubs,
-                onRetry: uid == null
-                    ? null
-                    : () => ref.invalidate(_hostClubsForUserProvider(uid)),
-                editMode: isEditMode,
-                onOpenClub: (club) => _openSettingsClub(club, isEditMode, uid),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Future<void> _openProfileEditor(String uid, HostProfile profile) async {
-    final saved = await showModalBottomSheet<bool>(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      builder: (_) => HostProfileEditorSheet(profile: profile),
-    );
-    if (saved == true && mounted) {
-      showCatchSnackBar(context, 'Host profile saved.');
-    }
-  }
-
-  Future<void> _createHostProfile() async {
-    try {
-      await HostProfileController.ensureProfileMutation.run(
-        ref,
-        (tx) async =>
-            tx.get(hostProfileControllerProvider.notifier).ensureProfile(),
-      );
-    } catch (_) {
-      // CatchMutationErrorListener owns user-facing error display.
-      return;
-    }
-    if (!mounted) return;
-    showCatchSnackBar(context, 'Host profile created.');
-  }
-
-  void _openSettingsClub(Club club, bool editMode, String? uid) {
-    context.pushNamed(
-      editMode && club.isOwnedBy(uid)
-          ? Routes.hostEditClubScreen.name
-          : Routes.hostClubDetailScreen.name,
-      pathParameters: {'clubId': club.id},
-      extra: club,
-    );
-  }
-
-  Future<void> _signOut(BuildContext context, WidgetRef ref) async {
-    final mutation = ref.read(AuthSessionController.signOutMutation);
-    if (mutation.isPending) return;
-    try {
-      await AuthSessionController.signOutMutation.run(
-        ref,
-        (tx) async => tx.get(authSessionControllerProvider.notifier).signOut(),
-      );
-    } catch (_) {
-      // CatchMutationErrorListener owns user-facing error display.
-      return;
-    }
-    if (context.mounted) context.go(Routes.startScreen.path);
-  }
-}
-
-class HostSettingsTabRail extends StatelessWidget
-    implements PreferredSizeWidget {
-  const HostSettingsTabRail({
-    super.key,
-    required this.selected,
-    required this.onChanged,
-  });
-
-  final HostSettingsMode selected;
-  final ValueChanged<HostSettingsMode> onChanged;
-
-  @override
-  Size get preferredSize => const Size.fromHeight(48);
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: preferredSize.height,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          CatchSpacing.s5,
-          0,
-          CatchSpacing.s5,
-          CatchSpacing.s2,
-        ),
-        child: CatchOptionGroup<HostSettingsMode>(
-          selected: selected,
-          onChanged: onChanged,
-          options: const [
-            CatchOption(value: HostSettingsMode.edit, label: 'Edit'),
-            CatchOption(value: HostSettingsMode.preview, label: 'Preview'),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class HostSettingsSection extends StatelessWidget {
-  const HostSettingsSection({
-    super.key,
-    required this.label,
-    required this.children,
-    this.first = false,
-  });
-
-  final String label;
-  final List<Widget> children;
-  final bool first;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Padding(
-      padding: EdgeInsets.only(top: first ? 0 : CatchSpacing.s2),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (!first) ...[
-            Divider(color: t.line, height: 1, thickness: 1),
-            gapH18,
-          ],
-          Text(label, style: CatchTextStyles.kicker(context, color: t.ink2)),
-          gapH10,
-          ...children,
-        ],
-      ),
-    );
-  }
-}
-
-class HostSettingsProfileSection extends StatelessWidget {
-  const HostSettingsProfileSection({
-    super.key,
-    required this.state,
-    required this.editMode,
-    this.creatingProfile = false,
-    required this.onRetry,
-    required this.onCreateProfile,
-    required this.onEditProfile,
-  });
-
-  final HostSettingsProfileState state;
-  final bool editMode;
-  final bool creatingProfile;
-  final VoidCallback? onRetry;
-  final VoidCallback? onCreateProfile;
-  final VoidCallback? onEditProfile;
-
-  @override
-  Widget build(BuildContext context) {
-    return switch (state) {
-      HostSettingsProfileLoading() => const HostSettingsRowsSkeleton(),
-      HostSettingsProfileError(:final error) => CatchErrorState.fromError(
-        error,
-        context: AppErrorContext.profile,
-        onRetry: onRetry,
-      ),
-      HostSettingsProfileMissing() => HostSettingsSection(
-        label: 'Profile',
-        first: true,
-        children: [
-          CatchField.nav(
-            title: 'Display name',
-            valueText: creatingProfile
-                ? 'Creating profile...'
-                : 'Create host profile',
-            icon: CatchIcons.businessOutlined,
-            action: creatingProfile
-                ? const SizedBox.square(
-                    dimension: CatchIcon.md,
-                    child: CatchLoadingIndicator(
-                      strokeWidth: CatchIcon.strokeSm,
-                    ),
-                  )
-                : null,
-            onTap: creatingProfile ? null : onCreateProfile,
-            showChevron: !creatingProfile,
-          ),
-        ],
-      ),
-      HostSettingsProfileContent(:final profile) => HostSettingsProfileRows(
-        profile: profile,
-        editMode: editMode,
-        onEditProfile: onEditProfile,
-      ),
-    };
-  }
-}
-
-class HostSettingsProfileRows extends StatelessWidget {
-  const HostSettingsProfileRows({
-    super.key,
-    required this.profile,
-    required this.editMode,
-    required this.onEditProfile,
-  });
-
-  final HostProfile profile;
-  final bool editMode;
-  final VoidCallback? onEditProfile;
-
-  @override
-  Widget build(BuildContext context) {
-    final canEdit = editMode && onEditProfile != null;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        HostSettingsSection(
-          label: 'Profile',
-          first: true,
-          children: [
-            CatchField.nav(
-              title: 'Display name',
-              valueText: profile.displayName,
-              icon: CatchIcons.personOutlineRounded,
-              onTap: canEdit ? onEditProfile : null,
-              showChevron: canEdit,
-            ),
-            CatchField.nav(
-              title: 'Role title',
-              valueText: profile.roleTitle?.trim().isNotEmpty == true
-                  ? profile.roleTitle!.trim()
-                  : 'Add role title',
-              icon: CatchIcons.cardMembershipOutlined,
-              divider: true,
-              onTap: canEdit ? onEditProfile : null,
-              showChevron: canEdit,
-            ),
-            CatchField.nav(
-              title: 'Status',
-              valueText: hostProfileStatusLabel(profile.status),
-              icon: CatchIcons.checkCircleOutlineRounded,
-              divider: true,
-              showChevron: false,
-            ),
-          ],
-        ),
-        HostSettingsSection(
-          label: 'Bio',
-          children: [
-            CatchField.nav(
-              title: 'About you as a host',
-              valueText: profile.bio?.trim().isNotEmpty == true
-                  ? profile.bio!.trim()
-                  : 'Add a host bio',
-              icon: CatchIcons.chatBubbleOutlineRounded,
-              valueMaxLines: 2,
-              onTap: canEdit ? onEditProfile : null,
-              showChevron: canEdit,
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class HostSettingsClubsSection extends StatelessWidget {
-  const HostSettingsClubsSection({
-    super.key,
-    required this.uid,
-    required this.state,
-    required this.onRetry,
-    required this.editMode,
-    required this.onOpenClub,
-  });
-
-  final String? uid;
-  final HostSettingsClubsState state;
-  final VoidCallback? onRetry;
-  final bool editMode;
-  final ValueChanged<Club> onOpenClub;
-
-  @override
-  Widget build(BuildContext context) {
-    return HostSettingsSection(
-      label: 'Clubs you host',
-      children: [
-        switch (state) {
-          HostSettingsClubsLoading() => const HostSettingsRowsSkeleton(
-            rowCount: 2,
-          ),
-          HostSettingsClubsError(:final error) => CatchErrorState.fromError(
-            error,
-            context: AppErrorContext.club,
-            onRetry: onRetry,
-          ),
-          HostSettingsClubsEmpty() => const HostSettingsClubsEmptyState(),
-          HostSettingsClubsContent(:final clubs) => HostSettingsClubRows(
-            uid: uid,
-            clubs: clubs,
-            onOpenClub: onOpenClub,
-          ),
-        },
-      ],
-    );
-  }
-}
-
-class HostSettingsClubsEmptyState extends StatelessWidget {
-  const HostSettingsClubsEmptyState({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Text(
-      'No host clubs yet.',
-      style: CatchTextStyles.supporting(context, color: t.ink2),
-    );
-  }
-}
-
-class HostSettingsClubRows extends StatelessWidget {
-  const HostSettingsClubRows({
-    super.key,
-    required this.uid,
-    required this.clubs,
-    required this.onOpenClub,
-  });
-
-  final String? uid;
-  final List<Club> clubs;
-  final ValueChanged<Club> onOpenClub;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        for (final club in clubs)
-          CatchField.nav(
-            title: club.isOwnedBy(uid) ? 'Owner' : 'Host team',
-            valueText: club.name,
-            icon: CatchIcons.groupOutlined,
-            divider: club != clubs.first,
-            onTap: () => onOpenClub(club),
-          ),
-      ],
-    );
-  }
-}
-
-class HostProfileEditorSheet extends ConsumerStatefulWidget {
-  const HostProfileEditorSheet({super.key, required this.profile});
-
-  final HostProfile profile;
-
-  @override
-  ConsumerState<HostProfileEditorSheet> createState() =>
-      _HostProfileEditorSheetState();
-}
-
-class _HostProfileEditorSheetState
-    extends ConsumerState<HostProfileEditorSheet> {
-  final _formKey = GlobalKey<FormState>();
-  final _displayNameController = TextEditingController();
-  final _roleTitleController = TextEditingController();
-  final _bioController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    _displayNameController.text = widget.profile.displayName;
-    _roleTitleController.text = widget.profile.roleTitle ?? '';
-    _bioController.text = widget.profile.bio ?? '';
-  }
-
-  @override
-  void dispose() {
-    _displayNameController.dispose();
-    _roleTitleController.dispose();
-    _bioController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final saveMutation = ref.watch(HostProfileController.saveProfileMutation);
-    return Form(
-      key: _formKey,
-      child: CatchBottomSheetScaffold(
-        title: 'Professional profile',
-        subtitle: hostProfileStatusLabel(widget.profile.status),
-        keyboardSafe: true,
-        action: CatchButton(
-          label: 'Save profile',
-          icon: Icon(CatchIcons.checkRounded, size: CatchIcon.md),
-          isLoading: saveMutation.isPending,
-          fullWidth: true,
-          onPressed: saveMutation.isPending
-              ? null
-              : () => unawaited(_saveProfile()),
-        ),
-        child: HostProfileFields(
-          status: widget.profile.status,
-          displayNameController: _displayNameController,
-          roleTitleController: _roleTitleController,
-          bioController: _bioController,
-          showStatus: false,
-        ),
-      ),
-    );
-  }
-
-  Future<void> _saveProfile() async {
-    if (_formKey.currentState?.validate() != true) return;
-    try {
-      await HostProfileController.saveProfileMutation.run(
-        ref,
-        (tx) async => tx
-            .get(hostProfileControllerProvider.notifier)
-            .saveProfile(
-              displayName: _displayNameController.text,
-              roleTitle: _roleTitleController.text,
-              bio: _bioController.text,
-            ),
-      );
-      if (!mounted) return;
-      Navigator.of(context).pop(true);
-    } catch (_) {
-      // CatchMutationErrorListener owns user-facing error display.
-    }
-  }
-}
 
 class HostProfileScreen extends ConsumerStatefulWidget {
   const HostProfileScreen({
@@ -1239,14 +104,23 @@ class _HostProfileScreenState extends ConsumerState<HostProfileScreen> {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final compactTextScale = MediaQuery.textScalerOf(context).scale(1) >= 1.4;
-    final uid = ref.watch(uidProvider).asData?.value;
+    final uidAsync = ref.watch(uidProvider);
+    if (uidAsync.isLoading) {
+      return const HostLoadingScreen(title: 'Professional profile');
+    }
+    if (uidAsync.hasError) {
+      return CatchErrorScaffold.fromError(
+        uidAsync.error!,
+        context: AppErrorContext.auth,
+        onRetry: () => ref.invalidate(uidProvider),
+      );
+    }
+
+    final uid = uidAsync.asData?.value;
     final profileAsync = uid == null
         ? const AsyncData<HostProfile?>(null)
         : ref.watch(watchHostProfileProvider(uid));
-    final state = HostProfileEditState.fromAsync(
-      uid: uid,
-      profile: profileAsync,
-    );
+    final state = buildHostProfileEditState(uid: uid, profile: profileAsync);
     final ensureMutation = ref.watch(
       HostProfileController.ensureProfileMutation,
     );
@@ -1822,7 +696,7 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold> {
                   initialExpandedField: widget.initialExpandedEditField,
                   onPreviewClub: _openClubPreview,
                 ),
-                HostClubTab.organizer => HostClubOrganizerOverview(
+                HostClubTab.organizer => HostClubOrganizerOverviewController(
                   club: selectedClub,
                   currentUid: _state.currentUid,
                   isOwner: _state.selectedClubIsOwner,
@@ -2021,7 +895,7 @@ class HostTodayDashboardCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final eventsAsync = ref.watch(watchEventsForClubProvider(club.id));
-    final dashboardState = HostHomeTodayDashboardState.fromAsync(eventsAsync);
+    final dashboardState = buildHostHomeTodayDashboardState(eventsAsync);
 
     return HostTodayDashboardSection(
       club: club,
@@ -2612,7 +1486,7 @@ class HostTodayTaskCard extends StatelessWidget {
                   task.title,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.titleS(context, color: t.ink),
+                  style: CatchTextStyles.fieldRowTitle(context, color: t.ink),
                 ),
                 gapH4,
                 Text(
@@ -2721,7 +1595,7 @@ class HostEventsClubCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final eventsAsync = ref.watch(watchEventsForClubProvider(club.id));
-    final eventsState = HostHomeEventsSectionState.fromAsync(eventsAsync);
+    final eventsState = buildHostHomeEventsSectionState(eventsAsync);
     final owner = club.isOwnedBy(currentUid);
 
     return HostEventsClubSection(
@@ -2880,8 +1754,8 @@ class HostMetaRow extends StatelessWidget {
   }
 }
 
-class HostClubOrganizerOverview extends ConsumerWidget {
-  const HostClubOrganizerOverview({
+class HostClubOrganizerOverviewController extends ConsumerWidget {
+  const HostClubOrganizerOverviewController({
     super.key,
     required this.club,
     required this.currentUid,
@@ -2908,8 +1782,57 @@ class HostClubOrganizerOverview extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final eventsAsync = ref.watch(watchEventsForClubProvider(club.id));
     final events = eventsAsync.asData?.value ?? const <Event>[];
-    final activeEvents = events.where((event) => !event.isCancelled).toList();
+    final activeEventCount = events.where((event) => !event.isCancelled).length;
 
+    return HostClubOrganizerOverview(
+      club: club,
+      currentUid: currentUid,
+      isOwner: isOwner,
+      clubs: clubs,
+      showClubPicker: showClubPicker,
+      eventsLoaded: eventsAsync.hasValue,
+      eventCount: events.length,
+      activeEventCount: activeEventCount,
+      onSelectClubIndex: onSelectClubIndex,
+      onSelectTab: onSelectTab,
+      onPreviewClub: onPreviewClub,
+      onOpenSettings: onOpenSettings,
+    );
+  }
+}
+
+class HostClubOrganizerOverview extends StatelessWidget {
+  const HostClubOrganizerOverview({
+    super.key,
+    required this.club,
+    required this.currentUid,
+    required this.isOwner,
+    required this.clubs,
+    required this.showClubPicker,
+    required this.eventsLoaded,
+    required this.eventCount,
+    required this.activeEventCount,
+    required this.onSelectClubIndex,
+    required this.onSelectTab,
+    required this.onPreviewClub,
+    required this.onOpenSettings,
+  });
+
+  final Club club;
+  final String currentUid;
+  final bool isOwner;
+  final List<Club> clubs;
+  final bool showClubPicker;
+  final bool eventsLoaded;
+  final int eventCount;
+  final int activeEventCount;
+  final ValueChanged<int> onSelectClubIndex;
+  final ValueChanged<HostClubTab> onSelectTab;
+  final HostClubPreviewCallback onPreviewClub;
+  final VoidCallback onOpenSettings;
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       key: const ValueKey('host-club-organizer-overview'),
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -2935,7 +1858,7 @@ class HostClubOrganizerOverview extends ConsumerWidget {
         ),
         if (isOwner) ...[
           gapH14,
-          HostOrganizerPayoutPrompt(
+          HostOrganizerPayoutPromptController(
             uid: currentUid,
             onManagePayouts: () => onSelectTab(HostClubTab.edit),
           ),
@@ -2943,9 +1866,9 @@ class HostClubOrganizerOverview extends ConsumerWidget {
         gapH16,
         HostOrganizerMetricGrid(
           club: club,
-          eventsLoaded: eventsAsync.hasValue,
-          eventCount: events.length,
-          activeEventCount: activeEvents.length,
+          eventsLoaded: eventsLoaded,
+          eventCount: eventCount,
+          activeEventCount: activeEventCount,
         ),
         gapH12,
         CatchSection.contained(
@@ -2978,7 +1901,7 @@ class HostClubOrganizerOverview extends ConsumerWidget {
         gapH10,
         HostOrganizerTrendStrip(
           memberCount: club.memberCount,
-          activeEventCount: activeEvents.length,
+          activeEventCount: activeEventCount,
           onTap: () => onSelectTab(HostClubTab.insights),
         ),
         gapH24,
@@ -3057,94 +1980,6 @@ class HostOrganizerHeader extends StatelessWidget {
           ),
         ],
       ],
-    );
-  }
-}
-
-class HostOrganizerPayoutPrompt extends ConsumerWidget {
-  const HostOrganizerPayoutPrompt({
-    super.key,
-    required this.uid,
-    required this.onManagePayouts,
-  });
-
-  final String uid;
-  final VoidCallback onManagePayouts;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final accountAsync = ref.watch(watchHostPaymentAccountProvider(uid));
-    final account = accountAsync.asData?.value;
-    if (account?.canAcceptInternationalPayments == true) {
-      return const SizedBox.shrink();
-    }
-
-    final loading = accountAsync.isLoading && !accountAsync.hasValue;
-    final error = accountAsync.hasError;
-    final title = loading
-        ? 'Checking payout status'
-        : error
-        ? 'Payout status needs attention'
-        : 'Connect payouts to get paid';
-    final message = loading
-        ? 'We are checking whether this organizer can collect paid bookings.'
-        : error
-        ? 'Open payouts to retry status checks and continue setup.'
-        : "Paid events can't collect until Stripe is set up.";
-
-    final t = CatchTokens.of(context);
-    final warningFill = Color.alphaBlend(
-      t.warning.withValues(alpha: CatchOpacity.calloutFill),
-      t.surface,
-    );
-
-    return CatchSurface(
-      backgroundColor: warningFill,
-      borderColor: Colors.transparent,
-      radius: CatchRadius.md,
-      padding: const EdgeInsets.symmetric(
-        horizontal: CatchSpacing.s4,
-        vertical: CatchSpacing.s3,
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: CatchStroke.hairline),
-            child: Icon(
-              CatchIcons.warningAmberRounded,
-              size: CatchIcon.md,
-              color: t.warning,
-            ),
-          ),
-          gapW12,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: CatchTextStyles.labelL(context)),
-                gapH2,
-                Text(
-                  message,
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
-                ),
-                if (!loading) ...[
-                  gapH8,
-                  SizedBox(
-                    width: CatchLayout.hostPayoutSetupButtonWidth,
-                    child: CatchButton(
-                      label: 'Set up payouts',
-                      size: CatchButtonSize.sm,
-                      fullWidth: true,
-                      onPressed: onManagePayouts,
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -3384,14 +2219,17 @@ class HostOrganizerTeamRow extends StatelessWidget {
                       profile.displayName,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: CatchTextStyles.titleS(context, color: t.ink),
+                      style: CatchTextStyles.fieldRowTitle(
+                        context,
+                        color: t.ink,
+                      ),
                     ),
                     gapH2,
                     Text(
                       isCurrentUser ? 'You · $roleLabel' : roleLabel,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: CatchTextStyles.bodyS(context, color: t.ink2),
+                      style: CatchTextStyles.supporting(context, color: t.ink2),
                     ),
                   ],
                 ),
@@ -3499,7 +2337,7 @@ class HostTrendKpi extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(value, style: CatchTextStyles.titleS(context, color: t.ink)),
+        Text(value, style: CatchTextStyles.statCompact(context, color: t.ink)),
         gapH2,
         Text(label, style: CatchTextStyles.monoLabelS(context, color: t.ink3)),
       ],
@@ -3753,7 +2591,7 @@ class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
         if (isOwner) ...[
           HostSettingsSection(
             label: 'Payouts',
-            children: [HostPaymentAccountCard(club: club)],
+            children: [HostPaymentAccountControllerCard(club: club)],
           ),
           HostSettingsSection(
             label: 'Host team',
@@ -4006,7 +2844,7 @@ class _HostClubInsightsPaneState extends ConsumerState<HostClubInsightsPane> {
 
   @override
   Widget build(BuildContext context) {
-    final query = _state.query;
+    final query = _hostAnalyticsQueryFor(_state.query);
     final analyticsAsync = ref.watch(hostAnalyticsProvider(query));
 
     return Column(
@@ -4081,6 +2919,30 @@ class _HostClubInsightsPaneState extends ConsumerState<HostClubInsightsPane> {
   }
 }
 
+HostAnalyticsQuery _hostAnalyticsQueryFor(HostClubInsightsQueryState state) {
+  return HostAnalyticsQuery(
+    clubId: state.clubId,
+    eventId: state.eventId,
+    rangePreset: switch (state.rangePreset) {
+      HostClubInsightsRangePreset.sevenDays =>
+        HostAnalyticsRangePreset.sevenDays,
+      HostClubInsightsRangePreset.thirtyDays =>
+        HostAnalyticsRangePreset.thirtyDays,
+      HostClubInsightsRangePreset.ninetyDays =>
+        HostAnalyticsRangePreset.ninetyDays,
+      HostClubInsightsRangePreset.month => HostAnalyticsRangePreset.month,
+      HostClubInsightsRangePreset.custom => HostAnalyticsRangePreset.custom,
+    },
+    startDate: state.startDate,
+    endDate: state.endDate,
+    granularity: switch (state.granularity) {
+      HostClubInsightsGranularity.day => HostAnalyticsGranularity.day,
+      HostClubInsightsGranularity.week => HostAnalyticsGranularity.week,
+      HostClubInsightsGranularity.month => HostAnalyticsGranularity.month,
+    },
+  );
+}
+
 class HostAnalyticsControls extends StatelessWidget {
   const HostAnalyticsControls({
     super.key,
@@ -4096,13 +2958,13 @@ class HostAnalyticsControls extends StatelessWidget {
     required this.onClearEvent,
   });
 
-  final HostAnalyticsRangePreset rangePreset;
-  final HostAnalyticsGranularity granularity;
+  final HostClubInsightsRangePreset rangePreset;
+  final HostClubInsightsGranularity granularity;
   final DateTime customStartDate;
   final DateTime customEndDate;
   final String? selectedEventId;
-  final ValueChanged<HostAnalyticsRangePreset> onRangeChanged;
-  final ValueChanged<HostAnalyticsGranularity> onGranularityChanged;
+  final ValueChanged<HostClubInsightsRangePreset> onRangeChanged;
+  final ValueChanged<HostClubInsightsGranularity> onGranularityChanged;
   final VoidCallback onPickStartDate;
   final VoidCallback onPickEndDate;
   final VoidCallback onClearEvent;
@@ -4113,39 +2975,48 @@ class HostAnalyticsControls extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CatchOptionGroup<HostAnalyticsRangePreset>(
+        CatchOptionGroup<HostClubInsightsRangePreset>(
           selected: rangePreset,
           onChanged: onRangeChanged,
           variant: CatchOptionGroupVariant.mono,
           options: const [
-            CatchOption(value: HostAnalyticsRangePreset.sevenDays, label: '7D'),
             CatchOption(
-              value: HostAnalyticsRangePreset.thirtyDays,
+              value: HostClubInsightsRangePreset.sevenDays,
+              label: '7D',
+            ),
+            CatchOption(
+              value: HostClubInsightsRangePreset.thirtyDays,
               label: '30D',
             ),
             CatchOption(
-              value: HostAnalyticsRangePreset.ninetyDays,
+              value: HostClubInsightsRangePreset.ninetyDays,
               label: '90D',
             ),
-            CatchOption(value: HostAnalyticsRangePreset.month, label: 'MONTH'),
             CatchOption(
-              value: HostAnalyticsRangePreset.custom,
+              value: HostClubInsightsRangePreset.month,
+              label: 'MONTH',
+            ),
+            CatchOption(
+              value: HostClubInsightsRangePreset.custom,
               label: 'CUSTOM',
             ),
           ],
         ),
         gapH12,
-        CatchOptionGroup<HostAnalyticsGranularity>(
+        CatchOptionGroup<HostClubInsightsGranularity>(
           selected: granularity,
           onChanged: onGranularityChanged,
           variant: CatchOptionGroupVariant.mono,
           options: const [
-            CatchOption(value: HostAnalyticsGranularity.day, label: 'DAY'),
-            CatchOption(value: HostAnalyticsGranularity.week, label: 'WEEK'),
-            CatchOption(value: HostAnalyticsGranularity.month, label: 'MONTH'),
+            CatchOption(value: HostClubInsightsGranularity.day, label: 'DAY'),
+            CatchOption(value: HostClubInsightsGranularity.week, label: 'WEEK'),
+            CatchOption(
+              value: HostClubInsightsGranularity.month,
+              label: 'MONTH',
+            ),
           ],
         ),
-        if (rangePreset == HostAnalyticsRangePreset.custom) ...[
+        if (rangePreset == HostClubInsightsRangePreset.custom) ...[
           gapH12,
           Row(
             children: [
@@ -4365,7 +3236,7 @@ class HostAnalyticsMetricTile extends StatelessWidget {
               caption,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.bodyS(context, color: t.ink3),
+              style: CatchTextStyles.supporting(context, color: t.ink3),
             ),
           ],
         ],
@@ -4587,7 +3458,7 @@ class HostAnalyticsEventTile extends StatelessWidget {
                     gapH4,
                     Text(
                       EventFormatters.shortDate(event.startTime),
-                      style: CatchTextStyles.bodyS(context, color: t.ink3),
+                      style: CatchTextStyles.supporting(context, color: t.ink3),
                     ),
                     gapH8,
                     Wrap(
@@ -4765,7 +3636,7 @@ class HostAnalyticsDataQualityPanel extends StatelessWidget {
                   Expanded(
                     child: Text(
                       indexedRow.$2.detail,
-                      style: CatchTextStyles.bodyS(context, color: t.ink2),
+                      style: CatchTextStyles.supporting(context, color: t.ink2),
                     ),
                   ),
                 ],
@@ -4910,7 +3781,6 @@ mixin _HostInlineClubSaveState<T extends ConsumerStatefulWidget>
       return false;
     }
   }
-
 }
 
 class HostInlineTextEntryEditor extends ConsumerStatefulWidget {
@@ -5055,7 +3925,8 @@ class _HostInlineTextEntryEditorState
       initiallyExpanded: widget.isExpanded,
       onTap: widget.onTap,
       isLoading: saving,
-      error: _validationError ??
+      error:
+          _validationError ??
           mutationErrorMessage(saveMutation, context: AppErrorContext.club),
       control: ProfileInlineTextValue(
         label: widget.label,
@@ -5133,10 +4004,10 @@ class HostInlineOptionEditor<T> extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<HostInlineOptionEditor<T>> createState() =>
-      HostInlineOptionEditorState<T>();
+      _HostInlineOptionEditorState<T>();
 }
 
-class HostInlineOptionEditorState<T>
+class _HostInlineOptionEditorState<T>
     extends ConsumerState<HostInlineOptionEditor<T>>
     with _HostInlineClubSaveState<HostInlineOptionEditor<T>> {
   late T _selected = widget.currentValue;
@@ -5349,7 +4220,8 @@ class _HostInlineAgeRangeEditorState
       initiallyExpanded: widget.isExpanded,
       onTap: widget.onTap,
       isLoading: saving,
-      error: _validationError ??
+      error:
+          _validationError ??
           mutationErrorMessage(saveMutation, context: AppErrorContext.club),
       control: Row(
         children: [
@@ -5588,40 +4460,6 @@ class HostEmptyState extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class HostAuthRequiredScreen extends StatelessWidget {
-  const HostAuthRequiredScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchErrorScaffold(
-      title: 'Sign in required',
-      message: 'Sign in to manage host operations.',
-      retryLabel: 'Sign in',
-      onRetry: () => context.go(Routes.authScreen.path),
-    );
-  }
-}
-
-class HostLoadingScreen extends StatelessWidget {
-  const HostLoadingScreen({
-    super.key,
-    required this.title,
-    this.showTabRail = false,
-  });
-
-  final String title;
-  final bool showTabRail;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: CatchTokens.of(context).bg,
-      appBar: CatchTopBar(title: title, border: true),
-      body: SafeArea(child: HostRouteLoadingBody(showTabRail: showTabRail)),
     );
   }
 }

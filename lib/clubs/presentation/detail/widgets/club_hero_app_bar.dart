@@ -3,7 +3,7 @@ import 'dart:math' as math;
 
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_share_card.dart';
-import 'package:catch_dating_app/clubs/presentation/shared/club_transition_tags.dart';
+import 'package:catch_dating_app/clubs/shared/club_transition_tags.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
@@ -19,6 +19,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 typedef ClubShareHandler =
     Future<void> Function(BuildContext context, Club club);
+
+const EdgeInsets _clubHeroLeadingPadding = EdgeInsets.only(
+  left: CatchSpacing.s5,
+  top: CatchSpacing.micro10,
+  bottom: CatchSpacing.micro6,
+);
+const EdgeInsets _clubHeroActionPadding = EdgeInsets.only(
+  top: CatchSpacing.micro10,
+  bottom: CatchSpacing.micro6,
+  right: CatchSpacing.s5,
+);
 
 class ClubHeroAppBar extends StatelessWidget {
   const ClubHeroAppBar({
@@ -75,11 +86,7 @@ class ClubHeroAppBar extends StatelessWidget {
         ),
       ),
       leading: Padding(
-        padding: const EdgeInsets.only(
-          left: CatchSpacing.s5,
-          top: CatchSpacing.micro10,
-          bottom: CatchSpacing.micro6,
-        ),
+        padding: _clubHeroLeadingPadding,
         child: CatchTopBarIconAction(
           icon: CatchIcons.arrowBackIosNewRounded,
           tooltip: 'Back',
@@ -89,11 +96,7 @@ class ClubHeroAppBar extends StatelessWidget {
       ),
       actions: [
         Padding(
-          padding: const EdgeInsets.only(
-            top: CatchSpacing.micro10,
-            bottom: CatchSpacing.micro6,
-            right: CatchSpacing.s5,
-          ),
+          padding: _clubHeroActionPadding,
           child: Builder(
             builder: (buttonContext) => CatchTopBarIconAction(
               icon: CatchIcons.platformShare(

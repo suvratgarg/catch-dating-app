@@ -426,6 +426,10 @@ abstract final class CatchInsets {
     horizontal: CatchSpacing.screenPx,
   );
 
+  /// Bottom breathing room for scrollable component bodies whose surrounding
+  /// shell already owns horizontal and top padding.
+  static const EdgeInsets scrollEnd = EdgeInsets.only(bottom: CatchSpacing.s6);
+
   /// Wider horizontal gutters for sparse auth/onboarding layouts.
   static const EdgeInsets pageHorizontalWide = EdgeInsets.symmetric(
     horizontal: CatchSpacing.s6,
@@ -508,6 +512,33 @@ abstract final class CatchInsets {
   /// Form-step padding with more bottom space for final/action-heavy steps.
   static const EdgeInsets formStepBodyRelaxed = pageBodyRelaxed;
 
+  /// Long-form edit body padding under a top app bar.
+  static const EdgeInsets formEditBodyRelaxed = EdgeInsets.fromLTRB(
+    CatchSpacing.screenPx,
+    CatchSpacing.s4,
+    CatchSpacing.screenPx,
+    CatchSpacing.s7,
+  );
+
+  /// Top offset for titled form sections inside a continuous edit page.
+  static const EdgeInsets formSectionTop = EdgeInsets.only(
+    top: CatchSpacing.s2,
+  );
+
+  /// Inline error offset below form controls inside step forms.
+  static const EdgeInsets formFieldError = EdgeInsets.only(
+    top: CatchSpacing.s1,
+    left: CatchSpacing.s1,
+  );
+
+  /// Bottom-docked form action padding with page gutters and safe-area lift.
+  static const EdgeInsets formActionDock = EdgeInsets.fromLTRB(
+    CatchSpacing.screenPx,
+    CatchSpacing.s3,
+    CatchSpacing.screenPx,
+    CatchSpacing.micro18,
+  );
+
   /// Default content padding inside cards and bordered panels.
   static const EdgeInsets content = EdgeInsets.all(CatchSpacing.s4);
 
@@ -521,6 +552,12 @@ abstract final class CatchInsets {
 
   /// Dense content padding for compact summary tiles and small controls.
   static const EdgeInsets contentDense = EdgeInsets.all(CatchSpacing.s3);
+
+  /// Event Success live check-in summary strip content padding.
+  static const EdgeInsets eventSuccessLiveSummaryContent = EdgeInsets.symmetric(
+    horizontal: CatchSpacing.s5,
+    vertical: CatchSpacing.s4,
+  );
 
   /// Relaxed content padding for empty states, large cards, and share panels.
   static const EdgeInsets contentRelaxed = EdgeInsets.all(CatchSpacing.s5);
@@ -551,6 +588,11 @@ abstract final class CatchInsets {
   /// Micro horizontal padding for compact icon labels.
   static const EdgeInsets iconLabelHorizontal = EdgeInsets.symmetric(
     horizontal: CatchSpacing.micro6,
+  );
+
+  /// Margin between the selected country flag and dial code text.
+  static const EdgeInsets countryCodeFlagMargin = EdgeInsets.only(
+    right: CatchSpacing.micro6,
   );
 
   /// Pill horizontal padding for badges and compact chips.
@@ -702,6 +744,19 @@ abstract final class CatchInsets {
   /// Bottom gap between compact inline rows in detail screens.
   static const EdgeInsets detailInlineRowBottomGap = EdgeInsets.only(
     bottom: CatchSpacing.micro10,
+  );
+
+  /// Top alignment offset for small hint dots beside multiline detail copy.
+  static const EdgeInsets detailHintDotTop = EdgeInsets.only(
+    top: CatchSpacing.s1,
+  );
+
+  /// Safe-area minimum padding for fixed loading CTAs on detail screens.
+  static const EdgeInsets detailLoadingCtaSafeArea = EdgeInsets.fromLTRB(
+    CatchLayout.detailScreenHorizontalPadding,
+    CatchSpacing.s3,
+    CatchLayout.detailScreenHorizontalPadding,
+    CatchSpacing.s3,
   );
 
   /// Default content padding inside cards and bordered panels.
@@ -1383,6 +1438,8 @@ abstract final class CatchMotion {
   static const Duration afterglowCountUp = Duration(milliseconds: 600);
   static const Duration arrivalCelebration = Duration(milliseconds: 800);
   static const Duration snackbar = Duration(seconds: 2);
+  static const Duration authOtpCooldownTick = Duration(seconds: 1);
+  static const Duration authOtpResendCooldown = Duration(seconds: 60);
   static const Duration revealDrop = Duration(milliseconds: 280);
   static const Duration revealSettle = Duration(milliseconds: 170);
   static const Duration revealCinematicTick = Duration(seconds: 1);
@@ -1817,6 +1874,8 @@ abstract final class CatchLayout {
   static const double tabDockLabelFontSize = 8.5;
   static const double topBarHeight = 56.0;
   static const double topBarLargeHeight = 104.0;
+  static const double hostEventManageTopBarHeight =
+      topBarLargeHeight + CatchSpacing.s4;
   static const double topBarTabHeight = CatchSpacing.s12;
   static const double topBarCollapsedFadeExtent = 72.0;
   static const double topBarCompactSearchBottomHeight = 68.0;
@@ -1856,8 +1915,20 @@ abstract final class CatchLayout {
   static const double heroSignalChipVerticalPadding = 7.0;
   static const double compactDarkPillHorizontalPadding = 11.0;
   static const double compactDarkPillVerticalPadding = 7.0;
+  static const double calendarHeaderTitleFontSize = 26.0;
+  static const double calendarHeaderTitleLineHeight = 1.12;
+  static const double calendarHeaderTitleMinHeight = 36.0;
+  static const double calendarWeekdayFontSize = 13.0;
+  static const double calendarWeekdayLineHeight = 1.45;
+  static const double calendarDateFontSize = 13.0;
+  static const double calendarDateLineHeight = 1.30;
+  static const double calendarWeekStripBottomInset = 4.0;
   static const double calendarWeekStripVerticalInsetTotal = 16.0;
+  static const double calendarMonthWeekdayFontSize = 11.0;
+  static const double calendarMonthWeekdayLineHeight = 1.30;
+  static const double calendarMonthGridHeight = 240.0;
   static const double calendarMonthGridGapTotal = 30.0;
+  static const double calendarHeaderSkeletonToggleWidth = 80.0;
   static const double welcomeBrandMarkExtent = 52.0;
   static const double welcomeMaxWidth = 430.0;
   static const double welcomeReelRowHeight = 90.0;

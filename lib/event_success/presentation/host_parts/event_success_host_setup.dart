@@ -2,10 +2,12 @@ part of '../event_success_host_screen.dart';
 
 class SetupTab extends StatefulWidget {
   const SetupTab({
+    super.key,
     required this.event,
     required this.plan,
     required this.planIsPersisted,
-    required this.fixtureActions,
+    required this.actionState,
+    required this.onSaveSetup,
     required this.shrinkWrap,
     required this.physics,
     required this.padding,
@@ -14,7 +16,9 @@ class SetupTab extends StatefulWidget {
   final Event event;
   final EventSuccessPlan plan;
   final bool planIsPersisted;
-  final EventSuccessHostFixtureActions? fixtureActions;
+  final EventSuccessSetupActionState actionState;
+  final Future<void> Function(EventSuccessSetupSaveRequest request)?
+  onSaveSetup;
   final bool shrinkWrap;
   final ScrollPhysics physics;
   final EdgeInsetsGeometry padding;
@@ -90,166 +94,139 @@ class _SetupTabState extends State<SetupTab> {
     final eventHasStarted = !widget.event.startTime.isAfter(DateTime.now());
     final setupFrozen = hasParticipantActivity || eventHasStarted;
     final unsavedFrozen = !widget.planIsPersisted && setupFrozen;
+    final profile = EventSuccessActivityProfile.forFormat(
+      widget.event.eventFormat,
+      targetAttendeeCount: _targetAttendeeCount,
+    );
+    final presentedDraft = _resolvedDraft;
 
-    return Consumer(
-      builder: (context, ref, _) {
-        final ensureMutation = ref.watch(
-          EventSuccessController.ensurePlanMutation,
-        );
-        final saveMutation = ref.watch(
-          EventSuccessController.saveSetupMutation,
-        );
-        final errorMutation = saveMutation.hasError
-            ? saveMutation
-            : ensureMutation;
-        final profile = EventSuccessActivityProfile.forFormat(
-          widget.event.eventFormat,
-          targetAttendeeCount: _targetAttendeeCount,
-        );
-        final presentedDraft = _resolvedDraft;
-
-        return ListView(
-          shrinkWrap: widget.shrinkWrap,
-          primary: widget.shrinkWrap ? false : null,
-          physics: widget.physics,
-          padding: widget.padding,
-          children: [
-            if (unsavedFrozen) ...[
-              NoticeCard(
-                icon: CatchIcons.lockClockRounded,
-                title: eventHasStarted
-                    ? 'Event started without a saved guide'
-                    : 'Live guide can no longer be saved',
-                body: eventHasStarted
-                    ? 'This event began before a live guide was saved. Attendance and check-in still work, but the Live tab won\'t have any guided controls for this event.'
-                    : 'Bookings have already started. Attendance and check-in still work, but the Live tab won\'t have guided controls unless a guide was saved first.',
+    return ListView(
+      shrinkWrap: widget.shrinkWrap,
+      primary: widget.shrinkWrap ? false : null,
+      physics: widget.physics,
+      padding: widget.padding,
+      children: [
+        if (unsavedFrozen) ...[
+          NoticeCard(
+            icon: CatchIcons.lockClockRounded,
+            title: eventHasStarted
+                ? 'Event started without a saved guide'
+                : 'Live guide can no longer be saved',
+            body: eventHasStarted
+                ? 'This event began before a live guide was saved. Attendance and check-in still work, but the Live tab won\'t have any guided controls for this event.'
+                : 'Bookings have already started. Attendance and check-in still work, but the Live tab won\'t have guided controls unless a guide was saved first.',
+          ),
+          gapH16,
+        ] else if (!widget.planIsPersisted) ...[
+          NoticeCard(
+            icon: CatchIcons.cloudUploadOutlined,
+            title: 'Setup not saved yet',
+            body:
+                'This default plan is visible here only. Save it so the Live tab is ready when the event starts.',
+          ),
+          gapH16,
+        ],
+        if (setupFrozen && widget.planIsPersisted) ...[
+          NoticeCard(
+            icon: CatchIcons.lockClockRounded,
+            title: 'Settings are locked',
+            body: hasParticipantActivity
+                ? 'Bookings have started, so the saved guide is locked in. Switch to the Live tab to drive the event in real time once it starts.'
+                : 'The event has started — setup is locked. Use the Live tab to control the event right now, and the Report tab afterward.',
+          ),
+          gapH16,
+        ],
+        if (widget.actionState.hasError) ...[
+          CatchErrorBanner.fromError(
+            widget.actionState.error!,
+            context: AppErrorContext.event,
+          ),
+          gapH16,
+        ],
+        CatchSurface(
+          borderColor: t.line,
+          padding: CatchInsets.content,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SetupSectionTitle(
+                title: 'Recommended setup',
+                subtitle:
+                    'Review the essentials first. Format controls and advanced timing stay available below.',
+              ),
+              gapH12,
+              HostActivitySummary(profile: profile, draft: presentedDraft),
+              gapH16,
+              PlanSummary(
+                plan: widget.plan,
+                draft: presentedDraft,
+                planIsPersisted: widget.planIsPersisted,
+              ),
+              if (presentedDraft.readinessIssues.isNotEmpty) ...[
+                gapH12,
+                ReadinessIssues(issues: presentedDraft.readinessIssues),
+              ],
+              gapH16,
+              TargetAttendeeControl(
+                value: _targetAttendeeCount,
+                recommendedMin: _draft.playbook.capacity.min,
+                recommendedMax: _draft.playbook.capacity.max,
+                enabled: !setupFrozen,
+                onChanged: (value) =>
+                    setState(() => _targetAttendeeCount = value),
               ),
               gapH16,
-            ] else if (!widget.planIsPersisted) ...[
-              NoticeCard(
-                icon: CatchIcons.cloudUploadOutlined,
-                title: 'Setup not saved yet',
-                body:
-                    'This default plan is visible here only. Save it so the Live tab is ready when the event starts.',
+              EventSuccessSetupBody(
+                draft: presentedDraft,
+                eventFormat: widget.event.eventFormat,
+                targetAttendeeCount: _targetAttendeeCount,
+                attendeePrompt: _attendeePromptText,
+                editable: !setupFrozen,
+                onDraftChanged: (nextDraft) {
+                  setState(() => _draft = nextDraft);
+                },
+                onAttendeePromptChanged: (value) {
+                  setState(() => _attendeePromptText = value);
+                },
               ),
-              gapH16,
             ],
-            if (setupFrozen && widget.planIsPersisted) ...[
-              NoticeCard(
-                icon: CatchIcons.lockClockRounded,
-                title: 'Settings are locked',
-                body: hasParticipantActivity
-                    ? 'Bookings have started, so the saved guide is locked in. Switch to the Live tab to drive the event in real time once it starts.'
-                    : 'The event has started — setup is locked. Use the Live tab to control the event right now, and the Report tab afterward.',
-              ),
-              gapH16,
-            ],
-            if (errorMutation.hasError) ...[
-              CatchErrorBanner.fromError(
-                (errorMutation as MutationError).error,
-                context: AppErrorContext.event,
-              ),
-              gapH16,
-            ],
-            CatchSurface(
-              borderColor: t.line,
-              padding: CatchInsets.content,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SetupSectionTitle(
-                    title: 'Recommended setup',
-                    subtitle:
-                        'Review the essentials first. Format controls and advanced timing stay available below.',
+          ),
+        ),
+        gapH16,
+        if (_isDirty && !setupFrozen) ...[const UnsavedChangesPill(), gapH8],
+        CatchButton(
+          label: !widget.planIsPersisted && setupFrozen
+              ? 'Save unavailable'
+              : widget.planIsPersisted
+              ? (_isDirty ? 'Save changes' : 'Save setup')
+              : 'Save live guide',
+          isLoading: widget.actionState.isSaving,
+          onPressed:
+              widget.actionState.isSaving ||
+                  setupFrozen ||
+                  widget.onSaveSetup == null
+              ? null
+              : () => unawaited(
+                  widget.onSaveSetup!(
+                    EventSuccessSetupSaveRequest(
+                      event: widget.event,
+                      plan: widget.plan,
+                      planIsPersisted: widget.planIsPersisted,
+                      draft: _resolvedDraft,
+                      attendeePrompt: _attendeePromptText,
+                    ),
                   ),
-                  gapH12,
-                  HostActivitySummary(profile: profile, draft: presentedDraft),
-                  gapH16,
-                  PlanSummary(
-                    plan: widget.plan,
-                    draft: presentedDraft,
-                    planIsPersisted: widget.planIsPersisted,
-                  ),
-                  if (presentedDraft.readinessIssues.isNotEmpty) ...[
-                    gapH12,
-                    ReadinessIssues(issues: presentedDraft.readinessIssues),
-                  ],
-                  gapH16,
-                  TargetAttendeeControl(
-                    value: _targetAttendeeCount,
-                    recommendedMin: _draft.playbook.capacity.min,
-                    recommendedMax: _draft.playbook.capacity.max,
-                    enabled: !setupFrozen,
-                    onChanged: (value) =>
-                        setState(() => _targetAttendeeCount = value),
-                  ),
-                  gapH16,
-                  EventSuccessSetupBody(
-                    draft: presentedDraft,
-                    eventFormat: widget.event.eventFormat,
-                    targetAttendeeCount: _targetAttendeeCount,
-                    attendeePrompt: _attendeePromptText,
-                    editable: !setupFrozen,
-                    onDraftChanged: (nextDraft) {
-                      setState(() => _draft = nextDraft);
-                    },
-                    onAttendeePromptChanged: (value) {
-                      setState(() => _attendeePromptText = value);
-                    },
-                  ),
-                ],
-              ),
-            ),
-            gapH16,
-            if (_isDirty && !setupFrozen) ...[
-              const UnsavedChangesPill(),
-              gapH8,
-            ],
-            CatchButton(
-              label: !widget.planIsPersisted && setupFrozen
-                  ? 'Save unavailable'
-                  : widget.planIsPersisted
-                  ? (_isDirty ? 'Save changes' : 'Save setup')
-                  : 'Save live guide',
-              isLoading:
-                  widget.fixtureActions?.onSaveSetup == null &&
-                  (saveMutation.isPending || ensureMutation.isPending),
-              onPressed:
-                  widget.fixtureActions?.onSaveSetup ??
-                  (saveMutation.isPending ||
-                          ensureMutation.isPending ||
-                          setupFrozen
-                      ? null
-                      : () => EventSuccessController.saveSetupMutation.run(
-                          ref,
-                          (tx) async {
-                            final basePlan = widget.planIsPersisted
-                                ? widget.plan
-                                : await tx
-                                      .get(
-                                        eventSuccessControllerProvider.notifier,
-                                      )
-                                      .ensurePlan(widget.event);
-                            await tx
-                                .get(eventSuccessControllerProvider.notifier)
-                                .saveSetup(
-                                  plan: basePlan,
-                                  draft: _resolvedDraft,
-                                  attendeePrompt: _attendeePromptText,
-                                );
-                          },
-                        )),
-              fullWidth: true,
-            ),
-          ],
-        );
-      },
+                ),
+          fullWidth: true,
+        ),
+      ],
     );
   }
 }
 
 class TargetAttendeeControl extends StatelessWidget {
   const TargetAttendeeControl({
+    super.key,
     required this.value,
     required this.recommendedMin,
     required this.recommendedMax,
@@ -326,7 +303,7 @@ class TargetAttendeeControl extends StatelessWidget {
 }
 
 class ReadinessIssues extends StatelessWidget {
-  const ReadinessIssues({required this.issues});
+  const ReadinessIssues({super.key, required this.issues});
 
   final List<String> issues;
 
@@ -381,7 +358,11 @@ EventRunOfShowStep? _activeRunOfShowStep(EventSuccessRuntime runtime) {
 }
 
 class SetupSectionTitle extends StatelessWidget {
-  const SetupSectionTitle({required this.title, required this.subtitle});
+  const SetupSectionTitle({
+    super.key,
+    required this.title,
+    required this.subtitle,
+  });
 
   final String title;
   final String subtitle;
@@ -404,7 +385,7 @@ class SetupSectionTitle extends StatelessWidget {
 }
 
 class UnsavedChangesPill extends StatelessWidget {
-  const UnsavedChangesPill();
+  const UnsavedChangesPill({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -429,6 +410,7 @@ class UnsavedChangesPill extends StatelessWidget {
 
 class NoticeCard extends StatelessWidget {
   const NoticeCard({
+    super.key,
     required this.icon,
     required this.title,
     required this.body,

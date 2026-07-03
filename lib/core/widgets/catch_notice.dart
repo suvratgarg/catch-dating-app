@@ -76,6 +76,8 @@ class CatchNoticeQueue {
   CatchNoticeData? get current => notices.isEmpty ? null : notices.first;
 }
 
+// keepalive: notice queue is app-wide UI state that must survive route
+// transitions until dismissed.
 @Riverpod(keepAlive: true)
 class CatchNoticeController extends _$CatchNoticeController {
   @override
@@ -137,7 +139,10 @@ class _CatchNoticeHostState extends ConsumerState<CatchNoticeHost> {
     final eventNotice = ref.watch(
       catchNoticeControllerProvider.select((queue) => queue.current),
     );
-    final notices = <CatchNoticeData>[...widget.persistentNotices, ?eventNotice];
+    final notices = <CatchNoticeData>[
+      ...widget.persistentNotices,
+      ?eventNotice,
+    ];
 
     return Stack(
       children: [

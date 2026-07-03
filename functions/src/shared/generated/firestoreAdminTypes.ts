@@ -687,6 +687,36 @@ export interface PublicProfileDocument {
 }
 
 /**
+ * Professional host identity stored at hostProfiles/{uid}. This document is separate from users/{uid} dating profile data and publicProfiles/{uid}.
+ */
+export interface HostProfileDocument {
+  /**
+   * Professional display name for host, club, event, and support-chat surfaces.
+   */
+  displayName: string;
+  /**
+   * Professional host avatar or organization logo URL.
+   */
+  avatarUrl?: string | null;
+  /**
+   * Professional title such as Founder, Coach, Organizer, or Community Lead.
+   */
+  roleTitle?: string | null;
+  /**
+   * Professional host bio. Must not mirror dating-profile prompts.
+   */
+  bio?: string | null;
+  status: "active" | "pending" | "suspended";
+  verified?: boolean;
+  /**
+   * @maxItems 20
+   */
+  linkedClubIds?: string[];
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
  * Canonical club document stored at clubs/{clubId}. The club id is the document id and is not stored in document data.
  */
 export interface ClubDocument {

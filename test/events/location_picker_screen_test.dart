@@ -1,10 +1,11 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
-import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/events/presentation/location_picker_screen.dart';
 import 'package:catch_dating_app/locations/data/places_repository.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
@@ -75,6 +76,30 @@ void main() {
 
       expect(googleMap.mapType, gmaps.MapType.none);
       expect(googleMap.style, isNull);
+    });
+
+    testWidgets('can render deterministic non-platform map shell', (
+      tester,
+    ) async {
+      await pumpEventsTestApp(
+        tester,
+        LocationPickerScreen(
+          loadMapTiles: false,
+          usePlatformMapView: false,
+          initialSearchQuery: 'Bandra Social',
+          initialSearchError: obviousOfflineException(),
+        ),
+      );
+
+      expect(find.byType(gmaps.GoogleMap), findsNothing);
+      expect(find.text('Bandra Social'), findsOneWidget);
+      expect(
+        find.text(
+          'No internet connection. Connect to the internet and try again.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('No location selected'), findsOneWidget);
     });
 
     testWidgets('initial center does not count as a selected location', (
@@ -254,6 +279,95 @@ void main() {
       );
     });
 
+    testWidgets('uses shared offline copy when place search fails offline', (
+      tester,
+    ) async {
+      await pumpEventsTestApp(
+        tester,
+        const LocationPickerScreen(loadMapTiles: false),
+        overrides: [
+          placesRepositoryProvider.overrideWithValue(
+            _FakePlacesRepository(
+              suggestions: const [],
+              placeDetails: const PlaceDetails(
+                placeId: 'bandra-fort',
+                displayName: 'Bandra Fort',
+                formattedAddress: 'Bandra Fort, Mumbai',
+                location: LocationCoordinate(19.042, 72.819),
+              ),
+              autocompleteError: obviousOfflineException(),
+            ),
+          ),
+        ],
+      );
+
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Search for a meeting point'),
+        'Bandra',
+      );
+      await pumpFeatureUiFor(tester, const Duration(milliseconds: 350));
+      await tester.pump();
+
+      expect(
+        find.text(
+          'No internet connection. Connect to the internet and try again.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('Could not search places. Try again.'), findsNothing);
+    });
+
+    testWidgets('uses shared offline copy when place details fail offline', (
+      tester,
+    ) async {
+      await pumpEventsTestApp(
+        tester,
+        const LocationPickerScreen(loadMapTiles: false),
+        overrides: [
+          placesRepositoryProvider.overrideWithValue(
+            _FakePlacesRepository(
+              suggestions: const [
+                PlaceAutocompleteSuggestion(
+                  placeId: 'bandra-fort',
+                  description: 'Bandra Fort, Mumbai, Maharashtra',
+                  mainText: 'Bandra Fort',
+                  secondaryText: 'Mumbai, Maharashtra',
+                ),
+              ],
+              placeDetails: const PlaceDetails(
+                placeId: 'bandra-fort',
+                displayName: 'Bandra Fort',
+                formattedAddress: 'Bandra Fort, Mumbai',
+                location: LocationCoordinate(19.042, 72.819),
+              ),
+              detailsError: obviousOfflineException(),
+            ),
+          ),
+        ],
+      );
+
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Search for a meeting point'),
+        'Bandra',
+      );
+      await pumpFeatureUiFor(tester, const Duration(milliseconds: 350));
+      await tester.pump();
+      await tester.tap(find.text('Bandra Fort'));
+      await tester.pump();
+
+      expect(
+        find.text(
+          'No internet connection. Connect to the internet and try again.',
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.text('Could not load that place. Try another result.'),
+        findsNothing,
+      );
+      expect(find.text('Bandra Fort'), findsWidgets);
+    });
+
     testWidgets(
       'shows immediate feedback while loading selected place details',
       (tester) async {
@@ -342,11 +456,15 @@ class _FakePlacesRepository implements PlacesRepository {
     required this.suggestions,
     required this.placeDetails,
     this.detailsFuture,
+    this.autocompleteError,
+    this.detailsError,
   });
 
   final List<PlaceAutocompleteSuggestion> suggestions;
   final PlaceDetails placeDetails;
   final Future<PlaceDetails>? detailsFuture;
+  final Object? autocompleteError;
+  final Object? detailsError;
 
   @override
   Future<List<PlaceAutocompleteSuggestion>> autocomplete({
@@ -355,6 +473,8 @@ class _FakePlacesRepository implements PlacesRepository {
     LocationCoordinate? bias,
     String? countryIsoCode,
   }) async {
+    final autocompleteError = this.autocompleteError;
+    if (autocompleteError != null) throw autocompleteError;
     return suggestions;
   }
 
@@ -363,6 +483,8 @@ class _FakePlacesRepository implements PlacesRepository {
     required String placeId,
     required String sessionToken,
   }) async {
+    final detailsError = this.detailsError;
+    if (detailsError != null) throw detailsError;
     return detailsFuture ?? placeDetails;
   }
 }

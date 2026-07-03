@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-06-25",
+  "updated": "2026-07-03",
   "references": [
     {
       "id": "screen.dashboard.home.full_dashboard",
@@ -181,17 +181,12 @@
         "kind": "claude",
         "id": "claude.profile-public",
         "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-profile/Profile.dc.html",
-        "exportedAt": "2026-06-22",
-        "exportTool": "Google Chrome headless screenshot + sips crop",
+        "exportedAt": "2026-07-03",
+        "exportTool": "tool/design/export_reference_screen.mjs",
+        "label": "Profile · other",
         "viewport": {
-          "width": 1340,
+          "width": 1320,
           "height": 920
-        },
-        "crop": {
-          "x": 54,
-          "y": 41,
-          "width": 390,
-          "height": 812
         }
       },
       "thresholds": {
@@ -199,7 +194,7 @@
         "maxMismatchRatio": 0.18,
         "maxMeanDelta": 18
       },
-      "notes": "Canonical public-profile Claude template reference for advisory comparison against public_profile_member light captures rendered on the design-phone device. 2026-06-25 public profile photo/context pass: above advisory threshold; mismatch 36.62%, meanDelta 32.76, maxDelta 226, masked 203190. Remaining divergence is concentrated in top-bar/status chrome, profile-insight copy, confidence badge rhythm, and below-fold profile sections."
+      "notes": "Canonical public-profile Claude template reference for advisory comparison against public_profile_member light captures rendered on the claude-phone-390x812 device. 2026-07-03 reference refresh: regenerated from the current Profile · other handoff panel with tool/design/export_reference_screen.mjs; the capture route now exercises a poppable route so top chrome matches the handoff. Remaining measured divergence is profile-insight copy, confidence badge rhythm, and below-fold profile sections."
     },
     {
       "id": "screen.profile.self.preview_tab_default",
@@ -220,17 +215,12 @@
         "kind": "claude",
         "id": "claude.profile-self",
         "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-profile/Profile.dc.html",
-        "exportedAt": "2026-06-22",
-        "exportTool": "Google Chrome headless screenshot + sips crop",
+        "exportedAt": "2026-07-03",
+        "exportTool": "tool/design/export_reference_screen.mjs",
+        "label": "Profile · self (preview)",
         "viewport": {
-          "width": 1340,
+          "width": 1320,
           "height": 920
-        },
-        "crop": {
-          "x": 476,
-          "y": 41,
-          "width": 390,
-          "height": 812
         }
       },
       "thresholds": {
@@ -238,7 +228,7 @@
         "maxMismatchRatio": 0.18,
         "maxMeanDelta": 18
       },
-      "notes": "Canonical self-profile preview Claude template reference for advisory comparison against profile_self_preview_tab light captures rendered on the design-phone device. 2026-06-25 non-host reference batch: above advisory threshold; mismatch 19.98%, meanDelta 26.87, maxDelta 226, masked 219570."
+      "notes": "Canonical self-profile preview Claude template reference for advisory comparison against profile_self_preview_tab light captures rendered on the claude-phone-390x812 device. 2026-07-03 reference refresh: regenerated from the current Profile · self (preview) handoff panel with tool/design/export_reference_screen.mjs and aligned the capture fixture to the handoff identity/photo content. The compare remains blocked because the current handoff models a two-tab header while production ProfileScreen intentionally renders Edit, Preview, and Insights; refreshed comparison is above advisory threshold at 26.84% mismatch / 46.15 meanDelta, maxDelta 237, masked 219570."
     },
     {
       "id": "screen.profile.self.edit_tab_default",
@@ -259,17 +249,12 @@
         "kind": "claude",
         "id": "claude.profile-self",
         "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-profile/Profile.dc.html",
-        "exportedAt": "2026-06-22",
-        "exportTool": "Google Chrome headless screenshot + sips crop",
+        "exportedAt": "2026-07-03",
+        "exportTool": "tool/design/export_reference_screen.mjs",
+        "label": "Profile · edit",
         "viewport": {
-          "width": 1340,
+          "width": 1320,
           "height": 920
-        },
-        "crop": {
-          "x": 898,
-          "y": 41,
-          "width": 390,
-          "height": 812
         }
       },
       "thresholds": {
@@ -277,7 +262,7 @@
         "maxMismatchRatio": 0.18,
         "maxMeanDelta": 18
       },
-      "notes": "Canonical self-profile edit Claude template reference for advisory comparison against profile_self_edit_tab light captures rendered on the design-phone device. 2026-06-25 non-host reference batch: within advisory threshold; mismatch 14.80%, meanDelta 16.59, maxDelta 240, masked 134640."
+      "notes": "Canonical self-profile edit Claude template reference for advisory comparison against profile_self_edit_tab light captures rendered on the claude-phone-390x812 device. 2026-07-03 reference refresh: regenerated from the current Profile · edit handoff panel with tool/design/export_reference_screen.mjs and aligned the capture fixture to the handoff identity/photo content. The compare remains blocked because the current handoff models a two-tab header and older field-group edit layout while production ProfileScreen intentionally renders Edit, Preview, and Insights plus current photo/editor rows; refreshed comparison is above advisory threshold at 13.67% mismatch / 20.03 meanDelta, maxDelta 244, masked 134640."
     },
     {
       "id": "screen.host.event.manage.setup_workspace",
@@ -556,7 +541,7 @@
         "maxMismatchRatio": 0.18,
         "maxMeanDelta": 18
       },
-      "notes": "Canonical Claude Messaging inbox reference for advisory comparison against matches_list_context light captures rendered on the design-phone device. 2026-06-25 non-host reference batch: above advisory threshold; mismatch 11.84%, meanDelta 18.80, maxDelta 227, masked 77996."
+      "notes": "Canonical Claude Messaging inbox reference for advisory comparison against matches_list_context light captures rendered on the design-phone device. 2026-06-25 non-host reference batch: above advisory threshold; mismatch 11.84%, meanDelta 18.80, maxDelta 227, masked 77996. 2026-07-03 fresh design-phone comparison is within threshold at mismatch 6.84%, meanDelta 8.21, maxDelta 227, masked 77996."
     },
     {
       "id": "screen.matches.chat.populated_thread",
@@ -595,7 +580,41 @@
         "maxMismatchRatio": 0.18,
         "maxMeanDelta": 18
       },
-      "notes": "Canonical Claude Messaging thread reference for advisory comparison against match_chat_context light captures rendered on the design-phone device. 2026-06-25 non-host reference batch: above advisory threshold; mismatch 33.15%, meanDelta 52.85, maxDelta 240, masked 199692."
+      "notes": "Canonical Claude Messaging thread reference for advisory comparison against match_chat_context light captures rendered on the design-phone device. 2026-06-25 non-host reference batch: above advisory threshold; mismatch 33.15%, meanDelta 52.85, maxDelta 240, masked 199692. 2026-07-03 Match Chat fixture and reference-safe-area alignment moved the fresh comparison within threshold at mismatch 7.22%, meanDelta 8.50, maxDelta 240, masked 199692."
+    },
+    {
+      "id": "screen.matches.chat.new_match_empty",
+      "screenId": "screen.matches.chat",
+      "stateId": "new_match_empty",
+      "captureId": "match_chat_empty_thread",
+      "theme": "light",
+      "textScale": 1,
+      "device": {
+        "id": "claude-phone-390x812",
+        "width": 390,
+        "height": 812,
+        "pixelRatio": 1
+      },
+      "referencePath": "design/reference_screens/screen.matches.chat/new_match_empty.png",
+      "maskPath": "design/reference_screens/screen.matches.chat/masks.json",
+      "source": {
+        "kind": "claude",
+        "id": "claude.match-chat",
+        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-messaging/Messaging.dc.html",
+        "exportedAt": "2026-07-03",
+        "exportTool": "node tool/design/export_reference_screen.mjs --label \"Messaging · New match (empty)\"",
+        "viewport": {
+          "width": 1320,
+          "height": 920
+        },
+        "label": "Messaging · New match (empty)"
+      },
+      "thresholds": {
+        "perChannelDelta": 16,
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 18
+      },
+      "notes": "Canonical Claude Messaging new-match empty-thread reference for advisory comparison against match_chat_empty_thread light captures rendered on the design-phone device. 2026-07-03 export and capture fixture pass compares within threshold at mismatch 5.01%, meanDelta 5.46, maxDelta 240, masked 46812."
     },
     {
       "id": "screen.host.inbox.populated_queries",
@@ -1382,6 +1401,240 @@
       "notes": "Canonical Onboarding welcome Claude template reference for advisory comparison against onboarding_welcome light captures rendered on the design-phone device. 2026-06-25 non-host reference batch: above advisory threshold; mismatch 15.35%, meanDelta 23.29, maxDelta 229, masked 32760."
     },
     {
+      "id": "screen.onboarding.flow.name_dob_step",
+      "stateId": "name_dob_step",
+      "captureId": "onboarding_name_dob",
+      "referencePath": "design/reference_screens/screen.onboarding.flow/name_dob_step.png",
+      "notes": "Canonical Onboarding name/DOB Claude template reference for advisory comparison against onboarding_name_dob light captures rendered on the design-phone device. Status and bottom safe-area regions are masked; date-picker-open variants remain separate future exports.",
+      "screenId": "screen.onboarding.flow",
+      "theme": "light",
+      "textScale": 1,
+      "device": {
+        "id": "claude-phone-390x812",
+        "width": 390,
+        "height": 812,
+        "pixelRatio": 1
+      },
+      "maskPath": "design/reference_screens/screen.onboarding.flow/masks.json",
+      "source": {
+        "kind": "claude",
+        "id": "onboarding-handoff",
+        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-onboarding/OnboardingV2.dc.html",
+        "exportedAt": "2026-07-03",
+        "exportTool": "node tool/design/export_onboarding_references.mjs --write",
+        "viewport": {
+          "width": 900,
+          "height": 940
+        },
+        "crop": {
+          "x": 255,
+          "y": 37,
+          "width": 390,
+          "height": 812
+        }
+      },
+      "thresholds": {
+        "perChannelDelta": 16,
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 18
+      }
+    },
+    {
+      "id": "screen.onboarding.flow.gender_interest_step",
+      "stateId": "gender_interest_step",
+      "captureId": "onboarding_gender_interest",
+      "referencePath": "design/reference_screens/screen.onboarding.flow/gender_interest_step.png",
+      "notes": "Canonical Onboarding gender/interest Claude template reference for advisory comparison against onboarding_gender_interest light captures rendered on the design-phone device. Status and bottom safe-area regions are masked; validation and long-option variants remain separate future exports.",
+      "screenId": "screen.onboarding.flow",
+      "theme": "light",
+      "textScale": 1,
+      "device": {
+        "id": "claude-phone-390x812",
+        "width": 390,
+        "height": 812,
+        "pixelRatio": 1
+      },
+      "maskPath": "design/reference_screens/screen.onboarding.flow/masks.json",
+      "source": {
+        "kind": "claude",
+        "id": "onboarding-handoff",
+        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-onboarding/OnboardingV2.dc.html",
+        "exportedAt": "2026-07-03",
+        "exportTool": "node tool/design/export_onboarding_references.mjs --write",
+        "viewport": {
+          "width": 900,
+          "height": 940
+        },
+        "crop": {
+          "x": 255,
+          "y": 37,
+          "width": 390,
+          "height": 812
+        }
+      },
+      "thresholds": {
+        "perChannelDelta": 16,
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 18
+      }
+    },
+    {
+      "id": "screen.onboarding.flow.instagram_step",
+      "stateId": "instagram_step",
+      "captureId": "onboarding_instagram_filled",
+      "referencePath": "design/reference_screens/screen.onboarding.flow/instagram_step.png",
+      "notes": "Canonical Onboarding Instagram filled-handle Claude template reference for advisory comparison against onboarding_instagram_filled light captures rendered on the design-phone device. Status and bottom safe-area regions are masked; skipped/empty variants remain capture-backed without a separate Claude export.",
+      "screenId": "screen.onboarding.flow",
+      "theme": "light",
+      "textScale": 1,
+      "device": {
+        "id": "claude-phone-390x812",
+        "width": 390,
+        "height": 812,
+        "pixelRatio": 1
+      },
+      "maskPath": "design/reference_screens/screen.onboarding.flow/masks.json",
+      "source": {
+        "kind": "claude",
+        "id": "onboarding-handoff",
+        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-onboarding/OnboardingV2.dc.html",
+        "exportedAt": "2026-07-03",
+        "exportTool": "node tool/design/export_onboarding_references.mjs --write",
+        "viewport": {
+          "width": 900,
+          "height": 940
+        },
+        "crop": {
+          "x": 255,
+          "y": 37,
+          "width": 390,
+          "height": 812
+        }
+      },
+      "thresholds": {
+        "perChannelDelta": 16,
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 18
+      }
+    },
+    {
+      "id": "screen.onboarding.flow.photos_count_met",
+      "stateId": "photos_photo_gate",
+      "captureId": "onboarding_photos_count_met",
+      "referencePath": "design/reference_screens/screen.onboarding.flow/photos_count_met.png",
+      "notes": "Canonical Onboarding photos count-met Claude template reference for advisory comparison against onboarding_photos_count_met light captures rendered on the design-phone device. Status and bottom safe-area regions are masked; picker, upload-pending, upload-failure, and disabled-count variants remain separate future exports.",
+      "screenId": "screen.onboarding.flow",
+      "theme": "light",
+      "textScale": 1,
+      "device": {
+        "id": "claude-phone-390x812",
+        "width": 390,
+        "height": 812,
+        "pixelRatio": 1
+      },
+      "maskPath": "design/reference_screens/screen.onboarding.flow/masks.json",
+      "source": {
+        "kind": "claude",
+        "id": "onboarding-handoff",
+        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-onboarding/OnboardingV2.dc.html",
+        "exportedAt": "2026-07-03",
+        "exportTool": "node tool/design/export_onboarding_references.mjs --write",
+        "viewport": {
+          "width": 900,
+          "height": 940
+        },
+        "crop": {
+          "x": 255,
+          "y": 37,
+          "width": 390,
+          "height": 812
+        }
+      },
+      "thresholds": {
+        "perChannelDelta": 16,
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 18
+      }
+    },
+    {
+      "id": "screen.onboarding.flow.prompts_partial",
+      "stateId": "prompts_step",
+      "captureId": "onboarding_prompts_partial",
+      "referencePath": "design/reference_screens/screen.onboarding.flow/prompts_partial.png",
+      "notes": "Canonical Onboarding prompts partial Claude template reference for advisory comparison against onboarding_prompts_partial light captures rendered on the design-phone device. Status and bottom safe-area regions are masked; prompt-picker, empty, complete, long-answer, and keyboard variants remain separate future exports.",
+      "screenId": "screen.onboarding.flow",
+      "theme": "light",
+      "textScale": 1,
+      "device": {
+        "id": "claude-phone-390x812",
+        "width": 390,
+        "height": 812,
+        "pixelRatio": 1
+      },
+      "maskPath": "design/reference_screens/screen.onboarding.flow/masks.json",
+      "source": {
+        "kind": "claude",
+        "id": "onboarding-handoff",
+        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-onboarding/OnboardingV2.dc.html",
+        "exportedAt": "2026-07-03",
+        "exportTool": "node tool/design/export_onboarding_references.mjs --write",
+        "viewport": {
+          "width": 900,
+          "height": 940
+        },
+        "crop": {
+          "x": 255,
+          "y": 37,
+          "width": 390,
+          "height": 812
+        }
+      },
+      "thresholds": {
+        "perChannelDelta": 16,
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 18
+      }
+    },
+    {
+      "id": "screen.onboarding.flow.running_prefs_step",
+      "stateId": "running_prefs_step",
+      "captureId": "onboarding_running_prefs",
+      "referencePath": "design/reference_screens/screen.onboarding.flow/running_prefs_step.png",
+      "notes": "Canonical Onboarding running-preferences Claude template reference for advisory comparison against onboarding_running_prefs light captures rendered on the design-phone device. Status and bottom safe-area regions are masked; completion mutation and profile-completion copy variants remain capture-backed without separate Claude exports.",
+      "screenId": "screen.onboarding.flow",
+      "theme": "light",
+      "textScale": 1,
+      "device": {
+        "id": "claude-phone-390x812",
+        "width": 390,
+        "height": 812,
+        "pixelRatio": 1
+      },
+      "maskPath": "design/reference_screens/screen.onboarding.flow/masks.json",
+      "source": {
+        "kind": "claude",
+        "id": "onboarding-handoff",
+        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-onboarding/OnboardingV2.dc.html",
+        "exportedAt": "2026-07-03",
+        "exportTool": "node tool/design/export_onboarding_references.mjs --write",
+        "viewport": {
+          "width": 900,
+          "height": 940
+        },
+        "crop": {
+          "x": 255,
+          "y": 37,
+          "width": 390,
+          "height": 812
+        }
+      },
+      "thresholds": {
+        "perChannelDelta": 16,
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 18
+      }
+    },
+    {
       "id": "screen.auth.phone_entry.phone_entry",
       "screenId": "screen.auth.phone_entry",
       "stateId": "phone_entry",
@@ -1400,8 +1653,9 @@
         "kind": "claude",
         "id": "auth-handoff",
         "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-onboarding/OnboardingV2.dc.html",
-        "exportedAt": "2026-06-22",
-        "exportTool": "Google Chrome headless screenshot + CDP clip",
+        "exportedAt": "2026-07-03",
+        "exportTool": "tool/design/export_reference_screen.mjs",
+        "label": "02 Phone",
         "viewport": {
           "width": 900,
           "height": 940
@@ -1418,7 +1672,47 @@
         "maxMismatchRatio": 0.18,
         "maxMeanDelta": 18
       },
-      "notes": "Canonical Auth phone-entry Claude template reference for advisory comparison against auth_phone_entry light captures rendered on the design-phone device. 2026-06-25 non-host reference batch: within advisory threshold; mismatch 6.81%, meanDelta 11.81, maxDelta 240, masked 47608."
+      "notes": "Canonical Auth phone-entry Claude template reference for advisory comparison against auth_phone_entry light captures rendered on the claude-phone-390x812 device. 2026-07-03 reference refresh: regenerated from the current 02 Phone handoff panel with tool/design/export_reference_screen.mjs using onboarding_v2.step=2 and the established 390x812 clip. The current production capture is above advisory threshold at 11.09% mismatch / 22.89 meanDelta, maxDelta 240, masked 47608, because the app uses a vertically centered production auth frame and current labeled phone field while the handoff still models top chrome/back button and a compact field row."
+    },
+    {
+      "id": "screen.auth.phone_entry.otp_entry",
+      "screenId": "screen.auth.phone_entry",
+      "stateId": "otp_entry",
+      "captureId": "auth_otp_entry",
+      "theme": "light",
+      "textScale": 1,
+      "device": {
+        "id": "claude-phone-390x812",
+        "width": 390,
+        "height": 812,
+        "pixelRatio": 1
+      },
+      "referencePath": "design/reference_screens/screen.auth.phone_entry/otp_entry.png",
+      "maskPath": "design/reference_screens/screen.auth.phone_entry/masks.json",
+      "source": {
+        "kind": "claude",
+        "id": "auth-handoff",
+        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-onboarding/OnboardingV2.dc.html",
+        "exportedAt": "2026-07-03",
+        "exportTool": "tool/design/export_reference_screen.mjs",
+        "label": "03 OTP",
+        "viewport": {
+          "width": 900,
+          "height": 940
+        },
+        "crop": {
+          "x": 255,
+          "y": 37,
+          "width": 390,
+          "height": 812
+        }
+      },
+      "thresholds": {
+        "perChannelDelta": 16,
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 18
+      },
+      "notes": "Canonical Auth OTP Claude template reference for advisory comparison against auth_otp_entry light captures rendered on the claude-phone-390x812 device. 2026-07-03 reference addition: exported from the current 03 OTP handoff panel with tool/design/export_reference_screen.mjs using onboarding_v2.step=3 and the established 390x812 clip. The reference is registered to expose drift; production currently renders a vertically centered auth frame and empty OTP cells while the handoff models top chrome/back button and prefilled digits."
     },
     {
       "id": "screen.filters.preferences.default_preferences",

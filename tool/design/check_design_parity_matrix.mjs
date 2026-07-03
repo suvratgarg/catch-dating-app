@@ -247,6 +247,12 @@ function validateScreen(
     if ((state.status === "captured" || state.status === "ready") && !state.captureIds?.length) {
       errors.push(`${stateLabel}: ${state.status} states must list captureIds.`);
     }
+    const staleCaptureTextField = staleCapturedStateTextField(state);
+    if ((state.status === "captured" || state.status === "ready") && staleCaptureTextField) {
+      errors.push(
+        `${stateLabel}.${staleCaptureTextField}: ${state.status} state text says capture coverage is missing.`
+      );
+    }
   }
   if (screenContractId) {
     const aggregateStateIds =
@@ -259,6 +265,17 @@ function validateScreen(
     for (const captureId of screenCaptureIds) aggregateCaptureIds.add(captureId);
     matrixCaptureIdsByContractId.set(screenContractId, aggregateCaptureIds);
   }
+}
+
+function staleCapturedStateTextField(state) {
+  const staleCapturedStateTextPattern =
+    /\b(?:no\b[^.]*\bcaptures?\b[^.]*\bexists?\s+yet|captures?\b[^.]*\bnot\s+yet\s+registered)\b/iu;
+  const fields = ["notes", "nextAction", "source"];
+  for (const field of fields) {
+    if (typeof state?.[field] !== "string") continue;
+    if (staleCapturedStateTextPattern.test(state[field])) return field;
+  }
+  return null;
 }
 
 function validateScreenContractStateParity(

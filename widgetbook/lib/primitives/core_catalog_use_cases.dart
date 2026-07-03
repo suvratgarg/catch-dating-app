@@ -69,7 +69,8 @@ import 'package:catch_dating_app/core/widgets/src/catch_inline_message_surface.d
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
-import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
+import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
+import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_app_bar.dart';
@@ -258,6 +259,58 @@ Widget catchMenuCatalogStates(BuildContext context) {
               danger: true,
             ),
           ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: CatchMenuRow,
+  path: '[Core catalog]/Menus',
+)
+Widget catchMenuRowCatalogStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'CatchMenuRow',
+    catalogId: 'core.widgets.catch_menu_row',
+    children: [
+      _StateCard(
+        label: 'selected',
+        child: CatchMenuRow<String>(
+          item: CatchMenuItem(
+            value: 'going',
+            label: 'Going',
+            sublabel: 'Confirmed attendee view',
+            icon: CatchIcons.checkCircle,
+            selected: true,
+          ),
+          onSelected: (value, _) => _ignoreString(value),
+        ),
+      ),
+      _StateCard(
+        label: 'disabled',
+        child: CatchMenuRow<String>(
+          item: CatchMenuItem(
+            value: 'disabled',
+            label: 'Host controls',
+            sublabel: 'Unavailable for guests',
+            icon: CatchIcons.lockOutlineRounded,
+            enabled: false,
+          ),
+          onSelected: (value, _) => _ignoreString(value),
+        ),
+      ),
+      _StateCard(
+        label: 'danger',
+        child: CatchMenuRow<String>(
+          item: CatchMenuItem(
+            value: 'remove',
+            label: 'Remove from event',
+            icon: CatchIcons.deleteOutline,
+            danger: true,
+          ),
+          onSelected: (value, _) => _ignoreString(value),
         ),
       ),
     ],
@@ -1450,6 +1503,33 @@ Widget catchFrameworkErrorViewCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
+  type: CatchFrameworkErrorDebugDetails,
+  path: '[Core catalog]/Feedback',
+)
+Widget catchFrameworkErrorDebugDetailsCatalogStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'CatchFrameworkErrorDebugDetails',
+    catalogId: 'core.widgets.catch_framework_error_debug_details',
+    children: [
+      _StateCard(
+        label: 'collapsed',
+        child: CatchFrameworkErrorDebugDetails(
+          details: 'StateError: Widgetbook sample framework failure',
+        ),
+      ),
+      _StateCard(
+        label: 'expanded',
+        child: CatchFrameworkErrorDebugDetails(
+          details: 'StateError: Widgetbook sample framework failure',
+          initiallyExpanded: true,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
   type: CatchNoticeHost,
   path: '[Core catalog]/Feedback',
 )
@@ -1799,6 +1879,32 @@ Widget eventTicketSurfaceCatalogStates(BuildContext context) {
               ),
             ),
           ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: EventHeroSurface,
+  path: '[Core catalog]/Event cards',
+)
+Widget eventHeroSurfaceCatalogStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'EventHeroSurface',
+    catalogId: 'events.widgets.event_hero_surface',
+    children: [
+      _StateCard(
+        label: 'shared hero wrapper',
+        child: EventHeroSurface(
+          tag: 'widgetbook-event-hero-surface',
+          child: CatchSurface.card(
+            child: Text(
+              'Event cards use this wrapper for the shared ticket Hero flight.',
+              style: CatchTextStyles.bodyM(context),
+            ),
+          ),
         ),
       ),
     ],
@@ -2352,6 +2458,74 @@ Widget catchMetaDotRowCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
+  type: CatchMetaEntryFlow,
+  path: '[Core catalog]/Data display',
+)
+Widget catchMetaEntryFlowCatalogStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'CatchMetaEntryFlow',
+    catalogId: 'core.widgets.catch_meta_dot_row.flow',
+    children: [
+      _StateCard(
+        label: 'entries / truncation',
+        child: SizedBox(
+          width: 260,
+          child: CatchMetaEntryFlow(
+            entries: [
+              CatchMetaEntry(label: 'Tonight', icon: CatchIcons.calendarAdd),
+              CatchMetaEntry(
+                label: 'Bandra West',
+                icon: CatchIcons.pinOutlined,
+              ),
+              CatchMetaEntry(label: 'Easy pace'),
+            ],
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: CatchMetaEntryView,
+  path: '[Core catalog]/Data display',
+)
+Widget catchMetaEntryViewCatalogStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  return _CatalogScreen(
+    title: 'CatchMetaEntryView',
+    catalogId: 'core.widgets.catch_meta_dot_row.entry',
+    children: [
+      _StateCard(
+        label: 'plain / icon / strong',
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CatchMetaEntryView(entry: CatchMetaEntry(label: 'Tonight')),
+            const SizedBox(width: CatchSpacing.s4),
+            CatchMetaEntryView(
+              entry: CatchMetaEntry(
+                label: 'Bandra',
+                icon: CatchIcons.pinOutlined,
+                iconColor: t.primary,
+              ),
+            ),
+            const SizedBox(width: CatchSpacing.s4),
+            const CatchMetaEntryView(
+              entry: CatchMetaEntry(label: '2.4 km'),
+              isStrong: true,
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
   type: CatchBottomDock,
   path: '[Core catalog]/Sheets and footers',
 )
@@ -2651,6 +2825,33 @@ Widget catchDaySectionHeaderCatalogStates(BuildContext context) {
   );
 }
 
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: CatchDaySectionHeaderCount,
+  path: '[Core catalog]/Sections',
+)
+Widget catchDaySectionHeaderCountCatalogStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  return _CatalogScreen(
+    title: 'CatchDaySectionHeaderCount',
+    catalogId: 'core.widgets.catch_day_section_header.count',
+    children: [
+      _StateCard(
+        label: 'default / color override',
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CatchDaySectionHeaderCount(count: 3),
+            const SizedBox(width: CatchSpacing.s6),
+            CatchDaySectionHeaderCount(count: 12, color: t.primary),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
 Widget catchPersonAvatarCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
   return _CatalogScreen(
@@ -2876,6 +3077,196 @@ Widget catchCelebrationScreenCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
+  type: PaperCelebrationScaffold,
+  path: '[Core catalog]/Moments',
+)
+Widget paperCelebrationScaffoldCatalogStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'PaperCelebrationScaffold',
+    catalogId: 'core.celebration.paper_scaffold',
+    children: [
+      _StateCard(
+        label: 'confirmation shell',
+        child: _PhoneFrame(
+          height: 720,
+          child: PaperCelebrationScaffold(
+            screen: CatchCelebrationScreen(
+              kind: CelebrationMomentKind.eventCreated,
+              playEffects: false,
+              appearance: CatchCelebrationAppearance.paper,
+              showCloseButton: false,
+              icon: CatchIcons.verifiedRounded,
+              eyebrow: 'Event created',
+              title: 'Your event is live.',
+              message:
+                  'Sundowner 5K, Bandra seafront is now listed on Sunday sea-face crew.',
+              details: _celebrationDetails,
+              note:
+                  'Bookings, waitlist, and attendance are tracked from Manage event.',
+              primaryAction: CelebrationAction(
+                label: 'Manage event',
+                onPressed: _noop,
+              ),
+              secondaryAction: CelebrationAction(
+                label: 'Back to club',
+                onPressed: _noop,
+              ),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: PaperCelebrationIcon,
+  path: '[Core catalog]/Moments',
+)
+Widget paperCelebrationIconCatalogStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'PaperCelebrationIcon',
+    catalogId: 'core.celebration.paper_icon',
+    children: [
+      _StateCard(
+        label: 'paper mark',
+        child: Center(
+          child: PaperCelebrationIcon(icon: CatchIcons.verifiedRounded),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: PaperCelebrationDetailsCard,
+  path: '[Core catalog]/Moments',
+)
+Widget paperCelebrationDetailsCardCatalogStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'PaperCelebrationDetailsCard',
+    catalogId: 'core.celebration.paper_details_card',
+    children: [
+      _StateCard(
+        label: 'event details',
+        child: PaperCelebrationDetailsCard(details: _celebrationDetails),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: PaperCelebrationDetailRow,
+  path: '[Core catalog]/Moments',
+)
+Widget paperCelebrationDetailRowCatalogStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'PaperCelebrationDetailRow',
+    catalogId: 'core.celebration.paper_detail_row',
+    children: [
+      _StateCard(
+        label: 'icon detail',
+        child: PaperCelebrationDetailRow(detail: _whenCelebrationDetail),
+      ),
+      _StateCard(
+        label: 'text detail',
+        child: PaperCelebrationDetailRow(detail: _hostCelebrationDetail),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: CelebrationIcon,
+  path: '[Core catalog]/Moments',
+)
+Widget celebrationIconCatalogStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'CelebrationIcon',
+    catalogId: 'core.celebration.immersive_icon',
+    children: [
+      _StateCard(
+        label: 'immersive mark',
+        child: _ImmersiveCelebrationFrame(
+          child: CelebrationIcon(icon: CatchIcons.checkRounded),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: CelebrationDetailsCard,
+  path: '[Core catalog]/Moments',
+)
+Widget celebrationDetailsCardCatalogStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'CelebrationDetailsCard',
+    catalogId: 'core.celebration.immersive_details_card',
+    children: [
+      _StateCard(
+        label: 'full-screen details',
+        child: _ImmersiveCelebrationFrame(
+          child: CelebrationDetailsCard(details: _celebrationDetails),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: CelebrationDetailRow,
+  path: '[Core catalog]/Moments',
+)
+Widget celebrationDetailRowCatalogStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'CelebrationDetailRow',
+    catalogId: 'core.celebration.immersive_detail_row',
+    children: [
+      _StateCard(
+        label: 'icon detail',
+        child: _ImmersiveCelebrationFrame(
+          child: CelebrationDetailRow(detail: _whenCelebrationDetail),
+        ),
+      ),
+      _StateCard(
+        label: 'text detail',
+        child: _ImmersiveCelebrationFrame(
+          child: CelebrationDetailRow(detail: _hostCelebrationDetail),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: CelebrationNote,
+  path: '[Core catalog]/Moments',
+)
+Widget celebrationNoteCatalogStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'CelebrationNote',
+    catalogId: 'core.celebration.immersive_note',
+    children: [
+      _StateCard(
+        label: 'supporting note',
+        child: _ImmersiveCelebrationFrame(
+          child: CelebrationNote(note: 'Matching opens after check-in.'),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
   type: ResponsiveBuilder,
   path: '[Core catalog]/Layout',
 )
@@ -3015,6 +3406,24 @@ class _PhoneFrame extends StatelessWidget {
           ),
           child: SizedBox(width: 390, height: height, child: child),
         ),
+      ),
+    );
+  }
+}
+
+class _ImmersiveCelebrationFrame extends StatelessWidget {
+  const _ImmersiveCelebrationFrame({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(gradient: t.heroGrad),
+      child: Padding(
+        padding: const EdgeInsets.all(CatchSpacing.s4),
+        child: child,
       ),
     );
   }
@@ -3363,3 +3772,24 @@ Widget _sliverTextData(String value) => SliverToBoxAdapter(
 void _noop() {}
 
 void _ignoreString(String _) {}
+
+final _whenCelebrationDetail = CelebrationDetail(
+  label: 'When',
+  value: 'Sun, 22 Jun - 6:30 AM',
+  icon: CatchIcons.calendarMonthOutlined,
+);
+
+const _hostCelebrationDetail = CelebrationDetail(
+  label: 'Host',
+  value: 'Sunday sea-face crew',
+);
+
+final _celebrationDetails = [
+  _whenCelebrationDetail,
+  CelebrationDetail(
+    label: 'Where',
+    value: 'Carter Road jetty',
+    icon: CatchIcons.locationOnOutlined,
+  ),
+  _hostCelebrationDetail,
+];

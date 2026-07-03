@@ -56,7 +56,7 @@ final class ChatControllerProvider
   }
 }
 
-String _$chatControllerHash() => r'd0466cc515c72e20e84a73392749088ab007447f';
+String _$chatControllerHash() => r'efddfbad8d1159acdaca8f4a0651f95d6622fd60';
 
 /// **Pattern A: Action controller + static Mutations**
 ///

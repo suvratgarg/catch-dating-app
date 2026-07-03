@@ -1,10 +1,10 @@
 {
-  "version": "2.7.0",
-  "updated": "2026-06-30",
+  "version": "2.7.150",
+  "updated": "2026-07-03",
   "owner": "recursive_audit_loop",
-  "read_policy": "Use this file for active backlog, next actions, scanner counts, stable debt ids, and documentation hygiene follow-up. Historical detail lives in passes.jsonl/files.jsonl; do not recreate long markdown trackers for closed work.",
+  "read_policy": "Use this file for active backlog, next actions, scanner counts, stable debt ids, uid-loading conflation follow-up, React component-governance follow-up including class-name boundary enforcement and exported website feature component registry coverage, admin feature export boundary, the retired website legacy site barrel/import boundary, UI label spans, empty-state variants, page shells, claim-flow route/root/auth-row shells, website Host Page route, Host Application flow, Host feature section, waitlist form shells, marketing section, marketing info-card, marketing loop-list, marketing consent banner, featured organizer card, app-download CTA group, organizer listing, organizer listing hero, organizer listing event section including event-action cards, organizer search section, organizer search result shells, PublicSearchBar ownership, public event-card shells, admin editor section/form shells, admin layout span classes, admin eyebrow labels, admin card/stat layout shells, admin loading icon shells, admin toolbar shells/modifiers, admin marketing studio shell/tabs, admin marketing post-board shells, admin marketing composer flow shells, admin marketing picker list/row shells, admin marketing feature-shot grid/card shells, admin marketing brand-contract shells, admin marketing help/compliance text/list shells, admin marketing event-library grid/card/link shells, admin marketing media-library grid/card shells, admin marketing new-post grid/card shells, admin marketing guide shells, admin marketing stacked-section shells, admin marketing app-media shells, admin marketing field shells, admin marketing layout shells, admin diff list shells, admin publishing utility primitives, admin event supply shells, admin selected table rows, admin marketing tag rows, admin marketing query lists, admin marketing slide editor/list shells, admin marketing recommendation list/item shells, admin marketing audit list/row shells, admin feature-drop feature editor/list shells, admin feature-drop controls/preview shells, admin marketing preview/export shells, admin marketing carousel preview shells, admin marketing image editor shells, admin guardrail lists, admin intake source lists, admin intake gate lists, admin intake decision/footer shells, admin intake workspace shells, admin organizer intake curation shells, admin overview queue shells, admin roadmap lists, and documentation hygiene follow-up. Historical detail lives in passes.jsonl/files.jsonl; do not recreate long markdown trackers for closed work.",
   "scanner_snapshot": {
-    "updated": "2026-06-15",
+    "updated": "2026-07-03",
     "command": "bash tool/widget_cleanup_scan.sh --summary",
     "counts": {
       "centralized_widget_timing": 0,
@@ -26,19 +26,44 @@
       "literal_sized_box_spacing_candidates": 0,
       "raw_decorated_surface_candidates": 0,
       "unstyled_text_candidates": 0,
+      "low_level_typography_role_candidates": 0,
+      "nonzero_letter_spacing_candidates": 0,
+      "raw_text_style_candidates": 0,
       "legacy_spacing_canonical_candidates": 0,
       "fine_grained_spacing_compatibility": 0,
       "presentation_plugin_imports": 0,
       "raw_error_surface_candidates": 0
     },
     "notes": [
-      "2026-06-15 live scanner reports zero matches across all widget cleanup categories.",
+      "2026-07-03 live widget cleanup scanner reports zero matches across all categories; stored snapshot refreshed so future agents do not chase stale 2026-07-01 candidates.",
+      "2026-07-01 bash tool/widget_cleanup_scan.sh --summary now emits live machine-readable counts; dart tool/audit_registry.dart backlog runs that live summary by default and keeps --stored-scanner for historical comparison.",
+      "2026-06-15 stored scanner snapshot reported zero matches across the then-tracked widget cleanup categories; do not treat that historical note as current without rerunning the live scanner.",
       "2026-06-15 whole-project analyzer hygiene pass applied 65 dart fix changes across import ordering, redundant default arguments, and initializing formals; flutter analyze --no-fatal-infos now reports no issues.",
       "Raw test timing calls now route through shared pumpFeatureUi/pumpFeatureUiFor helpers in manual QA, golden, and UI capture harnesses.",
       "Definition catalog now reports zero consolidation candidates after local private-helper collision renames and centralizing duplicate date formats in AppTimeFormatters. See docs/audit_registry/consolidation_candidates.json."
     ]
   },
   "pending": [
+    {
+      "id": "WEB-UI-COMPONENT-GOVERNANCE-001",
+      "title": "Expand React UI governance beyond native interactive primitives",
+      "status": "active",
+      "owner": "agent",
+      "area": "website,admin,react-ui,tooling",
+      "priority": "high",
+      "summary": "The React scanners block raw native interactive controls and direct feature/app/story className usage outside shared primitive owner files, and website-legacy-site-barrel/import boundary, website-page-shell, data-table, admin-workbench-table, form-shell, admin-editor-section-form, admin-layout-span, field-layout, admin-summary-metrics, admin-workbench-toolbar including compact modifier props, admin-workbench-layout, admin-loading-icon/spin class wiring, admin-command-list, admin-intake-tag-list, admin-intake-section-shell, admin-intake-state-grid, admin-row-tag-shell, admin-roadmap-list, admin-status-display, admin-filter-bar, admin-empty-state including class-pass-through variants, admin-app-shell-status, admin-app-auth-shell, admin-intake-status-chip, admin-quality-row, admin-quality-list, admin-intake-decision-shell including DecisionFooter/marketing-decision-footer, website-organizer-filter-rail, website-stat-strip, website-chip-rail, website-capture-grid including capture-card shells, website-card-grid, website-empty-state variants, website-status-display, website-app-download-shell including legacy AppDownloadCtas imports/local components, website-badge-status, website-identity-display-shell, website-process-status-panel, website-ui-label-shell, website-section-heading, website-action-group, website-control-row, website-waitlist-section, website-waitlist-form-shell, website-success-grid including direct SuccessGrid composition, website-claim-shell, website-claim-flow-shell including the route root, website-content-grid, website-panel-shell, website-product-shell including product-module-grid/card shells, website-row-shell, website-host-preview-shell including main/hero/hero-store/offer/section/apply/format-rail/chip-row wrappers, website-host-page-shell, website-host-application-shell, website-host-feature-section-shell, website-marketing-section-shell, website-marketing-info-card-shell, website-marketing-loop-list-shell, website-marketing-consent-banner-shell, website-featured-organizer-card-shell, website-listing-shell, website-listing-hero-shell, website-listing-review-shell including review-signal and owner-response shells, website-listing-claim-shell, website-listing-card-grid-shell, website-listing-event-section-shell including event-action cards, website-listing-source-ledger-shell, website-organizer-result-shell, website-organizer-search-section-shell, plus website-search-form families including PublicSearchBar ownership, direct public-search slot composition, and public event-card shells are now enforced by the React component-governance scanner; class-name boundary drift is blocked by web:react-classname-boundaries, website route review states are validated against Storybook parameters.catchRoute declarations through marketing:website-routes, and exported website feature components must be present in design/website/components.json through marketing:website-components. Admin feature UI exports are limited to route/workspace entry components through web:admin-feature-exports, and admin route/workspace, shared primitive, and feedback provider exports are registry-backed through web:admin-components, with first admin Storybook primitive, Overview route, and Access, Admin Roles, Data Quality, Events, Event Intake, Growth, Finance, Intake, Marketing Ops, Organizer Intake, Organizer Publishing, Safety, and Users route/workspace previews enforced through web:admin-storybook. The next pass should extend the same registry-backed enforcement pattern to remaining marketing filters, additional website filters, remaining structural layout rails/shells, remaining route-specific shells, remaining non-shell status blocks, remaining admin structural lists, or other reusable UI structures so website/admin screens do not hand-roll them per screen. Start from one reference component family, add or reuse shared primitives, migrate offenders, then add focused scanner checks and Storybook/component-registry coverage where applicable.",
+      "paths": [
+        "tool/web/check_react_ui_primitives.mjs",
+        "tool/web/check_react_component_governance.mjs",
+        "website/src/shared/ui/**",
+        "website/src/shared/site/**",
+        "admin/src/shared/ui/**",
+        "design/website/components.json",
+        "docs/web_surface_architecture.md",
+        "docs/marketing_website_architecture.md"
+      ],
+      "source": "2026-07-01-react-surface-ui-primitive-governance"
+    },
     {
       "id": "MATCH-CHAT-OWNER-QA-001",
       "title": "Owner-side QA: live Chats device pass + seeded-data + thumbnail backfill",
@@ -55,26 +80,45 @@
         "docs/demo_data_seeding.md"
       ],
       "source": "deep_semantic_audit_2026-06"
-    },
-    {
-      "id": "NEW-WIDGET-INVENTORY-2026-06-30",
-      "title": "Close remaining new-widget Widgetbook/catalog inventory gaps",
-      "status": "pending",
-      "owner": "agent",
-      "area": "widgets,widgetbook,design_catalog",
-      "priority": "high",
-      "summary": "The new-widget scanner for the HEAD^ -> working-tree delta now reports 283 added widget classes: 254 public, 29 private, 9 exact-name Widgetbook matches, 245 missing Widgetbook coverage, 244 missing catalog mentions, and 0 remaining added Widget-returning helpers after the first pruning pass. Continue from docs/audit_registry/new_widget_inventory_scan.json, pruning or promoting the 29 private widget classes first, then registering public survivors in Widgetbook and docs/widget_catalog.md.",
-      "paths": [
-        "docs/audit_registry/new_widget_inventory_scan.json",
-        "tool/design/check_new_widget_inventory.mjs",
-        "docs/widget_catalog.md",
-        "widgetbook/lib/main.directories.g.dart"
-      ],
-      "source": "2026-06-30-new-widget-inventory-scan"
     }
   ],
   "next_up": [],
   "completed": [
+    {
+      "id": "UID-LOADING-CONFLATION-2026-07-02-DONE",
+      "title": "Separate signed-in uid resolution from downstream loading states",
+      "completed": "2026-07-03",
+      "rules": [
+        "ASYNC-UI-001",
+        "AUDIT-REGISTRY-001"
+      ],
+      "summary": "Verified current event uid-gated surfaces no longer conflate auth loading, signed-out, and downstream event loading: CalendarScreen and SavedEventsScreen branch on uidProvider loading/error before reading event repositories, signed-out users get empty states without querying user event providers, and signed-in users retain separate downstream loading/error states. Verified: flutter analyze --no-fatal-infos lib/events/presentation/calendar/calendar_screen.dart lib/events/presentation/saved_events_screen.dart test/calendar/calendar_screen_test.dart test/events/calendar_screen_test.dart test/events/saved_events_screen_test.dart; flutter test --reporter compact test/calendar/calendar_screen_test.dart test/events/saved_events_screen_test.dart test/events/calendar_screen_test.dart.",
+      "source": "2026-07-02-enforcement-integrity-follow-up"
+    },
+    {
+      "id": "DEBT-AUTH-LOADING-STATE-001-DONE",
+      "title": "Separate auth loading from signed-out and empty event states",
+      "completed": "2026-07-03",
+      "rules": [
+        "ASYNC-UI-001",
+        "AUDIT-REGISTRY-001",
+        "WIDGET-TEST-001"
+      ],
+      "summary": "Verified CalendarScreen and SavedEventsScreen distinguish uidProvider auth loading, auth error, signed-out empty, signed-in empty, downstream event loading, and downstream event error. Existing regression tests cover auth-loading skeletons and auth-error copy before signed-out/empty copy for both screens. Verified: flutter analyze --no-fatal-infos lib/events/presentation/calendar/calendar_screen.dart lib/events/presentation/saved_events_screen.dart test/calendar/calendar_screen_test.dart test/events/calendar_screen_test.dart test/events/saved_events_screen_test.dart; flutter test --reporter compact test/calendar/calendar_screen_test.dart test/events/saved_events_screen_test.dart test/events/calendar_screen_test.dart.",
+      "source": "rules_registry_and_enforcement_hardening_spec"
+    },
+    {
+      "id": "NEW-WIDGET-INVENTORY-2026-06-30-DONE",
+      "title": "Close remaining new-widget Widgetbook/catalog inventory gaps",
+      "completed": "2026-07-01",
+      "rules": [
+        "AUDIT-REGISTRY-001",
+        "DOC-HYGIENE-001",
+        "WIDGET-CATALOG-001"
+      ],
+      "summary": "Closed the current HEAD^ -> working-tree new-widget inventory. The scanner now reports 37 added widget classes, 37 public, 0 private, 37 covered, 0 Widget-returning helpers, and 0 unresolved items. Added exact-name Widgetbook and docs/widget_catalog.md coverage for ExploreScreenEmptyState, ExploreClearAction, and ExploreEventsEmptySliver, regenerated widgetbook/lib/main.directories.g.dart, and refreshed docs/audit_registry/new_widget_inventory_scan.json. The earlier 274-unresolved backlog snapshot was stale after subsequent Widgetbook/catalog work.",
+      "source": "2026-07-01-new-widget-inventory-scan"
+    },
     {
       "id": "PAY-WEBHOOK-001-DONE",
       "title": "Razorpay webhook + reconciliation sweep + pending-order tracking",
@@ -245,7 +289,7 @@
       "rules": [
         "FN-PAY-001"
       ],
-      "summary": "Added a distinct non-recoverable 'refundFailed' payment status (charged + booking failed + refund could not be issued) to the payments contract + PaymentStatus (TS generated, Dart enum w/ unknownEnumValue fallback). verifyRazorpayPayment and stripeWebhook now write 'refundFailed' (was 'completed'+signUpFailed) when the refund call fails or there is no payment intent, and emit a structured 'ALERT manual refund required' error log for reconciliation. payment_history_screen surfaces it as a 'Refund pending \u2014 contact support' badge. Tests added for both providers' refund-failure path. NOTE: log-based paging/alert wiring (e.g. a Cloud Logging metric alert on the ALERT prefix) is an ops/infra step. Verified: functions build+lint+338 tests, Dart payment+contract tests green."
+      "summary": "Added a distinct non-recoverable 'refundFailed' payment status (charged + booking failed + refund could not be issued) to the payments contract + PaymentStatus (TS generated, Dart enum w/ unknownEnumValue fallback). verifyRazorpayPayment and stripeWebhook now write 'refundFailed' (was 'completed'+signUpFailed) when the refund call fails or there is no payment intent, and emit a structured 'ALERT manual refund required' error log for reconciliation. payment_history_screen surfaces it as a 'Refund pending — contact support' badge. Tests added for both providers' refund-failure path. NOTE: log-based paging/alert wiring (e.g. a Cloud Logging metric alert on the ALERT prefix) is an ops/infra step. Verified: functions build+lint+338 tests, Dart payment+contract tests green."
     },
     {
       "id": "FUNCTIONS-RATE-LIMIT-001-DONE",
@@ -263,7 +307,7 @@
       "rules": [
         "FN-DATA-001"
       ],
-      "summary": "Account deletion is now re-entrant + compensated: a completion tombstone (deletedUsers/{uid}) is written ONLY after all cleanup batches commit (was written first, inside the batch), and the handler short-circuits on it so a retry never re-runs destructive cleanup. auth.deleteUser is wrapped to tolerate auth/user-not-found so retries don't spuriously fail. The aggregate count decrements were already idempotent (conditioned on each edge's current status, which the same writes flip to 'deleted', so a retry can't double-decrement) \u2014 documented in code. Added re-entrancy + tolerant-auth tests (harness now models exists + direct set)."
+      "summary": "Account deletion is now re-entrant + compensated: a completion tombstone (deletedUsers/{uid}) is written ONLY after all cleanup batches commit (was written first, inside the batch), and the handler short-circuits on it so a retry never re-runs destructive cleanup. auth.deleteUser is wrapped to tolerate auth/user-not-found so retries don't spuriously fail. The aggregate count decrements were already idempotent (conditioned on each edge's current status, which the same writes flip to 'deleted', so a retry can't double-decrement) — documented in code. Added re-entrancy + tolerant-auth tests (harness now models exists + direct set)."
     },
     {
       "id": "BACKEND-IDEMPOTENCY-RECEIPT-001-DONE",
@@ -272,7 +316,7 @@
       "rules": [
         "FN-IDEMP-001"
       ],
-      "summary": "VERIFIED complete. Shared withEventReceipt() exists (functions/src/shared/eventReceipts.ts). Coverage audit: onMatchCreated guards push via withEventReceipt; onMessageCreated uses an in-transaction receipt (stronger than withEventReceipt because it must be atomic with the unread-count write \u2014 refactoring to the non-transactional helper would LOSE atomicity, so intentionally left); moderatePhoto/moderateMessage use deterministic flag ids via create()+ALREADY_EXISTS; onSwipeCreated writes matches via create()+ALREADY_EXISTS and reaction messages via deterministic ids (profileReaction_{swiper}_{target}) with set(); stripeWebhook fulfillment is guarded by a payment-status check (skips already-completed/refunded on redelivery). Remaining .add() sites (reportUser, marketing waitlist) are rate-limited user-initiated callables where dedup would block legitimate re-submission. No non-idempotent trigger side effect remains unguarded."
+      "summary": "VERIFIED complete. Shared withEventReceipt() exists (functions/src/shared/eventReceipts.ts). Coverage audit: onMatchCreated guards push via withEventReceipt; onMessageCreated uses an in-transaction receipt (stronger than withEventReceipt because it must be atomic with the unread-count write — refactoring to the non-transactional helper would LOSE atomicity, so intentionally left); moderatePhoto/moderateMessage use deterministic flag ids via create()+ALREADY_EXISTS; onSwipeCreated writes matches via create()+ALREADY_EXISTS and reaction messages via deterministic ids (profileReaction_{swiper}_{target}) with set(); stripeWebhook fulfillment is guarded by a payment-status check (skips already-completed/refunded on redelivery). Remaining .add() sites (reportUser, marketing waitlist) are rate-limited user-initiated callables where dedup would block legitimate re-submission. No non-idempotent trigger side effect remains unguarded."
     },
     {
       "id": "BACKEND-ATOMIC-COUNTS-001-DONE",
@@ -281,7 +325,7 @@
       "rules": [
         "FN-DATA-001"
       ],
-      "summary": "VERIFIED complete. Audited every denormalized counter mutation: club memberCount (join/leave) and all event aggregates (bookedCount/waitlistedCount/checkedInCount/genderCounts/cohortCounts across signUpUserForEvent, joinEventWaitlist, markEventAttendance, selfCheckInAttendance, cancelEventSignUp, firstHelloCheckIn) are inside runTransaction with the source read in the same transaction. Invite-link counters use FieldValue.increment in-transaction (or best-effort for metrics). accountDeletion decrements are status-conditioned (idempotent). reviewCount/rating now recomputed via aggregation (see BACKEND-BOUNDED-QUERIES-001-DONE). No race-prone read-modify-write-outside-transaction remains. Residual: two concurrent deletions of the same uid could theoretically double-decrement (non-transactional cross-doc read) \u2014 accepted, gated by client + 3/hour rate limit."
+      "summary": "VERIFIED complete. Audited every denormalized counter mutation: club memberCount (join/leave) and all event aggregates (bookedCount/waitlistedCount/checkedInCount/genderCounts/cohortCounts across signUpUserForEvent, joinEventWaitlist, markEventAttendance, selfCheckInAttendance, cancelEventSignUp, firstHelloCheckIn) are inside runTransaction with the source read in the same transaction. Invite-link counters use FieldValue.increment in-transaction (or best-effort for metrics). accountDeletion decrements are status-conditioned (idempotent). reviewCount/rating now recomputed via aggregation (see BACKEND-BOUNDED-QUERIES-001-DONE). No race-prone read-modify-write-outside-transaction remains. Residual: two concurrent deletions of the same uid could theoretically double-decrement (non-transactional cross-doc read) — accepted, gated by client + 3/hour rate limit."
     },
     {
       "id": "LIB-IMAGE-PRIMITIVE-001-DONE",
@@ -290,7 +334,7 @@
       "rules": [
         "IMAGE-NETWORK-PRIMITIVE-001"
       ],
-      "summary": "CatchNetworkImage primitive exists and all raw Image.network widget sites are migrated (verified: 0 raw Image.network outside lib/core/widgets). Fixed a stale person_avatar doc comment. Regression guard: added tool/check_no_raw_network_image.sh (pure-grep, CI-gated in flutter-ci.yml) scoped to the Image.network WIDGET. The intended home is a catch_ui_lints rule (catch_no_raw_network_image) but the analyzer plugin cannot be recompiled in the current local toolchain (a fresh `dart analyze` plugin compile crashes \u2014 even an inert added const; pristine bytes pass only via cached compile), so a linter rule could not be verified/shipped safely without risking the whole UI-lint gate. NOTE: raw NetworkImage (ImageProvider) is intentionally NOT guarded \u2014 2 legitimate ImageProvider call sites in profile_view_mapper have no Widget-primitive equivalent."
+      "summary": "CatchNetworkImage primitive exists and all raw Image.network widget sites are migrated (verified: 0 raw Image.network outside lib/core/widgets). Fixed a stale person_avatar doc comment. Regression guard: added tool/check_no_raw_network_image.sh (pure-grep, CI-gated in flutter-ci.yml) scoped to the Image.network WIDGET. The intended home is a catch_ui_lints rule (catch_no_raw_network_image) but the analyzer plugin cannot be recompiled in the current local toolchain (a fresh `dart analyze` plugin compile crashes — even an inert added const; pristine bytes pass only via cached compile), so a linter rule could not be verified/shipped safely without risking the whole UI-lint gate. NOTE: raw NetworkImage (ImageProvider) is intentionally NOT guarded — 2 legitimate ImageProvider call sites in profile_view_mapper have no Widget-primitive equivalent."
     },
     {
       "id": "LIB-ORPHAN-ON-FAILURE-001-DONE",
@@ -299,7 +343,7 @@
       "rules": [
         "FLOW-MUTATION-001"
       ],
-      "summary": "Added ImageUploadRepository.deleteByPath (best-effort, tolerates object-not-found) plus uploadChatImageWithMetadata so callers can compensate. chat sendImage now deletes the uploaded image if sendImageMessage fails. create_event submit wraps the photo upload loop + attach write and deletes any already-uploaded photos on failure (reorder isn't possible \u2014 Storage rules require the event doc to exist before photo upload, storage.rules:188). Tests: chat_controller_test (3 cases) + a create_event multi-photo mid-upload-failure compensation test; updated FakeImageUploadRepository in clubs_test_helpers. Verified: analyze clean, chats/hosts/image_uploads/clubs suites green."
+      "summary": "Added ImageUploadRepository.deleteByPath (best-effort, tolerates object-not-found) plus uploadChatImageWithMetadata so callers can compensate. chat sendImage now deletes the uploaded image if sendImageMessage fails. create_event submit wraps the photo upload loop + attach write and deletes any already-uploaded photos on failure (reorder isn't possible — Storage rules require the event doc to exist before photo upload, storage.rules:188). Tests: chat_controller_test (3 cases) + a create_event multi-photo mid-upload-failure compensation test; updated FakeImageUploadRepository in clubs_test_helpers. Verified: analyze clean, chats/hosts/image_uploads/clubs suites green."
     },
     {
       "id": "LIB-DATA-ACCESS-DEDUP-001-DONE",
@@ -309,7 +353,7 @@
         "DATA-ACCESS-BATCH-001",
         "DESIGN-PRIMITIVES-001"
       ],
-      "summary": "DONE: the genuine duplication \u2014 the triplicated private _chunks<T> helper \u2014 was extracted to lib/core/firestore_chunks.dart#chunkedForWhereIn (encodes the whereIn-10 limit) and all repos use it. Re-audit of the 'merge-stream machinery' note: the chunked stream-merge-by-doc-id pattern exists in exactly ONE place (event_repository.watchEventsByIds); watchEventsByParticipation is structurally different (upstream participation sub + generation guard for re-subscription) and fetchUpcomingEventsForClubs + saved_event_repository are simple Future loops already using the shared chunk helper. There is no 1:1 duplicated stream helper left to extract, and forcing a generic over the differing stream shapes would add risk to core event streaming for no real dedup. Batched profile providers for reviews/recap/blocked are done (see PERF-N-PLUS-ONE-001-DONE)."
+      "summary": "DONE: the genuine duplication — the triplicated private _chunks<T> helper — was extracted to lib/core/firestore_chunks.dart#chunkedForWhereIn (encodes the whereIn-10 limit) and all repos use it. Re-audit of the 'merge-stream machinery' note: the chunked stream-merge-by-doc-id pattern exists in exactly ONE place (event_repository.watchEventsByIds); watchEventsByParticipation is structurally different (upstream participation sub + generation guard for re-subscription) and fetchUpcomingEventsForClubs + saved_event_repository are simple Future loops already using the shared chunk helper. There is no 1:1 duplicated stream helper left to extract, and forcing a generic over the differing stream shapes would add risk to core event streaming for no real dedup. Batched profile providers for reviews/recap/blocked are done (see PERF-N-PLUS-ONE-001-DONE)."
     },
     {
       "id": "PERF-N-PLUS-ONE-001-DONE",
@@ -318,7 +362,7 @@
       "rules": [
         "DATA-ACCESS-BATCH-001"
       ],
-      "summary": "DONE: the high-traffic N+1s (per-row/per-tile realtime streams + sequential reads in reviews_history, event_recap roster, safety blocked-list, public_profile) are routed through batched providers (publicProfilesByIdsProvider, watchEventsByIdsProvider) and parallelized. The three 'remaining' notes were re-audited and are NOT actionable: (1) who_is_going renders the full roster (avatar grid + names), so it genuinely needs the roster stream \u2014 it is not a count-only over-fetch; (2) the explore countdowns (explore_events_section, explore_peek_rail) compute COARSE relative-time labels ('in 3 days') on a scrolling discovery feed \u2014 DateTime.now() in build is appropriate and per-second ticking across feed cards would be wasteful; (3) chat_screen is a single screen (not a list) whose watched providers (messages/match/club/event/profile) are all required to render it, and it already .selects uid \u2014 splitting it risks the core chat flow for a marginal gain. Per the success-criteria principle, no churn manufactured for non-problems."
+      "summary": "DONE: the high-traffic N+1s (per-row/per-tile realtime streams + sequential reads in reviews_history, event_recap roster, safety blocked-list, public_profile) are routed through batched providers (publicProfilesByIdsProvider, watchEventsByIdsProvider) and parallelized. The three 'remaining' notes were re-audited and are NOT actionable: (1) who_is_going renders the full roster (avatar grid + names), so it genuinely needs the roster stream — it is not a count-only over-fetch; (2) the explore countdowns (explore_events_section, explore_peek_rail) compute COARSE relative-time labels ('in 3 days') on a scrolling discovery feed — DateTime.now() in build is appropriate and per-second ticking across feed cards would be wasteful; (3) chat_screen is a single screen (not a list) whose watched providers (messages/match/club/event/profile) are all required to render it, and it already .selects uid — splitting it risks the core chat flow for a marginal gain. Per the success-criteria principle, no churn manufactured for non-problems."
     },
     {
       "id": "STORAGE-UPLOAD-CONFORMANCE-001-DONE",
@@ -347,7 +391,7 @@
         "FIRESTORE-PARTIAL-WRITE-001",
         "EVENT-SUCCESS-INDEV-001"
       ],
-      "summary": "Host error surfaces: replaced all 7 bare-Text _ErrorText usages (setup/live/overrides) with the canonical CatchErrorBanner.fromError(error, context: event) and deleted the local _ErrorText class. Companion errors: the companion screen now wraps its content in CatchMutationErrorListener for the 7 fire-and-forget companion mutations (feedback, compatibilityResponse, wingmanRequest, firstHelloStart/Complete, microPodsOptOut, guidedRotationsOptOut) so a failed write surfaces a snackbar instead of being swallowed. Read-modify-set: assessed and documented \u2014 the plan/preference/compatibility docs are single-user-owned (event+uid), so their get-then-set is not a contended read-modify-set; a transaction was trialed but fake_cloud_firestore's _DummyTransaction.set is fire-and-forget and races snapshot-stream reads, so it stays a plain awaited set with an explanatory comment. Verified: analyze clean, 116 event_success tests green."
+      "summary": "Host error surfaces: replaced all 7 bare-Text _ErrorText usages (setup/live/overrides) with the canonical CatchErrorBanner.fromError(error, context: event) and deleted the local _ErrorText class. Companion errors: the companion screen now wraps its content in CatchMutationErrorListener for the 7 fire-and-forget companion mutations (feedback, compatibilityResponse, wingmanRequest, firstHelloStart/Complete, microPodsOptOut, guidedRotationsOptOut) so a failed write surfaces a snackbar instead of being swallowed. Read-modify-set: assessed and documented — the plan/preference/compatibility docs are single-user-owned (event+uid), so their get-then-set is not a contended read-modify-set; a transaction was trialed but fake_cloud_firestore's _DummyTransaction.set is fire-and-forget and races snapshot-stream reads, so it stays a plain awaited set with an explanatory comment. Verified: analyze clean, 116 event_success tests green."
     },
     {
       "id": "CHAT-MOD-CHANNEL-001-DONE",
@@ -406,7 +450,7 @@
         "DEAD-PUBLIC-SYMBOL-001",
         "NO-OP-CONDITIONAL-001"
       ],
-      "summary": "Two prior passes removed all genuinely-dead code (dead files event_pin_renderer/eligibility_step/chat_search_field; dead classes DashboardEmpty/EventCapacityProgress/ErrorMessageWidget; ChatController.resetUnread, CountryMarket.currencyMinorUnitFactor, AppShellKeys.offlineNotice, LocationCoordinate.isValid; several no-op conditionals incl. a latent mutation-error bug). Final assessment of the 3 flagged remainders: all are LATENT/PRE-WIRED capability, not harmful dead code, and deleting them would discard possibly-intended work, so they are deliberately retained: (a) instagram_page is an 87-line, fully-built but unrouted onboarding step (Instagram-handle collection) \u2014 a likely-planned feature, not abandoned code; (b) the analytics taxonomy 'dead funnel' is a pre-defined event taxonomy (standard to define ahead of emission); (c) the chat unread plural arm is latent capability for unreadCount>1. Per deletion-safety (don't remove what you didn't create when intent is ambiguous), these stay. event_discovery_repository 'dead any arm' remains required for switch exhaustiveness."
+      "summary": "Two prior passes removed all genuinely-dead code (dead files event_pin_renderer/eligibility_step/chat_search_field; dead classes DashboardEmpty/EventCapacityProgress/ErrorMessageWidget; ChatController.resetUnread, CountryMarket.currencyMinorUnitFactor, AppShellKeys.offlineNotice, LocationCoordinate.isValid; several no-op conditionals incl. a latent mutation-error bug). Final assessment of the 3 flagged remainders: all are LATENT/PRE-WIRED capability, not harmful dead code, and deleting them would discard possibly-intended work, so they are deliberately retained: (a) instagram_page is an 87-line, fully-built but unrouted onboarding step (Instagram-handle collection) — a likely-planned feature, not abandoned code; (b) the analytics taxonomy 'dead funnel' is a pre-defined event taxonomy (standard to define ahead of emission); (c) the chat unread plural arm is latent capability for unreadCount>1. Per deletion-safety (don't remove what you didn't create when intent is ambiguous), these stay. event_discovery_repository 'dead any arm' remains required for switch exhaustiveness."
     },
     {
       "id": "STREAM-LIFECYCLE-QUEUE-DONE",
@@ -427,7 +471,7 @@
         "ERROR-CATALOG-001",
         "DESIGN-PRIMITIVES-001"
       ],
-      "summary": "The branded error-primitive family (CatchErrorState/CatchSliverErrorState/CatchInlineErrorState/CatchErrorScaffold/showCatchErrorSnackBar/CatchErrorBanner) and the backend error layer (BackendErrorContext, withBackendErrorContext/Stream, normalizeBackendError, appErrorDescriptor/Message/Title) exist and the hard migration is complete. Verified 2026-06-16: backend_error_candidates scanner at mustMigrate=0 AND review=0 (8 drift candidates introduced since the last pass \u2014 app_bootstrap bootstrap logging, my deleteByPath best-effort swallow, and the genuinely-wrapped fcm_service/launch_access writes \u2014 were each verified safe and given documented intentional/verified classifications consistent with the scanner's existing path-classification design)."
+      "summary": "The branded error-primitive family (CatchErrorState/CatchSliverErrorState/CatchInlineErrorState/CatchErrorScaffold/showCatchErrorSnackBar/CatchErrorBanner) and the backend error layer (BackendErrorContext, withBackendErrorContext/Stream, normalizeBackendError, appErrorDescriptor/Message/Title) exist and the hard migration is complete. Verified 2026-06-16: backend_error_candidates scanner at mustMigrate=0 AND review=0 (8 drift candidates introduced since the last pass — app_bootstrap bootstrap logging, my deleteByPath best-effort swallow, and the genuinely-wrapped fcm_service/launch_access writes — were each verified safe and given documented intentional/verified classifications consistent with the scanner's existing path-classification design)."
     },
     {
       "id": "DOC-HYGIENE-QUEUE-DONE",
@@ -508,7 +552,7 @@
         "FIRESTORE-RULES-TEST-001",
         "CODEGEN-001"
       ],
-      "summary": "Core backend-owned notification fan-out is complete and watch-only (verified 2026-06-16: producers across onMatchCreated, onMessageCreated, clubClaims, mutateEvent, cancelEventSignUp + shared notifications.ts; durable notifications/{uid}/items docs; client reads watchActivityNotificationsProvider in activity/dashboard; push gated by granular prefs + two-tier club model). The only remaining work is cancelled-run display/copy QA, settings/permission UX, and device QA \u2014 not a missing fan-out gap."
+      "summary": "Core backend-owned notification fan-out is complete and watch-only (verified 2026-06-16: producers across onMatchCreated, onMessageCreated, clubClaims, mutateEvent, cancelEventSignUp + shared notifications.ts; durable notifications/{uid}/items docs; client reads watchActivityNotificationsProvider in activity/dashboard; push gated by granular prefs + two-tier club model). The only remaining work is cancelled-run display/copy QA, settings/permission UX, and device QA — not a missing fan-out gap."
     },
     {
       "id": "RUN-CANCELLATION-UI-POLICY-001-DONE",
@@ -531,7 +575,7 @@
         "DOC-HYGIENE-001",
         "EVENT-POLICY-INDEV-001"
       ],
-      "summary": "Conservative safe default applied + implemented (per the 'apply safe defaults' directive): post-publish hosts may edit ONLY operational fields (unlocked schedule, meeting point, pinned starting point, extra directions, distance, pace, description) via edit_hosted_event_screen; the risky fields (title, capacity, price, admission/event policy, invite setup, photo replacement) stay LOCKED after publish. Expanding the editable set is deliberately product-gated because it requires decisions on host notification copy, refund/payment implications, schedule-lock behavior, event-policy snapshot migration, invite-code safety, and photo moderation \u2014 none of which are safe to default. The safe (locked) default is the current behavior."
+      "summary": "Conservative safe default applied + implemented (per the 'apply safe defaults' directive): post-publish hosts may edit ONLY operational fields (unlocked schedule, meeting point, pinned starting point, extra directions, distance, pace, description) via edit_hosted_event_screen; the risky fields (title, capacity, price, admission/event policy, invite setup, photo replacement) stay LOCKED after publish. Expanding the editable set is deliberately product-gated because it requires decisions on host notification copy, refund/payment implications, schedule-lock behavior, event-policy snapshot migration, invite-code safety, and photo moderation — none of which are safe to default. The safe (locked) default is the current behavior."
     },
     {
       "id": "PROFILE-PHONE-OTP-001-DONE",
@@ -540,7 +584,7 @@
       "rules": [
         "FN-AUTHZ-001"
       ],
-      "summary": "Conservative safe default applied + documented: phone stays DISPLAY-ONLY (lib/user_profile/presentation/widgets/profile_tab.dart) with an in-code rationale \u2014 inline editing would diverge the Firestore phoneNumber from the Firebase Auth OTP identity with no re-verification. Re-enabling editing requires a full OTP re-verification flow that updates the Auth phone credential first; that is a future feature needing real SMS/OTP + device testing (cannot be built/verified in this environment), and keeping phone read-only is the low-risk default."
+      "summary": "Conservative safe default applied + documented: phone stays DISPLAY-ONLY (lib/user_profile/presentation/widgets/profile_tab.dart) with an in-code rationale — inline editing would diverge the Firestore phoneNumber from the Firebase Auth OTP identity with no re-verification. Re-enabling editing requires a full OTP re-verification flow that updates the Auth phone credential first; that is a future feature needing real SMS/OTP + device testing (cannot be built/verified in this environment), and keeping phone read-only is the low-risk default."
     },
     {
       "id": "PROFILE-PHOTO-RETIRE-LEGACY-001-DONE",
@@ -553,7 +597,7 @@
     },
     {
       "id": "SWIPES-RENAME-CONTINUE-001-DONE",
-      "title": "Continue swipes \u2192 profileDecisions rename from dual_write to retire_old",
+      "title": "Continue swipes → profileDecisions rename from dual_write to retire_old",
       "completed": "2026-06-16",
       "rules": [
         "FIRESTORE-RULES-TEST-001",
@@ -591,7 +635,7 @@
         "CONTROLLER-BOUNDARY-001",
         "PROVIDER-SEAM-001"
       ],
-      "summary": "Done. Rules simplified with the relationship migration (direct event/club writes denied, projections gone, swipe eligibility via eventParticipations, reviews behind callables, retired fields invalid). Verified 2026-06-16: users/{uid} is owner-read-only; the only direct client users read is the owner updating their own fcmToken; public surfaces use publicProfiles. The one open question (active clubMemberships authed-readability) is a deliberate product/privacy decision, NOT a safe default \u2014 the current rule (active memberships readable by authed users) is preserved because roster / who's-going / member-count features depend on cross-user reads; tightening it would break those features and requires product confirmation. Documented as the standing decision."
+      "summary": "Done. Rules simplified with the relationship migration (direct event/club writes denied, projections gone, swipe eligibility via eventParticipations, reviews behind callables, retired fields invalid). Verified 2026-06-16: users/{uid} is owner-read-only; the only direct client users read is the owner updating their own fcmToken; public surfaces use publicProfiles. The one open question (active clubMemberships authed-readability) is a deliberate product/privacy decision, NOT a safe default — the current rule (active memberships readable by authed users) is preserved because roster / who's-going / member-count features depend on cross-user reads; tightening it would break those features and requires product confirmation. Documented as the standing decision."
     },
     {
       "id": "MIGRATION-VALIDATION-001-DONE",
@@ -653,7 +697,7 @@
         "DESIGN-PRIMITIVES-001",
         "UI-LINT-001"
       ],
-      "summary": "Complete. (1) All 40 core primitive CLASSES are Catch-prefixed + semantically named (codegen regenerated). (2) Primitive FILES renamed to catch_*.dart (28 files this pass: activity_*, async_value_widget->catch_async_value_view, error_banner->catch_error_banner, icon_btn->catch_icon_button, mutation_error_snackbar_listener->catch_mutation_error_listener, rich_share_card_sheet->catch_share_card_sheet, etc.) with all imports updated + 67 directives_ordering fixes; analyze clean, 1336 client + golden tests pass. (3) CatchNetworkImage single image seam (all sites migrated). (4) noRawNetworkImage drift gate shipped (tool/check_no_raw_network_image.sh, CI-wired; the analyzer rule was blocked by the local plugin-recompile crash documented in memory). (5) BoxDecoration->CatchSurface AUDIT: inspected all 34 feature-level decoration:BoxDecoration sites \u2014 they are legitimately bespoke (LinearGradient scrims, border-only dividers, structural backgrounds, celebration custom-cream styling, Ink+InkWell ripple map cards with CustomPaint, small date-marker/avatar chips, in-dev event_success, exempt labs). BoxDecoration is the correct tool for these; genuine filled/bordered card surfaces already use CatchSurface/CatchSectionCard. A mass conversion was NOT warranted and would be incorrect (CatchSurface cannot model gradients/scrims/dividers). (6) Marginal dedups (role->chat-route 2-site ternary, level labels, chat bubble shape) intentionally left un-abstracted per the over-abstraction guard. Migration map: docs/audit_registry/deep_semantic_audit_2026-06/catalogue_migration_map.md."
+      "summary": "Complete. (1) All 40 core primitive CLASSES are Catch-prefixed + semantically named (codegen regenerated). (2) Primitive FILES renamed to catch_*.dart (28 files this pass: activity_*, async_value_widget->catch_async_value_view, error_banner->catch_error_banner, icon_btn->catch_icon_button, mutation_error_snackbar_listener->catch_mutation_error_listener, rich_share_card_sheet->catch_share_card_sheet, etc.) with all imports updated + 67 directives_ordering fixes; analyze clean, 1336 client + golden tests pass. (3) CatchNetworkImage single image seam (all sites migrated). (4) noRawNetworkImage drift gate shipped (tool/check_no_raw_network_image.sh, CI-wired; the analyzer rule was blocked by the local plugin-recompile crash documented in memory). (5) BoxDecoration->CatchSurface AUDIT: inspected all 34 feature-level decoration:BoxDecoration sites — they are legitimately bespoke (LinearGradient scrims, border-only dividers, structural backgrounds, celebration custom-cream styling, Ink+InkWell ripple map cards with CustomPaint, small date-marker/avatar chips, in-dev event_success, exempt labs). BoxDecoration is the correct tool for these; genuine filled/bordered card surfaces already use CatchSurface/CatchSectionCard. A mass conversion was NOT warranted and would be incorrect (CatchSurface cannot model gradients/scrims/dividers). (6) Marginal dedups (role->chat-route 2-site ternary, level labels, chat bubble shape) intentionally left un-abstracted per the over-abstraction guard. Migration map: docs/audit_registry/deep_semantic_audit_2026-06/catalogue_migration_map.md."
     },
     {
       "id": "CONTRACT-DART-GEN-002-DONE",
@@ -662,7 +706,7 @@
       "rules": [
         "CODEGEN-001"
       ],
-      "summary": "Built tool/contracts/generate_domain_classes.mjs, a declarative schema-driven domain-class generator (delegated, then merged + adversarially reviewed + fixed). It emits the safely-generatable domain classes from contracts/firestore schemas \u2014 Swipe, ClubMembership, Review, EventConstraints \u2014 with @TimestampConverter, schema-derived enums, freezed equality, and a per-field 'schema still contains this field' assertion so a removed/renamed contract field fails generation loudly (the core drift-protection goal). Derived getters/behavior moved to *_extensions.dart files re-exported from the generated class. Complex classes with custom serialization/migration/business logic stay hand-written with documented HAND_WRITTEN_NOTES reasons: Event (heavy logic + non-schema defaults), PublicProfile (legacy bio migration), Match (readValue coalescing), ProfilePhoto (multi-format date + sentinel copyWith), prompt answers (catalog coupling), Club/value objects, and Payment (per-member docs + unknownEnumValue decode fail-safe). The generator's --check parity gate is now wired into contracts-ci.yml + tool/check_data_contract.sh. NOTE (review fix): the first delegated pass mis-stamped payment.dart as generated while the generator crashed on it; corrected \u2014 Payment is now honest hand-written and the generator runs clean + idempotent. Full 'no hand-written *.dart for all 32' was NOT forced: the remaining classes legitimately need hand-written custom logic, and the generator infrastructure + drift assertions + generatable subset are the high-quality, correct outcome. Verified: --check passes, analyze clean, domain parity + full suite green."
+      "summary": "Built tool/contracts/generate_domain_classes.mjs, a declarative schema-driven domain-class generator (delegated, then merged + adversarially reviewed + fixed). It emits the safely-generatable domain classes from contracts/firestore schemas — Swipe, ClubMembership, Review, EventConstraints — with @TimestampConverter, schema-derived enums, freezed equality, and a per-field 'schema still contains this field' assertion so a removed/renamed contract field fails generation loudly (the core drift-protection goal). Derived getters/behavior moved to *_extensions.dart files re-exported from the generated class. Complex classes with custom serialization/migration/business logic stay hand-written with documented HAND_WRITTEN_NOTES reasons: Event (heavy logic + non-schema defaults), PublicProfile (legacy bio migration), Match (readValue coalescing), ProfilePhoto (multi-format date + sentinel copyWith), prompt answers (catalog coupling), Club/value objects, and Payment (per-member docs + unknownEnumValue decode fail-safe). The generator's --check parity gate is now wired into contracts-ci.yml + tool/check_data_contract.sh. NOTE (review fix): the first delegated pass mis-stamped payment.dart as generated while the generator crashed on it; corrected — Payment is now honest hand-written and the generator runs clean + idempotent. Full 'no hand-written *.dart for all 32' was NOT forced: the remaining classes legitimately need hand-written custom logic, and the generator infrastructure + drift assertions + generatable subset are the high-quality, correct outcome. Verified: --check passes, analyze clean, domain parity + full suite green."
     },
     {
       "id": "APP-ERROR-INFRA-001-DONE",
@@ -685,7 +729,7 @@
         "DESIGN-PRIMITIVES-001",
         "WIDGET-TEST-001"
       ],
-      "summary": "CelebrationEffectsController now layers an OPTIONAL one-shot sound on top of the existing per-moment haptic, mirroring the proven event_success audio pattern: a lazily-created lowLatency AudioPlayer plays AssetSource('audio/celebration/<kind>.mp3') with per-kind volume (match heaviest, check-in lightest), wrapped in _runSafely so a missing asset / absent plugin (web/unit-test) / transient error gracefully no-ops and is remembered for the session. The sound is 'optional' in two senses consistent with the codebase: the screen-level playEffects flag already gates whether effects run, and the audio is a non-mandatory enhancement that degrades to haptic-only when the file isn't present. Added assets/audio/celebration/ (registered in pubspec) + a README documenting the 4 needed files (match/event_created/event_joined/checked_in) \u2014 the actual audio files are a design deliverable, exactly like the already-shipped event_success audio slots. Verified: analyze clean, celebration screen tests green."
+      "summary": "CelebrationEffectsController now layers an OPTIONAL one-shot sound on top of the existing per-moment haptic, mirroring the proven event_success audio pattern: a lazily-created lowLatency AudioPlayer plays AssetSource('audio/celebration/<kind>.mp3') with per-kind volume (match heaviest, check-in lightest), wrapped in _runSafely so a missing asset / absent plugin (web/unit-test) / transient error gracefully no-ops and is remembered for the session. The sound is 'optional' in two senses consistent with the codebase: the screen-level playEffects flag already gates whether effects run, and the audio is a non-mandatory enhancement that degrades to haptic-only when the file isn't present. Added assets/audio/celebration/ (registered in pubspec) + a README documenting the 4 needed files (match/event_created/event_joined/checked_in) — the actual audio files are a design deliverable, exactly like the already-shipped event_success audio slots. Verified: analyze clean, celebration screen tests green."
     }
   ]
 }

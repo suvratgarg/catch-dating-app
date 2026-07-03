@@ -8,10 +8,12 @@ import 'package:catch_dating_app/auth/presentation/otp_page.dart';
 import 'package:catch_dating_app/auth/presentation/phone_page.dart';
 import 'package:catch_dating_app/auth/presentation/auth_session_controller.dart';
 import 'package:catch_dating_app/events/presentation/calendar/calendar_screen.dart';
+import 'package:catch_dating_app/events/presentation/calendar/calendar_screen_state.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
 import 'package:catch_dating_app/core/external_links.dart';
+import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -26,15 +28,16 @@ import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
+import 'package:catch_dating_app/events/presentation/event_location_map_state.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/force_update/data/app_version_config_provider.dart';
 import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
 import 'package:catch_dating_app/force_update/domain/app_version_config.dart';
 import 'package:catch_dating_app/force_update/presentation/update_required_screen.dart';
-import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
-import 'package:catch_dating_app/image_uploads/presentation/profile_photo_editor_screen.dart';
-import 'package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart';
-import 'package:catch_dating_app/image_uploads/presentation/widgets/photo_slot.dart';
+import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
+import 'package:catch_dating_app/image_uploads/shared/profile_photo_editor_screen.dart';
+import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
+import 'package:catch_dating_app/image_uploads/shared/photo_slot.dart';
 import 'package:catch_dating_app/labs/design_fixtures/profile_surface_fixtures.dart';
 import 'package:catch_dating_app/labs/design_fixtures/utility_surface_fixtures.dart';
 import 'package:catch_dating_app/launch_access/data/launch_access_config_provider.dart';
@@ -56,9 +59,9 @@ import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_screen.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_state.dart';
-import 'package:catch_dating_app/reviews/presentation/reviews_section.dart';
-import 'package:catch_dating_app/reviews/presentation/star_rating.dart';
-import 'package:catch_dating_app/reviews/presentation/write_review_sheet.dart';
+import 'package:catch_dating_app/reviews/shared/reviews_section.dart';
+import 'package:catch_dating_app/reviews/shared/star_rating.dart';
+import 'package:catch_dating_app/reviews/shared/write_review_sheet.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/safety/presentation/settings_controller.dart';
@@ -118,7 +121,20 @@ final _calendarSavedEvents = <Event>[
     priceInPaise: 120000,
   ),
 ];
+final _calendarSummary = CalendarEventSummary.from(
+  signedUpEvents: _calendarJoinedEvents,
+  savedEvents: _calendarSavedEvents,
+  now: _calendarNow,
+);
+const _calendarWeekHeaderPreviewHeight = 150.0;
+const _calendarMonthHeaderPreviewHeight = 360.0;
 const _calendarClubNames = {'design-club': 'Sea Face Social'};
+const double _utilityDeviceFrameMaxWidth = 390;
+const double _utilityDeviceFrameHeight = 720;
+const double _utilitySheetFrameHeight = 560;
+const double _utilityDialogFrameHeight = 360;
+const double _utilityPhotoSlotWidth = 168;
+const double _utilityPhotoSlotHeight = 224;
 const _forceUpdateConfig = AppVersionConfig(
   minVersion: '4.2.0',
   minBuildAndroid: 420,
@@ -198,12 +214,70 @@ Widget authScreenStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'phone entry',
-        child: const _DeviceFrame(child: _AuthScope(child: AuthScreen())),
+        child: _authFrame(child: const AuthScreen()),
       ),
       _StateCard(
-        label: 'otp entry',
-        child: const _DeviceFrame(
-          child: _AuthScope(step: AuthStep.otp, child: AuthScreen()),
+        label: 'otp entry cooldown',
+        child: _authFrame(
+          mode: _AuthPreviewMode.otpEntry,
+          child: const AuthScreen(),
+        ),
+      ),
+      _StateCard(
+        label: 'send code pending',
+        child: _authFrame(
+          mode: _AuthPreviewMode.sendCodePending,
+          child: const AuthScreen(),
+        ),
+      ),
+      _StateCard(
+        label: 'send code error',
+        child: _authFrame(
+          mode: _AuthPreviewMode.sendCodeError,
+          child: const AuthScreen(),
+        ),
+      ),
+      _StateCard(
+        label: 'verify code pending',
+        child: _authFrame(
+          mode: _AuthPreviewMode.verifyCodePending,
+          child: const AuthScreen(),
+        ),
+      ),
+      _StateCard(
+        label: 'verify code error',
+        child: _authFrame(
+          mode: _AuthPreviewMode.verifyCodeError,
+          child: const AuthScreen(),
+        ),
+      ),
+      _StateCard(
+        label: 'resend pending',
+        child: _authFrame(
+          mode: _AuthPreviewMode.resendPending,
+          child: const AuthScreen(),
+        ),
+      ),
+      _StateCard(
+        label: 'resend error',
+        child: _authFrame(
+          mode: _AuthPreviewMode.resendError,
+          child: const AuthScreen(),
+        ),
+      ),
+      _StateCard(
+        label: 'phone entry text scale 2',
+        child: _authFrame(
+          textScaler: const TextScaler.linear(2),
+          child: const AuthScreen(),
+        ),
+      ),
+      _StateCard(
+        label: 'otp reduced motion',
+        child: _authFrame(
+          mode: _AuthPreviewMode.otpEntry,
+          disableAnimations: true,
+          child: const AuthScreen(),
         ),
       ),
     ],
@@ -222,7 +296,56 @@ Widget phonePageStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'default country',
-        child: const _DeviceFrame(child: _AuthScope(child: PhonePage())),
+        child: _authFrame(child: const PhonePage()),
+      ),
+      _StateCard(
+        label: 'send code pending',
+        child: _authFrame(
+          mode: _AuthPreviewMode.sendCodePending,
+          child: const PhonePage(),
+        ),
+      ),
+      _StateCard(
+        label: 'send code error',
+        child: _authFrame(
+          mode: _AuthPreviewMode.sendCodeError,
+          child: const PhonePage(),
+        ),
+      ),
+      _StateCard(
+        label: 'text scale 2',
+        child: _authFrame(
+          textScaler: const TextScaler.linear(2),
+          child: const PhonePage(),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Country code selector states',
+  type: CountryCodeSelector,
+  path: '[P3 utility surfaces]/Auth',
+)
+Widget countryCodeSelectorStates(BuildContext context) {
+  return const _UtilityCatalog(
+    title: 'CountryCodeSelector',
+    contractId: 'component.auth.country_code_selector',
+    children: [
+      _StateCard(
+        label: 'India default',
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: CountryCodeSelector(countryCode: '+91', onChanged: _noopCode),
+        ),
+      ),
+      _StateCard(
+        label: 'US default',
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: CountryCodeSelector(countryCode: '+1', onChanged: _noopCode),
+        ),
       ),
     ],
   );
@@ -239,9 +362,54 @@ Widget otpPageStates(BuildContext context) {
     contractId: 'screen.auth.otp',
     children: [
       _StateCard(
-        label: 'verification code',
-        child: const _DeviceFrame(
-          child: _AuthScope(step: AuthStep.otp, child: OtpPage()),
+        label: 'verification code cooldown',
+        child: _authFrame(
+          mode: _AuthPreviewMode.otpEntry,
+          child: const OtpPage(),
+        ),
+      ),
+      _StateCard(
+        label: 'verify pending',
+        child: _authFrame(
+          mode: _AuthPreviewMode.verifyCodePending,
+          child: const OtpPage(),
+        ),
+      ),
+      _StateCard(
+        label: 'verify error',
+        child: _authFrame(
+          mode: _AuthPreviewMode.verifyCodeError,
+          child: const OtpPage(),
+        ),
+      ),
+      _StateCard(
+        label: 'resend pending',
+        child: _authFrame(
+          mode: _AuthPreviewMode.resendPending,
+          child: const OtpPage(),
+        ),
+      ),
+      _StateCard(
+        label: 'resend error',
+        child: _authFrame(
+          mode: _AuthPreviewMode.resendError,
+          child: const OtpPage(),
+        ),
+      ),
+      _StateCard(
+        label: 'text scale 2',
+        child: _authFrame(
+          mode: _AuthPreviewMode.otpEntry,
+          textScaler: const TextScaler.linear(2),
+          child: const OtpPage(),
+        ),
+      ),
+      _StateCard(
+        label: 'reduced motion',
+        child: _authFrame(
+          mode: _AuthPreviewMode.otpEntry,
+          disableAnimations: true,
+          child: const OtpPage(),
         ),
       ),
     ],
@@ -420,6 +588,87 @@ Widget orderedPhotoPickerStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Ordered tile states',
+  type: OrderedPhotoTile,
+  path: '[P3 utility surfaces]/Image uploads',
+)
+Widget orderedPhotoTileStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'OrderedPhotoTile',
+    contractId: 'component.image_uploads.ordered_photo_tile',
+    children: [
+      _StateCard(
+        label: 'cover removable',
+        child: Center(
+          child: SizedBox(
+            width: 260,
+            height: 146,
+            child: OrderedPhotoTile(
+              photo: _orderedPhotoPreviews.first,
+              index: 0,
+              canReorder: true,
+              showCoverBadge: true,
+              showReorderHandle: true,
+              onRemove: _noop,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'read only',
+        child: Center(
+          child: SizedBox(
+            width: 260,
+            height: 146,
+            child: OrderedPhotoTile(
+              photo: _orderedPhotoPreviews.last,
+              index: 1,
+              canReorder: false,
+              showCoverBadge: false,
+              showReorderHandle: false,
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Ordered add tile states',
+  type: OrderedPhotoAddTile,
+  path: '[P3 utility surfaces]/Image uploads',
+)
+Widget orderedPhotoAddTileStates(BuildContext context) {
+  return const _UtilityCatalog(
+    title: 'OrderedPhotoAddTile',
+    contractId: 'component.image_uploads.ordered_photo_add_tile',
+    children: [
+      _StateCard(
+        label: 'active',
+        child: Center(
+          child: SizedBox(
+            width: 260,
+            height: 146,
+            child: OrderedPhotoAddTile(label: 'Add event photos', onTap: _noop),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'disabled compact',
+        child: Center(
+          child: SizedBox(
+            width: 160,
+            height: 82,
+            child: OrderedPhotoAddTile(label: 'Add more'),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Slot states',
   type: PhotoSlot,
   path: '[P3 utility surfaces]/Image uploads',
@@ -474,6 +723,56 @@ Widget photoSlotStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Main badge states',
+  type: PhotoSlotMainBadge,
+  path: '[P3 utility surfaces]/Image uploads',
+)
+Widget photoSlotMainBadgeStates(BuildContext context) {
+  return const _UtilityCatalog(
+    title: 'PhotoSlotMainBadge',
+    contractId: 'component.image_uploads.photo_slot_main_badge',
+    children: [
+      _StateCard(
+        label: 'main badge',
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: PhotoSlotMainBadge(label: 'MAIN'),
+        ),
+      ),
+      _StateCard(
+        label: 'cover badge',
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: PhotoSlotMainBadge(label: 'Cover'),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Striped placeholder states',
+  type: StripedPhotoPlaceholder,
+  path: '[P3 utility surfaces]/Image uploads',
+)
+Widget stripedPhotoPlaceholderStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'StripedPhotoPlaceholder',
+    contractId: 'component.image_uploads.striped_photo_placeholder',
+    children: [
+      _StateCard(
+        label: 'first slot',
+        child: _photoSlotFrame(child: const StripedPhotoPlaceholder(index: 0)),
+      ),
+      _StateCard(
+        label: 'sixth slot',
+        child: _photoSlotFrame(child: const StripedPhotoPlaceholder(index: 5)),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Editor states',
   type: ProfilePhotoEditorScreen,
   path: '[P3 utility surfaces]/Image uploads',
@@ -493,6 +792,60 @@ Widget profilePhotoEditorScreenStates(BuildContext context) {
                 photo: _profilePhotos.first,
                 canDelete: true,
               ),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Editor preview states',
+  type: ProfilePhotoEditorPreview,
+  path: '[P3 utility surfaces]/Image uploads',
+)
+Widget profilePhotoEditorPreviewStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'ProfilePhotoEditorPreview',
+    contractId: 'component.image_uploads.profile_photo_editor_preview',
+    children: [
+      _StateCard(
+        label: 'existing image',
+        child: Center(
+          child: SizedBox(
+            width: 260,
+            height: 347,
+            child: ProfilePhotoEditorPreview(
+              cropKey: GlobalKey(),
+              loading: false,
+              url: _profilePhotos.first.url,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'loading',
+        child: Center(
+          child: SizedBox(
+            width: 260,
+            height: 347,
+            child: ProfilePhotoEditorPreview(
+              cropKey: GlobalKey(),
+              loading: true,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'empty',
+        child: Center(
+          child: SizedBox(
+            width: 260,
+            height: 347,
+            child: ProfilePhotoEditorPreview(
+              cropKey: GlobalKey(),
+              loading: false,
             ),
           ),
         ),
@@ -589,18 +942,18 @@ Widget forceUpdateCheckErrorScreenStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Screen states',
-  type: UpdateRequiredScreen,
+  type: UpdateRequiredContent,
   path: '[P3 utility surfaces]/Force update',
 )
 Widget updateRequiredScreenStates(BuildContext context) {
   return _UtilityCatalog(
-    title: 'UpdateRequiredScreen',
+    title: 'UpdateRequiredContent',
     contractId: 'screen.force_update.required',
     children: [
       _StateCard(
         label: 'store link configured',
         child: const _DeviceFrame(
-          child: _ForceUpdateStoreScope(child: UpdateRequiredScreen()),
+          child: UpdateRequiredContent(onUpdateNow: _noop),
         ),
       ),
     ],
@@ -615,7 +968,7 @@ Widget updateRequiredScreenStates(BuildContext context) {
 Widget calendarScreenStates(BuildContext context) {
   return _UtilityCatalog(
     title: 'CalendarScreen',
-    contractId: 'screen.calendar',
+    contractId: 'screen.calendar.home',
     children: [
       _StateCard(
         label: 'auth loading',
@@ -695,7 +1048,364 @@ Widget calendarScreenStates(BuildContext context) {
           ),
         ),
       ),
+      _StateCard(
+        label: 'text scale 2.0',
+        child: _DeviceFrame(
+          child: _MediaOverride(
+            textScaler: const TextScaler.linear(2),
+            child: _CalendarScope(
+              child: CalendarScreen(referenceNow: _calendarNow),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'reduced motion',
+        child: _DeviceFrame(
+          child: _MediaOverride(
+            disableAnimations: true,
+            child: _CalendarScope(
+              child: CalendarScreen(referenceNow: _calendarNow),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'dark theme',
+        child: Theme(
+          data: AppTheme.dark,
+          child: _DeviceFrame(
+            child: _CalendarScope(
+              child: CalendarScreen(referenceNow: _calendarNow),
+            ),
+          ),
+        ),
+      ),
     ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Loading state',
+  type: CalendarLoadingScreen,
+  path: '[P3 utility surfaces]/Calendar/Components',
+)
+Widget calendarLoadingScreenStates(BuildContext context) {
+  return const _DeviceFrame(child: Scaffold(body: CalendarLoadingScreen()));
+}
+
+@widgetbook.UseCase(
+  name: 'Agenda section states',
+  type: CalendarAgendaSliverSection,
+  path: '[P3 utility surfaces]/Calendar/Components',
+)
+Widget calendarAgendaSliverSectionStates(BuildContext context) {
+  final readyState = CalendarAgendaSectionState.from(
+    summary: _calendarSummary,
+    clubNames: const CalendarClubNameLookupState.ready(_calendarClubNames),
+  );
+  final emptyState = CalendarAgendaSectionState.from(
+    summary: CalendarEventSummary.from(
+      signedUpEvents: const <Event>[],
+      savedEvents: const <Event>[],
+      now: _calendarNow,
+    ),
+    clubNames: const CalendarClubNameLookupState.ready(_calendarClubNames),
+  );
+
+  Key dayKey(DateTime date) {
+    return ValueKey<String>(
+      'widgetbook-calendar-agenda-${date.toIso8601String()}',
+    );
+  }
+
+  return _UtilityCatalog(
+    title: 'CalendarAgendaSliverSection',
+    contractId: 'component.calendar.agenda_section',
+    children: [
+      _StateCard(
+        label: 'ready rows',
+        child: SizedBox(
+          height: _utilitySheetFrameHeight,
+          child: CustomScrollView(
+            slivers: [
+              CalendarAgendaSliverSection(
+                state: readyState,
+                dayKeyBuilder: dayKey,
+                onEventSelected: (_) {},
+                onRetryClubNames: _noop,
+              ),
+            ],
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'club names loading',
+        child: SizedBox(
+          height: _utilityDialogFrameHeight,
+          child: CustomScrollView(
+            slivers: [
+              CalendarAgendaSliverSection(
+                state: const CalendarAgendaClubNamesLoadingState(),
+                dayKeyBuilder: dayKey,
+                onEventSelected: (_) {},
+                onRetryClubNames: _noop,
+              ),
+            ],
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'club names error',
+        child: SizedBox(
+          height: _utilityDialogFrameHeight,
+          child: CustomScrollView(
+            slivers: [
+              CalendarAgendaSliverSection(
+                state: CalendarAgendaClubNamesErrorState(
+                  StateError('Club names failed'),
+                ),
+                dayKeyBuilder: dayKey,
+                onEventSelected: (_) {},
+                onRetryClubNames: _noop,
+              ),
+            ],
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'empty',
+        child: SizedBox(
+          height: _utilityDialogFrameHeight,
+          child: CustomScrollView(
+            slivers: [
+              CalendarAgendaSliverSection(
+                state: emptyState,
+                dayKeyBuilder: dayKey,
+                onEventSelected: (_) {},
+                onRetryClubNames: _noop,
+              ),
+            ],
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Header states',
+  type: CalendarDateHeader,
+  path: '[P3 utility surfaces]/Calendar/Components',
+)
+Widget calendarDateHeaderStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'CalendarDateHeader',
+    contractId: 'component.calendar.date_header',
+    children: [
+      _StateCard(
+        label: 'week strip',
+        child: SizedBox(
+          height: _calendarWeekHeaderPreviewHeight,
+          child: CalendarDateHeader(
+            summary: _calendarSummary,
+            selectedDate: _calendarSummary.anchorDate,
+            expanded: false,
+            onDateSelected: (_) {},
+            onTodayPressed: _noop,
+            onVerticalDragDelta: (_) {},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'month grid',
+        child: SizedBox(
+          height: _calendarMonthHeaderPreviewHeight,
+          child: CalendarDateHeader(
+            summary: _calendarSummary,
+            selectedDate: _calendarSummary.anchorDate,
+            expanded: true,
+            onDateSelected: (_) {},
+            onTodayPressed: _noop,
+            onVerticalDragDelta: (_) {},
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Skeleton state',
+  type: CalendarDateHeaderSkeleton,
+  path: '[P3 utility surfaces]/Calendar/Components',
+)
+Widget calendarDateHeaderSkeletonStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'CalendarDateHeaderSkeleton',
+    contractId: 'component.calendar.date_header_skeleton',
+    children: const [
+      _StateCard(label: 'loading', child: CalendarDateHeaderSkeleton()),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Skeleton state',
+  type: CalendarWeekStripSkeleton,
+  path: '[P3 utility surfaces]/Calendar/Components',
+)
+Widget calendarWeekStripSkeletonStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'CalendarWeekStripSkeleton',
+    contractId: 'component.calendar.week_strip_skeleton',
+    children: const [
+      _StateCard(label: 'loading', child: CalendarWeekStripSkeleton()),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Title row state',
+  type: CalendarTitleRow,
+  path: '[P3 utility surfaces]/Calendar/Components',
+)
+Widget calendarTitleRowStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'CalendarTitleRow',
+    contractId: 'component.calendar.title_row',
+    children: [
+      _StateCard(
+        label: 'current month',
+        child: CalendarTitleRow(title: 'July 2026', onTodayPressed: _noop),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Stats state',
+  type: CalendarStatsHeader,
+  path: '[P3 utility surfaces]/Calendar/Components',
+)
+Widget calendarStatsHeaderStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'CalendarStatsHeader',
+    contractId: 'component.calendar.stats_header',
+    children: [
+      _StateCard(
+        label: 'joined saved cancelled',
+        child: CalendarStatsHeader(summary: _calendarSummary),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Skeleton state',
+  type: CalendarStatsHeaderSkeleton,
+  path: '[P3 utility surfaces]/Calendar/Components',
+)
+Widget calendarStatsHeaderSkeletonStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'CalendarStatsHeaderSkeleton',
+    contractId: 'component.calendar.stats_header_skeleton',
+    children: const [
+      _StateCard(label: 'loading', child: CalendarStatsHeaderSkeleton()),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Skeleton state',
+  type: CalendarStatSkeleton,
+  path: '[P3 utility surfaces]/Calendar/Components',
+)
+Widget calendarStatSkeletonStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'CalendarStatSkeleton',
+    contractId: 'component.calendar.stat_skeleton',
+    children: const [
+      _StateCard(label: 'single stat', child: CalendarStatSkeleton()),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Week strip state',
+  type: CalendarWeekStrip,
+  path: '[P3 utility surfaces]/Calendar/Components',
+)
+Widget calendarWeekStripStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'CalendarWeekStrip',
+    contractId: 'component.calendar.week_strip',
+    children: [
+      _StateCard(
+        label: 'event markers',
+        child: CalendarWeekStrip(
+          summary: _calendarSummary,
+          selectedDate: _calendarSummary.anchorDate,
+          onDateSelected: (_) {},
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Month grid state',
+  type: CalendarMonthGrid,
+  path: '[P3 utility surfaces]/Calendar/Components',
+)
+Widget calendarMonthGridStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'CalendarMonthGrid',
+    contractId: 'component.calendar.month_grid',
+    children: [
+      _StateCard(
+        label: 'event markers',
+        child: CalendarMonthGrid(
+          summary: _calendarSummary,
+          selectedDate: _calendarSummary.anchorDate,
+          onDateSelected: (_) {},
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Divider state',
+  type: CalendarStatDivider,
+  path: '[P3 utility surfaces]/Calendar/Components',
+)
+Widget calendarStatDividerStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'CalendarStatDivider',
+    contractId: 'component.calendar.stat_divider',
+    children: const [
+      _StateCard(
+        label: 'vertical rule',
+        child: Center(child: CalendarStatDivider()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Empty message state',
+  type: CalendarMessage,
+  path: '[P3 utility surfaces]/Calendar/Components',
+)
+Widget calendarMessageStates(BuildContext context) {
+  return const _DeviceFrame(
+    child: Scaffold(
+      body: CalendarMessage(
+        title: 'No planned events yet',
+        body: 'Events you book or save will show up here by day and time.',
+      ),
+    ),
   );
 }
 
@@ -1046,11 +1756,12 @@ Widget eventLocationMapScreenStates(BuildContext context) {
       _StateCard(
         label: 'network tiles disabled',
         child: _DeviceFrame(
-          child: _ExternalLinkScope(
-            child: EventLocationMapScreen(
-              event: _event,
+          child: EventLocationMapScreen(
+            state: EventLocationMapState.fromEvent(
+              _event,
               enableNetworkTiles: false,
             ),
+            onGetDirections: () {},
           ),
         ),
       ),
@@ -1058,8 +1769,11 @@ Widget eventLocationMapScreenStates(BuildContext context) {
         label: 'no exact coordinate',
         child: _DeviceFrame(
           child: EventLocationMapScreen(
-            event: _eventWithoutCoordinate,
-            enableNetworkTiles: false,
+            state: EventLocationMapState.fromEvent(
+              _eventWithoutCoordinate,
+              enableNetworkTiles: false,
+            ),
+            onGetDirections: () {},
           ),
         ),
       ),
@@ -1303,6 +2017,145 @@ Widget reviewsHistoryScreenStates(BuildContext context) {
           ),
         ),
       ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'History body states',
+  type: ReviewsHistoryBody,
+  path: '[P3 utility surfaces]/Reviews history',
+)
+Widget reviewsHistoryBodyStates(BuildContext context) {
+  final rows = _reviewHistoryRows();
+  return _UtilityCatalog(
+    title: 'ReviewsHistoryBody',
+    contractId: 'screen.reviews.history.body',
+    children: [
+      _StateCard(
+        label: 'content',
+        child: SizedBox(
+          height: 420,
+          child: ReviewsHistoryBody(
+            state: ReviewsHistoryContent(user: _viewer, rows: rows),
+            onRetryProfile: _noop,
+            onRetryReviews: _noop,
+            onEditReview: _noopReviewHistoryEdit,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'empty',
+        child: SizedBox(
+          height: 320,
+          child: ReviewsHistoryBody(
+            state: const ReviewsHistoryEmpty(
+              title: 'No reviews yet',
+              message: 'Reviews you write after events will appear here.',
+            ),
+            onRetryProfile: _noop,
+            onRetryReviews: _noop,
+            onEditReview: _noopReviewHistoryEdit,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'error',
+        child: SizedBox(
+          height: 320,
+          child: ReviewsHistoryBody(
+            state: const ReviewsHistoryError(
+              title: 'Reviews unavailable',
+              message: 'Could not load your reviews.',
+              retryTarget: ReviewsHistoryRetryTarget.reviews,
+            ),
+            onRetryProfile: _noop,
+            onRetryReviews: _noop,
+            onEditReview: _noopReviewHistoryEdit,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'History list states',
+  type: ReviewsHistoryList,
+  path: '[P3 utility surfaces]/Reviews history',
+)
+Widget reviewsHistoryListStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'ReviewsHistoryList',
+    contractId: 'screen.reviews.history.list',
+    children: [
+      _StateCard(
+        label: 'rows',
+        child: SizedBox(
+          height: 360,
+          child: ReviewsHistoryList(
+            rows: _reviewHistoryRows(),
+            onEditReview: _noopReviewHistoryEdit,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'History empty state',
+  type: ReviewsHistoryEmptyState,
+  path: '[P3 utility surfaces]/Reviews history',
+)
+Widget reviewsHistoryEmptyStateStates(BuildContext context) {
+  return const _UtilityCatalog(
+    title: 'ReviewsHistoryEmptyState',
+    contractId: 'screen.reviews.history.empty',
+    children: [
+      _StateCard(
+        label: 'signed out',
+        child: SizedBox(
+          height: 300,
+          child: ReviewsHistoryEmptyState(
+            title: 'Sign in to see reviews',
+            message: 'Your past event reviews will appear here.',
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'History skeleton states',
+  type: ReviewsHistorySkeleton,
+  path: '[P3 utility surfaces]/Reviews history',
+)
+Widget reviewsHistorySkeletonStates(BuildContext context) {
+  return const _UtilityCatalog(
+    title: 'ReviewsHistorySkeleton',
+    contractId: 'screen.reviews.history.skeleton',
+    children: [
+      _StateCard(
+        label: 'loading list',
+        child: SizedBox(height: 360, child: ReviewsHistorySkeleton()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'History row skeleton states',
+  type: ReviewHistoryItemSkeleton,
+  path: '[P3 utility surfaces]/Reviews history',
+)
+Widget reviewHistoryItemSkeletonStates(BuildContext context) {
+  return const _UtilityCatalog(
+    title: 'ReviewHistoryItemSkeleton',
+    contractId: 'screen.reviews.history.row_skeleton',
+    children: [
+      _StateCard(label: 'loading row', child: ReviewHistoryItemSkeleton()),
     ],
   );
 }
@@ -1819,9 +2672,139 @@ Widget paymentHistoryScreenStates(BuildContext context) {
         label: 'event title missing',
         child: _DeviceFrame(
           child: _PaymentScope(
+            payments: _payments.take(1).toList(),
             paymentsStream: Stream.value(_payments.take(1).toList()),
             eventsById: const {},
             child: const PaymentHistoryScreen(),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Provider states',
+  type: PaymentHistoryListController,
+  path: '[P3 utility surfaces]/Payment history',
+)
+Widget paymentHistoryListControllerStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'PaymentHistoryListController',
+    contractId: 'screen.payments.history.provider-list',
+    children: [
+      _StateCard(
+        label: 'loaded',
+        child: _DeviceFrame(
+          child: _PaymentScope(
+            paymentsStream: Stream.value(_payments),
+            child: const PaymentHistoryListController(userId: _viewerUid),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'payments loading',
+        child: _DeviceFrame(
+          child: _PaymentScope(
+            paymentsStream: _loadingStream<List<Payment>>(),
+            child: const PaymentHistoryListController(userId: _viewerUid),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'List states',
+  type: PaymentHistoryList,
+  path: '[P3 utility surfaces]/Payment history',
+)
+Widget paymentHistoryListStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'PaymentHistoryList',
+    contractId: 'screen.payments.history.list',
+    children: [
+      _StateCard(
+        label: 'empty',
+        child: const _DeviceFrame(
+          child: PaymentHistoryList(
+            paymentHistory: PaymentHistoryViewModel(rows: []),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'status variants',
+        child: _DeviceFrame(
+          child: PaymentHistoryList(
+            paymentHistory: _paymentHistoryViewModel(_payments),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Loading states',
+  type: PaymentHistorySkeleton,
+  path: '[P3 utility surfaces]/Payment history',
+)
+Widget paymentHistorySkeletonStates(BuildContext context) {
+  return const _UtilityCatalog(
+    title: 'PaymentHistorySkeleton',
+    contractId: 'screen.payments.history.skeleton',
+    children: [
+      _StateCard(
+        label: 'loading list',
+        child: _DeviceFrame(child: PaymentHistorySkeleton()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Row skeleton states',
+  type: PaymentHistoryTileSkeleton,
+  path: '[P3 utility surfaces]/Payment history',
+)
+Widget paymentHistoryTileSkeletonStates(BuildContext context) {
+  return const _UtilityCatalog(
+    title: 'PaymentHistoryTileSkeleton',
+    contractId: 'screen.payments.history.row_skeleton',
+    children: [
+      _StateCard(label: 'loading row', child: PaymentHistoryTileSkeleton()),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Empty states',
+  type: PaymentHistoryEmptyState,
+  path: '[P3 utility surfaces]/Payment history',
+)
+Widget paymentHistoryEmptyStateStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'PaymentHistoryEmptyState',
+    contractId: 'screen.payments.history.empty',
+    children: [
+      _StateCard(
+        label: 'no payments',
+        child: _DeviceFrame(
+          child: PaymentHistoryEmptyState(
+            icon: CatchIcons.receiptLongOutlined,
+            title: 'No payments yet',
+            message: 'Event bookings and refunds will appear here.',
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'signed out',
+        child: _DeviceFrame(
+          child: PaymentHistoryEmptyState(
+            icon: CatchIcons.lockOutlineRounded,
+            title: 'Sign in required',
+            message: 'Sign in again to view payment history.',
           ),
         ),
       ),
@@ -1982,6 +2965,197 @@ Widget paymentConfirmationScreenStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Loading state',
+  type: PaymentConfirmationLoadingScreen,
+  path: '[P3 utility surfaces]/Payment confirmation',
+)
+Widget paymentConfirmationLoadingScreenStates(BuildContext context) {
+  return const _UtilityCatalog(
+    title: 'PaymentConfirmationLoadingScreen',
+    contractId: 'screen.payments.confirmation.loading',
+    children: [
+      _StateCard(
+        label: 'event loading',
+        child: _DeviceFrame(child: PaymentConfirmationLoadingScreen()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Backdrop states',
+  type: PaymentCheckoutEventBackdrop,
+  path: '[P3 utility surfaces]/Payment confirmation',
+)
+Widget paymentCheckoutEventBackdropStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'PaymentCheckoutEventBackdrop',
+    contractId: 'screen.payments.confirmation.checkout_backdrop',
+    children: [
+      _StateCard(
+        label: 'event summary',
+        child: _DeviceFrame(child: PaymentCheckoutEventBackdrop(event: _event)),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Provider states',
+  type: PaymentPendingCheckoutController,
+  path: '[P3 utility surfaces]/Payment confirmation',
+)
+Widget paymentPendingCheckoutControllerStates(BuildContext context) {
+  final pendingPayment = _payments.firstWhere(
+    (payment) => payment.status == PaymentStatus.pending,
+  );
+  return _UtilityCatalog(
+    title: 'PaymentPendingCheckoutController',
+    contractId: 'screen.payments.confirmation.pending_controller',
+    children: [
+      _StateCard(
+        label: 'checkout pending',
+        child: _DeviceFrame(
+          child: _PaymentScope(
+            eventsById: {_event.id: _event},
+            paymentsByPaymentId: {pendingPayment.paymentId: pendingPayment},
+            child: IgnorePointer(
+              child: PaymentPendingCheckoutController(
+                data: _confirmationData(
+                  pendingPayment,
+                  checkoutUrl: Uri.parse('https://checkout.example/pay'),
+                ),
+                event: _event,
+              ),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Body states',
+  type: PaymentPendingCheckoutBody,
+  path: '[P3 utility surfaces]/Payment confirmation',
+)
+Widget paymentPendingCheckoutBodyStates(BuildContext context) {
+  final pendingPayment = _payments.firstWhere(
+    (payment) => payment.status == PaymentStatus.pending,
+  );
+  final failedPayment = _payments.firstWhere(
+    (payment) => payment.status == PaymentStatus.refundFailed,
+  );
+  return _UtilityCatalog(
+    title: 'PaymentPendingCheckoutBody',
+    contractId: 'screen.payments.confirmation.pending_body',
+    children: [
+      _StateCard(
+        label: 'pending checkout',
+        child: _DeviceFrame(
+          child: IgnorePointer(
+            child: PaymentPendingCheckoutBody(
+              data: _confirmationData(
+                pendingPayment,
+                checkoutUrl: Uri.parse('https://checkout.example/pay'),
+              ),
+              event: _event,
+              failed: false,
+              providerLabel: 'Stripe',
+              onOpenCheckout: _noop,
+              onViewPaymentHistory: _noop,
+              onBackToEvent: _noop,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'failed checkout',
+        child: _DeviceFrame(
+          child: IgnorePointer(
+            child: PaymentPendingCheckoutBody(
+              data: _confirmationData(
+                failedPayment,
+                checkoutUrl: Uri.parse('https://checkout.example/retry'),
+              ),
+              event: _event,
+              failed: true,
+              providerLabel: 'Stripe',
+              onOpenCheckout: _noop,
+              onViewPaymentHistory: _noop,
+              onBackToEvent: _noop,
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Provider states',
+  type: PaymentConfirmationBodyController,
+  path: '[P3 utility surfaces]/Payment confirmation',
+)
+Widget paymentConfirmationBodyControllerStates(BuildContext context) {
+  final paidPayment = _payments.first;
+  return _UtilityCatalog(
+    title: 'PaymentConfirmationBodyController',
+    contractId: 'screen.payments.confirmation.body_controller',
+    children: [
+      _StateCard(
+        label: 'joined celebration',
+        child: _DeviceFrame(
+          child: _PaymentScope(
+            eventsById: {_event.id: _event},
+            child: IgnorePointer(
+              child: PaymentConfirmationBodyController(
+                data: _confirmationData(paidPayment),
+                event: _event,
+              ),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Body states',
+  type: PaymentConfirmationBody,
+  path: '[P3 utility surfaces]/Payment confirmation',
+)
+Widget paymentConfirmationBodyStates(BuildContext context) {
+  final paidPayment = _payments.first;
+  return _UtilityCatalog(
+    title: 'PaymentConfirmationBody',
+    contractId: 'screen.payments.confirmation.body',
+    children: [
+      _StateCard(
+        label: 'joined celebration',
+        child: _DeviceFrame(
+          child: IgnorePointer(
+            child: PaymentConfirmationBody(
+              data: _confirmationData(paidPayment),
+              event: _event,
+              clubName: 'Bandra Breakers',
+              onAddToCalendar: _noop,
+              onOpenDirections: _noop,
+              onInviteFriend: _noop,
+              onReferralShare: _noop,
+              onViewEvent: _noop,
+              onBackHome: _noop,
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Checkout sheet states',
   type: PaymentCheckoutSheet,
   path: '[P3 utility surfaces]/Payment confirmation',
@@ -2047,9 +3221,7 @@ Widget paymentConfirmationInfoStates(BuildContext context) {
       const _StateCard(label: 'heads up', child: PaymentConfirmationHeadsUp()),
       _StateCard(
         label: 'referral banner',
-        child: _PaymentScope(
-          child: IgnorePointer(child: PaymentReferralBanner(event: _event)),
-        ),
+        child: IgnorePointer(child: PaymentReferralBanner(onShare: _noop)),
       ),
     ],
   );
@@ -2067,8 +3239,36 @@ Widget paymentReferralBannerStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'event referral prompt',
+        child: IgnorePointer(child: PaymentReferralBanner(onShare: _noop)),
+      ),
+      _StateCard(
+        label: 'provider wired',
         child: _PaymentScope(
-          child: IgnorePointer(child: PaymentReferralBanner(event: _event)),
+          child: IgnorePointer(
+            child: PaymentReferralBannerController(event: _event),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Referral banner controller',
+  type: PaymentReferralBannerController,
+  path: '[P3 utility surfaces]/Payment confirmation',
+)
+Widget paymentReferralBannerControllerStates(BuildContext context) {
+  return _UtilityCatalog(
+    title: 'PaymentReferralBannerController',
+    contractId: 'component.payments.referral_banner.controller',
+    children: [
+      _StateCard(
+        label: 'provider wired',
+        child: _PaymentScope(
+          child: IgnorePointer(
+            child: PaymentReferralBannerController(event: _event),
+          ),
         ),
       ),
     ],
@@ -2163,60 +3363,222 @@ class _ForceUpdatePassThrough extends StatelessWidget {
   }
 }
 
+Widget _authFrame({
+  required Widget child,
+  _AuthPreviewMode mode = _AuthPreviewMode.phoneEntry,
+  TextScaler? textScaler,
+  bool disableAnimations = false,
+}) {
+  return _DeviceFrame(
+    child: _AuthScope(
+      mode: mode,
+      textScaler: textScaler,
+      disableAnimations: disableAnimations,
+      child: child,
+    ),
+  );
+}
+
+enum _AuthPreviewMode {
+  phoneEntry,
+  otpEntry,
+  sendCodePending,
+  sendCodeError,
+  verifyCodePending,
+  verifyCodeError,
+  resendPending,
+  resendError,
+}
+
 class _AuthScope extends StatelessWidget {
-  const _AuthScope({required this.child, this.step});
+  const _AuthScope({
+    required this.child,
+    this.mode = _AuthPreviewMode.phoneEntry,
+    this.textScaler,
+    this.disableAnimations = false,
+  });
 
   final Widget child;
-  final AuthStep? step;
+  final _AuthPreviewMode mode;
+  final TextScaler? textScaler;
+  final bool disableAnimations;
 
   @override
   Widget build(BuildContext context) {
-    return ProviderScope(
+    Widget scoped = ProviderScope(
       overrides: [
         authRepositoryProvider.overrideWithValue(
           const _WidgetbookAuthRepository(),
         ),
         authInitialCountryDialCodeProvider.overrideWithValue('+91'),
       ],
-      child: step == null ? child : _AuthStepSeeder(step: step!, child: child),
+      child: _AuthPreviewSeeder(mode: mode, child: child),
+    );
+
+    if (textScaler != null || disableAnimations) {
+      scoped = _AuthMediaOverride(
+        textScaler: textScaler,
+        disableAnimations: disableAnimations,
+        child: scoped,
+      );
+    }
+
+    return scoped;
+  }
+}
+
+class _AuthMediaOverride extends StatelessWidget {
+  const _AuthMediaOverride({
+    required this.child,
+    this.textScaler,
+    this.disableAnimations = false,
+  });
+
+  final Widget child;
+  final TextScaler? textScaler;
+  final bool disableAnimations;
+
+  @override
+  Widget build(BuildContext context) {
+    final media = MediaQuery.of(context);
+    return MediaQuery(
+      data: media.copyWith(
+        textScaler: textScaler ?? media.textScaler,
+        disableAnimations: disableAnimations || media.disableAnimations,
+      ),
+      child: child,
     );
   }
 }
 
-class _AuthStepSeeder extends ConsumerStatefulWidget {
-  const _AuthStepSeeder({required this.step, required this.child});
+class _AuthPreviewSeeder extends ConsumerStatefulWidget {
+  const _AuthPreviewSeeder({required this.mode, required this.child});
 
-  final AuthStep step;
+  final _AuthPreviewMode mode;
   final Widget child;
 
   @override
-  ConsumerState<_AuthStepSeeder> createState() => _AuthStepSeederState();
+  ConsumerState<_AuthPreviewSeeder> createState() => _AuthPreviewSeederState();
 }
 
-class _AuthStepSeederState extends ConsumerState<_AuthStepSeeder> {
+class _AuthPreviewSeederState extends ConsumerState<_AuthPreviewSeeder> {
+  static const _phoneNumber = '9876543210';
+  static const _countryCode = '+91';
+
+  Completer<void>? _pendingCompleter;
   var _seeded = false;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _seed());
+    WidgetsBinding.instance.addPostFrameCallback((_) => unawaited(_seed()));
   }
 
   @override
-  void didUpdateWidget(covariant _AuthStepSeeder oldWidget) {
+  void didUpdateWidget(covariant _AuthPreviewSeeder oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.step != widget.step) {
+    if (oldWidget.mode != widget.mode) {
       _seeded = false;
-      WidgetsBinding.instance.addPostFrameCallback((_) => _seed());
+      WidgetsBinding.instance.addPostFrameCallback((_) => unawaited(_seed()));
     }
   }
 
-  void _seed() {
+  @override
+  void dispose() {
+    final completer = _pendingCompleter;
+    if (completer != null && !completer.isCompleted) {
+      completer.complete();
+    }
+    super.dispose();
+  }
+
+  Future<void> _seed() async {
     if (!mounted || _seeded) return;
     _seeded = true;
     AuthController.sendOtpMutation.reset(ref);
     AuthController.verifyOtpMutation.reset(ref);
-    ref.read(authControllerProvider.notifier).goToStep(widget.step);
+
+    switch (widget.mode) {
+      case _AuthPreviewMode.phoneEntry:
+        ref.read(authControllerProvider.notifier).goToStep(AuthStep.phone);
+        break;
+      case _AuthPreviewMode.otpEntry:
+        await _seedOtpStep();
+        break;
+      case _AuthPreviewMode.sendCodePending:
+        ref.read(authControllerProvider.notifier).goToStep(AuthStep.phone);
+        _runPending(AuthController.sendOtpMutation);
+        break;
+      case _AuthPreviewMode.sendCodeError:
+        ref.read(authControllerProvider.notifier).goToStep(AuthStep.phone);
+        _runError(
+          AuthController.sendOtpMutation,
+          const NetworkException(
+            'widgetbook-send-code-failed',
+            'We could not send the code. Check your connection and try again.',
+            context: BackendErrorContext(
+              service: BackendService.auth,
+              action: 'send verification code',
+              resource: 'phone_auth',
+            ),
+          ),
+        );
+        break;
+      case _AuthPreviewMode.verifyCodePending:
+        await _seedOtpStep();
+        _runPending(AuthController.verifyOtpMutation);
+        break;
+      case _AuthPreviewMode.verifyCodeError:
+        await _seedOtpStep();
+        _runError(
+          AuthController.verifyOtpMutation,
+          const ValidationException(
+            'That code is invalid. Please try again.',
+            code: 'invalid-verification-code',
+            context: BackendErrorContext(
+              service: BackendService.auth,
+              action: 'verify sms code',
+              resource: 'phone_auth',
+            ),
+          ),
+        );
+        break;
+      case _AuthPreviewMode.resendPending:
+        await _seedOtpStep();
+        _runPending(AuthController.sendOtpMutation);
+        break;
+      case _AuthPreviewMode.resendError:
+        await _seedOtpStep();
+        _runError(
+          AuthController.sendOtpMutation,
+          const NetworkException(
+            'widgetbook-resend-code-failed',
+            'We could not resend the code. Please try again.',
+            context: BackendErrorContext(
+              service: BackendService.auth,
+              action: 'resend verification code',
+              resource: 'phone_auth',
+            ),
+          ),
+        );
+        break;
+    }
+  }
+
+  Future<void> _seedOtpStep() async {
+    await ref
+        .read(authControllerProvider.notifier)
+        .sendOtp(_phoneNumber, _countryCode);
+  }
+
+  void _runPending(Mutation<void> mutation) {
+    final completer = Completer<void>();
+    _pendingCompleter = completer;
+    unawaited(mutation.run(ref, (_) => completer.future));
+  }
+
+  void _runError(Mutation<void> mutation, Object error) {
+    unawaited(mutation.run(ref, (_) async => throw error).catchError((_) {}));
   }
 
   @override
@@ -2469,20 +3831,6 @@ class _MapRouteScope extends StatelessWidget {
   }
 }
 
-class _ExternalLinkScope extends StatelessWidget {
-  const _ExternalLinkScope({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return ProviderScope(
-      overrides: [externalUrlLauncherProvider.overrideWithValue(_noopLauncher)],
-      child: child,
-    );
-  }
-}
-
 class _ActivityScreenScope extends StatelessWidget {
   const _ActivityScreenScope({
     required this.child,
@@ -2614,6 +3962,7 @@ class _PaymentScope extends StatelessWidget {
   const _PaymentScope({
     required this.child,
     this.uidStream,
+    this.payments,
     this.paymentsStream,
     this.paymentsByPaymentId,
     this.eventsById,
@@ -2621,13 +3970,27 @@ class _PaymentScope extends StatelessWidget {
 
   final Widget child;
   final Stream<String?>? uidStream;
+  final List<Payment>? payments;
   final Stream<List<Payment>>? paymentsStream;
   final Map<String, Payment?>? paymentsByPaymentId;
   final Map<String, Event>? eventsById;
 
   @override
   Widget build(BuildContext context) {
-    final payments = _payments;
+    final payments = this.payments ?? _payments;
+    final eventIds = {for (final payment in payments) payment.eventId};
+    final batchedEvents = eventsById == null
+        ? [
+            for (final payment in payments)
+              _utilityEvent(
+                id: payment.eventId,
+                meetingPoint: _eventTitleForPayment(payment),
+                notes: 'Receipt context',
+                latitude: 19.0676,
+                longitude: 72.8227,
+              ),
+          ]
+        : eventsById!.values.toList(growable: false);
     final paymentsById =
         paymentsByPaymentId ??
         {for (final payment in payments) payment.paymentId: payment};
@@ -2650,7 +4013,11 @@ class _PaymentScope extends StatelessWidget {
         ),
         watchPaymentsForUserProvider(
           _viewerUid,
-        ).overrideWith((ref) => paymentsStream ?? Stream.value(_payments)),
+        ).overrideWith((ref) => paymentsStream ?? Stream.value(payments)),
+        if (eventIds.isNotEmpty)
+          watchEventsByIdsProvider(
+            EventsByIdQuery(eventIds),
+          ).overrideWith((ref) => Stream.value(batchedEvents)),
         watchClubProvider(
           _event.clubId,
         ).overrideWith((ref) => Stream<Club?>.value(null)),
@@ -2737,7 +4104,9 @@ class _DeviceFrame extends StatelessWidget {
     final t = CatchTokens.of(context);
     return Center(
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 390),
+        constraints: const BoxConstraints(
+          maxWidth: _utilityDeviceFrameMaxWidth,
+        ),
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: t.surface,
@@ -2746,10 +4115,34 @@ class _DeviceFrame extends StatelessWidget {
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(CatchRadius.lg),
-            child: SizedBox(height: 720, child: child),
+            child: SizedBox(height: _utilityDeviceFrameHeight, child: child),
           ),
         ),
       ),
+    );
+  }
+}
+
+class _MediaOverride extends StatelessWidget {
+  const _MediaOverride({
+    required this.child,
+    this.textScaler,
+    this.disableAnimations = false,
+  });
+
+  final Widget child;
+  final TextScaler? textScaler;
+  final bool disableAnimations;
+
+  @override
+  Widget build(BuildContext context) {
+    final media = MediaQuery.of(context);
+    return MediaQuery(
+      data: media.copyWith(
+        textScaler: textScaler ?? media.textScaler,
+        disableAnimations: disableAnimations || media.disableAnimations,
+      ),
+      child: child,
     );
   }
 }
@@ -2764,7 +4157,9 @@ class _SheetFrame extends StatelessWidget {
     final t = CatchTokens.of(context);
     return Center(
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 390),
+        constraints: const BoxConstraints(
+          maxWidth: _utilityDeviceFrameMaxWidth,
+        ),
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: t.bg,
@@ -2774,7 +4169,7 @@ class _SheetFrame extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(CatchRadius.lg),
             child: SizedBox(
-              height: 560,
+              height: _utilitySheetFrameHeight,
               child: Align(alignment: Alignment.bottomCenter, child: child),
             ),
           ),
@@ -2794,7 +4189,10 @@ class _DialogFrame extends StatelessWidget {
     final t = CatchTokens.of(context);
     return ColoredBox(
       color: t.ink.withValues(alpha: CatchOpacity.confirmDialogScrim),
-      child: SizedBox(height: 360, child: Center(child: child)),
+      child: SizedBox(
+        height: _utilityDialogFrameHeight,
+        child: Center(child: child),
+      ),
     );
   }
 }
@@ -2852,6 +4250,18 @@ Event _utilityEvent({
 String _eventTitleForPayment(Payment payment) =>
     UtilitySurfaceFixtures.eventTitleForPayment(payment);
 
+PaymentHistoryViewModel _paymentHistoryViewModel(Iterable<Payment> payments) {
+  return PaymentHistoryViewModel(
+    rows: [
+      for (final payment in payments)
+        PaymentHistoryRow(
+          payment: payment,
+          eventTitle: _eventTitleForPayment(payment),
+        ),
+    ],
+  );
+}
+
 PaymentConfirmationData _confirmationData(Payment payment, {Uri? checkoutUrl}) {
   return PaymentConfirmationData(
     paymentId: payment.paymentId,
@@ -2877,6 +4287,23 @@ Review _reviewWithOwnerResponse() {
       updatedAt: _calendarNow,
     ),
   );
+}
+
+List<ReviewsHistoryRow> _reviewHistoryRows() {
+  final editableReview = _reviews.first;
+  final responseReview = _reviewWithOwnerResponse();
+  return [
+    ReviewsHistoryRow(
+      review: editableReview,
+      contextLabel: 'Sunday Sea Face Crew · Jun 22',
+      editEventId: editableReview.eventId,
+    ),
+    ReviewsHistoryRow(
+      review: responseReview,
+      contextLabel: 'Bandra afterglow run · missing event context',
+      editEventId: null,
+    ),
+  ];
 }
 
 void _noopReviewEdit(Review review) {}
@@ -2908,7 +4335,15 @@ Future<bool> _noopLauncher(Uri uri, {Object? mode}) async {
 }
 
 Widget _photoSlotFrame({required Widget child}) {
-  return Center(child: SizedBox(width: 168, height: 224, child: child));
+  return Center(
+    child: SizedBox(
+      width: _utilityPhotoSlotWidth,
+      height: _utilityPhotoSlotHeight,
+      child: child,
+    ),
+  );
 }
 
 void _noop() {}
+
+void _noopCode(String _) {}

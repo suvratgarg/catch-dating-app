@@ -1,10 +1,12 @@
-import 'dart:async';
-
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen_state.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_contact_section.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_hero_app_bar.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_host_section.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_photo_strip.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_schedule_section.dart';
-import 'package:catch_dating_app/clubs/presentation/shared/club_identity_atoms.dart';
+import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
@@ -13,87 +15,27 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
-import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
-import 'package:catch_dating_app/reviews/domain/review.dart';
-import 'package:catch_dating_app/reviews/presentation/reviews_section.dart';
-import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
+import 'package:catch_dating_app/reviews/shared/reviews_section.dart';
 import 'package:flutter/material.dart';
 
 typedef ClubEventSelectionHandler = void Function(Event event);
-typedef ClubHostProfileHandler = void Function(String hostUid);
-typedef ClubHostMessageHandler =
-    Future<void> Function(BuildContext context, ClubHostProfile host);
-typedef ClubContactActionHandler =
-    Future<void> Function(ClubContactAction action);
 
-enum ClubContactActionKind { instagram, phone, email }
-
-class ClubContactAction {
-  const ClubContactAction._({
-    required this.kind,
-    required this.label,
-    required this.uri,
-    required this.openExternally,
-  });
-
-  factory ClubContactAction.instagram(String handle) {
-    final normalized = handle.replaceFirst('@', '');
-    return ClubContactAction._(
-      kind: ClubContactActionKind.instagram,
-      label: handle,
-      uri: Uri.parse('https://instagram.com/$normalized'),
-      openExternally: true,
-    );
-  }
-
-  factory ClubContactAction.phone(String phoneNumber) {
-    return ClubContactAction._(
-      kind: ClubContactActionKind.phone,
-      label: phoneNumber,
-      uri: Uri(scheme: 'tel', path: phoneNumber),
-      openExternally: false,
-    );
-  }
-
-  factory ClubContactAction.email(String email) {
-    return ClubContactAction._(
-      kind: ClubContactActionKind.email,
-      label: email,
-      uri: Uri(scheme: 'mailto', path: email),
-      openExternally: false,
-    );
-  }
-
-  final ClubContactActionKind kind;
-  final String label;
-  final Uri uri;
-  final bool openExternally;
-}
+const EdgeInsets _clubDetailSectionStackPadding = EdgeInsets.only(
+  top: CatchSpacing.screenPt,
+);
+const EdgeInsets _clubActivityTilePadding = EdgeInsets.symmetric(
+  horizontal: CatchSpacing.s4,
+  vertical: CatchSpacing.s3,
+);
 
 class ClubDetailBody extends StatelessWidget {
   const ClubDetailBody({
     super.key,
-    required this.club,
-    required this.upcoming,
-    required this.reviews,
-    required this.userProfile,
-    required this.uid,
-    required this.isHost,
-    required this.isMember,
-    required this.isMutating,
-    required this.clubPushNotificationsEnabled,
-    required this.isClubPushMutating,
-    required this.isAuthenticated,
-    this.canMessageHosts = false,
-    this.isMessageHostPending = false,
+    required this.state,
     this.onShareClub,
     this.onEventSelected,
     this.onViewHostProfile,
@@ -101,19 +43,7 @@ class ClubDetailBody extends StatelessWidget {
     this.onContactSelected,
   });
 
-  final Club club;
-  final List<Event> upcoming;
-  final List<Review> reviews;
-  final UserProfile? userProfile;
-  final String? uid;
-  final bool isHost;
-  final bool isMember;
-  final bool isMutating;
-  final bool clubPushNotificationsEnabled;
-  final bool isClubPushMutating;
-  final bool isAuthenticated;
-  final bool canMessageHosts;
-  final bool isMessageHostPending;
+  final ClubDetailBodyState state;
   final ClubShareHandler? onShareClub;
   final ClubEventSelectionHandler? onEventSelected;
   final ClubHostProfileHandler? onViewHostProfile;
@@ -124,12 +54,9 @@ class ClubDetailBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     const sectionGap = SizedBox(height: CatchLayout.detailScreenSectionGap);
+    final club = state.club;
     final tags = visibleClubTags(club, limit: 6);
-    final hasContact =
-        club.instagramHandle != null ||
-        club.phoneNumber != null ||
-        club.email != null;
-    final nextEvent = _nextPublishedEvent(upcoming);
+    final nextEvent = state.nextEvent;
 
     return ColoredBox(
       color: t.surface,
@@ -137,7 +64,7 @@ class ClubDetailBody extends StatelessWidget {
         slivers: [
           ClubHeroAppBar(
             club: club,
-            isHost: isHost,
+            isHost: state.isHost,
             locationLabel: _clubHeroLocationLabel(club, nextEvent),
             onShareClub: onShareClub,
           ),
@@ -161,7 +88,7 @@ class ClubDetailBody extends StatelessWidget {
                 ],
                 CatchMetricStrip(items: _clubMetricItems(club)),
                 CatchSectionStack(
-                  padding: const EdgeInsets.only(top: CatchSpacing.screenPt),
+                  padding: _clubDetailSectionStackPadding,
                   children: [
                     CatchSection.divided(
                       title: 'About',
@@ -190,18 +117,17 @@ class ClubDetailBody extends StatelessWidget {
                       child: ClubHostSection(
                         club: club,
                         canViewProfile: onViewHostProfile != null,
-                        canMessageHost: canMessageHosts,
-                        isMessageHostPending: isMessageHostPending,
-                        currentUid: uid,
+                        isMessageHostPending: state.isMessageHostPending,
+                        messageableHostUids: state.messageableHostUids,
                         onViewProfile: onViewHostProfile,
                         onMessageHost: onMessageHost,
                       ),
                     ),
-                    if (hasContact)
+                    if (state.contactActions.isNotEmpty)
                       CatchSection.divided(
                         title: 'Get in touch',
                         child: ClubContactSection(
-                          club: club,
+                          actions: state.contactActions,
                           showTitle: false,
                           onContactSelected: onContactSelected,
                         ),
@@ -213,11 +139,11 @@ class ClubDetailBody extends StatelessWidget {
             ),
           ),
           ClubScheduleSection(
-            events: upcoming,
-            isHost: isHost,
+            events: state.upcomingEvents,
+            isHost: state.isHost,
             onEventSelected: onEventSelected,
           ),
-          if (isAuthenticated)
+          if (state.showReviews)
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(
                 CatchLayout.detailScreenHorizontalPadding,
@@ -226,21 +152,16 @@ class ClubDetailBody extends StatelessWidget {
                 CatchLayout.detailScreenBottomPadding,
               ),
               sliver: SliverToBoxAdapter(
-                child: ClubReviewsSection(reviews: reviews, currentUid: uid),
+                child: ClubReviewsSection(
+                  reviews: state.reviews,
+                  currentUid: state.uid,
+                ),
               ),
             ),
         ],
       ),
     );
   }
-}
-
-Event? _nextPublishedEvent(List<Event> events) {
-  final upcoming = [
-    for (final event in events)
-      if (!event.isCancelled) event,
-  ]..sort((a, b) => a.startTime.compareTo(b.startTime));
-  return upcoming.isEmpty ? null : upcoming.first;
 }
 
 List<CatchMetricStripItem> _clubMetricItems(Club club) {
@@ -313,10 +234,7 @@ class ClubNextRunBanner extends StatelessWidget {
               borderRadius: BorderRadius.circular(CatchRadius.md),
             ),
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: CatchSpacing.s4,
-                vertical: CatchSpacing.s3,
-              ),
+              padding: _clubActivityTilePadding,
               child: Row(
                 children: [
                   Icon(
@@ -425,307 +343,6 @@ class ClubActivitySection extends StatelessWidget {
                 size: CatchBadgeSize.md,
                 uppercase: false,
               ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class ClubHostSection extends StatelessWidget {
-  const ClubHostSection({
-    super.key,
-    required this.club,
-    required this.canViewProfile,
-    required this.canMessageHost,
-    required this.isMessageHostPending,
-    required this.currentUid,
-    required this.onViewProfile,
-    required this.onMessageHost,
-  });
-
-  final Club club;
-  final bool canViewProfile;
-  final bool canMessageHost;
-  final bool isMessageHostPending;
-  final String? currentUid;
-  final ClubHostProfileHandler? onViewProfile;
-  final ClubHostMessageHandler? onMessageHost;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final hosts = club.displayHostProfiles;
-
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.tileContentCompact,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          for (final host in hosts) ...[
-            Semantics(
-              button: canViewProfile,
-              label: canViewProfile ? 'View ${host.displayName} profile' : null,
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: canViewProfile
-                    ? () => onViewProfile?.call(host.uid)
-                    : null,
-                child: ClubHostRow(
-                  host: host,
-                  borderColor: t.primarySoft,
-                  showChevron: canViewProfile,
-                  onMessage:
-                      canMessageHost &&
-                          currentUid != null &&
-                          currentUid != host.uid &&
-                          !isMessageHostPending &&
-                          onMessageHost != null
-                      ? () => unawaited(onMessageHost!(context, host))
-                      : null,
-                ),
-              ),
-            ),
-            if (host != hosts.last) gapH12,
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class ClubHostRow extends StatelessWidget {
-  const ClubHostRow({
-    super.key,
-    required this.host,
-    required this.borderColor,
-    required this.showChevron,
-    required this.onMessage,
-  });
-
-  final ClubHostProfile host;
-  final Color borderColor;
-  final bool showChevron;
-  final VoidCallback? onMessage;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    final isOwner = host.role == ClubHostRole.owner;
-    final meta =
-        '${isOwner ? 'OWNER' : 'HOST'} · '
-        '${showChevron ? 'VIEW PROFILE' : 'PUBLIC PROFILE'}';
-
-    return Row(
-      children: [
-        ClubHostAvatar(
-          name: host.displayName,
-          imageUrl: host.avatarUrl,
-          size: CatchSpacing.s10,
-          borderWidth: 2,
-          borderColor: borderColor,
-        ),
-        gapW12,
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                children: [
-                  Flexible(
-                    child: Text(
-                      host.displayName,
-                      style: CatchTextStyles.name(context),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  if (isOwner) ...[
-                    const SizedBox(width: CatchSpacing.micro6),
-                    Icon(
-                      CatchIcons.sealCheck,
-                      size: CatchIcon.sm,
-                      color: t.primary,
-                    ),
-                  ],
-                ],
-              ),
-              const SizedBox(height: CatchSpacing.s1),
-              Text(
-                meta,
-                style: CatchTextStyles.monoLabel(context),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ),
-        ),
-        if (onMessage != null) ...[
-          gapW8,
-          Tooltip(
-            message: 'Message host',
-            child: CatchIconButton(
-              onTap: onMessage,
-              child: Icon(
-                CatchIcons.chatBubbleOutlineRounded,
-                size: CatchIcon.control,
-                color: t.primary,
-              ),
-            ),
-          ),
-        ],
-        if (showChevron) ...[
-          gapW8,
-          Icon(
-            CatchIcons.chevronRightRounded,
-            size: CatchIcon.lg,
-            color: t.ink3,
-          ),
-        ],
-      ],
-    );
-  }
-}
-
-class ClubContactSection extends StatelessWidget {
-  const ClubContactSection({
-    super.key,
-    required this.club,
-    this.showTitle = true,
-    this.onContactSelected,
-  });
-
-  final Club club;
-  final bool showTitle;
-  final ClubContactActionHandler? onContactSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.tileContentCompact,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (showTitle) ...[
-            const CatchSectionHeader(title: 'Contact', heavy: true),
-            gapH12,
-          ],
-          if (club.instagramHandle != null)
-            Padding(
-              padding: CatchInsets.detailInlineRowBottomGap,
-              child: CatchField.nav(
-                icon: CatchIcons.alternateEmailRounded,
-                iconColor: t.ink,
-                title: ClubContactAction.instagram(club.instagramHandle!).label,
-                onTap: onContactSelected != null
-                    ? () => unawaited(
-                        onContactSelected!(
-                          ClubContactAction.instagram(club.instagramHandle!),
-                        ),
-                      )
-                    : null,
-                showChevron: false,
-                action: Icon(CatchIcons.arrowUpRight, size: CatchIcon.sm),
-              ),
-            ),
-          if (club.phoneNumber != null)
-            Padding(
-              padding: CatchInsets.detailInlineRowBottomGap,
-              child: CatchField.nav(
-                icon: CatchIcons.callOutlined,
-                iconColor: t.ink,
-                title: ClubContactAction.phone(club.phoneNumber!).label,
-                onTap: onContactSelected != null
-                    ? () => unawaited(
-                        onContactSelected!(
-                          ClubContactAction.phone(club.phoneNumber!),
-                        ),
-                      )
-                    : null,
-                showChevron: false,
-                action: Icon(CatchIcons.arrowUpRight, size: CatchIcon.sm),
-              ),
-            ),
-          if (club.email != null)
-            Padding(
-              padding: CatchInsets.detailInlineRowBottomGap,
-              child: CatchField.nav(
-                icon: CatchIcons.emailOutlined,
-                iconColor: t.ink,
-                title: ClubContactAction.email(club.email!).label,
-                onTap: onContactSelected != null
-                    ? () => unawaited(
-                        onContactSelected!(
-                          ClubContactAction.email(club.email!),
-                        ),
-                      )
-                    : null,
-                showChevron: false,
-                action: Icon(CatchIcons.arrowUpRight, size: CatchIcon.sm),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-class ClubPhotoStrip extends StatelessWidget {
-  const ClubPhotoStrip({super.key, required this.club});
-
-  final Club club;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final photos = club.clubPhotos.take(3).toList();
-
-    return Column(
-      children: [
-        Row(
-          children: [
-            for (var index = 0; index < photos.length; index++) ...[
-              Expanded(
-                child: AspectRatio(
-                  aspectRatio: 1,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(CatchRadius.infoTile),
-                    child: ColoredBox(
-                      color: t.primarySoft,
-                      child: CatchNetworkImage(
-                        photos[index].thumbnailOrUrl,
-                        errorBuilder: (_, _, _) => Icon(
-                          CatchIcons.groupsOutlined,
-                          color: t.ink2,
-                          size: CatchIcon.lg,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              if (index != photos.length - 1) gapW8,
-            ],
-          ],
-        ),
-        gapH8,
-        Row(
-          children: [
-            Text(
-              'FROM THE CLUB',
-              style: CatchTextStyles.monoLabelS(context, color: t.ink),
-            ),
-            const Spacer(),
-            Text(
-              '${club.clubPhotos.length} PHOTOS',
-              style: CatchTextStyles.monoLabelS(context, color: t.ink3),
-            ),
           ],
         ),
       ],

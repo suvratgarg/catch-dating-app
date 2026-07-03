@@ -1,34 +1,43 @@
 import 'dart:async';
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/connectivity_service.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
+    show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart' show CatchMotion;
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
-import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
-import 'package:catch_dating_app/swipes/presentation/profile_redesign/catch_profile_view.dart';
-import 'package:catch_dating_app/swipes/presentation/profile_surface.dart';
+import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
+import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
+import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/catch_profile_view.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
-    show UpdateUserProfilePatch;
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/preview_tab.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_insights_tab.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_sliver_header.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../events/events_test_helpers.dart';
 import '../test_pump_helpers.dart';
@@ -43,6 +52,15 @@ Widget _profileTab(UserProfile user) {
           uploadState: (loadingIndices: <int>{}, uploadError: null),
         ),
       ),
+    ),
+  );
+}
+
+Widget _profileWidgetHarness(Widget child) {
+  return ProviderScope(
+    child: MaterialApp(
+      theme: AppTheme.light,
+      home: Scaffold(body: child),
     ),
   );
 }
@@ -209,7 +227,7 @@ void main() {
   });
 
   testWidgets(
-    'Profile sliver header uses Your profile title with Edit and Preview options',
+    'Profile sliver header uses Your profile title with profile tab options',
     (tester) async {
       const topSafeArea = 47.0;
       tester.view.devicePixelRatio = 1.0;
@@ -234,6 +252,7 @@ void main() {
       expect(find.text('Your profile').hitTestable(), findsOneWidget);
       expect(find.text('Edit'), findsOneWidget);
       expect(find.text('Preview'), findsOneWidget);
+      expect(find.text('Insights'), findsOneWidget);
       expect(find.text('Edit profile'), findsNothing);
       expect(find.text('Preview profile'), findsNothing);
       expect(find.text('You'), findsNothing);
@@ -255,12 +274,50 @@ void main() {
       expect(find.text('Your profile').hitTestable(), findsNothing);
       expect(find.text('Edit'), findsOneWidget);
       expect(find.text('Preview'), findsOneWidget);
+      expect(find.text('Insights'), findsOneWidget);
       expect(
         tester.getTopLeft(_profileOptionGroup()).dy,
         greaterThanOrEqualTo(topSafeArea),
       );
     },
   );
+
+  testWidgets('Profile settings button routes to account settings', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1.0;
+    tester.view.physicalSize = const Size(390, 844);
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final router = GoRouter(
+      initialLocation: Routes.profileScreen.path,
+      routes: [
+        GoRoute(
+          path: Routes.profileScreen.path,
+          name: Routes.profileScreen.name,
+          builder: (context, state) => const _ProfileHeaderHarness(),
+        ),
+        GoRoute(
+          path: Routes.settingsScreen.path,
+          name: Routes.settingsScreen.name,
+          builder: (context, state) =>
+              const Scaffold(body: Text('Settings route reached')),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
+      ),
+    );
+    await tester.pump();
+
+    await tester.tap(find.byTooltip('Settings'));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Settings route reached'), findsOneWidget);
+  });
 
   testWidgets('ProfileScreen uses native horizontal tab paging', (
     tester,
@@ -285,18 +342,35 @@ void main() {
     expect(find.byType(TabBarView), findsOneWidget);
     expect(find.byType(ProfileTabSliverBody), findsOneWidget);
     expect(find.byType(PreviewTab), findsNothing);
+    expect(find.byType(ProfileInsightsTabSliverBody), findsNothing);
 
     await tester.drag(find.byType(TabBarView), const Offset(-320, 0));
     await pumpFeatureUi(tester);
 
     expect(find.byType(PreviewTab), findsOneWidget);
     expect(find.byType(ProfileTabSliverBody), findsNothing);
+    expect(find.byType(ProfileInsightsTabSliverBody), findsNothing);
+
+    await tester.drag(find.byType(TabBarView), const Offset(-320, 0));
+    await pumpFeatureUi(tester);
+
+    expect(find.byType(ProfileInsightsTabSliverBody), findsOneWidget);
+    expect(find.byType(ProfileTabSliverBody), findsNothing);
+    expect(find.byType(PreviewTab), findsNothing);
+
+    await tester.drag(find.byType(TabBarView), const Offset(320, 0));
+    await pumpFeatureUi(tester);
+
+    expect(find.byType(PreviewTab), findsOneWidget);
+    expect(find.byType(ProfileTabSliverBody), findsNothing);
+    expect(find.byType(ProfileInsightsTabSliverBody), findsNothing);
 
     await tester.drag(find.byType(TabBarView), const Offset(320, 0));
     await pumpFeatureUi(tester);
 
     expect(find.byType(ProfileTabSliverBody), findsOneWidget);
     expect(find.byType(PreviewTab), findsNothing);
+    expect(find.byType(ProfileInsightsTabSliverBody), findsNothing);
   });
 
   testWidgets('ProfileScreen preserves NestedScrollView overlap contract', (
@@ -344,6 +418,45 @@ void main() {
       tester.getTopLeft(_profileOptionGroup()).dy,
       greaterThanOrEqualTo(0),
     );
+  });
+
+  testWidgets('ProfileScreen surfaces profile photo upload failures', (
+    tester,
+  ) async {
+    final user = buildUser();
+    final repository = FakeProfileEditUserProfileRepository()
+      ..latestProfile = user;
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
+          watchUserProfileProvider.overrideWith(
+            (ref) => Stream<UserProfile?>.value(user),
+          ),
+          userProfileRepositoryProvider.overrideWithValue(repository),
+          imageUploadRepositoryProvider.overrideWithValue(
+            _FailingProfileImageUploadRepository(),
+          ),
+          errorLoggerProvider.overrideWithValue(_SilentErrorLogger()),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: const _ProfileUploadFailureSeeder(),
+        ),
+      ),
+    );
+
+    await pumpFeatureUi(tester);
+    await pumpFeatureUi(tester);
+
+    expect(
+      find.text(
+        'No internet connection. Connect to the internet and try again.',
+      ),
+      findsOneWidget,
+    );
+    expect(find.byType(CatchLoadingIndicator), findsNothing);
   });
 
   testWidgets('Profile preview card can scroll back to the top', (
@@ -1106,6 +1219,7 @@ void main() {
       containsPair('answer', 'Updated bio'),
     ]);
     expect(_inlinePromptEditableText(), findsOneWidget);
+    expect(find.byType(CatchErrorBanner), findsOneWidget);
     expect(find.textContaining('Save failed'), findsOneWidget);
   });
 
@@ -1263,6 +1377,65 @@ void main() {
 
     expect(find.text('Children'), findsOneWidget);
     expect(_catchChip(ChildrenStatus.dontHave.label), findsOneWidget);
+  });
+
+  testWidgets('ProfileSingleEnumEntry renders through the inline editor', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _profileWidgetHarness(
+        ProfileSingleEnumEntry<EducationLevel>(
+          icon: CatchIcons.schoolOutlined,
+          label: 'Education',
+          values: EducationLevel.values,
+          value: EducationLevel.masters,
+          fieldName: 'education',
+          patchForValue: (value) => UpdateUserProfilePatch(education: value),
+          isExpanded: false,
+          onTap: () {},
+          onSaved: () {},
+          onCancel: () {},
+        ),
+      ),
+    );
+
+    expect(find.byType(ProfileSingleEnumEntry<EducationLevel>), findsOneWidget);
+    expect(
+      find.byType(ProfileInlineSingleChoiceEntryEditor<EducationLevel>),
+      findsOneWidget,
+    );
+    expect(find.text('Education'), findsOneWidget);
+    expect(find.text(EducationLevel.masters.label), findsOneWidget);
+  });
+
+  testWidgets('ProfileMultiEnumEntry renders through the inline editor', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _profileWidgetHarness(
+        ProfileMultiEnumEntry<Language>(
+          icon: CatchIcons.languageOutlined,
+          label: 'Languages',
+          values: Language.values,
+          selected: const [Language.english, Language.hindi],
+          fieldName: 'languages',
+          placeholder: 'Languages',
+          patchForValues: (values) => UpdateUserProfilePatch(languages: values),
+          isExpanded: false,
+          onTap: () {},
+          onSaved: () {},
+          onCancel: () {},
+        ),
+      ),
+    );
+
+    expect(find.byType(ProfileMultiEnumEntry<Language>), findsOneWidget);
+    expect(
+      find.byType(ProfileInlineMultiChoiceEntryEditor<Language>),
+      findsOneWidget,
+    );
+    expect(find.text('Languages'), findsOneWidget);
+    expect(find.text('English, Hindi'), findsOneWidget);
   });
 
   testWidgets('single-choice chip saves only after Done', (tester) async {
@@ -1585,7 +1758,7 @@ class _ProfileHeaderHarnessState extends State<_ProfileHeaderHarness>
   @override
   void initState() {
     super.initState();
-    _controller = TabController(length: 2, vsync: this);
+    _controller = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -1625,6 +1798,61 @@ class _ProfileEditProviderPrimer extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(uidProvider);
     return child;
+  }
+}
+
+class _ProfileUploadFailureSeeder extends ConsumerStatefulWidget {
+  const _ProfileUploadFailureSeeder();
+
+  @override
+  ConsumerState<_ProfileUploadFailureSeeder> createState() =>
+      _ProfileUploadFailureSeederState();
+}
+
+class _ProfileUploadFailureSeederState
+    extends ConsumerState<_ProfileUploadFailureSeeder> {
+  bool _started = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _started) return;
+      _started = true;
+      PhotoUploadController.uploadPhotoMutation.reset(ref);
+      unawaited(
+        PhotoUploadController.uploadPhotoMutation
+            .run(ref, (tx) async {
+              await tx
+                  .get(photoUploadControllerProvider.notifier)
+                  .pickAndUpload(1);
+            })
+            .catchError((_) {}),
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => const ProfileScreen();
+}
+
+class _FailingProfileImageUploadRepository extends Fake
+    implements ImageUploadRepository {
+  @override
+  Future<XFile?> pickImage({
+    ImageUploadPurpose purpose = ImageUploadPurpose.profilePhoto,
+    int? imageQuality,
+  }) async {
+    return XFile('picked-profile-photo.jpg');
+  }
+
+  @override
+  Future<UploadedImage> uploadUserProfilePhoto({
+    required String uid,
+    required int index,
+    required XFile image,
+  }) async {
+    throw obviousOfflineException();
   }
 }
 

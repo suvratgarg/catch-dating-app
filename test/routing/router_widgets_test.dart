@@ -155,7 +155,7 @@ void main() {
       final club = club_helpers.buildClub();
       final container = ProviderContainer(
         overrides: [
-          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+          uidProvider.overrideWith((ref) => Stream.value('host-1')),
           fetchClubProvider('club-1').overrideWith((ref) async => club),
         ],
       );

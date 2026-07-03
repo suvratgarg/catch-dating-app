@@ -10,6 +10,8 @@ part 'launch_access_config_provider.g.dart';
 /// This provider is intentionally not wired into routing yet. When the router
 /// starts using it, the bundled default keeps the gate off unless Remote Config
 /// explicitly enables it.
+// keepalive: launch-access config is a global gate input and should not refetch
+// per route.
 @Riverpod(keepAlive: true)
 LaunchAccessConfig launchAccessConfig(Ref ref) {
   final remoteConfig = ref.watch(firebaseRemoteConfigProvider);

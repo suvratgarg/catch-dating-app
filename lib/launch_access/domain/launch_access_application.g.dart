@@ -46,18 +46,10 @@ _LaunchAccessApplication _$LaunchAccessApplicationFromJson(
   reviewerUid: json['reviewerUid'] as String?,
   reviewNote: json['reviewNote'] as String?,
   submissionCount: (json['submissionCount'] as num?)?.toInt() ?? 1,
-  createdAt: const NullableTimestampConverter().fromJson(
-    json['createdAt'] as Timestamp?,
-  ),
-  submittedAt: const NullableTimestampConverter().fromJson(
-    json['submittedAt'] as Timestamp?,
-  ),
-  updatedAt: const NullableTimestampConverter().fromJson(
-    json['updatedAt'] as Timestamp?,
-  ),
-  reviewedAt: const NullableTimestampConverter().fromJson(
-    json['reviewedAt'] as Timestamp?,
-  ),
+  createdAt: const NullableTimestampConverter().fromJson(json['createdAt']),
+  submittedAt: const NullableTimestampConverter().fromJson(json['submittedAt']),
+  updatedAt: const NullableTimestampConverter().fromJson(json['updatedAt']),
+  reviewedAt: const NullableTimestampConverter().fromJson(json['reviewedAt']),
 );
 
 Map<String, dynamic> _$LaunchAccessApplicationToJson(

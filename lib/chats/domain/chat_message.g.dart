@@ -11,9 +11,7 @@ _ChatMessage _$ChatMessageFromJson(Map<String, dynamic> json) => _ChatMessage(
   senderId: json['senderId'] as String,
   text: json['text'] as String,
   imageUrl: json['imageUrl'] as String?,
-  sentAt: const NullableTimestampConverter().fromJson(
-    json['sentAt'] as Timestamp?,
-  ),
+  sentAt: const NullableTimestampConverter().fromJson(json['sentAt']),
 );
 
 Map<String, dynamic> _$ChatMessageToJson(_ChatMessage instance) =>

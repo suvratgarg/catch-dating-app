@@ -53,7 +53,9 @@ class CatchNetworkImage extends StatelessWidget {
         width: width,
         height: height,
         semanticLabel: semanticLabel,
-        errorBuilder: errorBuilder ?? _defaultError,
+        errorBuilder:
+            errorBuilder ??
+            (context, error, stack) => const CatchNetworkImageFallback(),
       );
     }
 
@@ -78,7 +80,9 @@ class CatchNetworkImage extends StatelessWidget {
       cacheWidth: decodeWidth,
       cacheHeight: cacheHeight ?? scaled(height),
       semanticLabel: semanticLabel,
-      errorBuilder: errorBuilder ?? _defaultError,
+      errorBuilder:
+          errorBuilder ??
+          (context, error, stack) => const CatchNetworkImageFallback(),
       loadingBuilder: loadingBuilder,
     );
   }
@@ -87,16 +91,32 @@ class CatchNetworkImage extends StatelessWidget {
     final trimmed = url.trim();
     return trimmed.startsWith('assets/') || trimmed.startsWith('packages/');
   }
+}
 
-  Widget _defaultError(BuildContext context, Object error, StackTrace? stack) {
+class CatchNetworkImageFallback extends StatelessWidget {
+  const CatchNetworkImageFallback({
+    super.key,
+    this.backgroundColor,
+    this.iconColor,
+    this.icon,
+    this.iconSize = CatchIcon.md,
+  });
+
+  final Color? backgroundColor;
+  final Color? iconColor;
+  final IconData? icon;
+  final double iconSize;
+
+  @override
+  Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return ColoredBox(
-      color: t.surface,
+      color: backgroundColor ?? t.surface,
       child: Center(
         child: Icon(
-          CatchIcons.imageOutlined,
-          color: t.ink3,
-          size: CatchIcon.md,
+          icon ?? CatchIcons.imageOutlined,
+          color: iconColor ?? t.ink3,
+          size: iconSize,
         ),
       ),
     );

@@ -8,18 +8,20 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
-import 'package:catch_dating_app/events/presentation/attendance_sheet_view_model.dart';
-import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
-import 'package:catch_dating_app/events/data/event_invite_share_copy.dart';
+import 'package:catch_dating_app/events/shared/attendance_sheet_view_model.dart';
+import 'package:catch_dating_app/events/shared/event_invite_share_copy.dart';
 import 'package:catch_dating_app/hosts/domain/host_report_export.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-final hostEventManageActionsProvider = Provider<HostEventManageActions>(
-  (ref) => HostEventManageController(ref),
-);
+part 'host_event_manage_controller.g.dart';
+
+@riverpod
+HostEventManageActions hostEventManageActions(Ref ref) =>
+    HostEventManageController(ref);
 
 abstract interface class HostEventManageActions {
   Future<String> createInviteLink({
@@ -149,6 +151,7 @@ class HostEventManageController implements HostEventManageActions {
       event: viewModel.event,
       participations: reportData.participations,
       namesByUid: reportData.namesByUid,
+      exportedAt: DateTime.now(),
     );
     await _shareExport(export: export, origin: origin);
   }
@@ -167,6 +170,7 @@ class HostEventManageController implements HostEventManageActions {
       event: viewModel.event,
       participations: reportData.participations,
       namesByUid: reportData.namesByUid,
+      exportedAt: DateTime.now(),
     );
     await _shareExport(export: export, origin: origin);
   }
@@ -174,7 +178,7 @@ class HostEventManageController implements HostEventManageActions {
   @override
   Future<void> cancelHostedEvent({required Event event}) async {
     await _ref
-        .read(eventBookingControllerProvider.notifier)
+        .read(hostEventBookingControllerProvider.notifier)
         .cancelHostedEvent(event: event);
     _invalidateHostedEvent(event.id);
   }
@@ -182,7 +186,7 @@ class HostEventManageController implements HostEventManageActions {
   @override
   Future<void> deleteUnusedEvent({required Event event}) async {
     await _ref
-        .read(eventBookingControllerProvider.notifier)
+        .read(hostEventBookingControllerProvider.notifier)
         .deleteHostedEvent(event: event);
     _invalidateHostedEvent(event.id);
   }

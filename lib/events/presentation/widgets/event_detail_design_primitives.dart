@@ -16,6 +16,7 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
 import 'package:flutter/material.dart';
 
 class EventDetailTicketStubBand extends StatelessWidget {
@@ -223,10 +224,7 @@ class EventDetailMapCard extends StatelessWidget {
                   child: Row(
                     children: [
                       Expanded(
-                        child: MapPill(
-                          text: event.locationName,
-                          color: t.ink,
-                        ),
+                        child: MapPill(text: event.locationName, color: t.ink),
                       ),
                       gapW8,
                       MapPill(text: note, color: t.ink2),
@@ -375,8 +373,8 @@ class EventDetailPhotoStripTile extends StatelessWidget {
   }
 }
 
-class _TicketStubCellData {
-  const _TicketStubCellData({
+class TicketStubCellData {
+  const TicketStubCellData({
     required this.label,
     required this.value,
     this.detail,
@@ -396,7 +394,7 @@ class TicketStubCell extends StatelessWidget {
     required this.showDivider,
   });
 
-  final _TicketStubCellData cell;
+  final TicketStubCellData cell;
   final bool showDivider;
 
   @override
@@ -441,7 +439,10 @@ class TicketStubCell extends StatelessWidget {
                       cell.detail!,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: CatchTextStyles.numericMeta(context, color: t.ink2),
+                      style: CatchTextStyles.numericMeta(
+                        context,
+                        color: t.ink2,
+                      ),
                     ),
                   ],
                 ],
@@ -491,8 +492,8 @@ class HairlineList extends StatelessWidget {
   }
 }
 
-class _ItineraryStep {
-  const _ItineraryStep({
+class ItineraryStep {
+  const ItineraryStep({
     required this.time,
     required this.title,
     required this.detail,
@@ -515,7 +516,7 @@ class ItineraryRow extends StatelessWidget {
     this.dotBackgroundColor,
   });
 
-  final _ItineraryStep step;
+  final ItineraryStep step;
   final bool isLast;
   final Color accent;
   final Color railColor;
@@ -602,11 +603,7 @@ class ItineraryRow extends StatelessWidget {
 }
 
 class MapPill extends StatelessWidget {
-  const MapPill({
-    super.key,
-    required this.text,
-    required this.color,
-  });
+  const MapPill({super.key, required this.text, required this.color});
 
   final String text;
   final Color color;
@@ -734,23 +731,23 @@ class _MapGridPainter extends CustomPainter {
       oldDelegate.routeColor != routeColor;
 }
 
-List<_TicketStubCellData> _ticketStubCells(Event event) {
+List<TicketStubCellData> _ticketStubCells(Event event) {
   final locationDetail = event.locationNotes;
   return [
-    _TicketStubCellData(
+    TicketStubCellData(
       label: 'When',
       value: event.shortDateLabel,
       detail: event.compactTimeRangeLabel,
       icon: CatchIcons.calendarAdd,
     ),
-    _TicketStubCellData(
+    TicketStubCellData(
       label: 'Where',
       value: event.locationName,
       detail: locationDetail == null || locationDetail.isEmpty
           ? null
           : locationDetail,
     ),
-    _TicketStubCellData(
+    TicketStubCellData(
       label: _levelLabelFor(event.activityKind),
       value: event.pace.label,
       detail: event.activitySummaryLabel,
@@ -768,20 +765,20 @@ List<String> _hintsFor(Event event) {
   return [capacityHint, _interactionHint(event.eventFormat.interactionModel)];
 }
 
-List<_ItineraryStep> _itineraryFor(Event event) {
+List<ItineraryStep> _itineraryFor(Event event) {
   final warmupTime = event.startTime.add(const Duration(minutes: 15));
   return [
-    _ItineraryStep(
+    ItineraryStep(
       time: EventFormatters.time(event.startTime),
       title: 'Gather at ${event.locationName}',
       detail: 'Quick hellos, host check-in, and the plan for the group.',
     ),
-    _ItineraryStep(
+    ItineraryStep(
       time: EventFormatters.time(warmupTime),
       title: event.eventFormat.label,
       detail: _activityPlanDetail(event),
     ),
-    _ItineraryStep(
+    ItineraryStep(
       time: EventFormatters.time(event.endTime),
       title: 'Wrap up',
       detail:
@@ -910,20 +907,6 @@ String _admissionSummary(EventAdmissionPolicy policy) {
   };
 }
 
-/// One value/label data pair in an [EventDetailHostCard] stat strip
-/// (design-system `HostStat`). [value] and [label] are pre-formatted; [label]
-/// is rendered uppercased mono.
-@immutable
-class EventDetailHostStat {
-  const EventDetailHostStat({required this.value, required this.label});
-
-  /// Mono figure, e.g. `"23"` or `"92%"`.
-  final String value;
-
-  /// Mono label, e.g. `"RUNS"` (rendered uppercased).
-  final String label;
-}
-
 /// Design-system "your hosts" card (`components/events/HostCard`): a graded
 /// avatar on the activity gradient, the condensed host name with a pigment
 /// verified seal, a mono meta line, an optional three-up stat strip, and two
@@ -1011,7 +994,6 @@ class EventDetailHostCard extends StatelessWidget {
                                   color: nameColor,
                                 ).copyWith(
                                   fontSize: CatchLayout.eventDetailHostNameSize,
-                                  letterSpacing: -0.2,
                                 ),
                           ),
                         ),
@@ -1129,11 +1111,7 @@ class EventDetailHostCard extends StatelessWidget {
 /// The 46px host avatar — a graded photo over the activity-pigment gradient,
 /// or the bare gradient when no photo is supplied.
 class HostAvatar extends StatelessWidget {
-  const HostAvatar({
-    super.key,
-    required this.activity,
-    this.photoUrl,
-  });
+  const HostAvatar({super.key, required this.activity, this.photoUrl});
 
   final CatchActivity activity;
   final String? photoUrl;

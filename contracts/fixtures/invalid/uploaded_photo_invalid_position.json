@@ -1,0 +1,17 @@
+{
+  "id": "club_photo_01",
+  "url": "https://example.test/club-photo.jpg",
+  "storagePath": "clubs/club-1/photos/club_photo_01.jpg",
+  "thumbnailUrl": null,
+  "thumbnailStoragePath": null,
+  "position": 20,
+  "moderation": null,
+  "createdAt": {
+    "_seconds": 1770000000,
+    "_nanoseconds": 0
+  },
+  "updatedAt": {
+    "_seconds": 1770000000,
+    "_nanoseconds": 0
+  }
+}

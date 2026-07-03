@@ -8,6 +8,8 @@ import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/saved_event.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -76,6 +78,63 @@ void main() {
       );
 
       expect(result.requireValue!.isHost, isTrue);
+    });
+
+    test(
+      'host role waits for club ownership before rendering detail state',
+      () {
+        AppConfig.configureEntrypointRole(AppRole.host);
+
+        final result = buildEventDetailViewModel(
+          eventAsync: AsyncData(buildEvent()),
+          userProfileAsync: AsyncData(buildUser(uid: 'host-1')),
+          reviewsAsync: const AsyncData(<Review>[]),
+          clubAsync: const AsyncLoading(),
+          savedEventAsync: const AsyncData(null),
+          participationAsync: const AsyncData(null),
+          currentUid: 'host-1',
+          isAuthenticated: true,
+        );
+
+        expect(result.isLoading, isTrue);
+      },
+    );
+
+    test(
+      'host role surfaces club errors before falling back to consumer state',
+      () {
+        AppConfig.configureEntrypointRole(AppRole.host);
+
+        final result = buildEventDetailViewModel(
+          eventAsync: AsyncData(buildEvent()),
+          userProfileAsync: AsyncData(buildUser(uid: 'host-1')),
+          reviewsAsync: const AsyncData(<Review>[]),
+          clubAsync: AsyncError(StateError('club failed'), StackTrace.empty),
+          savedEventAsync: const AsyncData(null),
+          participationAsync: const AsyncData(null),
+          currentUid: 'host-1',
+          isAuthenticated: true,
+        );
+
+        expect(result.hasError, isTrue);
+        expect(result.error, isA<StateError>());
+      },
+    );
+
+    test('consumer role keeps detail available when club ownership fails', () {
+      final result = buildEventDetailViewModel(
+        eventAsync: AsyncData(buildEvent()),
+        userProfileAsync: AsyncData(buildUser()),
+        reviewsAsync: const AsyncData(<Review>[]),
+        clubAsync: AsyncError(StateError('club failed'), StackTrace.empty),
+        savedEventAsync: const AsyncData(null),
+        participationAsync: const AsyncData(null),
+        currentUid: 'runner-1',
+        isAuthenticated: true,
+      );
+
+      expect(result.hasError, isFalse);
+      expect(result.requireValue!.isHost, isFalse);
     });
 
     test('returns saved state from the saved event relationship doc', () {
@@ -350,7 +409,82 @@ void main() {
       expect(repository.unsavedEventId, 'event-10');
       expect(repository.savedEventId, isNull);
     });
+
+    test(
+      'records invite-link opens through the event repository seam',
+      () async {
+        final repository = FakeEventRepository();
+        final container = ProviderContainer(
+          overrides: [
+            eventRepositoryProvider.overrideWith((ref) => repository),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        await container
+            .read(eventDetailControllerProvider.notifier)
+            .recordInviteLinkOpenBestEffort(
+              eventId: 'event-11',
+              inviteLinkId: 'invite-11',
+            );
+
+        expect(repository.recordedInviteOpenEventId, 'event-11');
+        expect(repository.recordedInviteOpenLinkId, 'invite-11');
+      },
+    );
+
+    test(
+      'logs but does not surface invite-link attribution failures',
+      () async {
+        final repository = FakeEventRepository()
+          ..recordInviteOpenError = StateError('attribution failed');
+        final errorLogger = _RecordingErrorLogger();
+        final container = ProviderContainer(
+          overrides: [
+            eventRepositoryProvider.overrideWith((ref) => repository),
+            errorLoggerProvider.overrideWithValue(errorLogger),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        await container
+            .read(eventDetailControllerProvider.notifier)
+            .recordInviteLinkOpenBestEffort(
+              eventId: 'event-12',
+              inviteLinkId: 'invite-12',
+            );
+
+        expect(repository.recordedInviteOpenEventId, isNull);
+        expect(repository.recordedInviteOpenLinkId, isNull);
+        expect(errorLogger.loggedExceptions, hasLength(1));
+        expect(
+          errorLogger.loggedExceptions.single.message,
+          contains('Unable to record invite link open best effort'),
+        );
+      },
+    );
   });
+}
+
+class _RecordingErrorLogger extends ErrorLogger {
+  _RecordingErrorLogger()
+    : super(crashReporter: null, shouldReportErrors: false);
+
+  final List<AppException> loggedExceptions = [];
+
+  @override
+  void logAppException(AppException exception) {
+    loggedExceptions.add(exception);
+  }
+
+  @override
+  void log({
+    required LogLevel level,
+    required String message,
+    Object? error,
+    StackTrace? stackTrace,
+    Map<String, String>? context,
+  }) {}
 }
 
 EventParticipation _participation({

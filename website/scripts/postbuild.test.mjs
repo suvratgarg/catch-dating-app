@@ -61,11 +61,23 @@ test("postbuild writes route metadata, robots, and an indexable-only sitemap", (
   );
   assert.match(claimHtml, /<meta name="robots" content="noindex, follow" \/>/);
 
+  const notFoundHtml = fs.readFileSync(
+    path.join(distRoot, "404.html"),
+    "utf8"
+  );
+  assert.match(notFoundHtml, /<title>Page not found \| Catch<\/title>/);
+  assert.match(
+    notFoundHtml,
+    /<link rel="canonical" href="https:\/\/example\.test\/404\/" \/>/
+  );
+  assert.match(notFoundHtml, /<meta name="robots" content="noindex, follow" \/>/);
+
   const sitemap = fs.readFileSync(path.join(distRoot, "sitemap.xml"), "utf8");
   assert.match(sitemap, /<loc>https:\/\/example\.test\/<\/loc>/);
   assert.match(sitemap, /<loc>https:\/\/example\.test\/host\/<\/loc>/);
   assert.match(sitemap, /<loc>https:\/\/example\.test\/organizers\/afterfly\/<\/loc>/);
   assert.doesNotMatch(sitemap, /claim\/<\/loc>/);
+  assert.doesNotMatch(sitemap, /404\/<\/loc>/);
   assert.doesNotMatch(sitemap, /organizers\/$/);
   assert.doesNotMatch(sitemap, /afterfly-run-club/);
   assert.doesNotMatch(sitemap, /noindex-sample/);

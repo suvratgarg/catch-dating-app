@@ -63,7 +63,5 @@ String _slugFrom(String raw, String fallback) {
 }
 
 DateTime _requiredTimestamp(Object? value, String field) {
-  if (value is Timestamp) return value.toDate();
-  if (value is DateTime) return value;
-  throw StateError('Missing timestamp field $field.');
+  return dateTimeFromFirestoreValue(value, field: field);
 }

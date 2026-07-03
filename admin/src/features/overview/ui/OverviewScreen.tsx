@@ -11,11 +11,28 @@ import {
   Users,
 } from "lucide-react";
 import {
-  AdminButton,
-  AdminTag,
+  AdminFilterBar,
+  AdminMetricCard,
+  AdminMetricGrid,
+  AdminOverviewAnalyticsClearButton,
+  AdminOverviewBarChart,
+  AdminOverviewLineChart,
+  AdminOverviewMainGrid,
+  AdminOverviewQueueActionHint,
+  AdminOverviewQueueColumns,
+  AdminOverviewQueueDecisionButton,
+  AdminOverviewQueueDetailPanel,
+  AdminOverviewQueueHeading,
+  AdminOverviewQueueItems,
+  AdminOverviewQueueList,
+  AdminOverviewQueueRow,
+  AdminOverviewQueueRowActions,
+  AdminOverviewValueSignals,
   DataTable,
   EmptyState,
   Panel,
+  QualityList,
+  QualityRow,
   RiskBadge,
   SelectField,
   StateRow,
@@ -128,20 +145,31 @@ export function OverviewScreen({
         onRangePresetChange={onAnalyticsRangePresetChange}
         onStartDateChange={onAnalyticsStartDateChange}
       />
-      <section className="metric-grid" aria-label="Key metrics">
+      <AdminMetricGrid ariaLabel="Key metrics">
         {primaryMetrics.map((metric) => (
-          <MetricTile key={metric.id} metric={metric} />
+          <AdminMetricCard
+            key={metric.id}
+            label={metric.label}
+            tone={metricTone(metric)}
+            value={(
+              <>
+                {metric.value.toLocaleString()}
+                {metric.unit && <span>{metric.unit}</span>}
+              </>
+            )}
+            variant="tile"
+          />
         ))}
-      </section>
+      </AdminMetricGrid>
 
-      <section className="main-grid">
+      <AdminOverviewMainGrid>
         <Panel
-          className="span-2"
+          span={2}
           icon={<ShieldAlert size={18} strokeWidth={1.9} />}
           title="Live queues"
           action={`${queueCount(overview)} open`}
         >
-          <div className="queue-columns">
+          <AdminOverviewQueueColumns>
             <QueueList
               intent="danger"
               items={queueGroups[0]?.items ?? []}
@@ -185,7 +213,7 @@ export function OverviewScreen({
               selectedKey={selectedQueue?.key ?? null}
               title="Moderation and payments"
             />
-          </div>
+          </AdminOverviewQueueColumns>
           <QueueDetailPanel selection={selectedQueue} />
         </Panel>
 
@@ -194,7 +222,10 @@ export function OverviewScreen({
           title="Attendance trend"
           action={analyticsMetricAction(hostAnalytics, "attendanceRate")}
         >
-          <LineMiniChart points={analyticsRatePoints(hostAnalytics)} />
+          <AdminOverviewLineChart
+            emptyLabel="No trend data yet."
+            points={analyticsRatePoints(hostAnalytics)}
+          />
         </Panel>
 
         <Panel
@@ -202,11 +233,14 @@ export function OverviewScreen({
           title="Booking demand"
           action={analyticsMetricAction(hostAnalytics, "bookings")}
         >
-          <BarMiniChart points={analyticsTrendPoints(hostAnalytics, "bookings")} />
+          <AdminOverviewBarChart
+            emptyLabel="No trend data yet."
+            points={analyticsTrendPoints(hostAnalytics, "bookings")}
+          />
         </Panel>
 
         <Panel
-          className="span-2"
+          span={2}
           icon={<BarChart3 size={18} strokeWidth={1.9} />}
           title="Event performance"
           action={`${hostAnalytics.topEvents.length} ranked`}
@@ -235,7 +269,7 @@ export function OverviewScreen({
             overview={overview}
           />
         </Panel>
-      </section>
+      </AdminOverviewMainGrid>
     </>
   );
 }
@@ -311,7 +345,7 @@ function AnalyticsControls({
 }) {
   const hasScope = clubId.trim() || eventId.trim();
   return (
-    <section className="analytics-controls" aria-label="Organizer analytics filters">
+    <AdminFilterBar ariaLabel="Organizer analytics filters">
       <SelectField
         label="Range"
         onChange={(value) =>
@@ -364,32 +398,22 @@ function AnalyticsControls({
         placeholder="all events"
         value={eventId}
       />
-      <AdminButton
-        className="analytics-clear"
+      <AdminOverviewAnalyticsClearButton
         disabled={!hasScope}
         onClick={onClearScope}
       >
         Clear scope
-      </AdminButton>
-    </section>
+      </AdminOverviewAnalyticsClearButton>
+    </AdminFilterBar>
   );
 }
 
-function MetricTile({metric}: {metric: AdminOverviewMetric}) {
-  const tone = metric.id.includes("failed") ||
+function metricTone(metric: AdminOverviewMetric): "normal" | "attention" {
+  return metric.id.includes("failed") ||
     metric.id.includes("Reports") ||
     metric.id.includes("Applications") ?
     "attention" :
     "normal";
-  return (
-    <article className={`metric-tile ${tone}`}>
-      <div className="metric-label">{metric.label}</div>
-      <div className="metric-value">
-        {metric.value.toLocaleString()}
-        {metric.unit && <span>{metric.unit}</span>}
-      </div>
-    </article>
-  );
 }
 
 function QueueList({
@@ -408,12 +432,9 @@ function QueueList({
   title: string;
 }) {
   return (
-    <div className="queue-list">
-      <div className="queue-heading">
-        <span>{title}</span>
-        <strong>{items.length}</strong>
-      </div>
-      <div className="queue-items">
+    <AdminOverviewQueueList>
+      <AdminOverviewQueueHeading count={items.length} title={title} />
+      <AdminOverviewQueueItems>
         {items.length === 0 ? (
           <EmptyState icon={<CheckCircle2 size={16} strokeWidth={1.9} />}>
             Clear
@@ -430,8 +451,8 @@ function QueueList({
             />
           ))
         )}
-      </div>
-    </div>
+      </AdminOverviewQueueItems>
+    </AdminOverviewQueueList>
   );
 }
 
@@ -449,23 +470,23 @@ function QueueRow({
   onInspect: (item: AdminQueueItem) => void;
 }) {
   return (
-    <article className={`queue-row ${intent} ${isSelected ? "selected" : ""}`.trim()}>
+    <AdminOverviewQueueRow intent={intent} selected={isSelected}>
       <div>
         <h3>{item.title}</h3>
         <p>{item.detail}</p>
       </div>
-      <div className="queue-row-actions">
+      <AdminOverviewQueueRowActions>
         <span>{relativeTime(item.createdAt)}</span>
-        <AdminButton
-          className="queue-decision-button"
+        <AdminOverviewQueueDecisionButton
           onClick={() => onInspect(item)}
-          selected={isSelected}
         >
           Inspect
-        </AdminButton>
-        {actionHint ? <AdminTag tone="muted">{actionHint}</AdminTag> : null}
-      </div>
-    </article>
+        </AdminOverviewQueueDecisionButton>
+        {actionHint ? (
+          <AdminOverviewQueueActionHint>{actionHint}</AdminOverviewQueueActionHint>
+        ) : null}
+      </AdminOverviewQueueRowActions>
+    </AdminOverviewQueueRow>
   );
 }
 
@@ -477,7 +498,7 @@ function QueueDetailPanel({
   if (!selection) {
     return (
       <EmptyState
-        className="workbench-empty"
+        variant="workbench"
         icon={<CheckCircle2 size={16} strokeWidth={1.9} />}
       >
         No open queue rows.
@@ -485,12 +506,12 @@ function QueueDetailPanel({
     );
   }
   return (
-    <section className="queue-detail-panel" aria-label="Selected queue detail">
-      <div className="queue-heading">
-        <span>Selected queue row</span>
-        <strong>{selection.group}</strong>
-      </div>
-      <div className="quality-list">
+    <AdminOverviewQueueDetailPanel aria-label="Selected queue detail">
+      <AdminOverviewQueueHeading
+        count={selection.group}
+        title="Selected queue row"
+      />
+      <QualityList>
         <StateRow label="Title" value={selection.item.title} />
         <StateRow label="Status" value={selection.item.status} />
         <StateRow label="Target" value={selection.item.targetPath} />
@@ -500,8 +521,8 @@ function QueueDetailPanel({
           label="Owner flow"
           value={ownerFlowForQueueGroup(selection.group)}
         />
-      </div>
-    </section>
+      </QualityList>
+    </AdminOverviewQueueDetailPanel>
   );
 }
 
@@ -511,58 +532,6 @@ function ownerFlowForQueueGroup(group: string): string {
   if (group === "Organizer claims") return "Organizers tab";
   if (group === "Index reviews") return "Organizers tab";
   return "Safety, Finance, or owning support workflow";
-}
-
-function LineMiniChart({points}: {points: Array<{label: string; value: number}>}) {
-  if (points.length === 0) {
-    return (
-      <EmptyState className="empty-panel">
-        No trend data yet.
-      </EmptyState>
-    );
-  }
-  const path = points.map((point, index) => {
-    const x = points.length === 1 ? 50 : (index / (points.length - 1)) * 100;
-    const y = 100 - point.value;
-    return `${index === 0 ? "M" : "L"} ${x.toFixed(2)} ${y.toFixed(2)}`;
-  }).join(" ");
-  return (
-    <div className="line-chart">
-      <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-        <path className="line-area" d={`${path} L 100 100 L 0 100 Z`} />
-        <path className="line-stroke" d={path} />
-      </svg>
-      <div className="chart-labels">
-        {points.map((point) => (
-          <span key={point.label}>{point.label}</span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function BarMiniChart({points}: {points: Array<{label: string; value: number}>}) {
-  if (points.length === 0) {
-    return (
-      <EmptyState className="empty-panel">
-        No trend data yet.
-      </EmptyState>
-    );
-  }
-  const max = Math.max(1, ...points.map((point) => point.value));
-  return (
-    <div className="bar-chart">
-      {points.map((point) => (
-        <div className="bar-column" key={point.label}>
-          <div
-            className="bar"
-            style={{height: `${Math.max(8, (point.value / max) * 100)}%`}}
-          />
-          <span>{point.label}</span>
-        </div>
-      ))}
-    </div>
-  );
 }
 
 function analyticsTrendPoints(
@@ -690,29 +659,12 @@ function EventPerformanceTable({
 
 function ValueSignals() {
   const signals = [
-    {label: "Spend", value: 72, color: "green"},
-    {label: "Referrals", value: 46, color: "teal"},
-    {label: "Attendance", value: 64, color: "orange"},
-    {label: "Match quality", value: 58, color: "red"},
+    {label: "Spend", value: 72, tone: "green" as const},
+    {label: "Referrals", value: 46, tone: "teal" as const},
+    {label: "Attendance", value: 64, tone: "orange" as const},
+    {label: "Match quality", value: 58, tone: "red" as const},
   ];
-  return (
-    <div className="signals">
-      {signals.map((signal) => (
-        <div className="signal-row" key={signal.label}>
-          <div>
-            <span>{signal.label}</span>
-            <strong>{signal.value}</strong>
-          </div>
-          <div className="signal-track">
-            <div
-              className={`signal-fill ${signal.color}`}
-              style={{width: `${signal.value}%`}}
-            />
-          </div>
-        </div>
-      ))}
-    </div>
-  );
+  return <AdminOverviewValueSignals signals={signals} />;
 }
 
 function DataQualityRows({
@@ -723,34 +675,34 @@ function DataQualityRows({
   overview: AdminOverviewResponse;
 }) {
   return (
-    <div className="quality-list">
+    <QualityList>
       {overview.dataQuality.map((item) => (
-        <div className={`quality-row ${item.state}`} key={item.id}>
-          {item.state === "blocked" ? (
+        <QualityRow
+          key={item.id}
+          tone={item.state}
+          icon={item.state === "blocked" ? (
             <FileWarning size={16} strokeWidth={1.9} />
           ) : (
             <Clock3 size={16} strokeWidth={1.9} />
-          )}
-          <div>
-            <strong>{item.label}</strong>
-            <span>{item.detail}</span>
-          </div>
-        </div>
+          )}>
+          <strong>{item.label}</strong>
+          <span>{item.detail}</span>
+        </QualityRow>
       ))}
       {hostAnalytics.dataQuality.map((item) => (
-        <div className={`quality-row ${item.state}`} key={`analytics-${item.id}`}>
-          {item.state === "missing" ? (
+        <QualityRow
+          key={`analytics-${item.id}`}
+          tone={item.state}
+          icon={item.state === "missing" ? (
             <FileWarning size={16} strokeWidth={1.9} />
           ) : (
             <Clock3 size={16} strokeWidth={1.9} />
-          )}
-          <div>
-            <strong>Analytics · {item.id}</strong>
-            <span>{item.detail}</span>
-          </div>
-        </div>
+          )}>
+          <strong>Analytics · {item.id}</strong>
+          <span>{item.detail}</span>
+        </QualityRow>
       ))}
-    </div>
+    </QualityList>
   );
 }
 

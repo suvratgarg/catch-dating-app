@@ -21,21 +21,103 @@ import {
 import {
   AdminButton,
   AdminCard,
+  AdminCardList,
   AdminIconButton,
   AdminLinkButton,
   AdminPanel,
   AdminStateRow,
-  AdminTextField,
+  AdminStatGrid,
   AdminTextareaField,
+  AdminTextField,
   AlertRow,
   CardHeader,
   EmptyState,
-  FilePickerButton,
-  PageHeader,
+  QualityRow,
   SegmentedControl,
-  SelectField,
   SelectableCardButton,
   StatusChip,
+  AdminCommandRow,
+  AdminCommandStack,
+  AdminEyebrow,
+  AdminFeatureDropCaptureThumb,
+  AdminFeatureDropControlGrid,
+  AdminFeatureDropFeatureEditor,
+  AdminFeatureDropFeatureList,
+  AdminFeatureDropPreviewCard,
+  AdminFeatureDropPreviewGrid,
+  AdminFeatureDropWideField,
+  AdminMarketingExportStatus,
+  AdminMarketingAuditList,
+  AdminMarketingAuditRow,
+  AdminMarketingAppCapturePreview,
+  AdminMarketingAppMediaPaths,
+  AdminMarketingBrandContract,
+  AdminMarketingBrandContractItem,
+  AdminMarketingComplianceList,
+  AdminMarketingFeatureShotCard,
+  AdminMarketingFeatureShotGrid,
+  AdminMarketingFilePickerButton,
+  AdminMarketingDeliverable,
+  AdminMarketingGuideLayout,
+  AdminMarketingHelpText,
+  AdminMarketingCardLink,
+  AdminMarketingCarouselPreview,
+  AdminMarketingEventLibraryGrid,
+  AdminMarketingImageControls,
+  AdminMarketingImageEditor,
+  AdminMarketingImageEditorHeader,
+  AdminMarketingImageEmpty,
+  AdminMarketingImageMetaFields,
+  AdminMarketingImageReviewRow,
+  AdminMarketingImageSourceNote,
+  AdminMarketingImageThumb,
+  AdminMarketingOpsShell,
+  AdminMarketingPreviewActions,
+  AdminMarketingPreviewBrandNote,
+  AdminMarketingPreviewCopy,
+  AdminMarketingPreviewImage,
+  AdminMarketingPreviewMeta,
+  AdminMarketingPreviewShell,
+  AdminMarketingPreviewSlide,
+  AdminMarketingPreviewToolbar,
+  AdminMarketingLibraryCard,
+  AdminMarketingMediaCard,
+  AdminMarketingMediaGrid,
+  AdminMarketingNewPostCard,
+  AdminMarketingNewPostGrid,
+  AdminMarketingRecommendationItem,
+  AdminMarketingRecommendationList,
+  AdminMarketingSelectField,
+  AdminMarketingSlideEditor,
+  AdminMarketingSlideEditorTopline,
+  AdminMarketingSlideList,
+  AdminMarketingStackedSections,
+  AdminMarketingStudioActions,
+  AdminMarketingBoardColumn,
+  AdminMarketingBoardList,
+  AdminMarketingPostBoard,
+  AdminMarketingPostTypeBadge,
+  AdminMarketingStudioFilterTabs,
+  AdminMarketingStudioHeader,
+  AdminMarketingStudioNav,
+  AdminMarketingStudioStack,
+  AdminMarketingStudioSummary,
+  AdminMarketingStudioSummaryItem,
+  AdminMarketingTabs,
+  AdminMarketingComposer,
+  AdminMarketingComposerBackButton,
+  AdminMarketingComposerFooter,
+  AdminMarketingComposerHeader,
+  AdminMarketingPickerList,
+  AdminMarketingPickerRow,
+  AdminMarketingStepChip,
+  AdminMarketingStepLayout,
+  AdminMarketingStepStrip,
+  AdminQueryList,
+  AdminQueryRow,
+  AdminTag,
+  DecisionFooter,
+  TagList,
 } from "../../../shared/ui/AdminPrimitives";
 import {
   appScreenshotPreviewUrl,
@@ -56,11 +138,11 @@ import {
   type DecisionHandler,
 } from "../../../shared/controllers/marketingReviewDecisionHelpers";
 import {
+  type MarketingOpsController,
   type MarketingStudioTab,
   type MarketingTypeFilter,
   useMarketingOpsController,
 } from "../controllers/useMarketingOpsController";
-import {DecisionFooter} from "../../../shared/ui/ReviewDecisionControls";
 import {
   AdminRecordMarketingReviewDecisionResponse,
   MarketingContentDraftType,
@@ -98,6 +180,14 @@ export function MarketingOpsScreen({
   onNotice: (message: string | null) => void;
 }) {
   const controller = useMarketingOpsController({onError, onNotice});
+  return <MarketingOpsWorkspace controller={controller} />;
+}
+
+export function MarketingOpsWorkspace({
+  controller,
+}: {
+  controller: MarketingOpsController;
+}) {
   const {
     activeTab,
     bridge,
@@ -125,7 +215,7 @@ export function MarketingOpsScreen({
   if (!bridge) {
     return (
       <EmptyState
-        className="marketing-empty-state"
+        variant="marketing"
         icon={<RefreshCw size={18} strokeWidth={1.9} />}
       >
         {isLoading ? "Loading marketing ops..." : "Marketing ops is not available."}
@@ -134,10 +224,10 @@ export function MarketingOpsScreen({
   }
 
   return (
-    <section className="marketing-ops-shell marketing-studio-shell">
-      <PageHeader
+    <AdminMarketingOpsShell variant="studio">
+      <AdminMarketingStudioHeader
         actions={(
-          <div className="marketing-studio-actions">
+          <AdminMarketingStudioActions>
             <AdminButton
               disabled={isLoading}
               icon={<RefreshCw size={15} strokeWidth={1.9} />}
@@ -152,21 +242,19 @@ export function MarketingOpsScreen({
             >
               New post
             </AdminButton>
-          </div>
+          </AdminMarketingStudioActions>
         )}
-        className="marketing-studio-header"
         eyebrow={`Marketing / ${bridge.city.label}`}
         title="Content studio"
       >
         Create, review, and export event-highlight and feature-explainer posts.
         Marketing consumes approved intake records and lead lists; it does not
         create canonical organizer or event documents.
-      </PageHeader>
+      </AdminMarketingStudioHeader>
 
-      <div className="marketing-studio-nav">
-        <SegmentedControl<MarketingStudioTab>
+      <AdminMarketingStudioNav>
+        <AdminMarketingTabs<MarketingStudioTab>
           ariaLabel="Marketing studio views"
-          className="marketing-tabs"
           options={studioTabs}
           value={activeTab === "composer" ? "posts" : activeTab}
           onChange={setActiveTab}
@@ -178,7 +266,7 @@ export function MarketingOpsScreen({
         >
           New post
         </AdminButton>
-      </div>
+      </AdminMarketingStudioNav>
 
       <MarketingActionBoundaryPanel bridge={bridge} />
 
@@ -213,7 +301,7 @@ export function MarketingOpsScreen({
           />
         ) : (
           <EmptyState
-            className="marketing-empty-state compact"
+            compact variant="marketing"
             icon={<Megaphone size={16} strokeWidth={1.9} />}
           >
             Select a post from the board before opening the composer.
@@ -240,7 +328,7 @@ export function MarketingOpsScreen({
           onCreateDraft={createDraft}
         />
       )}
-    </section>
+    </AdminMarketingOpsShell>
   );
 }
 
@@ -262,7 +350,7 @@ function MarketingActionBoundaryPanel({
         Marketing consumes reviewed source-backed leads and draft records. App
         supply changes stay in Intake, Events, and Organizers.
       </AlertRow>
-      <div className="marketing-stat-grid">
+      <AdminStatGrid>
         <AdminStateRow
           label="Dashboard read"
           value="marketingOpsDashboards/current"
@@ -287,22 +375,24 @@ function MarketingActionBoundaryPanel({
           label="Blocked here"
           value="events/{id}, externalEvents/{id}, organizer imports, booking, payments, direct posting"
         />
-      </div>
-      <div className="command-stack">
+      </AdminStatGrid>
+      <AdminCommandStack>
         {Object.entries(bridge.commands).length > 0 ? (
           Object.entries(bridge.commands).map(([label, command]) => (
-            <div className="command-row" key={label}>
+            <AdminCommandRow key={label}>
               <span>{label}</span>
               <code>{command}</code>
-            </div>
+            </AdminCommandRow>
           ))
         ) : (
-          <div className="marketing-empty-state compact">
-            <FileWarning size={16} strokeWidth={1.9} />
-            <span>No generated marketing commands are attached to this dashboard.</span>
-          </div>
+          <EmptyState
+            compact variant="marketing"
+            icon={<FileWarning size={16} strokeWidth={1.9} />}
+          >
+            No generated marketing commands are attached to this dashboard.
+          </EmptyState>
         )}
-      </div>
+      </AdminCommandStack>
     </AdminPanel>
   );
 }
@@ -326,47 +416,48 @@ function MarketingPostsWorkspace({
   const board = boardColumns(filteredDrafts);
 
   return (
-    <div className="marketing-studio-stack">
-      <section className="marketing-studio-summary">
-        <div>
-          <span>Week</span>
-          <strong>{bridge.weekStart} to {bridge.weekEnd}</strong>
-        </div>
-        <div>
-          <span>Drafts</span>
-          <strong>{bridge.summary.contentDrafts}</strong>
-        </div>
-        <div>
-          <span>Export ready</span>
-          <strong>{bridge.summary.exportReadyDrafts}</strong>
-        </div>
-        <div>
-          <span>Verified pool</span>
-          <strong>{bridge.summary.approvedCandidates}</strong>
-        </div>
-      </section>
+    <AdminMarketingStudioStack>
+      <AdminMarketingStudioSummary>
+        <AdminMarketingStudioSummaryItem
+          label="Week"
+          value={`${bridge.weekStart} to ${bridge.weekEnd}`}
+        />
+        <AdminMarketingStudioSummaryItem
+          label="Drafts"
+          value={bridge.summary.contentDrafts}
+        />
+        <AdminMarketingStudioSummaryItem
+          label="Export ready"
+          value={bridge.summary.exportReadyDrafts}
+        />
+        <AdminMarketingStudioSummaryItem
+          label="Verified pool"
+          value={bridge.summary.approvedCandidates}
+        />
+      </AdminMarketingStudioSummary>
 
-      <SegmentedControl
+      <AdminMarketingStudioFilterTabs
         ariaLabel="Marketing content type filter"
-        className="marketing-studio-filter-row"
         onChange={onTypeFilterChange}
         options={typeFilters}
         value={typeFilter}
       />
 
-      <div className="marketing-post-board">
+      <AdminMarketingPostBoard>
         {board.map((column) => (
-          <section className="marketing-board-column" key={column.id}>
-            <header>
-              <span>{column.title}</span>
-              <strong>{column.drafts.length}</strong>
-            </header>
-            <div className="marketing-board-list">
+          <AdminMarketingBoardColumn
+            count={column.drafts.length}
+            key={column.id}
+            title={column.title}
+          >
+            <AdminMarketingBoardList>
               {column.drafts.length === 0 ? (
-                <div className="marketing-empty-state compact">
-                  <CheckCircle2 size={16} strokeWidth={1.9} />
-                  <span>{column.emptyText}</span>
-                </div>
+                <EmptyState
+                  compact variant="marketing"
+                  icon={<CheckCircle2 size={16} strokeWidth={1.9} />}
+                >
+                  {column.emptyText}
+                </EmptyState>
               ) : column.drafts.map((draft) => (
                 <MarketingPostCard
                   draft={draft}
@@ -375,11 +466,11 @@ function MarketingPostsWorkspace({
                   onSelect={() => onDraftSelect(draft.id)}
                 />
               ))}
-            </div>
-          </section>
+            </AdminMarketingBoardList>
+          </AdminMarketingBoardColumn>
         ))}
-      </div>
-    </div>
+      </AdminMarketingPostBoard>
+    </AdminMarketingStudioStack>
   );
 }
 
@@ -468,9 +559,9 @@ function MarketingPostCard({
       onClick={onSelect}
       selected={isSelected}
     >
-      <span className={`marketing-post-type ${draftType}`}>
+      <AdminMarketingPostTypeBadge draftType={draftType}>
         {draftLabel(draftType)}
-      </span>
+      </AdminMarketingPostTypeBadge>
       <strong>{draftTitle(draft)}</strong>
       <span>{draft.cityId} / {draft.weekStart}</span>
       <div>
@@ -524,44 +615,32 @@ function MarketingDraftComposer({
   const boundedStep = Math.min(Math.max(stepIndex, 0), steps.length - 1);
 
   return (
-    <section className="marketing-composer">
-      <header className="marketing-composer-header">
-        <div>
-          <AdminButton
-            className="marketing-composer-back"
-            onClick={onBack}
-          >
-            Back to posts
-          </AdminButton>
-          <span className={`marketing-post-type ${draftType}`}>
-            {draftLabel(draftType)}
-          </span>
-          <h3>{draftTitle(draft)}</h3>
-          <p>
-            {draft.format} / {draft.aspectRatio} / manual Instagram export
-          </p>
-        </div>
-        <StatusChip>{draft.reviewState}</StatusChip>
-      </header>
+    <AdminMarketingComposer>
+      <AdminMarketingComposerHeader status={<StatusChip>{draft.reviewState}</StatusChip>}>
+        <AdminMarketingComposerBackButton onClick={onBack}>
+          Back to posts
+        </AdminMarketingComposerBackButton>
+        <AdminMarketingPostTypeBadge draftType={draftType}>
+          {draftLabel(draftType)}
+        </AdminMarketingPostTypeBadge>
+        <h3>{draftTitle(draft)}</h3>
+        <p>
+          {draft.format} / {draft.aspectRatio} / manual Instagram export
+        </p>
+      </AdminMarketingComposerHeader>
 
-      <div className="marketing-step-strip">
+      <AdminMarketingStepStrip>
         {steps.map((step, index) => (
-          <SelectableCardButton
-            className={
-              index === boundedStep ?
-                "marketing-step-chip active" :
-                index < boundedStep ?
-                "marketing-step-chip done" :
-                "marketing-step-chip"
-            }
+          <AdminMarketingStepChip
             key={step}
+            marker={index < boundedStep ? "OK" : index + 1}
             onClick={() => onStepChange(index)}
+            status={index === boundedStep ? "active" : index < boundedStep ? "done" : "todo"}
           >
-            <span>{index < boundedStep ? "OK" : index + 1}</span>
-            <strong>{step}</strong>
-          </SelectableCardButton>
+            {step}
+          </AdminMarketingStepChip>
         ))}
-      </div>
+      </AdminMarketingStepStrip>
 
       {boundedStep === 0 ? (
         draftType === "event_highlights" ? (
@@ -594,7 +673,7 @@ function MarketingDraftComposer({
         />
       )}
 
-      <div className="marketing-composer-footer">
+      <AdminMarketingComposerFooter>
         {boundedStep > 0 ? (
           <AdminButton
             onClick={() => onStepChange(boundedStep - 1)}
@@ -610,8 +689,8 @@ function MarketingDraftComposer({
             {steps[boundedStep + 1]}
           </AdminButton>
         ) : null}
-      </div>
-    </section>
+      </AdminMarketingComposerFooter>
+    </AdminMarketingComposer>
   );
 }
 
@@ -637,37 +716,37 @@ function MarketingEventPickStep({
       title="Pick events from the library"
       action={`${eventSlides.length} picked`}
     >
-      <p className="marketing-help-text">
+      <AdminMarketingHelpText>
         This step is read-only event selection visibility for the current draft.
         Event sourcing, verification, canonical imports, booking, payments, and
         waitlists stay in Intake, Events, and Organizers.
-      </p>
-      <div className="marketing-picker-list">
+      </AdminMarketingHelpText>
+      <AdminMarketingPickerList>
         {verifiedEvents.map((event) => {
           const isPicked = pickedIds.has(event.id);
           return (
-            <div
-              className={`marketing-picker-row ${isPicked ? "selected" : ""}`}
+            <AdminMarketingPickerRow
               key={event.id}
+              marker={isPicked ? "OK" : null}
+              selected={isPicked}
+              status={isPicked ? "In draft" : "Verified"}
             >
-              <span>{isPicked ? "OK" : ""}</span>
-              <div>
-                <strong>{event.title}</strong>
-                <small>
-                  {event.category} / {event.neighborhood} / {event.startDate}
-                </small>
-              </div>
-              <em>{isPicked ? "In draft" : "Verified"}</em>
-            </div>
+              <strong>{event.title}</strong>
+              <small>
+                {event.category} / {event.neighborhood} / {event.startDate}
+              </small>
+            </AdminMarketingPickerRow>
           );
         })}
         {verifiedEvents.length === 0 ? (
-          <div className="marketing-empty-state compact">
-            <FileWarning size={16} strokeWidth={1.9} />
-            <span>No verified events are available for this draft.</span>
-          </div>
+          <EmptyState
+            compact variant="marketing"
+            icon={<FileWarning size={16} strokeWidth={1.9} />}
+          >
+            No verified events are available for this draft.
+          </EmptyState>
         ) : null}
-      </div>
+      </AdminMarketingPickerList>
     </AdminPanel>
   );
 }
@@ -692,33 +771,39 @@ function MarketingFeaturePickStep({
       title="Pick feature shots"
       action={`${featureSlides.length} frames`}
     >
-      <p className="marketing-help-text">
+      <AdminMarketingHelpText>
         Pair each feature frame with one approved app screenshot from the media
         library. Copy comes next.
-      </p>
-      <div className="marketing-feature-shot-grid">
+      </AdminMarketingHelpText>
+      <AdminMarketingFeatureShotGrid>
         {featureSlides.map((slide, index) => (
-          <div className="marketing-feature-shot-card" key={slide.id}>
-            <div className="marketing-slide-editor-topline">
-              <div className="intake-eyebrow">Frame {index + 1}</div>
-              <span className="intake-badge muted">{slide.role}</span>
-            </div>
-            <strong>{slide.headline}</strong>
+          <AdminMarketingFeatureShotCard
+            key={slide.id}
+            headline={slide.headline}
+            meta={(
+              <AdminMarketingSlideEditorTopline>
+                <AdminEyebrow>Frame {index + 1}</AdminEyebrow>
+                <StatusChip tone="muted">{slide.role}</StatusChip>
+              </AdminMarketingSlideEditorTopline>
+            )}
+          >
             <MarketingSlideImageEditor
               appCaptures={appCaptures}
               image={slide.image ?? null}
               slideId={slide.id}
               onChange={(image) => onSlideChange(draft.id, slide.id, {image})}
             />
-          </div>
+          </AdminMarketingFeatureShotCard>
         ))}
         {featureSlides.length === 0 ? (
-          <div className="marketing-empty-state compact">
-            <FileWarning size={16} strokeWidth={1.9} />
-            <span>No feature frames are available in this draft.</span>
-          </div>
+          <EmptyState
+            compact variant="marketing"
+            icon={<FileWarning size={16} strokeWidth={1.9} />}
+          >
+            No feature frames are available in this draft.
+          </EmptyState>
         ) : null}
-      </div>
+      </AdminMarketingFeatureShotGrid>
     </AdminPanel>
   );
 }
@@ -739,25 +824,25 @@ function MarketingCopyStep({
   ) => void;
 }) {
   return (
-    <div className="marketing-step-layout">
+    <AdminMarketingStepLayout>
       <AdminPanel
         icon={<ListChecks size={18} strokeWidth={1.9} />}
         title={draftType === "event_highlights" ? "Order & copy" : "Copy & layout"}
         action={`${draft.slides.length} slides`}
       >
-        <div className="marketing-slide-list single">
+        <AdminMarketingSlideList single>
           {draft.slides.map((slide, index) => (
-            <div className="marketing-slide-editor" key={slide.id}>
-              <div className="marketing-slide-editor-topline">
-                <div className="intake-eyebrow">
+            <AdminMarketingSlideEditor key={slide.id}>
+              <AdminMarketingSlideEditorTopline>
+                <AdminEyebrow>
                   {String(index + 1).padStart(2, "0")} / {slide.role}
-                </div>
+                </AdminEyebrow>
                 {slide.eventCandidateId ? (
-                  <span className="intake-badge muted">
+                  <StatusChip tone="muted">
                     {slide.eventCandidateId}
-                  </span>
+                  </StatusChip>
                 ) : null}
-              </div>
+              </AdminMarketingSlideEditorTopline>
               <AdminTextField
                 label="Headline"
                 value={slide.headline}
@@ -771,9 +856,9 @@ function MarketingCopyStep({
                 onChange={(value) =>
                   onSlideChange(draft.id, slide.id, {body: value})}
               />
-            </div>
+            </AdminMarketingSlideEditor>
           ))}
-        </div>
+        </AdminMarketingSlideList>
       </AdminPanel>
       <AdminPanel
         icon={<Megaphone size={18} strokeWidth={1.9} />}
@@ -786,15 +871,15 @@ function MarketingCopyStep({
           value={draft.caption}
           onChange={(value) => onDraftChange(draft.id, {caption: value})}
         />
-        <div className="marketing-tag-row">
+        <TagList>
           {draft.ctas.map((cta) => (
-            <span className="intake-tag muted" key={cta.id}>
+            <AdminTag key={cta.id} tone="muted">
               CTA / {cta.label}
-            </span>
+            </AdminTag>
           ))}
-        </div>
+        </TagList>
       </AdminPanel>
-    </div>
+    </AdminMarketingStepLayout>
   );
 }
 
@@ -806,7 +891,7 @@ function MarketingComplianceStep({
   draftType: MarketingContentDraftType;
 }) {
   return (
-    <div className="marketing-step-layout">
+    <AdminMarketingStepLayout>
       <AdminPanel
         icon={<CheckCircle2 size={18} strokeWidth={1.9} />}
         title="Brand & compliance check"
@@ -819,15 +904,18 @@ function MarketingComplianceStep({
         title="Brand contract"
         action={draft.aspectRatio}
       >
-        <div className="marketing-brand-contract">
-          <div><span>Wordmark</span><strong>{draft.brandContract.logo}</strong></div>
-          <div><span>Headlines</span><strong>{draft.brandContract.headlineFont}</strong></div>
-          <div><span>Labels</span><strong>{draft.brandContract.labelFont}</strong></div>
-          <div><span>Body</span><strong>{draft.brandContract.bodyFont}</strong></div>
-          <div><span>Export</span><strong>{draft.delivery?.finalImageExport ?? "1080x1350 PNG"}</strong></div>
-        </div>
+        <AdminMarketingBrandContract>
+          <AdminMarketingBrandContractItem label="Wordmark" value={draft.brandContract.logo} />
+          <AdminMarketingBrandContractItem label="Headlines" value={draft.brandContract.headlineFont} />
+          <AdminMarketingBrandContractItem label="Labels" value={draft.brandContract.labelFont} />
+          <AdminMarketingBrandContractItem label="Body" value={draft.brandContract.bodyFont} />
+          <AdminMarketingBrandContractItem
+            label="Export"
+            value={draft.delivery?.finalImageExport ?? "1080x1350 PNG"}
+          />
+        </AdminMarketingBrandContract>
       </AdminPanel>
-    </div>
+    </AdminMarketingStepLayout>
   );
 }
 
@@ -891,7 +979,7 @@ function ComplianceChecklist({
     "Image rights cleared",
   ];
   return (
-    <div className="marketing-compliance-list">
+    <AdminMarketingComplianceList>
       {checks.map((check) => (
         <AlertRow
           icon={<CheckCircle2 size={16} strokeWidth={1.9} />}
@@ -901,7 +989,7 @@ function ComplianceChecklist({
           Required before marking the draft export ready.
         </AlertRow>
       ))}
-    </div>
+    </AdminMarketingComplianceList>
   );
 }
 
@@ -932,53 +1020,52 @@ function MarketingEventLibrary({
     candidate.publishability === "publishable_after_approval"
   );
   return (
-    <div className="marketing-studio-stack">
+    <AdminMarketingStudioStack>
       <AdminPanel
         icon={<Library size={18} strokeWidth={1.9} />}
         title="Verified event pool"
         action={`${verifiedEvents.length} usable`}
       >
-        <p className="marketing-help-text">
+        <AdminMarketingHelpText>
           Marketing can curate approved event lead records here. Crawl setup,
           source inbox triage, event editing, canonical imports, and
           verification actions stay in Intake, Events, and Organizers.
-        </p>
-        <div className="marketing-event-library-grid">
+        </AdminMarketingHelpText>
+        <AdminMarketingEventLibraryGrid>
           {verifiedEvents.map((event) => (
-            <article className="marketing-library-card" key={event.id}>
-              <header>
-                <span className="intake-eyebrow">
-                  {event.category} / {event.reviewState}
-                </span>
-                <h3>{event.title}</h3>
-              </header>
-              <p>{event.publicDescription}</p>
-              <div className="marketing-tag-row">
-                <span className="intake-tag">{event.venue}</span>
-                <span className="intake-tag">{event.neighborhood}</span>
-                <span className="intake-tag">{event.startDate}</span>
-                <span className="intake-tag muted">{event.price}</span>
-              </div>
-              {event.sourceUrl ? (
-                <AdminLinkButton
-                  className="marketing-card-link"
+            <AdminMarketingLibraryCard
+              key={event.id}
+              eyebrow={`${event.category} / ${event.reviewState}`}
+              title={event.title}
+              description={event.publicDescription}
+              action={event.sourceUrl ? (
+                <AdminMarketingCardLink
                   href={event.sourceUrl}
                   icon={<ExternalLink size={15} strokeWidth={1.9} />}
                   rel="noreferrer"
                   target="_blank"
                 >
                   Source
-                </AdminLinkButton>
+                </AdminMarketingCardLink>
               ) : null}
-            </article>
+            >
+              <TagList>
+                <AdminTag>{event.venue}</AdminTag>
+                <AdminTag>{event.neighborhood}</AdminTag>
+                <AdminTag>{event.startDate}</AdminTag>
+                <AdminTag tone="muted">{event.price}</AdminTag>
+              </TagList>
+            </AdminMarketingLibraryCard>
           ))}
           {verifiedEvents.length === 0 ? (
-            <div className="marketing-empty-state compact">
-              <FileWarning size={16} strokeWidth={1.9} />
-              <span>No verified events are currently available.</span>
-            </div>
+            <EmptyState
+              compact variant="marketing"
+              icon={<FileWarning size={16} strokeWidth={1.9} />}
+            >
+              No verified events are currently available.
+            </EmptyState>
           ) : null}
-        </div>
+        </AdminMarketingEventLibraryGrid>
       </AdminPanel>
       <MarketingRecommendations
         inFlight={inFlight}
@@ -989,7 +1076,7 @@ function MarketingEventLibrary({
         onItemChange={onItemChange}
         onNoteChange={onNoteChange}
       />
-    </div>
+    </AdminMarketingStudioStack>
   );
 }
 
@@ -1000,91 +1087,84 @@ function MarketingMediaLibrary({
 }) {
   if (!media) return <MarketingAppFeatureMediaView media={media} />;
   return (
-    <div className="marketing-studio-stack">
+    <AdminMarketingStudioStack>
       <AdminPanel
         icon={<ImagePlus size={18} strokeWidth={1.9} />}
         title="Media library"
         action={media.status.replaceAll("_", " ")}
       >
-        <p className="marketing-help-text">
+        <AdminMarketingHelpText>
           App screenshot inventory for feature explainers. These assets come
           from the deterministic app media pipeline.
-        </p>
-        <div className="marketing-stat-grid">
+        </AdminMarketingHelpText>
+        <AdminStatGrid>
           <AdminStateRow
             label="Active"
             value={`${media.summary.activeCaptures}/${media.summary.totalCaptures}`}
           />
           <AdminStateRow label="Member" value={String(media.summary.memberCaptures)} />
           <AdminStateRow label="Host" value={String(media.summary.hostCaptures)} />
-        </div>
+        </AdminStatGrid>
       </AdminPanel>
-
-      <div className="marketing-media-grid">
+      <AdminMarketingMediaGrid>
         {media.captures.map((capture) => {
           const previewUrl = appScreenshotPreviewUrl(capture);
           return (
-            <article className="marketing-media-card" key={capture.id}>
-              {previewUrl ? (
-                <img alt={capture.alt} src={previewUrl} />
-              ) : (
-                <div className="marketing-empty-state compact">
-                  <FileWarning size={16} strokeWidth={1.9} />
-                  <span>No preview</span>
-                </div>
-              )}
-              <div>
-                <span className="intake-eyebrow">
-                  {capture.audience} / {capture.walkthroughStep}
-                </span>
-                <h3>{capture.surface}</h3>
-                <p>{capture.caption}</p>
-              </div>
-              <div className="marketing-tag-row">
-                <span className="intake-badge">{capture.status}</span>
-                <span className="intake-badge muted">
+            <AdminMarketingMediaCard
+              key={capture.id}
+              description={capture.caption}
+              eyebrow={`${capture.audience} / ${capture.walkthroughStep}`}
+              previewAlt={capture.alt}
+              previewFallback={
+                <EmptyState
+                  compact variant="marketing"
+                  icon={<FileWarning size={16} strokeWidth={1.9} />}
+                >
+                  No preview
+                </EmptyState>
+              }
+              previewSrc={previewUrl}
+              title={capture.surface}
+            >
+              <TagList>
+                <StatusChip>{capture.status}</StatusChip>
+                <StatusChip tone="muted">
                   {capture.assetState.replaceAll("_", " ")}
-                </span>
-              </div>
-            </article>
+                </StatusChip>
+              </TagList>
+            </AdminMarketingMediaCard>
           );
         })}
-      </div>
-
+      </AdminMarketingMediaGrid>
       <AdminPanel
         icon={<Settings2 size={18} strokeWidth={1.9} />}
         title="Media automation"
         action={media.sourceDocs.pipelineDoc}
       >
-        <div className="command-stack">
+        <AdminCommandStack>
           {Object.entries(media.commands).map(([label, command]) => (
-            <div className="command-row" key={label}>
+            <AdminCommandRow key={label}>
               <span>{label}</span>
               <code>{command}</code>
-            </div>
+            </AdminCommandRow>
           ))}
-        </div>
+        </AdminCommandStack>
       </AdminPanel>
-
       <AdminPanel
         icon={<Lock size={18} strokeWidth={1.9} />}
         title="Direct Instagram publishing"
         action="Backend required"
       >
-        <div className="quality-row warning">
-          <Clock3 size={16} strokeWidth={1.9} />
-          <div>
-            <strong>Not a browser-only action</strong>
-            <span>
-              The admin can approve drafts now. Token handling, hosted assets,
-              retries, and publish audit logs still need a backend job.
-            </span>
-          </div>
-        </div>
+        <QualityRow tone="warning" icon={<Clock3 size={16} strokeWidth={1.9} />}>
+          <strong>Not a browser-only action</strong>
+          <span>
+            The admin can approve drafts now. Token handling, hosted assets,
+            retries, and publish audit logs still need a backend job.
+          </span>
+        </QualityRow>
       </AdminPanel>
-
       <MarketingFeatureDropView appCaptures={media.captures} />
-    </div>
+    </AdminMarketingStudioStack>
   );
 }
 
@@ -1100,8 +1180,9 @@ function MarketingNewPost({
   const eventCreateKey = "create:event_highlights";
   const featureCreateKey = "create:feature_explainer";
   return (
-    <div className="marketing-new-post-grid">
-      <NewPostTypeCard
+    <AdminMarketingNewPostGrid>
+      <AdminMarketingNewPostCard
+        actionLabel="Create draft"
         accent="event"
         description={`${bridge.summary.approvedCandidates} approved marketing event leads can seed the first draft.`}
         disabled={Boolean(inFlight[eventCreateKey])}
@@ -1109,7 +1190,8 @@ function MarketingNewPost({
         meta="Weekly verified event carousel"
         onClick={() => void onCreateDraft("event_highlights")}
       />
-      <NewPostTypeCard
+      <AdminMarketingNewPostCard
+        actionLabel="Create draft"
         accent="feature"
         description={`${bridge.appFeatureMedia?.summary.activeCaptures ?? 0} active app screenshots available.`}
         disabled={Boolean(inFlight[featureCreateKey])}
@@ -1117,50 +1199,23 @@ function MarketingNewPost({
         meta="Product screenshot carousel"
         onClick={() => void onCreateDraft("feature_explainer")}
       />
-      <NewPostTypeCard
+      <AdminMarketingNewPostCard
+        actionLabel="Unavailable"
         accent="soon"
         description="Needs organizer profile copy, rights policy, and claim-state routing."
         disabled
         label="Organizer spotlight"
         meta="Soon"
       />
-      <NewPostTypeCard
+      <AdminMarketingNewPostCard
+        actionLabel="Unavailable"
         accent="soon"
         description="Needs a canonical hosted event detail contract before creation."
         disabled
         label="Event spotlight"
         meta="Soon"
       />
-    </div>
-  );
-}
-
-function NewPostTypeCard({
-  accent,
-  description,
-  disabled = false,
-  label,
-  meta,
-  onClick,
-}: {
-  accent: "event" | "feature" | "soon";
-  description: string;
-  disabled?: boolean;
-  label: string;
-  meta: string;
-  onClick?: () => void;
-}) {
-  return (
-    <SelectableCardButton
-      className={`marketing-new-post-card ${accent}`}
-      disabled={disabled}
-      onClick={onClick}
-    >
-      <span>{meta}</span>
-      <strong>{label}</strong>
-      <p>{description}</p>
-      <small>{disabled ? "Unavailable" : "Create draft"}</small>
-    </SelectableCardButton>
+    </AdminMarketingNewPostGrid>
   );
 }
 
@@ -1174,14 +1229,14 @@ function MarketingGuide({bridge}: {bridge: MarketingOpsBridge}) {
   const nextAction = guideNextAction(bridge);
 
   return (
-    <div className="marketing-guide-layout">
+    <AdminMarketingGuideLayout>
       <AdminPanel
-        className="span-2"
+        span={2}
         icon={<Megaphone size={18} strokeWidth={1.9} />}
         title="What this produces"
         action="Manual export"
       >
-        <div className="marketing-deliverable">
+        <AdminMarketingDeliverable>
           <div>
             <strong>Deliverable</strong>
             <span>{bridge.summary.deliverable ?? "Manual content packet; no auto-posting."}</span>
@@ -1194,7 +1249,7 @@ function MarketingGuide({bridge}: {bridge: MarketingOpsBridge}) {
             <strong>Image files</strong>
             <span>Preview and export can download 1080x1350 PNG slides for manual Instagram upload. Posting still stays manual.</span>
           </div>
-        </div>
+        </AdminMarketingDeliverable>
       </AdminPanel>
 
       <AdminPanel
@@ -1202,14 +1257,14 @@ function MarketingGuide({bridge}: {bridge: MarketingOpsBridge}) {
         title="Current state"
         action={bridge.summary.status}
       >
-        <div className="marketing-stat-grid">
+        <AdminStatGrid>
           <AdminStateRow label="Source results" value={String(bridge.summary.sourceResults)} />
           <AdminStateRow label="Reviewable candidates" value={String(bridge.summary.reviewableCandidates ?? 0)} />
           <AdminStateRow label="Needs source" value={String(bridge.summary.sourceMissingCandidates ?? 0)} />
           <AdminStateRow label="Dedupe groups" value={String(bridge.summary.duplicateGroups ?? 0)} />
           <AdminStateRow label="Shortlists" value={String(bridge.summary.recommendationSets)} />
           <AdminStateRow label="Export-ready" value={String(bridge.summary.exportReadyDrafts)} />
-        </div>
+        </AdminStatGrid>
         <AlertRow
           icon={<Clock3 size={16} strokeWidth={1.9} />}
           title="Next action"
@@ -1224,31 +1279,33 @@ function MarketingGuide({bridge}: {bridge: MarketingOpsBridge}) {
         title="What is being shortlisted"
         action={recommendedSet?.tone ?? "none"}
       >
-        <p className="marketing-help-text">
+        <AdminMarketingHelpText>
           Candidates are reviewed marketing event leads, not canonical Firestore
           event documents. The same candidate may be reused in multiple tone
           variants, but it should appear only once in the candidate queue after
           dedupe.
-        </p>
-        <div className="marketing-query-list">
+        </AdminMarketingHelpText>
+        <AdminQueryList>
           {(recommendedSet?.items ?? []).map((item) => (
-            <div className="marketing-query" key={item.id}>
+            <AdminQueryRow key={item.id}>
               <strong>{item.rank}. {item.title}</strong>
               <span>{item.neighborhood} / {publishabilityLabel(item.publishability)}</span>
-            </div>
+            </AdminQueryRow>
           ))}
           {(recommendedSet?.items.length ?? 0) === 0 ? (
-            <div className="marketing-empty-state compact">
-              <FileWarning size={16} strokeWidth={1.9} />
-              <span>No sourced events are eligible for this shortlist yet.</span>
-            </div>
+            <EmptyState
+              compact variant="marketing"
+              icon={<FileWarning size={16} strokeWidth={1.9} />}
+            >
+              No sourced events are eligible for this shortlist yet.
+            </EmptyState>
           ) : null}
-        </div>
+        </AdminQueryList>
       </AdminPanel>
 
       {recommendedDraft ? (
         <AdminPanel
-          className="span-2"
+          span={2}
           icon={<Sparkles size={18} strokeWidth={1.9} />}
           title="Post preview"
           action={recommendedDraft.aspectRatio}
@@ -1256,7 +1313,7 @@ function MarketingGuide({bridge}: {bridge: MarketingOpsBridge}) {
           <MarketingDraftPreview draft={recommendedDraft} />
         </AdminPanel>
       ) : null}
-    </div>
+    </AdminMarketingGuideLayout>
   );
 }
 
@@ -1282,20 +1339,20 @@ function MarketingRecommendations({
   onNoteChange: (key: string, value: string) => void;
 }) {
   return (
-    <div className="marketing-stacked-sections">
+    <AdminMarketingStackedSections>
       <AdminPanel
         icon={<Sparkles size={18} strokeWidth={1.9} />}
         title="Shortlist variants"
         action="Choose one direction"
       >
-        <p className="marketing-help-text">
+        <AdminMarketingHelpText>
           These are alternate editorial treatments built from the same reviewed
           candidate pool. Singles-friendly is the default for third-party
           events. Singles-social should stay blocked unless the source
           explicitly says the event is for singles, dating, or mixers.
-        </p>
+        </AdminMarketingHelpText>
       </AdminPanel>
-      <div className="marketing-card-list">
+      <AdminCardList>
       {recommendationSets.map((set) => (
         <AdminCard key={set.id}>
           <CardHeader
@@ -1306,11 +1363,11 @@ function MarketingRecommendations({
             )}
           >
             <div>
-              <div className="intake-eyebrow">{set.tone} / {set.status}</div>
+              <AdminEyebrow>{set.tone} / {set.status}</AdminEyebrow>
               <h3>{set.title}</h3>
             </div>
           </CardHeader>
-          <p className="marketing-help-text">{set.explanation}</p>
+          <AdminMarketingHelpText>{set.explanation}</AdminMarketingHelpText>
           {set.status.startsWith("blocked") ? (
             <AlertRow
               icon={<FileWarning size={16} strokeWidth={1.9} />}
@@ -1320,11 +1377,11 @@ function MarketingRecommendations({
               No sourced candidates currently match this tone.
             </AlertRow>
           ) : null}
-          <div className="marketing-recommendation-list">
+          <AdminMarketingRecommendationList>
             {set.items.map((item) => {
               const key = `recommendation_item:${item.id}`;
               return (
-                <div className="marketing-recommendation-item" key={item.id}>
+                <AdminMarketingRecommendationItem key={item.id}>
                   <AdminTextField
                     label="Rank"
                     value={String(item.rank)}
@@ -1355,14 +1412,14 @@ function MarketingRecommendations({
                     onDecision={onDecision}
                     onNoteChange={(value) => onNoteChange(key, value)}
                   />
-                </div>
+                </AdminMarketingRecommendationItem>
               );
             })}
-          </div>
+          </AdminMarketingRecommendationList>
         </AdminCard>
       ))}
-      </div>
-    </div>
+    </AdminCardList>
+    </AdminMarketingStackedSections>
   );
 }
 
@@ -1373,148 +1430,132 @@ function MarketingAppFeatureMediaView({
 }) {
   if (!media) {
     return (
-      <div className="marketing-card-list">
+      <AdminCardList>
         <AdminPanel
-          className="span-2"
+          span={2}
           icon={<FileWarning size={18} strokeWidth={1.9} />}
           title="App media pipeline"
           action="Not generated"
         >
-          <div className="marketing-empty-state compact">
-            <FileWarning size={16} strokeWidth={1.9} />
-            <span>
-              The marketing ops bridge does not include app screenshot metadata.
-              Regenerate it from the event-guide script to attach the existing
-              screenshot capture manifest.
-            </span>
-          </div>
+          <EmptyState
+            compact variant="marketing"
+            icon={<FileWarning size={16} strokeWidth={1.9} />}
+          >
+            The marketing ops bridge does not include app screenshot metadata.
+            Regenerate it from the event-guide script to attach the existing
+            screenshot capture manifest.
+          </EmptyState>
         </AdminPanel>
-      </div>
+      </AdminCardList>
     );
   }
 
   return (
-    <div className="marketing-stacked-sections">
+    <AdminMarketingStackedSections>
       <AdminPanel
         icon={<ImagePlus size={18} strokeWidth={1.9} />}
         title="App screenshot slots"
         action={media.status.replaceAll("_", " ")}
       >
-        <p className="marketing-help-text">
+        <AdminMarketingHelpText>
           These slots come from the existing deterministic app media pipeline.
           Use this inventory for app-feature carousel imagery instead of
           hand-authored screenshots.
-        </p>
-        <div className="marketing-stat-grid">
+        </AdminMarketingHelpText>
+        <AdminStatGrid>
           <AdminStateRow
             label="Active"
             value={`${media.summary.activeCaptures}/${media.summary.totalCaptures}`}
           />
           <AdminStateRow label="Member" value={String(media.summary.memberCaptures)} />
           <AdminStateRow label="Host" value={String(media.summary.hostCaptures)} />
-        </div>
+        </AdminStatGrid>
       </AdminPanel>
-
       <AdminPanel
         icon={<Settings2 size={18} strokeWidth={1.9} />}
         title="Existing automation"
         action={media.sourceDocs.pipelineDoc}
       >
-        <div className="command-stack">
+        <AdminCommandStack>
           {Object.entries(media.commands).map(([label, command]) => (
-            <div className="command-row" key={label}>
+            <AdminCommandRow key={label}>
               <span>{label}</span>
               <code>{command}</code>
-            </div>
+            </AdminCommandRow>
           ))}
-        </div>
+        </AdminCommandStack>
       </AdminPanel>
-
       <AdminPanel
         icon={<Lock size={18} strokeWidth={1.9} />}
         title="Direct Instagram publishing"
         action="Backend required"
       >
-        <div className="quality-row">
-          <CheckCircle2 size={16} strokeWidth={1.9} />
-          <div>
-            <strong>Feasible without operator downloads</strong>
-            <span>
-              The backend can publish from approved hosted assets after the
-              Catch Instagram professional account is connected and approved.
-            </span>
-          </div>
-        </div>
-        <div className="quality-row warning">
-          <Clock3 size={16} strokeWidth={1.9} />
-          <div>
-            <strong>Not a browser-only action</strong>
-            <span>
-              Instagram publishing uses container creation and publish calls, so
-              the admin should approve a draft while a server job owns token
-              handling, public asset URLs, retries, and audit logging.
-            </span>
-          </div>
-        </div>
+        <QualityRow icon={<CheckCircle2 size={16} strokeWidth={1.9} />}>
+          <strong>Feasible without operator downloads</strong>
+          <span>
+            The backend can publish from approved hosted assets after the
+            Catch Instagram professional account is connected and approved.
+          </span>
+        </QualityRow>
+        <QualityRow tone="warning" icon={<Clock3 size={16} strokeWidth={1.9} />}>
+          <strong>Not a browser-only action</strong>
+          <span>
+            Instagram publishing uses container creation and publish calls, so
+            the admin should approve a draft while a server job owns token
+            handling, public asset URLs, retries, and audit logging.
+          </span>
+        </QualityRow>
       </AdminPanel>
-
-      <div className="marketing-card-list">
+      <AdminCardList>
         {media.captures.map((capture) => {
           const previewUrl = appScreenshotPreviewUrl(capture);
           return (
-            <article className="marketing-card" key={capture.id}>
-              <header className="marketing-card-header">
+            <AdminCard key={capture.id}>
+              <CardHeader
+                action={(
+                  <StatusChip tone={capture.assetState === "website_synced" ? "ready" : ""}>
+                    {capture.assetState.replaceAll("_", " ")}
+                  </StatusChip>
+                )}
+              >
                 <div>
-                  <div className="intake-eyebrow">
+                  <AdminEyebrow>
                     {capture.audience} / {capture.walkthroughStep}
-                  </div>
+                  </AdminEyebrow>
                   <h3>{capture.surface}</h3>
                 </div>
-                <span className={`intake-badge ${capture.assetState === "website_synced" ? "ready" : ""}`}>
-                  {capture.assetState.replaceAll("_", " ")}
-                </span>
-              </header>
+              </CardHeader>
               {previewUrl ? (
-                <img
+                <AdminMarketingAppCapturePreview
                   alt={capture.alt}
-                  className="marketing-app-capture-preview"
                   src={previewUrl}
                 />
               ) : (
-                <div className="marketing-empty-state compact">
-                  <FileWarning size={16} strokeWidth={1.9} />
-                  <span>No preview asset found for this slot.</span>
-                </div>
+                <EmptyState
+                  compact variant="marketing"
+                  icon={<FileWarning size={16} strokeWidth={1.9} />}
+                >
+                  No preview asset found for this slot.
+                </EmptyState>
               )}
-              <p className="marketing-help-text">{capture.caption}</p>
-              <div className="marketing-tag-row">
-                <span className="intake-badge">{capture.status}</span>
-                <span className="intake-badge">{capture.device}</span>
+              <AdminMarketingHelpText>{capture.caption}</AdminMarketingHelpText>
+              <TagList>
+                <StatusChip>{capture.status}</StatusChip>
+                <StatusChip>{capture.device}</StatusChip>
                 {capture.captureId ? (
-                  <span className="intake-badge">{capture.captureId}</span>
+                  <StatusChip>{capture.captureId}</StatusChip>
                 ) : null}
-              </div>
-              <div className="marketing-app-media-paths">
-                <div>
-                  <span>Source</span>
-                  <code>{capture.sourcePath}</code>
-                </div>
-                <div>
-                  <span>Website</span>
-                  <code>{capture.websitePath}</code>
-                </div>
-                {capture.webPath ? (
-                  <div>
-                    <span>Public path</span>
-                    <code>{capture.webPath}</code>
-                  </div>
-                ) : null}
-              </div>
-            </article>
+              </TagList>
+              <AdminMarketingAppMediaPaths
+                sourcePath={capture.sourcePath}
+                webPath={capture.webPath}
+                websitePath={capture.websitePath}
+              />
+            </AdminCard>
           );
         })}
-      </div>
-    </div>
+      </AdminCardList>
+    </AdminMarketingStackedSections>
   );
 }
 
@@ -1620,40 +1661,35 @@ function MarketingFeatureDropView({
   ));
 
   return (
-    <div className="marketing-stacked-sections">
+    <AdminMarketingStackedSections>
       <AdminPanel
-        className="span-2"
+        span={2}
         icon={<Sparkles size={18} strokeWidth={1.9} />}
         title="Feature drop renderer"
         action="1080x1350 / 6 frames"
       >
-        <p className="marketing-help-text">
+        <AdminMarketingHelpText>
           This renderer follows the design-system feature-drop template: 4:5
           Instagram frames, Catch wordmark, Archivo headline system, IBM Plex
           Mono labels, activity pigment as the only chroma, and approved app
           screenshots inside the template phone shell.
-        </p>
-        <div className="quality-row">
-          <CheckCircle2 size={16} strokeWidth={1.9} />
-          <div>
-            <strong>Uses existing capture automation</strong>
-            <span>
-              Phone imagery resolves from the app media bridge and prefers raw
-              402x874 screenshots before falling back to synced website assets.
-            </span>
-          </div>
-        </div>
+        </AdminMarketingHelpText>
+        <QualityRow icon={<CheckCircle2 size={16} strokeWidth={1.9} />}>
+          <strong>Uses existing capture automation</strong>
+          <span>
+            Phone imagery resolves from the app media bridge and prefers raw
+            402x874 screenshots before falling back to synced website assets.
+          </span>
+        </QualityRow>
       </AdminPanel>
-
       <AdminPanel
-        className="span-2"
+        span={2}
         icon={<Settings2 size={18} strokeWidth={1.9} />}
         title="Template controls"
         action={`${config.audience} / ${config.register} / ${config.accent}`}
       >
-        <div className="feature-drop-control-grid">
-          <SelectField
-            className="marketing-field"
+        <AdminFeatureDropControlGrid>
+          <AdminMarketingSelectField
             label="Audience"
             onChange={(value) =>
               updateAudience(value as MarketingFeatureDropAudience)}
@@ -1663,8 +1699,7 @@ function MarketingFeatureDropView({
             ]}
             value={config.audience}
           />
-          <SelectField
-            className="marketing-field"
+          <AdminMarketingSelectField
             label="Register"
             onChange={(value) =>
               updateConfig({register: value as MarketingFeatureDropRegister})}
@@ -1675,8 +1710,7 @@ function MarketingFeatureDropView({
             ]}
             value={config.register}
           />
-          <SelectField
-            className="marketing-field"
+          <AdminMarketingSelectField
             label="Accent"
             onChange={(value) =>
               updateConfig({accent: value as MarketingFeatureDropAccent})}
@@ -1689,8 +1723,7 @@ function MarketingFeatureDropView({
             ]}
             value={config.accent}
           />
-          <SelectField
-            className="marketing-field"
+          <AdminMarketingSelectField
             label="Wordmark"
             onChange={(value) =>
               updateConfig({showWordmark: value === "shown"})}
@@ -1720,29 +1753,31 @@ function MarketingFeatureDropView({
             value={config.outroLine}
             onChange={(value) => updateConfig({outroLine: value})}
           />
-          <AdminTextareaField
-            className="marketing-field feature-drop-span-2"
-            label="Cover body"
-            rows={2}
-            value={config.coverBody}
-            onChange={(value) => updateConfig({coverBody: value})}
-          />
-        </div>
+          <AdminFeatureDropWideField>
+            <AdminTextareaField
+              label="Cover body"
+              rows={2}
+              value={config.coverBody}
+              onChange={(value) => updateConfig({coverBody: value})}
+            />
+          </AdminFeatureDropWideField>
+        </AdminFeatureDropControlGrid>
       </AdminPanel>
-
       <AdminPanel
-        className="span-2"
+        span={2}
         icon={<ImagePlus size={18} strokeWidth={1.9} />}
         title="Feature slides"
         action={`${selectedCaptureIds.size} capture slots`}
       >
         {appCaptures.length === 0 ? (
-          <div className="marketing-empty-state compact">
-            <FileWarning size={16} strokeWidth={1.9} />
-            <span>No app capture slots are available in the marketing bridge.</span>
-          </div>
+          <EmptyState
+            compact variant="marketing"
+            icon={<FileWarning size={16} strokeWidth={1.9} />}
+          >
+            No app capture slots are available in the marketing bridge.
+          </EmptyState>
         ) : null}
-        <div className="feature-drop-feature-list">
+        <AdminFeatureDropFeatureList>
           {config.features.map((feature, index) => {
             const selectedCapture = appCaptures.find((capture) =>
               capture.id === feature.captureId
@@ -1751,20 +1786,19 @@ function MarketingFeatureDropView({
               appScreenshotPreviewUrl(selectedCapture) :
               null;
             return (
-              <div className="feature-drop-feature-editor" key={feature.id}>
-                <div className="marketing-image-editor-header">
+              <AdminFeatureDropFeatureEditor key={feature.id}>
+                <AdminMarketingImageEditorHeader>
                   <div>
                     <strong>Slide {index + 2}</strong>
                     <span>{feature.id.replaceAll("-", " ")}</span>
                   </div>
                   {previewUrl ? (
-                    <img
+                    <AdminFeatureDropCaptureThumb
                       alt={selectedCapture?.alt ?? ""}
-                      className="feature-drop-capture-thumb"
                       src={previewUrl}
                     />
                   ) : null}
-                </div>
+                </AdminMarketingImageEditorHeader>
                 <AdminTextField
                   label="Title"
                   value={feature.title}
@@ -1776,8 +1810,7 @@ function MarketingFeatureDropView({
                   value={feature.body}
                   onChange={(value) => updateFeature(feature.id, {body: value})}
                 />
-                <SelectField
-                  className="marketing-field"
+                <AdminMarketingSelectField
                   label="App capture"
                   onChange={(value) =>
                     updateFeature(feature.id, {captureId: value})}
@@ -1787,19 +1820,18 @@ function MarketingFeatureDropView({
                   }))}
                   value={feature.captureId}
                 />
-              </div>
+              </AdminFeatureDropFeatureEditor>
             );
           })}
-        </div>
+        </AdminFeatureDropFeatureList>
       </AdminPanel>
-
       <AdminPanel
-        className="span-2"
+        span={2}
         icon={<Megaphone size={18} strokeWidth={1.9} />}
         title="Template preview"
         action={isRendering ? "Rendering" : "Ready"}
       >
-        <div className="marketing-preview-toolbar">
+        <AdminMarketingPreviewToolbar>
           <div>
             <strong>Feature-drop carousel</strong>
             <span>Six export frames generated from the current editable copy.</span>
@@ -1811,19 +1843,19 @@ function MarketingFeatureDropView({
           >
             {isExporting ? "Exporting" : "Download PNG slides"}
           </AdminButton>
-        </div>
+        </AdminMarketingPreviewToolbar>
         {renderError ? (
-          <div className="marketing-export-status error">{renderError}</div>
+          <AdminMarketingExportStatus tone="error">{renderError}</AdminMarketingExportStatus>
         ) : null}
         {exportError ? (
-          <div className="marketing-export-status error">{exportError}</div>
+          <AdminMarketingExportStatus tone="error">{exportError}</AdminMarketingExportStatus>
         ) : null}
         {exportMessage ? (
-          <div className="marketing-export-status">{exportMessage}</div>
+          <AdminMarketingExportStatus>{exportMessage}</AdminMarketingExportStatus>
         ) : null}
-        <div className="feature-drop-preview-grid">
+        <AdminFeatureDropPreviewGrid>
           {previewUrls.map((url, index) => (
-            <figure className="feature-drop-preview-card" key={url}>
+            <AdminFeatureDropPreviewCard key={url}>
               <img
                 alt={`Feature drop slide ${index + 1}`}
                 src={url}
@@ -1831,11 +1863,11 @@ function MarketingFeatureDropView({
               <figcaption>
                 {String(index + 1).padStart(2, "0")} / {index === 0 ? "Cover" : index === 5 ? "Outro" : "Feature"}
               </figcaption>
-            </figure>
+            </AdminFeatureDropPreviewCard>
           ))}
-        </div>
+        </AdminFeatureDropPreviewGrid>
       </AdminPanel>
-    </div>
+    </AdminMarketingStackedSections>
   );
 }
 
@@ -1865,48 +1897,44 @@ function MarketingDrafts({
   ) => void;
 }) {
   return (
-    <div className="marketing-stacked-sections">
+    <AdminMarketingStackedSections>
       <AdminPanel
         icon={<Megaphone size={18} strokeWidth={1.9} />}
         title="Preview and export"
         action="Manual Instagram upload"
       >
-        <p className="marketing-help-text">
+        <AdminMarketingHelpText>
           This preview shows the carousel copy and slide order. PNG export
           creates individual 4:5 image files for manual Instagram upload. It is
           not an auto-posting integration.
-        </p>
+        </AdminMarketingHelpText>
       </AdminPanel>
-      <div className="marketing-card-list">
+      <AdminCardList>
       {drafts.map((draft) => {
         const key = `content_draft:${draft.id}`;
         const eventSlideCount = draft.slides.filter((slide) =>
           slide.role === "event"
         ).length;
         return (
-          <article className="marketing-card span-2" key={draft.id}>
-            <header className="marketing-card-header">
+          <AdminCard key={draft.id} span={2}>
+            <CardHeader action={<StatusChip>{draft.aspectRatio}</StatusChip>}>
               <div>
-                <div className="intake-eyebrow">{draft.format} / {draft.tone}</div>
+                <AdminEyebrow>{draft.format} / {draft.tone}</AdminEyebrow>
                 <h3>{draft.id}</h3>
               </div>
-              <span className="intake-badge">{draft.aspectRatio}</span>
-            </header>
-            <div className="quality-row">
-              <CheckCircle2 size={16} strokeWidth={1.9} />
-              <div>
-                <strong>PNG export available</strong>
-                <span>
-                  Downloads one 1080x1350 PNG per slide using the current
-                  editable draft copy and existing Catch web tokens.
-                </span>
-              </div>
-            </div>
+            </CardHeader>
+            <QualityRow icon={<CheckCircle2 size={16} strokeWidth={1.9} />}>
+              <strong>PNG export available</strong>
+              <span>
+                Downloads one 1080x1350 PNG per slide using the current
+                editable draft copy and existing Catch web tokens.
+              </span>
+            </QualityRow>
             <MarketingDraftPreview draft={draft} />
-            <div className="marketing-slide-list">
+            <AdminMarketingSlideList>
               {draft.slides.map((slide) => (
-                <div className="marketing-slide-editor" key={slide.id}>
-                  <div className="intake-eyebrow">{slide.role}</div>
+                <AdminMarketingSlideEditor key={slide.id}>
+                  <AdminEyebrow>{slide.role}</AdminEyebrow>
                   <AdminTextField
                     label="Headline"
                     value={slide.headline}
@@ -1927,9 +1955,9 @@ function MarketingDrafts({
                     onChange={(image) =>
                       onSlideChange(draft.id, slide.id, {image})}
                   />
-                </div>
+                </AdminMarketingSlideEditor>
               ))}
-            </div>
+            </AdminMarketingSlideList>
             <AdminTextareaField
               label="Caption"
               rows={8}
@@ -1953,11 +1981,11 @@ function MarketingDrafts({
                   undefined
               }
             />
-          </article>
+          </AdminCard>
         );
       })}
-      </div>
-    </div>
+      </AdminCardList>
+    </AdminMarketingStackedSections>
   );
 }
 
@@ -2036,8 +2064,8 @@ function MarketingSlideImageEditor({
   }, [image, onChange]);
 
   return (
-    <div className="marketing-image-editor">
-      <div className="marketing-image-editor-header">
+    <AdminMarketingImageEditor>
+      <AdminMarketingImageEditorHeader>
         <div>
           <strong>Slide image</strong>
           <span>Use approved app screenshot slots when the post references product UI. Uploads and URLs are for sourced non-app imagery.</span>
@@ -2050,10 +2078,9 @@ function MarketingSlideImageEditor({
             <Trash2 size={15} strokeWidth={1.9} />
           </AdminIconButton>
         ) : null}
-      </div>
-      <div className="marketing-image-controls">
-        <SelectField
-          className="marketing-field"
+      </AdminMarketingImageEditorHeader>
+      <AdminMarketingImageControls>
+        <AdminMarketingSelectField
           label="App screenshot"
           onChange={selectAppCapture}
           options={[
@@ -2065,15 +2092,14 @@ function MarketingSlideImageEditor({
           ]}
           value={selectedCapture?.id ?? ""}
         />
-        <FilePickerButton
+        <AdminMarketingFilePickerButton
           accept="image/*"
-          className="marketing-file-button"
           icon={<ImagePlus size={15} strokeWidth={1.9} />}
           inputLabel={`Choose image for ${slideId}`}
           onChange={(event) => void handleUpload(event)}
         >
           Choose image
-        </FilePickerButton>
+        </AdminMarketingFilePickerButton>
         <AdminTextField
           label="Image URL"
           value={image?.sourceType === "url" ? image.url : ""}
@@ -2090,8 +2116,7 @@ function MarketingSlideImageEditor({
               }) :
               onChange(null)}
         />
-        <SelectField
-          className="marketing-field"
+        <AdminMarketingSelectField
           label="Fit"
           onChange={(value) =>
             updateImage({fit: value as "cover" | "contain"})}
@@ -2101,15 +2126,14 @@ function MarketingSlideImageEditor({
           ]}
           value={image?.fit ?? "cover"}
         />
-      </div>
+      </AdminMarketingImageControls>
       {previewUrl ? (
-        <div className="marketing-image-review-row">
-          <img
+        <AdminMarketingImageReviewRow>
+          <AdminMarketingImageThumb
             alt={image?.altText || "Selected slide image"}
-            className="marketing-image-thumb"
             src={previewUrl}
           />
-          <div className="marketing-image-meta-fields">
+          <AdminMarketingImageMetaFields>
             <AdminTextField
               label="Alt text"
               value={image?.altText ?? ""}
@@ -2120,22 +2144,22 @@ function MarketingSlideImageEditor({
               value={image?.credit ?? ""}
               onChange={(value) => updateImage({credit: value})}
             />
-            <div className="marketing-image-source-note">
+            <AdminMarketingImageSourceNote>
               {image?.sourceType === "app_capture" ?
                 `App screenshot slot: ${image.captureId ?? "unknown"}` :
                 image?.sourceType === "upload" ?
                 `Uploaded file: ${image.fileName ?? "local image"}` :
                 "External image URL"}
-            </div>
-          </div>
-        </div>
+            </AdminMarketingImageSourceNote>
+          </AdminMarketingImageMetaFields>
+        </AdminMarketingImageReviewRow>
       ) : (
-        <div className="marketing-image-empty">
+        <AdminMarketingImageEmpty>
           <ImagePlus size={15} strokeWidth={1.9} />
           <span>No image attached to this slide.</span>
-        </div>
+        </AdminMarketingImageEmpty>
       )}
-    </div>
+    </AdminMarketingImageEditor>
   );
 }
 
@@ -2148,43 +2172,43 @@ function MarketingAudit({
 }) {
   const local = Object.values(localDecisions);
   return (
-    <div className="marketing-card-list">
+    <AdminCardList>
       <AdminPanel
         icon={<Settings2 size={18} strokeWidth={1.9} />}
         title="Generated commands"
         action={bridge.generatedAt}
       >
-        <div className="command-stack">
+        <AdminCommandStack>
           {Object.entries(bridge.commands).map(([label, command]) => (
-            <div className="command-row" key={label}>
+            <AdminCommandRow key={label}>
               <span>{label}</span>
               <code>{command}</code>
-            </div>
+            </AdminCommandRow>
           ))}
-        </div>
+        </AdminCommandStack>
       </AdminPanel>
       <AdminPanel
         icon={<CheckCircle2 size={18} strokeWidth={1.9} />}
         title="Review decisions"
         action={`${bridge.auditTrail.length + local.length} shown`}
       >
-        <div className="marketing-audit-list">
+        <AdminMarketingAuditList>
           {bridge.auditTrail.map((item) => (
-            <div className="marketing-audit-row" key={`${item.targetType}-${item.targetId}`}>
+            <AdminMarketingAuditRow key={`${item.targetType}-${item.targetId}`}>
               <strong>{item.targetType}: {item.targetId}</strong>
               <span>{String(item.decision)} by {item.reviewer ?? "unknown"}</span>
               {item.note ? <p>{item.note}</p> : null}
-            </div>
+            </AdminMarketingAuditRow>
           ))}
           {local.map((item) => (
-            <div className="marketing-audit-row" key={item.decisionPath}>
+            <AdminMarketingAuditRow key={item.decisionPath}>
               <strong>{item.targetType}: {item.targetId}</strong>
               <span>{item.decisionStatus} saved to {item.decisionPath}</span>
-            </div>
+            </AdminMarketingAuditRow>
           ))}
-        </div>
+        </AdminMarketingAuditList>
       </AdminPanel>
-    </div>
+    </AdminCardList>
   );
 }
 
@@ -2217,13 +2241,13 @@ function MarketingDraftPreview({draft}: {draft: MarketingContentDraft}) {
   }, [draft]);
 
   return (
-    <div className="marketing-preview-shell">
-      <div className="marketing-preview-toolbar">
+    <AdminMarketingPreviewShell>
+      <AdminMarketingPreviewToolbar>
         <div>
           <strong>{draft.tone.replaceAll("-", " ")} preview</strong>
           <span>{draft.delivery?.currentExport ?? "copy and layout preview"} / no auto-posting</span>
         </div>
-        <div className="marketing-preview-actions">
+        <AdminMarketingPreviewActions>
           <AdminLinkButton
             download={`${draft.id}.json`}
             href={downloadHref}
@@ -2243,54 +2267,57 @@ function MarketingDraftPreview({draft}: {draft: MarketingContentDraft}) {
           >
             {isExportingImages ? "Exporting" : "Download PNG slides"}
           </AdminButton>
-        </div>
-      </div>
+        </AdminMarketingPreviewActions>
+      </AdminMarketingPreviewToolbar>
       {imageExportMessage ? (
-        <div className="marketing-export-status">{imageExportMessage}</div>
+        <AdminMarketingExportStatus>{imageExportMessage}</AdminMarketingExportStatus>
       ) : null}
       {imageExportError ? (
-        <div className="marketing-export-status error">{imageExportError}</div>
+        <AdminMarketingExportStatus tone="error">{imageExportError}</AdminMarketingExportStatus>
       ) : null}
       {exportBlocker && draftType === "event_highlights" ? (
-        <div className="marketing-empty-state compact">
-          <FileWarning size={16} strokeWidth={1.9} />
-          <span>{exportBlocker}</span>
-        </div>
+        <EmptyState
+          compact variant="marketing"
+          icon={<FileWarning size={16} strokeWidth={1.9} />}
+        >
+          {exportBlocker}
+        </EmptyState>
       ) : null}
       {exportBlocker && draftType === "feature_explainer" ? (
-        <div className="marketing-empty-state compact">
-          <FileWarning size={16} strokeWidth={1.9} />
-          <span>{exportBlocker}</span>
-        </div>
+        <EmptyState
+          compact variant="marketing"
+          icon={<FileWarning size={16} strokeWidth={1.9} />}
+        >
+          {exportBlocker}
+        </EmptyState>
       ) : null}
-      <div className="marketing-carousel-preview" aria-label={`${draft.tone} carousel preview`}>
+      <AdminMarketingCarouselPreview aria-label={`${draft.tone} carousel preview`}>
         {draft.slides.map((slide, index) => (
-          <article
-            className={`marketing-preview-slide ${slide.image?.url ? "has-image" : ""}`}
+          <AdminMarketingPreviewSlide
+            hasImage={Boolean(slide.image?.url)}
             key={slide.id}
           >
-            <div className="marketing-preview-meta">
+            <AdminMarketingPreviewMeta>
               <span>{index + 1}/{draft.slides.length}</span>
               <span>{slide.role}</span>
-            </div>
+            </AdminMarketingPreviewMeta>
             {slide.image?.url ? (
-              <img
+              <AdminMarketingPreviewImage
                 alt={slide.image.altText || ""}
-                className="marketing-preview-image"
                 src={slide.image.url}
               />
             ) : null}
-            <div className="marketing-preview-brand-note">
+            <AdminMarketingPreviewBrandNote>
               Export design: Catch _ logo text, Archivo token headlines, IBM Plex Mono labels, SF body
-            </div>
-            <div className="marketing-preview-copy">
+            </AdminMarketingPreviewBrandNote>
+            <AdminMarketingPreviewCopy>
               <h4>{slide.headline}</h4>
               <p>{slide.body}</p>
-            </div>
-          </article>
+            </AdminMarketingPreviewCopy>
+          </AdminMarketingPreviewSlide>
         ))}
-      </div>
-    </div>
+      </AdminMarketingCarouselPreview>
+    </AdminMarketingPreviewShell>
   );
 }
 

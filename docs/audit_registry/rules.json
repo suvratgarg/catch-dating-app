@@ -3,6 +3,7 @@
     "AUDIT-REGISTRY-001": {
       "title": "Stamp every cleanup pass in the audit registry",
       "status": "active",
+      "kind": "process",
       "introduced_in": {
         "doc_id": "docs_index",
         "version": "2.0.0"
@@ -18,11 +19,45 @@
       "sunset_when": [
         "The registry update is enforced by automation or CI",
         "Three consecutive cleanup passes include complete pass receipts"
+      ],
+      "sunset_signals": [
+        {
+          "type": "tool-exists",
+          "tool": "meta:enforcement-integrity"
+        }
+      ],
+      "sunset_review": {
+        "date": "2026-07-02",
+        "decision": "keep",
+        "note": "meta-gate automates registry integrity; pass-stamping discipline remains manual"
+      },
+      "enforcement": [
+        {
+          "tool": "meta:enforcement-integrity",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/agent_operating_model.md#operating-principle"
+        },
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/README.md#workflow"
+        },
+        {
+          "tool": "audit:dependency-direction",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#reference-implementation-workflow"
+        },
+        {
+          "tool": "audit:dependency-direction",
+          "stage": "scanner-ratchet",
+          "docAnchor": "docs/app_architecture.md#screen-definition",
+          "baseline": "tool/architecture/dependency_direction_baseline.json"
+        }
       ]
     },
     "DOC-HYGIENE-001": {
       "title": "Prefer versioned owners over new markdown sprawl",
       "status": "active",
+      "kind": "process",
       "introduced_in": {
         "doc_id": "docs_index",
         "version": "2.0.0"
@@ -35,11 +70,53 @@
       "instruction": "Update an existing source-of-truth doc or registry entry before creating a new doc. Mark stale snapshots historical instead of letting conflicting instructions accumulate.",
       "sunset_when": [
         "Docs index and doc_versions remain current for five broad passes"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
+      ]
+    },
+    "EXHIBIT-FRESHNESS-001": {
+      "title": "Keep architecture exhibits fresh against their tracker anchors",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "app_architecture",
+        "version": "1.4.11"
+      },
+      "applies_to": [
+        "docs/app_architecture.md",
+        "docs/audit_registry/architecture_pattern_adoption.json",
+        "tool/architecture/check_app_architecture_exhibits.mjs"
+      ],
+      "instruction": "Every architecture reference exhibit must declare an exhibit-freshness marker, point to its tracker source, keep the tracker architectureExhibit anchor in sync, and remove stale code snippets when the reference implementation changes.",
+      "sunset_when": [
+        "Architecture exhibit blocks are generated from source markers or another stronger source-backed mechanism"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "audit:app-architecture-exhibits",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#reference-implementation-workflow"
+        }
       ]
     },
     "AGENT-HARNESS-001": {
       "title": "Use the agent harness for broad AI-assisted work",
       "status": "active",
+      "kind": "process",
       "introduced_in": {
         "doc_id": "agent_operating_model",
         "version": "1.0.0"
@@ -60,11 +137,236 @@
       "sunset_when": [
         "The agent readiness gate is mandatory in CI for broad-work branches",
         "Five consecutive broad passes include context-pack proof, readiness proof, and no missing regression-ledger updates"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "meta:enforcement-integrity",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/agent_operating_model.md#operating-principle"
+        },
+        {
+          "tool": "agent:readiness",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/agent_operating_model.md#done-criteria-for-this-harness"
+        }
+      ]
+    },
+    "AGENT-DELEGATION-001": {
+      "title": "Keep parallel agent work parent-integrated and worktree-isolated",
+      "status": "active",
+      "kind": "process",
+      "introduced_in": {
+        "doc_id": "agent_operating_model",
+        "version": "1.2.0"
+      },
+      "applies_to": [
+        "AGENTS.md",
+        "docs/agent_operating_model.md",
+        "docs/agent_skills/**",
+        "docs/audit_registry/**",
+        "tool/agent/**",
+        "tool/tools_manifest.json",
+        "lib/**",
+        "test/**"
+      ],
+      "instruction": "When using subagents for speed, isolate their work in short-lived Git worktrees/branches, assign disjoint write scopes, keep canonical docs/generated registries/audit receipts parent-owned by default, review commits before importing, run final verification in the parent branch, and record a delegation outcome metric.",
+      "sunset_when": [
+        "Delegation outcome metrics show five consecutive accepted batches with no file-ownership conflicts",
+        "The readiness gate validates delegation protocol coverage and metrics shape"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
+      ]
+    },
+    "WEB-ROUTE-001": {
+      "title": "Keep marketing website route contracts ahead of visual review",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "web_surface_architecture",
+        "version": "0.7.0"
+      },
+      "applies_to": [
+        "website/**",
+        "packages/web-config/**",
+        "design/website/**",
+        "tool/marketing/**",
+        "tool/web/check_react_architecture_boundaries.mjs",
+        ".github/workflows/marketing-website.yml"
+      ],
+      "instruction": "Before changing public marketing routes, generated organizer route families, SEO metadata, static postbuild output, robots/sitemap behavior, review states, route Storybook evidence, or route-owned URL state, update design/website/routes.json when the public contract changes and pass node tool/run.mjs check marketing:website-routes plus node tool/run.mjs check web:react-architecture-boundaries when React route boundaries are touched. The route gate validates runtime/static metadata and matching Storybook parameters.catchRoute declarations for Storybook-backed review states. Start component-first review only after the route contract is current.",
+      "sunset_when": [
+        "A website component workbench enforces route-linked page/state coverage in CI",
+        "Five consecutive marketing website route changes pass the route contract gate without follow-up fixes"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
+      ]
+    },
+    "WEB-UI-PRIMITIVE-001": {
+      "title": "React interactive UI must use shared primitives",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "web_surface_architecture",
+        "version": "0.7.2"
+      },
+      "applies_to": [
+        "website/src/**",
+        "admin/src/**",
+        "tool/web/check_react_ui_primitives.mjs",
+        "package.json",
+        "website/package.json",
+        "admin/package.json"
+      ],
+      "instruction": "React feature, app, and story code must not render native interactive elements such as button, anchor, input, select, or textarea directly. Route those elements through the shared UI primitive owner for the surface, or add a temporary react-ui-primitive-allow override with a stable debt id and removal plan. Run node tool/run.mjs check web:react-ui-primitives before handoff.",
+      "sunset_when": [
+        "The React primitive scanner is enforced in CI for website and admin",
+        "The remaining form/table/layout component families have equivalent registry-backed scanners"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
+      ]
+    },
+    "WEB-UI-COMPONENT-001": {
+      "title": "React governed component families must use shared wrappers",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "web_surface_architecture",
+        "version": "0.7.3"
+      },
+      "applies_to": [
+        "website/src/**",
+        "admin/src/**",
+        "tool/web/check_react_classname_boundaries.mjs",
+        "tool/web/check_react_component_governance.mjs",
+        "package.json",
+        "website/package.json",
+        "admin/package.json",
+        "tool/marketing/check_website_components.mjs",
+        "design/website/components.json",
+        "tool/web/check_admin_feature_exports.mjs",
+        "tool/web/check_admin_components.mjs",
+        "design/admin/components.json"
+      ],
+      "instruction": "React feature, app, and story code must route governed component families through shared primitives instead of rendering the shell directly. Marketing website exported uppercase feature components must be declared in design/website/components.json or made private, so route/section/supporting components remain registry-backed. Admin feature UI files may export route/workspace entry components such as *Screen and *Workspace; reusable panels, cards, lists, badges, and sections belong in admin/src/shared/ui or stay private. Admin route/workspace entries, shared admin primitives, and admin feedback providers must be declared in design/admin/components.json. Do not pass className directly outside shared UI/site primitive owner files; move the style decision into a primitive or use a temporary react-classname-boundary-allow override with a stable debt id and removal plan. The canonical governed-family registry is generated by `node tool/web/check_react_component_governance.mjs --families-json` and checked in at `docs/audit_registry/react_component_governance_families.json`. The family scanner is a known-family blocklist: passing it does not classify novel component shells, so repeated new shell drift must be added to `tool/web/check_react_component_governance.mjs` before handoff. Run `node tool/run.mjs check marketing:website-components`, `node tool/run.mjs check web:admin-feature-exports`, `node tool/run.mjs check web:admin-components`, `node tool/run.mjs check web:react-classname-boundaries`, and `node tool/run.mjs check web:react-component-governance` before handoff.",
+      "sunset_when": [
+        "The React component-governance scanner is enforced in CI for website and admin",
+        "Form groups, filters, nav rails, layout shells, metric cards, and status blocks have equivalent registry-backed scanners or documented non-governed classifications"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "version": "2.6.126",
+      "updated": "2026-07-02",
+      "enforcement": [
+        {
+          "tool": "marketing:website-components",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/marketing_website_architecture.md#architecture-rules"
+        },
+        {
+          "tool": "web:admin-feature-exports",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/admin_dashboard_user_stories_and_component_catalogue.md#base-component-catalogue"
+        },
+        {
+          "tool": "web:admin-components",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/admin_dashboard_user_stories_and_component_catalogue.md#base-component-catalogue"
+        },
+        {
+          "tool": "web:react-classname-boundaries",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/audit_registry/rules.json"
+        },
+        {
+          "tool": "web:react-component-governance",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/marketing_website_architecture.md#architecture-rules"
+        },
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
+      ]
+    },
+    "WEB-QUERY-STATE-001": {
+      "title": "React server-state pending state must ratchet toward TanStack Query",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "marketing_website_architecture",
+        "version": "0.4.138"
+      },
+      "applies_to": [
+        "website/src/features/**",
+        "admin/src/features/**",
+        "tool/web/check_react_query_state.mjs",
+        "tool/web/react_query_state_baseline.json",
+        "package.json",
+        "website/package.json",
+        "admin/package.json"
+      ],
+      "instruction": "React feature controllers and feature use* hooks should not add new manual loading, saving, submitting, pending, or in-flight state for server reads or mutations. Use TanStack Query query/mutation state and explicit query-key invalidation for server state; keep only view-local form, filter, selection, and client-only rendering state in React state. Run node tool/run.mjs check web:react-query-state before handoff.",
+      "sunset_when": [
+        "The React query-state baseline is empty for website and admin feature controllers/hooks",
+        "New React server-state work consistently uses query keys, mutation pending state, and explicit invalidation without manual async-state flags"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "web:react-query-state",
+          "stage": "scanner-ratchet",
+          "docAnchor": "docs/marketing_website_architecture.md#server-state-direction",
+          "baseline": "tool/web/react_query_state_baseline.json"
+        },
+        {
+          "stage": "manual",
+          "docAnchor": "docs/marketing_website_architecture.md#server-state-direction"
+        }
       ]
     },
     "CODEGEN-001": {
       "title": "Keep generated Dart outputs synchronized during iterative work",
       "status": "active",
+      "kind": "process",
       "introduced_in": {
         "doc_id": "audit_registry",
         "version": "2.2.0"
@@ -76,11 +378,117 @@
       "instruction": "When editing Riverpod, Freezed, json_serializable, envied, or other build_runner-backed Dart sources, keep generated outputs from build_runner instead of manually reverting hash/output churn. Prefer running `dart run build_runner watch --delete-conflicting-outputs` during iterative cleanup loops, and stop it only when the user asks or when the session no longer needs codegen.",
       "sunset_when": [
         "Code generation is enforced by CI or a repository-local dev daemon"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
+      ]
+    },
+    "SCHEMA-FIXTURE-001": {
+      "title": "Contract fixtures stay schema-backed",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "audit_registry",
+        "version": "2.6.2"
+      },
+      "applies_to": [
+        "contracts/fixtures/**/*.json",
+        "tool/contracts/check_schema_fixtures.mjs",
+        "tool/contracts/generated/schema_contract_registry.mjs"
+      ],
+      "instruction": "Every JSON fixture under contracts/fixtures/valid or contracts/fixtures/invalid must be declared in tool/contracts/check_schema_fixtures.mjs and must validate with the expected pass/fail result against its generated JSON Schema.",
+      "sunset_when": [
+        "Fixture-schema mapping is generated from contract metadata or embedded fixture metadata"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "contracts:schema-fixtures",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
+      ]
+    },
+    "MIGRATION-CONTRACT-001": {
+      "title": "Migration contracts keep phase evidence machine-checkable",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "audit_registry",
+        "version": "2.6.2"
+      },
+      "applies_to": [
+        "contracts/migrations/*.json",
+        "tool/contracts/check_migration_contracts.mjs"
+      ],
+      "instruction": "Every migration contract must declare schemaVersion, logicalName, currentPhase, reason, unique phases with known statuses, operational evidence such as guards or known consumers, and liveApply evidence when any phase is complete_remote.",
+      "sunset_when": [
+        "Migration metadata is generated from a stronger typed migration registry"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "contracts:migration-contracts",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
+      ]
+    },
+    "STORAGE-CONTRACT-001": {
+      "title": "Storage path contracts stay tied to rules and rules tests",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "audit_registry",
+        "version": "2.6.2"
+      },
+      "applies_to": [
+        "contracts/storage/*.schema.json",
+        "storage.rules",
+        "functions/test/storage.rules.test.cjs",
+        "tool/contracts/check_storage_contract.mjs"
+      ],
+      "instruction": "Every storage path schema must declare x-storage-rules-match, x-storage-read, x-storage-write, x-storage-rules-test-file, and matching storage.rules coverage. Review passes for storage contracts should run the static storage checker and, when feasible, the firestore/storage emulator rules suite.",
+      "sunset_when": [
+        "Storage path contracts and storage.rules are generated from one typed registry"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "contracts:storage-contract",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/audit_registry/rules.json"
+        },
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
       ]
     },
     "FIRESTORE-RULES-TEST-001": {
       "title": "Run Firebase rules tests under the required emulators",
       "status": "active",
+      "kind": "process",
       "introduced_in": {
         "doc_id": "audit_rules",
         "version": "2.4.4"
@@ -98,11 +506,23 @@
       "sunset_when": [
         "A wrapper script or CI-only command makes the emulator requirement impossible to bypass",
         "Functions README and data-contract tracker stay in sync for three rules passes"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
       ]
     },
     "DESIGN-PRIMITIVES-001": {
       "title": "Prefer shared design primitives over repeated local shells",
       "status": "active",
+      "kind": "contract",
       "introduced_in": {
         "doc_id": "widget_cleanup",
         "version": "2.1.0"
@@ -111,14 +531,26 @@
         "lib/**/presentation/**",
         "lib/core/widgets/**"
       ],
-      "instruction": "Before creating local card, sheet, empty-state, rail, row, badge, skeleton, or section UI, check existing primitives such as CatchSurface, CatchBottomSheetScaffold, CatchEmptyState, CatchHorizontalRail, CatchVerticalSection, CatchField, CatchSection, PersonRow, run tile variants, CatchBadge, and CatchSkeleton.",
+      "instruction": "Before creating local card, sheet, empty-state, rail, row, badge, skeleton, or section UI, check docs/widget_catalog.md and the existing Catch* primitives under lib/core/widgets for an owner. Do not duplicate an existing primitive shell; extend the primitive or propose a variant through catalog review.",
       "sunset_when": [
         "Widget catalog shows no repeated local shells outside intentional feature-specific UI"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
       ]
     },
     "ASYNC-UI-001": {
       "title": "Async presentation states use shared boundaries and content-shaped skeletons",
       "status": "active",
+      "kind": "contract",
       "introduced_in": {
         "doc_id": "audit_rules",
         "version": "2.5.8"
@@ -128,15 +560,84 @@
         "lib/core/widgets/**",
         "test/**"
       ],
-      "instruction": "Presentation widgets should route AsyncValue, Future, and Stream loading/error branches through CatchAsyncValueView, CatchAsyncValueSliver, or a feature-owned typed display-state adapter. View-models may call AsyncValue.when when they return non-widget display state. Empty states stay in successful data callbacks. Optional enrichment may fail silently only when the primary surface remains correct and no primary CTA, paid action, safety action, or host operation depends on it. Initial or fallback data should render ahead of blocking loading skeletons when credible data is available. Data-load errors must use Catch error primitives with retry unless retry is impossible or unsafe. Loading states should use skeletons that resemble the eventual UI shape when that shape is known; use compact spinners or loading copy only for tiny inline metadata, unknown one-off work, or platform/plugin actions.",
+      "instruction": "Presentation widgets should route AsyncValue, Future, and Stream loading/error branches through CatchAsyncValueView, CatchAsyncValueSliver, or a feature-owned typed display-state adapter. View-models may call AsyncValue.when when they return non-widget display state. Empty states stay in successful data callbacks. Data-load errors must use Catch error primitives with retry unless retry is impossible or unsafe.",
       "sunset_when": [
-        "Analyzer or scanner coverage enforces raw async UI branches, retryable data-load errors, and generic skeleton drift",
+        "Analyzer or scanner coverage enforces raw async UI branches and retryable data-load errors"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
+      ]
+    },
+    "ASYNC-ENRICHMENT-001": {
+      "title": "Optional enrichment failures stay non-primary",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "rules_registry_and_enforcement_hardening_spec",
+        "version": "1.0.0"
+      },
+      "applies_to": [
+        "lib/**/presentation/**",
+        "lib/core/widgets/**",
+        "test/**"
+      ],
+      "instruction": "Optional enrichment reads may fail silently only when the primary surface remains correct and no primary CTA, paid action, safety action, or host operation depends on the enrichment. Silent enrichment failures should still log through error context when diagnosis matters. Anything a primary action depends on is not enrichment and must surface its error.",
+      "sunset_when": [
+        "Optional enrichment failures are inventoried separately from primary action failures for three app architecture passes"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
+      ]
+    },
+    "ASYNC-LOADING-PRESENTATION-001": {
+      "title": "Async loading states render credible data before blocking skeletons",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "rules_registry_and_enforcement_hardening_spec",
+        "version": "1.0.0"
+      },
+      "applies_to": [
+        "lib/**/presentation/**",
+        "lib/core/widgets/**",
+        "test/**"
+      ],
+      "instruction": "When credible initial or fallback data is available (route extra, cached value, optimistic snapshot), render it ahead of blocking loading skeletons. Loading states should use skeletons that resemble the eventual UI shape when that shape is known; use compact spinners or loading copy only for tiny inline metadata, unknown one-off work, or platform/plugin actions.",
+      "sunset_when": [
         "Widgetbook and captures include content-shaped loading states for every contracted screen"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
       ]
     },
     "WIDGET-CATALOG-001": {
       "title": "Keep widget catalog current when widget architecture changes",
       "status": "active",
+      "kind": "contract",
       "introduced_in": {
         "doc_id": "widget_catalog",
         "version": "2.1.0"
@@ -149,11 +650,23 @@
       "instruction": "Update docs/widget_catalog.md in the same pass when adding, deleting, moving, renaming, or materially changing a widget, primitive API, screen ownership model, sliver/tab structure, or reusable design-system role. Do not update the catalog for tiny implementation-only edits that do not change inventory or usage guidance.",
       "sunset_when": [
         "A generated widget inventory or CI check makes catalog drift visible automatically"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
       ]
     },
     "DESIGN-TOKENS-001": {
       "title": "Keep design-system ownership centralized",
       "status": "active",
+      "kind": "contract",
       "introduced_in": {
         "doc_id": "widget_cleanup",
         "version": "2.1.0"
@@ -164,11 +677,33 @@
       "instruction": "Theme tokens, typography, app theme, spacing, radius, motion, icon sizes, and compatibility layout helpers should live under lib/core/theme. Do not add new design primitives under generic lib/constants or a parallel top-level lib/theme folder.",
       "sunset_when": [
         "Legacy spacing compatibility usage is either migrated or intentionally documented"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "scanner:ui-local-constant-wrappers",
+          "stage": "analyzer-warning",
+          "docAnchor": "docs/app_architecture.md#token-tier-model"
+        },
+        {
+          "tool": "scanner:ui-system-raw-values",
+          "stage": "manual",
+          "docAnchor": "docs/app_architecture.md#token-tier-model"
+        },
+        {
+          "stage": "manual",
+          "docAnchor": "docs/app_architecture.md#token-tier-model"
+        }
       ]
     },
     "UI-LINT-001": {
       "title": "Codify audited UI invariants as analyzer plugin rules",
       "status": "active",
+      "kind": "contract",
       "introduced_in": {
         "doc_id": "app_architecture",
         "version": "1.1.0"
@@ -186,11 +721,39 @@
       "sunset_when": [
         "All high-value UI scanner findings either migrate into analyzer plugin diagnostics or are documented as intentionally broad triage queues",
         "New audited screens stay covered by strict UI diagnostics without custom one-off scripts"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "lint:catch-ui-plugin-smoke",
+          "stage": "analyzer-warning",
+          "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
+        },
+        {
+          "tool": "scanner:ui-allow-debt",
+          "stage": "analyzer-warning",
+          "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
+        },
+        {
+          "tool": "scanner:sizing",
+          "stage": "analyzer-warning",
+          "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
+        },
+        {
+          "tool": "scanner:ui-local-constant-wrappers",
+          "stage": "analyzer-warning",
+          "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
+        }
       ]
     },
     "RESPONSIVE-LAYOUT-001": {
       "title": "Avoid hardcoded widget dimensions for content-sized UI",
       "status": "active",
+      "kind": "contract",
       "introduced_in": {
         "doc_id": "audit_rules",
         "version": "2.5.0"
@@ -204,11 +767,28 @@
       "sunset_when": [
         "Widget cleanup scans classify fixed dimensions by acceptable fixed-format controls versus content-sized UI",
         "Dashboard, run-club, chat, profile, and run-detail passes have removed unjustified fixed content-card heights"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "scanner:sizing",
+          "stage": "analyzer-warning",
+          "docAnchor": "docs/app_architecture.md#sizing-and-constraints"
+        },
+        {
+          "stage": "manual",
+          "docAnchor": "docs/app_architecture.md#sizing-and-constraints"
+        }
       ]
     },
     "DENORMALIZED-DATA-001": {
       "title": "Keep denormalized projection fields in sync",
       "status": "active",
+      "kind": "contract",
       "introduced_in": {
         "doc_id": "audit_rules",
         "version": "2.5.1"
@@ -225,11 +805,23 @@
       "sunset_when": [
         "A projection inventory lists all denormalized fields and their sync owner",
         "CI or a data audit job checks projection drift for critical collections"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
       ]
     },
     "DEBUG-LOOP-001": {
       "title": "Use interactive phone debug logs as feedback evidence",
       "status": "active",
+      "kind": "process",
       "introduced_in": {
         "doc_id": "widget_cleanup",
         "version": "2.0.0"
@@ -241,11 +833,23 @@
       "instruction": "When user is clicking through the app on a physical phone, run an interactive flutter run session through tool/flutter_with_env.sh, keep stdin open for reload/restart, and summarize fresh logs in pass proof.",
       "sunset_when": [
         "A stable automated device-smoke workflow replaces manual debug sessions"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
       ]
     },
     "CONTROLLER-BOUNDARY-001": {
       "title": "Keep product behavior out of presentation widgets",
       "status": "active",
+      "kind": "contract",
       "introduced_in": {
         "doc_id": "app_architecture",
         "version": "1.1.0"
@@ -253,14 +857,73 @@
       "applies_to": [
         "lib/**/presentation/**"
       ],
-      "instruction": "Widgets may own focus, scroll, animations, navigation, temporary input state, and rendering. Move repository writes, validation decisions, mutation orchestration, and product side effects into controllers, view-model providers, or repositories.",
+      "instruction": "Widgets may own focus, scroll, animations, navigation, temporary input state, and rendering. Move repository writes, repository-provider reads, validation decisions, mutation orchestration, product side effects, and WidgetRef-threaded provider access into controllers, view-model providers, or repositories.",
       "sunset_when": [
         "Presentation repository-provider scanner stays clean for five cleanup passes"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        },
+        {
+          "tool": "audit:dependency-direction",
+          "stage": "scanner-ratchet",
+          "docAnchor": "docs/app_architecture.md#controller-and-view-model-contract",
+          "baseline": "tool/architecture/dependency_direction_baseline.json"
+        }
+      ]
+    },
+    "DEPENDENCY-DIRECTION-001": {
+      "title": "Layer imports follow dependency direction",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "rules_registry_and_enforcement_hardening_spec",
+        "version": "1.0.0"
+      },
+      "applies_to": [
+        "lib/**",
+        "tool/architecture/check_dependency_direction.mjs",
+        "tool/architecture/dependency_direction_baseline.json"
+      ],
+      "instruction": "Layer imports follow the declared dependency direction. lib/*/domain/** must not import Flutter, Riverpod, Firebase, routing, or platform plugin packages; Timestamp/serialization handling routes through core/firestore_converters, and the existing direct imports are ratcheted debt in tool/architecture/dependency_direction_baseline.json — new domain code must not add them. lib/*/data/** and lib/*/domain/** must not import feature presentation code. Feature presentation must not import sibling feature presentation internals. Sanctioned seams are (a) a sibling feature public controller (presentation/*_controller.dart) imported from a route screen (*_screen.dart) or another controller, and (b) symbols exported by the sibling feature root barrel (lib/<feature>/<feature>.dart), where every presentation export in a barrel requires a // public-api: annotation. Direct deep imports of sibling presentation files remain violations. Widgets, bodies, state adapters, and view models are feature internals — when another feature needs a read model, expose a narrow public provider/contract or annotated barrel seam instead.",
+      "sunset_when": [
+        "The dependency-direction baseline is empty and adopted architecture boundary checks cover aligned features"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "audit:dependency-direction",
+          "stage": "scanner-ratchet",
+          "docAnchor": "docs/app_architecture.md#dependency-direction",
+          "baseline": "tool/architecture/dependency_direction_baseline.json"
+        },
+        {
+          "tool": "audit:adopted-architecture-boundaries",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#dependency-direction"
+        },
+        {
+          "tool": "audit:dependency-direction",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#dependency-direction"
+        }
       ]
     },
     "PROVIDER-SEAM-001": {
       "title": "Use feature-owned provider seams",
       "status": "active",
+      "kind": "contract",
       "introduced_in": {
         "doc_id": "app_architecture",
         "version": "1.1.0"
@@ -271,11 +934,23 @@
       "instruction": "If a feature has a view model, controller, or feature-specific provider, screens should use that seam rather than reaching around it to a lower-level repository provider.",
       "sunset_when": [
         "Feature screens consistently read view models/controllers and no scanner reaches remain"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/app_architecture.md#screen-composition-contract"
+        }
       ]
     },
     "ACTION-CARDINALITY-001": {
       "title": "Declare action cardinality before wiring UI affordances",
       "status": "active",
+      "kind": "contract",
       "introduced_in": {
         "doc_id": "action_cardinality_policy",
         "version": "1.0.0"
@@ -290,11 +965,23 @@
       "sunset_when": [
         "The action inventory covers all primary callables and CTAs",
         "New feature specs include action cardinality as a required field"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
       ]
     },
     "EVENT-POLICY-INDEV-001": {
       "title": "Preserve event policy engine through production migration",
       "status": "active",
+      "kind": "product-marker",
       "introduced_in": {
         "doc_id": "event_policies_readme",
         "version": "1.0.0"
@@ -309,11 +996,23 @@
       "sunset_when": [
         "The event policy engine fully replaces legacy event capacity, price, and EventConstraints fields",
         "Or the product decision explicitly cancels the event-policy migration"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
       ]
     },
     "EVENT-SUCCESS-INDEV-001": {
       "title": "Preserve parallel event success layer until product decision",
       "status": "active",
+      "kind": "product-marker",
       "introduced_in": {
         "doc_id": "event_success",
         "version": "1.0.0"
@@ -328,11 +1027,23 @@
       "sunset_when": [
         "The event success layer is fully production-owned and no longer needs an in-development preservation marker",
         "Or the product decision explicitly cancels the live event success layer"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
       ]
     },
     "STREAM-LIFECYCLE-001": {
       "title": "Do not idle-timeout realtime Firestore listeners",
       "status": "active",
+      "kind": "contract",
       "introduced_in": {
         "doc_id": "audit_rules",
         "version": "2.3.0"
@@ -342,15 +1053,39 @@
         "lib/**/presentation/**",
         "test/**/*.dart"
       ],
-      "instruction": "Do not wrap Firestore snapshot streams in Stream.timeout to detect stalled loads; realtime streams may legitimately stay silent after initial data. Prefer Riverpod autoDispose, screen-active gating, explicit refresh/retry UI, and focused tests that advance fake time past prior timeout thresholds.",
+      "instruction": "Do not wrap Firestore snapshot streams in Stream.timeout to detect stalled loads; realtime streams may legitimately stay silent after initial data. Prefer Riverpod autoDispose, screen-active gating, explicit refresh/retry UI, and focused tests that advance fake time past prior timeout thresholds. Every keepAlive provider must carry a // keepalive: rationale marker within the three lines above the annotation or declaration.",
       "sunset_when": [
         "A scanner prevents Stream.timeout usage on repository/provider realtime listeners",
         "All retained stream timeouts are documented as non-Firestore protocol deadlines"
-      ]
+      ],
+      "sunset_signals": [
+        {
+          "type": "tool-exists",
+          "tool": "audit:dependency-direction"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "audit:dependency-direction",
+          "stage": "scanner-ratchet",
+          "docAnchor": "docs/app_architecture.md#realtime-stream-lifecycle",
+          "baseline": "tool/architecture/dependency_direction_baseline.json"
+        },
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
+      ],
+      "sunset_review": {
+        "date": "2026-07-02",
+        "decision": "keep",
+        "note": "dependency scanner covers data stream timeouts; rule stays active until retained protocol deadlines are reviewed and the ratchet stays clean"
+      }
     },
     "ERROR-UI-001": {
       "title": "Use branded error surfaces for app-facing failures",
       "status": "active",
+      "kind": "contract",
       "introduced_in": {
         "doc_id": "app_architecture",
         "version": "1.1.0"
@@ -364,11 +1099,23 @@
       "sunset_when": [
         "A canonical app error primitive covers full-screen, sliver, and inline contexts",
         "Existing AsyncValue error branches have migrated away from raw centered text except where explicitly justified"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
       ]
     },
     "ERROR-CATALOG-001": {
       "title": "Keep the app error catalogue current",
       "status": "active",
+      "kind": "contract",
       "introduced_in": {
         "doc_id": "app_architecture",
         "version": "1.1.0"
@@ -383,11 +1130,34 @@
       "instruction": "When adding, renaming, or removing an AppException subclass, stable error code, error mapper, AppErrorContext, branded error primitive, or repeated app-facing failure category, update the error handling contract and error quick-reference sections in docs/app_architecture.md in the same pass. Add typed exceptions only for stable product/domain errors that need branching, analytics, retry policy, or tests; use mapped copy for one-off message changes.",
       "sunset_when": [
         "A generated or CI-backed error catalogue check validates subclass/code/doc parity"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "audit:backend-errors",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#error-scanners"
+        },
+        {
+          "tool": "audit:frontend-errors",
+          "stage": "scanner-ratchet",
+          "docAnchor": "docs/app_architecture.md#error-scanners",
+          "baseline": "tool/audit/frontend_error_candidates_baseline.json"
+        },
+        {
+          "stage": "manual",
+          "docAnchor": "docs/app_architecture.md#error-handling-contract"
+        }
       ]
     },
     "FLOW-MUTATION-001": {
       "title": "Advance multi-step flows only after required mutations succeed",
       "status": "active",
+      "kind": "contract",
       "introduced_in": {
         "doc_id": "app_architecture",
         "version": "1.1.0"
@@ -400,11 +1170,23 @@
       "sunset_when": [
         "Controller tests cover failure paths for all multi-step flow mutations",
         "No flow controller advances state before awaited persistence without an explicit optimistic contract"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
       ]
     },
     "EXTERNAL-SIDE-EFFECT-001": {
       "title": "Put plugin and platform side effects behind seams",
       "status": "active",
+      "kind": "contract",
       "introduced_in": {
         "doc_id": "widget_cleanup",
         "version": "2.1.0"
@@ -416,11 +1198,41 @@
       "instruction": "Store launches, URL launches, share sheets, image pickers, connectivity subscriptions, FCM setup, and other platform/plugin effects should sit behind providers/controllers/services so tests can replace them.",
       "sunset_when": [
         "Presentation plugin/platform import scanner remains clean for five passes"
-      ]
+      ],
+      "sunset_signals": [
+        {
+          "type": "tool-exists",
+          "tool": "audit:dependency-direction"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "audit:frontend-errors",
+          "stage": "scanner-ratchet",
+          "docAnchor": "docs/app_architecture.md#failure-channels",
+          "baseline": "tool/audit/frontend_error_candidates_baseline.json"
+        },
+        {
+          "tool": "audit:dependency-direction",
+          "stage": "scanner-ratchet",
+          "docAnchor": "docs/app_architecture.md#dependency-direction",
+          "baseline": "tool/architecture/dependency_direction_baseline.json"
+        },
+        {
+          "stage": "manual",
+          "docAnchor": "docs/app_architecture.md#repository-and-service-contract"
+        }
+      ],
+      "sunset_review": {
+        "date": "2026-07-02",
+        "decision": "keep",
+        "note": "dependency scanner blocks presentation plugin imports; broader side-effect seams still need manual architecture review"
+      }
     },
     "TOKEN-DRILLING-001": {
       "title": "Avoid prop drilling CatchTokens",
       "status": "watch",
+      "kind": "contract",
       "introduced_in": {
         "doc_id": "widget_cleanup",
         "version": "2.1.0"
@@ -432,11 +1244,17 @@
       "instruction": "Prefer CatchTokens.of(context) inside leaf widgets instead of passing CatchTokens through constructors unless intentionally rendering with a non-current token set.",
       "sunset_when": [
         "Token prop-drilling scanner remains clean for three passes"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
       ]
     },
     "TEST-ASYNC-001": {
       "title": "Use named async test flushing helpers",
       "status": "watch",
+      "kind": "contract",
       "introduced_in": {
         "doc_id": "widget_cleanup",
         "version": "2.0.0"
@@ -447,11 +1265,17 @@
       "instruction": "Use flushTestEventQueue instead of raw Future<void>.delayed(Duration.zero) when tests need queued provider stream or callback delivery.",
       "sunset_when": [
         "Scanner reports no raw zero-delay async flushes for three passes"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
       ]
     },
     "WIDGET-TEST-001": {
       "title": "Centralize broad widget test settling",
       "status": "watch",
+      "kind": "contract",
       "introduced_in": {
         "doc_id": "widget_cleanup",
         "version": "2.0.0"
@@ -463,11 +1287,17 @@
       "sunset_when": [
         "Only the approved centralized helper-level broad wait remains",
         "No feature-level raw pumpAndSettle appears for three passes"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
       ]
     },
     "WIDGET-SEMANTICS-001": {
       "title": "Make custom tappables semantic before testing them",
       "status": "watch",
+      "kind": "contract",
       "introduced_in": {
         "doc_id": "widget_cleanup",
         "version": "2.0.0"
@@ -479,11 +1309,17 @@
       "instruction": "Before adding fragile widget finders, give custom tap targets stable semantics, labels, tooltips, or keys that describe real user actions.",
       "sunset_when": [
         "Feature tappable scanner remains clean for three cleanup passes"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
       ]
     },
     "SLIVER-001": {
       "title": "Respect sliver ownership and NestedScrollView overlap contracts",
       "status": "active",
+      "kind": "contract",
       "introduced_in": {
         "doc_id": "sliver_layout",
         "version": "2.0.0"
@@ -496,11 +1332,23 @@
       "instruction": "If a parent owns a CustomScrollView, children should usually return slivers; NestedScrollView tabs must inject absorbed overlap or own the inner scroll view. Collapsible title headers followed by pinned bottom rows must move the title upward as it collapses; do not let sticky search/filter/tab rows visually scroll over and cover the title.",
       "sunset_when": [
         "Sliver screens have dedicated regression tests and no known blank/overflow regressions"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
       ]
     },
     "ERROR-UI-002": {
       "title": "Data-load error branches must use a Catch error primitive with retry, never an empty-state or bespoke card",
       "status": "active",
+      "kind": "scar",
       "introduced_in": {
         "doc_id": "deep_semantic_audit_2026_06",
         "version": "1.0.0"
@@ -513,11 +1361,50 @@
       "sunset_when": [
         "A catch_ui_lints diagnostic flags CatchEmptyState/bespoke cards inside error branches",
         "No feature error branch renders raw/empty surfaces for three passes"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
+      ]
+    },
+    "MUTATION-KEY-GRAIN-001": {
+      "title": "Mutation state keys match interaction grain",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "rules_registry_and_enforcement_hardening_spec",
+        "version": "1.0.0"
+      },
+      "applies_to": [
+        "lib/**/presentation/**"
+      ],
+      "instruction": "Mutation state cardinality must match UI interaction grain. Route-level single actions (book, cancel, submit, delete for the route's single subject) may use static Mutation fields. Repeated row/list actions — attendance, waitlist offers, join-request decisions, any per-entity action rendered N times on one surface — must key mutation state per target (mutation(key) family instances) so one row's pending/error state cannot affect sibling rows. Keys are typed Dart records with value equality, not concatenated strings. Reference implementation: lib/hosts/presentation/host_event_booking_controller.dart.",
+      "sunset_when": [
+        "Repeated row/list mutation actions consistently use typed record keys for three app architecture passes"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/app_architecture.md#controller-and-view-model-contract"
+        }
       ]
     },
     "MUTATION-ERROR-SURFACE-001": {
       "title": "A watched Mutation consumed for isPending must also surface hasError",
       "status": "active",
+      "kind": "scar",
       "introduced_in": {
         "doc_id": "deep_semantic_audit_2026_06",
         "version": "1.0.0"
@@ -525,15 +1412,34 @@
       "applies_to": [
         "lib/**/presentation/**"
       ],
-      "instruction": "Any UI that watches a Mutation to drive a spinner (isPending) must also handle hasError \u2014 via an inline ErrorBanner.fromError, a screen-level MutationErrorSnackbarListener, or try/catch + showCatchErrorSnackBar around .run(). Silent failure (spinner clears, no feedback) is forbidden, especially for destructive/security actions.",
+      "instruction": "Any UI that watches a Mutation to drive a spinner (isPending) must also handle hasError — via an inline ErrorBanner.fromError, a screen-level MutationErrorSnackbarListener, or try/catch + showCatchErrorSnackBar around .run(). Silent failure (spinner clears, no feedback) is forbidden, especially for destructive/security actions.",
       "sunset_when": [
         "A scanner flags isPending watches with no matching hasError handling",
         "Mutation failure paths have controller/widget tests for three passes"
+      ],
+      "sunset_signals": [
+        {
+          "type": "tool-exists",
+          "tool": "audit:mutation-error-surfaces"
+        }
+      ],
+      "sunset_review": {
+        "date": "2026-07-02",
+        "decision": "keep",
+        "note": "scanner shipped 2026-07-02; rule stays active until the per-mutation analyzer diagnostic replaces the file-level heuristic"
+      },
+      "enforcement": [
+        {
+          "tool": "audit:mutation-error-surfaces",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#controller-and-mutation-errors"
+        }
       ]
     },
     "FIRESTORE-PARTIAL-WRITE-001": {
       "title": "Mutating writes use partial update()/FieldValue of changed keys, not full-document set() of a client snapshot",
       "status": "active",
+      "kind": "scar",
       "introduced_in": {
         "doc_id": "deep_semantic_audit_2026_06",
         "version": "1.0.0"
@@ -546,11 +1452,23 @@
       "sunset_when": [
         "read-modify-set is gone from event_success and other repositories",
         "A scanner flags set() of a full fetched snapshot for three passes"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
       ]
     },
     "DATA-ACCESS-BATCH-001": {
       "title": "List/roster surfaces resolve display-only data via one batched provider, not per-tile streams or sequential reads",
       "status": "active",
+      "kind": "scar",
       "introduced_in": {
         "doc_id": "deep_semantic_audit_2026_06",
         "version": "1.0.0"
@@ -563,11 +1481,23 @@
       "sunset_when": [
         "Per-tile snapshot listeners and sequential per-id reads are removed from list surfaces",
         "A shared batched-read helper is the single fan-out implementation"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
       ]
     },
     "INJECTED-CLOCK-001": {
       "title": "Time-dependent domain getters take an injected clock, not DateTime.now()",
       "status": "active",
+      "kind": "scar",
       "introduced_in": {
         "doc_id": "deep_semantic_audit_2026_06",
         "version": "1.0.0"
@@ -576,14 +1506,38 @@
         "lib/**/domain/**",
         "lib/**/data/**"
       ],
-      "instruction": "Domain getters/predicates with time semantics must accept an injected DateTime/referenceNow when any caller threads one, instead of calling DateTime.now() internally \u2014 otherwise adjacent branches disagree and tests cannot pin time.",
+      "instruction": "Domain getters/predicates with time semantics must accept an injected DateTime/referenceNow when any caller threads one, instead of calling DateTime.now() internally — otherwise adjacent branches disagree and tests cannot pin time.",
       "sunset_when": [
         "No domain time predicate calls DateTime.now() internally where a referenceNow is threaded"
-      ]
+      ],
+      "sunset_signals": [
+        {
+          "type": "tool-exists",
+          "tool": "audit:dependency-direction"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "audit:dependency-direction",
+          "stage": "scanner-ratchet",
+          "docAnchor": "docs/audit_registry/rules.json",
+          "baseline": "tool/architecture/dependency_direction_baseline.json"
+        },
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
+      ],
+      "sunset_review": {
+        "date": "2026-07-02",
+        "decision": "keep",
+        "note": "dependency scanner covers domain DateTime.now access; rule stays active until existing clock debt is burned down and tests pin time seams"
+      }
     },
     "NO-OP-CONDITIONAL-001": {
       "title": "Ternary and switch/if arms must not be structurally identical",
       "status": "active",
+      "kind": "scar",
       "introduced_in": {
         "doc_id": "deep_semantic_audit_2026_06",
         "version": "1.0.0"
@@ -595,11 +1549,23 @@
       "instruction": "A conditional whose branches return/produce identical values is dead logic; remove the condition or fix the divergent branch. Often a symptom of an incomplete rename or a forgotten variant.",
       "sunset_when": [
         "A lint flags identical-branch conditionals (dart analyzer / catch_ui_lints) and the codebase is clean for three passes"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
       ]
     },
     "DEAD-PUBLIC-SYMBOL-001": {
       "title": "Public widgets/getters/enum values in non-labs lib/ must have a production reference",
       "status": "active",
+      "kind": "scar",
       "introduced_in": {
         "doc_id": "deep_semantic_audit_2026_06",
         "version": "1.0.0"
@@ -607,14 +1573,26 @@
       "applies_to": [
         "lib/**"
       ],
-      "instruction": "Public symbols (widgets, getters, enum values) outside lib/labs and intentional in-dev features must have at least one production reference. Test-only references do not count as live; orphaned symbols left by superseded migrations must be deleted with their dead tests.",
+      "instruction": "Public symbols (widgets, getters, enum values) outside lib/labs and intentional in-dev features must have at least one live reference. Live references are: production lib/ code, route/config registration, and Widgetbook use cases or capture-catalog entries for components that have a widget-catalog or component-contract entry. Test-only references do not count as live. A symbol whose only live reference is Widgetbook and which has no catalog/contract entry is dead. Orphaned symbols left by superseded migrations must be deleted together with their dead tests.",
       "sunset_when": [
         "A dead-public-symbol scan is clean (minus the documented in-dev carve-out) for three passes"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
       ]
     },
     "COPY-VERB-INTEGRITY-001": {
       "title": "User-facing copy is golden-tested and survives automated renames",
       "status": "active",
+      "kind": "scar",
       "introduced_in": {
         "doc_id": "deep_semantic_audit_2026_06",
         "version": "1.0.0"
@@ -623,15 +1601,27 @@
         "lib/**",
         "contracts/catalogs/**"
       ],
-      "instruction": "User-facing strings must pass a snapshot/golden test. Automated find-replace renames (e.g. run->event) must re-run the golden before merge so verb corruptions ('You both event to make friends', 'Long-event person', 'Runs for headspace' regressions) cannot ship. Catalog copy in contracts/ is in scope.",
+      "instruction": "High-traffic user-facing string surfaces — onboarding, booking/CTA flows, dashboard, event detail, chat, notifications, and catalog copy under contracts/ — must be covered by a copy snapshot/golden test. Any automated find-replace rename that can touch prose (e.g. run->event) must re-run the copy golden AND include a human review of the changed string literals before merge. Do not add goldens for every string in the app; the scope is the named high-traffic surfaces plus any string that has previously regressed.",
       "sunset_when": [
         "A copy golden covers the high-traffic user-facing string surfaces",
         "Two consecutive renames pass the golden with no manual copy fixes"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
       ]
     },
     "IMAGE-NETWORK-PRIMITIVE-001": {
       "title": "Network images go through a shared caching/decode-sized primitive",
       "status": "active",
+      "kind": "scar",
       "introduced_in": {
         "doc_id": "deep_semantic_audit_2026_06",
         "version": "1.0.0"
@@ -644,11 +1634,30 @@
       "sunset_when": [
         "catch_ui_lints flags raw Image.network outside the primitive",
         "All feature image sites route through CatchNetworkImage for three passes"
+      ],
+      "sunset_signals": [
+        {
+          "type": "tool-exists",
+          "tool": "scanner:no-raw-network-image"
+        }
+      ],
+      "sunset_review": {
+        "date": "2026-07-02",
+        "decision": "keep",
+        "note": "raw network image scanner is active; rule stays active until feature image sites consistently route through CatchNetworkImage"
+      },
+      "enforcement": [
+        {
+          "tool": "scanner:no-raw-network-image",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#widget-ownership"
+        }
       ]
     },
     "FN-IDEMP-001": {
       "title": "At-least-once triggers/webhooks guard non-idempotent side effects with an event receipt",
       "status": "active",
+      "kind": "scar",
       "introduced_in": {
         "doc_id": "deep_semantic_audit_2026_06",
         "version": "1.0.0"
@@ -660,11 +1669,23 @@
       "sunset_when": [
         "A shared withEventReceipt primitive wraps every at-least-once handler's side effects",
         "Redelivery regression tests exist for each trigger/webhook"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
       ]
     },
     "FN-DATA-001": {
       "title": "Backend-owned denormalized counts are mutated inside the source-read transaction",
       "status": "active",
+      "kind": "scar",
       "introduced_in": {
         "doc_id": "deep_semantic_audit_2026_06",
         "version": "1.0.0"
@@ -676,11 +1697,23 @@
       "sunset_when": [
         "No non-transactional count mutation remains",
         "A projection/count drift check runs in CI or a data-audit job"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
       ]
     },
     "FN-PAY-001": {
       "title": "Every capturable payment has a server webhook + reconciliation sweep and a distinct non-recoverable refund state",
       "status": "active",
+      "kind": "scar",
       "introduced_in": {
         "doc_id": "deep_semantic_audit_2026_06",
         "version": "1.0.0"
@@ -693,11 +1726,23 @@
       "sunset_when": [
         "A Razorpay webhook + reconciliation sweep exist mirroring Stripe",
         "refund_failed is a distinct, alerted terminal state"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
       ]
     },
     "FN-RATE-001": {
       "title": "Every checkRateLimit action has an explicit RATE_LIMITS entry; missing entries warn",
       "status": "active",
+      "kind": "scar",
       "introduced_in": {
         "doc_id": "deep_semantic_audit_2026_06",
         "version": "1.0.0"
@@ -709,11 +1754,28 @@
       "sunset_when": [
         "checkRateLimit warns on default fallback",
         "All callables have explicit limits for three passes"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "audit:fn-rate-limits",
+          "stage": "scanner-gate",
+          "docAnchor": "functions/README.md#rate-limiting"
+        },
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
       ]
     },
     "FN-AUTHZ-001": {
       "title": "Client-supplied ids and storage paths are ownership/format-validated before use as keys or action targets",
       "status": "active",
+      "kind": "scar",
       "introduced_in": {
         "doc_id": "deep_semantic_audit_2026_06",
         "version": "1.0.0"
@@ -725,11 +1787,23 @@
       "sunset_when": [
         "A scan flags client-id/path use as keys/targets without validation",
         "Storage-path and doc-id validation cover all sinks for three passes"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
       ]
     },
     "FN-MOD-001": {
       "title": "Content moderation runs at the write boundary and covers every delivery channel and public surface",
       "status": "active",
+      "kind": "scar",
       "introduced_in": {
         "doc_id": "deep_semantic_audit_2026_06",
         "version": "1.0.0"
@@ -741,11 +1815,23 @@
       "sunset_when": [
         "Blocked content cannot reach push/preview/public surfaces",
         "Moderation coverage has tests for each channel"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
       ]
     },
     "FN-PERF-001": {
       "title": "Aggregation triggers use a before/after diff guard and bound their queries",
       "status": "active",
+      "kind": "scar",
       "introduced_in": {
         "doc_id": "deep_semantic_audit_2026_06",
         "version": "1.0.0"
@@ -757,11 +1843,23 @@
       "sunset_when": [
         "Hot aggregation triggers diff-guard and bound queries",
         "No unbounded full-collection scan on a per-write hot path"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
       ]
     },
     "FN-INPUT-001": {
       "title": "User free-text inputs are length-bounded and outputs never leak PII or raw upstream detail",
       "status": "active",
+      "kind": "scar",
       "introduced_in": {
         "doc_id": "deep_semantic_audit_2026_06",
         "version": "1.0.0"
@@ -773,11 +1871,23 @@
       "sunset_when": [
         "All free-text inputs have server-side max lengths",
         "No raw upstream/PII detail reaches clients or logs"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
       ]
     },
     "FN-DOC-001": {
       "title": "functions/README.md inventory is CI-diffed against src/index.ts exports",
       "status": "active",
+      "kind": "scar",
       "introduced_in": {
         "doc_id": "deep_semantic_audit_2026_06",
         "version": "1.0.0"
@@ -786,15 +1896,33 @@
         "functions/README.md",
         "functions/src/index.ts"
       ],
-      "instruction": "The canonical functions/README.md function inventory must stay in sync with the actual exports in src/index.ts (currently omits the Stripe surface and ~30 exports). Add a CI check that diffs the documented inventory against exports.",
+      "instruction": "The canonical functions/README.md function inventory must stay in sync with the actual exports in src/index.ts. Add a CI check that diffs the documented inventory against exports.",
       "sunset_when": [
         "A CI check diffs README inventory vs index.ts exports",
         "Inventory stays current for three passes"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "audit:fn-readme-inventory",
+          "stage": "scanner-ratchet",
+          "docAnchor": "functions/README.md#function-inventory-may-2026",
+          "baseline": "tool/audit/fn_readme_inventory_baseline.json"
+        },
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
       ]
     },
     "FN-DUP-001": {
       "title": "Shared authorization/eligibility/state-machine logic lives in one module",
       "status": "active",
+      "kind": "scar",
       "introduced_in": {
         "doc_id": "deep_semantic_audit_2026_06",
         "version": "1.0.0"
@@ -806,7 +1934,56 @@
       "sunset_when": [
         "Duplicated authz/eligibility logic is consolidated",
         "A duplication scan stays clean for three passes"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
+      ]
+    },
+    "ROUTE-STRING-001": {
+      "title": "Navigation outside routing config uses named routes or constants",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "app_architecture",
+        "version": "1.4.9"
+      },
+      "applies_to": [
+        "lib/**/presentation/**",
+        "lib/**/application/**",
+        "tool/architecture/check_route_string_literals.mjs"
+      ],
+      "instruction": "Production navigation outside lib/routing must use named routes, route constants, or typed route helpers instead of raw path string literals. Raw paths stay owned by route definitions and URL contract files.",
+      "sunset_when": [
+        "Raw route literal scanner stays clean for three app architecture passes"
+      ],
+      "sunset_signals": [
+        {
+          "type": "tool-exists",
+          "tool": "audit:route-string-literals"
+        }
+      ],
+      "sunset_review": {
+        "date": "2026-07-02",
+        "decision": "keep",
+        "note": "route literal scanner is active; rule stays active until raw route literals remain clean for consecutive app architecture passes"
+      },
+      "enforcement": [
+        {
+          "tool": "audit:route-string-literals",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#routing-and-navigation"
+        }
       ]
     }
-  }
+  },
+  "version": "2.7.8",
+  "updated": "2026-07-03"
 }

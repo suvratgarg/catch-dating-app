@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -16,12 +17,12 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
-import 'package:catch_dating_app/swipes/presentation/profile_surface.dart';
-import 'package:catch_dating_app/swipes/presentation/swipe_empty_content.dart';
-import 'package:catch_dating_app/swipes/presentation/swipe_queue_notifier.dart';
+import 'package:catch_dating_app/swipes/presentation/catches_event_screen_state.dart';
+import 'package:catch_dating_app/swipes/presentation/swipe_queue_controller.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/catches_pass_button.dart';
-import 'package:catch_dating_app/swipes/presentation/widgets/profile_reaction_controls.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/swipe_empty_state.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_reaction_controls.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
@@ -45,20 +46,27 @@ class SwipeScreen extends ConsumerStatefulWidget {
 }
 
 class _SwipeScreenState extends ConsumerState<SwipeScreen> {
+  CatchesProfileReviewActionState _actionState =
+      const CatchesProfileReviewActionState.idle();
+
   Future<void> _recordSwipe(
     SwipeDirection direction, {
     ProfileReactionTarget? reactionTarget,
     String? comment,
   }) async {
+    if (_actionState.isPending) return;
+
+    final nextActionState = direction == SwipeDirection.pass
+        ? const CatchesProfileReviewActionState.passPending()
+        : const CatchesProfileReviewActionState.reactionPending();
+
     Future<void> performSwipe() => ref
         .read(
-          swipeQueueProvider(
-            widget.eventId,
-            vibeIds: widget.vibeIds,
-          ).notifier,
+          swipeQueueProvider(widget.eventId, vibeIds: widget.vibeIds).notifier,
         )
         .swipe(direction, reactionTarget: reactionTarget, comment: comment);
 
+    setState(() => _actionState = nextActionState);
     try {
       await performSwipe();
     } catch (error) {
@@ -70,9 +78,23 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
           error,
           errorContext: AppErrorContext.swipes,
           onRetry: () {
-            unawaited(performSwipe());
+            unawaited(
+              _recordSwipe(
+                direction,
+                reactionTarget: reactionTarget,
+                comment: comment,
+              ),
+            );
           },
         );
+      }
+    } finally {
+      if (mounted) {
+        setState(
+          () => _actionState = const CatchesProfileReviewActionState.idle(),
+        );
+      } else {
+        _actionState = const CatchesProfileReviewActionState.idle();
       }
     }
   }
@@ -86,61 +108,71 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
     final eventAsync = ref.watch(watchEventProvider(widget.eventId));
     final currentUserAsync = ref.watch(watchUserProfileProvider);
     final currentUser = currentUserAsync.asData?.value;
-    final currentUserParticipation = currentUser == null
+    final participationAsync = currentUser == null
         ? null
-        : ref
-              .watch(
-                watchEventParticipationProvider(
-                  widget.eventId,
-                  currentUser.uid,
-                ),
-              )
-              .asData
-              ?.value;
+        : ref.watch(
+            watchEventParticipationProvider(widget.eventId, currentUser.uid),
+          );
+    final state = buildCatchesEventScreenState(
+      queue: _catchAsyncState(queueAsync),
+      event: _catchAsyncState(eventAsync),
+      currentUser: _catchAsyncState(currentUserAsync),
+      currentUserParticipation: participationAsync == null
+          ? null
+          : _catchAsyncState(participationAsync),
+      now: widget.now,
+    );
 
     return Scaffold(
       backgroundColor: t.bg,
-      body: queueAsync.when(
-        loading: () => const CatchesProfileReviewSkeleton(),
-        error: (e, _) => CatchErrorState.fromError(
-          e,
+      body: switch (state) {
+        CatchesEventQueueLoading() => const CatchesProfileReviewSkeleton(),
+        CatchesEventQueueError(:final error) => CatchErrorState.fromError(
+          error,
           context: AppErrorContext.swipes,
           onRetry: () => ref.invalidate(
             swipeQueueProvider(widget.eventId, vibeIds: widget.vibeIds),
           ),
         ),
-        data: (profiles) => profiles.isEmpty
-            ? SwipeEmptyState(
-                content: buildSwipeEmptyContent(
-                  event: eventAsync.asData?.value,
-                  currentUser: currentUser,
-                  currentUserParticipation: currentUserParticipation,
-                  now: widget.now,
-                ),
-              )
-            : CatchesProfileReview(
-                profile: profiles.first,
-                remainingCount: profiles.length,
-                viewerProfile: currentUser,
-                sharedRunTitle: eventAsync.asData?.value?.title,
-                onBack: () {
-                  if (context.canPop()) {
-                    context.pop();
-                  } else {
-                    context.goNamed(Routes.swipeHubScreen.name);
-                  }
-                },
-                onFilters: () => context.pushNamed(Routes.filtersScreen.name),
-                onPass: () => _recordSwipe(SwipeDirection.pass),
-                onReact: (target, comment) => _recordSwipe(
-                  SwipeDirection.like,
-                  reactionTarget: target,
-                  comment: comment,
-                ),
-              ),
-      ),
+        CatchesEventEmpty(:final content) => SwipeEmptyState(content: content),
+        CatchesEventReady(
+          :final profile,
+          :final remainingCount,
+          :final viewerProfile,
+          :final sharedRunTitle,
+        ) =>
+          CatchesProfileReview(
+            profile: profile,
+            remainingCount: remainingCount,
+            viewerProfile: viewerProfile,
+            sharedRunTitle: sharedRunTitle,
+            actionState: _actionState,
+            onBack: () {
+              if (context.canPop()) {
+                context.pop();
+              } else {
+                context.goNamed(Routes.swipeHubScreen.name);
+              }
+            },
+            onFilters: () => context.pushNamed(Routes.filtersScreen.name),
+            onPass: () => _recordSwipe(SwipeDirection.pass),
+            onReact: (target, comment) => _recordSwipe(
+              SwipeDirection.like,
+              reactionTarget: target,
+              comment: comment,
+            ),
+          ),
+      },
     );
   }
+}
+
+CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
+  return value.when(
+    data: CatchAsyncState<T>.data,
+    loading: () => const CatchAsyncState.loading(),
+    error: (error, stackTrace) => CatchAsyncState<T>.error(error),
+  );
 }
 
 class CatchesProfileReviewSkeleton extends StatelessWidget {
@@ -148,15 +180,15 @@ class CatchesProfileReviewSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
+    return const Stack(
       children: [
-        const Positioned.fill(
+        Positioned.fill(
           child: ProfileSurfaceSkeleton(
             bottomPadding: CatchLayout.catchesProfileBottomPadding,
           ),
         ),
-        const CatchesTopOverlaySkeleton(),
-        const CatchesBottomScrim(),
+        CatchesTopOverlaySkeleton(),
+        CatchesBottomScrim(),
         Positioned(
           left: CatchSpacing.s5,
           bottom: CatchSpacing.s4,
@@ -165,6 +197,28 @@ class CatchesProfileReviewSkeleton extends StatelessWidget {
       ],
     );
   }
+}
+
+enum CatchesProfileReviewActionStatus { idle, passPending, reactionPending }
+
+@immutable
+class CatchesProfileReviewActionState {
+  const CatchesProfileReviewActionState.idle()
+    : status = CatchesProfileReviewActionStatus.idle;
+
+  const CatchesProfileReviewActionState.passPending()
+    : status = CatchesProfileReviewActionStatus.passPending;
+
+  const CatchesProfileReviewActionState.reactionPending()
+    : status = CatchesProfileReviewActionStatus.reactionPending;
+
+  final CatchesProfileReviewActionStatus status;
+
+  bool get isPending => status != CatchesProfileReviewActionStatus.idle;
+  bool get isPassPending =>
+      status == CatchesProfileReviewActionStatus.passPending;
+  bool get isReactionPending =>
+      status == CatchesProfileReviewActionStatus.reactionPending;
 }
 
 class CatchesProfileReview extends StatelessWidget {
@@ -178,6 +232,7 @@ class CatchesProfileReview extends StatelessWidget {
     required this.onReact,
     this.viewerProfile,
     this.sharedRunTitle,
+    this.actionState = const CatchesProfileReviewActionState.idle(),
   });
 
   final PublicProfile profile;
@@ -188,9 +243,12 @@ class CatchesProfileReview extends StatelessWidget {
   final ProfileReactionCallback onReact;
   final UserProfile? viewerProfile;
   final String? sharedRunTitle;
+  final CatchesProfileReviewActionState actionState;
 
   @override
   Widget build(BuildContext context) {
+    final actionsEnabled = !actionState.isPending;
+
     return Stack(
       children: [
         Positioned.fill(
@@ -212,6 +270,8 @@ class CatchesProfileReview extends StatelessWidget {
                   sharedRunTitle: sharedRunTitle,
                   bottomPadding: CatchLayout.catchesProfileBottomPadding,
                   onReact: onReact,
+                  reactionsEnabled: actionsEnabled,
+                  reactionsPending: actionState.isReactionPending,
                 ),
               );
             },
@@ -226,7 +286,10 @@ class CatchesProfileReview extends StatelessWidget {
         Positioned(
           left: CatchSpacing.s5,
           bottom: CatchSpacing.s4,
-          child: CatchesPassButton(onPressed: onPass),
+          child: CatchesPassButton(
+            onPressed: actionsEnabled ? onPass : null,
+            isPending: actionState.isPassPending,
+          ),
         ),
       ],
     );
@@ -395,7 +458,9 @@ class OverlayIconAction extends StatelessWidget {
         message: tooltip,
         child: CatchIconButton(
           size: CatchLayout.floatingControlExtent,
-          background: t.surface.withValues(alpha: CatchOpacity.floatingControlFill),
+          background: t.surface.withValues(
+            alpha: CatchOpacity.floatingControlFill,
+          ),
           onTap: onPressed,
           child: Icon(icon, color: t.ink, size: CatchIcon.row),
         ),

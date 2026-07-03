@@ -1,8 +1,12 @@
+import 'dart:async';
+
+import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/labs/design_fixtures/profile_surface_fixtures.dart';
+import 'package:catch_dating_app/swipes/presentation/filters_controller.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -70,6 +74,14 @@ Widget filtersRouteStates(BuildContext context) {
         ),
       ),
       _StateCard(
+        label: 'save error snackbar',
+        child: const _DeviceFrame(
+          child: _FiltersRouteScope(
+            child: _FiltersSaveErrorSeeder(child: FiltersScreen()),
+          ),
+        ),
+      ),
+      _StateCard(
         label: 'text scale 2.0',
         child: const _DeviceFrame(
           child: _MediaOverride(
@@ -85,6 +97,12 @@ Widget filtersRouteStates(BuildContext context) {
             disableAnimations: true,
             child: _FiltersRouteScope(),
           ),
+        ),
+      ),
+      _StateCard(
+        label: 'dark theme',
+        child: _DeviceFrame(
+          child: Theme(data: AppTheme.dark, child: const _FiltersRouteScope()),
         ),
       ),
     ],
@@ -162,14 +180,30 @@ Widget filtersContentStates(BuildContext context) {
           ),
         ),
       ),
+      _StateCard(
+        label: 'dark theme',
+        child: _DeviceFrame(
+          child: Theme(
+            data: AppTheme.dark,
+            child: const _FiltersContentFrame(
+              ageRange: RangeValues(24, 36),
+              interestedIn: {Gender.man},
+            ),
+          ),
+        ),
+      ),
     ],
   );
 }
 
 class _FiltersRouteScope extends StatelessWidget {
-  const _FiltersRouteScope({this.profileStream});
+  const _FiltersRouteScope({
+    this.profileStream,
+    this.child = const FiltersScreen(),
+  });
 
   final Stream<UserProfile?>? profileStream;
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
@@ -179,9 +213,41 @@ class _FiltersRouteScope extends StatelessWidget {
           (ref) => profileStream ?? Stream<UserProfile?>.value(_filtersProfile),
         ),
       ],
-      child: const FiltersScreen(),
+      child: child,
     );
   }
+}
+
+class _FiltersSaveErrorSeeder extends ConsumerStatefulWidget {
+  const _FiltersSaveErrorSeeder({required this.child});
+
+  final Widget child;
+
+  @override
+  ConsumerState<_FiltersSaveErrorSeeder> createState() =>
+      _FiltersSaveErrorSeederState();
+}
+
+class _FiltersSaveErrorSeederState
+    extends ConsumerState<_FiltersSaveErrorSeeder> {
+  bool _started = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _started) return;
+      _started = true;
+      unawaited(
+        FiltersController.saveFiltersMutation
+            .run(ref, (_) async => throw StateError('Filter save failed'))
+            .catchError((_) {}),
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }
 
 class _FiltersContentFrame extends StatelessWidget {

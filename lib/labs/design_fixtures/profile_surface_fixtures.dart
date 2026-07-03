@@ -1,4 +1,6 @@
 import 'package:catch_dating_app/core/connectivity_service.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
+    show UpdateUserProfilePatch;
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -7,8 +9,6 @@ import 'package:catch_dating_app/user_analytics/data/user_analytics_repository.d
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
-    show UpdateUserProfilePatch;
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 
 /// Shared deterministic fixtures for Profile/Public Profile design review.
@@ -144,7 +144,10 @@ final class ProfileSurfaceFixtures {
     ),
   );
 
-  static final ownPublicProfile = publicProfileFromUserProfile(viewer);
+  static final ownPublicProfile = publicProfileFromUserProfile(
+    viewer,
+    today: now,
+  );
 
   static final noPromptPublicProfile = targetPublicProfile.copyWith(
     uid: 'design-profile-no-prompts',

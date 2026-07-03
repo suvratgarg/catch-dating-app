@@ -20,7 +20,7 @@ import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/core/location_service.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
-import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
+import 'package:catch_dating_app/dashboard/data/dashboard_recommendations_repository.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/events/data/event_discovery_repository.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
@@ -401,7 +401,7 @@ List<Object> appShellTestOverrides({
         ).overrideWithValue(AsyncData(participationsByEventId[event.id])),
       ],
     ],
-    exploreViewModelProvider.overrideWithValue(
+    exploreClubsViewModelProvider.overrideWithValue(
       AsyncData(
         ExploreViewModel(
           joinedClubs: joinedClubs,

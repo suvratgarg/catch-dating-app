@@ -9,11 +9,15 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_profile_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_profile.dart';
+import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_home_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_settings_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_settings_view_model.dart';
+import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_card.dart';
+import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -48,7 +52,7 @@ void main() {
       ],
     );
 
-    final state = HostSettingsState.fromAsync(
+    final state = buildHostSettingsState(
       uid: _hostUid,
       profile: const AsyncLoading<HostProfile?>(),
       clubs: AsyncData<List<Club>>([ownedClub]),
@@ -63,6 +67,63 @@ void main() {
     expect(state.clubs, isA<HostSettingsClubsContent>());
   });
 
+  test('HostSettingsActionState maps account and club navigation policy', () {
+    final profile = HostProfile(
+      uid: _hostUid,
+      displayName: 'Asha Host',
+      status: HostProfileStatus.active,
+      createdAt: DateTime(2026),
+      updatedAt: DateTime(2026),
+    );
+    final ownedClub = buildClub(
+      id: 'owned-club',
+      name: 'Owner Club',
+      ownerUserId: _hostUid,
+    );
+    final cohostClub = buildClub(
+      id: 'cohost-club',
+      name: 'Co-host Club',
+      hostUserId: 'owner-2',
+      hostUserIds: const [_hostUid],
+    );
+
+    final editState = buildHostSettingsState(
+      uid: _hostUid,
+      profile: AsyncData<HostProfile?>(profile),
+      clubs: AsyncData<List<Club>>([ownedClub, cohostClub]),
+    );
+    expect(editState.actions.canSignOut, isTrue);
+    expect(editState.actions.canCreateProfile, isFalse);
+    expect(editState.actions.canEditProfile, isTrue);
+    expect(
+      editState.actions.clubNavigationFor(ownedClub).destination,
+      HostSettingsClubDestination.edit,
+    );
+    expect(
+      editState.actions.clubNavigationFor(cohostClub).destination,
+      HostSettingsClubDestination.preview,
+    );
+    expect(
+      editState.actions.clubNavigationFor(cohostClub).roleLabel,
+      'Host team',
+    );
+
+    final previewState = buildHostSettingsState(
+      uid: _hostUid,
+      profile: const AsyncData<HostProfile?>(null),
+      clubs: const AsyncData<List<Club>>([]),
+      editMode: false,
+      signOutPending: true,
+    );
+    expect(previewState.actions.canSignOut, isFalse);
+    expect(previewState.actions.canCreateProfile, isTrue);
+    expect(previewState.actions.canEditProfile, isFalse);
+    expect(
+      previewState.actions.clubNavigationFor(ownedClub).destination,
+      HostSettingsClubDestination.preview,
+    );
+  });
+
   test('HostProfileEditState maps profile async branches', () {
     final profile = HostProfile(
       uid: _hostUid,
@@ -73,28 +134,28 @@ void main() {
     );
 
     expect(
-      HostProfileEditState.fromAsync(
+      buildHostProfileEditState(
         uid: null,
         profile: const AsyncData<HostProfile?>(null),
       ),
       isA<HostProfileEditAuthRequired>(),
     );
     expect(
-      HostProfileEditState.fromAsync(
+      buildHostProfileEditState(
         uid: _hostUid,
         profile: const AsyncLoading<HostProfile?>(),
       ),
       isA<HostProfileEditLoading>(),
     );
     expect(
-      HostProfileEditState.fromAsync(
+      buildHostProfileEditState(
         uid: _hostUid,
         profile: const AsyncData<HostProfile?>(null),
       ),
       isA<HostProfileEditMissing>(),
     );
     expect(
-      HostProfileEditState.fromAsync(
+      buildHostProfileEditState(
         uid: _hostUid,
         profile: AsyncData<HostProfile?>(profile),
       ),
@@ -148,31 +209,30 @@ void main() {
       now: DateTime(2026, 6, 25, 12),
     );
 
-    expect(state.rangePreset, HostAnalyticsRangePreset.thirtyDays);
-    expect(state.granularity, HostAnalyticsGranularity.day);
+    expect(state.rangePreset, HostClubInsightsRangePreset.thirtyDays);
+    expect(state.granularity, HostClubInsightsGranularity.day);
     expect(state.customStartDate, DateTime(2026, 5, 27));
     expect(state.customEndDate, DateTime(2026, 6, 25));
-    expect(state.query, isA<HostAnalyticsQuery>());
     expect(state.query.clubId, 'club-1');
     expect(state.query.eventId, isNull);
 
     final scoped = state
-        .selectGranularity(HostAnalyticsGranularity.week)
+        .selectGranularity(HostClubInsightsGranularity.week)
         .selectEvent('event-1')
         .selectCustomStartDate(DateTime(2026, 6, 1, 18))
         .selectCustomEndDate(DateTime(2026, 6, 20, 9));
 
-    expect(scoped.rangePreset, HostAnalyticsRangePreset.custom);
+    expect(scoped.rangePreset, HostClubInsightsRangePreset.custom);
     expect(scoped.query.clubId, 'club-1');
     expect(scoped.query.eventId, 'event-1');
-    expect(scoped.query.granularity, HostAnalyticsGranularity.week);
+    expect(scoped.query.granularity, HostClubInsightsGranularity.week);
     expect(scoped.query.startDate, DateTime(2026, 6));
     expect(scoped.query.endDate, DateTime(2026, 6, 20));
 
     final switchedClub = scoped.selectClub('club-2');
     expect(switchedClub.query.clubId, 'club-2');
     expect(switchedClub.selectedEventId, isNull);
-    expect(switchedClub.rangePreset, HostAnalyticsRangePreset.custom);
+    expect(switchedClub.rangePreset, HostClubInsightsRangePreset.custom);
   });
 
   test('HostHomeScreenState resolves selected club and host role', () {
@@ -226,15 +286,15 @@ void main() {
     final clubsError = StateError('clubs failed');
 
     expect(
-      HostHomeRouteState.fromAsync(uid: const AsyncData<String?>(null)).status,
+      buildHostHomeRouteState(uid: const AsyncData<String?>(null)).status,
       HostHomeRouteStatus.authRequired,
     );
     expect(
-      HostHomeRouteState.fromAsync(uid: const AsyncLoading<String?>()).status,
+      buildHostHomeRouteState(uid: const AsyncLoading<String?>()).status,
       HostHomeRouteStatus.loading,
     );
 
-    final authErrorState = HostHomeRouteState.fromAsync(
+    final authErrorState = buildHostHomeRouteState(
       uid: AsyncError<String?>(authError, stackTrace),
     );
     expect(authErrorState.status, HostHomeRouteStatus.error);
@@ -242,14 +302,14 @@ void main() {
     expect(authErrorState.errorContext, AppErrorContext.auth);
 
     expect(
-      HostHomeRouteState.fromAsync(
+      buildHostHomeRouteState(
         uid: const AsyncData<String?>(_hostUid),
         clubs: const AsyncLoading<List<Club>>(),
       ).status,
       HostHomeRouteStatus.loading,
     );
 
-    final clubsErrorState = HostHomeRouteState.fromAsync(
+    final clubsErrorState = buildHostHomeRouteState(
       uid: const AsyncData<String?>(_hostUid),
       clubs: AsyncError<List<Club>>(clubsError, stackTrace),
     );
@@ -258,19 +318,76 @@ void main() {
     expect(clubsErrorState.error, clubsError);
     expect(clubsErrorState.errorContext, AppErrorContext.club);
 
-    final emptyState = HostHomeRouteState.fromAsync(
+    final emptyState = buildHostHomeRouteState(
       uid: const AsyncData<String?>(_hostUid),
       clubs: const AsyncData<List<Club>>([]),
     );
     expect(emptyState.status, HostHomeRouteStatus.empty);
     expect(emptyState.uid, _hostUid);
 
-    final loadedState = HostHomeRouteState.fromAsync(
+    final loadedState = buildHostHomeRouteState(
       uid: const AsyncData<String?>(_hostUid),
       clubs: AsyncData<List<Club>>([club]),
     );
     expect(loadedState.status, HostHomeRouteStatus.loaded);
     expect(loadedState.clubs, [club]);
+  });
+
+  testWidgets('Host clubs shows loading while uid resolves', (tester) async {
+    await _pumpHostScreen(
+      tester,
+      const HostClubsScreen(),
+      overrides: [uidProvider.overrideWithValue(const AsyncLoading<String?>())],
+      settle: false,
+    );
+
+    expect(find.byType(HostLoadingScreen), findsOneWidget);
+    expect(find.text('Clubs'), findsOneWidget);
+    expect(find.text('Sign in required'), findsNothing);
+  });
+
+  testWidgets('Host account shows loading while uid resolves', (tester) async {
+    await _pumpHostScreen(
+      tester,
+      const HostAccountScreen(),
+      overrides: [uidProvider.overrideWithValue(const AsyncLoading<String?>())],
+      settle: false,
+    );
+
+    expect(find.byType(HostLoadingScreen), findsOneWidget);
+    expect(find.text('Host profile'), findsOneWidget);
+    expect(find.text('Sign in required'), findsNothing);
+  });
+
+  testWidgets('Host profile route shows loading while uid resolves', (
+    tester,
+  ) async {
+    await _pumpHostScreen(
+      tester,
+      const HostProfileScreen(),
+      overrides: [uidProvider.overrideWithValue(const AsyncLoading<String?>())],
+      settle: false,
+    );
+
+    expect(find.byType(HostLoadingScreen), findsOneWidget);
+    expect(find.text('Professional profile'), findsOneWidget);
+    expect(find.text('Sign in required'), findsNothing);
+  });
+
+  testWidgets('Host payment card shows loading while uid resolves', (
+    tester,
+  ) async {
+    await _pumpHostScreen(
+      tester,
+      HostPaymentAccountControllerCard(
+        club: buildClub(id: 'owned-club', ownerUserId: _hostUid),
+      ),
+      overrides: [uidProvider.overrideWithValue(const AsyncLoading<String?>())],
+      settle: false,
+    );
+
+    expect(find.byType(HostPaymentAccountLoadingCard), findsOneWidget);
+    expect(find.text('Connect payouts to get paid'), findsNothing);
   });
 
   test(
@@ -322,25 +439,23 @@ void main() {
     final error = StateError('events failed');
 
     expect(
-      HostHomeEventsSectionState.fromAsync(
-        const AsyncLoading<List<Event>>(),
-      ).status,
+      buildHostHomeEventsSectionState(const AsyncLoading<List<Event>>()).status,
       HostHomeEventsStatus.loading,
     );
 
-    final errorState = HostHomeEventsSectionState.fromAsync(
+    final errorState = buildHostHomeEventsSectionState(
       AsyncError<List<Event>>(error, stackTrace),
     );
     expect(errorState.status, HostHomeEventsStatus.error);
     expect(errorState.error, error);
 
-    final emptyState = HostHomeEventsSectionState.fromAsync(
+    final emptyState = buildHostHomeEventsSectionState(
       AsyncData<List<Event>>([cancelled]),
     );
     expect(emptyState.status, HostHomeEventsStatus.empty);
     expect(emptyState.rows.isEmpty, isTrue);
 
-    final populatedState = HostHomeEventsSectionState.fromAsync(
+    final populatedState = buildHostHomeEventsSectionState(
       AsyncData<List<Event>>([event, cancelled]),
     );
     expect(populatedState.status, HostHomeEventsStatus.populated);
@@ -361,18 +476,18 @@ void main() {
     ).copyWith(status: EventLifecycleStatus.cancelled);
 
     expect(
-      HostHomeTodayDashboardState.fromAsync(
+      buildHostHomeTodayDashboardState(
         const AsyncLoading<List<Event>>(),
       ).status,
       HostHomeTodayStatus.loading,
     );
 
-    final emptyState = HostHomeTodayDashboardState.fromAsync(
+    final emptyState = buildHostHomeTodayDashboardState(
       AsyncData<List<Event>>([cancelled]),
     );
     expect(emptyState.status, HostHomeTodayStatus.empty);
 
-    final contentState = HostHomeTodayDashboardState.fromAsync(
+    final contentState = buildHostHomeTodayDashboardState(
       AsyncData<List<Event>>([late, early, cancelled]),
     );
     expect(contentState.status, HostHomeTodayStatus.content);
@@ -650,7 +765,12 @@ void main() {
       'Updated dawn loops.',
     );
     final doneButton = find.text('Done');
-    await tester.drag(find.byType(Scrollable).first, const Offset(0, -96));
+    final editorScrollView = find.ancestor(
+      of: descriptionEditor,
+      matching: find.byType(Scrollable),
+    );
+    expect(editorScrollView, findsOneWidget);
+    await tester.drag(editorScrollView, const Offset(0, -96));
     await pumpFeatureUi(tester);
     await tester.tap(doneButton);
     await pumpFeatureUi(tester);
@@ -1044,6 +1164,64 @@ void main() {
     expect(find.text('save failed'), findsOneWidget);
     expect(repository.savedUid, isNull);
   });
+
+  testWidgets('Host profile route saves and keeps the editor open', (
+    tester,
+  ) async {
+    final profile = HostProfile(
+      uid: _hostUid,
+      displayName: 'Asha Host',
+      roleTitle: 'Founder',
+      bio: 'Runs easy miles.',
+      status: HostProfileStatus.active,
+      createdAt: DateTime(2026),
+      updatedAt: DateTime(2026),
+    );
+    final repository = _FakeHostProfileRepository(profile: profile);
+
+    await _pumpHostScreen(
+      tester,
+      const HostProfileScreen(),
+      overrides: [
+        uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
+        watchHostProfileProvider(
+          _hostUid,
+        ).overrideWithValue(AsyncData<HostProfile?>(profile)),
+        hostProfileRepositoryProvider.overrideWith((ref) => repository),
+      ],
+    );
+
+    await tester.enterText(
+      find.descendant(
+        of: find.widgetWithText(CatchField, 'Display name'),
+        matching: find.byType(TextField),
+      ),
+      'Updated Host',
+    );
+    await tester.enterText(
+      find.descendant(
+        of: find.widgetWithText(CatchField, 'Role title'),
+        matching: find.byType(TextField),
+      ),
+      'Lead organizer',
+    );
+    await tester.enterText(
+      find.descendant(
+        of: find.widgetWithText(CatchField, 'Bio'),
+        matching: find.byType(TextField),
+      ),
+      'Curates social runs.',
+    );
+    await tester.tap(find.text('Save profile'));
+    await pumpFeatureUi(tester);
+
+    expect(repository.savedUid, _hostUid);
+    expect(repository.savedDisplayName, 'Updated Host');
+    expect(repository.savedRoleTitle, 'Lead organizer');
+    expect(repository.savedBio, 'Curates social runs.');
+    expect(find.byType(HostProfileScreen), findsOneWidget);
+    expect(find.text('Host profile saved.'), findsOneWidget);
+  });
 }
 
 List _hostClubOverrides({
@@ -1065,6 +1243,7 @@ Future<void> _pumpHostScreen(
   WidgetTester tester,
   Widget child, {
   List overrides = const [],
+  bool settle = true,
 }) async {
   final router = GoRouter(
     initialLocation: '/',
@@ -1110,7 +1289,12 @@ Future<void> _pumpHostScreen(
       child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
     ),
   );
-  await pumpFeatureUi(tester);
+  if (settle) {
+    await pumpFeatureUi(tester);
+  } else {
+    await tester.pump();
+    await tester.pump();
+  }
 }
 
 class _FakeHostProfileRepository implements HostProfileRepository {

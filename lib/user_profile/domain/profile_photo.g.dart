@@ -14,12 +14,8 @@ _ProfilePhoto _$ProfilePhotoFromJson(Map<String, dynamic> json) =>
       storagePath: json['storagePath'] as String,
       thumbnailStoragePath: json['thumbnailStoragePath'] as String,
       position: (json['position'] as num).toInt(),
-      createdAt: const TimestampConverter().fromJson(
-        json['createdAt'] as Timestamp,
-      ),
-      updatedAt: const TimestampConverter().fromJson(
-        json['updatedAt'] as Timestamp,
-      ),
+      createdAt: const TimestampConverter().fromJson(json['createdAt']),
+      updatedAt: const TimestampConverter().fromJson(json['updatedAt']),
       prompt: json['prompt'] == null
           ? null
           : PhotoPromptAnswer.fromJson(json['prompt'] as Map<String, dynamic>),
@@ -49,10 +45,7 @@ _ProfilePhotoModeration _$ProfilePhotoModerationFromJson(
 ) => _ProfilePhotoModeration(
   status: json['status'] as String,
   reason: json['reason'] as String?,
-  reviewedAt: _$JsonConverterFromJson<Timestamp, DateTime>(
-    json['reviewedAt'],
-    const TimestampConverter().fromJson,
-  ),
+  reviewedAt: const NullableTimestampConverter().fromJson(json['reviewedAt']),
 );
 
 Map<String, dynamic> _$ProfilePhotoModerationToJson(
@@ -60,18 +53,5 @@ Map<String, dynamic> _$ProfilePhotoModerationToJson(
 ) => <String, dynamic>{
   'status': instance.status,
   'reason': instance.reason,
-  'reviewedAt': _$JsonConverterToJson<Timestamp, DateTime>(
-    instance.reviewedAt,
-    const TimestampConverter().toJson,
-  ),
+  'reviewedAt': const NullableTimestampConverter().toJson(instance.reviewedAt),
 };
-
-Value? _$JsonConverterFromJson<Json, Value>(
-  Object? json,
-  Value? Function(Json json) fromJson,
-) => json == null ? null : fromJson(json as Json);
-
-Json? _$JsonConverterToJson<Json, Value>(
-  Value? value,
-  Json? Function(Value value) toJson,
-) => value == null ? null : toJson(value);

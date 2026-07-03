@@ -8,29 +8,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 typedef InlineSaveCallback = VoidCallback;
 
-Future<void> saveField({
-  required WidgetRef ref,
-  required UpdateUserProfilePatch patch,
-}) {
-  return ProfileEditController.saveFieldsMutation.run(
-    ref,
-    (tx) async =>
-        tx.get(profileEditControllerProvider.notifier).saveFields(patch),
-  );
-}
-
-Future<void> saveFieldFromLatest({
-  required WidgetRef ref,
-  required LatestProfilePatchBuilder buildPatch,
-}) {
-  return ProfileEditController.saveFieldsMutation.run(
-    ref,
-    (tx) async => tx
-        .get(profileEditControllerProvider.notifier)
-        .saveFieldsFromLatest(buildPatch),
-  );
-}
-
 mixin InlineSaveState<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   bool _isSaving = false;
   Object? _saveError;
@@ -66,11 +43,24 @@ mixin InlineSaveState<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   }
 
   Future<bool> saveFields(UpdateUserProfilePatch patch) {
-    return _save(() => saveField(ref: ref, patch: patch));
+    return _save(
+      () => ProfileEditController.saveFieldsMutation.run(
+        ref,
+        (tx) async =>
+            tx.get(profileEditControllerProvider.notifier).saveFields(patch),
+      ),
+    );
   }
 
   Future<bool> saveFieldsFromLatest(LatestProfilePatchBuilder buildPatch) {
-    return _save(() => saveFieldFromLatest(ref: ref, buildPatch: buildPatch));
+    return _save(
+      () => ProfileEditController.saveFieldsMutation.run(
+        ref,
+        (tx) async => tx
+            .get(profileEditControllerProvider.notifier)
+            .saveFieldsFromLatest(buildPatch),
+      ),
+    );
   }
 
   Widget? buildSaveError() {

@@ -195,6 +195,43 @@
       ]
     },
     {
+      "id": "hostProfiles",
+      "path": "hostProfiles/{uid}",
+      "rulesMatch": "/hostProfiles/{uid}",
+      "typescriptInterface": "HostProfileDocument",
+      "dartModel": "lib/hosts/domain/host_profile.dart",
+      "owner": "professional host identity owned by the authenticated host; seeded and projected by club/profile functions",
+      "read": "public",
+      "write": "authenticated owner direct create/update; server functions may seed and project host display data",
+      "exportedFunctions": [
+        "syncHostProfile",
+        "createClub",
+        "addClubHost",
+        "removeClubHost",
+        "transferClubOwnership"
+      ],
+      "operations": [
+        {
+          "id": "owner_profile_write",
+          "type": "directCreateOrUpdate",
+          "owner": "authenticated owner",
+          "rulesMustContain": [
+            "isValidHostProfile"
+          ]
+        },
+        {
+          "id": "host_profile_projection",
+          "type": "triggerProjection",
+          "owner": "syncHostProfile trigger",
+          "function": "syncHostProfile"
+        }
+      ],
+      "migrationNotes": [
+        "Host professional identity is intentionally separate from users/{uid} dating profile data and publicProfiles/{uid}.",
+        "Club creation and team-management callables may seed missing hostProfiles/{uid} documents from professional host snapshots."
+      ]
+    },
+    {
       "id": "clubs",
       "path": "clubs/{clubId}",
       "rulesMatch": "/clubs/{clubId}",

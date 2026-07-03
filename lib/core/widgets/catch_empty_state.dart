@@ -43,35 +43,22 @@ class CatchEmptyState extends StatelessWidget {
     final t = CatchTokens.of(context);
     final content = LayoutBuilder(
       builder: (context, constraints) {
-        final child = switch (layout) {
-          CatchEmptyStateLayout.stacked => _buildStackedEmptyStateContent(
-            context,
-            icon: icon,
-            iconStyle: iconStyle,
-            iconSize: iconSize,
-            iconContainerSize: iconContainerSize,
-            title: title,
-            message: message,
-            action: action,
-            titleStyle: titleStyle ?? CatchTextStyles.sectionTitle(context),
-            messageStyle:
-                messageStyle ?? CatchTextStyles.bodyS(context, color: t.ink2),
-          ),
-          CatchEmptyStateLayout.inline => _buildInlineEmptyStateContent(
-            context,
-            icon: icon,
-            iconStyle: iconStyle,
-            iconSize: iconSize,
-            iconContainerSize: iconContainerSize,
-            title: title,
-            message: message,
-            action: action,
-            titleStyle: titleStyle ?? CatchTextStyles.sectionTitle(context),
-            messageStyle:
-                messageStyle ??
-                CatchTextStyles.supporting(context, color: t.ink2),
-          ),
-        };
+        final child = CatchEmptyStateContent(
+          layout: layout,
+          icon: icon,
+          iconStyle: iconStyle,
+          iconSize: iconSize,
+          iconContainerSize: iconContainerSize,
+          title: title,
+          message: message,
+          action: action,
+          titleStyle: titleStyle ?? CatchTextStyles.sectionTitle(context),
+          messageStyle:
+              messageStyle ??
+              (layout == CatchEmptyStateLayout.stacked
+                  ? CatchTextStyles.bodyS(context, color: t.ink2)
+                  : CatchTextStyles.supporting(context, color: t.ink2)),
+        );
 
         final constrainedChild = constraints.hasBoundedWidth
             ? SizedBox(width: constraints.maxWidth, child: child)
@@ -89,108 +76,133 @@ class CatchEmptyState extends StatelessWidget {
   }
 }
 
-Widget _buildStackedEmptyStateContent(
-  BuildContext context, {
-  required IconData? icon,
-  required CatchEmptyStateIconStyle iconStyle,
-  required double? iconSize,
-  required double? iconContainerSize,
-  required String? title,
-  required String? message,
-  required Widget? action,
-  required TextStyle titleStyle,
-  required TextStyle messageStyle,
-}) {
-  return Column(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      if (icon != null)
-        _buildEmptyStateIcon(
-          context,
-          icon: icon,
-          style: iconStyle,
-          size: iconSize,
-          containerSize: iconContainerSize,
-        ),
-      if (_hasText(title)) ...[
-        if (icon != null) gapH12,
-        Text(title!, style: titleStyle, textAlign: TextAlign.center),
-      ],
-      if (_hasText(message)) ...[
-        if (_hasText(title)) gapH6 else if (icon != null) gapH12,
-        Text(message!, style: messageStyle, textAlign: TextAlign.center),
-      ],
-      if (action != null) ...[gapH16, action],
-    ],
-  );
-}
+class CatchEmptyStateContent extends StatelessWidget {
+  const CatchEmptyStateContent({
+    super.key,
+    required this.layout,
+    required this.titleStyle,
+    required this.messageStyle,
+    this.icon,
+    this.iconStyle = CatchEmptyStateIconStyle.plain,
+    this.iconSize,
+    this.iconContainerSize,
+    this.title,
+    this.message,
+    this.action,
+  });
 
-Widget _buildInlineEmptyStateContent(
-  BuildContext context, {
-  required IconData? icon,
-  required CatchEmptyStateIconStyle iconStyle,
-  required double? iconSize,
-  required double? iconContainerSize,
-  required String? title,
-  required String? message,
-  required Widget? action,
-  required TextStyle titleStyle,
-  required TextStyle messageStyle,
-}) {
-  return Row(
-    children: [
-      if (icon != null) ...[
-        _buildEmptyStateIcon(
-          context,
-          icon: icon,
-          style: iconStyle,
-          size: iconSize,
-          containerSize: iconContainerSize ?? 44,
-        ),
-        gapW12,
-      ],
-      Expanded(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (_hasText(title)) Text(title!, style: titleStyle),
-            if (_hasText(message)) ...[
-              if (_hasText(title)) gapH4,
-              Text(message!, style: messageStyle),
-            ],
-            if (action != null) ...[gapH12, action],
+  final CatchEmptyStateLayout layout;
+  final IconData? icon;
+  final CatchEmptyStateIconStyle iconStyle;
+  final double? iconSize;
+  final double? iconContainerSize;
+  final String? title;
+  final String? message;
+  final Widget? action;
+  final TextStyle titleStyle;
+  final TextStyle messageStyle;
+
+  @override
+  Widget build(BuildContext context) {
+    final iconData = icon;
+    final titleText = title;
+    final messageText = message;
+    final actionWidget = action;
+
+    return switch (layout) {
+      CatchEmptyStateLayout.stacked => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (iconData != null)
+            CatchEmptyStateIcon(
+              icon: iconData,
+              style: iconStyle,
+              size: iconSize,
+              containerSize: iconContainerSize,
+            ),
+          if (_hasText(titleText)) ...[
+            if (iconData != null) gapH12,
+            Text(titleText!, style: titleStyle, textAlign: TextAlign.center),
           ],
-        ),
+          if (_hasText(messageText)) ...[
+            if (_hasText(titleText)) gapH6 else if (iconData != null) gapH12,
+            Text(
+              messageText!,
+              style: messageStyle,
+              textAlign: TextAlign.center,
+            ),
+          ],
+          if (actionWidget != null) ...[gapH16, actionWidget],
+        ],
       ),
-    ],
-  );
+      CatchEmptyStateLayout.inline => Row(
+        children: [
+          if (iconData != null) ...[
+            CatchEmptyStateIcon(
+              icon: iconData,
+              style: iconStyle,
+              size: iconSize,
+              containerSize: iconContainerSize ?? 44,
+            ),
+            gapW12,
+          ],
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (_hasText(titleText)) Text(titleText!, style: titleStyle),
+                if (_hasText(messageText)) ...[
+                  if (_hasText(titleText)) gapH4,
+                  Text(messageText!, style: messageStyle),
+                ],
+                if (actionWidget != null) ...[gapH12, actionWidget],
+              ],
+            ),
+          ),
+        ],
+      ),
+    };
+  }
 }
 
-Widget _buildEmptyStateIcon(
-  BuildContext context, {
-  required IconData icon,
-  required CatchEmptyStateIconStyle style,
-  required double? size,
-  required double? containerSize,
-}) {
-  final t = CatchTokens.of(context);
-  final bubbleSize = containerSize ?? 76;
+class CatchEmptyStateIcon extends StatelessWidget {
+  const CatchEmptyStateIcon({
+    super.key,
+    required this.icon,
+    required this.style,
+    this.size,
+    this.containerSize,
+  });
 
-  return switch (style) {
-    CatchEmptyStateIconStyle.plain => Icon(
-      icon,
-      size: size ?? 34,
-      color: t.ink3,
-    ),
-    CatchEmptyStateIconStyle.bubble => SizedBox.square(
-      dimension: bubbleSize,
-      child: DecoratedBox(
-        decoration: BoxDecoration(color: t.primarySoft, shape: BoxShape.circle),
-        child: Icon(icon, size: size ?? 34, color: t.primary),
+  final IconData icon;
+  final CatchEmptyStateIconStyle style;
+  final double? size;
+  final double? containerSize;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final bubbleSize = containerSize ?? 76;
+
+    return switch (style) {
+      CatchEmptyStateIconStyle.plain => Icon(
+        icon,
+        size: size ?? 34,
+        color: t.ink3,
       ),
-    ),
-  };
+      CatchEmptyStateIconStyle.bubble => SizedBox.square(
+        dimension: bubbleSize,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: t.primarySoft,
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, size: size ?? 34, color: t.primary),
+        ),
+      ),
+    };
+  }
 }
 
 bool _hasText(String? value) => value != null && value.isNotEmpty;

@@ -9,6 +9,10 @@ final class CatchBusinessRules {
   static const eventMaxDurationMinutes = 240;
   static const eventDurationStepMinutes = 15;
   static const eventScheduleLockSlotMinutes = 1;
+  static const eventEditDatePickerWindowDays = 365;
+  static const eventEditDatePickerWindow = Duration(
+    days: eventEditDatePickerWindowDays,
+  );
 
   static const eventSelfCheckInWindowBeforeMinutes = 10;
   static const eventSelfCheckInWindowAfterMinutes = 30;
@@ -16,4 +20,6 @@ final class CatchBusinessRules {
   static const eventFirstHelloMaxDistanceMeters = 100;
   static const eventHostAttendanceWindowBeforeMinutes = 10;
   static const eventHostAttendanceWindowAfterEventHours = 6;
+
+  static Duration eventDuration(int minutes) => Duration(minutes: minutes);
 }

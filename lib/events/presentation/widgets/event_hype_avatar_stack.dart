@@ -6,7 +6,6 @@ import 'package:catch_dating_app/public_profile/data/public_profile_repository.d
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_hype_avatar_stack.g.dart';
@@ -85,12 +84,13 @@ Future<List<CatchPersonAvatarItem>> eventHypeAvatars(
   return items;
 }
 
-class EventHypeAvatarStack extends ConsumerWidget {
+class EventHypeAvatarStack extends StatelessWidget {
   const EventHypeAvatarStack({
     super.key,
     required this.eventId,
     required this.totalCount,
     required this.viewerInterestedInGenders,
+    this.avatarItems,
     this.size = 32,
     this.limit = 4,
     this.obscured = true,
@@ -101,6 +101,7 @@ class EventHypeAvatarStack extends ConsumerWidget {
   final String eventId;
   final int totalCount;
   final List<Gender> viewerInterestedInGenders;
+  final List<CatchPersonAvatarItem>? avatarItems;
   final double size;
   final int limit;
   final bool obscured;
@@ -108,7 +109,7 @@ class EventHypeAvatarStack extends ConsumerWidget {
   final ActivityKind activityKind;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     if (totalCount <= 0) return const SizedBox.shrink();
     if (obscured) {
       return CatchPersonAvatarStack(
@@ -122,22 +123,13 @@ class EventHypeAvatarStack extends ConsumerWidget {
       );
     }
 
-    final avatarsAsync = ref.watch(
-      eventHypeAvatarsProvider(
-        EventHypeAvatarQuery(
-          eventId: eventId,
-          viewerInterestedInGenders: viewerInterestedInGenders,
-          limit: limit,
-        ),
-      ),
-    );
-    final items = avatarsAsync.asData?.value;
-    final avatarItems = items == null || items.isEmpty
+    final items = avatarItems;
+    final visibleItems = items == null || items.isEmpty
         ? _fallbackItems(eventId, totalCount, limit)
         : items;
 
     return CatchPersonAvatarStack(
-      items: avatarItems,
+      items: visibleItems,
       totalCount: totalCount,
       size: size,
       limit: limit,

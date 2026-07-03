@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -14,12 +15,10 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
-import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
+import 'package:catch_dating_app/swipes/presentation/event_recap_screen_state.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_view_model.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:flutter/material.dart';
@@ -27,20 +26,33 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class EventRecapScreen extends ConsumerStatefulWidget {
-  const EventRecapScreen({super.key, required this.eventId});
+  const EventRecapScreen({
+    super.key,
+    required this.eventId,
+    this.initialSelectedVibeIds = const <String>{},
+  });
 
   final String eventId;
+  final Set<String> initialSelectedVibeIds;
 
   @override
   ConsumerState<EventRecapScreen> createState() => _EventRecapScreenState();
 }
 
 class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
-  final Set<String> _selectedVibes = {};
+  late final Set<String> _selectedVibes = {...widget.initialSelectedVibeIds};
 
   @override
   Widget build(BuildContext context) {
     final recapAsync = ref.watch(eventRecapViewModelProvider(widget.eventId));
+    final viewModel = recapAsync.asData?.value;
+    final rosterProfiles = _watchRosterProfiles(viewModel);
+    final screenState = buildEventRecapScreenState(
+      eventId: widget.eventId,
+      viewModel: _catchAsyncState(recapAsync),
+      rosterProfiles: rosterProfiles,
+      selectedVibeIds: _selectedVibes,
+    );
 
     return Scaffold(
       backgroundColor: CatchTokens.of(context).bg,
@@ -52,119 +64,158 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
           onPressed: () => context.pop(),
         ),
       ),
-      body: recapAsync.when(
-        loading: () => const EventRecapLoadingBody(),
-        error: (error, _) => CatchErrorState.fromError(
-          error,
-          context: AppErrorContext.event,
-          onRetry: () {
-            ref.invalidate(watchEventProvider(widget.eventId));
-            ref.invalidate(
-              watchEventParticipationsForEventProvider(widget.eventId),
-            );
-            ref.invalidate(uidProvider);
-            ref.invalidate(eventRecapViewModelProvider(widget.eventId));
-          },
+      body: switch (screenState) {
+        EventRecapLoading() => const EventRecapLoadingBody(),
+        EventRecapError(:final error, :final retryIntent) =>
+          CatchErrorState.fromError(
+            error,
+            context: AppErrorContext.event,
+            onRetry: () => _retry(retryIntent),
+          ),
+        EventRecapMissingEvent() => const CatchErrorState(
+          title: 'Event not found',
+          message: 'This event is no longer available.',
         ),
-        data: (viewModel) {
-          if (viewModel == null) {
-            return const CatchErrorState(
-              title: 'Event not found',
-              message: 'This event is no longer available.',
-            );
-          }
-          final t = CatchTokens.of(context);
-          final event = viewModel.event;
-          final attendeeIds = viewModel.attendeeIds;
-          // Resolve every roster profile in one batched fetch instead of a
-          // realtime stream per grid tile.
-          final rosterProfiles =
-              ref
-                  .watch(
-                    publicProfilesByIdsProvider(
-                      PublicProfilesQuery(attendeeIds),
-                    ),
-                  )
-                  .asData
-                  ?.value ??
-              const <String, PublicProfile>{};
+        EventRecapReady ready => EventRecapReadyBody(
+          state: ready,
+          onToggleVibe: _toggleVibe,
+          onOpenCatchesDeck: _openCatchesDeck,
+        ),
+      },
+    );
+  }
 
-          return ListView(
-            padding: CatchInsets.pageBodyTight,
-            children: [
-              Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth: CatchLayout.maxContentWidth,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      RecapHero(
-                        event: event,
-                        checkedInCount: viewModel.checkedInCount,
-                      ),
-                      gapH24,
-                      Text(
-                        'Who brought the vibe?',
-                        style: CatchTextStyles.titleL(context),
-                      ),
-                      gapH4,
-                      Text(
-                        "Tap people you remember. They'll be easier to spot when you open the catches deck.",
-                        style: CatchTextStyles.proseM(context, color: t.ink2),
-                      ),
-                      gapH14,
-                      if (attendeeIds.isEmpty)
-                        const EmptyRoster()
-                      else
-                        GridView.builder(
-                          itemCount: attendeeIds.length,
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: responsiveGridCount(
-                                  MediaQuery.of(context).size.width,
-                                ),
-                                crossAxisSpacing: CatchLayout.eventRecapGridGap,
-                                mainAxisSpacing: CatchLayout.eventRecapGridGap,
-                                childAspectRatio:
-                                    CatchAspectRatio.eventRecapVibeTile,
-                              ),
-                          itemBuilder: (context, index) {
-                            final attendeeId = attendeeIds[index];
-                            return VibeTile(
-                              key: SwipeKeys.vibeTile(attendeeId),
-                              profile: rosterProfiles[attendeeId],
-                              selected: _selectedVibes.contains(attendeeId),
-                              onTap: () => setState(() {
-                                _selectedVibes.contains(attendeeId)
-                                    ? _selectedVibes.remove(attendeeId)
-                                    : _selectedVibes.add(attendeeId);
-                              }),
-                            );
-                          },
-                        ),
-                      gapH24,
-                      CatchButton(
-                        key: SwipeKeys.openCatchesDeckButton,
-                        label: 'Open catches deck',
-                        onPressed: () => context.goNamed(
-                          Routes.swipeEventScreen.name,
-                          pathParameters: {'eventId': event.id},
-                          extra: _selectedVibes,
-                        ),
-                        fullWidth: true,
-                      ),
-                    ],
-                  ),
+  Map<String, PublicProfile> _watchRosterProfiles(
+    EventRecapViewModel? viewModel,
+  ) {
+    final attendeeIds = viewModel?.attendeeIds ?? const <String>[];
+    if (attendeeIds.isEmpty) return const <String, PublicProfile>{};
+
+    // Resolve every roster profile in one batched fetch instead of a realtime
+    // stream per grid tile.
+    return ref
+            .watch(
+              publicProfilesByIdsProvider(PublicProfilesQuery(attendeeIds)),
+            )
+            .asData
+            ?.value ??
+        const <String, PublicProfile>{};
+  }
+
+  void _retry(EventRecapRetryIntent intent) {
+    ref.invalidate(watchEventProvider(intent.eventId));
+    ref.invalidate(watchEventParticipationsForEventProvider(intent.eventId));
+    ref.invalidate(uidProvider);
+    ref.invalidate(eventRecapViewModelProvider(intent.eventId));
+  }
+
+  void _toggleVibe(String attendeeId) {
+    setState(() {
+      _selectedVibes.contains(attendeeId)
+          ? _selectedVibes.remove(attendeeId)
+          : _selectedVibes.add(attendeeId);
+    });
+  }
+
+  void _openCatchesDeck(EventRecapOpenDeckIntent intent) {
+    context.goNamed(
+      Routes.swipeEventScreen.name,
+      pathParameters: {'eventId': intent.eventId},
+      extra: intent.selectedVibeIds,
+    );
+  }
+}
+
+class EventRecapReadyBody extends StatelessWidget {
+  const EventRecapReadyBody({
+    super.key,
+    required this.state,
+    required this.onToggleVibe,
+    required this.onOpenCatchesDeck,
+  });
+
+  final EventRecapReady state;
+  final ValueChanged<String> onToggleVibe;
+  final ValueChanged<EventRecapOpenDeckIntent> onOpenCatchesDeck;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return ListView(
+      padding: CatchInsets.pageBodyTight,
+      children: [
+        Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: CatchLayout.maxContentWidth,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                RecapHero(state: state.hero),
+                gapH24,
+                Text(
+                  'Who brought the vibe?',
+                  style: CatchTextStyles.titleL(context),
                 ),
-              ),
-            ],
-          );
-        },
+                gapH4,
+                Text(
+                  "Tap people you remember. They'll be easier to spot when you open the catches deck.",
+                  style: CatchTextStyles.proseM(context, color: t.ink2),
+                ),
+                gapH14,
+                if (!state.hasAttendees)
+                  const EmptyRoster()
+                else
+                  VibeGrid(
+                    rows: state.attendeeRows,
+                    onToggleVibe: onToggleVibe,
+                  ),
+                gapH24,
+                CatchButton(
+                  key: SwipeKeys.openCatchesDeckButton,
+                  label: 'Open catches deck',
+                  onPressed: state.openDeckActionEnabled
+                      ? () => onOpenCatchesDeck(state.openDeckIntent)
+                      : null,
+                  fullWidth: true,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class VibeGrid extends StatelessWidget {
+  const VibeGrid({super.key, required this.rows, required this.onToggleVibe});
+
+  final List<EventRecapAttendeeRow> rows;
+  final ValueChanged<String> onToggleVibe;
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.builder(
+      itemCount: rows.length,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: responsiveGridCount(MediaQuery.of(context).size.width),
+        crossAxisSpacing: CatchLayout.eventRecapGridGap,
+        mainAxisSpacing: CatchLayout.eventRecapGridGap,
+        childAspectRatio: CatchAspectRatio.eventRecapVibeTile,
       ),
+      itemBuilder: (context, index) {
+        final row = rows[index];
+        return VibeTile(
+          key: SwipeKeys.vibeTile(row.attendeeId),
+          row: row,
+          onTap: () => onToggleVibe(row.attendeeId),
+        );
+      },
     );
   }
 }
@@ -234,7 +285,7 @@ class RecapHeroSkeleton extends StatelessWidget {
           gapH4,
           CatchSkeleton.text(width: CatchSpacing.s16 * 3),
           gapH18,
-          Row(
+          const Row(
             children: [
               Expanded(child: RecapStatSkeleton()),
               Expanded(child: RecapStatSkeleton()),
@@ -291,22 +342,13 @@ class VibeGridSkeleton extends StatelessWidget {
 }
 
 class RecapHero extends StatelessWidget {
-  const RecapHero({
-    super.key,
-    required this.event,
-    required this.checkedInCount,
-  });
+  const RecapHero({super.key, required this.state});
 
-  final Event event;
-  final int checkedInCount;
+  final EventRecapHeroState state;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final closesAt = swipeWindowClosesAt(event);
-    final windowLabel = closesAt.isAfter(DateTime.now())
-        ? 'Catches open until ${EventFormatters.time(closesAt)}'
-        : 'Catch window closed';
 
     return CatchSurface(
       padding: CatchInsets.contentRelaxed,
@@ -316,7 +358,7 @@ class RecapHero extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '${event.title.toUpperCase()} · COMPLETE',
+            state.kicker,
             style: CatchTextStyles.labelM(
               context,
               color: t.surface.withValues(
@@ -326,12 +368,12 @@ class RecapHero extends StatelessWidget {
           ),
           gapH10,
           Text(
-            event.distanceLabel,
+            state.distanceLabel,
             style: CatchTextStyles.headline(context, color: t.surface),
           ),
           gapH4,
           Text(
-            '${event.activitySummaryLabel} · $checkedInCount checked in',
+            state.activityCheckedInLabel,
             style: CatchTextStyles.supporting(
               context,
               color: t.surface.withValues(
@@ -342,9 +384,9 @@ class RecapHero extends StatelessWidget {
           gapH18,
           Row(
             children: [
-              RecapStat(label: 'When', value: event.shortDateLabel),
-              RecapStat(label: 'Time', value: event.compactTimeRangeLabel),
-              RecapStat(label: 'Catches', value: windowLabel),
+              RecapStat(label: 'When', value: state.whenLabel),
+              RecapStat(label: 'Time', value: state.timeLabel),
+              RecapStat(label: 'Catches', value: state.windowLabel),
             ],
           ),
         ],
@@ -392,41 +434,36 @@ class RecapStat extends StatelessWidget {
 }
 
 class VibeTile extends StatelessWidget {
-  const VibeTile({
-    super.key,
-    required this.profile,
-    required this.selected,
-    required this.onTap,
-  });
+  const VibeTile({super.key, required this.row, required this.onTap});
 
-  final PublicProfile? profile;
-  final bool selected;
+  final EventRecapAttendeeRow row;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final name = profile?.name ?? 'guest';
 
     return Tooltip(
-      message: selected ? 'Remove $name' : 'Remember $name',
+      message: row.tooltip,
       child: Semantics(
         button: true,
-        selected: selected,
-        label: profile?.name ?? 'Guest',
+        selected: row.selected,
+        label: row.semanticLabel,
         child: CatchSurface(
           onTap: onTap,
           backgroundColor: t.surface,
           radius: CatchRadius.md,
-          borderColor: selected ? t.primary : t.line,
-          borderWidth: selected ? CatchStroke.selection : CatchStroke.hairline,
+          borderColor: row.selected ? t.primary : t.line,
+          borderWidth: row.selected
+              ? CatchStroke.selection
+              : CatchStroke.hairline,
           duration: CatchMotion.micro,
           clipBehavior: Clip.antiAlias,
           padding: EdgeInsets.zero,
           child: Stack(
             fit: StackFit.expand,
             children: [
-              RecapProfilePhoto(profile: profile),
+              RecapProfilePhoto(profile: row.profile),
               DecoratedBox(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -448,7 +485,7 @@ class VibeTile extends StatelessWidget {
                 right: CatchSpacing.s2,
                 bottom: CatchSpacing.s2,
                 child: Text(
-                  profile?.name ?? 'Guest',
+                  row.displayName,
                   style: CatchTextStyles.labelM(
                     context,
                     color: CatchTokens.editorialLight,
@@ -457,7 +494,7 @@ class VibeTile extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              if (selected)
+              if (row.selected)
                 Positioned(
                   right: CatchSpacing.s2,
                   top: CatchSpacing.s2,
@@ -477,6 +514,14 @@ class VibeTile extends StatelessWidget {
       ),
     );
   }
+}
+
+CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
+  return value.when(
+    data: CatchAsyncState<T>.data,
+    loading: () => const CatchAsyncState.loading(),
+    error: (error, stackTrace) => CatchAsyncState<T>.error(error),
+  );
 }
 
 class RecapProfilePhoto extends StatelessWidget {

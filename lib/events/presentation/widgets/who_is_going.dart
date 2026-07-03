@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -20,6 +21,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'who_is_going.g.dart';
+
+const _whoIsGoingAvatarLimit = 7;
 
 @riverpod
 Future<Map<String, (String name, String? photoUrl)>> attendeeProfiles(
@@ -73,13 +76,32 @@ class WhoIsGoing extends ConsumerWidget {
         onRetry: () =>
             ref.invalidate(watchEventParticipationRosterProvider(event.id)),
       ),
-      builder: (context, roster) => WhoIsGoingContent(
-        event: event,
-        roster: roster,
-        userProfile: userProfile,
-        surfaceStyle: surfaceStyle,
-        showHeader: showHeader,
-      ),
+      builder: (context, roster) {
+        final avatarItems =
+            event.isUpcomingAt(DateTime.now()) || roster.bookedCount <= 0
+            ? null
+            : ref
+                  .watch(
+                    eventHypeAvatarsProvider(
+                      EventHypeAvatarQuery(
+                        eventId: event.id,
+                        viewerInterestedInGenders:
+                            userProfile.interestedInGenders,
+                        limit: _whoIsGoingAvatarLimit,
+                      ),
+                    ),
+                  )
+                  .asData
+                  ?.value;
+        return WhoIsGoingContent(
+          event: event,
+          roster: roster,
+          userProfile: userProfile,
+          avatarItems: avatarItems,
+          surfaceStyle: surfaceStyle,
+          showHeader: showHeader,
+        );
+      },
     );
   }
 }
@@ -90,6 +112,7 @@ class WhoIsGoingContent extends StatelessWidget {
     required this.event,
     required this.roster,
     required this.userProfile,
+    this.avatarItems,
     this.fallbackTotal,
     this.surfaceStyle,
     this.showHeader = true,
@@ -98,6 +121,7 @@ class WhoIsGoingContent extends StatelessWidget {
   final Event event;
   final EventParticipationRoster roster;
   final UserProfile userProfile;
+  final List<CatchPersonAvatarItem>? avatarItems;
   final int? fallbackTotal;
   final EventDetailSurfaceStyle? surfaceStyle;
   final bool showHeader;
@@ -106,7 +130,9 @@ class WhoIsGoingContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final total = fallbackTotal ?? roster.bookedCount;
-    final hasActiveSwipeWindow = hasOpenSwipeWindow(event);
+    final referenceNow = DateTime.now();
+    final isUpcoming = event.isUpcomingAt(referenceNow);
+    final hasActiveSwipeWindow = hasOpenSwipeWindow(event, now: referenceNow);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -136,8 +162,8 @@ class WhoIsGoingContent extends StatelessWidget {
         ],
         if (total == 0)
           EmptyRosterMessage(
-            title: event.isUpcoming ? 'No attendees yet' : 'No attendees booked',
-            message: event.isUpcoming
+            title: isUpcoming ? 'No attendees yet' : 'No attendees booked',
+            message: isUpcoming
                 ? 'Be the first to book this event.'
                 : 'This event did not have any booked attendees.',
             surfaceStyle: surfaceStyle,
@@ -147,14 +173,15 @@ class WhoIsGoingContent extends StatelessWidget {
             eventId: event.id,
             totalCount: total,
             viewerInterestedInGenders: userProfile.interestedInGenders,
+            avatarItems: avatarItems,
             activityKind: event.activityKind,
             size: 44,
-            limit: 7,
-            obscured: event.isUpcoming,
+            limit: _whoIsGoingAvatarLimit,
+            obscured: isUpcoming,
             showOverflowCount: true,
           ),
           gapH12,
-          if (event.isUpcoming)
+          if (isUpcoming)
             SwipeWindowBanner(
               icon: CatchIcons.lockOutlineRounded,
               message: 'Catches unlock for 24 hours after the event finishes.',

@@ -44,6 +44,25 @@ void main() {
       expect(repository.lastDraft!.role, LaunchAccessRole.both);
       expect(repository.lastDraft!.inviteCode, 'HOST-1');
     });
+
+    test('draft resets after route listener disposal', () async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      final subscription = container.listen(
+        launchAccessControllerProvider,
+        (_, _) {},
+      );
+      container
+          .read(launchAccessControllerProvider.notifier)
+          .setCity('mumbai');
+      expect(subscription.read().city, 'mumbai');
+
+      subscription.close();
+      await container.pump();
+
+      expect(container.read(launchAccessControllerProvider).city, isEmpty);
+    });
   });
 }
 

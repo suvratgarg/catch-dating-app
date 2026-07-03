@@ -395,6 +395,8 @@ class ClubsRepository {
   );
 }
 
+// keepalive: club repository is a shared Firestore/Functions facade reused by
+// discovery, hosting, and route guards.
 @Riverpod(keepAlive: true)
 ClubsRepository clubsRepository(Ref ref) => ClubsRepository(
   ref.watch(firebaseFirestoreProvider),

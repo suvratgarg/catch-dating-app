@@ -1,11 +1,11 @@
 import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
+import 'package:catch_dating_app/dashboard/data/dashboard_recommendations_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_arrival_action.dart';
+import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
 import 'package:catch_dating_app/health_activity/domain/runner_activity.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
@@ -15,12 +15,12 @@ import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart' show Provider;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'dashboard_full_view_model.g.dart';
 
-final dashboardNowProvider = Provider<DateTime>((ref) => DateTime.now());
+@riverpod
+DateTime dashboardNow(Ref ref) => DateTime.now();
 
 enum DashboardSectionStatus { loading, error, data }
 
@@ -489,7 +489,7 @@ List<DashboardEventRecommendation> rankDashboardEventRecommendations({
         event.isFull) {
       continue;
     }
-    if (viewer != null && !_isEligibleForRecommendation(event, viewer)) {
+    if (viewer != null && !_isEligibleForRecommendation(event, viewer, now)) {
       continue;
     }
 
@@ -510,9 +510,14 @@ List<DashboardEventRecommendation> rankDashboardEventRecommendations({
   return recommendations.take(limit).toList(growable: false);
 }
 
-bool _isEligibleForRecommendation(Event event, UserProfile viewer) {
-  if (viewer.age < event.constraints.minAge ||
-      viewer.age > event.constraints.maxAge) {
+bool _isEligibleForRecommendation(
+  Event event,
+  UserProfile viewer,
+  DateTime now,
+) {
+  final viewerAge = viewer.ageOn(now);
+  if (viewerAge < event.constraints.minAge ||
+      viewerAge > event.constraints.maxAge) {
     return false;
   }
   final genderCap = event.constraints.maxForGender(viewer.gender);

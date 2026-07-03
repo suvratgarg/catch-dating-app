@@ -1,5 +1,29 @@
 {
-  "generated_at": "2026-06-28T12:22:33.886973+00:00",
-  "total_candidates": 0,
-  "candidates": []
+  "generated_at": "2026-06-30T22:11:28.087905+00:00",
+  "total_candidates": 1,
+  "candidates": [
+    {
+      "match_type": "name_collision_needs_triage",
+      "severity": "medium",
+      "name": "ProfilePhoto",
+      "kind": "class",
+      "is_widget": false,
+      "sites": [
+        {
+          "file": "lib/swipes/presentation/profile_redesign/catch_profile_view.dart",
+          "line": 223,
+          "signature": "class ProfilePhoto extends StatelessWidget {",
+          "body_hash": "097bf9f99c7d5b54"
+        },
+        {
+          "file": "lib/user_profile/domain/profile_photo.dart",
+          "line": 11,
+          "signature": "abstract class ProfilePhoto with _$ProfilePhoto {",
+          "body_hash": "24add457f45f0136"
+        }
+      ],
+      "suggestion": "Same class 'ProfilePhoto' appears in 2 files with different implementations. Triage before consolidation.",
+      "id": "C-001"
+    }
+  ]
 }

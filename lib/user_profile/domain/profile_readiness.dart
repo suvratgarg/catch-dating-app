@@ -4,9 +4,9 @@ import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 
 extension UserProfileReadiness on UserProfile {
-  bool get hasBookingReadyIdentity {
+  bool hasBookingReadyIdentityOn(DateTime today) {
     return hasBookingReadyName &&
-        validateRequiredDateOfBirth(dateOfBirth) == null &&
+        validateRequiredDateOfBirth(dateOfBirth, today: today) == null &&
         validateRequiredPhoneNumber(phoneNumber) == null &&
         interestedInGenders.isNotEmpty;
   }
@@ -17,8 +17,8 @@ extension UserProfileReadiness on UserProfile {
         displayName.trim().isNotEmpty;
   }
 
-  bool get hasSocialReadyProfile {
-    return hasBookingReadyIdentity &&
+  bool hasSocialReadyProfileOn(DateTime today) {
+    return hasBookingReadyIdentityOn(today) &&
         profileComplete &&
         hasMinimumSocialPhotos &&
         hasRequiredProfilePrompts;

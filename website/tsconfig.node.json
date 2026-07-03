@@ -1,4 +1,9 @@
 {
   "extends": "../packages/web-config/tsconfig.vite.json",
-  "include": ["vite.config.ts", "../packages/web-config/vite-react.ts"]
+  "include": [
+    "vite.config.ts",
+    ".storybook/*.ts",
+    "src/vite-env.d.ts",
+    "../packages/web-config/vite-react.ts"
+  ]
 }

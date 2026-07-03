@@ -1,0 +1,138 @@
+{
+  "version": 2,
+  "updated": "2026-07-03",
+  "owner": "agent_operating_model",
+  "review": "Staff review - Organizer publication -> public listing -> claim CTA slice",
+  "pass_id": "2026-07-02-react-staff-review-full-remediation",
+  "items": [
+    {
+      "id": "F1",
+      "status": "completed",
+      "title": "Move claim URL semantics out of organizers routing",
+      "resolution": "Claim URL parsing lives in website/src/features/claims/claimRouting.ts; organizers/routing.ts keeps organizer path and claim href helpers."
+    },
+    {
+      "id": "F2",
+      "status": "completed",
+      "title": "Lift intake workspace tab shell out of intake/organizer",
+      "resolution": "admin/src/features/intake/ui/IntakeWorkspaceScreen.tsx owns intake workspace tabs/header; event and organizer intake are sibling workspaces."
+    },
+    {
+      "id": "F3",
+      "status": "completed",
+      "title": "Separate pure public discovery projection from analytics callback wiring",
+      "resolution": "publicDiscovery.ts no longer imports organizer analytics; ListingEventsSections decorates event action models with click tracking at the section boundary."
+    },
+    {
+      "id": "M1",
+      "status": "completed",
+      "title": "Deduplicate claim controllers",
+      "resolution": "Shared claim auth, mutation, and validation seams live in website/src/features/claims/useClaimRequestMutation.ts and claimModel.ts; route and listing controllers stay thin."
+    },
+    {
+      "id": "M2",
+      "status": "completed",
+      "title": "Route claim URL state through React Router",
+      "resolution": "App route shell derives ClaimRouteState from React Router location/params and injects it into ClaimPage/useClaimFlowController."
+    },
+    {
+      "id": "M3",
+      "status": "completed",
+      "title": "Inject listing claim panel controller for Storybook and tests",
+      "resolution": "Listing claim sections accept a controller prop; OrganizerListingSections stories inject a mock configured controller instead of mounting Firebase auth watchers."
+    },
+    {
+      "id": "M4",
+      "status": "completed",
+      "title": "Add noindex not_found route and static 404 output",
+      "resolution": "Fallback and unresolved organizer listing routes render website/src/features/notFound/NotFoundPage.tsx with noindex metadata; postbuild emits /404/ and 404.html."
+    },
+    {
+      "id": "A1",
+      "status": "completed",
+      "title": "Make admin organizer publishing detail URL-addressable",
+      "resolution": "Admin navigation derives from React Router location; /organizers/:clubId opens organizer detail and selection/back actions update the URL."
+    },
+    {
+      "id": "A2",
+      "status": "deferred",
+      "title": "Split OrganizerIntakeScreen monolith and govern intake layout shells",
+      "resolution": "Partially remediated: OrganizerIntakeScreen no longer owns the event/organizer workspace shell, and raw intake workspace/layout/decision/source classes are enforced by web:react-component-governance primitives. Not complete: the organizer intake route still owns many embedded panel views in admin/src/features/intake/organizer/ui/OrganizerIntakeScreen.tsx.",
+      "followUp": {
+        "id": "A2-FOLLOW-UP",
+        "status": "open",
+        "title": "Split remaining OrganizerIntakeScreen panel views into feature-owned section files",
+        "scope": [
+          "admin/src/features/intake/organizer/ui/OrganizerIntakeScreen.tsx",
+          "admin/src/features/intake/organizer/ui/sections"
+        ],
+        "acceptance": [
+          "OrganizerIntakeScreen remains the route/workspace composition entry, not the owner of every panel body.",
+          "Repeated organizer intake panel views move into named section/view files under admin/src/features/intake/organizer/ui/sections.",
+          "Existing shared admin primitives remain the only destination for reusable UI shells.",
+          "Run web:admin-feature-exports, web:admin-components, web:react-component-governance, admin typecheck, and admin build."
+        ]
+      }
+    },
+    {
+      "id": "A3",
+      "status": "completed",
+      "title": "Replace app-shell error/notice callback threading",
+      "resolution": "Added AdminFeedbackProvider/useAdminFeedback and moved touched organizer publishing, event publishing, organizer intake, and event intake surfaces off app-shell onError/onNotice props."
+    },
+    {
+      "id": "A4",
+      "status": "completed",
+      "title": "Migrate admin publishing/intake manual async state to TanStack Query",
+      "resolution": "Organizer publishing list/detail reads use useQuery and save/publish use useMutation; organizer intake, event intake, and marketing ops row-level pending state derives from TanStack mutation state through named mutation keys."
+    },
+    {
+      "id": "D1",
+      "status": "completed",
+      "title": "Actually use admin react-router dependency",
+      "resolution": "Admin App is wrapped in BrowserRouter and section navigation is derived from useLocation/useNavigate instead of hidden activeNav state."
+    },
+    {
+      "id": "D2",
+      "status": "completed",
+      "title": "Add website import-boundary enforcement",
+      "resolution": "Added tool/web/check_website_import_boundaries.mjs, wired it into website pretypecheck and root web:typecheck, and codified explicit cross-feature allowlists."
+    },
+    {
+      "id": "D3",
+      "status": "completed",
+      "title": "Lazy-load Firebase out of SEO listing chunks",
+      "resolution": "Static Firebase SDK imports were removed; claim/review/analytics runtime calls now dynamic-import website/src/firebase.ts, and production HostListingPage chunk verification shows no static Firebase runtime import or SDK symbols."
+    },
+    {
+      "id": "G1",
+      "status": "completed",
+      "title": "Collapse governed-family prose duplication",
+      "resolution": "tool/web/check_react_component_governance.mjs owns the family list via --families-json; docs and manifest entries now point to docs/audit_registry/react_component_governance_families.json instead of duplicating prose walls."
+    },
+    {
+      "id": "G2",
+      "status": "completed",
+      "title": "Document scanner ratchet limits",
+      "resolution": "Scanner help, generated family registry, architecture docs, and WEB-UI-COMPONENT-001 state that governance is a known-family blocklist and novel repeated shells must become scanner families."
+    },
+    {
+      "id": "S1",
+      "status": "completed",
+      "title": "Make Storybook states match rendered states",
+      "resolution": "Claim/listing section stories now split overstated states into explicit exports. ListingReviews has separate verified, public-form, and empty exports; ListingSources has separate source-ledger and claimable-unclaimed exports. check_website_components verifies registry states appear in Storybook metadata for each component id."
+    },
+    {
+      "id": "S2",
+      "status": "completed",
+      "title": "Clarify route review-state vocabulary versus component story states",
+      "resolution": "Route reviews now require stateCoverage.storybook/manual in design/website/routes.json, and MarketingRoutes stories mirror the same route-state coverage vocabulary."
+    },
+    {
+      "id": "P1",
+      "status": "completed",
+      "title": "Key listing view analytics effect on listing id",
+      "resolution": "useHostListingPageController listingView analytics effect now depends on listing.id instead of generated listing object identity."
+    }
+  ]
+}

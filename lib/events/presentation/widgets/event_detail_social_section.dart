@@ -4,11 +4,11 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
-import 'package:catch_dating_app/reviews/presentation/reviews_section.dart';
+import 'package:catch_dating_app/reviews/shared/reviews_section.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 
@@ -19,10 +19,7 @@ class EventDetailSocialSection extends StatelessWidget {
     required this.clubId,
     required this.reviews,
     required this.userProfile,
-    required this.isAuthenticated,
-    required this.isHost,
-    required this.participation,
-    this.now,
+    required this.state,
     this.surfaceStyle,
   });
 
@@ -30,20 +27,13 @@ class EventDetailSocialSection extends StatelessWidget {
   final String clubId;
   final List<Review> reviews;
   final UserProfile? userProfile;
-  final bool isAuthenticated;
-  final bool isHost;
-  final EventParticipation? participation;
-  final DateTime? now;
+  final EventDetailSocialState state;
   final EventDetailSurfaceStyle? surfaceStyle;
 
   @override
   Widget build(BuildContext context) {
     final profile = userProfile;
-    final canShowMemberContext = isAuthenticated && profile != null;
-    final reviewAccessStarted = !event.endTime.isAfter(now ?? DateTime.now());
-    final hasReviewAccess =
-        participation?.status == EventParticipationStatus.attended &&
-        reviewAccessStarted;
+    final canShowMemberContext = state.showMemberContext && profile != null;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -60,10 +50,7 @@ class EventDetailSocialSection extends StatelessWidget {
                   surfaceStyle: surfaceStyle,
                   showHeader: false,
                 )
-              : _GuestWhoIsGoing(
-                  surfaceStyle: surfaceStyle,
-                  showHeader: false,
-                ),
+              : GuestWhoIsGoing(surfaceStyle: surfaceStyle, showHeader: false),
         ),
         if (canShowMemberContext) ...[
           CatchSection.divided(
@@ -76,8 +63,8 @@ class EventDetailSocialSection extends StatelessWidget {
               reviews: reviews,
               currentUid: profile.uid,
               userProfile: profile,
-              isHost: isHost,
-              hasAttended: hasReviewAccess,
+              isHost: state.renderAsHost,
+              hasAttended: state.hasReviewAccess,
             ),
           ),
         ],
@@ -86,11 +73,8 @@ class EventDetailSocialSection extends StatelessWidget {
   }
 }
 
-class _GuestWhoIsGoing extends StatelessWidget {
-  const _GuestWhoIsGoing({
-    this.surfaceStyle,
-    this.showHeader = true,
-  });
+class GuestWhoIsGoing extends StatelessWidget {
+  const GuestWhoIsGoing({super.key, this.surfaceStyle, this.showHeader = true});
 
   final EventDetailSurfaceStyle? surfaceStyle;
   final bool showHeader;

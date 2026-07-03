@@ -9,6 +9,11 @@ import {
   useState,
 } from "react";
 import {
+  BrowserRouter,
+  useLocation,
+  useNavigate,
+} from "react-router";
+import {
   Activity,
   AlertTriangle,
   BarChart3,
@@ -19,7 +24,6 @@ import {
   LineChart,
   Lock,
   Megaphone,
-  RefreshCw,
   Search,
   ShieldAlert,
   Sparkles,
@@ -28,9 +32,29 @@ import {
 } from "lucide-react";
 import {getIdTokenResult, onAuthStateChanged, User} from "firebase/auth";
 import {
+  AdminAppShell,
+  AdminAuthStatus,
+  AdminBrandBlock,
+  AdminBrandCopy,
+  AdminBrandMark,
+  AdminBrandSubtitle,
+  AdminBrandTitle,
   AdminButton,
+  AdminEnvironmentStatus,
+  AdminFeatureLoadingState,
   AdminIconButton,
+  AdminLoadingIcon,
   AdminNavButton,
+  AdminNavList,
+  AdminSidebar,
+  AdminSidebarFooter,
+  AdminSignInActions,
+  AdminSignInMeta,
+  AdminSignInPanel,
+  AdminSignInScreen,
+  AdminTopbar,
+  AdminTopbarActions,
+  AdminWorkspace,
   SearchField,
   SegmentedControl,
   StatusBanner,
@@ -47,6 +71,7 @@ import {
   DataMode,
   adminRoleClaimKeys,
 } from "../shared/types/adminTypes";
+import {AdminFeedbackProvider} from "../shared/feedback/AdminFeedbackContext";
 
 type AdminNavId =
   | "overview"
@@ -82,10 +107,10 @@ const MarketingOpsScreen = lazy(() =>
   }))
 );
 
-const OrganizerIntakeScreen = lazy(() =>
-  import("../features/intake/organizer/ui/OrganizerIntakeScreen").then(
+const IntakeWorkspaceScreen = lazy(() =>
+  import("../features/intake/ui/IntakeWorkspaceScreen").then(
     (module) => ({
-      default: module.OrganizerIntakeScreen,
+      default: module.IntakeWorkspaceScreen,
     })
   )
 );
@@ -222,11 +247,20 @@ const adminSectionCopy: Partial<Record<AdminNavId, AdminSectionCopy>> = {
 };
 
 export function App() {
+  return (
+    <BrowserRouter>
+      <AdminRouteApp />
+    </BrowserRouter>
+  );
+}
+
+function AdminRouteApp() {
   const mode = dataMode();
+  const location = useLocation();
+  const navigate = useNavigate();
   const adminEnvironment = String(
     import.meta.env.VITE_ADMIN_FIREBASE_ENV ?? "dev"
   );
-  const [activeNav, setActiveNav] = useState<AdminNavId>("overview");
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [globalSearchQuery, setGlobalSearchQuery] = useState("");
@@ -298,13 +332,21 @@ export function App() {
       hasAnyAdminRole(adminRoles, navRoleMap[item.id])),
     [adminRoles, mode]
   );
-  const currentNav = visibleNavigation.some((item) => item.id === activeNav) ?
-    activeNav :
+  const routeNav = adminNavForPath(location.pathname);
+  const routeNavVisible = routeNav !== null &&
+    visibleNavigation.some((item) => item.id === routeNav);
+  const currentNav: AdminNavId = routeNavVisible ?
+    routeNav :
     visibleNavigation[0]?.id ?? "overview";
 
   useEffect(() => {
-    if (currentNav !== activeNav) setActiveNav(currentNav);
-  }, [activeNav, currentNav]);
+    if (routeNav === currentNav) return;
+    navigate(adminPathForNav(currentNav), {replace: true});
+  }, [currentNav, navigate, routeNav]);
+
+  const setActiveNav = useCallback((nextNav: AdminNavId) => {
+    navigate(adminPathForNav(nextNav));
+  }, [navigate]);
 
   const overviewController = useOverviewController({
     adminRoles,
@@ -449,16 +491,16 @@ export function App() {
   const topbarCopy = copyForAdminSection(currentNav);
 
   return (
-    <div className="app-shell">
-      <aside className="sidebar" aria-label="Admin sections">
-        <div className="brand-block">
-          <div className="brand-mark">C</div>
-          <div>
-            <div className="brand-title">Catch Ops</div>
-            <div className="brand-subtitle">{mode} console</div>
-          </div>
-        </div>
-        <nav className="nav-list">
+    <AdminAppShell>
+      <AdminSidebar aria-label="Admin sections">
+        <AdminBrandBlock>
+          <AdminBrandMark>C</AdminBrandMark>
+          <AdminBrandCopy>
+            <AdminBrandTitle>Catch Ops</AdminBrandTitle>
+            <AdminBrandSubtitle>{mode} console</AdminBrandSubtitle>
+          </AdminBrandCopy>
+        </AdminBrandBlock>
+        <AdminNavList>
           {visibleNavigation.map((item) => {
             const Icon = item.icon;
             const selected = currentNav === item.id;
@@ -472,23 +514,20 @@ export function App() {
               />
             );
           })}
-        </nav>
-        <div className="sidebar-footer">
+        </AdminNavList>
+        <AdminSidebarFooter>
           <Lock size={15} strokeWidth={1.8} />
           <span>Admin claim required</span>
-        </div>
-      </aside>
+        </AdminSidebarFooter>
+      </AdminSidebar>
 
-      <main className="workspace">
-        <header className="topbar">
+      <AdminWorkspace>
+        <AdminTopbar>
           <div>
             <h1>{topbarCopy.title}</h1>
             <p>{topbarCopy.subtitle}</p>
           </div>
-          <form
-            className="topbar-actions"
-            onSubmit={handleGlobalSearchSubmit}
-          >
+          <AdminTopbarActions onSubmit={handleGlobalSearchSubmit}>
             <SearchField
               ariaLabel="Jump to user analytics"
               icon={<Search size={16} strokeWidth={1.8} />}
@@ -497,16 +536,14 @@ export function App() {
               placeholder="Jump to users/{uid}"
               value={globalSearchQuery}
             />
-            <span
-              className="admin-env-status"
-              title="Configured by Vite environment variables"
-            >
-              {adminEnvironment} · {mode}
-            </span>
+            <AdminEnvironmentStatus
+              environment={adminEnvironment}
+              mode={mode}
+            />
             <AdminAuthStatus
               mode={mode}
               roles={adminRoles}
-              user={user}
+              userLabel={user?.email ?? user?.uid ?? "Signed in"}
             />
             <SegmentedControl<AnalyticsRangePreset>
               ariaLabel="Time range"
@@ -523,11 +560,7 @@ export function App() {
               label="Refresh"
               onClick={() => void overviewController.refresh()}
             >
-              <RefreshCw
-                className={overviewController.isLoading ? "spin" : ""}
-                size={17}
-                strokeWidth={1.9}
-              />
+              <AdminLoadingIcon active={overviewController.isLoading} />
             </AdminIconButton>
             {mode === "live" && (
               <AdminButton
@@ -537,74 +570,72 @@ export function App() {
                 {isAuthActionPending ? "Signing out" : "Sign out"}
               </AdminButton>
             )}
-          </form>
-        </header>
+          </AdminTopbarActions>
+        </AdminTopbar>
 
-        {error && (
-          <StatusBanner
-            icon={<AlertTriangle size={17} strokeWidth={1.9} />}
-            tone="error"
-          >
-            {error}
-          </StatusBanner>
-        )}
-        {notice && (
-          <StatusBanner
-            icon={<CheckCircle2 size={17} strokeWidth={1.9} />}
-            tone="success"
-          >
-            {notice}
-          </StatusBanner>
-        )}
+        <AdminFeedbackProvider onError={setError} onNotice={setNotice}>
+          {error && (
+            <StatusBanner
+              icon={<AlertTriangle size={17} strokeWidth={1.9} />}
+              tone="error"
+            >
+              {error}
+            </StatusBanner>
+          )}
+          {notice && (
+            <StatusBanner
+              icon={<CheckCircle2 size={17} strokeWidth={1.9} />}
+              tone="success"
+            >
+              {notice}
+            </StatusBanner>
+          )}
 
-        {currentNav === "safety" ? (
-          <Suspense fallback={<FeatureLoadingState label="Loading Safety" />}>
+          {currentNav === "safety" ? (
+          <Suspense fallback={<AdminFeatureLoadingState label="Loading Safety" />}>
             <SafetyTriageScreen
               onError={setError}
               onNotice={setNotice}
             />
           </Suspense>
         ) : currentNav === "marketing-ops" ? (
-          <Suspense fallback={<FeatureLoadingState label="Loading Marketing" />}>
+          <Suspense fallback={<AdminFeatureLoadingState label="Loading Marketing" />}>
             <MarketingOpsScreen
               onError={setError}
               onNotice={setNotice}
             />
           </Suspense>
         ) : currentNav === "access" ? (
-          <Suspense fallback={<FeatureLoadingState label="Loading Access" />}>
+          <Suspense fallback={<AdminFeatureLoadingState label="Loading Access" />}>
             <AccessReviewScreen
               onError={setError}
               onNotice={setNotice}
             />
           </Suspense>
         ) : currentNav === "growth" ? (
-          <Suspense fallback={<FeatureLoadingState label="Loading Growth" />}>
+          <Suspense fallback={<AdminFeatureLoadingState label="Loading Growth" />}>
             <GrowthKpiScreen onError={setError} />
           </Suspense>
         ) : currentNav === "organizer-intake" ? (
-          <Suspense fallback={<FeatureLoadingState label="Loading Intake" />}>
-            <OrganizerIntakeScreen
-              onError={setError}
-              onNotice={setNotice}
-            />
+          <Suspense fallback={<AdminFeatureLoadingState label="Loading Intake" />}>
+            <IntakeWorkspaceScreen />
           </Suspense>
         ) : currentNav === "organizers" ? (
-          <Suspense fallback={<FeatureLoadingState label="Loading Organizers" />}>
+          <Suspense fallback={<AdminFeatureLoadingState label="Loading Organizers" />}>
             <OrganizerPublishingScreen
-              onError={setError}
-              onNotice={setNotice}
+              selectedClubId={organizerClubIdForPath(location.pathname)}
+              onBackToList={() => navigate(adminPathForNav("organizers"))}
+              onSelectClubId={(clubId) => {
+                navigate(`${adminPathForNav("organizers")}/${encodeURIComponent(clubId)}`);
+              }}
             />
           </Suspense>
         ) : currentNav === "events" ? (
-          <Suspense fallback={<FeatureLoadingState label="Loading Events" />}>
-            <EventPublishingScreen
-              onError={setError}
-              onNotice={setNotice}
-            />
+          <Suspense fallback={<AdminFeatureLoadingState label="Loading Events" />}>
+            <EventPublishingScreen />
           </Suspense>
         ) : currentNav === "users" ? (
-          <Suspense fallback={<FeatureLoadingState label="Loading Users" />}>
+          <Suspense fallback={<AdminFeatureLoadingState label="Loading Users" />}>
             <UserAnalyticsScreen
               handoffRequestId={userAnalyticsHandoff?.requestId ?? null}
               handoffUserId={userAnalyticsHandoff?.userId ?? null}
@@ -613,15 +644,15 @@ export function App() {
             />
           </Suspense>
         ) : currentNav === "finance" ? (
-          <Suspense fallback={<FeatureLoadingState label="Loading Finance" />}>
+          <Suspense fallback={<AdminFeatureLoadingState label="Loading Finance" />}>
             <FinanceOpsScreen onError={setError} />
           </Suspense>
         ) : currentNav === "quality" ? (
-          <Suspense fallback={<FeatureLoadingState label="Loading Data quality" />}>
+          <Suspense fallback={<AdminFeatureLoadingState label="Loading Data quality" />}>
             <DataQualityScreen onError={setError} />
           </Suspense>
         ) : currentNav === "admin-roles" ? (
-          <Suspense fallback={<FeatureLoadingState label="Loading Admin roles" />}>
+          <Suspense fallback={<AdminFeatureLoadingState label="Loading Admin roles" />}>
             <AdminRoleManagementScreen
               currentUserUid={user?.uid ?? null}
               onError={setError}
@@ -629,7 +660,7 @@ export function App() {
             />
           </Suspense>
         ) : (
-          <Suspense fallback={<FeatureLoadingState label="Loading Overview" />}>
+          <Suspense fallback={<AdminFeatureLoadingState label="Loading Overview" />}>
             <OverviewScreen
               analyticsClubId={overviewController.analyticsClubId}
               analyticsEndDate={overviewController.analyticsEndDate}
@@ -649,42 +680,9 @@ export function App() {
             />
           </Suspense>
         )}
-      </main>
-    </div>
-  );
-}
-
-function FeatureLoadingState({label}: {label: string}) {
-  return (
-    <div className="marketing-empty-state">
-      <RefreshCw className="spin" size={18} strokeWidth={1.9} />
-      <span>{label}...</span>
-    </div>
-  );
-}
-
-function AdminAuthStatus({
-  mode,
-  roles,
-  user,
-}: {
-  mode: DataMode;
-  roles: string[];
-  user: User | null;
-}) {
-  if (mode === "sample") {
-    return (
-      <span className="admin-auth-status sample">
-        Sample mode · auth bypassed
-      </span>
-    );
-  }
-  return (
-    <span className="admin-auth-status live">
-      {user?.email ?? user?.uid ?? "Signed in"} · {
-        roles.length > 0 ? roles.join(", ") : "no admin claim read yet"
-      }
-    </span>
+        </AdminFeedbackProvider>
+      </AdminWorkspace>
+    </AdminAppShell>
   );
 }
 
@@ -723,6 +721,37 @@ function copyForAdminSection(activeNav: AdminNavId) {
     title: "Overview",
     subtitle: "Live operations, cohort health, finance risk, and marketplace signals.",
   };
+}
+
+function adminNavForPath(pathname: string): AdminNavId | null {
+  const segment = pathname.replace(/^\/+|\/+$/gu, "").split("/")[0] ?? "";
+  if (segment === "") return "overview";
+  if (segment === "marketing") return "marketing-ops";
+  if (segment === "intake") return "organizer-intake";
+  if (segment === "admin-roles") return "admin-roles";
+  if (isAdminNavId(segment)) return segment;
+  return null;
+}
+
+function adminPathForNav(nav: AdminNavId): string {
+  if (nav === "overview") return "/overview";
+  if (nav === "marketing-ops") return "/marketing";
+  if (nav === "organizer-intake") return "/intake";
+  return `/${nav}`;
+}
+
+function isAdminNavId(value: string): value is AdminNavId {
+  return navigation.some((item) => item.id === value);
+}
+
+function organizerClubIdForPath(pathname: string): string | null {
+  const match = pathname.match(/^\/organizers\/([^/]+)\/?$/u);
+  if (!match) return null;
+  try {
+    return decodeURIComponent(match[1]);
+  } catch {
+    return match[1];
+  }
 }
 
 function parseGlobalSearchQuery(
@@ -771,9 +800,9 @@ function SignInScreen({
   onSignIn: () => void;
 }) {
   return (
-    <main className="signin-screen">
-      <section className="signin-panel">
-        <div className="brand-mark large">C</div>
+    <AdminSignInScreen>
+      <AdminSignInPanel>
+        <AdminBrandMark size="large">C</AdminBrandMark>
         <h1>Catch Ops</h1>
         <p>Internal admin access requires Firebase Auth and an admin claim.</p>
         {error && (
@@ -791,8 +820,8 @@ function SignInScreen({
         >
           {isSigningIn ? "Signing in" : "Sign in with Google"}
         </AdminButton>
-      </section>
-    </main>
+      </AdminSignInPanel>
+    </AdminSignInScreen>
   );
 }
 
@@ -808,9 +837,9 @@ function AuthCheckScreen({
   onSignOut: () => void;
 }) {
   return (
-    <main className="signin-screen">
-      <section className="signin-panel">
-        <div className="brand-mark large">C</div>
+    <AdminSignInScreen>
+      <AdminSignInPanel>
+        <AdminBrandMark size="large">C</AdminBrandMark>
         <h1>Checking admin access</h1>
         <p>{email}</p>
         {error ? (
@@ -821,20 +850,16 @@ function AuthCheckScreen({
             {error}
           </StatusBanner>
         ) : (
-          <div className="signin-meta">
-            <RefreshCw
-              className={isPending ? "spin" : ""}
-              size={17}
-              strokeWidth={1.9}
-            />
+          <AdminSignInMeta>
+            <AdminLoadingIcon active={isPending} />
             <span>Reading Firebase custom claims.</span>
-          </div>
+          </AdminSignInMeta>
         )}
         <AdminButton disabled={isPending} onClick={onSignOut}>
           Sign out
         </AdminButton>
-      </section>
-    </main>
+      </AdminSignInPanel>
+    </AdminSignInScreen>
   );
 }
 
@@ -852,18 +877,18 @@ function UnauthorizedAdminScreen({
   onSignOut: () => void;
 }) {
   return (
-    <main className="signin-screen">
-      <section className="signin-panel">
-        <div className="brand-mark large">C</div>
+    <AdminSignInScreen>
+      <AdminSignInPanel>
+        <AdminBrandMark size="large">C</AdminBrandMark>
         <h1>Admin claim required</h1>
         <p>
           {email} is signed in, but this Firebase session does not include a
           Catch admin custom claim.
         </p>
-        <div className="signin-meta">
+        <AdminSignInMeta>
           <Lock size={17} strokeWidth={1.9} />
           <span>Ask an admin owner to assign a role, then refresh claims.</span>
-        </div>
+        </AdminSignInMeta>
         {error && (
           <StatusBanner
             icon={<AlertTriangle size={17} strokeWidth={1.9} />}
@@ -872,7 +897,7 @@ function UnauthorizedAdminScreen({
             {error}
           </StatusBanner>
         )}
-        <div className="signin-actions">
+        <AdminSignInActions>
           <AdminButton
             disabled={isPending}
             onClick={onRefreshClaims}
@@ -883,8 +908,8 @@ function UnauthorizedAdminScreen({
           <AdminButton disabled={isPending} onClick={onSignOut}>
             Sign out
           </AdminButton>
-        </div>
-      </section>
-    </main>
+        </AdminSignInActions>
+      </AdminSignInPanel>
+    </AdminSignInScreen>
   );
 }

@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:flutter/material.dart';
 
 /// Design-system `CoverStory` (`components/explore/CoverStory`): the dark "wow"
@@ -149,56 +150,63 @@ class CoverStoryChrome extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           if (story.location != null && story.location!.isNotEmpty)
-            GestureDetector(
-              onTap: story.onLocation,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    story.location!.toUpperCase(),
-                    style: CatchTextStyles.kicker(
-                      context,
+            Builder(
+              builder: (context) {
+                final location = story.location!;
+                final label = Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      location.toUpperCase(),
+                      style: CatchTextStyles.kicker(
+                        context,
+                        color: paper.withValues(
+                          alpha: CatchOpacity.coverStoryLocation,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: CatchSpacing.micro6),
+                    Icon(
+                      CatchIcons.expandMoreRounded,
+                      size: CatchIcon.xs,
                       color: paper.withValues(
                         alpha: CatchOpacity.coverStoryLocation,
                       ),
                     ),
-                  ),
-                  const SizedBox(width: CatchSpacing.micro6),
-                  Icon(
-                    CatchIcons.expandMoreRounded,
-                    size: CatchIcon.xs,
-                    color: paper.withValues(
-                      alpha: CatchOpacity.coverStoryLocation,
+                  ],
+                );
+                final onLocation = story.onLocation;
+                if (onLocation == null) return label;
+                return Tooltip(
+                  message: 'Change location',
+                  excludeFromSemantics: true,
+                  child: Semantics(
+                    container: true,
+                    button: true,
+                    label: 'Change location, $location',
+                    child: ExcludeSemantics(
+                      child: GestureDetector(onTap: onLocation, child: label),
                     ),
                   ),
-                ],
-              ),
+                );
+              },
             )
           else
             const SizedBox.shrink(),
           if (story.showSearch)
-            Semantics(
-              button: true,
-              label: 'Search',
-              child: GestureDetector(
-                onTap: story.onSearch,
-                child: Container(
-                  width: CatchLayout.coverStorySearchExtent,
-                  height: CatchLayout.coverStorySearchExtent,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: paper.withValues(
-                        alpha: CatchOpacity.coverStorySearchBorder,
-                      ),
-                    ),
-                  ),
-                  child: Icon(
-                    CatchIcons.searchRounded,
-                    size: CatchIcon.control,
-                    color: paper,
-                  ),
-                ),
+            CatchIconButton(
+              onTap: story.onSearch,
+              variant: CatchIconButtonVariant.plain,
+              background: Colors.transparent,
+              borderColor: paper.withValues(
+                alpha: CatchOpacity.coverStorySearchBorder,
+              ),
+              size: CatchLayout.coverStorySearchExtent,
+              tooltip: 'Search',
+              child: Icon(
+                CatchIcons.searchRounded,
+                size: CatchIcon.control,
+                color: paper,
               ),
             ),
         ],
@@ -254,7 +262,7 @@ class CoverStoryContent extends StatelessWidget {
             constraints: const BoxConstraints(maxWidth: 320),
             child: Text(
               story.body!,
-              style: CatchTextStyles.bodyM(
+              style: CatchTextStyles.proseM(
                 context,
                 color: paper.withValues(alpha: CatchOpacity.coverStoryBody),
               ),

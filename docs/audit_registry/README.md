@@ -1,7 +1,7 @@
 ---
 doc_id: audit_registry
-version: 2.3.0
-updated: 2026-06-30
+version: 2.6.2
+updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
 ---
@@ -28,11 +28,37 @@ Use this registry before reading long tracker docs. The goal is to answer:
 | `doc_versions.json` | Version metadata for durable docs that Codex reads repeatedly. |
 | `backlog.json` | Active backlog, next-up order, stable debt ids, and scanner counts. |
 | `doc_summaries.json` | Compact read/skip policies for long docs. |
-| `agent_metrics.jsonl` | Append-only measurements for agent-readiness score, check counts, and workflow-quality trend events. |
+| `agent_metrics.jsonl` | Append-only measurements for agent-readiness score, check counts, delegation outcomes, and workflow-quality trend events. |
+| `architecture_pattern_adoption.json` | Machine-readable tracker for architecture reference exhibits, prototype files, adopters, variants, exceptions, and back-propagation obligations. |
+| `react_component_governance_families.json` | Generated reader snapshot of React component families governed by `tool/web/check_react_component_governance.mjs --families-json`. |
+| `react_staff_review_remediation.json` | Staff review item tracker for the 2026-07-02 organizer publication, public listing, and claim CTA remediation pass. |
 | `widget_classification.json` | Generated registry of every Dart widget class, its role, ownership boundaries, catalog status, and allowed public remediation path. |
 | `widget_classification.schema.json` | JSON schema for the generated widget classification registry. |
+| `widget_similarity.json` | Generated structural-similarity registry for widget consolidation review packets. |
+| `widget_consolidation_receipts.md` | Command receipts, spot-checks, calibration notes, and known limitations for the widget consolidation pipeline. |
 | `new_widget_inventory_scan.json` | Generated report comparing the working tree to a base ref for newly added widgets, private widget classes, widget-returning helpers, and Widgetbook/catalog coverage gaps. |
 | `archive/` | Historical detail that should be searched only when a debt id or rule requires it. |
+
+## Enforcement Metadata
+
+Active rules declare `enforcement` entries. Machine-backed entries bind to a
+tool id in `tool/tools_manifest.json`; manual entries use `stage: manual` so
+the absence of a scanner is explicit. Manifest tools that enforce rules declare
+their `role`, reverse `rules` mapping, and, for gates or ratchets,
+`vacuityProof`. Active tools under `tool/*.sh`, `tool/architecture/**`, or
+`tool/audit/**`, and any active tool with a non-syntax manifest check, must
+declare a `role` so runtime checks cannot hide from enforcement review. Ratchet
+tools with checked baselines should also have a matching receipt in
+`agent_metrics.jsonl` when the baseline changes. For `maxCounts` baselines, the
+receipt stores the matching `maxCounts`; for `allowedFindings` baselines, it
+stores `allowedFindingsCount`.
+
+Validate this layer with:
+
+```sh
+node tool/check_enforcement_integrity.mjs
+node tool/run.mjs check --category meta
+```
 
 ## Workflow
 
@@ -45,12 +71,21 @@ Use this registry before reading long tracker docs. The goal is to answer:
 2. Pick scope:
 
    ```sh
-   dart tool/audit_registry.dart next
+   dart tool/audit_registry.dart next --screen-limit 20
+   dart tool/audit_registry.dart next --code-only --screen-limit 20
    dart tool/audit_registry.dart backlog
    dart tool/audit_registry.dart rules --status active
    dart tool/audit_registry.dart docs --path widget
    dart tool/audit_registry.dart stale --doc widget_cleanup --version 2.0.0
    ```
+
+   `next` prints non-blocked screen-contract gaps from
+   `design/screens/catch.screens.json` before the raw unreviewed-file list, so
+   broad agent loops keep choosing product-relevant migration work when the
+   backlog is blocked on owner/device input.
+   Use `--code-only` for autonomous refactor loops; it filters gaps classified
+   as reference-only or future-design work while preserving them in the default
+   queue for design/capture passes.
 
 3. Work in a focused batch and verify with scoped analyzer/tests/scanners.
 
@@ -95,6 +130,17 @@ Use this registry before reading long tracker docs. The goal is to answer:
    dart tool/audit_registry.dart report
    ```
 
+6. If the pass used parallel agents or disposable worktrees, record the
+   parent-reviewed outcome:
+
+   ```sh
+   node tool/agent/record_delegation_outcome.mjs \
+     --task-id <task-id> \
+     --mode worker-patch \
+     --status integrated \
+     --parent-review-outcome accepted-with-edits
+   ```
+
 ## Completion Criteria
 
 A pass is complete only when:
@@ -107,6 +153,8 @@ A pass is complete only when:
 - new debt has a stable debt id; and
 - any human device-debug logs used during the pass are summarized in
   `passes.jsonl`.
+- any parallel-agent work that influenced the parent branch is recorded in
+  `agent_metrics.jsonl`.
 
 ## Pruning Policy
 

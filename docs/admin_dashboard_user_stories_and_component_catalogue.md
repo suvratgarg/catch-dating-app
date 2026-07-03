@@ -1,7 +1,7 @@
 ---
 doc_id: admin_dashboard_user_stories_and_component_catalogue
-version: 0.2.1
-updated: 2026-06-30
+version: 0.2.18
+updated: 2026-07-03
 owner: admin_console
 status: active
 ---
@@ -46,7 +46,6 @@ Files inspected:
 - `admin/src/features/marketing/renderers/marketingFeatureDropRenderer.ts`
 - `admin/src/features/marketing/ui/MarketingOpsScreen.tsx`
 - `admin/src/shared/controllers/marketingReviewDecisionHelpers.ts`
-- `admin/src/shared/ui/ReviewDecisionControls.tsx`
 - `admin/src/features/intake/events/api/eventIntakeRepository.ts`
 - `admin/src/features/intake/events/controllers/useEventIntakeController.ts`
 - `admin/src/features/intake/events/ui/EventIntakeWorkspace.tsx`
@@ -78,6 +77,8 @@ Files inspected:
 - `admin/src/features/data-quality/api/dataQualityRepository.ts`
 - `admin/src/features/data-quality/controllers/useDataQualityController.ts`
 - `admin/src/features/data-quality/ui/DataQualityScreen.tsx`
+- `admin/src/stories/AdminRoutes.stories.tsx`
+- `design/admin/components.json`
 - `functions/src/admin/**` and `functions/src/clubs/clubClaims.ts` for API
   ownership context
 - `docs/admin_analytics_dashboard_spec.md`
@@ -259,6 +260,9 @@ Current adherence:
   outcomes are queue-only, manual, or still blocked on a dedicated contract.
 - Good: `adminAssignSafetyTriageItem` supports explicit assignment/unassignment
   with required notes, role gates, partial updates, and audit logs.
+- Good: `SafetyTriageScreen` now delegates rendering to a prop-driven
+  `SafetyTriageWorkspace`, giving Storybook deterministic route/workspace
+  coverage for queue detail, assignment, and status-only decision states.
 - Partial: `adminDecideSafetyTriageItem` supports reviewed/dismissed
   status-only decisions with explicit row selection and required notes.
 - Weak: escalation, restrictions, account/content changes, and richer
@@ -296,6 +300,11 @@ Current adherence:
   city, role, event types, availability windows, host interest, invite code,
   Instagram, referral source, Why Catch, submission count, timestamps, and
   bounded deterministic overlap signals before an operator decides.
+- Good: the route wrapper now delegates its rendered body to registered
+  `AccessReviewWorkspace`, giving Storybook deterministic route/workspace
+  coverage for filtered applications, selected application detail, duplicate
+  signals, decision inputs, and recent decision state without live reads or
+  writes in previews.
 - Good: Overview still keeps compact approve/deny shortcuts for queue triage.
 - Weak: broad identity search, account state, safety history, payment history,
   and referral graph actions are still intentionally outside Access.
@@ -329,6 +338,10 @@ Current adherence:
   time rather than source-generated attribution.
 - Good: the KPI table now has explicit signal selection and a detail panel for
   metric value, stage, status, source, and source-specific detail.
+- Good: the route wrapper now delegates its rendered body to registered
+  `GrowthKpiWorkspace`, giving Storybook deterministic route/workspace coverage
+  for signal filters, selected detail, and booking trend buckets without
+  running live query fetches in previews.
 - Weak: no channel attribution, referral graph, cohort analysis, campaign
   action workflow, export workflow, or linked anomaly drilldown exists yet.
 
@@ -366,6 +379,10 @@ Current adherence:
   supply writes, booking, payments, waitlists, and direct Instagram posting stay
   outside this workspace. The composer event-pick step also labels event
   selection as read-only source visibility for the current draft.
+- Good: the route wrapper now delegates to the prop-driven
+  `MarketingOpsWorkspace`, giving Storybook deterministic route/workspace
+  coverage for the generated marketing bridge, post board, and action-boundary
+  panel without live dashboard reads or marketing writes in previews.
 - Weak: event selection is still partly display-only, some draft mutations are
   local until review, and direct Instagram publishing is intentionally not
   implemented.
@@ -411,6 +428,15 @@ Current adherence:
   Event leads and Organizers, making the active read model, permitted decision
   writes, blocked canonical/app-facing writes, and required review gates visible
   before an operator enters the dense generated workspaces.
+- Good: the Intake route now delegates to the prop-driven `IntakeWorkspace`,
+  and Event Intake exposes `EventIntakePreviewWorkspace`, giving Storybook
+  deterministic route/workspace coverage for the generated bridge, run plan,
+  source-result review, and decision-only intake boundary without live reads or
+  writes in previews.
+- Good: Organizer Intake now delegates to the prop-driven
+  `OrganizerIntakeWorkspace`, giving Storybook deterministic route/workspace
+  coverage for workflow readiness, publication review packets, generated bridge
+  guardrails, and mutation callback boundaries without live writes in previews.
 - Weak: organizer intake is operationally dense and mostly driven by generated
   bridge JSON.
 - Weak: Event Intake approvals remain decision records only; canonical import
@@ -473,6 +499,11 @@ Current adherence:
 - Good: the side panel now includes an app listing preview from the same
   `clubs/{id}` fields consumed by Flutter: visibility, location, display
   category, image/logo state, tags/formats, and listing copy.
+- Good: the route wrapper now delegates to the prop-driven
+  `OrganizerPublishingWorkspace`, giving Storybook deterministic
+  route/workspace coverage for the canonical organizer directory, route/search
+  readiness, and publishing contract panel without live reads or writes in
+  previews.
 - Weak: the search token strategy is deterministic and cheap, but it is not
   typo-tolerant or ranked like a dedicated search service.
 
@@ -565,6 +596,11 @@ Current adherence:
   preserved after the callable returns.
 - Good: event save also rebuilds `eventDiscoveryProjection`, keeping activity,
   availability, age, and gate projections aligned with safe admin changes.
+- Good: the route wrapper now delegates its rendered body to registered
+  `EventPublishingWorkspace`, giving Storybook deterministic route/workspace
+  coverage for canonical directory metrics, launch-city event rows, external
+  supply counts, read-only import readiness, and disabled importer policy
+  state without live reads or writes in previews.
 - Good: existing live events created before this projection can be repaired
   with dry-run-first `tool/data/backfill_event_admin_search.mjs`.
 - Weak: schedule, capacity, price, event policy, cancellation, attendance,
@@ -618,6 +654,10 @@ Current adherence:
   target path, allowed aggregate sources, unavailable domains, and blocked
   actions so operators do not confuse UID analytics lookup with identity search
   or account support tooling.
+- Good: the route wrapper now delegates its rendered body to registered
+  `UserAnalyticsWorkspace`, giving Storybook deterministic route/workspace
+  coverage for lookup contract, aggregate report, and read-only mutation
+  boundary without running live query fetches in previews.
 - Weak: there is no user identity lookup by email, phone, or name, account
   status, moderation history, payment history, attendance roster, support
   notes, or audited user mutation path in this tab.
@@ -654,6 +694,10 @@ Current adherence:
   boundary, so operators can distinguish canonical payment rows, event
   analytics aggregates, and payout restriction aggregates before touching
   provider systems.
+- Good: the route wrapper now delegates its rendered body to registered
+  `FinanceOpsWorkspace`, giving Storybook deterministic route/workspace
+  coverage for issue rows, selected detail, and reconciliation evidence without
+  running live query fetches in previews.
 - Weak: no provider ledger, payout lifecycle, reconciliation detail, refund
   execution, export, or audited finance mutation path exists yet. The tab
   deliberately surfaces the missing evidence instead of offering retry, refund,
@@ -691,6 +735,9 @@ Current adherence:
   schedulers.
 - Good: the table now supports explicit signal selection and a detail panel for
   source, state, owner, runbook, updated time, detail, and next action.
+- Good: the route wrapper now delegates its rendered body to registered
+  `DataQualityWorkspace`, giving Storybook deterministic route/workspace
+  coverage without running live query fetches in previews.
 - Weak: generated bridge/readiness metadata is still partly assembled in the
   frontend; there is still no scheduler last-run/last-error telemetry, backfill
   status, acknowledgement, or remediation workflow.
@@ -726,6 +773,11 @@ Current adherence:
 - Good: the tab now exposes the exact-uid scope contract, normalized assignment
   path, source-of-truth documents, unsupported lookup inputs/actions, and
   blocks no-op saves so an unchanged role set cannot create audit noise.
+- Good: the route wrapper now delegates its rendered body to registered
+  `AdminRoleManagementWorkspace`, giving Storybook deterministic
+  route/workspace coverage for exact-uid scope, assignment register, role
+  editor, and self-target guardrails without running live query fetches or
+  writes in previews.
 - Weak: the tab is exact-uid based. It does not yet list all Firebase Auth
   users, search by email/name, or backfill the assignment register for claims
   that were set manually before this tab existed.
@@ -898,6 +950,7 @@ Implemented or started in `admin/src/shared/ui/AdminPrimitives.tsx`:
 - `FilePickerButton`
 - `AdminPanel`
 - `Panel`
+- `AdminIntakePublicationBoundaryPanel`
 - `AdminStateRow`
 - `StateRow`
 - `AdminTextField`
@@ -915,6 +968,8 @@ Migration already started:
   shared primitives.
 - Event lead intake refresh button and event tabs now compose shared primitives.
 - Organizer Intake workspace tabs now compose shared primitives.
+- Intake publication boundary panel now lives in shared admin UI instead of
+  being exported from the Organizer Intake feature.
 - Shared Marketing/Event review footer actions now compose `AdminButton`.
 - Deep Marketing composer back/next/export buttons, icon remove button, source
   links, and download links now compose `AdminButton`, `AdminIconButton`, or
@@ -972,8 +1027,29 @@ Component rule:
 
 New admin UI should not add raw `button`, `article`, `header`, badge, table, or
 field markup when an admin primitive exists. If the needed primitive does not
-exist, add it to `AdminPrimitives.tsx` or a focused shared admin component file
-first, then build the feature screen through composition.
+exist, add the visual shell to `AdminPrimitives.tsx` first, then build the
+feature screen through composition. Use a focused shared admin component file
+only for non-primitive behavior, and document why the shell does not belong in
+the central primitive owner.
+Admin feature UI files may export route or workspace entry components such as
+`*Screen` and `*Workspace`; reusable panels, cards, lists, badges, and sections
+should live in shared admin UI or stay private. This is enforced by
+`node tool/run.mjs check web:admin-feature-exports`.
+Admin route/workspace entries, shared admin primitives, and admin feedback
+providers are registered in `design/admin/components.json`. Update that
+registry before exporting or renaming admin screens, workspaces, primitives, or
+providers, then run `node tool/run.mjs check web:admin-components`.
+Admin preview coverage lives in Storybook under `admin/src/stories`. Registry
+entries may use `preview.status: "ready"` only when the story export declares a
+matching `parameters.catchComponent.id` and state list; verify with
+`node tool/run.mjs check web:admin-components` and
+`node tool/run.mjs check web:admin-storybook`.
+Current ready coverage includes shared admin primitives, the Overview route
+preview, and Access, Admin Roles, Data Quality, Events, Event Intake, Finance,
+Growth, Intake, Marketing Ops, Organizer Intake, Organizer Publishing, Safety,
+plus Users route/workspace previews.
+Route stories should use explicit fixture props or controller seams instead of
+app-level live data.
 Admin import direction is enforced by
 `node tool/admin/check_import_boundaries.mjs`: app shell may compose features
 and shared modules; features may depend on their own top-level feature and

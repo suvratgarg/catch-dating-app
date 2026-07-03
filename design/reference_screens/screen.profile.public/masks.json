@@ -1,7 +1,7 @@
 {
   "version": 1,
   "screenId": "screen.profile.public",
-  "updated": "2026-06-22",
+  "updated": "2026-07-03",
   "regions": [
     {
       "id": "status_bar",
@@ -19,9 +19,9 @@
       "stateIds": ["public_profile"],
       "rect": {
         "x": 0,
-        "y": 136,
+        "y": 98,
         "width": 390,
-        "height": 445
+        "height": 492
       },
       "reason": "Public profile hero imagery is user media and should be masked until fixture image parity is deliberate."
     },

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -13,10 +14,9 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/locations/data/places_repository.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
-import 'package:catch_dating_app/locations/presentation/google_maps_coordinate_adapter.dart';
+import 'package:catch_dating_app/locations/shared/catch_google_map.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 
 class LocationPickerScreen extends ConsumerStatefulWidget {
   const LocationPickerScreen({
@@ -25,6 +25,9 @@ class LocationPickerScreen extends ConsumerStatefulWidget {
     this.initialLocation,
     this.initialCenter,
     this.initialLabel,
+    this.initialSearchQuery,
+    this.initialSearchError,
+    this.usePlatformMapView = true,
     this.loadMapTiles = true,
   });
 
@@ -40,6 +43,16 @@ class LocationPickerScreen extends ConsumerStatefulWidget {
 
   /// Existing attendee-facing name for [initialLocation], if known.
   final String? initialLabel;
+
+  /// Optional deterministic search query for tests and visual captures.
+  final String? initialSearchQuery;
+
+  /// Optional deterministic search failure for tests and visual captures.
+  final Object? initialSearchError;
+
+  /// Use the Google Maps platform view. Tests/captures can disable this to
+  /// render the picker chrome without platform-view channels.
+  final bool usePlatformMapView;
 
   /// Retained as a test hook while the screen uses the Google Maps SDK.
   final bool loadMapTiles;
@@ -72,7 +85,7 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
   String? _selectedLabel;
   String? _selectedAddress;
   String? _selectedPlaceId;
-  gmaps.GoogleMapController? _mapController;
+  CatchGoogleMapController? _mapController;
   Timer? _searchDebounce;
   String _sessionToken = _newSessionToken();
   var _suggestions = <PlaceAutocompleteSuggestion>[];
@@ -93,7 +106,12 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
     super.initState();
     _selected = widget.initialLocation;
     _selectedLabel = _trimToNull(widget.initialLabel);
-    _searchController.text = _selectedLabel ?? '';
+    final initialSearchQuery = _trimToNull(widget.initialSearchQuery);
+    _searchController.text = _selectedLabel ?? initialSearchQuery ?? '';
+    final initialSearchError = widget.initialSearchError;
+    if (initialSearchError != null) {
+      _searchError = _placeSearchFailureText(initialSearchError);
+    }
   }
 
   @override
@@ -107,39 +125,35 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
     final initialCameraTarget =
         widget.initialLocation ?? widget.initialCenter ?? _defaultCenter;
     final hasInitialCameraHint =
         widget.initialLocation != null || widget.initialCenter != null;
+    final mapLayer = widget.usePlatformMapView
+        ? CatchGoogleMap(
+            initialCenter: initialCameraTarget,
+            initialZoom: hasInitialCameraHint ? 15 : 12,
+            markers: {
+              if (_selected != null)
+                CatchMapMarker(
+                  id: 'selected-starting-point',
+                  position: _selected!,
+                  hue: CatchMapMarkerHue.orange,
+                ),
+            },
+            mapType: widget.loadMapTiles
+                ? CatchMapType.normal
+                : CatchMapType.none,
+            onMapCreated: (controller) => _mapController = controller,
+            onTap: _setSelectedPoint,
+          )
+        : ColoredBox(color: t.bg);
 
     return Scaffold(
       body: Stack(
         children: [
-          gmaps.GoogleMap(
-            initialCameraPosition: gmaps.CameraPosition(
-              target: initialCameraTarget.toGoogleMapsLatLng(),
-              zoom: hasInitialCameraHint ? 15 : 12,
-            ),
-            markers: {
-              if (_selected != null)
-                gmaps.Marker(
-                  markerId: const gmaps.MarkerId('selected-starting-point'),
-                  position: _selected!.toGoogleMapsLatLng(),
-                  icon: gmaps.BitmapDescriptor.defaultMarkerWithHue(
-                    gmaps.BitmapDescriptor.hueOrange,
-                  ),
-                ),
-            },
-            myLocationButtonEnabled: false,
-            mapToolbarEnabled: false,
-            zoomControlsEnabled: false,
-            compassEnabled: false,
-            mapType: widget.loadMapTiles
-                ? gmaps.MapType.normal
-                : gmaps.MapType.none,
-            onMapCreated: (controller) => _mapController = controller,
-            onTap: (point) => _setSelectedPoint(point.toLocationCoordinate()),
-          ),
+          Positioned.fill(child: mapLayer),
           Positioned(
             top: CatchSpacing.s4,
             left: CatchSpacing.s4,
@@ -259,12 +273,12 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
         _suggestions = results;
         _searching = false;
       });
-    } catch (_) {
+    } catch (error) {
       if (!mounted) return;
       setState(() {
         _suggestions = const [];
         _searching = false;
-        _searchError = 'Could not search places. Try again.';
+        _searchError = _placeSearchFailureText(error);
       });
     }
   }
@@ -295,19 +309,14 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
         address: place.formattedAddress,
         placeId: place.placeId,
       );
-      await _mapController?.animateCamera(
-        gmaps.CameraUpdate.newLatLngZoom(
-          place.location.toGoogleMapsLatLng(),
-          16,
-        ),
-      );
-    } catch (_) {
+      await _mapController?.animateTo(place.location, zoom: 16);
+    } catch (error) {
       if (!mounted) return;
       setState(() {
         _pendingSuggestion = null;
         _suggestions = [suggestion];
         _searching = false;
-        _searchError = 'Could not load that place. Try another result.';
+        _searchError = _placeDetailsFailureText(error);
       });
     }
   }
@@ -325,6 +334,26 @@ String _suggestionLabel(PlaceAutocompleteSuggestion suggestion) {
   if (suggestion.mainText.isNotEmpty) return suggestion.mainText;
   if (suggestion.description.isNotEmpty) return suggestion.description;
   return 'selected place';
+}
+
+String _placeSearchFailureText(Object error) {
+  return _locationPickerFailureText(
+    error,
+    fallback: 'Could not search places. Try again.',
+  );
+}
+
+String _placeDetailsFailureText(Object error) {
+  return _locationPickerFailureText(
+    error,
+    fallback: 'Could not load that place. Try another result.',
+  );
+}
+
+String _locationPickerFailureText(Object error, {required String fallback}) {
+  final descriptor = appErrorDescriptor(error, context: AppErrorContext.event);
+  if (descriptor.title == 'Connection issue') return descriptor.message;
+  return fallback;
 }
 
 class MapPickerSearchRow extends StatelessWidget {
@@ -572,10 +601,7 @@ class SelectedPointPanel extends StatelessWidget {
                     gapH4,
                     Text(
                       subtitle,
-                      style: CatchTextStyles.supporting(
-                        context,
-                        color: t.ink2,
-                      ),
+                      style: CatchTextStyles.supporting(context, color: t.ink2),
                     ),
                   ],
                 ),

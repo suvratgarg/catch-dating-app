@@ -1,19 +1,22 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
-import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
-import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
+import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/labs/design_fixtures/profile_surface_fixtures.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_controller.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_screen.dart';
+import 'package:catch_dating_app/public_profile/presentation/public_profile_screen_state.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/user_analytics/data/user_analytics_repository.dart';
@@ -23,8 +26,22 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
+import 'package:catch_dating_app/user_profile/presentation/self_profile_edit_tab_state.dart';
+import 'package:catch_dating_app/user_profile/presentation/self_profile_screen_state.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor_choice.dart'
+    show
+        ProfileChipOptions,
+        ProfileChipPlaceholder,
+        ProfileMultiChipValue,
+        ProfileSingleChipValue;
+import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor_height.dart'
+    show ProfileHeightStepButton, ProfileHeightStepperControls;
 import 'package:catch_dating_app/user_profile/presentation/widgets/preview_tab.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_info_section.dart'
+    show ProfileInfoRowFrame, ProfileInfoSection, profileTabBodyPadding;
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_insights_tab.dart'
+    show ProfileInsightsTabSliverBody;
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_sliver_header.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
 import 'package:flutter/material.dart';
@@ -125,6 +142,117 @@ Widget profileScreenSelfRouteStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Self tab body states',
+  type: SelfProfileTabBody,
+  path: '[P1 product surfaces]/Profiles/Sections',
+)
+Widget profileScreenSelfTabBodyStates(BuildContext context) {
+  final idleUploadState = (loadingIndices: <int>{}, uploadError: null);
+
+  return _ProfileCatalog(
+    title: 'SelfProfileTabBody',
+    contractId: 'screen.profile.self.tab_body',
+    children: [
+      _StateCard(
+        label: 'loading tab shell',
+        child: _SectionFrame(
+          height: 760,
+          child: _SelfProfileTabBodyPreview(
+            state: SelfProfileScreenState(
+              status: SelfProfileRouteStatus.loading,
+              uploadState: idleUploadState,
+              mutationMode: SelfProfileMutationMode.idle,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'load error',
+        child: _SectionFrame(
+          height: 520,
+          child: _SelfProfileTabBodyPreview(
+            state: SelfProfileScreenState(
+              status: SelfProfileRouteStatus.error,
+              error: StateError('Profile failed'),
+              uploadState: idleUploadState,
+              mutationMode: SelfProfileMutationMode.idle,
+              retryIntent: SelfProfileRetryIntent.reloadProfile,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'profile unavailable',
+        child: _SectionFrame(
+          height: 520,
+          child: _SelfProfileTabBodyPreview(
+            state: SelfProfileScreenState(
+              status: SelfProfileRouteStatus.unavailable,
+              uploadState: idleUploadState,
+              mutationMode: SelfProfileMutationMode.idle,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'ready edit tab',
+        child: _SectionFrame(
+          height: 760,
+          child: _SelfProfileTabBodyPreview(
+            state: SelfProfileScreenState.fromAsync(
+              profileState: CatchAsyncState.data(_viewer),
+              today: ProfileSurfaceFixtures.now,
+              uploadState: idleUploadState,
+              uploadMutationPending: false,
+              saveMutationPending: false,
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Profile unavailable body',
+  type: ProfileUnavailableBody,
+  path: '[P1 product surfaces]/Profiles/Sections',
+)
+Widget profileUnavailableBodyState(BuildContext context) {
+  return const _ProfileCatalog(
+    title: 'ProfileUnavailableBody',
+    contractId: 'screen.profile.self.unavailable_body',
+    children: [
+      _StateCard(
+        label: 'default',
+        child: _SectionFrame(height: 320, child: ProfileUnavailableBody()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Insights sliver body states',
+  type: ProfileInsightsTabSliverBody,
+  path: '[P1 product surfaces]/Profiles/Sections',
+)
+Widget profileInsightsTabSliverBodyStates(BuildContext context) {
+  return const _ProfileCatalog(
+    title: 'ProfileInsightsTabSliverBody',
+    contractId: 'screen.profile.insights_tab.sliver_body',
+    children: [
+      _StateCard(
+        label: 'analytics body',
+        child: _SectionFrame(
+          height: 760,
+          child: CustomScrollView(slivers: [ProfileInsightsTabSliverBody()]),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Self section states',
   type: ProfileScreen,
   path: '[P1 product surfaces]/Profiles',
@@ -211,6 +339,85 @@ Widget profileScreenSelfSectionStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Profile title',
+  type: ProfileTitle,
+  path: '[P1 product surfaces]/Profiles/Sections',
+)
+Widget profileTitleStates(BuildContext context) {
+  return _ProfileCatalog(
+    title: 'ProfileTitle',
+    contractId: 'section.profile.self.title',
+    children: [
+      _StateCard(
+        label: 'title row',
+        child: const _SectionFrame(
+          height: 120,
+          child: _ProfileHeaderRouterFrame(child: ProfileTitle()),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Profile tab bar',
+  type: ProfileTabBar,
+  path: '[P1 product surfaces]/Profiles/Sections',
+)
+Widget profileTabBarStates(BuildContext context) {
+  return _ProfileCatalog(
+    title: 'ProfileTabBar',
+    contractId: 'section.profile.self.tab_bar',
+    children: [
+      _StateCard(
+        label: 'edit selected',
+        child: const _SectionFrame(
+          height: 96,
+          child: _ProfileTabBarPreview(initialIndex: 0),
+        ),
+      ),
+      _StateCard(
+        label: 'preview selected',
+        child: const _SectionFrame(
+          height: 96,
+          child: _ProfileTabBarPreview(initialIndex: 1),
+        ),
+      ),
+      _StateCard(
+        label: 'insights selected',
+        child: const _SectionFrame(
+          height: 96,
+          child: _ProfileTabBarPreview(initialIndex: 2),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Profile settings button',
+  type: ProfileSettingsButton,
+  path: '[P1 product surfaces]/Profiles/Sections',
+)
+Widget profileSettingsButtonStates(BuildContext context) {
+  return _ProfileCatalog(
+    title: 'ProfileSettingsButton',
+    contractId: 'section.profile.self.settings_button',
+    children: [
+      _StateCard(
+        label: 'settings action',
+        child: const _SectionFrame(
+          height: 96,
+          child: _ProfileHeaderRouterFrame(
+            child: Center(child: ProfileSettingsButton()),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Preview tab states',
   type: PreviewTab,
   path: '[P1 product surfaces]/Profiles/Sections',
@@ -282,6 +489,395 @@ Widget profileTabContentStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Photo section states',
+  type: ProfilePhotosSection,
+  path: '[P1 product surfaces]/Profiles/Sections',
+)
+Widget profilePhotosSectionStates(BuildContext context) {
+  final completeState = SelfProfilePhotoGridState.fromProfile(
+    user: _viewer,
+    uploadState: (loadingIndices: <int>{}, uploadError: null),
+  );
+  final loadingState = SelfProfilePhotoGridState.fromProfile(
+    user: _incompleteViewer,
+    uploadState: (loadingIndices: <int>{1}, uploadError: null),
+  );
+
+  return _ProfileCatalog(
+    title: 'ProfilePhotosSection',
+    contractId: 'screen.profile.edit_tab.photos_section',
+    children: [
+      _StateCard(
+        label: 'complete grid',
+        child: _SectionFrame(
+          height: 360,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfilePhotosSection(
+              first: true,
+              state: completeState,
+              onSlotTapped: (_) {},
+              onDeletePhoto: (_) {},
+              onReorderPhoto: (_, _) {},
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'upload pending',
+        child: _SectionFrame(
+          height: 360,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfilePhotosSection(
+              first: false,
+              state: loadingState,
+              onSlotTapped: (_) {},
+              onDeletePhoto: (_) {},
+              onReorderPhoto: (_, _) {},
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Field row states',
+  type: ProfileFieldRow,
+  path: '[P1 product surfaces]/Profiles/Sections',
+)
+Widget profileFieldRowStates(BuildContext context) {
+  final editState = SelfProfileEditTabState.fromProfile(
+    user: _viewer,
+    today: ProfileSurfaceFixtures.now,
+    uploadState: (loadingIndices: <int>{}, uploadError: null),
+  );
+  final rows = [
+    ...editState.aboutSectionRows.take(3),
+    ...editState.runningRows.take(2),
+    ...editState.lifestyleRows.take(1),
+  ];
+
+  return _ProfileCatalog(
+    title: 'ProfileFieldRow',
+    contractId: 'screen.profile.edit_tab.field_row',
+    children: [
+      _StateCard(
+        label: 'descriptor rows',
+        child: _SectionFrame(
+          height: CatchLayout.maxContentWidth,
+          child: _ProfileFieldRowCatalog(rows: rows),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Info section states',
+  type: ProfileInfoSection,
+  path: '[P1 product surfaces]/Profiles/Sections',
+)
+Widget profileInfoSectionStates(BuildContext context) {
+  return _ProfileCatalog(
+    title: 'ProfileInfoSection',
+    contractId: 'screen.profile.edit_tab.info_section',
+    children: [
+      _StateCard(
+        label: 'grouped section',
+        child: _SectionFrame(
+          height: 280,
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              ProfileInfoSection(
+                title: 'About you',
+                subtitle: '3 fields',
+                grouped: true,
+                fullBleedRows: true,
+                children: [
+                  for (final label in ['Display name', 'Instagram', 'Company'])
+                    CatchSurface(
+                      padding: CatchInsets.content,
+                      child: Text(
+                        label,
+                        style: CatchTextStyles.labelL(context),
+                      ),
+                    ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'ungrouped section',
+        child: _SectionFrame(
+          height: 220,
+          child: ListView(
+            padding: CatchInsets.content,
+            children: [
+              ProfileInfoSection(
+                title: 'Running',
+                children: [
+                  CatchSurface(
+                    padding: CatchInsets.content,
+                    child: Text(
+                      'Preferred pace',
+                      style: CatchTextStyles.labelL(context),
+                    ),
+                  ),
+                  gapH8,
+                  CatchSurface(
+                    padding: CatchInsets.content,
+                    child: Text(
+                      'Weekend mornings',
+                      style: CatchTextStyles.labelL(context),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Info row frame states',
+  type: ProfileInfoRowFrame,
+  path: '[P1 product surfaces]/Profiles/Sections',
+)
+Widget profileInfoRowFrameStates(BuildContext context) {
+  return _ProfileCatalog(
+    title: 'ProfileInfoRowFrame',
+    contractId: 'screen.profile.edit_tab.info_row_frame',
+    children: [
+      _StateCard(
+        label: 'standard and full bleed',
+        child: _SectionFrame(
+          height: 220,
+          child: ListView(
+            padding: CatchInsets.content,
+            children: [
+              ProfileInfoRowFrame(
+                fullBleed: false,
+                child: CatchSurface(
+                  padding: CatchInsets.content,
+                  child: Text(
+                    'Standard row frame',
+                    style: CatchTextStyles.labelL(context),
+                  ),
+                ),
+              ),
+              gapH12,
+              ProfileInfoRowFrame(
+                fullBleed: true,
+                child: CatchSurface(
+                  padding: CatchInsets.content,
+                  child: Text(
+                    'Full-bleed row frame',
+                    style: CatchTextStyles.labelL(context),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Direct text entry adapter states',
+  type: ProfileDirectTextEntry,
+  path: '[P1 product surfaces]/Profiles/Sections',
+)
+Widget profileDirectTextEntryStates(BuildContext context) {
+  return _ProfileCatalog(
+    title: 'ProfileDirectTextEntry',
+    contractId: 'screen.profile.edit_tab.direct_text_entry',
+    children: [
+      _StateCard(
+        label: 'display name row',
+        child: _SectionFrame(
+          height: CatchLayout.activityArtDefaultHeight,
+          child: ProfileDirectTextEntry(
+            icon: CatchIcons.personOutlined,
+            label: 'Display name',
+            value: _viewer.displayName,
+            currentValue: _viewer.displayName,
+            currentFieldValue: _viewer.displayName,
+            fieldName: 'displayName',
+            patchForValue: (value) =>
+                UpdateUserProfilePatch(displayName: value as String),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Single enum entry adapter states',
+  type: ProfileSingleEnumEntry,
+  path: '[P1 product surfaces]/Profiles/Sections',
+)
+Widget profileSingleEnumEntryStates(BuildContext context) {
+  return _ProfileCatalog(
+    title: 'ProfileSingleEnumEntry',
+    contractId: 'screen.profile.edit_tab.single_enum_entry',
+    children: [
+      _StateCard(
+        label: 'selected collapsed',
+        child: _SectionFrame(
+          height: CatchLayout.activityArtDefaultHeight,
+          child: ProfileSingleEnumEntry<EducationLevel>(
+            icon: CatchIcons.schoolOutlined,
+            label: 'Education',
+            values: EducationLevel.values,
+            value: EducationLevel.masters,
+            fieldName: 'education',
+            patchForValue: (value) => UpdateUserProfilePatch(education: value),
+            isExpanded: false,
+            onTap: () {},
+            onSaved: () {},
+            onCancel: () {},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'empty expanded',
+        child: _SectionFrame(
+          height: 300,
+          child: ProfileSingleEnumEntry<EducationLevel>(
+            icon: CatchIcons.schoolOutlined,
+            label: 'Education',
+            values: EducationLevel.values,
+            value: null,
+            fieldName: 'education',
+            patchForValue: (value) => UpdateUserProfilePatch(education: value),
+            placeholder: 'Education',
+            isExpanded: true,
+            onTap: () {},
+            onSaved: () {},
+            onCancel: () {},
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Multi enum entry adapter states',
+  type: ProfileMultiEnumEntry,
+  path: '[P1 product surfaces]/Profiles/Sections',
+)
+Widget profileMultiEnumEntryStates(BuildContext context) {
+  return _ProfileCatalog(
+    title: 'ProfileMultiEnumEntry',
+    contractId: 'screen.profile.edit_tab.multi_enum_entry',
+    children: [
+      _StateCard(
+        label: 'selected collapsed',
+        child: _SectionFrame(
+          height: CatchLayout.activityArtDefaultHeight,
+          child: ProfileMultiEnumEntry<Language>(
+            icon: CatchIcons.languageOutlined,
+            label: 'Languages',
+            values: Language.values,
+            selected: const [Language.english, Language.hindi],
+            fieldName: 'languages',
+            placeholder: 'Languages',
+            patchForValues: (values) =>
+                UpdateUserProfilePatch(languages: values),
+            isExpanded: false,
+            onTap: () {},
+            onSaved: () {},
+            onCancel: () {},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'empty expanded',
+        child: _SectionFrame(
+          height: 300,
+          child: ProfileMultiEnumEntry<Language>(
+            icon: CatchIcons.languageOutlined,
+            label: 'Languages',
+            values: Language.values,
+            selected: const [],
+            fieldName: 'languages',
+            placeholder: 'Languages',
+            patchForValues: (values) =>
+                UpdateUserProfilePatch(languages: values),
+            isExpanded: true,
+            onTap: () {},
+            onSaved: () {},
+            onCancel: () {},
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Prompt entry adapter states',
+  type: ProfilePromptEntry,
+  path: '[P1 product surfaces]/Profiles/Sections',
+)
+Widget profilePromptEntryStates(BuildContext context) {
+  final editState = SelfProfileEditTabState.fromProfile(
+    user: _viewer,
+    today: ProfileSurfaceFixtures.now,
+    uploadState: (loadingIndices: <int>{}, uploadError: null),
+  );
+  final slot = editState.promptSlots.first;
+
+  return _ProfileCatalog(
+    title: 'ProfilePromptEntry',
+    contractId: 'screen.profile.edit_tab.prompt_entry',
+    children: [
+      _StateCard(
+        label: 'collapsed prompt',
+        child: _SectionFrame(
+          height: CatchLayout.activityArtDefaultHeight,
+          child: ProfilePromptEntry(
+            user: _viewer,
+            slot: slot,
+            isExpanded: false,
+            onTap: () {},
+            onSaved: () {},
+            onCancel: () {},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'expanded prompt',
+        child: _SectionFrame(
+          height: CatchLayout.eventDetailHeroTicketWideHeight,
+          child: ProfilePromptEntry(
+            user: _viewer,
+            slot: slot,
+            isExpanded: true,
+            onTap: () {},
+            onSaved: () {},
+            onCancel: () {},
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Edit tab sliver body states',
   type: ProfileTabSliverBody,
   path: '[P1 product surfaces]/Profiles/Sections',
@@ -331,6 +927,88 @@ Widget profileTabSkeletonSliverBodyStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Photo skeleton section states',
+  type: ProfilePhotosSkeletonSection,
+  path: '[P1 product surfaces]/Profiles/Sections',
+)
+Widget profilePhotosSkeletonSectionStates(BuildContext context) {
+  return const _ProfileCatalog(
+    title: 'ProfilePhotosSkeletonSection',
+    contractId: 'screen.profile.edit_tab.skeleton.photos',
+    children: [
+      _StateCard(
+        label: 'loading photo grid',
+        child: _SectionFrame(
+          height: 360,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfilePhotosSkeletonSection(),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Info skeleton section states',
+  type: ProfileInfoSkeletonSection,
+  path: '[P1 product surfaces]/Profiles/Sections',
+)
+Widget profileInfoSkeletonSectionStates(BuildContext context) {
+  return const _ProfileCatalog(
+    title: 'ProfileInfoSkeletonSection',
+    contractId: 'screen.profile.edit_tab.skeleton.info_section',
+    children: [
+      _StateCard(
+        label: 'single row',
+        child: _SectionFrame(
+          height: 176,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfileInfoSkeletonSection(title: 'About you', rows: 1),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'divided rows',
+        child: _SectionFrame(
+          height: 320,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfileInfoSkeletonSection(title: 'Lifestyle', rows: 4),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Info skeleton tile states',
+  type: ProfileInfoSkeletonTile,
+  path: '[P1 product surfaces]/Profiles/Sections',
+)
+Widget profileInfoSkeletonTileStates(BuildContext context) {
+  return const _ProfileCatalog(
+    title: 'ProfileInfoSkeletonTile',
+    contractId: 'screen.profile.edit_tab.skeleton.info_tile',
+    children: [
+      _StateCard(
+        label: 'row placeholder',
+        child: _SectionFrame(
+          height: 120,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfileInfoSkeletonTile(),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Inline text value states',
   type: ProfileInlineTextValue,
   path: '[P1 product surfaces]/Profiles/Inline Editors',
@@ -349,29 +1027,26 @@ Widget profileInlineTextValueStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Inline text editor states',
-  type: ProfileInlineTextEntryEditor,
+  name: 'Direct text entry states',
+  type: ProfileDirectTextEntryField,
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
-Widget profileInlineTextEntryEditorStates(BuildContext context) {
+Widget profileDirectTextEntryFieldStates(BuildContext context) {
   return _ProfileCatalog(
-    title: 'ProfileInlineTextEntryEditor',
-    contractId: 'screen.profile.inline.text_entry',
+    title: 'ProfileDirectTextEntryField',
+    contractId: 'screen.profile.inline.direct_text_entry',
     children: [
       _StateCard(
-        label: 'expanded text entry',
+        label: 'focused direct input',
         child: _SectionFrame(
-          height: 240,
-          child: ProfileInlineTextEntryEditor(
+          height: 160,
+          child: ProfileDirectTextEntryField(
             icon: CatchIcons.personOutlined,
             label: 'Display name',
             value: 'Neha',
             currentValue: 'Neha',
+            currentFieldValue: 'Neha',
             fieldName: 'displayName',
-            isExpanded: true,
-            onTap: () {},
-            onSaved: () {},
-            onCancel: () {},
             patchForValue: (value) =>
                 UpdateUserProfilePatch(displayName: value as String),
           ),
@@ -453,6 +1128,86 @@ Widget profileInlineHeightEditorStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Height stepper control states',
+  type: ProfileHeightStepperControls,
+  path: '[P1 product surfaces]/Profiles/Inline Editors',
+)
+Widget profileHeightStepperControlsStates(BuildContext context) {
+  return _ProfileCatalog(
+    title: 'ProfileHeightStepperControls',
+    contractId: 'screen.profile.inline.height_stepper_controls',
+    children: [
+      _StateCard(
+        label: 'enabled',
+        child: _SectionFrame(
+          height: 120,
+          child: Center(
+            child: ProfileHeightStepperControls(
+              value: 172,
+              enabled: true,
+              onChanged: (_) {},
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'disabled',
+        child: _SectionFrame(
+          height: 120,
+          child: Center(
+            child: ProfileHeightStepperControls(
+              value: 172,
+              enabled: false,
+              onChanged: (_) {},
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Height step button states',
+  type: ProfileHeightStepButton,
+  path: '[P1 product surfaces]/Profiles/Inline Editors',
+)
+Widget profileHeightStepButtonStates(BuildContext context) {
+  return _ProfileCatalog(
+    title: 'ProfileHeightStepButton',
+    contractId: 'screen.profile.inline.height_step_button',
+    children: [
+      _StateCard(
+        label: 'enabled and disabled',
+        child: _SectionFrame(
+          height: 120,
+          child: Center(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ProfileHeightStepButton(
+                  tooltip: 'Decrease height',
+                  icon: CatchIcons.removeRounded,
+                  enabled: true,
+                  onPressed: () {},
+                ),
+                gapW8,
+                ProfileHeightStepButton(
+                  tooltip: 'Increase height',
+                  icon: CatchIcons.addRounded,
+                  enabled: false,
+                  onPressed: () {},
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Inline single choice editor states',
   type: ProfileInlineSingleChoiceEntryEditor,
   path: '[P1 product surfaces]/Profiles/Inline Editors',
@@ -466,20 +1221,7 @@ Widget profileInlineSingleChoiceEntryEditorStates(BuildContext context) {
         label: 'expanded choice set',
         child: _SectionFrame(
           height: 260,
-          child: ProfileInlineSingleChoiceEntryEditor<RelationshipGoal>(
-            icon: CatchIcons.favoriteOutline,
-            label: 'Looking for',
-            value: RelationshipGoal.relationship.label,
-            values: RelationshipGoal.values,
-            currentValue: RelationshipGoal.relationship,
-            fieldName: 'relationshipGoal',
-            isExpanded: true,
-            onTap: () {},
-            onSaved: () {},
-            onCancel: () {},
-            patchForValue: (value) =>
-                UpdateUserProfilePatch(relationshipGoal: value),
-          ),
+          child: const ProfileInlineRelationshipGoalChoiceEntryEditor(),
         ),
       ),
     ],
@@ -500,19 +1242,234 @@ Widget profileInlineMultiChoiceEntryEditorStates(BuildContext context) {
         label: 'expanded choice set',
         child: _SectionFrame(
           height: 260,
-          child: ProfileInlineMultiChoiceEntryEditor<Language>(
-            icon: CatchIcons.languageOutlined,
-            label: 'Languages',
-            value: 'English, Hindi',
-            values: Language.values,
-            currentValues: const [Language.english, Language.hindi],
-            fieldName: 'languages',
-            isExpanded: true,
-            onTap: () {},
-            onSaved: () {},
-            onCancel: () {},
-            patchForValues: (values) =>
-                UpdateUserProfilePatch(languages: values),
+          child: const ProfileInlineLanguageMultiChoiceEntryEditor(),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Single chip value states',
+  type: ProfileSingleChipValue,
+  path: '[P1 product surfaces]/Profiles/Inline Editors',
+)
+Widget profileSingleChipValueStates(BuildContext context) {
+  return _ProfileCatalog(
+    title: 'ProfileSingleChipValue',
+    contractId: 'screen.profile.inline.single_chip_value',
+    children: [
+      _StateCard(
+        label: 'collapsed selected',
+        child: _SectionFrame(
+          height: 120,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfileSingleChipValue<RelationshipGoal>(
+              emptyValue: 'Looking for',
+              displayValue: RelationshipGoal.relationship.label,
+              isEditing: false,
+              selected: RelationshipGoal.relationship,
+              enabled: true,
+              isAddAffordance: false,
+              allowEmptySelection: true,
+              onSelectedTap: (_) {},
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'editing empty',
+        child: _SectionFrame(
+          height: 120,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfileSingleChipValue<RelationshipGoal>(
+              emptyValue: 'Looking for',
+              displayValue: 'Looking for',
+              isEditing: true,
+              selected: null,
+              enabled: true,
+              isAddAffordance: true,
+              allowEmptySelection: true,
+              onSelectedTap: (_) {},
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'editing selected disabled',
+        child: _SectionFrame(
+          height: 120,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfileSingleChipValue<RelationshipGoal>(
+              emptyValue: 'Looking for',
+              displayValue: RelationshipGoal.relationship.label,
+              isEditing: true,
+              selected: RelationshipGoal.relationship,
+              enabled: false,
+              isAddAffordance: false,
+              allowEmptySelection: true,
+              onSelectedTap: (_) {},
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Multi chip value states',
+  type: ProfileMultiChipValue,
+  path: '[P1 product surfaces]/Profiles/Inline Editors',
+)
+Widget profileMultiChipValueStates(BuildContext context) {
+  return _ProfileCatalog(
+    title: 'ProfileMultiChipValue',
+    contractId: 'screen.profile.inline.multi_chip_value',
+    children: [
+      _StateCard(
+        label: 'collapsed selected',
+        child: _SectionFrame(
+          height: 120,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfileMultiChipValue<Language>(
+              emptyValue: 'Languages',
+              displayValue: 'English, Hindi',
+              isEditing: false,
+              selected: const {Language.english, Language.hindi},
+              enabled: true,
+              isAddAffordance: false,
+              onSelectedTap: (_) {},
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'editing selected',
+        child: _SectionFrame(
+          height: 120,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfileMultiChipValue<Language>(
+              emptyValue: 'Languages',
+              displayValue: 'English, Hindi',
+              isEditing: true,
+              selected: const {Language.english, Language.hindi},
+              enabled: true,
+              isAddAffordance: false,
+              onSelectedTap: (_) {},
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'editing empty disabled',
+        child: _SectionFrame(
+          height: 120,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfileMultiChipValue<Language>(
+              emptyValue: 'Languages',
+              displayValue: 'Languages',
+              isEditing: true,
+              selected: const {},
+              enabled: false,
+              isAddAffordance: true,
+              onSelectedTap: (_) {},
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Chip placeholder states',
+  type: ProfileChipPlaceholder,
+  path: '[P1 product surfaces]/Profiles/Inline Editors',
+)
+Widget profileChipPlaceholderStates(BuildContext context) {
+  return const _ProfileCatalog(
+    title: 'ProfileChipPlaceholder',
+    contractId: 'screen.profile.inline.chip_placeholder',
+    children: [
+      _StateCard(
+        label: 'empty and filled',
+        child: _SectionFrame(
+          height: 140,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ProfileChipPlaceholder(
+                  value: 'Add languages',
+                  isAddAffordance: true,
+                ),
+                gapH12,
+                ProfileChipPlaceholder(
+                  value: 'English, Hindi',
+                  isAddAffordance: false,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Chip option states',
+  type: ProfileChipOptions,
+  path: '[P1 product surfaces]/Profiles/Inline Editors',
+)
+Widget profileChipOptionsStates(BuildContext context) {
+  return _ProfileCatalog(
+    title: 'ProfileChipOptions',
+    contractId: 'screen.profile.inline.chip_options',
+    children: [
+      _StateCard(
+        label: 'enabled selected',
+        child: _SectionFrame(
+          height: 140,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfileChipOptions<Language>(
+              values: const [
+                Language.english,
+                Language.hindi,
+                Language.marathi,
+              ],
+              selected: const {Language.english},
+              enabled: true,
+              onTap: (_) {},
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'disabled',
+        child: _SectionFrame(
+          height: 140,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfileChipOptions<Language>(
+              values: const [
+                Language.english,
+                Language.hindi,
+                Language.marathi,
+              ],
+              selected: const {Language.english, Language.hindi},
+              enabled: false,
+              onTap: (_) {},
+            ),
           ),
         ),
       ),
@@ -544,8 +1501,6 @@ Widget profileInlineRangeEditorStates(BuildContext context) {
             sliderMax: 540,
             divisions: 20,
             labelText: _paceLabel,
-            minFieldName: 'paceMinSecsPerKm',
-            maxFieldName: 'paceMaxSecsPerKm',
             isExpanded: true,
             onTap: () {},
             onSaved: () {},
@@ -730,6 +1685,81 @@ Widget publicProfileSafetyActionStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Route body states',
+  type: PublicProfileScreenBody,
+  path: '[P1 product surfaces]/Profiles/Sections',
+)
+Widget publicProfileScreenBodyStates(BuildContext context) {
+  return _ProfileCatalog(
+    title: 'PublicProfileScreenBody',
+    contractId: 'screen.profile.public.route_body',
+    children: [
+      _StateCard(
+        label: 'cold loading',
+        child: _SectionFrame(
+          height: 760,
+          child: PublicProfileScreenBody(
+            state: PublicProfileScreenState(
+              uid: _targetProfile.uid,
+              status: PublicProfileRouteStatus.loading,
+              mutationMode: PublicProfileMutationMode.idle,
+              sharedRunTitle: null,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'load error',
+        child: _SectionFrame(
+          height: 520,
+          child: PublicProfileScreenBody(
+            state: PublicProfileScreenState(
+              uid: _targetProfile.uid,
+              status: PublicProfileRouteStatus.error,
+              error: StateError('Public profile failed'),
+              retryIntent: PublicProfileRetryIntent.reloadProfile,
+              mutationMode: PublicProfileMutationMode.idle,
+              sharedRunTitle: null,
+            ),
+            onRetry: () {},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'profile unavailable',
+        child: _SectionFrame(
+          height: 520,
+          child: PublicProfileScreenBody(
+            state: PublicProfileScreenState(
+              uid: _targetProfile.uid,
+              status: PublicProfileRouteStatus.unavailable,
+              mutationMode: PublicProfileMutationMode.idle,
+              sharedRunTitle: null,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'loaded with viewer context',
+        child: _SectionFrame(
+          height: 760,
+          child: PublicProfileScreenBody(
+            state: PublicProfileScreenState(
+              uid: _targetProfile.uid,
+              status: PublicProfileRouteStatus.ready,
+              profile: _targetProfile,
+              viewerProfile: _viewer,
+              mutationMode: PublicProfileMutationMode.idle,
+              sharedRunTitle: 'Morning miles',
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Body states',
   type: PublicProfileBody,
   path: '[P1 product surfaces]/Profiles',
@@ -813,6 +1843,45 @@ Widget publicProfileReportReasonTileStates(BuildContext context) {
   );
 }
 
+class _ProfileFieldRowCatalog extends StatefulWidget {
+  const _ProfileFieldRowCatalog({required this.rows});
+
+  final List<SelfProfileFieldRowDescriptor> rows;
+
+  @override
+  State<_ProfileFieldRowCatalog> createState() =>
+      _ProfileFieldRowCatalogState();
+}
+
+class _ProfileFieldRowCatalogState extends State<_ProfileFieldRowCatalog> {
+  String? _expandedField;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        for (final row in widget.rows)
+          ProfileFieldRow(
+            descriptor: row,
+            isExpanded: (fieldId) => _expandedField == fieldId,
+            onToggle: (fieldId) {
+              setState(() {
+                _expandedField = _expandedField == fieldId ? null : fieldId;
+              });
+            },
+            onSaved: _collapse,
+            onCancel: _collapse,
+          ),
+      ],
+    );
+  }
+
+  void _collapse() {
+    if (_expandedField == null) return;
+    setState(() => _expandedField = null);
+  }
+}
+
 class _SelfProfileRouteScope extends StatelessWidget {
   const _SelfProfileRouteScope({
     this.profileStream,
@@ -846,6 +1915,65 @@ class _SelfProfileRouteScope extends StatelessWidget {
         ),
       ],
       child: _ProfileRouter(themeMode: themeMode),
+    );
+  }
+}
+
+class _SelfProfileTabBodyPreview extends StatefulWidget {
+  const _SelfProfileTabBodyPreview({required this.state});
+
+  final SelfProfileScreenState state;
+
+  @override
+  State<_SelfProfileTabBodyPreview> createState() =>
+      _SelfProfileTabBodyPreviewState();
+}
+
+class _SelfProfileTabBodyPreviewState extends State<_SelfProfileTabBodyPreview>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabController;
+  late final ScrollController _previewScrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+    _previewScrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _previewScrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return NestedScrollView(
+      headerSliverBuilder: (context, innerBoxIsScrolled) {
+        final headerSlivers = ProfileSliverHeader(
+          controller: _tabController,
+        ).buildSlivers(context);
+        final collapsibleSlivers = headerSlivers.take(headerSlivers.length - 1);
+        final pinnedSliver = headerSlivers.last;
+
+        return [
+          ...collapsibleSlivers,
+          SliverOverlapAbsorber(
+            handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+            sliver: pinnedSliver,
+          ),
+        ];
+      },
+      body: SelfProfileTabBody(
+        state: widget.state,
+        controller: _tabController,
+        previewScrollController: _previewScrollController,
+        onPreviewForwardScroll: (_) => 0,
+        onPreviewLeadingOverscroll: (_) {},
+        onRetry: () {},
+      ),
     );
   }
 }
@@ -961,7 +2089,7 @@ class _ProfileHeaderPreviewState extends State<_ProfileHeaderPreview>
   void initState() {
     super.initState();
     _controller = TabController(
-      length: 2,
+      length: 3,
       initialIndex: widget.initialIndex,
       vsync: this,
     );
@@ -983,6 +2111,66 @@ class _ProfileHeaderPreviewState extends State<_ProfileHeaderPreview>
           child: Center(child: Text('Header review body')),
         ),
       ],
+    );
+  }
+}
+
+class _ProfileTabBarPreview extends StatefulWidget {
+  const _ProfileTabBarPreview({required this.initialIndex});
+
+  final int initialIndex;
+
+  @override
+  State<_ProfileTabBarPreview> createState() => _ProfileTabBarPreviewState();
+}
+
+class _ProfileTabBarPreviewState extends State<_ProfileTabBarPreview>
+    with SingleTickerProviderStateMixin {
+  late final TabController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TabController(
+      length: 3,
+      initialIndex: widget.initialIndex,
+      vsync: this,
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => ProfileTabBar(controller: _controller);
+}
+
+class _ProfileHeaderRouterFrame extends StatelessWidget {
+  const _ProfileHeaderRouterFrame({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final router = GoRouter(
+      routes: [
+        GoRoute(path: '/', builder: (_, _) => child),
+        GoRoute(
+          path: Routes.settingsScreen.path,
+          name: Routes.settingsScreen.name,
+          builder: (_, _) => const _SettingsPlaceholder(),
+        ),
+      ],
+    );
+
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      routerConfig: router,
     );
   }
 }
@@ -1045,69 +2233,79 @@ class _InlineTextValueCatalogState extends State<_InlineTextValueCatalog> {
   }
 }
 
+class ProfileInlineRelationshipGoalChoiceEntryEditor extends StatelessWidget {
+  const ProfileInlineRelationshipGoalChoiceEntryEditor({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ProfileInlineSingleChoiceEntryEditor<RelationshipGoal>(
+      icon: CatchIcons.favoriteOutline,
+      label: 'Looking for',
+      value: RelationshipGoal.relationship.label,
+      values: RelationshipGoal.values,
+      currentValue: RelationshipGoal.relationship,
+      fieldName: 'relationshipGoal',
+      isExpanded: true,
+      onTap: () {},
+      onSaved: () {},
+      onCancel: () {},
+      patchForValue: (value) => UpdateUserProfilePatch(relationshipGoal: value),
+    );
+  }
+}
+
+class ProfileInlineLanguageMultiChoiceEntryEditor extends StatelessWidget {
+  const ProfileInlineLanguageMultiChoiceEntryEditor({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ProfileInlineMultiChoiceEntryEditor<Language>(
+      icon: CatchIcons.languageOutlined,
+      label: 'Languages',
+      value: 'English, Hindi',
+      values: Language.values,
+      currentValues: const [Language.english, Language.hindi],
+      fieldName: 'languages',
+      isExpanded: true,
+      onTap: () {},
+      onSaved: () {},
+      onCancel: () {},
+      patchForValues: (values) => UpdateUserProfilePatch(languages: values),
+    );
+  }
+}
+
 class _InlineEditorVariantsState extends State<_InlineEditorVariants> {
   @override
   Widget build(BuildContext context) {
     return ListView(
       padding: CatchInsets.content,
       children: [
-        ProfileInlineTextEntryEditor(
+        ProfileDirectTextEntryField(
           icon: CatchIcons.personOutlined,
           label: 'Display name',
           value: 'Neha',
           currentValue: 'Neha',
+          currentFieldValue: 'Neha',
           fieldName: 'displayName',
-          isExpanded: true,
-          onTap: () {},
-          onSaved: () {},
-          onCancel: () {},
           patchForValue: (value) =>
               UpdateUserProfilePatch(displayName: value as String),
         ),
         gapH12,
-        ProfileInlineTextEntryEditor(
+        ProfileDirectTextEntryField(
           icon: CatchIcons.workOutline,
           label: 'Job title',
           value: 'Job title',
           currentValue: '',
+          currentFieldValue: null,
           fieldName: 'occupation',
-          isExpanded: false,
-          isAddAffordance: true,
-          onTap: () {},
-          onSaved: () {},
-          onCancel: () {},
           patchForValue: (value) =>
               UpdateUserProfilePatch(occupation: value as String),
         ),
         gapH12,
-        ProfileInlineSingleChoiceEntryEditor<RelationshipGoal>(
-          icon: CatchIcons.favoriteOutline,
-          label: 'Looking for',
-          value: RelationshipGoal.relationship.label,
-          values: RelationshipGoal.values,
-          currentValue: RelationshipGoal.relationship,
-          fieldName: 'relationshipGoal',
-          isExpanded: true,
-          onTap: () {},
-          onSaved: () {},
-          onCancel: () {},
-          patchForValue: (value) =>
-              UpdateUserProfilePatch(relationshipGoal: value),
-        ),
+        const ProfileInlineRelationshipGoalChoiceEntryEditor(),
         gapH12,
-        ProfileInlineMultiChoiceEntryEditor<Language>(
-          icon: CatchIcons.languageOutlined,
-          label: 'Languages',
-          value: 'English, Hindi',
-          values: Language.values,
-          currentValues: const [Language.english, Language.hindi],
-          fieldName: 'languages',
-          isExpanded: true,
-          onTap: () {},
-          onSaved: () {},
-          onCancel: () {},
-          patchForValues: (values) => UpdateUserProfilePatch(languages: values),
-        ),
+        const ProfileInlineLanguageMultiChoiceEntryEditor(),
         gapH12,
         ProfileInlineRangeEditor(
           icon: CatchIcons.directionsRunOutlined,
@@ -1119,8 +2317,6 @@ class _InlineEditorVariantsState extends State<_InlineEditorVariants> {
           sliderMax: 540,
           divisions: 20,
           labelText: _paceLabel,
-          minFieldName: 'paceMinSecsPerKm',
-          maxFieldName: 'paceMaxSecsPerKm',
           isExpanded: true,
           onTap: () {},
           onSaved: () {},

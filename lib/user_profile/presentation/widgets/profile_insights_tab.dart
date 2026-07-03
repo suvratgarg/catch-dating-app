@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/user_analytics/presentation/user_analytics_panel.dart';
+import 'package:catch_dating_app/user_analytics/shared/user_analytics_panel.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_info_section.dart';
 import 'package:flutter/material.dart';
 

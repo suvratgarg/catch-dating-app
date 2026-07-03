@@ -1,3 +1,4 @@
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useCallback, useEffect, useMemo, useState} from "react";
 import {
   loadEventIntakeBridge,
@@ -9,6 +10,7 @@ import {
   type EventIntakeDecisionHandler,
 } from "./eventIntakeReviewDecisionHelpers";
 import type {
+  AdminGetEventIntakeDashboardResponse,
   AdminRecordEventIntakeReviewDecisionPayload,
   AdminRecordEventIntakeReviewDecisionResponse,
   EventIntakeDecision,
@@ -18,6 +20,8 @@ import type {
   EventIntakeSourceResult,
   EventIntakeTargetType,
 } from "../../../../shared/types/adminTypes";
+import {adminQueryKeys} from "../../../../shared/query/queryKeys";
+import {usePendingMutationRecord} from "../../../../shared/query/usePendingMutationRecord";
 
 export type EventIntakeTab = "setup" | "inbox" | "candidates";
 
@@ -28,34 +32,67 @@ export function useEventIntakeController({
   onError: (message: string | null) => void;
   onNotice: (message: string | null) => void;
 }) {
-  const [bridge, setBridge] = useState<EventIntakeBridge | null>(null);
+  const queryClient = useQueryClient();
+  const bridgeQueryKey = adminQueryKeys.eventIntake.dashboardBridge();
+  const bridgeQuery = useQuery({
+    queryKey: bridgeQueryKey,
+    queryFn: loadEventIntakeBridge,
+  });
+  const decisionMutationKey = adminQueryKeys.eventIntake.decision();
+  const decisionMutation = useMutation({
+    mutationKey: decisionMutationKey,
+    mutationFn: recordEventIntakeReviewDecision,
+  });
+  const bridge = bridgeQuery.data?.bridge ?? null;
   const [activeTab, setActiveTab] = useState<EventIntakeTab>("setup");
-  const [isLoading, setIsLoading] = useState(false);
-  const [inFlight, setInFlight] = useState<Record<string, boolean>>({});
   const [localDecisions, setLocalDecisions] =
     useState<Record<string, AdminRecordEventIntakeReviewDecisionResponse>>({});
   const [notes, setNotes] = useState<Record<string, string>>({});
+  const inFlight = usePendingMutationRecord<
+    AdminRecordEventIntakeReviewDecisionPayload,
+    boolean
+  >(decisionMutationKey, (payload) => ({
+    key: `${payload.targetType}:${payload.targetId}`,
+    value: true,
+  }));
+
+  const setBridge = useCallback((
+    update: (current: EventIntakeBridge | null) => EventIntakeBridge | null
+  ) => {
+    queryClient.setQueryData<AdminGetEventIntakeDashboardResponse>(
+      bridgeQueryKey,
+      (current) => {
+        const nextBridge = update(current?.bridge ?? null);
+        return nextBridge ? {bridge: nextBridge} : current;
+      }
+    );
+  }, [bridgeQueryKey, queryClient]);
 
   const loadBridge = useCallback(async () => {
-    setIsLoading(true);
     onError(null);
-    try {
-      const result = await loadEventIntakeBridge();
-      setBridge(result.bridge);
-    } catch (error) {
+    const result = await bridgeQuery.refetch();
+    if (result.error) {
       onError(
-        error instanceof Error ?
-          error.message :
+        result.error instanceof Error ?
+          result.error.message :
           "Unable to load event intake workspace."
       );
-    } finally {
-      setIsLoading(false);
+      return false;
     }
-  }, [onError]);
+    return true;
+  }, [bridgeQuery, onError]);
 
   useEffect(() => {
-    void loadBridge();
-  }, [loadBridge]);
+    if (bridgeQuery.isError) {
+      onError(
+        bridgeQuery.error instanceof Error ?
+          bridgeQuery.error.message :
+          "Unable to load event intake workspace."
+      );
+      return;
+    }
+    if (bridgeQuery.isSuccess) onError(null);
+  }, [bridgeQuery.error, bridgeQuery.isError, bridgeQuery.isSuccess, onError]);
 
   const targetDecision = useCallback<EventIntakeDecisionHandler>(async ({
     targetType,
@@ -86,11 +123,10 @@ export function useEventIntakeController({
       edits,
       checklist: checklistForEventIntakeDecision(targetType, decision),
     };
-    setInFlight((current) => ({...current, [key]: true}));
     onError(null);
     onNotice(null);
     try {
-      const response = await recordEventIntakeReviewDecision(payload);
+      const response = await decisionMutation.mutateAsync(payload);
       setLocalDecisions((current) => ({...current, [key]: response}));
       setBridge((current) =>
         current ? applyLocalEventIntakeDecision(current, response, note) :
@@ -105,14 +141,8 @@ export function useEventIntakeController({
           error.message :
           "Unable to record event intake decision."
       );
-    } finally {
-      setInFlight((current) => {
-        const next = {...current};
-        delete next[key];
-        return next;
-      });
     }
-  }, [bridge, notes, onError, onNotice]);
+  }, [bridge, decisionMutation, notes, onError, onNotice, setBridge]);
 
   const updateSource = useCallback((
     sourceId: string,
@@ -164,7 +194,7 @@ export function useEventIntakeController({
     activeTab,
     bridge,
     inFlight,
-    isLoading,
+    isLoading: bridgeQuery.isPending || bridgeQuery.isFetching,
     loadBridge,
     localDecisions,
     notes,
@@ -177,3 +207,6 @@ export function useEventIntakeController({
     updateSourceResult,
   };
 }
+
+export type EventIntakeController =
+  ReturnType<typeof useEventIntakeController>;

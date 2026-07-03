@@ -4,7 +4,8 @@
     "minDurationMinutes": 30,
     "maxDurationMinutes": 240,
     "durationStepMinutes": 15,
-    "scheduleLockSlotMinutes": 1
+    "scheduleLockSlotMinutes": 1,
+    "editDatePickerWindowDays": 365
   },
   "eventAttendance": {
     "selfCheckInWindowBeforeMinutes": 10,

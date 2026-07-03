@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
+    show UpdateUserProfilePatch;
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/safety/presentation/settings_controller.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
-    show UpdateUserProfilePatch;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -121,6 +121,29 @@ void main() {
     await container.pump();
 
     await expectLater(cancelCompleter.future, completes);
+  });
+
+  test('watchBlockedUsersProvider propagates uid auth errors', () async {
+    final error = StateError('auth failed');
+    final container = ProviderContainer(
+      overrides: [
+        uidProvider.overrideWithValue(
+          AsyncError<String?>(error, StackTrace.empty),
+        ),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    final subscription = container.listen(
+      watchBlockedUsersProvider,
+      (_, _) {},
+      fireImmediately: true,
+    );
+    addTearDown(subscription.close);
+    await container.pump();
+
+    expect(subscription.read().hasError, isTrue);
+    expect(subscription.read().error, same(error));
   });
 }
 

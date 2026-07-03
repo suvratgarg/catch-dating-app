@@ -90,7 +90,8 @@ AsyncValue<EventDetailViewModel?> buildEventDetailViewModel({
     if (userProfileAsync.isLoading ||
         reviewsAsync.isLoading ||
         savedEventAsync.isLoading ||
-        participationAsync.isLoading) {
+        participationAsync.isLoading ||
+        _requiresHostOwnershipResolution(clubAsync)) {
       return const AsyncLoading();
     }
   }
@@ -115,6 +116,12 @@ AsyncValue<EventDetailViewModel?> buildEventDetailViewModel({
       return AsyncError(
         reviewsAsync.error!,
         reviewsAsync.stackTrace ?? StackTrace.current,
+      );
+    }
+    if (_requiresHostOwnershipErrorSurface(clubAsync)) {
+      return AsyncError(
+        clubAsync.error!,
+        clubAsync.stackTrace ?? StackTrace.current,
       );
     }
   }
@@ -148,4 +155,12 @@ AsyncValue<EventDetailViewModel?> buildEventDetailViewModel({
       participation: participation,
     ),
   );
+}
+
+bool _requiresHostOwnershipResolution(AsyncValue<Club?> clubAsync) {
+  return AppConfig.appRole.isHost && clubAsync.isLoading;
+}
+
+bool _requiresHostOwnershipErrorSurface(AsyncValue<Club?> clubAsync) {
+  return AppConfig.appRole.isHost && clubAsync.hasError;
 }

@@ -5,19 +5,25 @@ import 'package:catch_dating_app/core/data/city_repository.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
+import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
+import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/external_event.dart';
 import 'package:catch_dating_app/events/domain/viewer_event_availability.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
+import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/catch_cover_story.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/catch_cross_paths_card.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_body.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_city_picker.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_empty_state.dart';
@@ -50,6 +56,20 @@ const _delhi = CityData(
   latitude: 28.7041,
   longitude: 77.1025,
 );
+
+ExploreCityPickerState _cityPickerState({
+  CityData? selectedCity,
+  Iterable<CityData> cities = const [_mumbai, _delhi],
+  bool cityListLoading = false,
+  Object? cityListError,
+}) {
+  return ExploreCityPickerState.from(
+    selectedCity: selectedCity ?? _mumbai,
+    cities: cities,
+    cityListLoading: cityListLoading,
+    cityListError: cityListError,
+  );
+}
 
 final _viewer = UserProfile(
   uid: _viewerUid,
@@ -191,6 +211,19 @@ final _feedItems = [
   ),
 ];
 
+final _externalFeedItem = ExploreExternalEventItem(
+  event: _externalEvent(
+    id: 'widgetbook-external-jazz-supper',
+    title: 'Jazz supper table',
+    startTime: DateTime(2026, 6, 25, 20),
+    meetingPoint: 'Blue room terrace',
+    activityKind: ActivityKind.dinner,
+    priceDisplayText: 'Rs 1,800',
+    sourcePlatform: 'luma',
+  ),
+  distanceFromUserKm: 2.4,
+);
+
 @widgetbook.UseCase(
   name: 'Screen states',
   type: ExploreScreen,
@@ -205,11 +238,7 @@ Widget exploreScreenStates(BuildContext context) {
         label: 'discovery feed',
         description:
             'Default browse chrome with mixed event/club discovery and map pill count.',
-        child: _DeviceFrame(
-          child: _ExploreScope(
-            child: const ExploreScreen(enableEventMapNetworkTiles: false),
-          ),
-        ),
+        child: _DeviceFrame(child: _ExploreScope(child: const ExploreScreen())),
       ),
       _StateCard(
         label: 'loading with sticky chrome',
@@ -218,7 +247,7 @@ Widget exploreScreenStates(BuildContext context) {
           child: _ExploreScope(
             viewModel: const AsyncLoading<ExploreViewModel>(),
             feed: const AsyncLoading<ExploreFeedViewModel>(),
-            child: const ExploreScreen(enableEventMapNetworkTiles: false),
+            child: const ExploreScreen(),
           ),
         ),
       ),
@@ -235,7 +264,7 @@ Widget exploreScreenStates(BuildContext context) {
               StateError('Widgetbook club source failed'),
               StackTrace.empty,
             ),
-            child: const ExploreScreen(enableEventMapNetworkTiles: false),
+            child: const ExploreScreen(),
           ),
         ),
       ),
@@ -253,17 +282,14 @@ Widget exploreScreenStates(BuildContext context) {
               ExploreViewModel(joinedClubs: [], allClubs: []),
             ),
             feed: const AsyncData(ExploreFeedViewModel(items: [])),
-            child: const ExploreScreen(enableEventMapNetworkTiles: false),
+            child: const ExploreScreen(),
           ),
         ),
       ),
       _StateCard(
         label: 'anonymous guest',
         child: _DeviceFrame(
-          child: _ExploreScope(
-            uid: null,
-            child: const ExploreScreen(enableEventMapNetworkTiles: false),
-          ),
+          child: _ExploreScope(uid: null, child: const ExploreScreen()),
         ),
       ),
       _StateCard(
@@ -272,9 +298,7 @@ Widget exploreScreenStates(BuildContext context) {
           textScaler: const TextScaler.linear(2),
           child: _DeviceFrame(
             height: 760,
-            child: _ExploreScope(
-              child: const ExploreScreen(enableEventMapNetworkTiles: false),
-            ),
+            child: _ExploreScope(child: const ExploreScreen()),
           ),
         ),
       ),
@@ -283,9 +307,7 @@ Widget exploreScreenStates(BuildContext context) {
         child: _MediaOverride(
           disableAnimations: true,
           child: _DeviceFrame(
-            child: _ExploreScope(
-              child: const ExploreScreen(enableEventMapNetworkTiles: false),
-            ),
+            child: _ExploreScope(child: const ExploreScreen()),
           ),
         ),
       ),
@@ -360,6 +382,110 @@ Widget exploreListStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'List empty state',
+  type: ExploreListEmptyState,
+  path: '[Explore]/Sections',
+)
+Widget exploreListEmptyStateStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreListEmptyState',
+    catalogId: 'section.explore.list.empty_state',
+    children: [
+      _StateCard(
+        label: 'city empty',
+        child: _DeviceFrame(
+          height: 360,
+          child: _ExploreScope(
+            child: const ExploreListEmptyState(
+              cityLabel: 'Mumbai',
+              hasSearch: false,
+              filters: ExploreFilterSelection(),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'search empty',
+        child: _DeviceFrame(
+          height: 360,
+          child: _ExploreScope(
+            child: const ExploreListEmptyState(
+              cityLabel: 'Mumbai',
+              hasSearch: true,
+              filters: ExploreFilterSelection(),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'search and filters empty',
+        child: _DeviceFrame(
+          height: 360,
+          child: _ExploreScope(
+            child: const ExploreListEmptyState(
+              cityLabel: 'Mumbai',
+              hasSearch: true,
+              filters: ExploreFilterSelection(
+                distanceFilter: ExploreDistanceFilter.threeKm,
+                activityTag: 'dinner',
+              ),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Directory skeleton list',
+  type: ClubDirectorySkeletonList,
+  path: '[Explore]/Sections',
+)
+Widget clubDirectorySkeletonListStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ClubDirectorySkeletonList',
+    catalogId: 'section.explore.list.directory_skeleton_list',
+    children: [
+      _StateCard(
+        label: 'loading stack',
+        child: const _DeviceFrame(
+          height: 640,
+          child: SingleChildScrollView(
+            padding: CatchInsets.pageBody,
+            child: ClubDirectorySkeletonList(),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Directory skeleton card',
+  type: ClubDirectorySkeletonCard,
+  path: '[Explore]/Sections',
+)
+Widget clubDirectorySkeletonCardStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ClubDirectorySkeletonCard',
+    catalogId: 'section.explore.list.directory_skeleton_card',
+    children: [
+      _StateCard(
+        label: 'single card',
+        child: const _DeviceFrame(
+          height: 360,
+          child: Padding(
+            padding: CatchInsets.pageBody,
+            child: ClubDirectorySkeletonCard(),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'City picker states',
   type: ExploreCityPicker,
   path: '[Explore]/Controls',
@@ -371,23 +497,116 @@ Widget exploreCityPickerStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'ready',
-        child: _ExploreScope(child: const Center(child: ExploreCityPicker())),
+        child: Center(
+          child: ExploreCityPicker(
+            state: _cityPickerState(),
+            onSelected: _noopCity,
+          ),
+        ),
       ),
       _StateCard(
         label: 'city source loading',
-        child: _ExploreScope(
-          child: ProviderScope(
-            overrides: [
-              cityListProvider.overrideWith(
-                (ref) => Future<List<CityData>>.delayed(
-                  const Duration(minutes: 1),
-                  () => const [_mumbai],
-                ),
-              ),
-            ],
-            child: const Center(child: ExploreCityPicker()),
+        child: Center(
+          child: ExploreCityPicker(
+            state: _cityPickerState(cities: const [], cityListLoading: true),
+            onSelected: _noopCity,
           ),
         ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Trigger states',
+  type: CityTrigger,
+  path: '[Explore]/Controls',
+)
+Widget exploreCityTriggerStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+  return _CatalogScreen(
+    title: 'CityTrigger',
+    catalogId: 'control.explore.city_trigger',
+    children: [
+      _StateCard(
+        label: 'icon ready',
+        child: Center(
+          child: CityTrigger(city: _mumbai, focused: false, onTap: _noop),
+        ),
+      ),
+      _StateCard(
+        label: 'icon focused',
+        child: Center(
+          child: CityTrigger(city: _delhi, focused: true, onTap: _noop),
+        ),
+      ),
+      _StateCard(
+        label: 'scope label disabled',
+        child: Center(
+          child: CityTrigger(
+            city: _mumbai,
+            focused: false,
+            enabled: false,
+            presentation: ExploreCityPickerPresentation.scopeLabel,
+            foregroundColor: t.ink,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'City picker sheet states',
+  type: ExploreCityPickerSheet,
+  path: '[Explore]/Controls',
+)
+Widget exploreCityPickerSheetStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreCityPickerSheet',
+    catalogId: 'control.explore.city_picker_sheet',
+    children: [
+      _StateCard(
+        label: 'default',
+        child: _SheetFrame(
+          child: ExploreCityPickerSheet(
+            cities: const [_mumbai, _delhi],
+            selectedCity: _mumbai,
+            onSelected: (_) {},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'empty list',
+        child: _SheetFrame(
+          child: ExploreCityPickerSheet(
+            cities: const [],
+            selectedCity: _mumbai,
+            onSelected: (_) {},
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'City option tile states',
+  type: CityOptionTile,
+  path: '[Explore]/Controls',
+)
+Widget cityOptionTileStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'CityOptionTile',
+    catalogId: 'control.explore.city_option_tile',
+    children: [
+      _StateCard(
+        label: 'selected',
+        child: CityOptionTile(city: _mumbai, selected: true, onTap: _noop),
+      ),
+      _StateCard(
+        label: 'unselected',
+        child: CityOptionTile(city: _delhi, selected: false, onTap: _noop),
       ),
     ],
   );
@@ -407,7 +626,12 @@ Widget exploreDiscoveryCoverHeaderStates(BuildContext context) {
         label: 'featured event',
         child: _DeviceFrame(
           height: 360,
-          child: _ExploreScope(child: const ExploreDiscoveryCoverHeader()),
+          child: _ExploreScope(
+            child: ExploreDiscoveryCoverHeader(
+              cityPickerState: _cityPickerState(),
+              onCitySelected: _noopCity,
+            ),
+          ),
         ),
       ),
       _StateCard(
@@ -416,7 +640,120 @@ Widget exploreDiscoveryCoverHeaderStates(BuildContext context) {
           height: 180,
           child: _ExploreScope(
             feed: const AsyncData(ExploreFeedViewModel(items: [])),
-            child: const ExploreDiscoveryCoverHeader(),
+            child: ExploreDiscoveryCoverHeader(
+              cityPickerState: _cityPickerState(),
+              onCitySelected: _noopCity,
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Cover chrome states',
+  type: CoverStoryChrome,
+  path: '[Explore]/Sections',
+)
+Widget exploreCoverStoryChromeStates(BuildContext context) {
+  const d = CatchTokens.dark;
+  final locationStory = CatchCoverStory(
+    title: 'Tonight in Mumbai',
+    location: 'Mumbai',
+    showSearch: true,
+    onLocation: _noop,
+    onSearch: _noop,
+  );
+  const searchStory = CatchCoverStory(
+    title: 'Tonight in Mumbai',
+    showSearch: true,
+  );
+
+  Widget frame(Widget child) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: d.bg,
+        borderRadius: BorderRadius.circular(CatchRadius.lg),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: CatchSpacing.s3),
+        child: child,
+      ),
+    );
+  }
+
+  return _CatalogScreen(
+    title: 'CoverStoryChrome',
+    catalogId: 'section.explore.cover_story_chrome',
+    children: [
+      _StateCard(
+        label: 'location and search',
+        child: frame(CoverStoryChrome(paper: d.ink, story: locationStory)),
+      ),
+      _StateCard(
+        label: 'search only',
+        child: frame(CoverStoryChrome(paper: d.ink, story: searchStory)),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Cover content states',
+  type: CoverStoryContent,
+  path: '[Explore]/Sections',
+)
+Widget exploreCoverStoryContentStates(BuildContext context) {
+  const d = CatchTokens.dark;
+  final dinner = ActivityPalette.resolve(context, ActivityKind.dinner);
+  final dinnerStory = CatchCoverStory(
+    activityKind: ActivityKind.dinner,
+    kicker: 'Tonight',
+    title: 'Jazz supper table',
+    body: 'Eight seats, one long table, and an easy first round.',
+    cta: 'Book',
+    onCta: _noop,
+    data: '8:00 PM · Rs 1,800',
+    data2: '8 going · 4 left',
+  );
+  const neutralStory = CatchCoverStory(
+    title: 'Plans that feel warm before they feel crowded',
+    body: 'Browse hosted tables, runs, games, and coffee walks nearby.',
+    data: 'Mumbai',
+  );
+
+  Widget frame(Widget child) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: d.bg,
+        borderRadius: BorderRadius.circular(CatchRadius.lg),
+      ),
+      child: Padding(padding: CatchInsets.contentRelaxed, child: child),
+    );
+  }
+
+  return _CatalogScreen(
+    title: 'CoverStoryContent',
+    catalogId: 'section.explore.cover_story_content',
+    children: [
+      _StateCard(
+        label: 'event CTA',
+        child: frame(
+          CoverStoryContent(
+            paper: d.ink,
+            accent: dinner.accent,
+            story: dinnerStory,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'neutral hook',
+        child: frame(
+          CoverStoryContent(
+            paper: d.ink,
+            accent: d.primary,
+            story: neutralStory,
           ),
         ),
       ),
@@ -487,6 +824,248 @@ Widget explorePeekRailContentStates(BuildContext context) {
             selectedEventId: _feedItems.first.event.id,
             onEventTapped: (_) {},
             onSeeAll: _noop,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Collapsed map summary',
+  type: CollapsedMapSummary,
+  path: '[Explore]/Sections',
+)
+Widget collapsedMapSummaryStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'CollapsedMapSummary',
+    catalogId: 'section.explore.map.collapsed_summary',
+    children: [
+      _StateCard(
+        label: 'default city scope',
+        child: const _SheetFrame(
+          child: SizedBox(
+            height: 104,
+            child: CollapsedMapSummary(
+              count: 12,
+              scopeLabel: 'Mumbai',
+              filters: ExploreFilterSelection(),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'filtered map area',
+        child: const _SheetFrame(
+          child: SizedBox(
+            height: 104,
+            child: CollapsedMapSummary(
+              count: 4,
+              scopeLabel: 'Map area',
+              filters: ExploreFilterSelection(
+                distanceFilter: ExploreDistanceFilter.threeKm,
+                activityTag: 'dinner',
+              ),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Selected event lead',
+  type: ExploreSelectedEventLead,
+  path: '[Explore]/Sections',
+)
+Widget exploreSelectedEventLeadStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreSelectedEventLead',
+    catalogId: 'section.explore.map.selected_event_lead',
+    children: [
+      _StateCard(
+        label: 'ticket',
+        child: _SheetFrame(
+          child: _ExploreScope(
+            child: ExploreSelectedEventLead(
+              item: _feedItems[1],
+              spotlightEventId: _feedItems.first.event.id,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'spotlight',
+        child: _SheetFrame(
+          child: _ExploreScope(
+            child: ExploreSelectedEventLead(
+              item: _feedItems.first,
+              spotlightEventId: _feedItems.first.event.id,
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Event ticket card',
+  type: ExploreEventTicketCard,
+  path: '[Explore]/Sections',
+)
+Widget exploreEventTicketCardStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreEventTicketCard',
+    catalogId: 'section.explore.map.event_ticket_card',
+    children: [
+      _StateCard(
+        label: 'map pick',
+        child: _SheetFrame(
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ExploreEventTicketCard(
+              item: _feedItems.first,
+              statusLabel: 'Map pick',
+              onTap: _noop,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'selected with width',
+        child: _SheetFrame(
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ExploreEventTicketCard(
+              item: _feedItems[1],
+              statusLabel: 'Selected',
+              width: 260,
+              heroTag: 'widgetbook-explore-ticket',
+              onTap: _noop,
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Peek rail skeleton',
+  type: PeekRailSkeleton,
+  path: '[Explore]/Sections',
+)
+Widget peekRailSkeletonStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'PeekRailSkeleton',
+    catalogId: 'section.explore.map.peek_rail_skeleton',
+    children: [
+      _StateCard(
+        label: 'loading rail',
+        child: const _SheetFrame(
+          child: SizedBox(height: 180, child: PeekRailSkeleton()),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Map sheet lead states',
+  type: ExploreMapSheetLead,
+  path: '[Explore]/Sections',
+)
+Widget exploreMapSheetLeadStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreMapSheetLead',
+    catalogId: 'section.explore.map_route',
+    children: [
+      _StateCard(
+        label: 'collapsed summary',
+        child: const _SheetFrame(
+          child: SizedBox(
+            height: 104,
+            child: _ExploreScope(
+              child: _MapSheetLeadPreview(
+                leadMode: ExploreMapSheetLeadMode.collapsedSummary,
+              ),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'selected event lead',
+        child: _SheetFrame(
+          child: SizedBox(
+            height: 236,
+            child: _ExploreScope(
+              child: _MapSheetLeadPreview(
+                leadMode: ExploreMapSheetLeadMode.selectedEvent,
+                selectedEventId: _feedItems[1].event.id,
+              ),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'nearby rail lead',
+        child: const _SheetFrame(
+          child: SizedBox(
+            height: 236,
+            child: _ExploreScope(
+              child: _MapSheetLeadPreview(
+                leadMode: ExploreMapSheetLeadMode.nearbyRail,
+              ),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'loading rail',
+        child: const _SheetFrame(
+          child: SizedBox(
+            height: 180,
+            child: _ExploreScope(
+              feed: AsyncLoading<ExploreFeedViewModel>(),
+              child: _MapSheetLeadPreview(
+                leadMode: ExploreMapSheetLeadMode.nearbyRail,
+              ),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'error lead',
+        child: _SheetFrame(
+          child: SizedBox(
+            height: 150,
+            child: _ExploreScope(
+              feed: AsyncError<ExploreFeedViewModel>(
+                StateError('Widgetbook map lead failed'),
+                StackTrace.empty,
+              ),
+              child: const _MapSheetLeadPreview(
+                leadMode: ExploreMapSheetLeadMode.nearbyRail,
+              ),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'text scale 2.0',
+        child: const _MediaOverride(
+          textScaler: TextScaler.linear(2),
+          child: _SheetFrame(
+            child: SizedBox(
+              height: 140,
+              child: _ExploreScope(
+                child: _MapSheetLeadPreview(
+                  leadMode: ExploreMapSheetLeadMode.collapsedSummary,
+                ),
+              ),
+            ),
           ),
         ),
       ),
@@ -584,6 +1163,73 @@ Widget exploreFilterRailStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Rail label states',
+  type: ExploreRailLabel,
+  path: '[Explore]/Controls',
+)
+Widget exploreRailLabelStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreRailLabel',
+    catalogId: 'control.explore.filter_rail_label',
+    children: [
+      _StateCard(
+        label: 'time scope options',
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ExploreRailLabel(label: 'Tonight', selected: true, onTap: _noop),
+            gapW12,
+            ExploreRailLabel(label: 'Weekend', selected: false, onTap: _noop),
+          ],
+        ),
+      ),
+      _StateCard(
+        label: 'long copy',
+        child: ExploreRailLabel(
+          label: 'This week',
+          selected: false,
+          onTap: _noop,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Filter glyph states',
+  type: ExploreFilterGlyphButton,
+  path: '[Explore]/Controls',
+)
+Widget exploreFilterGlyphButtonStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreFilterGlyphButton',
+    catalogId: 'control.explore.filter_glyph_button',
+    children: [
+      _StateCard(
+        label: 'inactive',
+        child: Center(
+          child: ExploreFilterGlyphButton(
+            activeCount: 0,
+            semanticLabel: 'Filters',
+            onTap: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'active count',
+        child: Center(
+          child: ExploreFilterGlyphButton(
+            activeCount: 3,
+            semanticLabel: 'Filters, 3 active',
+            onTap: _noop,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Feed states',
   type: ExploreEventsSection,
   path: '[Explore]/Sections',
@@ -669,6 +1315,414 @@ Widget exploreEventsSectionStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Cross paths surface states',
+  type: CrossPathsSurface,
+  path: '[Explore]/Cards',
+)
+Widget crossPathsSurfaceStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+  return _CatalogScreen(
+    title: 'CrossPathsSurface',
+    catalogId: 'card.explore.cross_paths.surface',
+    children: [
+      _StateCard(
+        label: 'raised postcard chrome',
+        child: SizedBox(
+          width: 340,
+          child: CrossPathsSurface(
+            borderColor: t.line2,
+            radius: CatchSpacing.micro6,
+            elevation: CatchSurfaceShadow.raised,
+            child: Padding(
+              padding: CatchInsets.content,
+              child: Text(
+                'I am going for coffee after the run.',
+                style: CatchTextStyles.profileAnswer(context),
+              ),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'clipped photo-row chrome',
+        child: SizedBox(
+          width: 340,
+          height: 120,
+          child: CrossPathsSurface(
+            borderColor: t.line,
+            radius: CatchRadius.md,
+            clip: true,
+            child: ColoredBox(color: t.primarySoft),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Cross paths portrait states',
+  type: CrossPathsPortrait,
+  path: '[Explore]/Cards',
+)
+Widget crossPathsPortraitStates(BuildContext context) {
+  final activity = ActivityPalette.resolve(context, ActivityKind.socialRun);
+  return _CatalogScreen(
+    title: 'CrossPathsPortrait',
+    catalogId: 'card.explore.cross_paths.portrait',
+    children: [
+      _StateCard(
+        label: 'fallback and photo',
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: 112,
+              height: 150,
+              child: CrossPathsPortrait(activity: activity),
+            ),
+            gapW12,
+            SizedBox(
+              width: 112,
+              height: 150,
+              child: CrossPathsPortrait(
+                activity: activity,
+                photoUrl:
+                    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=240&q=80',
+              ),
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Cross paths polaroid states',
+  type: CrossPathsPolaroidRail,
+  path: '[Explore]/Cards',
+)
+Widget crossPathsPolaroidRailStates(BuildContext context) {
+  final activity = ActivityPalette.resolve(context, ActivityKind.socialRun);
+  return _CatalogScreen(
+    title: 'CrossPathsPolaroidRail',
+    catalogId: 'card.explore.cross_paths.polaroid_rail',
+    children: [
+      _StateCard(
+        label: 'fallback and photo',
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: CatchLayout.crossPathsRailColumnWidth,
+              child: CrossPathsPolaroidRail(activity: activity),
+            ),
+            gapW24,
+            SizedBox(
+              width: CatchLayout.crossPathsRailColumnWidth,
+              child: CrossPathsPolaroidRail(
+                activity: activity,
+                photoUrl:
+                    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=240&q=80',
+              ),
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Cross paths CTA states',
+  type: CrossPathsCtaRow,
+  path: '[Explore]/Cards',
+)
+Widget crossPathsCtaRowStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'CrossPathsCtaRow',
+    catalogId: 'card.explore.cross_paths.cta_row',
+    children: [
+      _StateCard(
+        label: 'join and like',
+        child: CrossPathsCtaRow(
+          cta: 'Join her there',
+          onJoin: _noop,
+          onLike: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'disabled actions',
+        child: CrossPathsCtaRow(cta: 'Join waitlist'),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'This week states',
+  type: ThisWeekRecommendationsSection,
+  path: '[Explore]/Sections',
+)
+Widget thisWeekRecommendationsSectionStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ThisWeekRecommendationsSection',
+    catalogId: 'section.explore.feed.this_week',
+    children: [
+      _StateCard(
+        label: 'ticket strip',
+        child: _ExploreScope(
+          child: AbsorbPointer(
+            child: ThisWeekRecommendationsSection(
+              items: _feedItems.take(3).toList(),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Event row states',
+  type: ExploreFeedEventRow,
+  path: '[Explore]/Rows',
+)
+Widget exploreFeedEventRowStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreFeedEventRow',
+    catalogId: 'row.explore.feed.event',
+    children: [
+      _StateCard(
+        label: 'open event',
+        child: _ExploreScope(
+          child: AbsorbPointer(child: ExploreFeedEventRow(item: _feedItems[1])),
+        ),
+      ),
+      _StateCard(
+        label: 'joined club recommendation',
+        child: _ExploreScope(
+          child: AbsorbPointer(
+            child: ExploreFeedEventRow(
+              item: _feedItems.first,
+              analyticsSource: 'widgetbook_joined',
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'External event row states',
+  type: ExploreExternalEventRow,
+  path: '[Explore]/Rows',
+)
+Widget exploreExternalEventRowStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreExternalEventRow',
+    catalogId: 'row.explore.feed.external_event',
+    children: [
+      _StateCard(
+        label: 'source link available',
+        child: _ExploreScope(
+          child: AbsorbPointer(
+            child: ExploreExternalEventRow(item: _externalFeedItem),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'missing source link',
+        child: _ExploreScope(
+          child: AbsorbPointer(
+            child: ExploreExternalEventRow(
+              item: ExploreExternalEventItem(
+                event: _externalFeedItem.event.copyWith(externalLinks: []),
+                distanceFromUserKm: null,
+              ),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Club polaroid states',
+  type: ExploreClubPolaroidCard,
+  path: '[Explore]/Cards',
+)
+Widget exploreClubPolaroidCardStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreClubPolaroidCard',
+    catalogId: 'card.explore.feed.club_polaroid',
+    children: [
+      _StateCard(
+        label: 'image-backed club',
+        child: AbsorbPointer(child: ExploreClubPolaroidCard(club: _clubs[1])),
+      ),
+      _StateCard(
+        label: 'fallback artwork',
+        child: AbsorbPointer(
+          child: ExploreClubPolaroidCard(
+            club: _clubs[2].copyWith(imageUrl: null),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Club row states',
+  type: ExploreFeedClubRow,
+  path: '[Explore]/Rows',
+)
+Widget exploreFeedClubRowStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreFeedClubRow',
+    catalogId: 'row.explore.feed.club',
+    children: [
+      _StateCard(
+        label: 'compact club',
+        child: AbsorbPointer(child: ExploreFeedClubRow(club: _clubs[0])),
+      ),
+      _StateCard(
+        label: 'host unknown',
+        child: AbsorbPointer(child: ExploreFeedClubRow(club: _clubs[2])),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Club cover states',
+  type: ExploreClubCover,
+  path: '[Explore]/Cards',
+)
+Widget exploreClubCoverStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreClubCover',
+    catalogId: 'card.explore.feed.club_cover',
+    children: [
+      _StateCard(
+        label: 'graded image',
+        child: SizedBox(
+          width: 260,
+          height: 260,
+          child: ExploreClubCover(club: _clubs[0]),
+        ),
+      ),
+      _StateCard(
+        label: 'compact fallback',
+        child: SizedBox.square(
+          dimension: 96,
+          child: ExploreClubCover(
+            club: _clubs[2].copyWith(imageUrl: null),
+            compact: true,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Club tags states',
+  type: ExploreClubTags,
+  path: '[Explore]/Cards',
+)
+Widget exploreClubTagsStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreClubTags',
+    catalogId: 'card.explore.feed.club_tags',
+    children: [
+      _StateCard(
+        label: 'visible tags',
+        child: ExploreClubTags(
+          state: ExploreClubCardState.from(_clubs[0], isSynthetic: false),
+        ),
+      ),
+      _StateCard(
+        label: 'member fallback',
+        child: ExploreClubTags(
+          state: ExploreClubCardState.from(
+            _clubs[0].copyWith(tags: []),
+            isSynthetic: false,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Dark pill states',
+  type: ExploreDarkPill,
+  path: '[Explore]/Cards',
+)
+Widget exploreDarkPillStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'ExploreDarkPill',
+    catalogId: 'card.explore.feed.dark_pill',
+    children: [
+      _StateCard(label: 'default', child: ExploreDarkPill('412 members')),
+      _StateCard(
+        label: 'compact action',
+        child: ExploreDarkPill('View club', compact: true),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Mono label states',
+  type: ExploreMonoLabel,
+  path: '[Explore]/Cards',
+)
+Widget exploreMonoLabelStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+  return _CatalogScreen(
+    title: 'ExploreMonoLabel',
+    catalogId: 'card.explore.feed.mono_label',
+    children: [
+      _StateCard(
+        label: 'result count',
+        child: ExploreMonoLabel('10 PLANS - JUN 24-30', color: t.ink3),
+      ),
+      _StateCard(
+        label: 'accent row kicker',
+        child: ExploreMonoLabel('CLUB TO KNOW', color: t.accent),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Loading sliver states',
+  type: ExploreEventsLoadingSliver,
+  path: '[Explore]/Sections',
+)
+Widget exploreEventsLoadingSliverStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'ExploreEventsLoadingSliver',
+    catalogId: 'section.explore.feed.loading',
+    children: [
+      _StateCard(
+        label: 'bounded skeleton',
+        child: _SliverFrame(
+          height: 240,
+          child: CustomScrollView(slivers: [ExploreEventsLoadingSliver()]),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Empty states',
   type: ExploreEmptyState,
   path: '[Explore]/Sections',
@@ -718,6 +1772,134 @@ Widget exploreEmptyStateStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Route empty states',
+  type: ExploreScreenEmptyState,
+  path: '[Explore]/Sections',
+)
+Widget exploreScreenEmptyStateStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreScreenEmptyState',
+    catalogId: 'section.explore.empty_error',
+    children: [
+      _StateCard(
+        label: 'no source clubs',
+        child: ExploreScreenEmptyState(
+          state: const ExploreDiscoveryEmptyState(
+            kind: ExploreDiscoveryEmptyKind.noSourceClubs,
+            cityLabel: 'Mumbai',
+            action: ExploreDiscoveryEmptyAction.none,
+          ),
+          onClearSearch: _noop,
+          onClearFilters: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'search plus filters',
+        child: ExploreScreenEmptyState(
+          state: const ExploreDiscoveryEmptyState(
+            kind: ExploreDiscoveryEmptyKind.noFilteredSearchResults,
+            cityLabel: 'Mumbai',
+            action: ExploreDiscoveryEmptyAction.clearSearchAndFilters,
+          ),
+          onClearSearch: _noop,
+          onClearFilters: _noop,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Clear action states',
+  type: ExploreClearAction,
+  path: '[Explore]/Controls',
+)
+Widget exploreClearActionStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreClearAction',
+    catalogId: 'control.explore.clear_action',
+    children: [
+      _StateCard(
+        label: 'clear search',
+        child: ExploreClearAction(
+          clearSearch: true,
+          clearFilters: false,
+          onClearSearch: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'clear filters',
+        child: ExploreClearAction(
+          clearSearch: false,
+          clearFilters: true,
+          onClearFilters: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'clear search and filters',
+        child: ExploreClearAction(
+          clearSearch: true,
+          clearFilters: true,
+          onClearSearch: _noop,
+          onClearFilters: _noop,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Feed empty sliver states',
+  type: ExploreEventsEmptySliver,
+  path: '[Explore]/Sections',
+)
+Widget exploreEventsEmptySliverStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreEventsEmptySliver',
+    catalogId: 'section.explore.empty_error',
+    children: [
+      _StateCard(
+        label: 'clear search',
+        child: _SliverFrame(
+          height: 280,
+          child: CustomScrollView(
+            slivers: [
+              ExploreEventsEmptySliver(
+                state: ExploreEventsEmptyState.from(
+                  filters: const ExploreFilterSelection(),
+                  searchQuery: 'pickleball supper',
+                ),
+                onClearSearch: _noop,
+                onClearFilters: _noop,
+              ),
+            ],
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'broaden time filter',
+        child: _SliverFrame(
+          height: 280,
+          child: CustomScrollView(
+            slivers: [
+              ExploreEventsEmptySliver(
+                state: ExploreEventsEmptyState.from(
+                  filters: const ExploreFilterSelection(
+                    timeFilter: ExploreTimeFilter.tonight,
+                  ),
+                  searchQuery: '',
+                ),
+                onSetTimeFilter: (_) {},
+              ),
+            ],
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Activity states',
   type: ExploreEventTypeBrowseGrid,
   path: '[Explore]/Sections',
@@ -752,6 +1934,198 @@ Widget exploreEventTypeBrowseGridStates(BuildContext context) {
           child: _ExploreScope(child: const ExploreEventTypeBrowseGrid()),
         ),
       ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Activity content states',
+  type: EventTypeBrowseContent,
+  path: '[Explore]/Sections',
+)
+Widget eventTypeBrowseContentStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'EventTypeBrowseContent',
+    catalogId: 'section.explore.activity_grid.content',
+    children: [
+      _StateCard(
+        label: 'collapsed preview',
+        child: EventTypeBrowseContent(
+          items: _feedItems,
+          activeActivityTag: ActivityKind.dinner.name,
+          expanded: false,
+          onCategoryTap: _ignoreActivityKind,
+          onExpand: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'expanded list',
+        child: EventTypeBrowseContent(
+          items: _feedItems,
+          activeActivityTag: null,
+          expanded: true,
+          onCategoryTap: _ignoreActivityKind,
+          onExpand: _noop,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Activity rows states',
+  type: ActivityTypeRows,
+  path: '[Explore]/Sections',
+)
+Widget activityTypeRowsStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ActivityTypeRows',
+    catalogId: 'section.explore.activity_grid.rows',
+    children: [
+      _StateCard(
+        label: 'single column',
+        child: SizedBox(
+          width: 280,
+          child: ActivityTypeRows(
+            slots: _activitySlots,
+            activeActivityTag: ActivityKind.socialRun.name,
+            onCategoryTap: _ignoreActivityKind,
+            onExpand: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'two columns',
+        child: SizedBox(
+          width: 560,
+          child: ActivityTypeRows(
+            slots: _activitySlots,
+            activeActivityTag: ActivityKind.pickleball.label,
+            onCategoryTap: _ignoreActivityKind,
+            onExpand: _noop,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Activity slot states',
+  type: ActivitySlotView,
+  path: '[Explore]/Sections',
+)
+Widget activitySlotViewStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ActivitySlotView',
+    catalogId: 'section.explore.activity_grid.slot',
+    children: [
+      _StateCard(
+        label: 'activity entry',
+        child: ActivitySlotView(
+          slot: const ActivitySlot.entry(_socialRunActivityEntry),
+          activeActivityTag: ActivityKind.socialRun.name,
+          onCategoryTap: _ignoreActivityKind,
+          onExpand: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'more slot',
+        child: ActivitySlotView(
+          slot: const ActivitySlot.more(3),
+          activeActivityTag: null,
+          onCategoryTap: _ignoreActivityKind,
+          onExpand: _noop,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Activity row states',
+  type: ActivityTypeRow,
+  path: '[Explore]/Rows',
+)
+Widget activityTypeRowStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'ActivityTypeRow',
+    catalogId: 'row.explore.activity_type',
+    children: [
+      _StateCard(
+        label: 'inactive row',
+        child: ActivityTypeRow(
+          entry: _dinnerActivityEntry,
+          active: false,
+          onTap: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'active row',
+        child: ActivityTypeRow(
+          entry: _socialRunActivityEntry,
+          active: true,
+          onTap: _noop,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'More row states',
+  type: MoreActivityTypesRow,
+  path: '[Explore]/Rows',
+)
+Widget moreActivityTypesRowStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'MoreActivityTypesRow',
+    catalogId: 'row.explore.activity_type.more',
+    children: [
+      _StateCard(
+        label: 'collapsed overflow',
+        child: MoreActivityTypesRow(remainingCount: 3, onTap: _noop),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Activity dot states',
+  type: ActivityDot,
+  path: '[Explore]/Rows',
+)
+Widget activityDotStates(BuildContext context) {
+  final run = eventActivityVisual(ActivityKind.socialRun, context: context);
+  final dinner = eventActivityVisual(ActivityKind.dinner, context: context);
+  return _CatalogScreen(
+    title: 'ActivityDot',
+    catalogId: 'row.explore.activity_type.dot',
+    children: [
+      _StateCard(
+        label: 'activity accents',
+        child: _InlineSwatches(
+          children: [
+            ActivityDot(color: run.accent),
+            ActivityDot(color: dinner.accent),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Activity skeleton states',
+  type: EventTypeBrowseSkeleton,
+  path: '[Explore]/Sections',
+)
+Widget eventTypeBrowseSkeletonStates(BuildContext context) {
+  return const _CatalogScreen(
+    title: 'EventTypeBrowseSkeleton',
+    catalogId: 'section.explore.activity_grid.skeleton',
+    children: [
+      _StateCard(label: 'loading rows', child: EventTypeBrowseSkeleton()),
     ],
   );
 }
@@ -881,6 +2255,31 @@ Widget exploreMapRouteStates(BuildContext context) {
   );
 }
 
+class _MapSheetLeadPreview extends ConsumerWidget {
+  const _MapSheetLeadPreview({required this.leadMode, this.selectedEventId});
+
+  final ExploreMapSheetLeadMode leadMode;
+  final String? selectedEventId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return CustomScrollView(
+      physics: const NeverScrollableScrollPhysics(),
+      slivers: buildExploreMapSheetLeadSlivers(
+        feedAsync: ref.watch(exploreFeedViewModelProvider),
+        onRetry: () => ref.invalidate(exploreFeedViewModelProvider),
+        selectedEventId: selectedEventId,
+        cameraCenter: null,
+        filters: ref.watch(exploreFiltersProvider),
+        scopeLabel: 'Mumbai',
+        leadMode: leadMode,
+        onEventTapped: (_) {},
+        onSeeAll: _noop,
+      ),
+    );
+  }
+}
+
 class _ExploreScope extends StatelessWidget {
   const _ExploreScope({
     required this.child,
@@ -924,7 +2323,7 @@ class _ExploreScope extends StatelessWidget {
         cityListProvider.overrideWith((ref) async => const [_mumbai, _delhi]),
         deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
         exploreSourceClubsProvider.overrideWithValue(effectiveSourceClubs),
-        exploreViewModelProvider.overrideWithValue(effectiveViewModel),
+        exploreClubsViewModelProvider.overrideWithValue(effectiveViewModel),
         exploreFeedViewModelProvider.overrideWithValue(effectiveFeed),
       ],
       child: _SeedExploreState(
@@ -1007,9 +2406,20 @@ class _ExploreEventsSliverPreview extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final filters = ref.watch(exploreFiltersProvider);
     return CustomScrollView(
       slivers: buildExploreEventsSlivers(
-        ref,
+        ref.watch(exploreFeedViewModelProvider),
+        filters: filters,
+        searchQuery: ref.watch(exploreSearchQueryProvider).trim(),
+        onRetry: () => ref.invalidate(exploreFeedViewModelProvider),
+        onClearSearch: () =>
+            ref.read(exploreSearchQueryProvider.notifier).clear(),
+        onClearFilters: () => ref.read(exploreFiltersProvider.notifier).clear(),
+        onSetTimeFilter: (filter) =>
+            ref.read(exploreFiltersProvider.notifier).setTimeFilter(filter),
+        onEventSelected: (_, _) {},
+        onExternalEventOpened: (_) {},
         pinnedDayHeaders: false,
         candidateClubs: _clubs,
         joinedClubIds: _joinedClubIds,
@@ -1206,6 +2616,21 @@ class _MapPillFrame extends StatelessWidget {
   }
 }
 
+class _InlineSwatches extends StatelessWidget {
+  const _InlineSwatches({required this.children});
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: CatchSpacing.s3,
+      runSpacing: CatchSpacing.s3,
+      children: children,
+    );
+  }
+}
+
 class _MediaOverride extends StatelessWidget {
   const _MediaOverride({
     required this.child,
@@ -1322,9 +2747,55 @@ ExploreEventItem _item({
     availability: resolveViewerEventAvailability(
       event: event,
       userProfile: _viewer,
+      now: _now,
     ),
     distanceFromUserKm: distanceFromUserKm,
     isJoinedClubMember: isJoinedClubMember,
+  );
+}
+
+ExternalEvent _externalEvent({
+  required String id,
+  required String title,
+  required DateTime startTime,
+  required String meetingPoint,
+  required ActivityKind activityKind,
+  required String priceDisplayText,
+  required String sourcePlatform,
+}) {
+  return ExternalEvent(
+    id: id,
+    canonicalHostId: 'widgetbook-external-host',
+    compatibilityClubId: _clubs[1].id,
+    title: title,
+    description:
+        'A reviewed external plan shown as read-only supply in Explore with outbound booking only.',
+    startTime: startTime,
+    endTime: startTime.add(const Duration(hours: 2)),
+    timezone: 'Asia/Kolkata',
+    meetingPoint: meetingPoint,
+    locationDetails: 'Hosted outside Catch; confirm final details on source.',
+    photoUrl: _clubs[1].imageUrl,
+    latitude: _mumbai.latitude + 0.03,
+    longitude: _mumbai.longitude + 0.03,
+    activityKind: activityKind,
+    interactionModel: activityKind.defaultInteractionModel,
+    priceDisplayText: priceDisplayText,
+    parsedPriceInPaise: 180000,
+    status: 'active',
+    publicationStatus: 'public',
+    citySlug: _mumbai.name,
+    sourcePlatform: sourcePlatform,
+    externalLinks: [
+      ExternalEventLink(
+        platform: sourcePlatform,
+        url: 'https://example.com/events/$id',
+        linkType: 'booking',
+        sourceEventKey: id,
+        candidateId: 'candidate-$id',
+        primary: true,
+      ),
+    ],
   );
 }
 
@@ -1346,3 +2817,32 @@ Widget _secondaryAction(String label) {
 }
 
 void _noop() {}
+
+void _noopCity(CityData _) {}
+
+void _ignoreActivityKind(ActivityKind _) {}
+
+const _socialRunActivityEntry = ActivityEntry(
+  activityKind: ActivityKind.socialRun,
+  count: 3,
+  firstSeenIndex: 0,
+);
+
+const _dinnerActivityEntry = ActivityEntry(
+  activityKind: ActivityKind.dinner,
+  count: 2,
+  firstSeenIndex: 1,
+);
+
+const _pickleballActivityEntry = ActivityEntry(
+  activityKind: ActivityKind.pickleball,
+  count: 1,
+  firstSeenIndex: 2,
+);
+
+const _activitySlots = [
+  ActivitySlot.entry(_socialRunActivityEntry),
+  ActivitySlot.entry(_dinnerActivityEntry),
+  ActivitySlot.entry(_pickleballActivityEntry),
+  ActivitySlot.more(3),
+];

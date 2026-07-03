@@ -8,41 +8,40 @@ import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
-import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 const int _activityPreviewCount = 5;
 
-class ExploreEventTypeBrowseGrid extends ConsumerStatefulWidget {
-  const ExploreEventTypeBrowseGrid({super.key});
+class ExploreEventTypeBrowseGrid extends StatefulWidget {
+  const ExploreEventTypeBrowseGrid({
+    super.key,
+    this.items = const [],
+    this.activeActivityTag,
+    this.onCategoryTap,
+  });
+
+  final List<ExploreEventItem> items;
+  final String? activeActivityTag;
+  final ValueChanged<ActivityKind>? onCategoryTap;
 
   @override
-  ConsumerState<ExploreEventTypeBrowseGrid> createState() =>
+  State<ExploreEventTypeBrowseGrid> createState() =>
       _ExploreEventTypeBrowseGridState();
 }
 
 class _ExploreEventTypeBrowseGridState
-    extends ConsumerState<ExploreEventTypeBrowseGrid> {
+    extends State<ExploreEventTypeBrowseGrid> {
   bool _expanded = false;
 
   @override
   Widget build(BuildContext context) {
-    final feedAsync = ref.watch(exploreFeedViewModelProvider);
-    final filters = ref.watch(exploreFiltersProvider);
-    return switch (feedAsync) {
-      AsyncLoading() => const EventTypeBrowseSkeleton(),
-      AsyncError() => const SizedBox.shrink(),
-      AsyncData(:final value) => EventTypeBrowseContent(
-        items: value.items,
-        activeActivityTag: filters.activityTag,
-        expanded: _expanded,
-        onCategoryTap: (activityKind) => ref
-            .read(exploreFiltersProvider.notifier)
-            .toggleActivityTag(activityKind.name),
-        onExpand: () => setState(() => _expanded = true),
-      ),
-    };
+    return EventTypeBrowseContent(
+      items: widget.items,
+      activeActivityTag: widget.activeActivityTag,
+      expanded: _expanded,
+      onCategoryTap: widget.onCategoryTap ?? (_) {},
+      onExpand: () => setState(() => _expanded = true),
+    );
   }
 }
 
@@ -115,9 +114,9 @@ class ActivityTypeRows extends StatelessWidget {
       builder: (context, constraints) {
         final columns =
             constraints.maxWidth >=
-                    ComponentBreakpoints.eventTypeGridTwoColumnBreakpoint
-                ? 2
-                : 1;
+                ComponentBreakpoints.eventTypeGridTwoColumnBreakpoint
+            ? 2
+            : 1;
         if (columns == 1) {
           return Column(
             children: [
@@ -296,7 +295,11 @@ class MoreActivityTypesRow extends StatelessWidget {
                   ),
                 ),
                 gapW12,
-                Icon(CatchIcons.forwardArrow, size: CatchIcon.sm, color: t.ink3),
+                Icon(
+                  CatchIcons.forwardArrow,
+                  size: CatchIcon.sm,
+                  color: t.ink3,
+                ),
               ],
             ),
           ),

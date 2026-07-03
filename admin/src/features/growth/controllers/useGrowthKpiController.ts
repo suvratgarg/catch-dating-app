@@ -1,8 +1,10 @@
+import {useQuery} from "@tanstack/react-query";
 import {useCallback, useEffect, useMemo, useState} from "react";
 import type {
   HostAnalyticsMetricCard,
   HostAnalyticsTrendPoint,
 } from "../../../shared/types/adminTypes";
+import {adminQueryKeys} from "../../../shared/query/queryKeys";
 import {loadGrowthKpiSnapshot} from "../api/growthKpiRepository";
 
 export type GrowthStage =
@@ -32,51 +34,84 @@ export interface GrowthMetrics {
   bookings: number;
 }
 
+export interface GrowthKpiController {
+  filteredRows: GrowthSignalRow[];
+  isLoading: boolean;
+  loadedAt: string | null;
+  metrics: GrowthMetrics;
+  query: string;
+  rangePreset: GrowthRangePreset;
+  rows: GrowthSignalRow[];
+  selected: GrowthSignalRow | null;
+  stageFilter: GrowthStage;
+  trend: HostAnalyticsTrendPoint[];
+  refresh: () => Promise<boolean>;
+  select: (row: GrowthSignalRow) => void;
+  setQuery: (value: string) => void;
+  setRangePreset: (value: GrowthRangePreset) => void;
+  setStageFilter: (value: GrowthStage) => void;
+}
+
 export function useGrowthKpiController({
   onError,
 }: {
   onError: (message: string | null) => void;
-}) {
-  const [rows, setRows] = useState<GrowthSignalRow[]>([]);
-  const [trend, setTrend] = useState<HostAnalyticsTrendPoint[]>([]);
+}): GrowthKpiController {
   const [rangePreset, setRangePreset] =
     useState<GrowthRangePreset>("30d");
   const [stageFilter, setStageFilter] = useState<GrowthStage>("all");
   const [query, setQuery] = useState("");
-  const [loadedAt, setLoadedAt] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const granularity = rangePreset === "7d" ? "day" : "week";
+  const snapshotQuery = useQuery({
+    queryKey: adminQueryKeys.growth.kpis(rangePreset, granularity),
+    queryFn: () => loadGrowthKpiSnapshot({
+      rangePreset,
+      granularity,
+    }),
+    placeholderData: (previousData) => previousData,
+  });
+  const rows = useMemo(
+    () => snapshotQuery.data ? buildGrowthRows(snapshotQuery.data) : [],
+    [snapshotQuery.data]
+  );
+  const trend = snapshotQuery.data?.hostAnalytics.trend ?? [];
+  const loadedAt = snapshotQuery.data?.loadedAt ?? null;
 
   const refresh = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const snapshot = await loadGrowthKpiSnapshot({
-        rangePreset,
-        granularity: rangePreset === "7d" ? "day" : "week",
-      });
-      const nextRows = buildGrowthRows(snapshot);
-      setRows(nextRows);
-      setTrend(snapshot.hostAnalytics.trend);
-      setLoadedAt(snapshot.loadedAt);
-      setSelectedId((current) => {
-        if (current && nextRows.some((row) => row.id === current)) {
-          return current;
-        }
-        return nextRows.find((row) => row.status !== "ready")?.id ??
-          nextRows[0]?.id ??
-          null;
-      });
-      onError(null);
-    } catch (error) {
-      onError(messageFromError(error, "Unable to load growth KPIs."));
-    } finally {
-      setIsLoading(false);
+    const result = await snapshotQuery.refetch();
+    if (result.error) {
+      onError(messageFromError(result.error, "Unable to load growth KPIs."));
+      return false;
     }
-  }, [onError, rangePreset]);
+    onError(null);
+    return true;
+  }, [onError, snapshotQuery]);
 
   useEffect(() => {
-    void refresh();
-  }, [refresh]);
+    if (snapshotQuery.isError) {
+      onError(messageFromError(
+        snapshotQuery.error,
+        "Unable to load growth KPIs."
+      ));
+      return;
+    }
+    if (snapshotQuery.isSuccess) onError(null);
+  }, [
+    onError,
+    snapshotQuery.error,
+    snapshotQuery.isError,
+    snapshotQuery.isSuccess,
+  ]);
+
+  useEffect(() => {
+    setSelectedId((current) => {
+      if (current && rows.some((row) => row.id === current)) return current;
+      return rows.find((row) => row.status !== "ready")?.id ??
+        rows[0]?.id ??
+        null;
+    });
+  }, [rows]);
 
   const filteredRows = useMemo(
     () => filterRows(rows, stageFilter, query),
@@ -95,7 +130,7 @@ export function useGrowthKpiController({
 
   return {
     filteredRows,
-    isLoading,
+    isLoading: snapshotQuery.isPending || snapshotQuery.isFetching,
     loadedAt,
     metrics,
     query,

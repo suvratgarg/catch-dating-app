@@ -16,26 +16,42 @@ const EdgeInsets _companionStageCueGap = EdgeInsets.only(
   bottom: CatchSpacing.s3,
 );
 
-class MicroPodCard extends ConsumerWidget {
+@immutable
+class AssignmentOptOutActionState {
+  const AssignmentOptOutActionState({
+    required this.optedOut,
+    this.isSaving = false,
+  });
+
+  final bool optedOut;
+  final bool isSaving;
+
+  bool get included => !optedOut;
+}
+
+class MicroPodCard extends StatelessWidget {
   const MicroPodCard({
+    super.key,
     required this.event,
     required this.assignment,
     required this.peerProfiles,
     required this.peersLoading,
-    required this.microPodsOptedOut,
+    required this.actionState,
+    required this.onIncludeChanged,
   });
 
   final Event event;
   final EventSuccessAssignment? assignment;
   final List<PublicProfile> peerProfiles;
   final bool peersLoading;
-  final bool microPodsOptedOut;
+  final AssignmentOptOutActionState actionState;
+  final ValueChanged<bool> onIncludeChanged;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final assigned = assignment;
-    final mutation = ref.watch(EventSuccessController.microPodsOptOutMutation);
+    final optedOut = actionState.optedOut;
     final groupSlots =
         assigned?.groupRotationSlots ?? const <EventSuccessGroupRotationSlot>[];
     final profilesByUid = {
@@ -52,14 +68,14 @@ class MicroPodCard extends ConsumerWidget {
           ),
           gapH10,
           Text(
-            microPodsOptedOut
+            optedOut
                 ? 'Starter groups paused for you'
                 : assigned?.displayTitle ?? 'Your starter group is forming',
             style: CatchTextStyles.titleL(context),
           ),
           gapH6,
           Text(
-            microPodsOptedOut
+            optedOut
                 ? 'You won\'t be included when the host runs the generator.'
                 : assigned?.displaySubtitle ??
                       'The host will publish starter groups once everyone is checked in.',
@@ -95,15 +111,9 @@ class MicroPodCard extends ConsumerWidget {
           StageActionDock(
             child: IncludeMeToggle(
               label: 'Include me in starter groups',
-              included: !microPodsOptedOut,
-              busy: mutation.isPending,
-              onChanged: (include) =>
-                  EventSuccessController.microPodsOptOutMutation.run(
-                    ref,
-                    (tx) => tx
-                        .get(eventSuccessControllerProvider.notifier)
-                        .setMicroPodsOptOut(event: event, optedOut: !include),
-                  ),
+              included: actionState.included,
+              busy: actionState.isSaving,
+              onChanged: onIncludeChanged,
             ),
           ),
         ],
@@ -113,7 +123,11 @@ class MicroPodCard extends ConsumerWidget {
 }
 
 class GroupRotationSlotRow extends StatelessWidget {
-  const GroupRotationSlotRow({required this.slot, required this.profilesByUid});
+  const GroupRotationSlotRow({
+    super.key,
+    required this.slot,
+    required this.profilesByUid,
+  });
 
   final EventSuccessGroupRotationSlot slot;
   final Map<String, PublicProfile> profilesByUid;
@@ -180,28 +194,29 @@ class GroupRotationSlotRow extends StatelessWidget {
   }
 }
 
-class RotationScheduleCard extends ConsumerWidget {
+class RotationScheduleCard extends StatelessWidget {
   const RotationScheduleCard({
+    super.key,
     required this.event,
     required this.assignment,
     required this.peerProfiles,
     required this.peersLoading,
-    required this.guidedRotationsOptedOut,
+    required this.actionState,
+    required this.onIncludeChanged,
   });
 
   final Event event;
   final EventSuccessAssignment? assignment;
   final List<PublicProfile> peerProfiles;
   final bool peersLoading;
-  final bool guidedRotationsOptedOut;
+  final AssignmentOptOutActionState actionState;
+  final ValueChanged<bool> onIncludeChanged;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final assigned = assignment;
-    final mutation = ref.watch(
-      EventSuccessController.guidedRotationsOptOutMutation,
-    );
+    final optedOut = actionState.optedOut;
     final profilesByUid = {
       for (final profile in peerProfiles) profile.uid: profile,
     };
@@ -216,14 +231,14 @@ class RotationScheduleCard extends ConsumerWidget {
           ),
           gapH10,
           Text(
-            guidedRotationsOptedOut
+            optedOut
                 ? 'Timed rotations paused for you'
                 : assigned?.displayTitle ?? 'Your rotation schedule is forming',
             style: CatchTextStyles.titleL(context),
           ),
           gapH6,
           Text(
-            guidedRotationsOptedOut
+            optedOut
                 ? 'You won\'t be included when the host runs the generator.'
                 : assigned?.displaySubtitle ??
                       'Your timed pairings appear once the host generates rotations.',
@@ -251,18 +266,9 @@ class RotationScheduleCard extends ConsumerWidget {
           StageActionDock(
             child: IncludeMeToggle(
               label: 'Include me in timed rotations',
-              included: !guidedRotationsOptedOut,
-              busy: mutation.isPending,
-              onChanged: (include) =>
-                  EventSuccessController.guidedRotationsOptOutMutation.run(
-                    ref,
-                    (tx) => tx
-                        .get(eventSuccessControllerProvider.notifier)
-                        .setGuidedRotationsOptOut(
-                          event: event,
-                          optedOut: !include,
-                        ),
-                  ),
+              included: actionState.included,
+              busy: actionState.isSaving,
+              onChanged: onIncludeChanged,
             ),
           ),
         ],
@@ -272,7 +278,11 @@ class RotationScheduleCard extends ConsumerWidget {
 }
 
 class RotationSlotRow extends StatelessWidget {
-  const RotationSlotRow({required this.slot, required this.peerName});
+  const RotationSlotRow({
+    super.key,
+    required this.slot,
+    required this.peerName,
+  });
 
   final EventSuccessRotationSlot slot;
   final String peerName;
@@ -313,7 +323,7 @@ class RotationSlotRow extends StatelessWidget {
 }
 
 class LiveStepContextCard extends StatelessWidget {
-  const LiveStepContextCard({required this.step});
+  const LiveStepContextCard({super.key, required this.step});
 
   final EventRunOfShowStep? step;
 
@@ -351,6 +361,7 @@ class LiveStepContextCard extends StatelessWidget {
 /// once check-in opens. Opt-out controls live on the at-event cards instead.
 class PreCheckInPlanningCard extends StatelessWidget {
   const PreCheckInPlanningCard({
+    super.key,
     required this.microPodsEnabled,
     required this.guidedRotationsEnabled,
     required this.liveRevealEnabled,
@@ -422,7 +433,7 @@ class PreCheckInPlanningCard extends StatelessWidget {
 }
 
 class PreviewLine extends StatelessWidget {
-  const PreviewLine({required this.icon, required this.text});
+  const PreviewLine({super.key, required this.icon, required this.text});
 
   final IconData icon;
   final String text;
@@ -446,6 +457,7 @@ class PreviewLine extends StatelessWidget {
 
 class IncludeMeToggle extends StatelessWidget {
   const IncludeMeToggle({
+    super.key,
     required this.label,
     required this.included,
     required this.busy,
@@ -478,14 +490,35 @@ class IncludeMeToggle extends StatelessWidget {
   }
 }
 
-class SelfCheckInCard extends ConsumerWidget {
-  const SelfCheckInCard({required this.event});
+@immutable
+class SelfCheckInActionState {
+  const SelfCheckInActionState({this.isCheckingIn = false});
+
+  final bool isCheckingIn;
+}
+
+class SelfCheckInCard extends StatefulWidget {
+  const SelfCheckInCard({
+    super.key,
+    required this.event,
+    required this.actionState,
+    required this.onSelfCheckIn,
+  });
 
   final Event event;
+  final SelfCheckInActionState actionState;
+  final Future<void> Function() onSelfCheckIn;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final mutation = ref.watch(EventBookingController.selfCheckInMutation);
+  State<SelfCheckInCard> createState() => _SelfCheckInCardState();
+}
+
+class _SelfCheckInCardState extends State<SelfCheckInCard> {
+  bool _checkingIn = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final busy = widget.actionState.isCheckingIn || _checkingIn;
     final t = CatchTokens.of(context);
     return StagePanel(
       child: Column(
@@ -511,18 +544,16 @@ class SelfCheckInCard extends ConsumerWidget {
                 CatchButton(
                   label: 'Scan host QR',
                   icon: Icon(CatchIcons.qrCodeScannerRounded),
-                  isLoading: mutation.isPending,
-                  onPressed: mutation.isPending
-                      ? null
-                      : () => _scanHostQr(context, ref),
+                  isLoading: busy,
+                  onPressed: busy ? null : () => _scanHostQr(context),
                   fullWidth: true,
                 ),
                 gapH8,
                 CatchButton(
                   label: 'Check in',
                   variant: CatchButtonVariant.ghost,
-                  isLoading: mutation.isPending,
-                  onPressed: mutation.isPending ? null : () => _checkIn(ref),
+                  isLoading: busy,
+                  onPressed: busy ? null : _checkIn,
                   fullWidth: true,
                 ),
               ],
@@ -533,35 +564,31 @@ class SelfCheckInCard extends ConsumerWidget {
     );
   }
 
-  Future<void> _scanHostQr(BuildContext context, WidgetRef ref) async {
+  Future<void> _scanHostQr(BuildContext context) async {
     final matched = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
-      builder: (context) => EventCheckInQrScannerSheet(eventId: event.id),
+      builder: (context) =>
+          EventCheckInQrScannerSheet(eventId: widget.event.id),
     );
     if (matched == true && context.mounted) {
-      _checkIn(ref);
+      await _checkIn();
     }
   }
 
-  void _checkIn(WidgetRef ref) {
-    unawaited(
-      ref
-          .read(eventSuccessLiveEffectsControllerProvider)
-          .play(EventSuccessLiveEffectKind.liveEntry),
-    );
-    EventBookingController.selfCheckInMutation.run(
-      ref,
-      (tx) => tx
-          .get(eventBookingControllerProvider.notifier)
-          .selfCheckIn(eventId: event.id),
-    );
+  Future<void> _checkIn() async {
+    setState(() => _checkingIn = true);
+    try {
+      await widget.onSelfCheckIn();
+    } finally {
+      if (mounted) setState(() => _checkingIn = false);
+    }
   }
 }
 
 class EventCheckInQrScannerSheet extends StatefulWidget {
-  const EventCheckInQrScannerSheet({required this.eventId});
+  const EventCheckInQrScannerSheet({super.key, required this.eventId});
 
   final String eventId;
 
@@ -572,17 +599,7 @@ class EventCheckInQrScannerSheet extends StatefulWidget {
 
 class _EventCheckInQrScannerSheetState
     extends State<EventCheckInQrScannerSheet> {
-  late final MobileScannerController _controller = MobileScannerController(
-    formats: const [BarcodeFormat.qrCode],
-  );
-  bool _handled = false;
   String? _errorText;
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -625,9 +642,9 @@ class _EventCheckInQrScannerSheetState
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    MobileScanner(
-                      controller: _controller,
-                      onDetect: _handleCapture,
+                    EventCheckInQrScanner(
+                      eventId: widget.eventId,
+                      onResult: _handleScanResult,
                     ),
                     DecoratedBox(
                       decoration: BoxDecoration(
@@ -671,30 +688,27 @@ class _EventCheckInQrScannerSheetState
     );
   }
 
-  void _handleCapture(BarcodeCapture capture) {
-    if (_handled) return;
-    for (final barcode in capture.barcodes) {
-      final rawValue = barcode.rawValue;
-      if (rawValue == null) continue;
-      final payload = EventCheckInQrPayload.tryParse(rawValue);
-      if (payload == null) {
+  void _handleScanResult(EventCheckInQrScanResult result) {
+    switch (result) {
+      case EventCheckInQrScanResult.ignored:
+        return;
+      case EventCheckInQrScanResult.invalid:
         setState(() => _errorText = 'This is not a Catch event QR.');
-        continue;
-      }
-      if (payload.eventId != widget.eventId) {
+      case EventCheckInQrScanResult.wrongEvent:
         setState(() => _errorText = 'This QR belongs to another event.');
-        continue;
-      }
-      _handled = true;
-      unawaited(HapticFeedback.lightImpact());
-      Navigator.of(context).maybePop(true);
-      return;
+      case EventCheckInQrScanResult.matched:
+        unawaited(HapticFeedback.lightImpact());
+        Navigator.of(context).maybePop(true);
     }
   }
 }
 
 class StagePromptCard extends StatelessWidget {
-  const StagePromptCard({required this.prompt, this.title = 'Social mission'});
+  const StagePromptCard({
+    super.key,
+    required this.prompt,
+    this.title = 'Social mission',
+  });
 
   final String prompt;
   final String title;
@@ -721,6 +735,7 @@ class StagePromptCard extends StatelessWidget {
 
 class StageConversationCueCard extends StatelessWidget {
   const StageConversationCueCard({
+    super.key,
     required this.title,
     required this.cues,
     this.subtitle,
@@ -761,7 +776,7 @@ class StageConversationCueCard extends StatelessWidget {
 }
 
 class StageCueLine extends StatelessWidget {
-  const StageCueLine({required this.cue});
+  const StageCueLine({super.key, required this.cue});
 
   final EventSuccessConversationCue cue;
 
@@ -831,6 +846,7 @@ class StageCueLine extends StatelessWidget {
 
 class StageSectionLabel extends StatelessWidget {
   const StageSectionLabel({
+    super.key,
     required this.icon,
     required this.label,
     required this.color,
@@ -861,6 +877,7 @@ class StageSectionLabel extends StatelessWidget {
 
 class PeopleTokenRow extends StatelessWidget {
   const PeopleTokenRow({
+    super.key,
     required this.countLabel,
     required this.loading,
     required this.loadingLabel,

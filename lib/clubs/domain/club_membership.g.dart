@@ -6,23 +6,19 @@ part of 'club_membership.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_ClubMembership _$ClubMembershipFromJson(
-  Map<String, dynamic> json,
-) => _ClubMembership(
-  id: json['id'] as String,
-  clubId: json['clubId'] as String,
-  uid: json['uid'] as String,
-  role: $enumDecode(_$ClubMembershipRoleEnumMap, json['role']),
-  status: $enumDecode(_$ClubMembershipStatusEnumMap, json['status']),
-  pushNotificationsEnabled: json['pushNotificationsEnabled'] as bool? ?? false,
-  joinedAt: const TimestampConverter().fromJson(json['joinedAt'] as Timestamp),
-  leftAt: const NullableTimestampConverter().fromJson(
-    json['leftAt'] as Timestamp?,
-  ),
-  deletedAt: const NullableTimestampConverter().fromJson(
-    json['deletedAt'] as Timestamp?,
-  ),
-);
+_ClubMembership _$ClubMembershipFromJson(Map<String, dynamic> json) =>
+    _ClubMembership(
+      id: json['id'] as String,
+      clubId: json['clubId'] as String,
+      uid: json['uid'] as String,
+      role: $enumDecode(_$ClubMembershipRoleEnumMap, json['role']),
+      status: $enumDecode(_$ClubMembershipStatusEnumMap, json['status']),
+      pushNotificationsEnabled:
+          json['pushNotificationsEnabled'] as bool? ?? false,
+      joinedAt: const TimestampConverter().fromJson(json['joinedAt']),
+      leftAt: const NullableTimestampConverter().fromJson(json['leftAt']),
+      deletedAt: const NullableTimestampConverter().fromJson(json['deletedAt']),
+    );
 
 Map<String, dynamic> _$ClubMembershipToJson(
   _ClubMembership instance,

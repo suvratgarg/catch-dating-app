@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-06-25",
+  "updated": "2026-07-03",
   "tools": [
     {
       "id": "tool:runner",
@@ -10,7 +10,40 @@
       "safety": "local",
       "status": "active",
       "description": "Lists, validates, and dispatches repo tools.",
-      "checks": ["node --check tool/run.mjs"]
+      "checks": [
+        "node --check tool/run.mjs"
+      ]
+    },
+    {
+      "id": "meta:enforcement-integrity",
+      "category": "meta",
+      "path": "tool/check_enforcement_integrity.mjs",
+      "command": "node tool/check_enforcement_integrity.mjs",
+      "safety": "local",
+      "status": "active",
+      "role": "gate",
+      "rules": [
+        "AGENT-HARNESS-001",
+        "AUDIT-REGISTRY-001"
+      ],
+      "description": "Validates rule-to-tool enforcement bindings, manifest roles, doc anchors, sunset signal reviews, vacuity proof declarations, architecture scanner ownership, and ratchet baseline receipts for maxCounts and allowedFindings baselines.",
+      "checks": [
+        "node --check tool/check_enforcement_integrity.mjs",
+        "node --test tool/check_enforcement_integrity.test.mjs",
+        "node tool/check_enforcement_integrity.mjs"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/check_enforcement_integrity.test.mjs",
+        "contains": [
+          "fails when an active rule has no enforcement",
+          "fails satisfied sunset signals without review",
+          "fails role-less covered runtime tools",
+          "fails gate tools that only run count or syntax checks",
+          "fails allowedFindings baselines without matching metric receipt",
+          "fails broad flutter regression guards without plain-name or evidence"
+        ]
+      }
     },
     {
       "id": "agent:context-pack",
@@ -23,7 +56,8 @@
       "checks": [
         "node --check tool/agent/context_pack.mjs",
         "node tool/agent/context_pack.mjs --task agent-readiness --paths AGENTS.md,docs/agent_operating_model.md --json"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "agent:readiness",
@@ -36,7 +70,32 @@
       "checks": [
         "node --check tool/agent/check_agent_readiness.mjs",
         "node tool/agent/check_agent_readiness.mjs"
-      ]
+      ],
+      "role": "gate",
+      "rules": [
+        "AGENT-HARNESS-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/agent/check_agent_readiness.mjs",
+        "contains": [
+          "Agent readiness score"
+        ]
+      }
+    },
+    {
+      "id": "agent:record-delegation",
+      "category": "agent",
+      "path": "tool/agent/record_delegation_outcome.mjs",
+      "command": "node tool/agent/record_delegation_outcome.mjs",
+      "safety": "local-writes-audit-jsonl",
+      "status": "active",
+      "description": "Records parent-reviewed parallel agent/worktree delegation outcomes in the agent metrics ledger.",
+      "checks": [
+        "node --check tool/agent/record_delegation_outcome.mjs",
+        "node tool/agent/record_delegation_outcome.mjs --help"
+      ],
+      "role": "generator"
     },
     {
       "id": "audit:registry",
@@ -46,7 +105,10 @@
       "safety": "local",
       "status": "active",
       "description": "Maintains the recursive audit registry.",
-      "checks": ["dart analyze tool/audit_registry.dart"]
+      "checks": [
+        "dart analyze tool/audit_registry.dart"
+      ],
+      "role": "generator"
     },
     {
       "id": "audit:backend-errors",
@@ -59,7 +121,19 @@
       "checks": [
         "dart analyze tool/audit/backend_error_candidates.dart",
         "dart tool/audit/backend_error_candidates.dart --check"
-      ]
+      ],
+      "role": "gate",
+      "rules": [
+        "ERROR-CATALOG-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/audit/backend_error_candidates.dart",
+        "contains": [
+          "blockingCandidates.isNotEmpty",
+          "_isBlockingCandidate"
+        ]
+      }
     },
     {
       "id": "audit:frontend-errors",
@@ -69,7 +143,21 @@
       "safety": "local",
       "status": "active",
       "description": "Scans frontend, provider, plugin, and local error-handling migration candidates.",
-      "checks": ["dart analyze tool/audit/frontend_error_candidates.dart"]
+      "checks": [
+        "dart analyze tool/audit/frontend_error_candidates.dart",
+        "dart tool/audit/frontend_error_candidates.dart --self-test",
+        "dart tool/audit/frontend_error_candidates.dart --check"
+      ],
+      "role": "ratchet",
+      "rules": [
+        "ERROR-CATALOG-001",
+        "EXTERNAL-SIDE-EFFECT-001"
+      ],
+      "baseline": "tool/audit/frontend_error_candidates_baseline.json",
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "dart tool/audit/frontend_error_candidates.dart --self-test"
+      }
     },
     {
       "id": "audit:definition-catalog",
@@ -79,7 +167,10 @@
       "safety": "local-writes-audit-json",
       "status": "active",
       "description": "Builds Dart definition and consolidation candidate catalogs.",
-      "checks": ["python3 -B -c \"import ast,pathlib; ast.parse(pathlib.Path('tool/audit/definition_catalog.py').read_text())\""]
+      "checks": [
+        "python3 -B -c \"import ast,pathlib; ast.parse(pathlib.Path('tool/audit/definition_catalog.py').read_text())\""
+      ],
+      "role": "generator"
     },
     {
       "id": "audit:architecture-scan",
@@ -89,7 +180,153 @@
       "safety": "local-writes-audit-json",
       "status": "active",
       "description": "Scans async-state handling, repository error wrapping, controller mutations, and structural widget overlap.",
-      "checks": ["python3 -B -c \"import ast,pathlib; ast.parse(pathlib.Path('tool/scan_architecture.py').read_text())\""]
+      "checks": [
+        "python3 -B -c \"import ast,pathlib; ast.parse(pathlib.Path('tool/scan_architecture.py').read_text())\""
+      ],
+      "role": "generator"
+    },
+    {
+      "id": "audit:adopted-architecture-boundaries",
+      "category": "audit",
+      "path": "tool/architecture/check_adopted_architecture_boundaries.mjs",
+      "command": "node tool/architecture/check_adopted_architecture_boundaries.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Enforces provider/routing-free imports and API usage for aligned provider-free adopters tracked in the architecture pattern registry.",
+      "checks": [
+        "node --check tool/architecture/check_adopted_architecture_boundaries.mjs",
+        "node tool/architecture/check_adopted_architecture_boundaries.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "DEPENDENCY-DIRECTION-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/architecture/check_adopted_architecture_boundaries.test.mjs",
+        "contains": [
+          "scanBoundaryFile flags provider, routing, data, and repository access"
+        ]
+      }
+    },
+    {
+      "id": "audit:app-architecture-exhibits",
+      "category": "audit",
+      "path": "tool/architecture/check_app_architecture_exhibits.mjs",
+      "command": "node tool/architecture/check_app_architecture_exhibits.mjs",
+      "safety": "local",
+      "status": "active",
+      "role": "gate",
+      "rules": [
+        "EXHIBIT-FRESHNESS-001"
+      ],
+      "description": "Checks app architecture reference exhibits for freshness markers, tracker anchor drift, and stale code snippets.",
+      "checks": [
+        "node --check tool/architecture/check_app_architecture_exhibits.mjs",
+        "node --test tool/architecture/check_app_architecture_exhibits.test.mjs",
+        "node tool/architecture/check_app_architecture_exhibits.mjs"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/architecture/check_app_architecture_exhibits.test.mjs",
+        "contains": [
+          "flags stale event-detail snippets in screen exhibit",
+          "flags tracker anchor drift"
+        ]
+      }
+    },
+    {
+      "id": "audit:dependency-direction",
+      "category": "audit",
+      "path": "tool/architecture/check_dependency_direction.mjs",
+      "command": "node tool/architecture/check_dependency_direction.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Checks Dart dependency direction, public barrel seams, provider-free state-file naming, route-boundary provider leaks, keepAlive rationale markers, manual provider declarations, hidden display-state classes, and multi-screen presentation files.",
+      "checks": [
+        "node --check tool/architecture/check_dependency_direction.mjs",
+        "node tool/architecture/check_dependency_direction.mjs"
+      ],
+      "role": "ratchet",
+      "rules": [
+        "DEPENDENCY-DIRECTION-001",
+        "INJECTED-CLOCK-001",
+        "STREAM-LIFECYCLE-001",
+        "EXTERNAL-SIDE-EFFECT-001",
+        "CONTROLLER-BOUNDARY-001",
+        "AUDIT-REGISTRY-001"
+      ],
+      "baseline": "tool/architecture/dependency_direction_baseline.json",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/architecture/check_dependency_direction.test.mjs",
+        "contains": [
+          "scanFile flags domain framework imports",
+          "scanFile flags data/domain imports of feature presentation",
+          "scanFile flags sibling feature widget imports",
+          "scanFile flags domain DateTime.now access",
+          "scanFile honors stream timeout override comments",
+          "scanFile flags presentation plugin imports outside controllers and services",
+          "scanDependencyDirection ratchets baseline findings",
+          "scanFile flags WidgetRef parameters below route build methods",
+          "scanFile flags repository provider reads from presentation widgets",
+          "scanFile flags unannotated feature-root presentation barrel exports",
+          "scanFile flags provider-coupled presentation state files",
+          "scanFile flags undocumented keepAlive providers",
+          "scanFile flags manual provider declarations outside core",
+          "scanFile flags display state classes misplaced outside state files",
+          "scanFile flags presentation files with multiple route screens",
+          "scanDependencyDirection flags untracked state adapters as a hard gate"
+        ]
+      }
+    },
+    {
+      "id": "audit:mutation-error-surfaces",
+      "category": "audit",
+      "path": "tool/architecture/check_mutation_error_surfaces.mjs",
+      "command": "node tool/architecture/check_mutation_error_surfaces.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Checks production Dart build methods that read Mutation isPending state also expose mutation error feedback.",
+      "checks": [
+        "node --check tool/architecture/check_mutation_error_surfaces.mjs",
+        "node tool/architecture/check_mutation_error_surfaces.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "MUTATION-ERROR-SURFACE-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/architecture/check_mutation_error_surfaces.test.mjs",
+        "contains": [
+          "scanFile flags build methods that read mutation pending without errors"
+        ]
+      }
+    },
+    {
+      "id": "audit:route-string-literals",
+      "category": "audit",
+      "path": "tool/architecture/check_route_string_literals.mjs",
+      "command": "node tool/architecture/check_route_string_literals.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Checks production Dart navigation calls outside lib/routing avoid raw route path string literals.",
+      "checks": [
+        "node --check tool/architecture/check_route_string_literals.mjs",
+        "node tool/architecture/check_route_string_literals.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "ROUTE-STRING-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/architecture/check_route_string_literals.test.mjs",
+        "contains": [
+          "scanFile flags context navigation with raw path strings"
+        ]
+      }
     },
     {
       "id": "audit:widget-antipatterns",
@@ -99,7 +336,10 @@
       "safety": "local-writes-audit-json",
       "status": "active",
       "description": "Scans widget-returning functions and private widget classes for widget architecture migration candidates.",
-      "checks": ["python3 -B -c \"import ast,pathlib; ast.parse(pathlib.Path('tool/scan_widget_antipatterns.py').read_text())\""]
+      "checks": [
+        "python3 -B -c \"import ast,pathlib; ast.parse(pathlib.Path('tool/scan_widget_antipatterns.py').read_text())\""
+      ],
+      "role": "generator"
     },
     {
       "id": "audit:widget-function-migrator",
@@ -109,7 +349,9 @@
       "safety": "local-writes-source",
       "status": "support",
       "description": "Mechanical helper for converting private widget-returning functions into widget classes from the widget antipattern scan.",
-      "checks": ["python3 -B -c \"import ast,pathlib; ast.parse(pathlib.Path('tool/migrate_widget_functions.py').read_text())\""]
+      "checks": [
+        "python3 -B -c \"import ast,pathlib; ast.parse(pathlib.Path('tool/migrate_widget_functions.py').read_text())\""
+      ]
     },
     {
       "id": "audit:widget-cleanup",
@@ -119,7 +361,10 @@
       "safety": "local",
       "status": "active",
       "description": "Scans widget/design-system cleanup candidates.",
-      "checks": ["bash -n tool/widget_cleanup_scan.sh"]
+      "checks": [
+        "bash -n tool/widget_cleanup_scan.sh"
+      ],
+      "role": "finder"
     },
     {
       "id": "remote-ops:manifest",
@@ -132,7 +377,8 @@
       "checks": [
         "node --check tool/check_remote_ops_manifest.mjs",
         "node tool/check_remote_ops_manifest.mjs --check"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "admin:import-boundaries",
@@ -145,7 +391,161 @@
       "checks": [
         "node --check tool/admin/check_import_boundaries.mjs",
         "node tool/admin/check_import_boundaries.mjs"
-      ]
+      ],
+      "role": "finder"
+    },
+    {
+      "id": "web:website-import-boundaries",
+      "category": "lint",
+      "path": "tool/web/check_website_import_boundaries.mjs",
+      "command": "node tool/web/check_website_import_boundaries.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Checks React marketing website app, feature, shared, generated, and service import boundaries.",
+      "checks": [
+        "node --check tool/web/check_website_import_boundaries.mjs",
+        "node tool/web/check_website_import_boundaries.mjs"
+      ],
+      "role": "finder"
+    },
+    {
+      "id": "web:react-ui-primitives",
+      "category": "lint",
+      "path": "tool/web/check_react_ui_primitives.mjs",
+      "command": "node tool/web/check_react_ui_primitives.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Checks React website/admin feature code does not hand-roll native interactive controls outside shared UI primitive owners.",
+      "checks": [
+        "node --check tool/web/check_react_ui_primitives.mjs",
+        "node tool/web/check_react_ui_primitives.mjs --check"
+      ],
+      "role": "finder"
+    },
+    {
+      "id": "web:react-classname-boundaries",
+      "category": "lint",
+      "path": "tool/web/check_react_classname_boundaries.mjs",
+      "command": "node tool/web/check_react_classname_boundaries.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Checks React website/admin app, feature, and story code does not pass className directly outside shared primitive owner files.",
+      "checks": [
+        "node --check tool/web/check_react_classname_boundaries.mjs",
+        "node tool/web/check_react_classname_boundaries.mjs --self-test",
+        "node tool/web/check_react_classname_boundaries.mjs --check"
+      ],
+      "role": "gate",
+      "rules": [
+        "WEB-UI-COMPONENT-001"
+      ],
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node tool/web/check_react_classname_boundaries.mjs --self-test"
+      }
+    },
+    {
+      "id": "web:react-component-governance",
+      "category": "lint",
+      "path": "tool/web/check_react_component_governance.mjs",
+      "command": "node tool/web/check_react_component_governance.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Checks React website/admin feature code routes governed component families through shared primitives. The governed-family registry is generated by --families-json and checked in at docs/audit_registry/react_component_governance_families.json.",
+      "checks": [
+        "node --check tool/web/check_react_component_governance.mjs",
+        "node tool/web/check_react_component_governance.mjs --self-test",
+        "node tool/web/check_react_component_governance.mjs --check"
+      ],
+      "role": "gate",
+      "rules": [
+        "WEB-UI-COMPONENT-001"
+      ],
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node tool/web/check_react_component_governance.mjs --self-test"
+      }
+    },
+    {
+      "id": "web:admin-feature-exports",
+      "category": "lint",
+      "path": "tool/web/check_admin_feature_exports.mjs",
+      "command": "node tool/web/check_admin_feature_exports.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Checks admin feature UI only exports route/workspace entry components; reusable panels/cards/lists must live in shared admin primitives or stay private.",
+      "checks": [
+        "node --check tool/web/check_admin_feature_exports.mjs",
+        "node tool/web/check_admin_feature_exports.mjs --self-test",
+        "node tool/web/check_admin_feature_exports.mjs --check"
+      ],
+      "role": "gate",
+      "rules": [
+        "WEB-UI-COMPONENT-001"
+      ],
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node tool/web/check_admin_feature_exports.mjs --self-test"
+      }
+    },
+    {
+      "id": "web:admin-components",
+      "category": "lint",
+      "path": "tool/web/check_admin_components.mjs",
+      "command": "node tool/web/check_admin_components.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates design/admin/components.json against admin route/workspace exports, shared admin UI primitives, feedback providers, and ready Storybook catchComponent coverage.",
+      "checks": [
+        "node --check tool/web/check_admin_components.mjs",
+        "node tool/web/check_admin_components.mjs --self-test",
+        "node tool/web/check_admin_components.mjs --check"
+      ],
+      "role": "gate",
+      "rules": [
+        "WEB-UI-COMPONENT-001"
+      ],
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node tool/web/check_admin_components.mjs --self-test"
+      }
+    },
+    {
+      "id": "web:react-architecture-boundaries",
+      "category": "lint",
+      "path": "tool/web/check_react_architecture_boundaries.mjs",
+      "command": "node tool/web/check_react_architecture_boundaries.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Checks React website/admin feature boundaries for route-owned state and cross-feature ownership drift.",
+      "checks": [
+        "node --check tool/web/check_react_architecture_boundaries.mjs",
+        "node tool/web/check_react_architecture_boundaries.mjs --check"
+      ],
+      "role": "finder"
+    },
+    {
+      "id": "web:react-query-state",
+      "category": "lint",
+      "path": "tool/web/check_react_query_state.mjs",
+      "command": "node tool/web/check_react_query_state.mjs",
+      "safety": "local",
+      "status": "active",
+      "role": "ratchet",
+      "rules": [
+        "WEB-QUERY-STATE-001"
+      ],
+      "baseline": "tool/web/react_query_state_baseline.json",
+      "description": "Ratchets React feature controller and use-hook manual async/loading state so new server-state work moves to TanStack Query instead of local loading flags.",
+      "checks": [
+        "node --check tool/web/check_react_query_state.mjs",
+        "node tool/web/check_react_query_state.mjs --self-test",
+        "node tool/web/check_react_query_state.mjs --check"
+      ],
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node tool/web/check_react_query_state.mjs --self-test"
+      }
     },
     {
       "id": "branding:native-assets",
@@ -155,7 +555,10 @@
       "safety": "local-writes-generated",
       "status": "active",
       "description": "Generates flavor-specific native launcher and splash brand assets from the design context token cache.",
-      "checks": ["dart analyze tool/branding/generate_native_brand_assets.dart"]
+      "checks": [
+        "dart analyze tool/branding/generate_native_brand_assets.dart"
+      ],
+      "role": "generator"
     },
     {
       "id": "lint:riverpod-plugin-smoke",
@@ -165,7 +568,10 @@
       "safety": "local",
       "status": "active",
       "description": "Verifies Riverpod's analysis_server_plugin diagnostics are active in dart analyze.",
-      "checks": ["bash -n tool/check_riverpod_lint.sh"]
+      "checks": [
+        "bash -n tool/check_riverpod_lint.sh"
+      ],
+      "role": "finder"
     },
     {
       "id": "lint:catch-ui-plugin-smoke",
@@ -175,7 +581,23 @@
       "safety": "local",
       "status": "active",
       "description": "Verifies Catch UI analysis_server_plugin diagnostics across seeded violation and clean allowance probes.",
-      "checks": ["bash -n tool/check_catch_ui_lints.sh"]
+      "checks": [
+        "bash -n tool/check_catch_ui_lints.sh",
+        "bash tool/check_catch_ui_lints.sh"
+      ],
+      "role": "gate",
+      "rules": [
+        "UI-LINT-001"
+      ],
+      "vacuityProof": {
+        "type": "probe-harness",
+        "path": "tool/check_catch_ui_lints.sh",
+        "diagnostics": [
+          "catch_no_allow_debt",
+          "catch_no_raw_content_dimension",
+          "catch_no_local_design_constant"
+        ]
+      }
     },
     {
       "id": "lint:catch-ui-drift",
@@ -188,7 +610,8 @@
       "checks": [
         "bash -n tool/check_catch_ui_lint_drift.sh",
         "bash tool/check_catch_ui_lint_drift.sh --count"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "scanner:sizing",
@@ -200,8 +623,20 @@
       "description": "Reports catch_no_raw_content_dimension diagnostics from the Catch UI analyzer plugin.",
       "checks": [
         "bash -n tool/check_sizing.sh",
-        "bash tool/check_sizing.sh --count"
-      ]
+        "bash tool/check_sizing.sh"
+      ],
+      "role": "gate",
+      "rules": [
+        "UI-LINT-001",
+        "RESPONSIVE-LAYOUT-001"
+      ],
+      "vacuityProof": {
+        "type": "probe-harness",
+        "path": "tool/check_catch_ui_lints.sh",
+        "diagnostics": [
+          "catch_no_raw_content_dimension"
+        ]
+      }
     },
     {
       "id": "scanner:ui-allow-debt",
@@ -213,8 +648,19 @@
       "description": "Reports catch_no_allow_debt diagnostics from the Catch UI analyzer plugin.",
       "checks": [
         "bash -n tool/check_ui_allow_debt.sh",
-        "bash tool/check_ui_allow_debt.sh --count"
-      ]
+        "bash tool/check_ui_allow_debt.sh"
+      ],
+      "role": "gate",
+      "rules": [
+        "UI-LINT-001"
+      ],
+      "vacuityProof": {
+        "type": "probe-harness",
+        "path": "tool/check_catch_ui_lints.sh",
+        "diagnostics": [
+          "catch_no_allow_debt"
+        ]
+      }
     },
     {
       "id": "scanner:ui-local-constant-wrappers",
@@ -226,8 +672,20 @@
       "description": "Reports catch_no_local_design_constant diagnostics from the Catch UI analyzer plugin.",
       "checks": [
         "bash -n tool/check_ui_local_constant_wrappers.sh",
-        "bash tool/check_ui_local_constant_wrappers.sh --count"
-      ]
+        "bash tool/check_ui_local_constant_wrappers.sh"
+      ],
+      "role": "gate",
+      "rules": [
+        "UI-LINT-001",
+        "DESIGN-TOKENS-001"
+      ],
+      "vacuityProof": {
+        "type": "probe-harness",
+        "path": "tool/check_catch_ui_lints.sh",
+        "diagnostics": [
+          "catch_no_local_design_constant"
+        ]
+      }
     },
     {
       "id": "scanner:ui-system-raw-values",
@@ -240,6 +698,10 @@
       "checks": [
         "bash -n tool/check_ui_system_raw_values.sh",
         "bash tool/check_ui_system_raw_values.sh --count"
+      ],
+      "role": "finder",
+      "rules": [
+        "DESIGN-TOKENS-001"
       ]
     },
     {
@@ -253,7 +715,19 @@
       "checks": [
         "bash -n tool/check_no_raw_network_image.sh",
         "bash tool/check_no_raw_network_image.sh"
-      ]
+      ],
+      "role": "gate",
+      "rules": [
+        "IMAGE-NETWORK-PRIMITIVE-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/check_no_raw_network_image.sh",
+        "contains": [
+          "Image\\.network",
+          "exit 1"
+        ]
+      }
     },
     {
       "id": "contracts:check-all",
@@ -263,7 +737,10 @@
       "safety": "local-build-test",
       "status": "active",
       "description": "Runs the full data/schema/rules contract gate.",
-      "checks": ["bash -n tool/check_data_contract.sh"]
+      "checks": [
+        "bash -n tool/check_data_contract.sh"
+      ],
+      "role": "finder"
     },
     {
       "id": "test:app-shell-integration",
@@ -273,7 +750,10 @@
       "safety": "local-build-test",
       "status": "active",
       "description": "Runs the split deterministic app-shell integration suites on a local Flutter desktop device.",
-      "checks": ["bash -n tool/test_app_shell_integration.sh"]
+      "checks": [
+        "bash -n tool/test_app_shell_integration.sh"
+      ],
+      "role": "finder"
     },
     {
       "id": "contracts:generate-business-rules",
@@ -286,7 +766,8 @@
       "checks": [
         "node --check tool/contracts/generate_business_rules.mjs",
         "node tool/contracts/generate_business_rules.mjs --check"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "contracts:generate-schemas",
@@ -296,7 +777,9 @@
       "safety": "local-writes-generated",
       "status": "active",
       "description": "Generates schema registries, validators, paths, and Dart schema metadata.",
-      "checks": ["node --check tool/contracts/generate_schema_contracts.mjs"]
+      "checks": [
+        "node --check tool/contracts/generate_schema_contracts.mjs"
+      ]
     },
     {
       "id": "contracts:validate-schemas",
@@ -306,7 +789,61 @@
       "safety": "local",
       "status": "active",
       "description": "Validates JSON schema source consistency.",
-      "checks": ["node --check tool/contracts/validate_schema_contracts.mjs"]
+      "checks": [
+        "node --check tool/contracts/validate_schema_contracts.mjs"
+      ]
+    },
+    {
+      "id": "contracts:schema-fixtures",
+      "category": "contracts",
+      "path": "tool/contracts/check_schema_fixtures.mjs",
+      "command": "node tool/contracts/check_schema_fixtures.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates every contract fixture against its explicitly mapped generated JSON Schema.",
+      "checks": [
+        "node --check tool/contracts/check_schema_fixtures.mjs",
+        "node --test tool/contracts/check_schema_fixtures.test.mjs",
+        "node tool/contracts/check_schema_fixtures.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "SCHEMA-FIXTURE-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/contracts/check_schema_fixtures.test.mjs",
+        "contains": [
+          "fixture manifest maps every fixture exactly once",
+          "schema fixture check validates all current fixtures"
+        ]
+      }
+    },
+    {
+      "id": "contracts:migration-contracts",
+      "category": "contracts",
+      "path": "tool/contracts/check_migration_contracts.mjs",
+      "command": "node tool/contracts/check_migration_contracts.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates staged migration contract phase metadata and live-apply evidence.",
+      "checks": [
+        "node --check tool/contracts/check_migration_contracts.mjs",
+        "node --test tool/contracts/check_migration_contracts.test.mjs",
+        "node tool/contracts/check_migration_contracts.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "MIGRATION-CONTRACT-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/contracts/check_migration_contracts.test.mjs",
+        "contains": [
+          "migration contract check validates the current migration inventory",
+          "migration contract check rejects incomplete complete-state evidence"
+        ]
+      }
     },
     {
       "id": "contracts:firestore-contract",
@@ -316,7 +853,9 @@
       "safety": "local",
       "status": "active",
       "description": "Checks Firestore contract metadata against rules, schemas, and Functions exports.",
-      "checks": ["node --check tool/contracts/check_firestore_contract.mjs"]
+      "checks": [
+        "node --check tool/contracts/check_firestore_contract.mjs"
+      ]
     },
     {
       "id": "contracts:storage-contract",
@@ -326,7 +865,12 @@
       "safety": "local",
       "status": "active",
       "description": "Checks Storage contract metadata against storage rules and tests.",
-      "checks": ["node --check tool/contracts/check_storage_contract.mjs"]
+      "checks": [
+        "node --check tool/contracts/check_storage_contract.mjs"
+      ],
+      "rules": [
+        "STORAGE-CONTRACT-001"
+      ]
     },
     {
       "id": "contracts:rules-semantics",
@@ -336,7 +880,9 @@
       "safety": "local",
       "status": "active",
       "description": "Checks Firestore rule semantics against schema-owned paths.",
-      "checks": ["node --check tool/contracts/check_firestore_rules_semantics.mjs"]
+      "checks": [
+        "node --check tool/contracts/check_firestore_rules_semantics.mjs"
+      ]
     },
     {
       "id": "contracts:path-literals",
@@ -346,7 +892,9 @@
       "safety": "local",
       "status": "active",
       "description": "Blocks retired raw schema path literals in production code.",
-      "checks": ["node --check tool/contracts/check_schema_path_literals.mjs"]
+      "checks": [
+        "node --check tool/contracts/check_schema_path_literals.mjs"
+      ]
     },
     {
       "id": "contracts:type-boundaries",
@@ -356,7 +904,9 @@
       "safety": "local",
       "status": "active",
       "description": "Checks schema/type boundary hygiene.",
-      "checks": ["node --check tool/contracts/check_schema_type_boundaries.mjs"]
+      "checks": [
+        "node --check tool/contracts/check_schema_type_boundaries.mjs"
+      ]
     },
     {
       "id": "contracts:generate-domain-classes",
@@ -369,7 +919,8 @@
       "checks": [
         "node --check tool/contracts/generate_domain_classes.mjs",
         "node tool/contracts/generate_domain_classes.mjs --check"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "data:validate",
@@ -379,7 +930,9 @@
       "safety": "remote-read",
       "status": "active",
       "description": "Validates live or emulator Firestore data invariants.",
-      "checks": ["node --check tool/data/validate_firestore_data.mjs"]
+      "checks": [
+        "node --check tool/data/validate_firestore_data.mjs"
+      ]
     },
     {
       "id": "data:delete-reviews",
@@ -389,7 +942,9 @@
       "safety": "remote-destructive-apply-guarded",
       "status": "active",
       "description": "Deletes reviews only with explicit confirmation.",
-      "checks": ["node --check tool/data/delete_firestore_reviews.mjs"]
+      "checks": [
+        "node --check tool/data/delete_firestore_reviews.mjs"
+      ]
     },
     {
       "id": "data:repair-public-profiles",
@@ -399,7 +954,11 @@
       "safety": "remote-write-apply-guarded",
       "status": "active",
       "description": "Repairs public profile projections from user profiles.",
-      "checks": ["node --check tool/data/recompute_public_profiles.mjs", "node --test tool/data/recompute_public_profiles.test.mjs"]
+      "checks": [
+        "node --check tool/data/recompute_public_profiles.mjs",
+        "node --test tool/data/recompute_public_profiles.test.mjs"
+      ],
+      "role": "generator"
     },
     {
       "id": "data:repair-club-hosts",
@@ -409,7 +968,11 @@
       "safety": "remote-write-apply-guarded",
       "status": "active",
       "description": "Repairs denormalized club host identity projections.",
-      "checks": ["node --check tool/data/recompute_club_host_profiles.mjs", "node --test tool/data/recompute_club_host_profiles.test.mjs"]
+      "checks": [
+        "node --check tool/data/recompute_club_host_profiles.mjs",
+        "node --test tool/data/recompute_club_host_profiles.test.mjs"
+      ],
+      "role": "generator"
     },
     {
       "id": "data:repair-review-authors",
@@ -419,7 +982,11 @@
       "safety": "remote-write-apply-guarded",
       "status": "active",
       "description": "Repairs denormalized review author names.",
-      "checks": ["node --check tool/data/recompute_review_author_profiles.mjs", "node --test tool/data/recompute_review_author_profiles.test.mjs"]
+      "checks": [
+        "node --check tool/data/recompute_review_author_profiles.mjs",
+        "node --test tool/data/recompute_review_author_profiles.test.mjs"
+      ],
+      "role": "generator"
     },
     {
       "id": "data:repair-club-member-counts",
@@ -429,7 +996,11 @@
       "safety": "remote-write-apply-guarded",
       "status": "active",
       "description": "Repairs club memberCount projections.",
-      "checks": ["node --check tool/data/recompute_club_member_counts.mjs", "node --test tool/data/recompute_club_member_counts.test.mjs"]
+      "checks": [
+        "node --check tool/data/recompute_club_member_counts.mjs",
+        "node --test tool/data/recompute_club_member_counts.test.mjs"
+      ],
+      "role": "generator"
     },
     {
       "id": "data:repair-event-aggregates",
@@ -439,7 +1010,11 @@
       "safety": "remote-write-apply-guarded",
       "status": "active",
       "description": "Repairs event aggregate counts from participation edges.",
-      "checks": ["node --check tool/data/recompute_event_aggregate_counts.mjs", "node --test tool/data/recompute_event_aggregate_counts.test.mjs"]
+      "checks": [
+        "node --check tool/data/recompute_event_aggregate_counts.mjs",
+        "node --test tool/data/recompute_event_aggregate_counts.test.mjs"
+      ],
+      "role": "generator"
     },
     {
       "id": "data:backfill-event-discovery",
@@ -449,7 +1024,11 @@
       "safety": "remote-write-apply-guarded",
       "status": "active",
       "description": "Backfills event discovery projection fields for Explore's direct event index.",
-      "checks": ["node --check tool/data/backfill_event_discovery_fields.mjs", "node --test tool/data/backfill_event_discovery_fields.test.mjs"]
+      "checks": [
+        "node --check tool/data/backfill_event_discovery_fields.mjs",
+        "node --test tool/data/backfill_event_discovery_fields.test.mjs"
+      ],
+      "role": "generator"
     },
     {
       "id": "data:backfill-event-admin-search",
@@ -459,7 +1038,11 @@
       "safety": "remote-write-apply-guarded",
       "status": "active",
       "description": "Backfills event adminSearch projections for the admin Events canonical directory.",
-      "checks": ["node --check tool/data/backfill_event_admin_search.mjs", "node --test tool/data/backfill_event_admin_search.test.mjs"]
+      "checks": [
+        "node --check tool/data/backfill_event_admin_search.mjs",
+        "node --test tool/data/backfill_event_admin_search.test.mjs"
+      ],
+      "role": "generator"
     },
     {
       "id": "data:backfill-organizer-admin-search",
@@ -469,7 +1052,11 @@
       "safety": "remote-write-apply-guarded",
       "status": "active",
       "description": "Backfills organizer adminSearch projections for the admin Organizers canonical directory.",
-      "checks": ["node --check tool/data/backfill_organizer_admin_search.mjs", "node --test tool/data/backfill_organizer_admin_search.test.mjs"]
+      "checks": [
+        "node --check tool/data/backfill_organizer_admin_search.mjs",
+        "node --test tool/data/backfill_organizer_admin_search.test.mjs"
+      ],
+      "role": "generator"
     },
     {
       "id": "data:backfill-algolia-explore-search",
@@ -479,7 +1066,9 @@
       "safety": "remote-write-apply-guarded",
       "status": "active",
       "description": "Backfills Algolia Explore search records from club and event projections.",
-      "checks": ["node --check tool/data/backfill_algolia_explore_search.mjs"]
+      "checks": [
+        "node --check tool/data/backfill_algolia_explore_search.mjs"
+      ]
     },
     {
       "id": "data:backfill-location-markets",
@@ -489,7 +1078,9 @@
       "safety": "remote-write-apply-guarded",
       "status": "active",
       "description": "Audits and optionally backfills location, city, region, and market projection fields for clubs, users, public profiles, and config cities.",
-      "checks": ["node --check tool/data/backfill_location_market_fields.mjs"]
+      "checks": [
+        "node --check tool/data/backfill_location_market_fields.mjs"
+      ]
     },
     {
       "id": "data:hygiene-media-paths",
@@ -499,7 +1090,9 @@
       "safety": "remote-write-apply-guarded",
       "status": "active",
       "description": "Audits and repairs hosted media paths against Firestore and Storage contracts.",
-      "checks": ["node --check tool/data/hygiene_media_paths.mjs"]
+      "checks": [
+        "node --check tool/data/hygiene_media_paths.mjs"
+      ]
     },
     {
       "id": "data:repair-future-attendance",
@@ -509,7 +1102,11 @@
       "safety": "remote-write-apply-guarded",
       "status": "active",
       "description": "Downgrades invalid attended edges on future events.",
-      "checks": ["node --check tool/data/repair_future_event_attendance.mjs", "node --test tool/data/repair_future_event_attendance.test.mjs"]
+      "checks": [
+        "node --check tool/data/repair_future_event_attendance.mjs",
+        "node --test tool/data/repair_future_event_attendance.test.mjs"
+      ],
+      "role": "generator"
     },
     {
       "id": "data:backfill-profile-photos",
@@ -519,7 +1116,11 @@
       "safety": "remote-write-apply-guarded",
       "status": "active",
       "description": "Backfills grouped profile photo fields.",
-      "checks": ["node --check tool/data/backfill_profile_photos.mjs", "node --test tool/data/backfill_profile_photos.test.mjs"]
+      "checks": [
+        "node --check tool/data/backfill_profile_photos.mjs",
+        "node --test tool/data/backfill_profile_photos.test.mjs"
+      ],
+      "role": "generator"
     },
     {
       "id": "data:strip-profile-coordinates",
@@ -529,7 +1130,9 @@
       "safety": "remote-write-apply-guarded",
       "status": "active",
       "description": "Removes public profile coordinate fields.",
-      "checks": ["node --check tool/data/strip_public_profile_coordinates.mjs"]
+      "checks": [
+        "node --check tool/data/strip_public_profile_coordinates.mjs"
+      ]
     },
     {
       "id": "data:profile-projection-parity",
@@ -539,7 +1142,10 @@
       "safety": "local-test",
       "status": "active",
       "description": "Checks seed and Functions public profile projection parity.",
-      "checks": ["npm --prefix functions run build && node --test tool/data/profile_projection_parity.test.mjs"]
+      "checks": [
+        "npm --prefix functions run build && node --test tool/data/profile_projection_parity.test.mjs"
+      ],
+      "role": "generator"
     },
     {
       "id": "demo:ops",
@@ -553,7 +1159,8 @@
         "node --check tool/demo/demo_ops.mjs",
         "node --test tool/demo/demo_ops_core.test.mjs",
         "node tool/demo/demo_ops.mjs persona-profile-projection --asset-statuses planned --output tool/demo/demo_seed/personas/us_nyc_sales_profile_projection.planned.json --check"
-      ]
+      ],
+      "role": "generator"
     },
     {
       "id": "demo:ops-core",
@@ -563,7 +1170,9 @@
       "safety": "local-test",
       "status": "internal",
       "description": "Shared planning and Firestore helpers for demo operations.",
-      "checks": ["node --check tool/demo/demo_ops_core.mjs"]
+      "checks": [
+        "node --check tool/demo/demo_ops_core.mjs"
+      ]
     },
     {
       "id": "demo:schedule-policy",
@@ -573,7 +1182,9 @@
       "safety": "local",
       "status": "internal",
       "description": "Shared demo schedule-lock and event timing policy helpers.",
-      "checks": ["node --check tool/demo/demo_schedule_policy.mjs"]
+      "checks": [
+        "node --check tool/demo/demo_schedule_policy.mjs"
+      ]
     },
     {
       "id": "demo:seed-scenario-catalog",
@@ -583,7 +1194,10 @@
       "safety": "local-test",
       "status": "internal",
       "description": "Loads and validates reusable demo seed scenario metadata.",
-      "checks": ["node --check tool/demo/demo_seed_scenario_catalog.mjs", "node --test tool/demo/demo_seed_scenario_catalog.test.mjs"]
+      "checks": [
+        "node --check tool/demo/demo_seed_scenario_catalog.mjs",
+        "node --test tool/demo/demo_seed_scenario_catalog.test.mjs"
+      ]
     },
     {
       "id": "demo:seed",
@@ -593,7 +1207,11 @@
       "safety": "remote-write-apply-guarded",
       "status": "active",
       "description": "Builds and optionally writes demo seed worlds.",
-      "checks": ["node --check tool/demo/seed_demo_data.mjs", "node --test tool/demo/seed_demo_data_append.test.mjs tool/demo/seed_demo_data_schema.test.mjs"]
+      "checks": [
+        "node --check tool/demo/seed_demo_data.mjs",
+        "node --test tool/demo/seed_demo_data_append.test.mjs tool/demo/seed_demo_data_schema.test.mjs"
+      ],
+      "role": "generator"
     },
     {
       "id": "demo:persona-catalog",
@@ -603,7 +1221,11 @@
       "safety": "local",
       "status": "active",
       "description": "Validates and summarizes sales-demo persona catalogs.",
-      "checks": ["node --check tool/demo/demo_persona_catalog.mjs", "node --test tool/demo/demo_persona_catalog.test.mjs"]
+      "checks": [
+        "node --check tool/demo/demo_persona_catalog.mjs",
+        "node --test tool/demo/demo_persona_catalog.test.mjs"
+      ],
+      "role": "generator"
     },
     {
       "id": "demo:persona-image-generation",
@@ -613,7 +1235,11 @@
       "safety": "local-writes-build-artifacts",
       "status": "active",
       "description": "Builds reviewable persona image-generation batches from the demo persona catalog.",
-      "checks": ["node --check tool/demo/demo_persona_image_generation.mjs", "node --test tool/demo/demo_persona_image_generation.test.mjs"]
+      "checks": [
+        "node --check tool/demo/demo_persona_image_generation.mjs",
+        "node --test tool/demo/demo_persona_image_generation.test.mjs"
+      ],
+      "role": "generator"
     },
     {
       "id": "firebase:project-resolver",
@@ -623,7 +1249,10 @@
       "safety": "local-test",
       "status": "active",
       "description": "Shared Firebase project resolver compatibility module.",
-      "checks": ["node --test tool/firebase/firebase_project_resolver.test.mjs"]
+      "checks": [
+        "node --test tool/firebase/firebase_project_resolver.test.mjs"
+      ],
+      "role": "finder"
     },
     {
       "id": "firebase:maps-config",
@@ -633,7 +1262,9 @@
       "safety": "local-secret-validation",
       "status": "active",
       "description": "Validates native/web Google Maps config and optional Places secret wiring.",
-      "checks": ["node --check tool/firebase/validate_google_maps_config.mjs"]
+      "checks": [
+        "node --check tool/firebase/validate_google_maps_config.mjs"
+      ]
     },
     {
       "id": "firebase:function-targets",
@@ -643,7 +1274,9 @@
       "safety": "local",
       "status": "active",
       "description": "Expands Firebase function deploy target names from Functions exports.",
-      "checks": ["node --check tool/firebase/list_firebase_function_targets.mjs"]
+      "checks": [
+        "node --check tool/firebase/list_firebase_function_targets.mjs"
+      ]
     },
     {
       "id": "firebase:register-app-check-debug-token",
@@ -653,7 +1286,9 @@
       "safety": "remote-write-dev-token",
       "status": "active",
       "description": "Registers a known local Firebase App Check debug token for an explicit app id.",
-      "checks": ["node --check tool/firebase/register_app_check_debug_token.mjs"]
+      "checks": [
+        "node --check tool/firebase/register_app_check_debug_token.mjs"
+      ]
     },
     {
       "id": "firebase:create-config-cities",
@@ -663,7 +1298,9 @@
       "safety": "remote-write-apply-guarded",
       "status": "active",
       "description": "Writes config/cities with dry-run and prod guards.",
-      "checks": ["node --check tool/firebase/create_config_cities.mjs"]
+      "checks": [
+        "node --check tool/firebase/create_config_cities.mjs"
+      ]
     },
     {
       "id": "env:flutter",
@@ -673,7 +1310,10 @@
       "safety": "local-build-run",
       "status": "active",
       "description": "Runs Flutter with active Firebase environment and dart defines.",
-      "checks": ["bash -n tool/flutter_with_env.sh"]
+      "checks": [
+        "bash -n tool/flutter_with_env.sh"
+      ],
+      "role": "generator"
     },
     {
       "id": "env:host-dev-simulator",
@@ -683,7 +1323,10 @@
       "safety": "local-build-run",
       "status": "active",
       "description": "Runs the Catch host dev app on an iOS simulator with local App Check debug settings.",
-      "checks": ["bash -n tool/run_host_dev_simulator.sh"]
+      "checks": [
+        "bash -n tool/run_host_dev_simulator.sh"
+      ],
+      "role": "generator"
     },
     {
       "id": "env:ci-toolchain",
@@ -696,7 +1339,8 @@
       "checks": [
         "bash -n tool/ci/check_toolchain_consistency.sh",
         "bash tool/ci/check_toolchain_consistency.sh"
-      ]
+      ],
+      "role": "generator"
     },
     {
       "id": "env:firebase",
@@ -706,7 +1350,10 @@
       "safety": "remote-firebase",
       "status": "active",
       "description": "Runs Firebase CLI against a configured environment alias.",
-      "checks": ["bash -n tool/firebase_with_env.sh"]
+      "checks": [
+        "bash -n tool/firebase_with_env.sh"
+      ],
+      "role": "generator"
     },
     {
       "id": "env:use-firebase",
@@ -716,7 +1363,10 @@
       "safety": "local-writes-config",
       "status": "active",
       "description": "Copies checked-in Firebase files for the selected environment.",
-      "checks": ["bash -n tool/use_firebase_environment.sh"]
+      "checks": [
+        "bash -n tool/use_firebase_environment.sh"
+      ],
+      "role": "generator"
     },
     {
       "id": "env:validate-firebase",
@@ -726,7 +1376,10 @@
       "safety": "local",
       "status": "active",
       "description": "Checks active Firebase files and dart defines match an environment.",
-      "checks": ["bash -n tool/validate_firebase_environment.sh"]
+      "checks": [
+        "bash -n tool/validate_firebase_environment.sh"
+      ],
+      "role": "generator"
     },
     {
       "id": "env:check-web-hosting",
@@ -736,7 +1389,9 @@
       "safety": "local",
       "status": "active",
       "description": "Requires explicit Vite Firebase/App Check env before web Hosting deploys.",
-      "checks": ["node --check tool/env/check_web_hosting_env.mjs"]
+      "checks": [
+        "node --check tool/env/check_web_hosting_env.mjs"
+      ]
     },
     {
       "id": "firebase:deploy-targets",
@@ -746,7 +1401,10 @@
       "safety": "remote-deploy",
       "status": "active",
       "description": "Deploys Firebase targets in safe order.",
-      "checks": ["bash -n tool/deploy_firebase_targets.sh"]
+      "checks": [
+        "bash -n tool/deploy_firebase_targets.sh"
+      ],
+      "role": "generator"
     },
     {
       "id": "analytics:check-host-bigquery",
@@ -759,7 +1417,8 @@
       "checks": [
         "node --check tool/analytics/check_host_analytics_bigquery.mjs",
         "node tool/analytics/check_host_analytics_bigquery.mjs"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "analytics:deploy-host-bigquery",
@@ -769,7 +1428,9 @@
       "safety": "remote-bigquery",
       "status": "active",
       "description": "Applies host analytics BigQuery DDL and mart refresh SQL.",
-      "checks": ["bash -n tool/analytics/deploy_host_analytics_bigquery.sh"]
+      "checks": [
+        "bash -n tool/analytics/deploy_host_analytics_bigquery.sh"
+      ]
     },
     {
       "id": "analytics:host-bigquery-live-status",
@@ -779,7 +1440,9 @@
       "safety": "remote-readonly",
       "status": "active",
       "description": "Checks live Firebase and BigQuery host analytics deployment status.",
-      "checks": ["node --check tool/analytics/host_analytics_live_status.mjs"]
+      "checks": [
+        "node --check tool/analytics/host_analytics_live_status.mjs"
+      ]
     },
     {
       "id": "analytics:check-user-bigquery",
@@ -792,7 +1455,8 @@
       "checks": [
         "node --check tool/analytics/check_user_analytics_bigquery.mjs",
         "node tool/analytics/check_user_analytics_bigquery.mjs"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "analytics:deploy-user-bigquery",
@@ -802,7 +1466,9 @@
       "safety": "remote-bigquery",
       "status": "active",
       "description": "Applies user analytics BigQuery DDL and mart refresh SQL.",
-      "checks": ["bash -n tool/analytics/deploy_user_analytics_bigquery.sh"]
+      "checks": [
+        "bash -n tool/analytics/deploy_user_analytics_bigquery.sh"
+      ]
     },
     {
       "id": "analytics:user-bigquery-live-status",
@@ -812,7 +1478,9 @@
       "safety": "remote-readonly",
       "status": "active",
       "description": "Checks live Firebase and BigQuery user analytics deployment status.",
-      "checks": ["node --check tool/analytics/user_analytics_live_status.mjs"]
+      "checks": [
+        "node --check tool/analytics/user_analytics_live_status.mjs"
+      ]
     },
     {
       "id": "platform:apple-flavors",
@@ -822,7 +1490,10 @@
       "safety": "local-writes-xcodeproj",
       "status": "active",
       "description": "Configures Apple flavor schemes and Firebase copy phases.",
-      "checks": ["ruby -c tool/platform/configure_apple_flavors.rb"]
+      "checks": [
+        "ruby -c tool/platform/configure_apple_flavors.rb"
+      ],
+      "role": "generator"
     },
     {
       "id": "platform:ios-maps-key",
@@ -832,7 +1503,10 @@
       "safety": "local-writes-config",
       "status": "active",
       "description": "Writes the iOS Google Maps xcconfig for a selected environment.",
-      "checks": ["bash -n tool/write_ios_maps_key_xcconfig.sh"]
+      "checks": [
+        "bash -n tool/write_ios_maps_key_xcconfig.sh"
+      ],
+      "role": "generator"
     },
     {
       "id": "host-discovery:validate",
@@ -845,7 +1519,8 @@
       "checks": [
         "node --check tool/host_discovery/validate_discovery_data.mjs",
         "node tool/host_discovery/validate_discovery_data.mjs --check"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "host-discovery:plan-searches",
@@ -858,7 +1533,8 @@
       "checks": [
         "node --check tool/host_discovery/plan_search_runs.mjs",
         "node tool/host_discovery/plan_search_runs.mjs --check"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "host-discovery:source-evidence",
@@ -871,7 +1547,8 @@
       "checks": [
         "node --check tool/host_discovery/generate_source_evidence.mjs",
         "node tool/host_discovery/generate_source_evidence.mjs --check"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "host-discovery:index-readiness",
@@ -884,7 +1561,8 @@
       "checks": [
         "node --check tool/host_discovery/check_index_readiness.mjs",
         "node tool/host_discovery/check_index_readiness.mjs --check"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "host-discovery:import-plan",
@@ -897,7 +1575,8 @@
       "checks": [
         "node --check tool/host_discovery/export_seed_import_plan.mjs",
         "node tool/host_discovery/export_seed_import_plan.mjs --check"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "host-discovery:apply-import-plan",
@@ -907,7 +1586,9 @@
       "safety": "remote-write-guarded",
       "status": "active",
       "description": "Applies an approved host discovery Firestore import plan with explicit project, overwrite, and prod guardrails.",
-      "checks": ["node --check tool/host_discovery/apply_seed_import_plan.mjs"]
+      "checks": [
+        "node --check tool/host_discovery/apply_seed_import_plan.mjs"
+      ]
     },
     {
       "id": "organizer-intake:generate",
@@ -980,7 +1661,8 @@
         "node tool/organizer_intake/pending_work_coverage.mjs --check --require-covered",
         "node tool/organizer_intake/promotion_execution_packet.mjs --check",
         "node tool/organizer_intake/check_operational_health.mjs --check"
-      ]
+      ],
+      "role": "generator"
     },
     {
       "id": "organizer-intake:create-decision-answer-packet",
@@ -995,7 +1677,8 @@
         "node --check tool/organizer_intake/create_decision_answer_packet.mjs",
         "node --test tool/organizer_intake/create_decision_answer_packet.test.mjs",
         "node tool/organizer_intake/create_decision_answer_packet.mjs --date 2026-06-18 --reviewer codex-dry-run --slug manifest-dry-run --check"
-      ]
+      ],
+      "role": "generator"
     },
     {
       "id": "organizer-intake:pending-decision-answer-packet",
@@ -1012,7 +1695,8 @@
         "node --test tool/organizer_intake/pending_decision_answer_packet.test.mjs",
         "node tool/organizer_intake/pending_decision_answer_packet.mjs --check",
         "node tool/organizer_intake/pending_decision_answer_packet.mjs --format markdown"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "organizer-intake:pending-decision-answer-plan",
@@ -1029,7 +1713,8 @@
         "node --test tool/organizer_intake/pending_decision_answer_plan.test.mjs",
         "node tool/organizer_intake/pending_decision_answer_plan.mjs --check",
         "node tool/organizer_intake/pending_decision_answer_plan.mjs --format markdown"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "organizer-intake:apply-pending-decision-answers",
@@ -1044,7 +1729,8 @@
         "node --check tool/organizer_intake/apply_pending_decision_answers.mjs",
         "node --test tool/organizer_intake/apply_pending_decision_answers.test.mjs",
         "node tool/organizer_intake/apply_pending_decision_answers.mjs --check --allow-partial"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "organizer-intake:reviewed-decision-answer-packets",
@@ -1059,7 +1745,8 @@
         "node --test tool/organizer_intake/reviewed_decision_answer_packets.test.mjs",
         "node tool/organizer_intake/reviewed_decision_answer_packets.mjs --check",
         "node tool/organizer_intake/reviewed_decision_answer_packets.mjs --format markdown"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "organizer-intake:promotion-execution-packet",
@@ -1076,7 +1763,8 @@
         "node --test tool/organizer_intake/promotion_execution_packet.test.mjs",
         "node tool/organizer_intake/promotion_execution_packet.mjs --check",
         "node tool/organizer_intake/promotion_execution_packet.mjs --format markdown"
-      ]
+      ],
+      "role": "generator"
     },
     {
       "id": "organizer-intake:policy-gap-decision",
@@ -1091,7 +1779,8 @@
         "node --test tool/organizer_intake/policy_gap_decision.test.mjs",
         "node tool/organizer_intake/policy_gap_decision.mjs list",
         "node tool/organizer_intake/policy_gap_decision.mjs draft recurring_event_crawl_policy --decision hold --reviewer codex-dry-run --date 2026-06-17 --note \"Need budget decision.\" --dry-run"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "organizer-intake:check-operational-health",
@@ -1105,7 +1794,8 @@
         "node --check tool/organizer_intake/check_operational_health.mjs",
         "node --test tool/organizer_intake/check_operational_health.test.mjs",
         "node tool/organizer_intake/check_operational_health.mjs --check"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "organizer-intake:pending-input-request",
@@ -1122,7 +1812,8 @@
         "node --test tool/organizer_intake/pending_input_request.test.mjs",
         "node tool/organizer_intake/pending_input_request.mjs --check",
         "node tool/organizer_intake/pending_input_request.mjs --format markdown"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "organizer-intake:pending-work-coverage",
@@ -1139,7 +1830,8 @@
         "node --test tool/organizer_intake/pending_work_coverage.test.mjs",
         "node tool/organizer_intake/pending_work_coverage.mjs --check --require-covered",
         "node tool/organizer_intake/pending_work_coverage.mjs --format markdown"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "organizer-intake:normalize-surface-url",
@@ -1154,7 +1846,8 @@
         "node --check tool/organizer_intake/normalize_surface_url.mjs",
         "node --test tool/organizer_intake/platform_adapters.test.mjs",
         "node tool/organizer_intake/normalize_surface_url.mjs https://luma.com/pxgmph3b --surface-id sample-luma-surface --expect-platform luma --expect-kind eventListing --expect-key luma:event:pxgmph3b"
-      ]
+      ],
+      "role": "generator"
     },
     {
       "id": "organizer-intake:capture-search-results",
@@ -1169,7 +1862,8 @@
         "node --check tool/organizer_intake/capture_search_results.mjs",
         "node --test tool/organizer_intake/search_capture_core.test.mjs",
         "node tool/organizer_intake/capture_search_results.mjs --source fixture --run-key 'web_search|\"after fly\" luma|indore|social_run_club|afterfly-run-club-indore' --raw-results tool/organizer_intake/fixtures/search_capture.afterfly.serpapi.raw.json --date 2026-06-17 --output tool/organizer_intake/fixtures/search_capture.afterfly.expected.json --check"
-      ]
+      ],
+      "role": "generator"
     },
     {
       "id": "organizer-intake:ingest-search-results",
@@ -1185,7 +1879,8 @@
         "node --test tool/organizer_intake/search_result_ingest_core.test.mjs",
         "node tool/organizer_intake/ingest_search_results.mjs --fixture tool/organizer_intake/fixtures/search_results.afterfly.sample.json --output tool/organizer_intake/fixtures/search_result_candidates.expected.json --check",
         "node tool/organizer_intake/ingest_search_results.mjs --check"
-      ]
+      ],
+      "role": "generator"
     },
     {
       "id": "organizer-intake:capture-luma-events",
@@ -1199,7 +1894,8 @@
         "node --check tool/organizer_intake/capture_luma_events.mjs",
         "node --test tool/organizer_intake/capture_luma_events.test.mjs",
         "node tool/organizer_intake/capture_luma_events.mjs --entity afterfly --surface afterfly-luma-takeoff-run-rave --raw-results tool/organizer_intake/fixtures/luma_event.afterfly.raw.json --date 2026-06-17 --city-slug indore --country-code IN --source-url https://luma.com/pxgmph3b --output tool/organizer_intake/fixtures/luma_event.afterfly.expected.json --check"
-      ]
+      ],
+      "role": "generator"
     },
     {
       "id": "organizer-intake:ingest-event-sources",
@@ -1215,7 +1911,8 @@
         "node --test tool/organizer_intake/event_source_ingest_core.test.mjs",
         "node tool/organizer_intake/ingest_event_sources.mjs --fixture tool/organizer_intake/fixtures/luma_event.afterfly.expected.json --output tool/organizer_intake/fixtures/external_event_candidates.expected.json --check",
         "node tool/organizer_intake/ingest_event_sources.mjs --check"
-      ]
+      ],
+      "role": "generator"
     },
     {
       "id": "organizer-intake:plan-event-location-resolution",
@@ -1231,7 +1928,8 @@
         "node --test tool/organizer_intake/event_location_resolution_core.test.mjs",
         "node tool/organizer_intake/plan_event_location_resolution.mjs --queue tool/organizer_intake/fixtures/external_event_candidates.expected.json --output tool/organizer_intake/fixtures/external_event_location_resolution_queue.expected.json --check",
         "node tool/organizer_intake/plan_event_location_resolution.mjs --check"
-      ]
+      ],
+      "role": "generator"
     },
     {
       "id": "organizer-intake:event-location-resolution",
@@ -1246,7 +1944,8 @@
         "node --test tool/organizer_intake/event_location_resolution.test.mjs",
         "node tool/organizer_intake/event_location_resolution.mjs list",
         "node tool/organizer_intake/event_location_resolution.mjs draft 2026-06-17-afterfly-luma-events:pxgmph3b --queue tool/organizer_intake/fixtures/external_event_location_resolution_queue.expected.json --name \"Nehru Stadium\" --address \"Nehru Stadium, Indore, Madhya Pradesh\" --place-id ChIJ-afterfly-indore --latitude 22.7196 --longitude 75.8577 --reviewer codex-dry-run --date 2026-06-17 --note \"Manual location QA complete.\" --confirm-location-checklist --dry-run"
-      ]
+      ],
+      "role": "generator"
     },
     {
       "id": "organizer-intake:plan-event-crawl-runs",
@@ -1261,7 +1960,8 @@
         "node --check tool/organizer_intake/plan_event_crawl_runs.mjs",
         "node --test tool/organizer_intake/event_crawl_run_plan_core.test.mjs",
         "node tool/organizer_intake/plan_event_crawl_runs.mjs --check"
-      ]
+      ],
+      "role": "generator"
     },
     {
       "id": "organizer-intake:plan-raw-artifact-storage",
@@ -1276,7 +1976,8 @@
         "node --check tool/organizer_intake/plan_raw_artifact_storage.mjs",
         "node --test tool/organizer_intake/raw_artifact_storage_core.test.mjs",
         "node tool/organizer_intake/plan_raw_artifact_storage.mjs --check"
-      ]
+      ],
+      "role": "generator"
     },
     {
       "id": "organizer-intake:plan-external-event-imports",
@@ -1292,7 +1993,8 @@
         "node --test tool/organizer_intake/event_import_plan_core.test.mjs",
         "node tool/organizer_intake/plan_external_event_imports.mjs --queue tool/organizer_intake/fixtures/external_event_candidates.expected.json --output tool/organizer_intake/fixtures/external_event_import_plan.expected.json --check",
         "node tool/organizer_intake/plan_external_event_imports.mjs --check"
-      ]
+      ],
+      "role": "generator"
     },
     {
       "id": "organizer-intake:llm-source-resolution",
@@ -1305,7 +2007,8 @@
       "checks": [
         "node --check tool/organizer_intake/llm_source_resolution.mjs",
         "node tool/organizer_intake/llm_source_resolution.mjs --check"
-      ]
+      ],
+      "role": "generator"
     },
     {
       "id": "organizer-intake:preflight-external-event-imports",
@@ -1321,7 +2024,8 @@
         "node --test tool/organizer_intake/event_import_execution_core.test.mjs",
         "node tool/organizer_intake/preflight_external_event_imports.mjs --plan tool/organizer_intake/fixtures/external_event_import_plan.expected.json --output tool/organizer_intake/fixtures/external_event_import_execution_plan.expected.json --check",
         "node tool/organizer_intake/preflight_external_event_imports.mjs --check"
-      ]
+      ],
+      "role": "generator"
     },
     {
       "id": "organizer-intake:publish-event-supply-readiness",
@@ -1336,7 +2040,8 @@
         "node --check tool/organizer_intake/publish_event_supply_readiness.mjs",
         "node --test tool/organizer_intake/event_supply_readiness_publish_core.test.mjs",
         "node tool/organizer_intake/publish_event_supply_readiness.mjs --check"
-      ]
+      ],
+      "role": "generator"
     },
     {
       "id": "organizer-intake:event-review-decision",
@@ -1350,7 +2055,8 @@
         "node --check tool/organizer_intake/event_review_decision.mjs",
         "node tool/organizer_intake/event_review_decision.mjs list",
         "node tool/organizer_intake/event_review_decision.mjs draft 2026-06-17-afterfly-luma-events:pxgmph3b --queue tool/organizer_intake/fixtures/external_event_candidates.expected.json --decision approve_for_import --reviewer codex-dry-run --date 2026-06-17 --note \"Reviewed for future import.\" --confirm-import-checklist --dry-run"
-      ]
+      ],
+      "role": "generator"
     },
     {
       "id": "organizer-intake:review-decision",
@@ -1365,7 +2071,8 @@
         "node --test tool/organizer_intake/review_decision.test.mjs",
         "node tool/organizer_intake/review_decision.mjs list",
         "node tool/organizer_intake/review_decision.mjs draft afterfly --decision approve_public --reviewer codex-dry-run --date 2026-06-17 --note \"Reviewed for public projection.\" --confirm-publication-checklist --confirm-manual-reports-reviewed --dry-run"
-      ]
+      ],
+      "role": "generator"
     },
     {
       "id": "organizer-intake:curation-decision",
@@ -1380,7 +2087,8 @@
         "node tool/organizer_intake/curation_decision.mjs list",
         "node tool/organizer_intake/curation_decision.mjs draft attach_surface --entity afterfly --search-candidate 2026-06-17-afterfly-search-fixture:sort-my-scene --search-queue tool/organizer_intake/fixtures/search_result_candidates.expected.json --reviewer codex-dry-run --date 2026-06-17 --reason \"Surface belongs to this organizer.\" --dry-run",
         "node tool/organizer_intake/curation_decision.mjs draft surface_decision --entity afterfly --surface afterfly-wrong-website-reported --decision reject_wrong_entity --reviewer codex-dry-run --date 2026-06-17 --reason \"Wrong entity.\" --dry-run"
-      ]
+      ],
+      "role": "generator"
     },
     {
       "id": "organizer-intake:export-curation-decisions",
@@ -1394,7 +2102,8 @@
         "node --check tool/organizer_intake/export_curation_decisions_from_firestore.mjs",
         "node --test tool/organizer_intake/export_curation_decisions_from_firestore.test.mjs",
         "node tool/organizer_intake/export_curation_decisions_from_firestore.mjs --fixture tool/organizer_intake/fixtures/firestore_curation_decisions.sample.json --date 2026-06-17 --source-label fixture --output tool/organizer_intake/fixtures/firestore_curation_decisions_export.expected.json --check"
-      ]
+      ],
+      "role": "generator"
     },
     {
       "id": "organizer-intake:export-review-decisions",
@@ -1408,7 +2117,8 @@
         "node --check tool/organizer_intake/export_review_decisions_from_firestore.mjs",
         "node --test tool/organizer_intake/export_review_decisions_from_firestore.test.mjs",
         "node tool/organizer_intake/export_review_decisions_from_firestore.mjs --fixture tool/organizer_intake/fixtures/firestore_review_decisions.sample.json --date 2026-06-17 --source-label fixture --output tool/organizer_intake/fixtures/firestore_review_decisions_export.expected.json --check"
-      ]
+      ],
+      "role": "generator"
     },
     {
       "id": "organizer-intake:export-event-review-decisions",
@@ -1422,7 +2132,8 @@
         "node --check tool/organizer_intake/export_event_review_decisions_from_firestore.mjs",
         "node --test tool/organizer_intake/export_event_review_decisions_from_firestore.test.mjs",
         "node tool/organizer_intake/export_event_review_decisions_from_firestore.mjs --fixture tool/organizer_intake/fixtures/firestore_event_review_decisions.sample.json --date 2026-06-17 --source-label fixture --output tool/organizer_intake/fixtures/firestore_event_review_decisions_export.expected.json --check"
-      ]
+      ],
+      "role": "generator"
     },
     {
       "id": "organizer-intake:export-event-location-resolutions",
@@ -1436,7 +2147,8 @@
         "node --check tool/organizer_intake/export_event_location_resolutions_from_firestore.mjs",
         "node --test tool/organizer_intake/export_event_location_resolutions_from_firestore.test.mjs",
         "node tool/organizer_intake/export_event_location_resolutions_from_firestore.mjs --fixture tool/organizer_intake/fixtures/firestore_event_location_resolutions.sample.json --date 2026-06-17 --source-label fixture --output tool/organizer_intake/fixtures/firestore_event_location_resolutions_export.expected.json --check"
-      ]
+      ],
+      "role": "generator"
     },
     {
       "id": "organizer-intake:export-policy-gap-decisions",
@@ -1450,7 +2162,8 @@
         "node --check tool/organizer_intake/export_policy_gap_decisions_from_firestore.mjs",
         "node --test tool/organizer_intake/export_policy_gap_decisions_from_firestore.test.mjs",
         "node tool/organizer_intake/export_policy_gap_decisions_from_firestore.mjs --fixture tool/organizer_intake/fixtures/firestore_policy_gap_decisions.sample.json --date 2026-06-17 --source-label fixture --output tool/organizer_intake/fixtures/firestore_policy_gap_decisions_export.expected.json --check"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "organizer-intake:sync-claim-targets",
@@ -1464,7 +2177,8 @@
         "node --check tool/organizer_intake/sync_claim_targets_to_firestore.mjs",
         "node --test tool/organizer_intake/sync_claim_targets_to_firestore.test.mjs",
         "node tool/organizer_intake/sync_claim_targets_to_firestore.mjs --fixture tool/organizer_intake/fixtures/existing_club_docs.empty.json --json"
-      ]
+      ],
+      "role": "generator"
     },
     {
       "id": "organizer-intake:check-promotion-bridge",
@@ -1478,7 +2192,8 @@
         "node --check tool/organizer_intake/check_promotion_bridge.mjs",
         "node --test tool/organizer_intake/check_promotion_bridge.test.mjs",
         "node tool/organizer_intake/check_promotion_bridge.mjs"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "organizer-intake:check-admin-review-bridge",
@@ -1492,7 +2207,8 @@
         "node --check tool/organizer_intake/check_admin_review_bridge.mjs",
         "node --test tool/organizer_intake/check_admin_review_bridge.test.mjs",
         "node tool/organizer_intake/check_admin_review_bridge.mjs"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "organizer-intake:run-promotion-pipeline",
@@ -1507,7 +2223,8 @@
         "node --test tool/organizer_intake/run_promotion_pipeline.test.mjs",
         "node tool/organizer_intake/run_promotion_pipeline.mjs --apply-decision-answers --allow-partial-decision-answers --claim-sync none --skip-website-build --json",
         "node tool/organizer_intake/run_promotion_pipeline.mjs"
-      ]
+      ],
+      "role": "generator"
     },
     {
       "id": "marketing:generate-organizer-listings",
@@ -1521,7 +2238,45 @@
         "node --check website/scripts/generateOrganizerListings.mjs",
         "node --test website/scripts/generateOrganizerListings.test.mjs",
         "node website/scripts/generateOrganizerListings.mjs --check"
-      ]
+      ],
+      "role": "generator"
+    },
+    {
+      "id": "marketing:website-routes",
+      "category": "marketing",
+      "path": "tool/marketing/check_website_routes.mjs",
+      "command": "node tool/marketing/check_website_routes.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates marketing website route contracts against React route, metadata, postbuild, and generated organizer-listing sources.",
+      "checks": [
+        "node --check tool/marketing/check_website_routes.mjs",
+        "node tool/marketing/check_website_routes.mjs --self-test",
+        "node tool/marketing/check_website_routes.mjs --check"
+      ],
+      "role": "finder"
+    },
+    {
+      "id": "marketing:website-components",
+      "category": "marketing",
+      "path": "tool/marketing/check_website_components.mjs",
+      "command": "node tool/marketing/check_website_components.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates marketing website component ownership contracts against React source files, exported feature components, route ids, CSS ownership, and bidirectional Storybook catchComponent coverage.",
+      "checks": [
+        "node --check tool/marketing/check_website_components.mjs",
+        "node tool/marketing/check_website_components.mjs --self-test",
+        "node tool/marketing/check_website_components.mjs --check"
+      ],
+      "role": "gate",
+      "rules": [
+        "WEB-UI-COMPONENT-001"
+      ],
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node tool/marketing/check_website_components.mjs --self-test"
+      }
     },
     {
       "id": "marketing:device-frame",
@@ -1531,7 +2286,10 @@
       "safety": "local-writes-artifacts",
       "status": "active",
       "description": "Wraps a raw app capture in the configured marketing device frame.",
-      "checks": ["dart analyze tool/marketing/frame_device_capture.dart"]
+      "checks": [
+        "dart analyze tool/marketing/frame_device_capture.dart"
+      ],
+      "role": "finder"
     },
     {
       "id": "marketing:app-screenshot-export",
@@ -1546,7 +2304,8 @@
         "dart analyze tool/marketing/frame_device_capture.dart",
         "node tool/marketing/export_app_screenshots.mjs --check",
         "node tool/marketing/export_app_screenshots.mjs --check-design-json"
-      ]
+      ],
+      "role": "generator"
     },
     {
       "id": "marketing:website-build",
@@ -1562,7 +2321,34 @@
         "node --test website/scripts/checkOrganizerBuildOutputs.test.mjs",
         "node --test website/scripts/postbuild.test.mjs",
         "npm --prefix website run build"
-      ]
+      ],
+      "role": "generator"
+    },
+    {
+      "id": "marketing:website-storybook",
+      "category": "marketing",
+      "path": "website/.storybook/main.ts",
+      "command": "npm --workspace catch-marketing run build:storybook",
+      "safety": "local-build",
+      "status": "active",
+      "description": "Builds the Storybook workbench for route-linked marketing website component and page-state review.",
+      "checks": [
+        "npm --workspace catch-marketing run build:storybook"
+      ],
+      "role": "generator"
+    },
+    {
+      "id": "web:admin-storybook",
+      "category": "lint",
+      "path": "admin/.storybook/main.ts",
+      "command": "npm --workspace catch-admin run build:storybook",
+      "safety": "local-build",
+      "status": "active",
+      "description": "Builds the Storybook workbench for registry-linked admin shared primitives and future admin route/workspace review states.",
+      "checks": [
+        "npm --workspace catch-admin run build:storybook"
+      ],
+      "role": "generator"
     },
     {
       "id": "marketing:app-media-sync",
@@ -1575,7 +2361,8 @@
       "checks": [
         "node --check tool/marketing/sync_website_media.mjs",
         "node tool/marketing/sync_website_media.mjs --check"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "marketing:event-guide-capture-search-results",
@@ -1614,7 +2401,8 @@
         "node --check tool/marketing/event_guide/publish_event_intake_dashboard.mjs",
         "node --test tool/marketing/event_guide/event_intake_dashboard_publish_core.test.mjs",
         "node tool/marketing/event_guide/publish_event_intake_dashboard.mjs --check"
-      ]
+      ],
+      "role": "generator"
     },
     {
       "id": "marketing:weekly-event-guide-validate",
@@ -1650,7 +2438,9 @@
       "safety": "local-writes-generated",
       "status": "internal",
       "description": "Generates internal weekly event guide draft packets from the PoC city config and reviewed candidate events.",
-      "checks": ["node --check tool/marketing/weekly_event_guide_poc/scripts/generate_guide.mjs"]
+      "checks": [
+        "node --check tool/marketing/weekly_event_guide_poc/scripts/generate_guide.mjs"
+      ]
     },
     {
       "id": "ui-capture:route-inventory",
@@ -1663,7 +2453,8 @@
       "checks": [
         "node --check tool/ui_capture/check_route_inventory.mjs",
         "node tool/ui_capture/check_route_inventory.mjs --check"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "ui-capture:coverage",
@@ -1676,7 +2467,8 @@
       "checks": [
         "node --check tool/ui_capture/check_capture_coverage.mjs",
         "node tool/ui_capture/check_capture_coverage.mjs --check"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "ui-capture:run",
@@ -1686,7 +2478,9 @@
       "safety": "local-writes-artifacts",
       "status": "active",
       "description": "Runs the Flutter UI capture harness and writes review PNG artifacts.",
-      "checks": ["node --check tool/ui_capture/run_captures.mjs"]
+      "checks": [
+        "node --check tool/ui_capture/run_captures.mjs"
+      ]
     },
     {
       "id": "design:tokens",
@@ -1699,7 +2493,8 @@
       "checks": [
         "dart analyze tool/design_tokens.dart lib/core/theme/generated/catch_design_tokens.g.dart",
         "dart run tool/design_tokens.dart --check"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "design:component-contracts",
@@ -1712,7 +2507,8 @@
       "checks": [
         "node --check tool/design/check_component_contracts.mjs",
         "node tool/design/check_component_contracts.mjs"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "design:widget-classification-generate",
@@ -1722,7 +2518,9 @@
       "safety": "local-writes-audit-json",
       "status": "active",
       "description": "Generates the exhaustive widget role, ownership, catalog, and consolidation classification registry from Dart source, component contracts, and Widgetbook.",
-      "checks": ["node --check tool/design/generate_widget_classification.mjs"]
+      "checks": [
+        "node --check tool/design/generate_widget_classification.mjs"
+      ]
     },
     {
       "id": "design:widget-classification-check",
@@ -1735,7 +2533,8 @@
       "checks": [
         "node --check tool/design/check_widget_classification.mjs",
         "node tool/design/check_widget_classification.mjs"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "design:new-widget-inventory",
@@ -1748,7 +2547,8 @@
       "checks": [
         "node --check tool/design/check_new_widget_inventory.mjs",
         "node tool/design/check_new_widget_inventory.mjs --no-write"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "design:widget-variant-inventory",
@@ -1761,7 +2561,8 @@
       "checks": [
         "node --check tool/design/generate_widget_variant_inventory.mjs",
         "node tool/design/generate_widget_variant_inventory.mjs --check"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "design:parity-matrix",
@@ -1774,7 +2575,22 @@
       "checks": [
         "node --check tool/design/check_design_parity_matrix.mjs",
         "node tool/design/check_design_parity_matrix.mjs --check"
-      ]
+      ],
+      "role": "finder"
+    },
+    {
+      "id": "design:comprehensive-todo-summary",
+      "category": "design",
+      "path": "tool/design/check_comprehensive_todo_summary.mjs",
+      "command": "node tool/design/check_comprehensive_todo_summary.mjs --check",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates the comprehensive design parity todo snapshot and priority summary table against the screen-contract and state-matrix ledgers.",
+      "checks": [
+        "node --check tool/design/check_comprehensive_todo_summary.mjs",
+        "node tool/design/check_comprehensive_todo_summary.mjs --check"
+      ],
+      "role": "finder"
     },
     {
       "id": "design:screen-coverage",
@@ -1787,7 +2603,8 @@
       "checks": [
         "node --check tool/design/check_screen_coverage.mjs",
         "node tool/design/check_screen_coverage.mjs --check"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "design:screen-contracts",
@@ -1800,7 +2617,8 @@
       "checks": [
         "node --check tool/design/check_screen_contracts.mjs",
         "node tool/design/check_screen_contracts.mjs --check"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "design:widgetbook-contract-refs",
@@ -1813,7 +2631,8 @@
       "checks": [
         "node --check tool/design/check_widgetbook_contract_refs.mjs",
         "node tool/design/check_widgetbook_contract_refs.mjs --check"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "design:widgetbook-coverage",
@@ -1823,7 +2642,9 @@
       "safety": "local",
       "status": "active",
       "description": "Scans production Flutter widget classes against generated Widgetbook component listings and the widget decision ledger.",
-      "checks": ["node --check tool/design/check_widgetbook_coverage.mjs"]
+      "checks": [
+        "node --check tool/design/check_widgetbook_coverage.mjs"
+      ]
     },
     {
       "id": "design:widgetbook-compare-build",
@@ -1833,7 +2654,9 @@
       "safety": "local-writes-docs",
       "status": "active",
       "description": "Builds the static Widgetbook comparison review page from Claude Design exports, component contracts, and generated Widgetbook directories.",
-      "checks": ["node --check tool/design/build_widgetbook_compare.mjs"]
+      "checks": [
+        "node --check tool/design/build_widgetbook_compare.mjs"
+      ]
     },
     {
       "id": "design:widgetbook-compare-server",
@@ -1842,8 +2665,10 @@
       "command": "node tool/design/widgetbook_compare_server.mjs",
       "safety": "local-server",
       "status": "active",
-      "description": "Serves the interactive Widgetbook comparison and decision logging UI for consolidation review.",
-      "checks": ["node --check tool/design/widgetbook_compare_server.mjs"]
+      "description": "Serves the interactive Widgetbook comparison and decision logging UI for dedupe-assisted consolidation review.",
+      "checks": [
+        "node --check tool/design/widgetbook_compare_server.mjs"
+      ]
     },
     {
       "id": "design:screen-contract-hygiene",
@@ -1856,7 +2681,8 @@
       "checks": [
         "node --check tool/design/check_screen_contract_hygiene.mjs",
         "node tool/design/check_screen_contract_hygiene.mjs --summary"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "design:reference-screens",
@@ -1869,7 +2695,36 @@
       "checks": [
         "node --check tool/design/check_reference_screens.mjs",
         "node tool/design/check_reference_screens.mjs --check --summary"
-      ]
+      ],
+      "role": "finder"
+    },
+    {
+      "id": "design:reference-screen-exporter",
+      "category": "design",
+      "path": "tool/design/export_reference_screen.mjs",
+      "command": "node tool/design/export_reference_screen.mjs",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Exports a single Claude Design data-screen-label panel to a reference PNG with explicit --write approval, optional fixed clip, and optional localStorage state.",
+      "checks": [
+        "node --check tool/design/export_reference_screen.mjs",
+        "node tool/design/export_reference_screen.mjs --help"
+      ],
+      "role": "generator"
+    },
+    {
+      "id": "design:onboarding-reference-exporter",
+      "category": "design",
+      "path": "tool/design/export_onboarding_references.mjs",
+      "command": "node tool/design/export_onboarding_references.mjs --check",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Regenerates onboarding step reference PNGs from the local Claude handoff and validates generated output dimensions without launching Chrome.",
+      "checks": [
+        "node --check tool/design/export_onboarding_references.mjs",
+        "node tool/design/export_onboarding_references.mjs --check"
+      ],
+      "role": "generator"
     },
     {
       "id": "design:parity-gate",
@@ -1878,11 +2733,12 @@
       "command": "node tool/design/check_design_parity.mjs --check",
       "safety": "local",
       "status": "active",
-      "description": "Runs the standard local design parity gate across component contracts, widget classification, routes, captures, screen contracts, Widgetbook refs, and advisory hygiene scanners.",
+      "description": "Runs the standard local design parity gate across component contracts, widget classification, routes, captures, screen contracts, todo summaries, Widgetbook refs, and advisory hygiene scanners.",
       "checks": [
         "node --check tool/design/check_design_parity.mjs",
         "node tool/design/check_design_parity.mjs --check"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "design:context-pack",
@@ -1895,7 +2751,8 @@
       "checks": [
         "node --check tool/design/build_context_pack.mjs",
         "node tool/design/build_context_pack.mjs --check"
-      ]
+      ],
+      "role": "finder"
     },
     {
       "id": "design:context-pack-builder",
@@ -1905,7 +2762,9 @@
       "safety": "local-writes-generated",
       "status": "support",
       "description": "Flutter-test-bound generator used by design:context-pack.",
-      "checks": ["flutter analyze tool/design/context_pack_builder_test.dart"]
+      "checks": [
+        "flutter analyze tool/design/context_pack_builder_test.dart"
+      ]
     },
     {
       "id": "design:preview-app",
@@ -1933,6 +2792,121 @@
       "safety": "local-ui",
       "status": "active",
       "description": "Visual review app entrypoint."
+    },
+    {
+      "id": "audit:fn-rate-limits",
+      "category": "audit",
+      "path": "tool/audit/check_fn_rate_limits.mjs",
+      "command": "node tool/audit/check_fn_rate_limits.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Checks every literal checkRateLimit action under functions/src has a matching RATE_LIMITS entry.",
+      "checks": [
+        "node --check tool/audit/check_fn_rate_limits.mjs",
+        "node --test tool/audit/check_fn_rate_limits.test.mjs",
+        "node tool/audit/check_fn_rate_limits.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "FN-RATE-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/audit/check_fn_rate_limits.test.mjs",
+        "contains": [
+          "scanFunctionRateLimits flags checkRateLimit actions missing entries",
+          "scanFunctionRateLimits passes when actions have explicit entries"
+        ]
+      }
+    },
+    {
+      "id": "audit:fn-readme-inventory",
+      "category": "audit",
+      "path": "tool/audit/check_fn_readme_inventory.mjs",
+      "command": "node tool/audit/check_fn_readme_inventory.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Diffs functions/src/index.ts exports against functions/README.md inventory and ratchets existing omissions.",
+      "checks": [
+        "node --check tool/audit/check_fn_readme_inventory.mjs",
+        "node --test tool/audit/check_fn_readme_inventory.test.mjs",
+        "node tool/audit/check_fn_readme_inventory.mjs"
+      ],
+      "role": "ratchet",
+      "rules": [
+        "FN-DOC-001"
+      ],
+      "baseline": "tool/audit/fn_readme_inventory_baseline.json",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/audit/check_fn_readme_inventory.test.mjs",
+        "contains": [
+          "scanFunctionReadmeInventory flags exports missing from README",
+          "scanFunctionReadmeInventory passes documented exports",
+          "scanFunctionReadmeInventory ratchets baseline findings"
+        ]
+      }
+    },
+    {
+      "id": "design:widget-similarity-registry",
+      "category": "design",
+      "path": "tool/design/build_widget_similarity.mjs",
+      "command": "node tool/design/build_widget_similarity.mjs --check",
+      "safety": "local",
+      "status": "active",
+      "role": "generator",
+      "description": "Builds and checks the generated widget similarity registry from widget dedupe fingerprints.",
+      "checks": [
+        "node --check tool/design/build_widget_similarity.mjs"
+      ]
+    },
+    {
+      "id": "design:widget-dedupe-probes",
+      "category": "design",
+      "path": "tool/design/check_widget_dedupe_probes.mjs",
+      "command": "node tool/design/check_widget_dedupe_probes.mjs",
+      "safety": "local",
+      "status": "active",
+      "role": "gate",
+      "description": "Runs seeded structural probes for the widget dedupe fingerprint extractor and similarity clustering.",
+      "checks": [
+        "node --check tool/design/check_widget_dedupe_probes.mjs",
+        "node tool/design/check_widget_dedupe_probes.mjs"
+      ],
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node tool/design/check_widget_dedupe_probes.mjs"
+      }
+    },
+    {
+      "id": "design:widget-dedupe-fingerprints",
+      "category": "design",
+      "path": "tool/widget_dedupe/bin/extract_fingerprints.dart",
+      "command": "dart run tool/widget_dedupe/bin/extract_fingerprints.dart --help",
+      "safety": "local",
+      "status": "active",
+      "role": "generator",
+      "description": "Extracts structural fingerprints for Dart widgets for dedupe and similarity analysis.",
+      "checks": [
+        "dart run tool/widget_dedupe/bin/extract_fingerprints.dart --help"
+      ]
+    },
+    {
+      "id": "design:widget-dedupe-fingerprint-tests",
+      "category": "design",
+      "path": "tool/widget_dedupe/test/fingerprint_extractor_test.dart",
+      "command": "dart test tool/widget_dedupe/test/fingerprint_extractor_test.dart",
+      "safety": "local",
+      "status": "active",
+      "role": "gate",
+      "description": "Runs fingerprint extractor regression tests for seeded widget dedupe fixtures and state-class folding.",
+      "checks": [
+        "dart test tool/widget_dedupe/test/fingerprint_extractor_test.dart"
+      ],
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "dart test tool/widget_dedupe/test/fingerprint_extractor_test.dart"
+      }
     }
   ]
 }

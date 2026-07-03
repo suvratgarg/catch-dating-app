@@ -80,10 +80,10 @@ ViewerEventAvailability resolveViewerEventAvailability({
   bool isSaved = false,
   bool isHosted = false,
   bool isClubMember = false,
-  DateTime? now,
+  required DateTime now,
   bool hasValidInvite = false,
 }) {
-  final referenceNow = now ?? DateTime.now();
+  final referenceNow = now;
   final base = _ViewerEventAvailabilityBuilder(
     event: event,
     userProfile: userProfile,
@@ -107,7 +107,10 @@ ViewerEventAvailability resolveViewerEventAvailability({
       return base.build(ViewerEventAvailabilityStatus.joined);
     case EventParticipationStatus.waitlisted:
       if (participation != null &&
-          EventService.participationStatus(participation).hasHostApproval) {
+          EventService.participationStatus(
+            participation,
+            now: referenceNow,
+          ).hasHostApproval) {
         return base.build(
           _hasEventStarted(event, referenceNow)
               ? ViewerEventAvailabilityStatus.past
@@ -148,14 +151,15 @@ ViewerEventAvailability resolveViewerEventAvailability({
     );
   }
 
-  if (userProfile.age < event.constraints.minAge) {
+  final userAge = userProfile.ageOn(referenceNow);
+  if (userAge < event.constraints.minAge) {
     return base.build(
       ViewerEventAvailabilityStatus.ageRestricted,
       eligibility: AgeTooYoung(event.constraints.minAge),
       ageLimit: event.constraints.minAge,
     );
   }
-  if (userProfile.age > event.constraints.maxAge) {
+  if (userAge > event.constraints.maxAge) {
     return base.build(
       ViewerEventAvailabilityStatus.ageRestricted,
       eligibility: AgeTooOld(event.constraints.maxAge),

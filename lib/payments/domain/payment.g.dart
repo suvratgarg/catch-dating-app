@@ -20,9 +20,7 @@ _Payment _$PaymentFromJson(Map<String, dynamic> json) => _Payment(
     unknownValue: PaymentStatus.failed,
   ),
   signUpFailed: json['signUpFailed'] as bool? ?? false,
-  createdAt: const TimestampConverter().fromJson(
-    json['createdAt'] as Timestamp,
-  ),
+  createdAt: const TimestampConverter().fromJson(json['createdAt']),
 );
 
 Map<String, dynamic> _$PaymentToJson(_Payment instance) => <String, dynamic>{

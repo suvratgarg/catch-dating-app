@@ -5,7 +5,7 @@
   "regions": [
     {
       "id": "status_bar",
-      "stateIds": ["phone_entry"],
+      "stateIds": ["phone_entry", "otp_entry"],
       "rect": {
         "x": 0,
         "y": 0,
@@ -26,8 +26,19 @@
       "reason": "Country code, phone number, caret, and keyboard-focus treatment are auth fixture data."
     },
     {
+      "id": "otp_fixture_code",
+      "stateIds": ["otp_entry"],
+      "rect": {
+        "x": 20,
+        "y": 190,
+        "width": 350,
+        "height": 78
+      },
+      "reason": "OTP digits, caret, and keyboard-focus treatment are auth fixture data."
+    },
+    {
       "id": "bottom_safe_area",
-      "stateIds": ["phone_entry"],
+      "stateIds": ["phone_entry", "otp_entry"],
       "rect": {
         "x": 0,
         "y": 772,

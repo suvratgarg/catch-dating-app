@@ -13,6 +13,8 @@ export 'package:catch_dating_app/locations/domain/place.dart'
 
 part 'places_repository.g.dart';
 
+// keepalive: Places repository is a shared Functions facade for location
+// autocomplete and details lookups.
 @Riverpod(keepAlive: true)
 PlacesRepository placesRepository(Ref ref) =>
     FirebasePlacesRepository(ref.watch(firebaseFunctionsProvider));

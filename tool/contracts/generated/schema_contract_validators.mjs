@@ -12,6 +12,7 @@ import {
   onboardingDraftDocumentSchema,
   userProfileDocumentSchema,
   publicProfileDocumentSchema,
+  hostProfileDocumentSchema,
   clubDocumentSchema,
   clubMembershipDocumentSchema,
   clubHostClaimDocumentSchema,
@@ -181,6 +182,7 @@ export const validateConfigCitiesDocument = ajv.compile(configCitiesDocumentSche
 export const validateOnboardingDraftDocument = ajv.compile(onboardingDraftDocumentSchema);
 export const validateUserProfileDocument = ajv.compile(userProfileDocumentSchema);
 export const validatePublicProfileDocument = ajv.compile(publicProfileDocumentSchema);
+export const validateHostProfileDocument = ajv.compile(hostProfileDocumentSchema);
 export const validateClubDocument = ajv.compile(clubDocumentSchema);
 export const validateClubMembershipDocument = ajv.compile(clubMembershipDocumentSchema);
 export const validateClubHostClaimDocument = ajv.compile(clubHostClaimDocumentSchema);

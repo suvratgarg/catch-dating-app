@@ -1,0 +1,774 @@
+{
+  "version": 1,
+  "updated": "2026-07-02",
+  "source": "tool/web/check_react_component_governance.mjs",
+  "limitation": "Known-family blocklist. Passing the scanner does not classify novel component shell families; reviewers must add new families when drift repeats.",
+  "families": [
+    {
+      "family": "website-legacy-site-barrel",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Import site chrome from shared/site, visual primitives from shared/ui/primitives, and domain adapters from their feature folders; do not recreate the legacy components/site barrel."
+    },
+    {
+      "family": "website-page-shell",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use PageShell and WebsitePageMain from shared/site, or a route-specific shared main such as ClaimFlowMain or HostPreviewMain, instead of rendering page-shell wrappers or <main> directly."
+    },
+    {
+      "family": "data-table",
+      "surfaces": [
+        "admin",
+        "website"
+      ],
+      "guidance": "Use the surface DataTable primitive instead of rendering a table shell directly."
+    },
+    {
+      "family": "admin-workbench-table",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use DataTable variant=\"workbench\" instead of class-configuring admin workbench table shells directly."
+    },
+    {
+      "family": "form-shell",
+      "surfaces": [
+        "admin",
+        "website"
+      ],
+      "guidance": "Use the surface Form/AdminForm primitive instead of rendering a form shell directly."
+    },
+    {
+      "family": "admin-editor-section-form",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminForm variant=\"publishing\", AdminPublishingFormShell, and AdminEditorSection instead of rendering or class-configuring admin editor form shells directly."
+    },
+    {
+      "family": "admin-layout-span",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use the shared span={2} layout prop on AdminPanel, Panel, AdminEditorPanel, AdminCard, TextField, or TextareaField instead of passing the raw admin span-2 class from feature code."
+    },
+    {
+      "family": "admin-eyebrow-label",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminEyebrow or an existing primitive prop such as PageHeader eyebrow instead of passing the raw admin intake-eyebrow class from feature code."
+    },
+    {
+      "family": "admin-card-stat-layout",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminCardList, AdminStatGrid, AdminCard, and CardHeader instead of passing raw admin marketing-card layout classes from feature code."
+    },
+    {
+      "family": "admin-marketing-studio-shell",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminMarketingOpsShell, AdminMarketingStudioHeader, AdminMarketingStudioActions, AdminMarketingStudioNav, and AdminMarketingTabs instead of passing raw admin marketing studio shell classes from feature code."
+    },
+    {
+      "family": "admin-marketing-post-board",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminMarketingStudioStack, AdminMarketingStudioSummary, AdminMarketingStudioFilterTabs, AdminMarketingPostBoard, AdminMarketingBoardColumn, AdminMarketingBoardList, and AdminMarketingPostTypeBadge instead of passing raw admin marketing post-board classes from feature code."
+    },
+    {
+      "family": "admin-marketing-composer-flow",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminMarketingComposer, AdminMarketingComposerHeader, AdminMarketingComposerBackButton, AdminMarketingStepStrip, AdminMarketingStepChip, AdminMarketingStepLayout, and AdminMarketingComposerFooter instead of passing raw admin marketing composer flow classes from feature code."
+    },
+    {
+      "family": "admin-marketing-picker-list",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminMarketingPickerList and AdminMarketingPickerRow instead of passing raw admin marketing picker list classes from feature code."
+    },
+    {
+      "family": "admin-marketing-feature-shot",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminMarketingFeatureShotGrid and AdminMarketingFeatureShotCard instead of passing raw admin marketing feature shot classes from feature code."
+    },
+    {
+      "family": "admin-marketing-brand-contract",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminMarketingBrandContract and AdminMarketingBrandContractItem instead of passing raw admin marketing brand contract classes from feature code."
+    },
+    {
+      "family": "admin-marketing-help-compliance",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminMarketingHelpText and AdminMarketingComplianceList instead of passing raw admin marketing help/compliance classes from feature code."
+    },
+    {
+      "family": "admin-marketing-event-library",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminMarketingEventLibraryGrid, AdminMarketingLibraryCard, and AdminMarketingCardLink instead of passing raw admin marketing event library classes from feature code."
+    },
+    {
+      "family": "admin-marketing-media-library",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminMarketingMediaGrid and AdminMarketingMediaCard instead of passing raw admin marketing media library classes from feature code."
+    },
+    {
+      "family": "admin-marketing-new-post",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminMarketingNewPostGrid and AdminMarketingNewPostCard instead of passing raw admin marketing new post classes from feature code."
+    },
+    {
+      "family": "admin-marketing-guide-shell",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminMarketingGuideLayout and AdminMarketingDeliverable instead of passing raw admin marketing guide shell classes from feature code."
+    },
+    {
+      "family": "admin-marketing-stacked-sections",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminMarketingStackedSections instead of passing the raw admin marketing-stacked-sections class from feature code."
+    },
+    {
+      "family": "admin-marketing-app-media",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminMarketingAppCapturePreview and AdminMarketingAppMediaPaths instead of passing raw admin marketing app media classes from feature code."
+    },
+    {
+      "family": "admin-marketing-field",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminTextField, AdminTextareaField, and AdminMarketingSelectField instead of passing the raw admin marketing-field class from feature code."
+    },
+    {
+      "family": "admin-marketing-layout-shell",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminMarketingGrid, AdminMarketingPanel, AdminMarketingTitleInput, AdminMarketingSection, and AdminMarketingEditGrid instead of passing raw admin marketing layout classes from feature code."
+    },
+    {
+      "family": "admin-diff-list",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminDiffList and AdminDiffRow instead of passing raw admin diff-list/diff-row classes from feature code."
+    },
+    {
+      "family": "admin-publishing-utility-primitives",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminPublishingLoadbar, AdminSurfacePreview, and AdminMutedCell instead of passing raw admin publishing utility classes from feature code."
+    },
+    {
+      "family": "admin-event-supply-shell",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminPanelActions, AdminEventSupplyReviewGrid, AdminEventSupplyDetailStack, AdminEventSupplyDetail, AdminEventSupplyEmptyState, and AdminEventSupplyLinks instead of passing raw admin event supply shell classes from feature code."
+    },
+    {
+      "family": "admin-selected-table-row",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminTableRow selected={...} instead of passing raw selected-row table classes from feature code."
+    },
+    {
+      "family": "admin-marketing-tag-row",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use TagList from AdminPrimitives instead of passing the raw admin marketing-tag-row class from feature code."
+    },
+    {
+      "family": "admin-marketing-query-list",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminQueryList and AdminQueryRow instead of passing raw admin marketing-query-list/marketing-query classes from feature code."
+    },
+    {
+      "family": "admin-marketing-slide-list",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminMarketingSlideList, AdminMarketingSlideEditor, and AdminMarketingSlideEditorTopline instead of passing raw admin marketing-slide editor classes from feature code."
+    },
+    {
+      "family": "admin-marketing-recommendation-list",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminMarketingRecommendationList and AdminMarketingRecommendationItem instead of passing raw admin marketing-recommendation classes from feature code."
+    },
+    {
+      "family": "admin-marketing-audit-list",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminMarketingAuditList and AdminMarketingAuditRow instead of passing raw admin marketing-audit classes from feature code."
+    },
+    {
+      "family": "admin-feature-drop-feature-list",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminFeatureDropFeatureList and AdminFeatureDropFeatureEditor instead of passing raw admin feature-drop feature classes from feature code."
+    },
+    {
+      "family": "admin-feature-drop-controls-preview",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminFeatureDropControlGrid, AdminFeatureDropWideField, AdminFeatureDropPreviewGrid, and AdminFeatureDropPreviewCard instead of passing raw admin feature-drop controls/preview classes from feature code."
+    },
+    {
+      "family": "admin-marketing-preview-export",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminMarketingPreviewShell, AdminMarketingPreviewToolbar, AdminMarketingPreviewActions, and AdminMarketingExportStatus instead of passing raw admin marketing preview/export classes from feature code."
+    },
+    {
+      "family": "admin-marketing-carousel-preview",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminMarketingCarouselPreview, AdminMarketingPreviewSlide, AdminMarketingPreviewMeta, AdminMarketingPreviewImage, AdminMarketingPreviewBrandNote, and AdminMarketingPreviewCopy instead of passing raw admin marketing carousel preview classes from feature code."
+    },
+    {
+      "family": "admin-marketing-image-editor",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminMarketingImageEditor, AdminMarketingImageEditorHeader, AdminMarketingImageControls, AdminMarketingFilePickerButton, AdminMarketingImageReviewRow, AdminMarketingImageThumb, AdminFeatureDropCaptureThumb, AdminMarketingImageMetaFields, AdminMarketingImageSourceNote, and AdminMarketingImageEmpty instead of passing raw admin marketing image editor classes from feature code."
+    },
+    {
+      "family": "admin-guardrail-list",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminGuardrailList instead of passing the raw admin guardrail-list class from feature code."
+    },
+    {
+      "family": "admin-intake-source-list",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminIntakeSourceList instead of passing the raw admin intake-source-list class from feature code."
+    },
+    {
+      "family": "admin-intake-gate-list",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminIntakeGateList and AdminIntakeGate instead of passing raw admin intake-gate-list/intake-gate classes from feature code."
+    },
+    {
+      "family": "admin-intake-decision-shell",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use DecisionFooter, AdminDecisionFooterShell, AdminIntakeDecisionActions, AdminIntakeDecisionState, and AdminIntakeDecisionBox instead of passing raw admin intake decision classes from feature code."
+    },
+    {
+      "family": "admin-intake-workspace-shell",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminIntakeWorkspaceHeader, AdminIntakeWorkspaceTabs, AdminIntakeLayout, and AdminIntakeEventWorkspaceShell instead of passing raw admin intake workspace shell classes from feature code."
+    },
+    {
+      "family": "admin-organizer-intake-curation-shell",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminOrganizerIntakeCurationPanel, AdminOrganizerIntakeList, AdminOrganizerIntakeCard, AdminOrganizerIntakeCardHeader, AdminOrganizerIntakeBadges, AdminOrganizerPolicyGapColumns, AdminOrganizerLocationResolutionForm, AdminOrganizerIntakeSurfaceGrid, AdminOrganizerSurfaceList, AdminOrganizerSurfaceRow, AdminOrganizerIntakeCheckboxField, AdminOrganizerCurationControlSection, and AdminOrganizerCurationControlGrid instead of passing raw organizer intake curation classes from feature code."
+    },
+    {
+      "family": "admin-overview-queue-shell",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminOverviewQueueList, AdminOverviewQueueHeading, AdminOverviewQueueItems, AdminOverviewQueueRow, AdminOverviewQueueRowActions, AdminOverviewQueueDecisionButton, and AdminOverviewQueueDetailPanel instead of passing raw admin overview queue shell classes from feature code."
+    },
+    {
+      "family": "admin-overview-analytics-shell",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminOverviewMainGrid, AdminOverviewQueueColumns, AdminOverviewAnalyticsClearButton, AdminOverviewLineChart, AdminOverviewBarChart, and AdminOverviewValueSignals instead of passing raw admin overview layout, chart, or signal classes from feature code."
+    },
+    {
+      "family": "field-layout",
+      "surfaces": [
+        "admin",
+        "website"
+      ],
+      "guidance": "Use the surface FieldGrid/AdminFieldGrid primitive instead of rendering a field layout grid directly."
+    },
+    {
+      "family": "admin-summary-metrics",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminMetricGrid and AdminMetricCard instead of rendering admin metric summary shells directly."
+    },
+    {
+      "family": "admin-workbench-toolbar",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminToolbar and its typed props such as compact instead of rendering admin workbench toolbar shells or class modifiers directly."
+    },
+    {
+      "family": "admin-workbench-layout",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminDirectoryScreenStack, AdminDetailScreenStack, AdminWorkbenchStack, AdminEditorGrid, and AdminEditorPanel instead of rendering or class-configuring admin workbench/editor layout shells directly."
+    },
+    {
+      "family": "admin-utility-shell",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminWorkbenchNote and AdminChecklistStack instead of rendering admin utility shells directly."
+    },
+    {
+      "family": "admin-command-list",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminCommandStack and AdminCommandRow instead of rendering admin command-list shells directly."
+    },
+    {
+      "family": "admin-intake-tag-list",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminTagList and AdminTag instead of rendering admin intake tag-list shells directly."
+    },
+    {
+      "family": "admin-intake-section-shell",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminIntakeSection, AdminIntakeSectionTitle, and AdminSearchCandidate* primitives instead of rendering admin intake/search-candidate shells directly."
+    },
+    {
+      "family": "admin-intake-state-grid",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminIntakeStateGrid instead of rendering admin intake state-grid shells directly."
+    },
+    {
+      "family": "admin-row-tag-shell",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminRowTitle and AdminTagRow instead of rendering admin row title or tag-row shells directly."
+    },
+    {
+      "family": "admin-roadmap-list",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminRoadmapList and AdminRoadmapListItem instead of rendering admin roadmap-list shells directly."
+    },
+    {
+      "family": "admin-status-display",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminStatusGrid and StateRow/AdminStateRow instead of rendering admin status-display shells directly."
+    },
+    {
+      "family": "admin-app-shell-status",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminEnvironmentStatus, AdminAuthStatus, and AdminFeatureLoadingState instead of local admin app-shell status/loading shells."
+    },
+    {
+      "family": "admin-loading-icon",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminLoadingIcon or AdminFeatureLoadingState instead of passing the raw spin animation class from app or feature code."
+    },
+    {
+      "family": "admin-app-auth-shell",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminAppShell, AdminSidebar, AdminBrand*, AdminNavList, AdminSidebarFooter, AdminWorkspace, AdminTopbar, AdminTopbarActions, and AdminSignIn* primitives instead of passing raw admin app/auth shell classes from app or feature code."
+    },
+    {
+      "family": "admin-intake-status-chip",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use StatusChip instead of rendering admin intake/status badge shells directly."
+    },
+    {
+      "family": "admin-quality-row",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use QualityRow or AlertRow instead of rendering admin quality-row shells directly."
+    },
+    {
+      "family": "admin-quality-list",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use QualityList instead of rendering admin quality-list containers directly."
+    },
+    {
+      "family": "admin-filter-bar",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use AdminFilterBar instead of rendering admin analytics/filter bar shells directly."
+    },
+    {
+      "family": "admin-empty-state",
+      "surfaces": [
+        "admin"
+      ],
+      "guidance": "Use EmptyState with the row/workbench/editor/marketing variant instead of rendering or class-configuring admin empty-state shells directly."
+    },
+    {
+      "family": "website-organizer-filter-rail",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use FilterRail instead of rendering website organizer filter rail shells directly."
+    },
+    {
+      "family": "website-stat-strip",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use StatStrip instead of rendering website stat or metric strips directly."
+    },
+    {
+      "family": "website-chip-rail",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use ChipRail instead of rendering website chip/label rail shells directly."
+    },
+    {
+      "family": "website-capture-grid",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use CaptureGrid, CaptureCard, and their variants instead of rendering website capture shells directly."
+    },
+    {
+      "family": "website-card-grid",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use CardGrid instead of rendering website card grid shells directly."
+    },
+    {
+      "family": "website-empty-state",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use EmptyState variants instead of rendering or class-configuring website empty-state shells directly."
+    },
+    {
+      "family": "website-status-display",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use LiveStatus and RouteLoadingState instead of rendering website status/loading shells directly."
+    },
+    {
+      "family": "website-app-download-shell",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use AppDownloadCtaGroup with marketing useAppDownloadCtas configuration instead of local AppDownloadCtas components, direct app-download shell composition, or raw store-button classes."
+    },
+    {
+      "family": "website-badge-status",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use StatusBadge, ReviewSignalBadge, and BadgeRow instead of rendering website badge/status shells directly."
+    },
+    {
+      "family": "website-identity-display-shell",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use ActivityMark and ProfileStrength instead of rendering website identity display shells directly."
+    },
+    {
+      "family": "website-process-status-panel",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use ProcessStatusPanel instead of rendering website process status panel shells directly."
+    },
+    {
+      "family": "website-ui-label-shell",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use UiLabel instead of rendering website ui-label spans directly."
+    },
+    {
+      "family": "website-search-form",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use PublicSearchBar, SearchFormShell, and PublicEventCard instead of rendering website public discovery shells directly."
+    },
+    {
+      "family": "website-section-heading",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use SectionHeader instead of rendering website section-heading shells directly."
+    },
+    {
+      "family": "website-action-group",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use ActionGroup instead of rendering website action group shells directly."
+    },
+    {
+      "family": "website-control-row",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use ControlRow instead of rendering website control row shells directly."
+    },
+    {
+      "family": "website-waitlist-section",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use WaitlistSection instead of rendering website waitlist section shells directly."
+    },
+    {
+      "family": "website-waitlist-form-shell",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use WaitlistFormShell instead of passing waitlist-form through a generic Form primitive."
+    },
+    {
+      "family": "website-success-grid",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use EventSuccessModuleGrid or ListingSuccessMetricGrid instead of composing website Event Success grid shells directly."
+    },
+    {
+      "family": "website-claim-shell",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use ClaimBandSection, ClaimBandGrid, ClaimBandRail, ClaimRequestPanel, and ClaimRequestPanelHeading instead of rendering website claim shells directly."
+    },
+    {
+      "family": "website-content-grid",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use ContentGrid instead of rendering website content grid shells directly."
+    },
+    {
+      "family": "website-panel-shell",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use PanelShell, EventTicketStatus, and EventTicketMeta instead of rendering website panel shells directly."
+    },
+    {
+      "family": "website-product-shell",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use ProductShell, ProductModuleGrid, ProductBoard*, HostConsole*, ModuleStack, HostCreateMockBar, and HostCreateFieldGrid instead of rendering website product shells directly."
+    },
+    {
+      "family": "website-row-shell",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use EvidenceStrip, FeaturedOrganizersCta, and ProofLedgerRows instead of rendering website row/list shells directly."
+    },
+    {
+      "family": "website-host-preview-shell",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use HostPreviewMain, HostPreviewHero*, HostPreviewFormatRail, HostPreviewChipRow, HostPreviewOfferShell, HostPreviewSection, HostPreviewApplyShell, and the other HostPreview* primitives instead of rendering host-preview route shells directly."
+    },
+    {
+      "family": "website-host-page-shell",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use HostHeroShell, HostHeroInner, HostHeroCopy, and HostPageSection instead of rendering Host Page route shells directly."
+    },
+    {
+      "family": "website-host-application-shell",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use HostApplicationShell, HostApplicationPanel, HostApplicationStage, HostApplicationSubmitted, HostApplicationReview*, OperationalNote, and HostApplicationCompletenessSummary instead of rendering Host Application shells directly."
+    },
+    {
+      "family": "website-host-feature-section-shell",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use HostFeatureSection, HostFeatureGrid, HostFeatureRail, HostCreateFlowCapture, HostComparisonTable*, PrivacyGuardrail, and PhoneCaptureShell instead of rendering Host feature section shells directly."
+    },
+    {
+      "family": "website-claim-flow-shell",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use ClaimFlowMain, ClaimFlow*, ClaimListingResults, ClaimResultButton, SelectedListingCard, VerificationMethodGrid, OwnerUnlockBoard, and AuthStatusRow variants instead of rendering claim-flow shells directly."
+    },
+    {
+      "family": "website-marketing-section-shell",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use HomeHero*, MarketingSection, MarketingSectionCopy, MarketingFormatCard, FeaturedOrganizerCardGrid, and LiveMeter instead of rendering website marketing section shells directly."
+    },
+    {
+      "family": "website-marketing-info-card-shell",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use MarketingInfoCardGrid or HostComparisonSummaryCards instead of rendering reveal-card article shells directly."
+    },
+    {
+      "family": "website-marketing-loop-list-shell",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use MarketingLoopList instead of rendering or importing local website loop-list shells."
+    },
+    {
+      "family": "website-marketing-consent-banner-shell",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use MarketingConsentBannerShell for the banner presentation; keep consent state and analytics decisions in the owning feature wrapper."
+    },
+    {
+      "family": "website-featured-organizer-card-shell",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use FeaturedOrganizerCardGrid and RecommendedOrganizersSectionShell instead of composing featured organizer card shells directly."
+    },
+    {
+      "family": "website-listing-shell",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use ListingSection, ListingSectionIntro, ListingFactGrid, ListingNoteGrid, ListingFormatRow, ListingDiagnostics*, ListingEventDownloadPanel, ListingEventEvidenceList, ListingReview*, and ListingSourceLedger instead of rendering organizer listing shells directly."
+    },
+    {
+      "family": "website-listing-card-grid-shell",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use ListingFactGrid or ListingNoteGrid instead of composing organizer listing grids/cards directly."
+    },
+    {
+      "family": "website-listing-event-section-shell",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use EventActionCard, ListingEventDownloadPanel, and ListingEventEvidenceList instead of composing organizer listing event shells directly."
+    },
+    {
+      "family": "website-organizer-result-shell",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use OrganizerResultCard*, OrganizerEventHighlights, and ListingFormatRow instead of rendering organizer result-card shells directly."
+    },
+    {
+      "family": "website-organizer-search-section-shell",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use OrganizerSearchSection, OrganizerSearchStats, OrganizerResultSummary, DirectoryClaimPressure*, and OrganizerResultCard* primitives instead of rendering organizer search section shells directly."
+    },
+    {
+      "family": "website-listing-hero-shell",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use ListingHeroShell, ListingHeroInner, ListingHeroCopy, ListingHeroEyebrow, ListingHeroMetrics, and ListingHeroShareStatus instead of rendering organizer listing hero shells directly."
+    },
+    {
+      "family": "website-listing-review-shell",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use ReviewSignalLane, ReviewSignalCard, OwnerResponsePrompt, ListingReviewEmptyState, ListingReviewForm, and ListingReviewCheckbox instead of rendering organizer listing review shells directly."
+    },
+    {
+      "family": "website-listing-claim-shell",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use ClaimMissingEvidenceList and ClaimRequestForm instead of rendering organizer listing claim shells directly."
+    },
+    {
+      "family": "website-listing-source-ledger-shell",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use ListingSourceLedger instead of composing organizer listing source-ledger rows directly."
+    }
+  ]
+}

@@ -58,6 +58,7 @@ void main() {
     final preview = EventSuccessEventPreview.fromEvent(
       event: event,
       roster: roster,
+      now: DateTime(2026, 5, 17, 7, 20),
     );
 
     expect(preview.livePlan.bookedCount, 3);
@@ -81,7 +82,10 @@ void main() {
       ),
     );
 
-    final preview = EventSuccessEventPreview.fromEvent(event: event);
+    final preview = EventSuccessEventPreview.fromEvent(
+      event: event,
+      now: DateTime(2026, 5, 17, 7, 20),
+    );
 
     expect(preview.playbook.id, EventSuccessPlaybookLibrary.pubQuiz.id);
     expect(

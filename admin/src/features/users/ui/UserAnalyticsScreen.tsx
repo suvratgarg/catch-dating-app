@@ -21,17 +21,33 @@ import type {
 } from "../../../shared/types/adminTypes";
 import {
   AdminButton,
+  AdminEditorGrid,
+  AdminEditorPanel,
+  AdminFieldGrid,
+  AdminMetricCard,
+  AdminMetricGrid,
+  AdminRoadmapList,
+  AdminRoadmapListItem,
   AdminTag,
+  AdminToolbar,
+  AdminWorkbenchNote,
+  AdminWorkbenchStack,
   AlertRow,
   DataTable,
   EmptyState,
   Panel,
+  QualityList,
   SegmentedControl,
   SelectField,
   StateRow,
   TextField,
+  AdminTagList,
+  AdminIntakeSection,
+  AdminIntakeSectionTitle,
+  AdminRowTitle,
 } from "../../../shared/ui/AdminPrimitives";
 import {
+  type UserAnalyticsController,
   type UserLookupContract,
   useUserAnalyticsController,
 } from
@@ -54,6 +70,14 @@ export function UserAnalyticsScreen({
     onError,
     onNotice,
   });
+  return <UserAnalyticsWorkspace controller={controller} />;
+}
+
+export function UserAnalyticsWorkspace({
+  controller,
+}: {
+  controller: UserAnalyticsController;
+}) {
   const missingCount = controller.report?.summaryCards.filter((metric) =>
     metric.status === "missing"
   ).length ?? 0;
@@ -62,28 +86,34 @@ export function UserAnalyticsScreen({
   ).length ?? 0;
 
   return (
-    <div className="workbench-stack">
-      <section className="metric-grid" aria-label="User analytics state">
+    <AdminWorkbenchStack>
+      <AdminMetricGrid ariaLabel="User analytics state">
         {controller.report ? (
           controller.report.summaryCards.map((metric) => (
-            <MetricCard metric={metric} key={metric.id} />
+            <AdminMetricCard
+              caption={metric.caption}
+              key={metric.id}
+              label={metric.label}
+              tone={metric.status === "ready" ? "normal" : "attention"}
+              value={formatMetricValue(metric)}
+            />
           ))
         ) : (
           <>
-            <Metric label="Selected user" value={controller.userId || "none"} />
-            <Metric label="Range" value={controller.rangePreset} />
-            <Metric label="Missing metrics" value={String(missingCount)} />
-            <Metric label="Data warnings" value={String(partialCount)} />
+            <AdminMetricCard label="Selected user" value={controller.userId || "none"} />
+            <AdminMetricCard label="Range" value={controller.rangePreset} />
+            <AdminMetricCard label="Missing metrics" value={String(missingCount)} />
+            <AdminMetricCard label="Data warnings" value={String(partialCount)} />
           </>
         )}
-      </section>
+      </AdminMetricGrid>
 
       <Panel
         icon={<Search size={18} strokeWidth={1.9} />}
         title="User analytics lookup"
         action={controller.isLoading ? "Loading" : "read-only"}
       >
-        <div className="workbench-toolbar">
+        <AdminToolbar>
           <TextField
             label="users/{uid}"
             onChange={controller.setUserId}
@@ -121,9 +151,9 @@ export function UserAnalyticsScreen({
           >
             Load
           </AdminButton>
-        </div>
+        </AdminToolbar>
         {controller.rangePreset === "custom" && (
-          <div className="form-grid two">
+          <AdminFieldGrid columns={2}>
             <TextField
               label="Start date"
               onChange={controller.setStartDate}
@@ -136,14 +166,14 @@ export function UserAnalyticsScreen({
               type="date"
               value={controller.endDate}
             />
-          </div>
+          </AdminFieldGrid>
         )}
-        <p className="workbench-note">
+        <AdminWorkbenchNote>
           This tab reads the aggregate-only adminGetUserAnalytics response for
           one selected user. Enter an exact users/{"{uid}"}, uid:{"{uid}"}, or
           raw uid value; this tab does not expose identity search, account
           actions, moderation actions, payment records, or raw scoring columns.
-        </p>
+        </AdminWorkbenchNote>
       </Panel>
 
       <UserLookupContractPanel contract={controller.lookupContract} />
@@ -152,13 +182,13 @@ export function UserAnalyticsScreen({
         <UserAnalyticsReportView report={controller.report} />
       ) : (
         <EmptyState
-          className="workbench-empty"
+          variant="workbench"
           icon={<Clock3 size={16} strokeWidth={1.9} />}
         >
           Enter a user id to load user-safe aggregate analytics.
         </EmptyState>
       )}
-    </div>
+    </AdminWorkbenchStack>
   );
 }
 
@@ -169,13 +199,13 @@ function UserLookupContractPanel({
 }) {
   return (
     <Panel
-      className="span-2"
+      span={2}
       icon={<ShieldCheck size={18} strokeWidth={1.9} />}
       title="Lookup contract"
       action={contract.canLoad ? contract.mode.replaceAll("_", " ") : "blocked"}
     >
-      <div className="publishing-editor-grid">
-        <div className="quality-list">
+      <AdminEditorGrid as="div">
+        <QualityList>
           <AlertRow
             icon={<ShieldCheck size={16} strokeWidth={1.9} />}
             title={contract.statusLabel}
@@ -186,55 +216,53 @@ function UserLookupContractPanel({
           <StateRow label="Normalized uid" value={contract.normalizedUserId} />
           <StateRow label="Target path" value={contract.targetPath} />
           <StateRow label="Allowed source" value={contract.allowedSources.join(", ")} />
-        </div>
-        <div className="workbench-stack compact-stack">
-          <div className="intake-section">
-            <div className="intake-section-title">Unavailable Here</div>
-            <div className="intake-tags">
+        </QualityList>
+        <AdminWorkbenchStack compact>
+          <AdminIntakeSection>
+            <AdminIntakeSectionTitle>Unavailable Here</AdminIntakeSectionTitle>
+            <AdminTagList>
               {contract.unavailableDomains.map((domain) => (
                 <AdminTag key={domain}>{domain}</AdminTag>
               ))}
-            </div>
-          </div>
-          <div className="intake-section">
-            <div className="intake-section-title">Blocked Actions</div>
-            <div className="intake-tags">
+            </AdminTagList>
+          </AdminIntakeSection>
+          <AdminIntakeSection>
+            <AdminIntakeSectionTitle>Blocked Actions</AdminIntakeSectionTitle>
+            <AdminTagList>
               {contract.blockedActions.map((action) => (
                 <AdminTag key={action}>{action}</AdminTag>
               ))}
-            </div>
-          </div>
-        </div>
-      </div>
+            </AdminTagList>
+          </AdminIntakeSection>
+        </AdminWorkbenchStack>
+      </AdminEditorGrid>
     </Panel>
   );
 }
 
 function UserAnalyticsReportView({report}: {report: UserAnalyticsResponse}) {
   return (
-    <section className="publishing-editor-grid">
-      <Panel
-        className="publishing-editor-panel"
+    <AdminEditorGrid>
+      <AdminEditorPanel
         icon={<BarChart3 size={18} strokeWidth={1.9} />}
         title="Trend"
         action={`${report.trend.length} buckets`}
       >
         <TrendTable points={report.trend} />
-      </Panel>
-
-      <div className="workbench-stack">
+      </AdminEditorPanel>
+      <AdminWorkbenchStack>
         <Panel
           icon={<UserRound size={18} strokeWidth={1.9} />}
           title="Scope"
           action={report.scope.userId}
         >
-          <div className="quality-list">
+          <QualityList>
             <StateRow label="User" value={`users/${report.scope.userId}`} />
             <StateRow label="Generated" value={formatDateTime(report.generatedAt)} />
             <StateRow label="Range start" value={formatDateTime(report.range.startDate)} />
             <StateRow label="Range end" value={formatDateTime(report.range.endDate)} />
             <StateRow label="Group by" value={report.range.granularity} />
-          </div>
+          </QualityList>
         </Panel>
 
         <SummaryPanel
@@ -247,17 +275,17 @@ function UserAnalyticsReportView({report}: {report: UserAnalyticsResponse}) {
           title="Coaching refs"
           action={`${report.coachingTipRefs.length} refs`}
         >
-          <div className="roadmap-list">
+          <AdminRoadmapList>
             {report.coachingTipRefs.map((tip) => (
-              <div className="roadmap-list-item" key={tip.id}>
+              <AdminRoadmapListItem key={tip.id}>
                 <Sparkles size={15} strokeWidth={1.9} />
                 <span>
                   <strong>{tip.copyKey}</strong> · priority {tip.priority} ·{" "}
                   {tip.metricIds.join(", ")}
                 </span>
-              </div>
+              </AdminRoadmapListItem>
             ))}
-          </div>
+          </AdminRoadmapList>
         </Panel>
 
         <DataQualityPanel rows={report.dataQuality} />
@@ -267,16 +295,16 @@ function UserAnalyticsReportView({report}: {report: UserAnalyticsResponse}) {
           title="Mutation boundary"
           action="read-only"
         >
-          <div className="quality-list">
+          <QualityList>
             <StateRow label="Callable" value="adminGetUserAnalytics" />
             <StateRow label="Source" value="BigQuery user analytics mart" />
             <StateRow label="Audit log" value="adminAuditLogs/{id}" />
             <StateRow label="PII" value="No identity lookup in this tab" />
             <StateRow label="Actions" value="No account/safety/payment mutations" />
-          </div>
+          </QualityList>
         </Panel>
-      </div>
-    </section>
+      </AdminWorkbenchStack>
+    </AdminEditorGrid>
   );
 }
 
@@ -284,7 +312,7 @@ function TrendTable({points}: {points: UserAnalyticsTrendPoint[]}) {
   if (points.length === 0) {
     return (
       <EmptyState
-        className="workbench-empty"
+        variant="workbench"
         icon={<Clock3 size={16} strokeWidth={1.9} />}
       >
         No trend buckets are available for this range.
@@ -292,7 +320,7 @@ function TrendTable({points}: {points: UserAnalyticsTrendPoint[]}) {
     );
   }
   return (
-    <DataTable className="workbench-table">
+    <DataTable variant="workbench">
       <thead>
         <tr>
           <th>Period</th>
@@ -307,10 +335,10 @@ function TrendTable({points}: {points: UserAnalyticsTrendPoint[]}) {
         {points.map((point) => (
           <tr key={point.periodStart}>
             <td>
-              <div className="row-title compact">
+              <AdminRowTitle compact>
                 <strong>{formatDate(point.periodStart)}</strong>
                 <span>{formatDate(point.periodEnd)}</span>
-              </div>
+              </AdminRowTitle>
             </td>
             <td>{numberValue(point.metrics.profileViews)}</td>
             <td>{numberValue(point.metrics.caughtYou)}</td>
@@ -337,7 +365,7 @@ function SummaryPanel({
       title="Aggregate summary"
       action="user-safe"
     >
-      <div className="quality-list">
+      <QualityList>
         <StateRow label="Outgoing likes" value={connection.outgoingLikes} />
         <StateRow label="Incoming likes" value={connection.incomingLikes} />
         <StateRow label="Private interest" value={connection.privateInterestReceived} />
@@ -347,7 +375,7 @@ function SummaryPanel({
         <StateRow label="Profile dwell" value={`${profile.profileDwellSeconds}s`} />
         <StateRow label="Top photo" value={profile.topPhotoId} />
         <StateRow label="Active minutes" value={profile.activeMinutes} />
-      </div>
+      </QualityList>
     </Panel>
   );
 }
@@ -359,43 +387,23 @@ function DataQualityPanel({rows}: {rows: UserAnalyticsDataQuality[]}) {
       title="Data quality"
       action={`${rows.filter((row) => row.state !== "ok").length} warnings`}
     >
-      <div className="quality-list">
+      <QualityList>
         {rows.map((row) => (
-          <div className="state-row" key={row.id}>
-            <span>{row.id}</span>
-            <strong>
+          <StateRow
+            key={row.id}
+            label={row.id}
+            value={(
+              <>
               <AdminTag tone={row.state === "ok" ? "muted" : "neutral"}>
                 {row.state}
               </AdminTag>{" "}
               {row.detail}
-            </strong>
-          </div>
+              </>
+            )}
+          />
         ))}
-      </div>
+      </QualityList>
     </Panel>
-  );
-}
-
-function MetricCard({metric}: {metric: UserAnalyticsMetricCard}) {
-  return (
-    <article
-      className={`metric-card ${
-        metric.status === "ready" ? "" : "attention"
-      }`.trim()}
-    >
-      <span>{metric.label}</span>
-      <div className="metric-value">{formatMetricValue(metric)}</div>
-      {metric.caption ? <small className="muted-cell">{metric.caption}</small> : null}
-    </article>
-  );
-}
-
-function Metric({label, value}: {label: string; value: string}) {
-  return (
-    <article className="metric-card">
-      <span>{label}</span>
-      <div className="metric-value">{value}</div>
-    </article>
   );
 }
 

@@ -8,11 +8,11 @@ import 'package:catch_dating_app/core/business_rules.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/device_location.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
@@ -32,12 +32,16 @@ import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dar
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
-import 'package:catch_dating_app/events/presentation/location_picker_screen.dart';
-import 'package:catch_dating_app/events/presentation/widgets/map_pin_tile.dart';
+import 'package:catch_dating_app/events/domain/event_private_access.dart';
+import 'package:catch_dating_app/events/events.dart'
+    show LocationPickerResult, LocationPickerScreen;
+import 'package:catch_dating_app/events/shared/map_pin_tile.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_policy_step.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_edit_screen_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_edit_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/validators.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
@@ -46,144 +50,134 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+part 'edit_hosted_event_route_screen.dart';
+
 abstract final class EditHostedEventKeys {
   static const saveButton = ValueKey('edit-hosted-event-save-button');
 }
 
-class EditHostedEventRouteScreen extends ConsumerWidget {
-  const EditHostedEventRouteScreen({
-    super.key,
-    required this.clubId,
-    required this.eventId,
-    this.initialEvent,
-  });
-
-  final String clubId;
-  final String eventId;
-  final Event? initialEvent;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final uidAsync = ref.watch(uidProvider);
-    final clubAsync = ref.watch(fetchClubProvider(clubId));
-    final eventAsync = ref.watch(watchEventProvider(eventId));
-
-    final state = HostEventEditState.resolve(
-      uid: uidAsync,
-      club: clubAsync,
-      event: eventAsync,
-      initialEvent: initialEvent,
-    );
-
-    return switch (state.status) {
-      HostEventEditRouteStatus.loading => Scaffold(
-        backgroundColor: CatchTokens.of(context).bg,
-        appBar: const CatchTopBar(title: 'Edit event', border: true),
-        body: const SafeArea(child: HostRouteLoadingBody(showTabRail: true)),
-      ),
-      HostEventEditRouteStatus.error => CatchErrorScaffold.fromError(
-        state.error!,
-        context: AppErrorContext.event,
-        onRetry: () {
-          ref.invalidate(fetchClubProvider(clubId));
-          ref.invalidate(watchEventProvider(eventId));
-        },
-      ),
-      HostEventEditRouteStatus.notFound => const CatchErrorScaffold(
-        title: 'Event not found',
-        message: 'This hosted event is no longer available.',
-      ),
-      HostEventEditRouteStatus.unauthorized => CatchErrorScaffold(
-        title: 'Action unavailable',
-        message: 'You can edit only events that you host.',
-        icon: CatchIcons.blockRounded,
-      ),
-      HostEventEditRouteStatus.ready => EditHostedEventScreen(
-        club: state.club!,
-        event: state.event!,
-      ),
-    };
-  }
-}
-
-enum HostEventEditRouteStatus { loading, error, notFound, unauthorized, ready }
-
 @immutable
-class HostEventEditState {
-  const HostEventEditState({
-    required this.status,
-    this.uid,
-    this.club,
-    this.event,
-    this.error,
+class HostEventEditSaveRequest {
+  const HostEventEditSaveRequest({
+    required this.nextEvent,
+    required this.includePolicy,
+    required this.inviteCode,
   });
 
-  final HostEventEditRouteStatus status;
-  final String? uid;
-  final Club? club;
-  final Event? event;
-  final Object? error;
+  final Event nextEvent;
+  final bool includePolicy;
+  final String? inviteCode;
 
-  factory HostEventEditState.resolve({
-    required AsyncValue<String?> uid,
-    required AsyncValue<Club?> club,
-    required AsyncValue<Event?> event,
-    Event? initialEvent,
+  factory HostEventEditSaveRequest.fromForm({
+    required Event event,
+    required bool scheduleLocked,
+    required bool policyLocked,
+    required DateTime selectedStartDateTime,
+    required int durationMinutes,
+    required LocationCoordinate startingPoint,
+    required String meetingPoint,
+    required String? meetingLocationAddress,
+    required String? meetingLocationPlaceId,
+    required String locationDetails,
+    required String distanceText,
+    required PaceLevel selectedPace,
+    required String description,
+    required String capacityText,
+    required String priceText,
+    required EventAdmissionPreset admissionPreset,
+    required bool cohortCapsEnabled,
+    required bool dynamicPricingEnabled,
+    required String minAgeText,
+    required String maxAgeText,
+    required String maxMenText,
+    required String maxWomenText,
+    required String dynamicPricingStepText,
+    required String dynamicPricingMaxText,
+    required EventCancellationPolicyId cancellationPolicyId,
+    required String inviteCodeText,
   }) {
-    final resolvedEvent = event.asData?.value ?? initialEvent;
-    if (uid.isLoading ||
-        club.isLoading ||
-        (event.isLoading && resolvedEvent == null)) {
-      return const HostEventEditState(status: HostEventEditRouteStatus.loading);
-    }
+    final distanceKm = event.eventFormat.activityKind.isDistanceBased
+        ? double.parse(distanceText.trim())
+        : event.distanceKm;
+    final startTime = scheduleLocked ? event.startTime : selectedStartDateTime;
+    final endTime = scheduleLocked
+        ? event.endTime
+        : startTime.add(CatchBusinessRules.eventDuration(durationMinutes));
+    final meetingLocation = EventMeetingLocation(
+      name: meetingPoint.trim(),
+      address: meetingLocationAddress,
+      placeId: meetingLocationPlaceId,
+      latitude: startingPoint.latitude,
+      longitude: startingPoint.longitude,
+      notes: _trimToNull(locationDetails),
+    ).normalized();
+    final includePolicy = !policyLocked;
+    final eventPolicyDefaults = includePolicy
+        ? EventPolicyDefaults(
+            admissionPreset: _admissionDefaultPresetFromSelected(
+              admissionPreset,
+              cohortCapsEnabled: cohortCapsEnabled,
+            ),
+            minAge: int.tryParse(minAgeText.trim()) ?? 0,
+            maxAge: int.tryParse(maxAgeText.trim()) ?? 99,
+            maxMen: int.tryParse(maxMenText.trim()),
+            maxWomen: int.tryParse(maxWomenText.trim()),
+            dynamicPricingEnabled: dynamicPricingEnabled,
+            dynamicPricingStepInPaise: _currencyTextValueInMinorUnits(
+              dynamicPricingStepText,
+              currencyCode: event.currency,
+            ),
+            dynamicPricingMaxInPaise: _currencyTextValueInMinorUnits(
+              dynamicPricingMaxText,
+              currencyCode: event.currency,
+            ),
+            cancellationPolicyId: cancellationPolicyId,
+          )
+        : null;
+    final capacityLimit = includePolicy
+        ? int.parse(capacityText.trim())
+        : event.capacityLimit;
+    final priceInPaise = includePolicy
+        ? _currencyTextValueInMinorUnits(
+            priceText,
+            currencyCode: event.currency,
+          )!
+        : event.priceInPaise;
+    final eventPolicy = includePolicy
+        ? _eventPolicyForDefaults(
+            defaults: eventPolicyDefaults!,
+            admissionPreset: admissionPreset,
+            capacityLimit: capacityLimit,
+            basePriceInPaise: priceInPaise,
+            inviteCodeHint: _inviteCodeHint(inviteCodeText),
+          )
+        : event.eventPolicy;
 
-    final error = uid.error ?? club.error ?? event.error;
-    if (error != null) {
-      return HostEventEditState(
-        status: HostEventEditRouteStatus.error,
-        error: error,
-      );
-    }
-
-    final resolvedUid = uid.asData?.value;
-    final resolvedClub = club.asData?.value;
-    if (resolvedClub == null || resolvedEvent == null) {
-      return HostEventEditState(
-        status: HostEventEditRouteStatus.notFound,
-        uid: resolvedUid,
-        club: resolvedClub,
-        event: resolvedEvent,
-      );
-    }
-
-    if (resolvedUid == null || !resolvedClub.isHostedBy(resolvedUid)) {
-      return HostEventEditState(
-        status: HostEventEditRouteStatus.unauthorized,
-        uid: resolvedUid,
-        club: resolvedClub,
-        event: resolvedEvent,
-      );
-    }
-
-    return HostEventEditState(
-      status: HostEventEditRouteStatus.ready,
-      uid: resolvedUid,
-      club: resolvedClub,
-      event: resolvedEvent,
+    return HostEventEditSaveRequest(
+      nextEvent: event.copyWith(
+        startTime: startTime,
+        endTime: endTime,
+        meetingPoint: meetingLocation.name,
+        meetingLocation: meetingLocation,
+        startingPointLat: meetingLocation.latitude,
+        startingPointLng: meetingLocation.longitude,
+        locationDetails: meetingLocation.notes,
+        distanceKm: distanceKm,
+        pace: event.eventFormat.activityKind.isDistanceBased
+            ? selectedPace
+            : event.pace,
+        description: description.trim(),
+        capacityLimit: capacityLimit,
+        priceInPaise: priceInPaise,
+        constraints: includePolicy
+            ? eventPolicyDefaults!.toConstraints()
+            : event.constraints,
+        eventPolicy: eventPolicy,
+      ),
+      includePolicy: includePolicy,
+      inviteCode: _trimToNull(inviteCodeText),
     );
   }
-
-  static bool eventCanEdit(Event event) => !event.isCancelled;
-
-  static bool eventScheduleLocked(Event event, DateTime now) =>
-      !eventCanEdit(event) ||
-      event.startTime.isBefore(now) ||
-      event.signedUpCount > 0 ||
-      event.waitlistCount > 0 ||
-      event.attendedCount > 0;
-
-  static bool eventPolicyLocked(Event event, DateTime now) =>
-      eventScheduleLocked(event, now);
 }
 
 class EditHostedEventScreen extends ConsumerStatefulWidget {
@@ -209,8 +203,6 @@ class EditHostedEventScreen extends ConsumerStatefulWidget {
 
 class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _dateController = TextEditingController();
-  final _startTimeController = TextEditingController();
   final _meetingPointController = TextEditingController();
   final _locationDetailsController = TextEditingController();
   final _distanceController = TextEditingController();
@@ -240,13 +232,6 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
   String? _scheduleErrorText;
 
   DateTime get _now => widget.now?.call() ?? DateTime.now();
-  bool get _canEdit => HostEventEditState.eventCanEdit(widget.event);
-
-  bool get _scheduleLocked =>
-      HostEventEditState.eventScheduleLocked(widget.event, _now);
-
-  bool get _policyLocked =>
-      HostEventEditState.eventPolicyLocked(widget.event, _now);
 
   DateTime get _selectedStartDateTime => DateTime(
     _selectedDate.year,
@@ -274,11 +259,6 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
     _meetingLocationPlaceId = meetingLocation?.placeId;
     _selectedPace = event.pace;
 
-    _dateController.text = _formatDate(_selectedDate);
-    _startTimeController.text = AppTimeFormatters.clockTime(
-      hour: _selectedStartTime.hour,
-      minute: _selectedStartTime.minute,
-    );
     _meetingPointController.text = event.locationName;
     _locationDetailsController.text = event.locationNotes ?? '';
     _distanceController.text = EventFormatters.distanceKm(
@@ -318,8 +298,6 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
 
   @override
   void dispose() {
-    _dateController.dispose();
-    _startTimeController.dispose();
     _meetingPointController.dispose();
     _locationDetailsController.dispose();
     _distanceController.dispose();
@@ -340,24 +318,68 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final mutation = ref.watch(
-      EventBookingController.updateHostedEventMutation,
+      HostEventBookingController.updateHostedEventMutation,
     );
+    final saveError = mutation.hasError
+        ? (mutation as MutationError).error
+        : null;
+    final canEdit = HostEventEditScreenState.eventCanEdit(widget.event);
+    final scheduleLocked = HostEventEditScreenState.eventScheduleLocked(
+      widget.event,
+      _now,
+    );
+    final fieldState = HostEventEditFieldDisplayState.fromForm(
+      canEdit: canEdit,
+      scheduleLocked: scheduleLocked,
+      selectedDate: _selectedDate,
+      selectedStartTime: _selectedStartTime,
+      durationMinutes: _durationMinutes,
+      scheduleErrorText: _scheduleErrorText,
+      isDistanceBased: widget.event.eventFormat.activityKind.isDistanceBased,
+      startingPoint: _startingPoint,
+      meetingPoint: _meetingPointController.text,
+      locationDetails: _locationDetailsController.text,
+      distanceText: _distanceController.text,
+      selectedPace: _selectedPace,
+      description: _descriptionController.text,
+      currencyCode: widget.event.currency,
+      admissionPreset: _selectedAdmissionPreset,
+      cohortCapsEnabled: _cohortCapsEnabled,
+      dynamicPricingEnabled: _dynamicPricingEnabled,
+      cancellationPolicyId: _selectedCancellationPolicyId,
+    );
+    final screenState = HostEventEditScreenState.from(
+      event: widget.event,
+      now: _now,
+      savePending: mutation.isPending,
+      fields: fieldState,
+      saveError: saveError,
+    );
+    final fields = screenState.fields;
+    final scheduleFields = fields.schedule;
+    final detailsFields = fields.locationDetails;
+    final locationState = detailsFields.location;
     final privateAccessAsync =
         _selectedAdmissionPreset == EventAdmissionPreset.inviteOnly
         ? ref.watch(watchEventPrivateAccessProvider(widget.event.id))
-        : const AsyncData(null);
-    privateAccessAsync.whenData((access) {
-      if (_loadedPrivateAccess) return;
+        : const AsyncData<EventPrivateAccess?>(null);
+    final privateAccessState = buildHostEventEditPrivateAccessState(
+      admissionPreset: _selectedAdmissionPreset,
+      loadedPrivateAccess: _loadedPrivateAccess,
+      privateAccess: privateAccessAsync,
+    );
+    if (privateAccessState.shouldMarkLoaded &&
+        privateAccessState.privateAccess.status == CatchAsyncStatus.data) {
       _loadedPrivateAccess = true;
-      final inviteCode = access?.inviteCode.trim();
-      if (inviteCode != null && inviteCode.isNotEmpty) {
+      final inviteCode = privateAccessState.inviteCodeSeed;
+      if (inviteCode != null) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted && _inviteCodeController.text.isEmpty) {
             _inviteCodeController.text = inviteCode;
           }
         });
       }
-    });
+    }
 
     return Scaffold(
       backgroundColor: t.bg,
@@ -372,43 +394,43 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
             children: [
               EditHostedEventScopeNotice(
                 isCancelled: widget.event.isCancelled,
-                scheduleLocked: _scheduleLocked,
-                policyLocked: _policyLocked,
+                scheduleLocked: screenState.scheduleLocked,
+                policyLocked: screenState.policyLocked,
               ),
-              if (mutation.hasError) ...[
+              if (screenState.hasSaveError) ...[
                 gapH12,
                 CatchErrorBanner.fromError(
-                  (mutation as MutationError).error,
+                  screenState.saveError!,
                   context: AppErrorContext.event,
                 ),
               ],
               gapH20,
               const CatchFormFieldLabel(label: 'Schedule', large: true),
               gapH8,
-              if (_scheduleLocked)
+              if (screenState.scheduleLocked)
                 ReadOnlyHostedEventScheduleCard(event: widget.event)
               else ...[
-                _buildPickerTile(
+                EditHostedEventPickerTile(
                   key: CreateEventFormKeys.datePicker,
-                  context: context,
                   icon: CatchIcons.calendarTodayOutlined,
-                  value: _dateController.text,
+                  value: scheduleFields.dateValue,
                   placeholder: 'Select a date',
-                  onTap: _pickDate,
+                  onTap: () =>
+                      _handleIntent(const HostEventEditPickDateIntent()),
                 ),
                 gapH12,
-                _buildPickerTile(
+                EditHostedEventPickerTile(
                   key: CreateEventFormKeys.timePicker,
-                  context: context,
                   icon: CatchIcons.scheduleOutlined,
-                  value: _startTimeController.text,
+                  value: scheduleFields.startTimeValue,
                   placeholder: 'Select start time',
-                  onTap: _pickStartTime,
+                  onTap: () =>
+                      _handleIntent(const HostEventEditPickStartTimeIntent()),
                 ),
-                if (_scheduleErrorText != null) ...[
+                if (scheduleFields.hasError) ...[
                   gapH6,
                   Text(
-                    _scheduleErrorText!,
+                    scheduleFields.errorText!,
                     style: CatchTextStyles.supporting(
                       context,
                       color: t.primary,
@@ -419,7 +441,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                 const CatchFormFieldLabel(label: 'Duration', large: true),
                 gapH8,
                 CatchNumberStepper(
-                  value: _durationMinutes,
+                  value: scheduleFields.durationMinutes,
                   min: CatchBusinessRules.eventMinDurationMinutes,
                   max: CatchBusinessRules.eventMaxDurationMinutes,
                   step: CatchBusinessRules.eventDurationStepMinutes,
@@ -427,8 +449,9 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                   increaseTooltip: 'Increase duration',
                   formatValue: (value) =>
                       EventFormatters.durationMinutes(value.round()),
-                  onChanged: (duration) =>
-                      setState(() => _durationMinutes = duration.round()),
+                  onChanged: (duration) => _handleIntent(
+                    HostEventEditDurationChangedIntent(duration.round()),
+                  ),
                 ),
               ],
               gapH24,
@@ -438,24 +461,27 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                 key: CreateEventFormKeys.meetingPoint,
                 title: 'Location name',
                 controller: _meetingPointController,
-                enabled: _canEdit,
+                enabled: screenState.canEdit,
                 placeholder: 'e.g. Bandstand Promenade, Bandra',
                 helperText:
                     'This is what attendees see in event cards and details.',
                 prefixIcon: Icon(CatchIcons.locationOnOutlined),
                 textCapitalization: TextCapitalization.words,
                 textInputAction: TextInputAction.next,
-                onChanged: (_) => setState(() {}),
+                onChanged: (value) => _handleIntent(
+                  HostEventEditMeetingPointChangedIntent(value),
+                ),
                 validator: (value) =>
                     value == null || value.trim().isEmpty ? 'Required' : null,
               ),
               gapH16,
               MapPinTile(
                 key: CreateEventFormKeys.mapPicker,
-                startingPoint: _startingPoint,
-                selectedLabel: _meetingPointController.text,
-                enabled: _canEdit,
-                onTap: _pickLocation,
+                startingPoint: locationState.startingPoint,
+                selectedLabel: locationState.selectedLabel,
+                enabled: locationState.canPick,
+                onTap: () =>
+                    _handleIntent(const HostEventEditPickLocationIntent()),
               ),
               gapH16,
               CatchField.input(
@@ -463,14 +489,14 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                 title: 'Extra directions',
                 isOptional: true,
                 controller: _locationDetailsController,
-                enabled: _canEdit,
+                enabled: screenState.canEdit,
                 placeholder: 'e.g. Meet outside the blue gate, third entrance',
                 prefixIcon: Icon(CatchIcons.infoOutline),
                 maxLines: 3,
                 textCapitalization: TextCapitalization.sentences,
                 textInputAction: TextInputAction.next,
               ),
-              if (widget.event.eventFormat.activityKind.isDistanceBased) ...[
+              if (detailsFields.isDistanceBased) ...[
                 gapH24,
                 const CatchFormFieldLabel(label: 'Event details', large: true),
                 gapH8,
@@ -478,7 +504,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                   key: CreateEventFormKeys.distance,
                   title: 'Distance (km)',
                   controller: _distanceController,
-                  enabled: _canEdit,
+                  enabled: screenState.canEdit,
                   placeholder: '10',
                   prefixIcon: Icon(CatchIcons.straightenOutlined),
                   keyboardType: const TextInputType.numberWithOptions(
@@ -506,11 +532,13 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                       .map(
                         (pace) => CatchSelectChip(
                           label: pace.label,
-                          active: _selectedPace == pace,
-                          enabled: _canEdit,
+                          active: detailsFields.selectedPace == pace,
+                          enabled: screenState.canEdit,
                           semanticsLabel: 'Select ${pace.label} pace',
-                          onTap: _canEdit
-                              ? () => setState(() => _selectedPace = pace)
+                          onTap: screenState.canEdit
+                              ? () => _handleIntent(
+                                  HostEventEditPaceChangedIntent(pace),
+                                )
                               : null,
                         ),
                       )
@@ -523,7 +551,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                 title: 'Description',
                 isOptional: true,
                 controller: _descriptionController,
-                enabled: _canEdit,
+                enabled: screenState.canEdit,
                 placeholder:
                     'What should attendees expect? Any tips for the route or venue?',
                 prefixIcon: Icon(CatchIcons.editNoteOutlined),
@@ -534,11 +562,11 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
               gapH24,
               const CatchFormFieldLabel(label: 'Event policy', large: true),
               gapH8,
-              if (_policyLocked)
+              if (screenState.policyLocked)
                 ReadOnlyHostedEventPolicyCard(event: widget.event)
               else
                 EditableHostedEventPolicyCard(
-                  currencyCode: widget.event.currency,
+                  state: fields.policy,
                   capacityController: _capacityController,
                   priceController: _priceController,
                   minAgeController: _minAgeController,
@@ -548,110 +576,34 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                   inviteCodeController: _inviteCodeController,
                   dynamicPricingStepController: _dynamicPricingStepController,
                   dynamicPricingMaxController: _dynamicPricingMaxController,
-                  admissionPreset: _selectedAdmissionPreset,
-                  onAdmissionPresetChanged: (preset) => setState(() {
-                    _selectedAdmissionPreset = preset;
-                    if (preset != EventAdmissionPreset.inviteOnly) {
-                      _loadedPrivateAccess = false;
-                    }
-                    if (preset != EventAdmissionPreset.balancedSingles) {
-                      _dynamicPricingEnabled = false;
-                    }
-                    if (preset != EventAdmissionPreset.openCapacity) {
-                      _cohortCapsEnabled = false;
-                    }
-                  }),
-                  cohortCapsEnabled: _cohortCapsEnabled,
-                  onCohortCapsEnabledChanged: (value) =>
-                      setState(() => _cohortCapsEnabled = value),
-                  dynamicPricingEnabled: _dynamicPricingEnabled,
-                  onDynamicPricingChanged: (value) => setState(() {
-                    _dynamicPricingEnabled = value;
-                    if (value && _dynamicPricingStepController.text.isEmpty) {
-                      _dynamicPricingStepController.text = '250';
-                    }
-                    if (value && _dynamicPricingMaxController.text.isEmpty) {
-                      _dynamicPricingMaxController.text = '1500';
-                    }
-                  }),
-                  cancellationPolicyId: _selectedCancellationPolicyId,
-                  onCancellationPolicyChanged: (policyId) =>
-                      setState(() => _selectedCancellationPolicyId = policyId),
-                  privateAccessAsync: privateAccessAsync,
+                  onAdmissionPresetChanged: (preset) => _handleIntent(
+                    HostEventEditAdmissionPresetChangedIntent(preset),
+                  ),
+                  onCohortCapsEnabledChanged: (value) => _handleIntent(
+                    HostEventEditCohortCapsChangedIntent(value),
+                  ),
+                  onDynamicPricingChanged: (value) => _handleIntent(
+                    HostEventEditDynamicPricingChangedIntent(value),
+                  ),
+                  onCancellationPolicyChanged: (policyId) => _handleIntent(
+                    HostEventEditCancellationPolicyChangedIntent(policyId),
+                  ),
+                  privateAccessAsync: privateAccessState.privateAccess,
                 ),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: _buildEditHostedEventFooter(
-        isLoading: mutation.isPending,
-        onSave: !_canEdit || mutation.isPending ? null : _saveChanges,
-      ),
-    );
-  }
-
-  Widget _buildPickerTile({
-    required Key key,
-    required BuildContext context,
-    required IconData icon,
-    required String? value,
-    required String placeholder,
-    required VoidCallback onTap,
-  }) {
-    final t = CatchTokens.of(context);
-    return CatchControlShell(
-      key: key,
-      onTap: onTap,
-      tone: CatchControlTone.raised,
-      padding: CatchControlMetrics.contentPadding(CatchControlSize.md),
-      semanticButton: true,
-      child: Row(
-        children: [
-          Icon(icon, size: CatchIcon.control, color: t.ink2),
-          gapW12,
-          Expanded(
-            child: Text(
-              value == null || value.isEmpty ? placeholder : value,
-              style: value == null || value.isEmpty
-                  ? CatchTextStyles.bodyLead(context, color: t.ink3)
-                  : CatchTextStyles.bodyLead(context),
-            ),
-          ),
-          Icon(
-            CatchIcons.chevronRightRounded,
-            size: CatchIcon.md,
-            color: t.ink3,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEditHostedEventFooter({
-    required bool isLoading,
-    required VoidCallback? onSave,
-  }) {
-    return CatchBottomDock(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s5,
-        CatchSpacing.s3,
-        CatchSpacing.s5,
-        CatchSpacing.micro18,
-      ),
-      child: CatchButton(
-        key: EditHostedEventKeys.saveButton,
-        label: 'Save changes',
-        onPressed: onSave,
-        isLoading: isLoading,
-        fullWidth: true,
-        icon: Icon(CatchIcons.saveOutlined),
+      bottomNavigationBar: EditHostedEventFooter(
+        state: screenState.footer,
+        onSave: () => _handleIntent(const HostEventEditSaveIntent()),
       ),
     );
   }
 
   Future<void> _pickDate() async {
     final today = DateUtils.dateOnly(_now);
-    final lastDate = today.add(const Duration(days: 365));
+    final lastDate = today.add(CatchBusinessRules.eventEditDatePickerWindow);
     final initialDate = _selectedDate.isBefore(today) ? today : _selectedDate;
     final picked = await showCatchDatePicker(
       context: context,
@@ -661,10 +613,12 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
       title: 'Event date',
     );
     if (picked == null) return;
-    final scheduleError = _scheduleErrorFor(picked, _selectedStartTime);
+    final scheduleError = _scheduleValidationFor(
+      picked,
+      _selectedStartTime,
+    ).errorText;
     setState(() {
       _selectedDate = DateUtils.dateOnly(picked);
-      _dateController.text = _formatDate(_selectedDate);
       _scheduleErrorText = scheduleError;
     });
   }
@@ -676,26 +630,30 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
       title: 'Start time',
     );
     if (picked == null) return;
-    final scheduleError = _scheduleErrorFor(_selectedDate, picked);
+    final scheduleError = _scheduleValidationFor(
+      _selectedDate,
+      picked,
+    ).errorText;
     setState(() {
       _selectedStartTime = picked;
-      _startTimeController.text = AppTimeFormatters.clockTime(
-        hour: picked.hour,
-        minute: picked.minute,
-      );
       _scheduleErrorText = scheduleError;
     });
   }
 
   Future<void> _pickLocation() async {
     final deviceLocation = ref.read(deviceLocationProvider).asData?.value;
+    final locationState = HostEventEditLocationState.from(
+      canEdit: true,
+      startingPoint: _startingPoint,
+      meetingPoint: _meetingPointController.text,
+    );
     final result = await Navigator.of(context).push<LocationPickerResult>(
       MaterialPageRoute(
         builder: (_) => LocationPickerScreen(
           countryIsoCode: countryIsoCodeForCityName(widget.club.location),
-          initialLocation: _startingPoint,
-          initialCenter: _startingPoint ?? deviceLocation,
-          initialLabel: _trimToNull(_meetingPointController.text),
+          initialLocation: locationState.startingPoint,
+          initialCenter: locationState.startingPoint ?? deviceLocation,
+          initialLabel: locationState.pickerInitialLabel,
           loadMapTiles: widget.loadMapTiles,
         ),
         fullscreenDialog: true,
@@ -714,143 +672,215 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
     }
   }
 
-  String? _scheduleErrorFor(DateTime date, TimeOfDay startTime) {
-    final startsAt = DateTime(
-      date.year,
-      date.month,
-      date.day,
-      startTime.hour,
-      startTime.minute,
+  HostEventEditScheduleValidationState _scheduleValidationFor(
+    DateTime date,
+    TimeOfDay startTime, {
+    bool scheduleLocked = false,
+  }) {
+    return HostEventEditScheduleValidationState.from(
+      scheduleLocked: scheduleLocked,
+      selectedStartDateTime: DateTime(
+        date.year,
+        date.month,
+        date.day,
+        startTime.hour,
+        startTime.minute,
+      ),
+      now: _now,
+      invalidScheduleMessage:
+          const HostEventEditSaveOutcomeState.updated().invalidScheduleMessage,
     );
-    return startsAt.isAfter(_now) ? null : 'Event start must be in the future.';
+  }
+
+  void _handleIntent(HostEventEditIntent intent) {
+    switch (intent) {
+      case HostEventEditPickDateIntent():
+        unawaited(_pickDate());
+      case HostEventEditPickStartTimeIntent():
+        unawaited(_pickStartTime());
+      case HostEventEditDurationChangedIntent(:final durationMinutes):
+        setState(() => _durationMinutes = durationMinutes);
+      case HostEventEditMeetingPointChangedIntent():
+        setState(() {});
+      case HostEventEditPickLocationIntent():
+        unawaited(_pickLocation());
+      case HostEventEditPaceChangedIntent(:final pace):
+        setState(() => _selectedPace = pace);
+      case HostEventEditAdmissionPresetChangedIntent(:final preset):
+        setState(() {
+          _selectedAdmissionPreset = preset;
+          if (preset != EventAdmissionPreset.inviteOnly) {
+            _loadedPrivateAccess = false;
+          }
+          if (preset != EventAdmissionPreset.balancedSingles) {
+            _dynamicPricingEnabled = false;
+          }
+          if (preset != EventAdmissionPreset.openCapacity) {
+            _cohortCapsEnabled = false;
+          }
+        });
+      case HostEventEditCohortCapsChangedIntent(:final enabled):
+        setState(() => _cohortCapsEnabled = enabled);
+      case HostEventEditDynamicPricingChangedIntent(:final enabled):
+        setState(() {
+          _dynamicPricingEnabled = enabled;
+          if (enabled && _dynamicPricingStepController.text.isEmpty) {
+            _dynamicPricingStepController.text = '250';
+          }
+          if (enabled && _dynamicPricingMaxController.text.isEmpty) {
+            _dynamicPricingMaxController.text = '1500';
+          }
+        });
+      case HostEventEditCancellationPolicyChangedIntent(:final policyId):
+        setState(() => _selectedCancellationPolicyId = policyId);
+      case HostEventEditSaveIntent():
+        _saveChanges();
+    }
   }
 
   void _saveChanges() {
+    final screenState = HostEventEditScreenState.from(
+      event: widget.event,
+      now: _now,
+      savePending: false,
+    );
     if (!_formKey.currentState!.validate()) return;
     if (_startingPoint == null) {
-      showCatchSnackBar(context, 'Pin a starting point before saving.');
+      showCatchSnackBar(
+        context,
+        screenState.saveOutcome.missingStartingPointMessage,
+      );
       return;
     }
-    if (!_scheduleLocked &&
-        _scheduleErrorFor(_selectedDate, _selectedStartTime) != null) {
-      setState(() => _scheduleErrorText = 'Event start must be in the future.');
+    final scheduleValidation = _scheduleValidationFor(
+      _selectedDate,
+      _selectedStartTime,
+      scheduleLocked: screenState.scheduleLocked,
+    );
+    if (!scheduleValidation.isValid) {
+      setState(() => _scheduleErrorText = scheduleValidation.errorText);
       return;
     }
 
-    final distanceKm = widget.event.eventFormat.activityKind.isDistanceBased
-        ? double.parse(_distanceController.text.trim())
-        : widget.event.distanceKm;
-    final startTime = _scheduleLocked
-        ? widget.event.startTime
-        : _selectedStartDateTime;
-    final endTime = _scheduleLocked
-        ? widget.event.endTime
-        : startTime.add(Duration(minutes: _durationMinutes));
-    final meetingLocation = EventMeetingLocation(
-      name: _meetingPointController.text.trim(),
-      address: _meetingLocationAddress,
-      placeId: _meetingLocationPlaceId,
-      latitude: _startingPoint!.latitude,
-      longitude: _startingPoint!.longitude,
-      notes: _trimToNull(_locationDetailsController.text),
-    ).normalized();
-    final includePolicy = !_policyLocked;
-    final eventPolicyDefaults = includePolicy ? _eventPolicyDefaults : null;
-    final eventPolicy = includePolicy
-        ? _eventPolicyForDefaults(eventPolicyDefaults!)
-        : widget.event.eventPolicy;
-
-    final nextEvent = widget.event.copyWith(
-      startTime: startTime,
-      endTime: endTime,
-      meetingPoint: meetingLocation.name,
-      meetingLocation: meetingLocation,
-      startingPointLat: meetingLocation.latitude,
-      startingPointLng: meetingLocation.longitude,
-      locationDetails: meetingLocation.notes,
-      distanceKm: distanceKm,
-      pace: widget.event.eventFormat.activityKind.isDistanceBased
-          ? _selectedPace
-          : widget.event.pace,
-      description: _descriptionController.text.trim(),
-      capacityLimit: includePolicy
-          ? int.parse(_capacityController.text.trim())
-          : widget.event.capacityLimit,
-      priceInPaise: includePolicy
-          ? _currencyControllerValueInMinorUnits(
-              _priceController,
-              currencyCode: widget.event.currency,
-            )!
-          : widget.event.priceInPaise,
-      constraints: includePolicy
-          ? eventPolicyDefaults!.toConstraints()
-          : widget.event.constraints,
-      eventPolicy: eventPolicy,
+    final request = HostEventEditSaveRequest.fromForm(
+      event: widget.event,
+      scheduleLocked: screenState.scheduleLocked,
+      policyLocked: screenState.policyLocked,
+      selectedStartDateTime: _selectedStartDateTime,
+      durationMinutes: _durationMinutes,
+      startingPoint: _startingPoint!,
+      meetingPoint: _meetingPointController.text,
+      meetingLocationAddress: _meetingLocationAddress,
+      meetingLocationPlaceId: _meetingLocationPlaceId,
+      locationDetails: _locationDetailsController.text,
+      distanceText: _distanceController.text,
+      selectedPace: _selectedPace,
+      description: _descriptionController.text,
+      capacityText: _capacityController.text,
+      priceText: _priceController.text,
+      admissionPreset: _selectedAdmissionPreset,
+      cohortCapsEnabled: _cohortCapsEnabled,
+      dynamicPricingEnabled: _dynamicPricingEnabled,
+      minAgeText: _minAgeController.text,
+      maxAgeText: _maxAgeController.text,
+      maxMenText: _maxMenController.text,
+      maxWomenText: _maxWomenController.text,
+      dynamicPricingStepText: _dynamicPricingStepController.text,
+      dynamicPricingMaxText: _dynamicPricingMaxController.text,
+      cancellationPolicyId: _selectedCancellationPolicyId,
+      inviteCodeText: _inviteCodeController.text,
     );
 
     unawaited(
-      EventBookingController.updateHostedEventMutation.run(ref, (tx) async {
+      HostEventBookingController.updateHostedEventMutation.run(ref, (tx) async {
         await tx
-            .get(eventBookingControllerProvider.notifier)
+            .get(hostEventBookingControllerProvider.notifier)
             .updateHostedEvent(
-              event: nextEvent,
-              includePolicy: includePolicy,
-              inviteCode: _trimToNull(_inviteCodeController.text),
+              event: request.nextEvent,
+              includePolicy: request.includePolicy,
+              inviteCode: request.inviteCode,
             );
         ref.invalidate(watchEventProvider(widget.event.id));
         ref.invalidate(watchEventParticipationRosterProvider(widget.event.id));
         if (!mounted) return;
-        showCatchSnackBar(context, 'Event updated.');
-        await Navigator.of(context).maybePop();
+        showCatchSnackBar(context, screenState.saveOutcome.successMessage);
+        if (screenState.saveOutcome.popRouteOnSuccess) {
+          await Navigator.of(context).maybePop();
+        }
       }),
     );
   }
+}
 
-  EventPolicyDefaults get _eventPolicyDefaults => EventPolicyDefaults(
-    admissionPreset: _admissionDefaultPresetFromSelected(
-      _selectedAdmissionPreset,
-      cohortCapsEnabled: _cohortCapsEnabled,
-    ),
-    minAge: int.tryParse(_minAgeController.text.trim()) ?? 0,
-    maxAge: int.tryParse(_maxAgeController.text.trim()) ?? 99,
-    maxMen: int.tryParse(_maxMenController.text.trim()),
-    maxWomen: int.tryParse(_maxWomenController.text.trim()),
-    dynamicPricingEnabled: _dynamicPricingEnabled,
-    dynamicPricingStepInPaise: _currencyControllerValueInMinorUnits(
-      _dynamicPricingStepController,
-      currencyCode: widget.event.currency,
-    ),
-    dynamicPricingMaxInPaise: _currencyControllerValueInMinorUnits(
-      _dynamicPricingMaxController,
-      currencyCode: widget.event.currency,
-    ),
-    cancellationPolicyId: _selectedCancellationPolicyId,
-  );
+class EditHostedEventPickerTile extends StatelessWidget {
+  const EditHostedEventPickerTile({
+    super.key,
+    required this.icon,
+    required this.value,
+    required this.placeholder,
+    required this.onTap,
+  });
 
-  EventPolicyBundle _eventPolicyForDefaults(EventPolicyDefaults defaults) {
-    final capacityLimit = int.parse(_capacityController.text.trim());
-    final basePriceInPaise = _currencyControllerValueInMinorUnits(
-      _priceController,
-      currencyCode: widget.event.currency,
-    )!;
-    if (_selectedAdmissionPreset == EventAdmissionPreset.requestToJoin) {
-      return EventPolicyBundle.requestToJoinEvent(
-        capacityLimit: capacityLimit,
-        basePriceInPaise: basePriceInPaise,
-        cancellationPolicy: defaults.cancellationPolicy,
-      );
-    }
-    return defaults.toEventPolicyBundle(
-      capacityLimit: capacityLimit,
-      basePriceInPaise: basePriceInPaise,
-      inviteCodeHint: _inviteCodeHint,
+  final IconData icon;
+  final String? value;
+  final String placeholder;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final displayValue = value;
+    final hasValue = displayValue != null && displayValue.isNotEmpty;
+    return CatchControlShell(
+      onTap: onTap,
+      tone: CatchControlTone.raised,
+      padding: CatchControlMetrics.contentPadding(CatchControlSize.md),
+      semanticButton: true,
+      child: Row(
+        children: [
+          Icon(icon, size: CatchIcon.control, color: t.ink2),
+          gapW12,
+          Expanded(
+            child: Text(
+              hasValue ? displayValue : placeholder,
+              style: hasValue
+                  ? CatchTextStyles.bodyLead(context)
+                  : CatchTextStyles.bodyLead(context, color: t.ink3),
+            ),
+          ),
+          Icon(
+            CatchIcons.chevronRightRounded,
+            size: CatchIcon.md,
+            color: t.ink3,
+          ),
+        ],
+      ),
     );
   }
+}
 
-  String? get _inviteCodeHint {
-    final code = _inviteCodeController.text.trim();
-    if (code.length <= 4) return code.isEmpty ? null : code;
-    return '${code.substring(0, 2)}...${code.substring(code.length - 2)}';
+class EditHostedEventFooter extends StatelessWidget {
+  const EditHostedEventFooter({
+    super.key,
+    required this.state,
+    required this.onSave,
+  });
+
+  final EditHostedEventFooterState state;
+  final VoidCallback onSave;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchBottomDock(
+      child: CatchButton(
+        key: EditHostedEventKeys.saveButton,
+        label: state.label,
+        onPressed: state.isEnabled ? onSave : null,
+        isLoading: state.isLoading,
+        fullWidth: true,
+        icon: Icon(CatchIcons.saveOutlined),
+      ),
+    );
   }
 }
 
@@ -928,7 +958,7 @@ class EditHostedEventScopeNotice extends StatelessWidget {
 class EditableHostedEventPolicyCard extends StatelessWidget {
   const EditableHostedEventPolicyCard({
     super.key,
-    required this.currencyCode,
+    required this.state,
     required this.capacityController,
     required this.priceController,
     required this.minAgeController,
@@ -938,18 +968,14 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
     required this.inviteCodeController,
     required this.dynamicPricingStepController,
     required this.dynamicPricingMaxController,
-    required this.admissionPreset,
     required this.onAdmissionPresetChanged,
-    required this.cohortCapsEnabled,
     required this.onCohortCapsEnabledChanged,
-    required this.dynamicPricingEnabled,
     required this.onDynamicPricingChanged,
-    required this.cancellationPolicyId,
     required this.onCancellationPolicyChanged,
     required this.privateAccessAsync,
   });
 
-  final String currencyCode;
+  final HostEventEditPolicyFieldState state;
   final TextEditingController capacityController;
   final TextEditingController priceController;
   final TextEditingController minAgeController;
@@ -959,15 +985,11 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
   final TextEditingController inviteCodeController;
   final TextEditingController dynamicPricingStepController;
   final TextEditingController dynamicPricingMaxController;
-  final EventAdmissionPreset admissionPreset;
   final ValueChanged<EventAdmissionPreset> onAdmissionPresetChanged;
-  final bool cohortCapsEnabled;
   final ValueChanged<bool> onCohortCapsEnabledChanged;
-  final bool dynamicPricingEnabled;
   final ValueChanged<bool> onDynamicPricingChanged;
-  final EventCancellationPolicyId cancellationPolicyId;
   final ValueChanged<EventCancellationPolicyId> onCancellationPolicyChanged;
-  final AsyncValue<Object?> privateAccessAsync;
+  final CatchAsyncState<EventPrivateAccess?> privateAccessAsync;
 
   @override
   Widget build(BuildContext context) {
@@ -997,7 +1019,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
               gapW12,
               Expanded(
                 child: CatchField.input(
-                  title: 'Base price ($currencyCode)',
+                  title: 'Base price (${state.currencyCode})',
                   controller: priceController,
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
@@ -1007,7 +1029,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                   ],
                   validator: (value) => _moneyRequiredValidator(
                     value,
-                    currencyCode: currencyCode,
+                    currencyCode: state.currencyCode,
                   ),
                 ),
               ),
@@ -1023,7 +1045,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
               for (final preset in EventAdmissionPreset.values)
                 CatchSelectChip(
                   label: preset.label,
-                  active: admissionPreset == preset,
+                  active: state.admissionPreset == preset,
                   semanticsLabel: preset.title,
                   onTap: () => onAdmissionPresetChanged(preset),
                 ),
@@ -1031,12 +1053,12 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
           ),
           gapH8,
           Text(
-            admissionPreset.description,
+            state.admissionDescription,
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
-          if (admissionPreset == EventAdmissionPreset.inviteOnly) ...[
+          if (state.showInviteCode) ...[
             gapH16,
-            if (privateAccessAsync.isLoading)
+            if (privateAccessAsync.status == CatchAsyncStatus.loading)
               Text(
                 'Loading current invite code...',
                 style: CatchTextStyles.supporting(context, color: t.ink2),
@@ -1050,21 +1072,19 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9_-]')),
               ],
-              validator: admissionPreset == EventAdmissionPreset.inviteOnly
-                  ? inviteCodeValidator
-                  : null,
+              validator: state.showInviteCode ? inviteCodeValidator : null,
             ),
           ],
-          if (admissionPreset == EventAdmissionPreset.openCapacity) ...[
+          if (state.showCohortCapsToggle) ...[
             gapH12,
             CatchField.toggle(
               title: 'Cohort caps',
               body:
                   'Optionally cap straight men and straight women without making this a separate admission format.',
-              value: cohortCapsEnabled,
+              value: state.cohortCapsEnabled,
               onChanged: onCohortCapsEnabledChanged,
             ),
-            if (cohortCapsEnabled) ...[
+            if (state.showCohortCapsFields) ...[
               gapH12,
               Row(
                 children: [
@@ -1093,29 +1113,29 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
               ),
             ],
           ],
-          if (admissionPreset == EventAdmissionPreset.requestToJoin) ...[
+          if (state.showRequestToJoinCopy) ...[
             gapH12,
             Text(
               'Requests appear in host manage with each person\'s public profile so the host can review fit before confirming spots.',
               style: CatchTextStyles.supporting(context, color: t.ink2),
             ),
           ],
-          if (admissionPreset == EventAdmissionPreset.balancedSingles) ...[
+          if (state.showDynamicPricingToggle) ...[
             gapH12,
             CatchField.toggle(
               title: 'Demand pricing',
               body:
                   'Increase price for the over-demand cohort while preserving the event balance.',
-              value: dynamicPricingEnabled,
+              value: state.dynamicPricingEnabled,
               onChanged: onDynamicPricingChanged,
             ),
-            if (dynamicPricingEnabled) ...[
+            if (state.showDynamicPricingFields) ...[
               gapH12,
               Row(
                 children: [
                   Expanded(
                     child: CatchField.input(
-                      title: 'Step ($currencyCode)',
+                      title: 'Step (${state.currencyCode})',
                       controller: dynamicPricingStepController,
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -1125,7 +1145,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                   gapW12,
                   Expanded(
                     child: CatchField.input(
-                      title: 'Max ($currencyCode)',
+                      title: 'Max (${state.currencyCode})',
                       controller: dynamicPricingMaxController,
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -1182,7 +1202,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
               for (final policyId in EventCancellationPolicyId.values)
                 CatchSelectChip(
                   label: policyFor(policyId).title.toUpperCase(),
-                  active: cancellationPolicyId == policyId,
+                  active: state.cancellationPolicyId == policyId,
                   semanticsLabel: policyFor(policyId).title,
                   onTap: () => onCancellationPolicyChanged(policyId),
                 ),
@@ -1190,7 +1210,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
           ),
           gapH8,
           Text(
-            policyFor(cancellationPolicyId).attendeeSummary,
+            state.cancellationSummary,
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
         ],
@@ -1221,13 +1241,11 @@ class ReadOnlyHostedEventPolicyCard extends StatelessWidget {
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH12,
-          _buildReadOnlyPolicyRow(
-            context: context,
+          ReadOnlyHostedEventPolicyRow(
             label: 'Capacity',
             value: '${event.capacityLimit}',
           ),
-          _buildReadOnlyPolicyRow(
-            context: context,
+          ReadOnlyHostedEventPolicyRow(
             label: 'Price',
             value: event.isFree
                 ? 'Free'
@@ -1236,13 +1254,11 @@ class ReadOnlyHostedEventPolicyCard extends StatelessWidget {
                     currencyCode: event.currency,
                   ),
           ),
-          _buildReadOnlyPolicyRow(
-            context: context,
+          ReadOnlyHostedEventPolicyRow(
             label: 'Admission',
             value: _admissionPresetFor(policy).title,
           ),
-          _buildReadOnlyPolicyRow(
-            context: context,
+          ReadOnlyHostedEventPolicyRow(
             label: 'Cancellation',
             value: policy.cancellationPolicy.title,
             showDivider: false,
@@ -1251,13 +1267,22 @@ class ReadOnlyHostedEventPolicyCard extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildReadOnlyPolicyRow({
-    required BuildContext context,
-    required String label,
-    required String value,
-    bool showDivider = true,
-  }) {
+class ReadOnlyHostedEventPolicyRow extends StatelessWidget {
+  const ReadOnlyHostedEventPolicyRow({
+    super.key,
+    required this.label,
+    required this.value,
+    this.showDivider = true,
+  });
+
+  final String label;
+  final String value;
+  final bool showDivider;
+
+  @override
+  Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return Column(
       children: [
@@ -1314,12 +1339,6 @@ class ReadOnlyHostedEventScheduleCard extends StatelessWidget {
   }
 }
 
-String _formatDate(DateTime date) {
-  return '${date.day.toString().padLeft(2, '0')}/'
-      '${date.month.toString().padLeft(2, '0')}/'
-      '${date.year}';
-}
-
 String? _trimToNull(String value) {
   final normalized = value.trim();
   return normalized.isEmpty ? null : normalized;
@@ -1355,13 +1374,37 @@ EventAdmissionDefaultPreset _admissionDefaultPresetFromSelected(
 String _minorUnitsText(int? value, {required String currencyCode}) =>
     minorCurrencyAmountInputText(value, currencyCode: currencyCode);
 
-int? _currencyControllerValueInMinorUnits(
-  TextEditingController controller, {
+int? _currencyTextValueInMinorUnits(
+  String value, {
   required String currencyCode,
-}) => parseMajorCurrencyAmountToMinorUnits(
-  controller.text,
-  currencyCode: currencyCode,
-);
+}) => parseMajorCurrencyAmountToMinorUnits(value, currencyCode: currencyCode);
+
+EventPolicyBundle _eventPolicyForDefaults({
+  required EventPolicyDefaults defaults,
+  required EventAdmissionPreset admissionPreset,
+  required int capacityLimit,
+  required int basePriceInPaise,
+  required String? inviteCodeHint,
+}) {
+  if (admissionPreset == EventAdmissionPreset.requestToJoin) {
+    return EventPolicyBundle.requestToJoinEvent(
+      capacityLimit: capacityLimit,
+      basePriceInPaise: basePriceInPaise,
+      cancellationPolicy: defaults.cancellationPolicy,
+    );
+  }
+  return defaults.toEventPolicyBundle(
+    capacityLimit: capacityLimit,
+    basePriceInPaise: basePriceInPaise,
+    inviteCodeHint: inviteCodeHint,
+  );
+}
+
+String? _inviteCodeHint(String value) {
+  final code = value.trim();
+  if (code.length <= 4) return code.isEmpty ? null : code;
+  return '${code.substring(0, 2)}...${code.substring(code.length - 2)}';
+}
 
 String? _moneyRequiredValidator(String? value, {required String currencyCode}) {
   if (value == null || value.trim().isEmpty) return 'Required';

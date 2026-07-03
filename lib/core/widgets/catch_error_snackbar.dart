@@ -11,6 +11,7 @@ void showCatchSnackBar(
   final t = CatchTokens.of(context);
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
+      backgroundColor: t.ink,
       content: Text(
         message,
         style: CatchTextStyles.labelL(context, color: t.bg),

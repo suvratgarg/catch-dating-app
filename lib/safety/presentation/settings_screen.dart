@@ -24,6 +24,7 @@ import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/safety/presentation/settings_account_state.dart';
+import 'package:catch_dating_app/safety/presentation/settings_account_view_model.dart';
 import 'package:catch_dating_app/safety/presentation/settings_controller.dart';
 import 'package:catch_dating_app/safety/presentation/settings_keys.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -150,7 +151,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       _preferences = SettingsPreferenceValues.fromProfile(userProfile);
     }
 
-    final state = SettingsAccountState.fromAsync(
+    final state = buildSettingsAccountState(
       profile: userProfileAsync,
       preferences: _preferences,
       blockedUsers: blockedUsersAsync,
@@ -193,302 +194,287 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                        SettingsSection(
-                          first: true,
-                          title: 'Account',
-                          footer: AccountProfileStatus(
-                            profile: state.profile,
-                            onRetry: () =>
-                                ref.invalidate(watchUserProfileProvider),
-                          ),
-                          children: [
-                            CatchField.read(
-                              title: 'Phone number',
-                              valueText: state.profile.phoneNumber,
-                              icon: CatchIcons.phoneOutlined,
-                            ),
-                            CatchField.read(
-                              title: 'Email',
-                              valueText: state.profile.email,
-                              icon: CatchIcons.emailOutlined,
-                            ),
-                            CatchField.nav(
-                              title: 'Edit profile',
-                              icon: CatchIcons.personOutlined,
-                              onTap: () =>
-                                  context.pushNamed(Routes.profileScreen.name),
-                            ),
-                            CatchField.nav(
-                              key: SettingsKeys.reviewHistoryRow,
-                              title: 'Review history',
-                              valueText: 'Events you reviewed',
-                              icon: CatchIcons.rateReviewOutlined,
-                              onTap: () => context.pushNamed(
-                                Routes.reviewsHistoryScreen.name,
-                              ),
-                            ),
-                            CatchField.nav(
-                              key: SettingsKeys.paymentHistoryRow,
-                              title: 'Payment history',
-                              valueText: 'Bookings and receipts',
-                              icon: CatchIcons.receiptLongOutlined,
-                              onTap: () => context.pushNamed(
-                                Routes.paymentHistoryScreen.name,
-                              ),
-                            ),
-                            CatchField.nav(
-                              key: SettingsKeys.hostAppRow,
-                              title: 'Catch Host',
-                              valueText: 'Manage events and clubs',
-                              icon: CatchIcons.workOutlineRounded,
-                              onTap: _openHostApp,
-                            ),
-                          ],
-                        ),
-                        if (AppConfig.enableEventPolicyLab ||
-                            AppConfig.enableEventSuccessPreview) ...[
-                          SettingsSection(
-                            title: 'Development',
-                            children: [
-                              if (AppConfig.enableEventPolicyLab)
-                                CatchField.nav(
-                                  key: SettingsKeys.eventPolicyLabRow,
-                                  title: 'Event policy lab',
-                                  valueText: 'Static booking policy previews',
-                                  icon: CatchIcons.scienceOutlined,
-                                  onTap: () => context.pushNamed(
-                                    Routes.eventPolicyLabScreen.name,
-                                  ),
-                                ),
-                              if (AppConfig.enableEventSuccessPreview)
-                                CatchField.nav(
-                                  key: SettingsKeys.eventSuccessLabRow,
-                                  title: 'Event success lab',
-                                  valueText:
-                                      'Host, attendee, and report previews',
-                                  icon: CatchIcons.autoGraphRounded,
-                                  onTap: () => context.pushNamed(
-                                    Routes.eventSuccessLabScreen.name,
-                                  ),
-                                ),
-                              if (AppConfig.enableEventSuccessPreview)
-                                CatchField.nav(
-                                  key: SettingsKeys.eventSuccessManualQaRow,
-                                  title: 'Event success manual QA',
-                                  valueText: 'Host and attendee side by side',
-                                  icon: CatchIcons.splitscreenRounded,
-                                  onTap: () => context.pushNamed(
-                                    Routes.eventSuccessManualQaScreen.name,
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ],
-                        SettingsSection(
-                          title: 'Notifications',
-                          children: [
-                            CatchField.toggle(
-                              key: SettingsKeys.newCatchesSwitch,
-                              title: 'Push notifications',
-                              icon: CatchIcons.favoriteOutline,
-                              value: state.preferences.newCatches,
-                              onChanged: state.mutations.savingPreference
-                                  ? null
-                                  : (value) => _savePref(
-                                      preference: SettingsPreference.newCatches,
-                                      value: value,
-                                    ),
-                            ),
-                            CatchField.toggle(
-                              key: SettingsKeys.messagesSwitch,
-                              title: 'Messages',
-                              icon: CatchIcons.chatBubbleOutlineRounded,
-                              value: state.preferences.messages,
-                              onChanged: state.mutations.savingPreference
-                                  ? null
-                                  : (value) => _savePref(
-                                      preference: SettingsPreference.messages,
-                                      value: value,
-                                    ),
-                            ),
-                            CatchField.toggle(
-                              key: SettingsKeys.eventRemindersSwitch,
-                              title: 'Event reminders',
-                              icon: CatchIcons.directionsRunOutlined,
-                              value: state.preferences.eventReminders,
-                              onChanged: state.mutations.savingPreference
-                                  ? null
-                                  : (value) => _savePref(
-                                      preference:
-                                          SettingsPreference.eventReminders,
-                                      value: value,
-                                    ),
-                            ),
-                            CatchField.toggle(
-                              key: SettingsKeys.eventStatusUpdatesSwitch,
-                              title: 'Event changes and cancellations',
-                              icon: CatchIcons.eventRepeatOutlined,
-                              value: state.preferences.eventStatusUpdates,
-                              onChanged: state.mutations.savingPreference
-                                  ? null
-                                  : (value) => _savePref(
-                                      preference:
-                                          SettingsPreference.eventStatusUpdates,
-                                      value: value,
-                                    ),
-                            ),
-                            CatchField.toggle(
-                              key: SettingsKeys.clubUpdatesSwitch,
-                              title: 'Club announcements',
-                              icon: CatchIcons.notificationsActiveOutlined,
-                              value: state.preferences.clubUpdates,
-                              onChanged: state.mutations.savingPreference
-                                  ? null
-                                  : (value) => _savePref(
-                                      preference:
-                                          SettingsPreference.clubUpdates,
-                                      value: value,
-                                    ),
-                            ),
-                            CatchField.toggle(
-                              key: SettingsKeys.weeklyDigestSwitch,
-                              title: 'Email updates',
-                              icon: CatchIcons.markEmailReadOutlined,
-                              value: state.preferences.weeklyDigest,
-                              onChanged: state.mutations.savingPreference
-                                  ? null
-                                  : (value) => _savePref(
-                                      preference:
-                                          SettingsPreference.weeklyDigest,
-                                      value: value,
-                                    ),
-                            ),
-                          ],
-                        ),
-                        SettingsSection(
-                          title: 'Privacy & safety',
-                          footer: BlockedAccountsSection(
-                            state: state.blockedAccounts,
-                            unblocking: state.mutations.unblocking,
-                            onRetry: () =>
-                                ref.invalidate(watchBlockedUsersProvider),
-                            onUnblock: _unblockUser,
-                          ),
-                          children: [
-                            CatchField.read(
-                              title: 'Blocked users',
-                              valueText: state.blockedAccounts.count
-                                  ?.toString(),
-                              icon: CatchIcons.shieldOutlined,
-                            ),
-                            CatchField.read(
-                              title: 'Who can see you',
-                              valueText: 'Runners on my events',
-                              icon: CatchIcons.visibilityOutlined,
-                            ),
-                            CatchField.toggle(
-                              key: SettingsKeys.showOnMapSwitch,
-                              title: 'Show me on map',
-                              icon: CatchIcons.mapOutlined,
-                              value: state.preferences.showOnMap,
-                              onChanged: state.mutations.savingPreference
-                                  ? null
-                                  : (value) => _savePref(
-                                      preference: SettingsPreference.showOnMap,
-                                      value: value,
-                                    ),
-                            ),
-                            CatchField.nav(
-                              title: 'Privacy policy',
-                              icon: CatchIcons.lockOutline,
-                              onTap: () => _openExternal(
-                                Uri.parse('https://catchdates.com/privacy'),
-                              ),
-                            ),
-                            CatchField.nav(
-                              key: SettingsKeys.deleteAccountRow,
-                              title: 'Delete account',
-                              icon: CatchIcons.deleteOutline,
-                              tone: CatchFieldTone.danger,
-                              action: state.mutations.deletingAccount
-                                  ? const SizedBox.square(
-                                      dimension: CatchIcon.control,
-                                      child: CatchLoadingIndicator(
-                                        strokeWidth: 2,
-                                      ),
-                                    )
-                                  : null,
-                              onTap: state.mutations.deletingAccount
-                                  ? null
-                                  : _confirmDeleteAccount,
-                            ),
-                          ],
-                        ),
-                        SettingsSection(
-                          title: 'About',
-                          children: [
-                            CatchField.nav(
-                              title: 'Help & support',
-                              valueText: 'Contact us',
-                              icon: CatchIcons.helpOutline,
-                              onTap: () => _openExternal(
-                                Uri.parse('https://catchdates.com/help'),
-                              ),
-                            ),
-                            CatchField.nav(
-                              title: 'Terms',
-                              valueText: 'Legal',
-                              icon: CatchIcons.descriptionOutlined,
-                              onTap: () => _openExternal(
-                                Uri.parse('https://catchdates.com/terms'),
-                              ),
-                            ),
-                            CatchField.read(
-                              title: 'Version',
-                              valueText: '1.0',
-                              icon: CatchIcons.infoOutline,
-                            ),
-                          ],
-                        ),
-                        SettingsSection(
-                          title: '',
-                          hideTitle: true,
-                          children: [
-                            CatchField.nav(
-                              key: SettingsKeys.signOutRow,
-                              title: 'Log out',
-                              icon: CatchIcons.logoutRounded,
-                              tone: CatchFieldTone.danger,
-                              action: state.mutations.signingOut
-                                  ? const SizedBox.square(
-                                      dimension: CatchIcon.control,
-                                      child: CatchLoadingIndicator(
-                                        strokeWidth: 2,
-                                      ),
-                                    )
-                                  : null,
-                              onTap: state.mutations.signingOut
-                                  ? null
-                                  : _signOut,
-                            ),
-                          ],
-                        ),
-                        gapH20,
-                        Center(
-                          child: Text(
-                            'Catch 1.0 · made in Bombay',
-                            style: CatchTextStyles.statusLabel(
-                              context,
-                              color: t.ink3,
+                  SettingsSection(
+                    first: true,
+                    title: 'Account',
+                    footer: AccountProfileStatus(
+                      profile: state.profile,
+                      onRetry: () => ref.invalidate(watchUserProfileProvider),
+                    ),
+                    children: [
+                      CatchField.read(
+                        title: 'Phone number',
+                        valueText: state.profile.phoneNumber,
+                        icon: CatchIcons.phoneOutlined,
+                      ),
+                      CatchField.read(
+                        title: 'Email',
+                        valueText: state.profile.email,
+                        icon: CatchIcons.emailOutlined,
+                      ),
+                      CatchField.nav(
+                        title: 'Edit profile',
+                        icon: CatchIcons.personOutlined,
+                        onTap: () =>
+                            context.pushNamed(Routes.profileScreen.name),
+                      ),
+                      CatchField.nav(
+                        key: SettingsKeys.reviewHistoryRow,
+                        title: 'Review history',
+                        valueText: 'Events you reviewed',
+                        icon: CatchIcons.rateReviewOutlined,
+                        onTap: () =>
+                            context.pushNamed(Routes.reviewsHistoryScreen.name),
+                      ),
+                      CatchField.nav(
+                        key: SettingsKeys.paymentHistoryRow,
+                        title: 'Payment history',
+                        valueText: 'Bookings and receipts',
+                        icon: CatchIcons.receiptLongOutlined,
+                        onTap: () =>
+                            context.pushNamed(Routes.paymentHistoryScreen.name),
+                      ),
+                      CatchField.nav(
+                        key: SettingsKeys.hostAppRow,
+                        title: 'Catch Host',
+                        valueText: 'Manage events and clubs',
+                        icon: CatchIcons.workOutlineRounded,
+                        onTap: _openHostApp,
+                      ),
+                    ],
+                  ),
+                  if (AppConfig.enableEventPolicyLab ||
+                      AppConfig.enableEventSuccessPreview) ...[
+                    SettingsSection(
+                      title: 'Development',
+                      children: [
+                        if (AppConfig.enableEventPolicyLab)
+                          CatchField.nav(
+                            key: SettingsKeys.eventPolicyLabRow,
+                            title: 'Event policy lab',
+                            valueText: 'Static booking policy previews',
+                            icon: CatchIcons.scienceOutlined,
+                            onTap: () => context.pushNamed(
+                              Routes.eventPolicyLabScreen.name,
                             ),
                           ),
-                        ),
+                        if (AppConfig.enableEventSuccessPreview)
+                          CatchField.nav(
+                            key: SettingsKeys.eventSuccessLabRow,
+                            title: 'Event success lab',
+                            valueText: 'Host, attendee, and report previews',
+                            icon: CatchIcons.autoGraphRounded,
+                            onTap: () => context.pushNamed(
+                              Routes.eventSuccessLabScreen.name,
+                            ),
+                          ),
+                        if (AppConfig.enableEventSuccessPreview)
+                          CatchField.nav(
+                            key: SettingsKeys.eventSuccessManualQaRow,
+                            title: 'Event success manual QA',
+                            valueText: 'Host and attendee side by side',
+                            icon: CatchIcons.splitscreenRounded,
+                            onTap: () => context.pushNamed(
+                              Routes.eventSuccessManualQaScreen.name,
+                            ),
+                          ),
                       ],
                     ),
+                  ],
+                  SettingsSection(
+                    title: 'Notifications',
+                    children: [
+                      CatchField.toggle(
+                        key: SettingsKeys.newCatchesSwitch,
+                        title: 'Push notifications',
+                        icon: CatchIcons.favoriteOutline,
+                        value: state.preferences.newCatches,
+                        onChanged: state.mutations.savingPreference
+                            ? null
+                            : (value) => _savePref(
+                                preference: SettingsPreference.newCatches,
+                                value: value,
+                              ),
+                      ),
+                      CatchField.toggle(
+                        key: SettingsKeys.messagesSwitch,
+                        title: 'Messages',
+                        icon: CatchIcons.chatBubbleOutlineRounded,
+                        value: state.preferences.messages,
+                        onChanged: state.mutations.savingPreference
+                            ? null
+                            : (value) => _savePref(
+                                preference: SettingsPreference.messages,
+                                value: value,
+                              ),
+                      ),
+                      CatchField.toggle(
+                        key: SettingsKeys.eventRemindersSwitch,
+                        title: 'Event reminders',
+                        icon: CatchIcons.directionsRunOutlined,
+                        value: state.preferences.eventReminders,
+                        onChanged: state.mutations.savingPreference
+                            ? null
+                            : (value) => _savePref(
+                                preference: SettingsPreference.eventReminders,
+                                value: value,
+                              ),
+                      ),
+                      CatchField.toggle(
+                        key: SettingsKeys.eventStatusUpdatesSwitch,
+                        title: 'Event changes and cancellations',
+                        icon: CatchIcons.eventRepeatOutlined,
+                        value: state.preferences.eventStatusUpdates,
+                        onChanged: state.mutations.savingPreference
+                            ? null
+                            : (value) => _savePref(
+                                preference:
+                                    SettingsPreference.eventStatusUpdates,
+                                value: value,
+                              ),
+                      ),
+                      CatchField.toggle(
+                        key: SettingsKeys.clubUpdatesSwitch,
+                        title: 'Club announcements',
+                        icon: CatchIcons.notificationsActiveOutlined,
+                        value: state.preferences.clubUpdates,
+                        onChanged: state.mutations.savingPreference
+                            ? null
+                            : (value) => _savePref(
+                                preference: SettingsPreference.clubUpdates,
+                                value: value,
+                              ),
+                      ),
+                      CatchField.toggle(
+                        key: SettingsKeys.weeklyDigestSwitch,
+                        title: 'Email updates',
+                        icon: CatchIcons.markEmailReadOutlined,
+                        value: state.preferences.weeklyDigest,
+                        onChanged: state.mutations.savingPreference
+                            ? null
+                            : (value) => _savePref(
+                                preference: SettingsPreference.weeklyDigest,
+                                value: value,
+                              ),
+                      ),
+                    ],
                   ),
-                ),
+                  SettingsSection(
+                    title: 'Privacy & safety',
+                    footer: BlockedAccountsSection(
+                      state: state.blockedAccounts,
+                      unblocking: state.mutations.unblocking,
+                      onRetry: () => ref.invalidate(watchBlockedUsersProvider),
+                      onUnblock: _unblockUser,
+                    ),
+                    children: [
+                      CatchField.read(
+                        title: 'Blocked users',
+                        valueText: state.blockedAccounts.count?.toString(),
+                        icon: CatchIcons.shieldOutlined,
+                      ),
+                      CatchField.read(
+                        title: 'Who can see you',
+                        valueText: 'Runners on my events',
+                        icon: CatchIcons.visibilityOutlined,
+                      ),
+                      CatchField.toggle(
+                        key: SettingsKeys.showOnMapSwitch,
+                        title: 'Show me on map',
+                        icon: CatchIcons.mapOutlined,
+                        value: state.preferences.showOnMap,
+                        onChanged: state.mutations.savingPreference
+                            ? null
+                            : (value) => _savePref(
+                                preference: SettingsPreference.showOnMap,
+                                value: value,
+                              ),
+                      ),
+                      CatchField.nav(
+                        title: 'Privacy policy',
+                        icon: CatchIcons.lockOutline,
+                        onTap: () => _openExternal(
+                          Uri.parse('https://catchdates.com/privacy'),
+                        ),
+                      ),
+                      CatchField.nav(
+                        key: SettingsKeys.deleteAccountRow,
+                        title: 'Delete account',
+                        icon: CatchIcons.deleteOutline,
+                        tone: CatchFieldTone.danger,
+                        action: state.mutations.deletingAccount
+                            ? const SizedBox.square(
+                                dimension: CatchIcon.control,
+                                child: CatchLoadingIndicator(strokeWidth: 2),
+                              )
+                            : null,
+                        onTap: state.mutations.deletingAccount
+                            ? null
+                            : _confirmDeleteAccount,
+                      ),
+                    ],
+                  ),
+                  SettingsSection(
+                    title: 'About',
+                    children: [
+                      CatchField.nav(
+                        title: 'Help & support',
+                        valueText: 'Contact us',
+                        icon: CatchIcons.helpOutline,
+                        onTap: () => _openExternal(
+                          Uri.parse('https://catchdates.com/help'),
+                        ),
+                      ),
+                      CatchField.nav(
+                        title: 'Terms',
+                        valueText: 'Legal',
+                        icon: CatchIcons.descriptionOutlined,
+                        onTap: () => _openExternal(
+                          Uri.parse('https://catchdates.com/terms'),
+                        ),
+                      ),
+                      CatchField.read(
+                        title: 'Version',
+                        valueText: '1.0',
+                        icon: CatchIcons.infoOutline,
+                      ),
+                    ],
+                  ),
+                  SettingsSection(
+                    title: '',
+                    hideTitle: true,
+                    children: [
+                      CatchField.nav(
+                        key: SettingsKeys.signOutRow,
+                        title: 'Log out',
+                        icon: CatchIcons.logoutRounded,
+                        tone: CatchFieldTone.danger,
+                        action: state.mutations.signingOut
+                            ? const SizedBox.square(
+                                dimension: CatchIcon.control,
+                                child: CatchLoadingIndicator(strokeWidth: 2),
+                              )
+                            : null,
+                        onTap: state.mutations.signingOut ? null : _signOut,
+                      ),
+                    ],
+                  ),
+                  gapH20,
+                  Center(
+                    child: Text(
+                      'Catch 1.0 · made in Bombay',
+                      style: CatchTextStyles.statusLabel(
+                        context,
+                        color: t.ink3,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -617,7 +603,8 @@ class BlockedAccountsSection extends StatelessWidget {
           child: const SizedBox(height: CatchStroke.hairline),
         ),
         switch (state.status) {
-          SettingsBlockedAccountsStatus.loading => const BlockedAccountsSkeleton(),
+          SettingsBlockedAccountsStatus.loading =>
+            const BlockedAccountsSkeleton(),
           SettingsBlockedAccountsStatus.error => Padding(
             padding: CatchInsets.content,
             child: CatchInlineErrorState.fromError(
@@ -634,10 +621,7 @@ class BlockedAccountsSection extends StatelessWidget {
               message: 'People you block will appear here.',
               iconSize: CatchIcon.tile,
               titleStyle: CatchTextStyles.sectionTitle(context),
-              messageStyle: CatchTextStyles.supporting(
-                context,
-                color: t.ink2,
-              ),
+              messageStyle: CatchTextStyles.supporting(context, color: t.ink2),
             ),
           ),
           SettingsBlockedAccountsStatus.content => Column(
@@ -687,8 +671,8 @@ class BlockedAccountsSkeleton extends StatelessWidget {
                         width: index == 0
                             ? CatchLayout.skeletonTextBodyWidth
                             : index == 1
-                                ? CatchLayout.skeletonTextCompactWidth
-                                : CatchLayout.skeletonTextShortWidth,
+                            ? CatchLayout.skeletonTextCompactWidth
+                            : CatchLayout.skeletonTextShortWidth,
                       ),
                     ],
                   ),

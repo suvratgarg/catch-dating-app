@@ -9,7 +9,8 @@ pull requests and deploys the production Firebase Hosting `marketing` target
 after matching changes land on `main`.
 
 The validation job checks generated design-token CSS, app-derived marketing
-media, screenshot design-context drift, and the Vite production build.
+media, screenshot design-context drift, route-contract drift, and the Vite
+production build.
 
 Organizer listing pages include a Firebase-backed claim form. Production builds
 must set the Firebase web config and `VITE_WEBSITE_APPCHECK_SITE_KEY` from
@@ -34,6 +35,42 @@ Workload Identity variables:
 It deploys only `hosting:marketing`. If a marketing change also modifies the
 waitlist Cloud Function, deploy Functions separately through the existing
 Firebase deploy workflow.
+
+## Route Contracts
+
+Route-first website review is owned by `design/website/routes.json`. Update that
+contract before changing public routes, page metadata, static postbuild output,
+organizer listing route families, sitemap inclusion, robots tags, or planned
+review states.
+
+```sh
+npm run check:routes
+```
+
+`npm run typecheck` runs the generated organizer listing check and the route
+contract check before TypeScript.
+
+## Component Workbench
+
+Storybook is the marketing website's Widgetbook-equivalent workbench. Stories
+should attach route contract metadata from `design/website/routes.json` through
+`parameters.catchRoute`, including the route id, path, and review states.
+Component ownership and Storybook coverage are tracked in
+`design/website/components.json`; update that registry when route or section
+stories move.
+
+```sh
+npm run check:components
+npm run storybook
+npm run build:storybook
+```
+
+The checked-in starter stories live in `src/stories/MarketingRoutes.stories.tsx`
+and cover `/`, `/host/`, `/host/preview/`, and `/organizers/` with mocked
+app-capture assets where relevant. Host route section stories live in
+`src/stories/HostSections.stories.tsx`; organizer search section stories live in
+`src/stories/OrganizerSearchSections.stories.tsx`.
+Storybook writes its static build to `storybook-static/`, which is ignored.
 
 ## Analytics Setup
 

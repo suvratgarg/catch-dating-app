@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
@@ -155,6 +154,7 @@ class _ProfileInlinePromptEntryEditorState
   @override
   Widget build(BuildContext context) {
     final selectedDefinition = profilePromptDefinition(_selectedPromptId);
+    final saveErrorBanner = buildSaveError();
 
     return CatchField.actions(
       icon: widget.icon,
@@ -167,7 +167,7 @@ class _ProfileInlinePromptEntryEditorState
           : CatchFieldTone.normal,
       initiallyExpanded: widget.isExpanded,
       isLoading: isSaving,
-      error: _validationError ?? _errorMessage(),
+      error: _validationError,
       onTap: isSaving ? null : widget.onTap,
       actionLeading: AnimatedBuilder(
         animation: _controller,
@@ -213,17 +213,15 @@ class _ProfileInlinePromptEntryEditorState
                       setState(() => _selectedPromptId = promptId);
                     },
             ),
+            if (saveErrorBanner != null) ...[
+              const SizedBox(height: CatchSpacing.s3),
+              saveErrorBanner,
+            ],
           ],
         ],
       ),
       onCancel: _cancel,
       onSubmit: _submit,
     );
-  }
-
-  String? _errorMessage() {
-    final error = saveError;
-    if (error == null) return null;
-    return appErrorMessage(error, context: AppErrorContext.profile);
   }
 }

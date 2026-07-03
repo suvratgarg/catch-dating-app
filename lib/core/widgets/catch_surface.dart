@@ -235,7 +235,7 @@ class CatchSurface extends StatelessWidget {
                   Text(title!, style: CatchTextStyles.labelL(context)),
                   const SizedBox(height: CatchSpacing.s1),
                 ],
-                Text(message!, style: CatchTextStyles.bodyS(context)),
+                Text(message!, style: CatchTextStyles.supporting(context)),
               ],
             ),
           ),

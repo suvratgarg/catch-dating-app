@@ -13,6 +13,7 @@ import {ConfigCitiesDocument} from "./configCitiesDocument";
 import {OnboardingDraftDocument} from "./onboardingDraftDocument";
 import {UserProfileDocument} from "./userProfileDocument";
 import {PublicProfileDocument} from "./publicProfileDocument";
+import {HostProfileDocument} from "./hostProfileDocument";
 import {ClubDocument} from "./clubDocument";
 import {ClubMembershipDocument} from "./clubMembershipDocument";
 import {ClubHostClaimDocument} from "./clubHostClaimDocument";
@@ -159,6 +160,7 @@ import {
   onboardingDraftDocumentSchema,
   userProfileDocumentSchema,
   publicProfileDocumentSchema,
+  hostProfileDocumentSchema,
   clubDocumentSchema,
   clubMembershipDocumentSchema,
   clubHostClaimDocumentSchema,
@@ -336,6 +338,10 @@ export const validatePublicProfileDocument:
   ValidateFunction<PublicProfileDocument> =
     ajv.compile(publicProfileDocumentSchema) as
       ValidateFunction<PublicProfileDocument>;
+export const validateHostProfileDocument:
+  ValidateFunction<HostProfileDocument> =
+    ajv.compile(hostProfileDocumentSchema) as
+      ValidateFunction<HostProfileDocument>;
 export const validateClubDocument:
   ValidateFunction<ClubDocument> =
     ajv.compile(clubDocumentSchema) as

@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
+import 'package:catch_dating_app/events/data/event_check_in_location_service.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/data/event_check_in_location_service.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
@@ -32,16 +32,9 @@ class EventBookingController extends _$EventBookingController {
   static final cancelMutation = Mutation<void>();
   static final joinWaitlistMutation = Mutation<void>();
   static final leaveWaitlistMutation = Mutation<void>();
-  static final createWaitlistOfferMutation = Mutation<void>();
   static final acceptWaitlistOfferMutation = Mutation<void>();
   static final declineWaitlistOfferMutation = Mutation<void>();
-  static final approveJoinRequestMutation = Mutation<void>();
-  static final declineJoinRequestMutation = Mutation<void>();
-  static final markAttendanceMutation = Mutation<void>();
   static final selfCheckInMutation = Mutation<void>();
-  static final hostCancelEventMutation = Mutation<void>();
-  static final deleteEventMutation = Mutation<void>();
-  static final updateHostedEventMutation = Mutation<void>();
 
   @override
   void build() {}
@@ -100,45 +93,6 @@ class EventBookingController extends _$EventBookingController {
         .cancelSignUpViaFunction(eventId: event.id);
   }
 
-  /// Cancels an event hosted by the signed-in user.
-  ///
-  /// The Cloud Function enforces host ownership and keeps audit/history
-  /// records intact.
-  Future<void> cancelHostedEvent({required Event event, String? reason}) async {
-    _requireSignedIn(action: 'cancel a hosted event');
-    await ref
-        .read(eventRepositoryProvider)
-        .cancelEvent(eventId: event.id, reason: reason);
-  }
-
-  /// Permanently deletes an unused hosted event.
-  ///
-  /// The Cloud Function rejects events with bookings, payments, reviews, or other
-  /// activity. Those events should be cancelled instead.
-  Future<void> deleteHostedEvent({required Event event}) async {
-    _requireSignedIn(action: 'delete a hosted event');
-    await ref.read(eventRepositoryProvider).deleteEvent(eventId: event.id);
-  }
-
-  /// Updates host-editable event details via the server-owned callable.
-  ///
-  /// The backend enforces host ownership, rejects cancelled events, and blocks
-  /// schedule changes once participants or waitlisted users exist.
-  Future<void> updateHostedEvent({
-    required Event event,
-    bool includePolicy = false,
-    String? inviteCode,
-  }) async {
-    _requireSignedIn(action: 'edit a hosted event');
-    await ref
-        .read(eventRepositoryProvider)
-        .updateEventDetails(
-          event: event,
-          includePolicy: includePolicy,
-          inviteCode: inviteCode,
-        );
-  }
-
   /// Adds the user to the waitlist for a full event.
   Future<void> joinWaitlist({
     required Event event,
@@ -159,24 +113,6 @@ class EventBookingController extends _$EventBookingController {
   Future<void> leaveWaitlist({required Event event}) async {
     _requireSignedIn(action: 'leave a waitlist');
     await ref.read(eventRepositoryProvider).leaveWaitlist(eventId: event.id);
-  }
-
-  /// Offers one waitlisted person an expiring spot.
-  Future<void> createWaitlistOffer({
-    required String eventId,
-    required String userId,
-  }) => createWaitlistOffers(eventId: eventId, userIds: [userId]);
-
-  /// Offers multiple waitlisted people expiring spots in roster order.
-  Future<void> createWaitlistOffers({
-    required String eventId,
-    required List<String> userIds,
-  }) async {
-    _requireSignedIn(action: 'offer a waitlist spot');
-    if (userIds.isEmpty) return;
-    await ref
-        .read(eventRepositoryProvider)
-        .createWaitlistOffers(eventId: eventId, userIds: userIds);
   }
 
   /// Accepts an expiring waitlist offer. Free offers book immediately; paid
@@ -208,49 +144,6 @@ class EventBookingController extends _$EventBookingController {
     await ref
         .read(eventRepositoryProvider)
         .declineWaitlistOffer(eventId: event.id);
-  }
-
-  /// Approves a request-to-join participation. Free approved requests are
-  /// booked by the backend; paid approved requests can complete payment.
-  Future<void> approveJoinRequest({
-    required String eventId,
-    required String userId,
-  }) async {
-    _requireSignedIn(action: 'approve a join request');
-    await ref
-        .read(eventRepositoryProvider)
-        .decideJoinRequest(
-          eventId: eventId,
-          userId: userId,
-          decision: 'approve',
-        );
-  }
-
-  /// Declines a request-to-join participation.
-  Future<void> declineJoinRequest({
-    required String eventId,
-    required String userId,
-  }) async {
-    _requireSignedIn(action: 'decline a join request');
-    await ref
-        .read(eventRepositoryProvider)
-        .decideJoinRequest(
-          eventId: eventId,
-          userId: userId,
-          decision: 'decline',
-        );
-  }
-
-  /// Toggles attendance for a single user on an event.
-  /// Only callable by the club host.
-  Future<void> markAttendance({
-    required String eventId,
-    required String userId,
-  }) async {
-    _requireSignedIn(action: 'mark attendance');
-    await ref
-        .read(eventRepositoryProvider)
-        .markAttendance(eventId: eventId, userId: userId);
   }
 
   /// Self-check-in for the signed-in user via GPS-verified proximity.

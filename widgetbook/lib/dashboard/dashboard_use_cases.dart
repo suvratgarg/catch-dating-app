@@ -11,16 +11,17 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
-import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
+import 'package:catch_dating_app/dashboard/data/dashboard_recommendations_repository.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/notifications_list_state.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_empty.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_section_state_card.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_sliver_header.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/empty_hero_card.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_rail.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/quick_actions.dart';
+import 'package:catch_dating_app/dashboard/shared/quick_actions.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/recommend_card.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/recommendations.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/stride_card.dart';
@@ -501,6 +502,27 @@ Widget dashboardNotificationDayGroupsReview(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Grouped row content',
+  type: NotificationGroupWidget,
+  path: '[P1 product surfaces]/Dashboard activity',
+)
+Widget dashboardNotificationGroupWidgetReview(BuildContext context) {
+  final rows = _notificationDayGroups().first.rows;
+  return _DashboardCatalog(
+    title: 'NotificationGroupWidget',
+    contractId: 'dashboard.activity.notification_group',
+    children: [
+      _StateCard(
+        label: 'mixed read state',
+        child: _DashboardPrimitiveFrame(
+          child: NotificationGroupWidget(rows: rows),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Skeleton states',
   type: ActivitySectionSkeleton,
   path: '[P1 product surfaces]/Dashboard activity',
@@ -525,6 +547,32 @@ Widget dashboardActivitySectionSkeletonReview(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Row skeleton states',
+  type: NotificationRowSkeleton,
+  path: '[P1 product surfaces]/Dashboard activity',
+)
+Widget dashboardNotificationRowSkeletonReview(BuildContext context) {
+  return const _DashboardCatalog(
+    title: 'NotificationRowSkeleton',
+    contractId: 'dashboard.activity.notification_row_skeleton',
+    children: [
+      _StateCard(
+        label: 'first row',
+        child: _DashboardPrimitiveFrame(
+          child: NotificationRowSkeleton(divider: false),
+        ),
+      ),
+      _StateCard(
+        label: 'divided row',
+        child: _DashboardPrimitiveFrame(
+          child: NotificationRowSkeleton(divider: true),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Empty home sliver',
   type: DashboardEmptySliverBody,
   path: '[P1 product surfaces]/Dashboard home',
@@ -539,6 +587,24 @@ Widget dashboardEmptySliverBodyReview(BuildContext context) {
         child: _DeviceFrame(
           child: CustomScrollView(slivers: [DashboardEmptySliverBody()]),
         ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Followed clubs skeleton',
+  type: FollowedClubsRailSkeleton,
+  path: '[P1 product surfaces]/Dashboard home',
+)
+Widget dashboardFollowedClubsRailSkeletonReview(BuildContext context) {
+  return const _DashboardCatalog(
+    title: 'FollowedClubsRailSkeleton',
+    contractId: 'dashboard.home.followed_clubs_skeleton',
+    children: [
+      _StateCard(
+        label: 'loading clubs',
+        child: _DashboardPrimitiveFrame(child: FollowedClubsRailSkeleton()),
       ),
     ],
   );
@@ -593,6 +659,45 @@ Widget dashboardFullSliverBodyReview(BuildContext context) {
                 ),
               ],
             ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Header content',
+  type: DashboardHeaderContent,
+  path: '[P1 product surfaces]/Dashboard home',
+)
+Widget dashboardHeaderContentReview(BuildContext context) {
+  return _DashboardCatalog(
+    title: 'DashboardHeaderContent',
+    contractId: 'dashboard.home.header_content',
+    children: [
+      _StateCard(
+        label: 'copy only',
+        child: const _DashboardPrimitiveFrame(
+          child: DashboardHeaderContent(
+            eyebrow: 'TODAY · MUMBAI',
+            title: 'Good evening, Subrath',
+            actions: [],
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'notification action',
+        child: _DashboardPrimitiveFrame(
+          child: DashboardHeaderContent(
+            eyebrow: 'THIS WEEK',
+            title: 'Three plans ready',
+            actions: [
+              DashboardNotificationBellButton(
+                unreadCount: 3,
+                onPressed: _noopTap,
+              ),
+            ],
           ),
         ),
       ),
@@ -695,6 +800,46 @@ Widget dashboardEmptyHeroCardReviewStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Hero content states',
+  type: EmptyHeroContent,
+  path: '[P1 product surfaces]/Dashboard home',
+)
+Widget dashboardEmptyHeroContentReviewStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+  Widget frame({required Widget child}) {
+    return _DashboardPrimitiveFrame(
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: t.heroGrad,
+          borderRadius: BorderRadius.circular(CatchRadius.heroCard),
+        ),
+        child: Padding(padding: CatchInsets.contentRelaxed, child: child),
+      ),
+    );
+  }
+
+  return _DashboardCatalog(
+    title: 'EmptyHeroContent',
+    contractId: 'dashboard.home.empty_hero_content',
+    children: [
+      _StateCard(
+        label: 'card copy',
+        child: frame(child: EmptyHeroContent(onFindEvent: _noopTap)),
+      ),
+      _StateCard(
+        label: 'welcome eyebrow',
+        child: frame(
+          child: EmptyHeroContent(
+            onFindEvent: _noopTap,
+            showWelcomeEyebrow: true,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Rail states',
   type: EventFocusRail,
   path: '[P1 product surfaces]/Dashboard home',
@@ -727,6 +872,96 @@ Widget dashboardEventFocusRailReviewStates(BuildContext context) {
             actions: _eventFocusActions,
             clubNameBuilder: (_) => _club.name,
           ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Card states',
+  type: EventFocusCard,
+  path: '[P1 product surfaces]/Dashboard home',
+)
+Widget dashboardEventFocusCardReviewStates(BuildContext context) {
+  return _DashboardCatalog(
+    title: 'EventFocusCard',
+    contractId: 'dashboard.home.event_focus_card',
+    children: [
+      _StateCard(
+        label: 'upcoming',
+        child: _DashboardPrimitiveFrame(
+          child: EventFocusCard(
+            item: EventFocusItem(
+              event: _nextEvent,
+              kind: EventFocusKind.upcoming,
+              clubName: _club.name,
+            ),
+            cardIndex: 0,
+            cardCount: 3,
+            checkInState: EventFocusCheckInState.idle,
+            onActionPressed: (_) {},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'check-in pending',
+        child: _DashboardPrimitiveFrame(
+          child: EventFocusCard(
+            item: EventFocusItem(
+              event: _nextEvent,
+              kind: EventFocusKind.checkIn,
+              clubName: _club.name,
+            ),
+            cardIndex: 1,
+            cardCount: 3,
+            checkInState: const EventFocusCheckInState(isPending: true),
+            onActionPressed: (_) {},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'after event actions',
+        child: _DashboardPrimitiveFrame(
+          child: EventFocusCard(
+            item: EventFocusItem(
+              event: DashboardSurfaceFixtures.attendedEvent,
+              kind: EventFocusKind.afterEvent,
+              clubName: _club.name,
+              canSwipe: true,
+              needsReview: true,
+            ),
+            cardIndex: 2,
+            cardCount: 3,
+            checkInState: EventFocusCheckInState.idle,
+            onActionPressed: (_) {},
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Page indicator states',
+  type: EventFocusPageIndicator,
+  path: '[P1 product surfaces]/Dashboard home',
+)
+Widget dashboardEventFocusPageIndicatorReviewStates(BuildContext context) {
+  return const _DashboardCatalog(
+    title: 'EventFocusPageIndicator',
+    contractId: 'dashboard.home.event_focus_page_indicator',
+    children: [
+      _StateCard(
+        label: 'first of three',
+        child: _DashboardPrimitiveFrame(
+          child: EventFocusPageIndicator(selectedIndex: 0, itemCount: 3),
+        ),
+      ),
+      _StateCard(
+        label: 'middle of three',
+        child: _DashboardPrimitiveFrame(
+          child: EventFocusPageIndicator(selectedIndex: 1, itemCount: 3),
         ),
       ),
     ],

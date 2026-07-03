@@ -78,6 +78,8 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   acceptEventWaitlistOffer: {maxRequests: 10, windowMs: 60 * 1000},
   declineEventWaitlistOffer: {maxRequests: 10, windowMs: 60 * 1000},
   decideEventJoinRequest: {maxRequests: 30, windowMs: 60 * 1000},
+  createEventInviteLink: {maxRequests: 20, windowMs: 60 * 1000},
+  disableEventInviteLink: {maxRequests: 20, windowMs: 60 * 1000},
   joinClub: {maxRequests: 30, windowMs: 60 * 1000},
   leaveClub: {maxRequests: 30, windowMs: 60 * 1000},
   addClubHost: {maxRequests: 20, windowMs: 60 * 1000},

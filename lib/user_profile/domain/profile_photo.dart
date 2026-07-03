@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'profile_photo.freezed.dart';
@@ -28,10 +27,9 @@ abstract class ProfilePhoto with _$ProfilePhoto {
     required int position,
     required String url,
     required String storagePath,
-    DateTime? now,
+    required DateTime now,
     PhotoPromptAnswer? prompt,
   }) {
-    final timestamp = now ?? DateTime.now();
     return ProfilePhoto(
       id: profilePhotoIdForStoragePath(storagePath, position),
       url: url,
@@ -41,11 +39,12 @@ abstract class ProfilePhoto with _$ProfilePhoto {
       prompt: prompt,
       moderation: const ProfilePhotoModeration(status: 'pending'),
       position: position,
-      createdAt: timestamp,
-      updatedAt: timestamp,
+      createdAt: now,
+      updatedAt: now,
     );
   }
 
+  @override
   Map<String, dynamic> toJson() => <String, dynamic>{
     'id': id,
     'url': url,
@@ -70,7 +69,7 @@ abstract class ProfilePhotoModeration with _$ProfilePhotoModeration {
   const factory ProfilePhotoModeration({
     required String status,
     String? reason,
-    @TimestampConverter() DateTime? reviewedAt,
+    @NullableTimestampConverter() DateTime? reviewedAt,
   }) = _ProfilePhotoModeration;
 
   factory ProfilePhotoModeration.fromJson(Map<String, dynamic> json) =>
@@ -175,7 +174,7 @@ List<ProfilePhoto> replaceProfilePhotoAtPosition({
   required Iterable<ProfilePhoto> profilePhotos,
   required int position,
   required ProfilePhoto photo,
-  DateTime? updatedAt,
+  required DateTime updatedAt,
 }) {
   RangeError.checkValueInInterval(
     position,
@@ -183,19 +182,18 @@ List<ProfilePhoto> replaceProfilePhotoAtPosition({
     maximumProfilePhotoCount - 1,
     'position',
   );
-  final timestamp = updatedAt ?? DateTime.now();
   final next = <ProfilePhoto>[
     for (final existing in normalizeProfilePhotos(profilePhotos))
       if (existing.position != position) existing,
-    _copyProfilePhotoToPosition(photo, position, updatedAt: timestamp),
+    _copyProfilePhotoToPosition(photo, position, updatedAt: updatedAt),
   ]..sort((a, b) => a.position.compareTo(b.position));
-  return compactProfilePhotoPositions(next, updatedAt: timestamp);
+  return compactProfilePhotoPositions(next, updatedAt: updatedAt);
 }
 
 List<ProfilePhoto> removeProfilePhotoAtPosition({
   required Iterable<ProfilePhoto> profilePhotos,
   required int position,
-  DateTime? updatedAt,
+  required DateTime updatedAt,
 }) {
   RangeError.checkValueInInterval(
     position,
@@ -203,21 +201,20 @@ List<ProfilePhoto> removeProfilePhotoAtPosition({
     maximumProfilePhotoCount - 1,
     'position',
   );
-  final timestamp = updatedAt ?? DateTime.now();
   return compactProfilePhotoPositions([
     for (final photo in compactProfilePhotoPositions(
       profilePhotos,
-      updatedAt: timestamp,
+      updatedAt: updatedAt,
     ))
       if (photo.position != position) photo,
-  ], updatedAt: timestamp);
+  ], updatedAt: updatedAt);
 }
 
 List<ProfilePhoto> reorderProfilePhoto({
   required Iterable<ProfilePhoto> profilePhotos,
   required int fromPosition,
   required int toPosition,
-  DateTime? updatedAt,
+  required DateTime updatedAt,
 }) {
   RangeError.checkValueInInterval(
     fromPosition,
@@ -239,13 +236,12 @@ List<ProfilePhoto> reorderProfilePhoto({
   }
   final moved = photos.removeAt(fromPosition);
   photos.insert(toPosition, moved);
-  final timestamp = updatedAt ?? DateTime.now();
   return [
     for (final indexedPhoto in photos.indexed)
       _copyProfilePhotoToPosition(
         indexedPhoto.$2,
         indexedPhoto.$1,
-        updatedAt: timestamp,
+        updatedAt: updatedAt,
       ),
   ];
 }
@@ -272,6 +268,7 @@ List<Map<String, dynamic>> profilePhotosToJson(Iterable<ProfilePhoto> photos) =>
 ProfilePhoto replaceProfilePhotoPrompt({
   required ProfilePhoto photo,
   required PhotoPromptDefinition definition,
+  required DateTime updatedAt,
   String caption = '',
 }) {
   final normalizedCaption = normalizePhotoPromptCaption(caption);
@@ -281,7 +278,7 @@ ProfilePhoto replaceProfilePhotoPrompt({
       definition: definition,
       caption: normalizedCaption,
     ),
-    updatedAt: DateTime.now(),
+    updatedAt: updatedAt,
   );
 }
 
@@ -289,7 +286,7 @@ List<ProfilePhoto> replaceProfilePhotoPromptAtPosition({
   required Iterable<ProfilePhoto> profilePhotos,
   required int position,
   required PhotoPromptAnswer? prompt,
-  DateTime? updatedAt,
+  required DateTime updatedAt,
 }) {
   RangeError.checkValueInInterval(
     position,
@@ -297,13 +294,12 @@ List<ProfilePhoto> replaceProfilePhotoPromptAtPosition({
     maximumProfilePhotoCount - 1,
     'position',
   );
-  final timestamp = updatedAt ?? DateTime.now();
   final updated = [
     for (final photo in normalizeProfilePhotos(profilePhotos))
       if (photo.position == position)
         photo.copyWith(
           prompt: prompt?.copyWith(photoIndex: position),
-          updatedAt: timestamp,
+          updatedAt: updatedAt,
         )
       else
         photo,

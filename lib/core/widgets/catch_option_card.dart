@@ -60,7 +60,10 @@ class CatchOptionCard extends StatelessWidget {
                 Text(title, style: CatchTextStyles.labelL(context)),
                 if (description != null && description!.isNotEmpty) ...[
                   const SizedBox(height: CatchSpacing.micro3),
-                  Text(description!, style: CatchTextStyles.bodyS(context)),
+                  Text(
+                    description!,
+                    style: CatchTextStyles.supporting(context),
+                  ),
                 ],
               ],
             ),

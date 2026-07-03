@@ -1,6 +1,6 @@
 {
-  "version": 1,
-  "updated": "2026-06-30",
+  "version": 3,
+  "updated": "2026-07-02",
   "owner": "agent_operating_model",
   "entries": [
     {
@@ -33,7 +33,9 @@
         "lib/core/widgets/**",
         "lib/**/presentation/widgets/**",
         "docs/design_parity/**",
-        "design/**",
+        "design/components/**",
+        "design/screens/**",
+        "design/tokens/**",
         "widgetbook/**"
       ],
       "symptom": "A design pass preserves duplicate concepts under local aliases instead of converging on a canonical global contract and Widgetbook coverage path.",
@@ -105,13 +107,109 @@
       "symptom": "Explore or event cards assume organizer host fields are non-null even though unclaimed organizer data allows null host ownership.",
       "guard": {
         "type": "command",
-        "command": "flutter test test/explore/explore_view_model_test.dart"
+        "command": "flutter test test/explore/explore_view_model_test.dart --plain-name 'unclaimed organizer'"
       },
       "owner_docs": [
         "docs/data_contracts.md",
         "docs/app_architecture.md"
       ],
       "notes": "Model nullable fields where schema allows null and provide display fallbacks."
+    },
+    {
+      "id": "REG-AGENT-006",
+      "title": "Parallel Flutter tests race on native-asset build outputs",
+      "status": "active",
+      "applies_to": [
+        "test/**",
+        "build/native_assets/**",
+        "tool/**",
+        "docs/audit_registry/**"
+      ],
+      "symptom": "Running multiple `flutter test` processes concurrently can crash Flutter while copying `build/native_assets/macos/native_assets.json` into `build/unit_test_assets/NativeAssetsManifest.json`, even when the same test passes sequentially.",
+      "guard": {
+        "type": "manual",
+        "command": "Run Flutter analyzer and Flutter tests sequentially; parallelize non-Flutter JSON/node/git scanners instead."
+      },
+      "owner_docs": [
+        "docs/agent_operating_model.md",
+        "docs/audit_registry/README.md"
+      ],
+      "notes": "If this crash appears, rerun the failed Flutter test sequentially before treating it as product-code failure."
+    },
+    {
+      "id": "REG-AGENT-007",
+      "title": "Parallel subagents fragment canonical ownership",
+      "status": "active",
+      "applies_to": [
+        "AGENTS.md",
+        "docs/agent_operating_model.md",
+        "docs/agent_skills/**",
+        "docs/audit_registry/**",
+        "docs/design_parity/**",
+        "docs/widget_catalog.md",
+        "tool/agent/**",
+        "tool/tools_manifest.json",
+        "lib/**",
+        "test/**"
+      ],
+      "symptom": "Parallel agents make independent edits to canonical docs, generated registries, audit receipts, or the same source files, causing merge conflicts and multiple local truths.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/agent/check_agent_readiness.mjs"
+      },
+      "owner_docs": [
+        "AGENTS.md",
+        "docs/agent_operating_model.md",
+        "docs/agent_skills/catch-parallel-delegation.md",
+        "docs/audit_registry/README.md"
+      ],
+      "notes": "Use disposable worktrees, disjoint write scopes, parent-owned integration, and record delegation outcomes with tool/agent/record_delegation_outcome.mjs."
+    },
+    {
+      "id": "REG-AGENT-008",
+      "title": "Enforcement assets drift from the rules they claim to prove",
+      "status": "active",
+      "applies_to": [
+        "docs/audit_registry/rules.json",
+        "tool/tools_manifest.json",
+        "tool/**",
+        ".github/workflows/**",
+        "docs/agent_operating_model.md",
+        "docs/app_architecture.md"
+      ],
+      "symptom": "A scanner, lint wrapper, manifest check, or CI step stays green while no active rule points to it, the rule has no doc anchor, the tool is only syntax/count checked, or the known-bad probe no longer proves the diagnostic fires.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/check_enforcement_integrity.mjs"
+      },
+      "owner_docs": [
+        "docs/agent_operating_model.md",
+        "docs/audit_registry/README.md",
+        "tool/README.md"
+      ],
+      "notes": "Update rule enforcement entries, manifest role/rules/vacuityProof metadata, doc anchors, and baseline receipts in the same pass as enforcement changes."
+    },
+    {
+      "id": "REG-WEB-001",
+      "title": "Marketing route metadata drifts from static output",
+      "status": "active",
+      "applies_to": [
+        "website/**",
+        "design/website/**",
+        "tool/marketing/check_website_routes.mjs",
+        ".github/workflows/marketing-website.yml"
+      ],
+      "symptom": "A public marketing route, page metadata key, generated listing path, sitemap entry, robots tag, or postbuild static output changes without a matching route contract update.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check marketing:website-routes"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "design/website/routes.json",
+        "docs/marketing_landing_page_research.md"
+      ],
+      "notes": "Run this guard before component-first website review so static HTML, hydrated metadata, generated organizer routes, and review states share one contract."
     }
   ]
 }

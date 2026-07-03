@@ -72,11 +72,13 @@ function listDartFiles(root) {
 function readWidgetbookNames() {
   if (!fs.existsSync(widgetbookPath)) return new Set();
   const source = fs.readFileSync(widgetbookPath, "utf8");
-  return new Set(
-    [...source.matchAll(/WidgetbookComponent\(\s*name: '([^']+)'/gu)].map(
-      (match) => match[1],
-    ),
-  );
+  const names = new Set();
+  for (const match of source.matchAll(/WidgetbookComponent\(\s*name: '([^']+)'/gu)) {
+    const name = match[1];
+    names.add(name);
+    names.add(name.replace(/<.*>$/u, ""));
+  }
+  return names;
 }
 
 function buildContractSymbolMap(components) {
@@ -113,7 +115,7 @@ function collectImports(source) {
 function collectWidgetDeclarations(source) {
   const declarations = [];
   const regex =
-    /class\s+([A-Za-z_][A-Za-z0-9_]*)\s+extends\s+(?:[A-Za-z_][A-Za-z0-9_]*\.)?((?:StatelessWidget|StatefulWidget|ConsumerWidget|ConsumerStatefulWidget|HookWidget|HookConsumerWidget)|(?:State|ConsumerState)<[^>{}]+>)/gu;
+    /class\s+([A-Za-z_][A-Za-z0-9_]*)(?:<[^>{}]+>)?\s+extends\s+(?:[A-Za-z_][A-Za-z0-9_]*\.)?((?:StatelessWidget|StatefulWidget|ConsumerWidget|ConsumerStatefulWidget|HookWidget|HookConsumerWidget)|(?:State|ConsumerState)<[^>{}]+>)/gu;
   for (const match of source.matchAll(regex)) {
     const baseClass = match[2];
     declarations.push({

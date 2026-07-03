@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Catch marketing website route contract",
+  "type": "object",
+  "required": ["version", "updated", "owner", "routes"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {"type": "string"},
+    "version": {"type": "integer", "minimum": 1},
+    "updated": {"type": "string"},
+    "owner": {"type": "string"},
+    "sourceOfTruth": {
+      "type": "object",
+      "additionalProperties": {"type": "string"}
+    },
+    "routes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "pageKey",
+          "source",
+          "staticOutput",
+          "indexing",
+          "sitemap",
+          "review"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z0-9_\\-]+$"},
+          "kind": {
+            "type": "string",
+            "enum": ["static", "clientDynamic", "generatedFamily"]
+          },
+          "path": {"type": "string"},
+          "pathPattern": {"type": "string"},
+          "pathPatterns": {
+            "type": "array",
+            "items": {"type": "string"},
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "pageKey": {
+            "type": "string",
+            "enum": ["home", "host", "organizers", "listing", "claim", "not_found"]
+          },
+          "source": {"type": "string"},
+          "metaKey": {"type": "string"},
+          "metaFactory": {"type": "string"},
+          "staticOutput": {
+            "type": "string",
+            "enum": ["postbuild", "generated-postbuild", "spa-rewrite"]
+          },
+          "indexing": {
+            "type": "string",
+            "enum": ["index", "noindex-follow", "listing-controlled"]
+          },
+          "sitemap": {
+            "type": "string",
+            "enum": ["included", "excluded", "listing-controlled"]
+          },
+          "notes": {"type": "string"},
+          "review": {
+            "type": "object",
+            "required": ["priority", "status", "viewports", "states", "stateCoverage"],
+            "additionalProperties": false,
+            "properties": {
+              "priority": {"type": "string", "enum": ["p0", "p1", "p2"]},
+              "status": {
+                "type": "string",
+                "enum": ["planned", "manual", "captured", "ready", "excluded"]
+              },
+              "viewports": {
+                "type": "array",
+                "items": {"type": "string", "enum": ["desktop", "mobile"]},
+                "uniqueItems": true
+              },
+              "states": {
+                "type": "array",
+                "items": {"type": "string"},
+                "uniqueItems": true
+              },
+              "stateCoverage": {
+                "type": "object",
+                "required": ["storybook", "manual"],
+                "additionalProperties": false,
+                "properties": {
+                  "storybook": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "uniqueItems": true
+                  },
+                  "manual": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "uniqueItems": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

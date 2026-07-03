@@ -8,10 +8,20 @@ import {
 } from "lucide-react";
 import {
   AdminButton,
+  AdminEditorGrid,
+  AdminEditorPanel,
+  AdminMetricCard,
+  AdminMetricGrid,
+  AdminRoadmapList,
+  AdminRoadmapListItem,
+  AdminTableRow,
   AdminTag,
+  AdminToolbar,
+  AdminWorkbenchStack,
   DataTable,
   EmptyState,
   Panel,
+  QualityList,
   RiskBadge,
   SearchField,
   SelectField,
@@ -19,6 +29,8 @@ import {
   TableActionButton,
   TextareaField,
   TextField,
+  AdminRowTitle,
+  AdminTagRow,
 } from "../../../shared/ui/AdminPrimitives";
 import type {
   AdminSafetyTriageDecision,
@@ -31,6 +43,7 @@ import {
   type SafetyDecisionFormState,
   type SafetyDecisionRecord,
   type SafetyQueueKind,
+  type SafetyTriageController,
   type SafetyTriageRow,
   useSafetyTriageController,
 } from "../controllers/useSafetyTriageController";
@@ -50,26 +63,33 @@ export function SafetyTriageScreen({
   onNotice: (message: string | null) => void;
 }) {
   const controller = useSafetyTriageController({onError, onNotice});
+  return <SafetyTriageWorkspace controller={controller} />;
+}
+
+export function SafetyTriageWorkspace({
+  controller,
+}: {
+  controller: SafetyTriageController;
+}) {
   return (
-    <div className="workbench-stack">
-      <section className="metric-grid" aria-label="Safety triage state">
-        <Metric label="Open reports" value={controller.metrics.reports} />
-        <Metric label="Moderation" value={controller.metrics.moderation} />
-        <Metric label="Event reports" value={controller.metrics.eventReports} />
-        <Metric
+    <AdminWorkbenchStack>
+      <AdminMetricGrid ariaLabel="Safety triage state">
+        <AdminMetricCard label="Open reports" value={controller.metrics.reports} />
+        <AdminMetricCard label="Moderation" value={controller.metrics.moderation} />
+        <AdminMetricCard label="Event reports" value={controller.metrics.eventReports} />
+        <AdminMetricCard
           label="High priority"
           tone={controller.metrics.highPriority > 0 ? "attention" : "normal"}
           value={controller.metrics.highPriority}
         />
-      </section>
-
+      </AdminMetricGrid>
       <Panel
-        className="span-2"
+        span={2}
         icon={<ShieldAlert size={18} strokeWidth={1.9} />}
         title="Safety triage"
         action={controller.isLoading ? "Loading" : `${controller.filteredRows.length} shown`}
       >
-        <div className="workbench-toolbar">
+        <AdminToolbar>
           <SearchField
             ariaLabel="Search safety queues"
             icon={<Search size={16} strokeWidth={1.8} />}
@@ -92,22 +112,21 @@ export function SafetyTriageScreen({
           >
             Refresh
           </AdminButton>
-        </div>
+        </AdminToolbar>
         <SafetyTable
           rows={controller.filteredRows}
           selectedTargetPath={controller.selected?.targetPath ?? null}
           onSelect={controller.select}
         />
       </Panel>
-
-      <section className="publishing-editor-grid">
+      <AdminEditorGrid>
         <SafetyDetailPanel
           detail={controller.selectedDetail}
           generatedAt={controller.generatedAt}
           isDetailLoading={controller.isDetailLoading}
           selected={controller.selected}
         />
-        <div className="workbench-stack">
+        <AdminWorkbenchStack>
           <SafetyAssignmentPanel
             assignmentForm={controller.assignmentForm}
             assignmentInFlight={controller.assignmentInFlight}
@@ -131,28 +150,28 @@ export function SafetyTriageScreen({
             title="Action boundary"
             action="status-only"
           >
-            <div className="quality-list">
+            <QualityList>
               <StateRow label="Source" value="adminGetOverview + adminGetSafetyTriageDetails" />
               <StateRow label="Mutations" value="adminAssignSafetyTriageItem, adminDecideSafetyTriageItem" />
               <StateRow label="Scope" value="assignment plus reviewed/dismissed status with required notes" />
               <StateRow label="Read contract" value="assignment, SLA, evidence, next actions" />
               <StateRow label="Not here" value="restrictions, escalation, payment disputes, organizer publishing" />
-            </div>
+            </QualityList>
           </Panel>
           <Panel
             icon={<AlertTriangle size={18} strokeWidth={1.9} />}
             title="Policy checklist"
             action="manual"
           >
-            <div className="roadmap-list">
+            <AdminRoadmapList>
               <ChecklistRow text="Open the source document before resolving." />
               <ChecklistRow text="Confirm reporter, subject, event, and channel context." />
               <ChecklistRow text="Use backend-owned actions only after policy outcome is explicit." />
-            </div>
+            </AdminRoadmapList>
           </Panel>
-        </div>
-      </section>
-    </div>
+        </AdminWorkbenchStack>
+      </AdminEditorGrid>
+    </AdminWorkbenchStack>
   );
 }
 
@@ -181,7 +200,7 @@ function SafetyAssignmentPanel({
       title="Assignment"
       action={selected ? "audited" : "No item"}
     >
-      <div className="quality-list">
+      <QualityList>
         <StateRow
           label="Selected"
           value={selected ? selected.targetPath : "Select a queue row"}
@@ -215,7 +234,7 @@ function SafetyAssignmentPanel({
           {assignmentInFlight ? "Saving" : "Save assignment"}
         </AdminButton>
         {recentAssignments.length ? (
-          <div className="roadmap-list">
+          <AdminRoadmapList>
             {recentAssignments.map((record) => (
               <ChecklistRow
                 key={`${record.targetPath}-${record.assignment.assigneeUid ?? "unassigned"}`}
@@ -225,11 +244,11 @@ function SafetyAssignmentPanel({
                 }
               />
             ))}
-          </div>
+          </AdminRoadmapList>
         ) : (
           <StateRow label="Recent assignments" value="None this session" />
         )}
-      </div>
+      </QualityList>
     </Panel>
   );
 }
@@ -259,7 +278,7 @@ function SafetyDecisionPanel({
       title="Decision"
       action={selected ? "audited" : "No item"}
     >
-      <div className="quality-list">
+      <QualityList>
         <StateRow
           label="Selected"
           value={selected ? selected.targetPath : "Select a queue row"}
@@ -275,7 +294,7 @@ function SafetyDecisionPanel({
           label="Decision check"
           value={decisionValidationIssue ?? "Ready"}
         />
-        <div className="workbench-toolbar">
+        <AdminToolbar>
           <AdminButton
             disabled={isDisabled}
             onClick={() => void onDecision("review")}
@@ -289,20 +308,20 @@ function SafetyDecisionPanel({
           >
             {decisionInFlight === "dismiss" ? "Dismissing" : "Dismiss"}
           </AdminButton>
-        </div>
+        </AdminToolbar>
         {recentDecisions.length ? (
-          <div className="roadmap-list">
+          <AdminRoadmapList>
             {recentDecisions.map((record) => (
               <ChecklistRow
                 key={`${record.targetPath}-${record.status}`}
                 text={`${record.status}: ${record.targetPath}`}
               />
             ))}
-          </div>
+          </AdminRoadmapList>
         ) : (
           <StateRow label="Recent decisions" value="None this session" />
         )}
-      </div>
+      </QualityList>
     </Panel>
   );
 }
@@ -319,7 +338,7 @@ function SafetyTable({
   if (rows.length === 0) {
     return (
       <EmptyState
-        className="workbench-empty"
+        variant="workbench"
         icon={<ShieldCheck size={16} strokeWidth={1.9} />}
       >
         No safety queue rows match this filter.
@@ -327,7 +346,7 @@ function SafetyTable({
     );
   }
   return (
-    <DataTable className="workbench-table">
+    <DataTable variant="workbench">
       <thead>
         <tr>
           <th>Queue item</th>
@@ -340,15 +359,12 @@ function SafetyTable({
       </thead>
       <tbody>
         {rows.map((row) => (
-          <tr
-            className={selectedTargetPath === row.targetPath ? "selected-row" : ""}
-            key={row.id}
-          >
+          <AdminTableRow key={row.id} selected={selectedTargetPath === row.targetPath}>
             <td>
-              <div className="row-title">
+              <AdminRowTitle>
                 <strong>{row.title}</strong>
                 <span>{row.queueLabel} · {row.detail}</span>
-              </div>
+              </AdminRowTitle>
             </td>
             <td>
               <RiskBadge tone={riskTone(row.priority)}>
@@ -363,7 +379,7 @@ function SafetyTable({
                 Review
               </TableActionButton>
             </td>
-          </tr>
+          </AdminTableRow>
         ))}
       </tbody>
     </DataTable>
@@ -382,14 +398,13 @@ function SafetyDetailPanel({
   selected: SafetyTriageRow | null;
 }) {
   return (
-    <Panel
-      className="publishing-editor-panel"
+    <AdminEditorPanel
       icon={<ShieldAlert size={18} strokeWidth={1.9} />}
       title="Triage detail"
       action={selected?.priority ?? "No item"}
     >
       {selected ? (
-        <div className="quality-list">
+        <QualityList>
           <StateRow label="Queue" value={selected.queueLabel} />
           <StateRow label="Target" value={selected.targetPath} />
           <StateRow label="Status" value={selected.status} />
@@ -449,22 +464,22 @@ function SafetyDetailPanel({
           <StateRow label="Created" value={formatDateTime(selected.createdAt)} />
           <StateRow label="Queue generated" value={formatDateTime(generatedAt)} />
           {detail?.nextActions.length ? (
-            <div className="roadmap-list">
+            <AdminRoadmapList>
               {detail.nextActions.map((action) => (
                 <ChecklistRow key={action} text={action} />
               ))}
-            </div>
+            </AdminRoadmapList>
           ) : null}
-        </div>
+        </QualityList>
       ) : (
         <EmptyState
-          className="workbench-empty"
+          variant="workbench"
           icon={<Clock3 size={16} strokeWidth={1.9} />}
         >
           Select a safety queue row to inspect.
         </EmptyState>
       )}
-    </Panel>
+    </AdminEditorPanel>
   );
 }
 
@@ -473,40 +488,40 @@ function PriorHistoryList({detail}: {detail: AdminSafetyTriageDetails}) {
     return "No related safety history found";
   }
   return (
-    <span className="tag-row">
+    <AdminTagRow as="span">
       {detail.priorHistory.map((signal) => (
         <AdminTag key={signal.id} tone="muted">
           {signal.label}: {signal.count}
         </AdminTag>
       ))}
-    </span>
+    </AdminTagRow>
   );
 }
 
 function OutcomeGuidanceList({detail}: {detail: AdminSafetyTriageDetails}) {
   if (detail.outcomeGuidance.length === 0) return "No guidance available";
   return (
-    <div className="roadmap-list">
+    <AdminRoadmapList>
       {detail.outcomeGuidance.map((item) => (
-        <div className="roadmap-list-item" key={item.id}>
+        <AdminRoadmapListItem key={item.id}>
           <ShieldCheck size={15} strokeWidth={1.9} />
           <span>
             <strong>{item.label}</strong> · {formatGuidanceStatus(item.actionStatus)}
             <br />
             {item.detail}
           </span>
-        </div>
+        </AdminRoadmapListItem>
       ))}
-    </div>
+    </AdminRoadmapList>
   );
 }
 
 function ChecklistRow({text}: {text: string}) {
   return (
-    <div className="roadmap-list-item">
+    <AdminRoadmapListItem>
       <ShieldCheck size={15} strokeWidth={1.9} />
       <span>{text}</span>
-    </div>
+    </AdminRoadmapListItem>
   );
 }
 
@@ -530,23 +545,6 @@ function formatGuidanceStatus(
 ): string {
   if (status === "needs_contract") return "needs contract";
   return status;
-}
-
-function Metric({
-  label,
-  tone = "normal",
-  value,
-}: {
-  label: string;
-  tone?: "normal" | "attention";
-  value: number;
-}) {
-  return (
-    <article className={`metric-card ${tone === "attention" ? "attention" : ""}`}>
-      <span>{label}</span>
-      <div className="metric-value">{value}</div>
-    </article>
-  );
 }
 
 function riskTone(priority: SafetyTriageRow["priority"]):

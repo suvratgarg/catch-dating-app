@@ -1,10 +1,13 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
+import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/saved_events_screen.dart';
+import 'package:catch_dating_app/events/presentation/saved_events_state.dart';
+import 'package:catch_dating_app/events/shared/event_tiles/event_tile_data.dart';
 import 'package:catch_dating_app/routing/go_router.dart' as app_router;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,7 +18,83 @@ import '../clubs/clubs_test_helpers.dart' as club_test;
 import 'events_test_helpers.dart';
 
 void main() {
+  group('SavedEventsListState', () {
+    test('orders upcoming saved events before past saved events', () {
+      final now = DateTime(2026, 7, 1, 12);
+      final laterUpcoming = buildEvent(
+        id: 'later-upcoming',
+        startTime: now.add(const Duration(days: 3)),
+      );
+      final nextUpcoming = buildEvent(
+        id: 'next-upcoming',
+        startTime: now.add(const Duration(hours: 6)),
+      );
+      final recentPast = buildEvent(
+        id: 'recent-past',
+        startTime: now.subtract(const Duration(hours: 4)),
+      );
+      final olderPast = buildEvent(
+        id: 'older-past',
+        startTime: now.subtract(const Duration(days: 4)),
+      );
+
+      final state = SavedEventsListState.from([
+        olderPast,
+        laterUpcoming,
+        recentPast,
+        nextUpcoming,
+      ], now: now);
+
+      expect(state.orderedEvents.map((event) => event.id), [
+        'next-upcoming',
+        'later-upcoming',
+        'recent-past',
+        'older-past',
+      ]);
+      expect(state.today, DateUtils.dateOnly(now));
+      expect(state.clubIds, [
+        nextUpcoming.clubId,
+        laterUpcoming.clubId,
+        recentPast.clubId,
+        olderPast.clubId,
+      ]);
+      expect(state.badgeLabelFor(nextUpcoming), 'SAVED');
+      expect(state.badgeLabelFor(recentPast), 'PAST');
+      expect(state.statusFor(nextUpcoming), EventTileStatus.saved);
+      expect(state.statusFor(recentPast), EventTileStatus.past);
+    });
+  });
+
   group('SavedEventsScreen', () {
+    testWidgets('shows loading while the auth session resolves', (
+      tester,
+    ) async {
+      await _pumpSavedEvents(
+        tester,
+        uid: const AsyncLoading<String?>(),
+        savedEvents: const [],
+        child: const SavedEventsScreen(),
+      );
+
+      expect(find.byType(CatchSkeleton), findsWidgets);
+      expect(find.text('No saved events yet'), findsNothing);
+    });
+
+    testWidgets('shows an auth error when the session fails to load', (
+      tester,
+    ) async {
+      await _pumpSavedEvents(
+        tester,
+        uid: AsyncError<String?>(Exception('auth failed'), StackTrace.empty),
+        savedEvents: const [],
+        child: const SavedEventsScreen(),
+      );
+
+      expect(find.text('Sign in problem'), findsOneWidget);
+      expect(find.text('Try again'), findsOneWidget);
+      expect(find.text('No saved events yet'), findsNothing);
+    });
+
     testWidgets('shows an empty state when there are no saved events', (
       tester,
     ) async {
@@ -50,7 +129,7 @@ void main() {
       await _pumpSavedEvents(
         tester,
         savedEvents: [past, future],
-        child: const SavedEventsScreen(),
+        child: SavedEventsScreen(referenceNow: now),
       );
       await tester.pump();
 
@@ -78,6 +157,7 @@ void main() {
           ),
           GoRoute(
             path: app_router.Routes.savedEventDetailScreen.path,
+            name: app_router.Routes.savedEventDetailScreen.name,
             builder: (context, state) => Scaffold(
               body: Text(
                 'Event detail ${state.pathParameters['clubId']}/${state.pathParameters['eventId']}',
@@ -105,6 +185,7 @@ void main() {
 
 Future<void> _pumpSavedEvents(
   WidgetTester tester, {
+  AsyncValue<String?> uid = const AsyncData<String?>('runner-1'),
   required List<Event> savedEvents,
   required Widget child,
 }) async {
@@ -115,7 +196,7 @@ Future<void> _pumpSavedEvents(
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
-        uidProvider.overrideWithValue(const AsyncData<String?>('runner-1')),
+        uidProvider.overrideWithValue(uid),
         clubsRepositoryProvider.overrideWith(
           (ref) =>
               club_test.FakeClubsRepository()

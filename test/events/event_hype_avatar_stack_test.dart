@@ -225,6 +225,7 @@ Future<void> _seedPublicProfile(
         position: 0,
         url: fullUrl,
         storagePath: 'publicProfiles/$uid/photos/photo-0.jpg',
+        now: DateTime(2026),
       ).copyWith(thumbnailUrl: thumbnailUrl).toJson(),
     ],
     'paceMinSecsPerKm': 300,

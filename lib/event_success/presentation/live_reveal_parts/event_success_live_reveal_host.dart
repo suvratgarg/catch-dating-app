@@ -1,6 +1,6 @@
 part of '../event_success_live_reveal_card.dart';
 
-class EventSuccessLiveRevealHostCard extends ConsumerWidget {
+class EventSuccessLiveRevealHostCard extends StatelessWidget {
   const EventSuccessLiveRevealHostCard({
     super.key,
     required this.event,
@@ -10,6 +10,7 @@ class EventSuccessLiveRevealHostCard extends ConsumerWidget {
     required this.preferences,
     this.participantProfiles = const [],
     this.now,
+    this.actionState = const EventSuccessRevealActionState(),
     this.onStartCountdown,
     this.onRevealRound,
     this.onResetReveal,
@@ -25,26 +26,24 @@ class EventSuccessLiveRevealHostCard extends ConsumerWidget {
   /// masked as "Hidden until reveal" until the host releases each round.
   final List<PublicProfile> participantProfiles;
   final DateTime? now;
-  final void Function(int roundIndex, int countdownSeconds)? onStartCountdown;
-  final ValueChanged<int>? onRevealRound;
-  final VoidCallback? onResetReveal;
+  final EventSuccessRevealActionState actionState;
+  final Future<void> Function(int roundIndex, int countdownSeconds)?
+  onStartCountdown;
+  final Future<void> Function(int roundIndex)? onRevealRound;
+  final Future<void> Function()? onResetReveal;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return RevealTicker(
       enabled: now == null && plan.isRevealCountdownRunning(DateTime.now()),
       builder: (context, tickNow) {
         final referenceNow = now ?? tickNow;
-        return _buildCard(context, ref, referenceNow);
+        return _buildCard(context, referenceNow);
       },
     );
   }
 
-  Widget _buildCard(
-    BuildContext context,
-    WidgetRef ref,
-    DateTime referenceNow,
-  ) {
+  Widget _buildCard(BuildContext context, DateTime referenceNow) {
     final t = CatchTokens.of(context);
     final revealSet = _hostRevealSet();
     final assignments = revealSet.assignments;
@@ -75,25 +74,6 @@ class EventSuccessLiveRevealHostCard extends ConsumerWidget {
       roundCount: roundCount,
       remainingSeconds: remainingSeconds,
     );
-    final startMutation = ref.watch(
-      EventSuccessController.startRevealCountdownMutation,
-    );
-    final revealMutation = ref.watch(
-      EventSuccessController.revealRoundMutation,
-    );
-    final resetMutation = ref.watch(EventSuccessController.resetRevealMutation);
-    final hasPendingMutation =
-        startMutation.isPending ||
-        revealMutation.isPending ||
-        resetMutation.isPending;
-    final errorMutation = startMutation.hasError
-        ? startMutation
-        : revealMutation.hasError
-        ? revealMutation
-        : resetMutation.hasError
-        ? resetMutation
-        : null;
-
     return CatchSurface(
       clipBehavior: Clip.antiAlias,
       borderWidth: 0,
@@ -219,11 +199,11 @@ class EventSuccessLiveRevealHostCard extends ConsumerWidget {
                 revealedThrough: plan.revealedThroughRoundIndex(referenceNow),
               ),
           ],
-          if (errorMutation != null) ...[
+          if (actionState.error != null) ...[
             gapH10,
             Text(
               appErrorMessage(
-                (errorMutation as MutationError).error,
+                actionState.error!,
                 context: AppErrorContext.event,
               ),
               style: CatchTextStyles.supporting(context, color: t.surface),
@@ -231,14 +211,13 @@ class EventSuccessLiveRevealHostCard extends ConsumerWidget {
           ],
           gapH16,
           HostRevealActions(
-            eventId: event.id,
             roundCount: roundCount,
             nextRound: nextRound,
             activeRound: activeRound,
             countdownSeconds: countdownSeconds,
             isCountingDown: isCountingDown,
             allRevealed: allRevealed,
-            isLoading: hasPendingMutation,
+            isLoading: actionState.isLoading,
             onStartCountdown: onStartCountdown,
             onRevealRound: onRevealRound,
             onResetReveal: onResetReveal,

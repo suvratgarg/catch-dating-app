@@ -3,12 +3,13 @@ import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/payments/data/host_payment_account_repository.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-final hostPaymentAccountControllerProvider =
-    Provider<HostPaymentAccountActions>(
-      (ref) => HostPaymentAccountController(ref),
-    );
+part 'host_payment_account_controller.g.dart';
+
+@riverpod
+HostPaymentAccountActions hostPaymentAccountController(Ref ref) =>
+    HostPaymentAccountController(ref);
 
 abstract interface class HostPaymentAccountActions {
   Future<void> startOnboarding({

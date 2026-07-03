@@ -7,10 +7,10 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
+import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/create_event_photo_picker.dart';
-import 'package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -185,10 +185,7 @@ class EventDetailsStep extends StatelessWidget {
                     ),
                     if (field.hasError)
                       Padding(
-                        padding: const EdgeInsets.only(
-                          top: CatchSpacing.micro6,
-                          left: CatchSpacing.s1,
-                        ),
+                        padding: CatchInsets.formFieldError,
                         child: Text(
                           field.errorText!,
                           style: CatchTextStyles.supporting(

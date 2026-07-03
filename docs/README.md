@@ -1,7 +1,7 @@
 ---
 doc_id: docs_index
-version: 4.3.0
-updated: 2026-06-30
+version: 4.5.3
+updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
 ---
@@ -36,15 +36,16 @@ section unless the task requires a full historical audit.
 
 | Area | Document | Purpose |
 |---|---|---|
-| Agent execution harness | `../AGENTS.md`, `agent_operating_model.md`, `agent_regression_ledger.json`, `agent_skills/` | Canonical AI-agent entrypoint, execution modes, regression guards, project-local skills, and readiness workflow for deterministic Catch cleanup/refactor/design work. |
-| Flutter app architecture | `app_architecture.md` | Canonical feature/layer/screen/controller/repository/async/error/UI layout/scroll/sizing/widget ownership spec for `lib/**`; read before broad app architecture or code-organization work. Supersedes the deleted controller, UI architecture, and error-handling docs. |
+| Agent execution harness | `../AGENTS.md`, `agent_operating_model.md`, `agent_regression_ledger.json`, `agent_skills/` | Canonical AI-agent entrypoint, execution modes, parent-led Git/worktree delegation protocol, regression guards, project-local skills, readiness workflow, and metrics recording for deterministic Catch cleanup/refactor/design work. |
+| Flutter app architecture | `app_architecture.md`, `audit_registry/architecture_pattern_adoption.json` | Canonical feature/layer/screen/controller/repository/async/error/UI layout/scroll/sizing/widget ownership spec for `lib/**`; read before broad app architecture or code-organization work. Architecture rollouts must prototype one reference implementation, copy the exhibit into `app_architecture.md`, and track adopters/variants/exceptions in the JSON tracker. |
 | Widget inventory and reusable widget guidance | `widget_catalog.md` | Catalog of Flutter widgets, primitive APIs, feature ownership notes, and catalog-update rules for material widget architecture changes. |
 | Visual identity / design language | `design_language.md` | Locked editorial identity — palette (B&W base + activity color), typography (Archivo/platform system/IBM Plex Mono), photo grading, ticket/polaroid metaphors, exploration log, and the UI elevation roadmap. |
 | Design parity state matrix, inventory, and composition migration | `design_parity/` | Feature-by-feature design-spec parity matrix plus Claude Design to Widgetbook inventory and layered composition migration spec connecting screens, states, captures, component contracts, previews, lints, token specimens, and visual-diff gaps. |
 | UI migration prompts | `sizing_migration_prompt.md`, `design_token_migration_prompt.md` | Reusable agent prompts for the mechanical sizing and design-token sweeps; each pairs with its `tool/check_*.sh` scanner as the deterministic definition of done. |
 | Action cardinality | `action_cardinality_policy.md` | Product and engineering rule for whether each action is disallowed, singleton, unbounded, or domain-bounded, plus initial action-surface audit. |
 | Release operations | `release_operations.md` | CI/release gates, Firebase deploy ordering, environment prerequisites, smoke tests, and human release evidence. |
-| Web surface architecture | `web_surface_architecture.md` | Domain/subdomain ownership, Firebase Hosting targets, stack boundaries for marketing/app/admin, marketing CI/CD, and future host-portal placement. |
+| Web surface architecture | `web_surface_architecture.md` | Domain/subdomain ownership, Firebase Hosting targets, stack boundaries for marketing/app/admin, marketing CI/CD, public website route contracts, and future host-portal placement. |
+| Marketing website architecture | `marketing_website_architecture.md` | Code organization, route-first/page-controller-component boundaries, target feature structure, and refactor order for `website/**`. |
 | Admin and analytics dashboard | `admin_analytics_dashboard_spec.md` | Internal admin console and analytics product spec: safety/access ops, cohort retention, host/event analytics, user value, finance, BigQuery marts, and admin API boundaries. |
 | Admin dashboard user stories and component catalogue | `admin_dashboard_user_stories_and_component_catalogue.md` | Tab-by-tab user stories, current workflow fit, top admin-console weaknesses, inspected-file log, and React admin primitive/component migration catalogue. |
 | Marketing app media pipeline | `marketing_app_media_pipeline.md` | Capture manifest, website screenshot sync, host vertical media slots, and drift-check workflow for app-derived marketing assets. Fed by the UI capture pipeline below. |
@@ -74,6 +75,8 @@ folder. Treat these as source-of-truth documents too:
 | Contracts | `../contracts/README.md` | JSON schema and generated contract workflow. |
 | Firebase | `../firebase/README.md` | Environment config, App Check, deploy prerequisites, and Firebase current state. |
 | Functions | `../functions/README.md` | Cloud Functions inventory, security defaults, secrets, and backend runbook. |
+| Marketing website | `../website/README.md` | Public website CI/CD, route-contract gate, analytics setup, and local marketing app workflow. |
+| Shared React web config | `../packages/web-config/README.md` | Shared Vite, TypeScript, generated token CSS, and browser baseline plumbing for web-native surfaces. |
 
 ## Temporary Active Trackers
 

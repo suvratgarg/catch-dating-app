@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/clubs/presentation/club_action_keys.dart';
+import 'package:catch_dating_app/clubs/shared/club_action_keys.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';

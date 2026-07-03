@@ -1,0 +1,10 @@
+{
+  "running": {
+    "paceMinSecsPerKm": 300,
+    "paceMaxSecsPerKm": 420,
+    "preferredDistances": ["fiveK", "tenK"],
+    "runningReasons": ["fitness", "social"],
+    "preferredRunTimes": ["morning", "evening"],
+    "version": 1
+  }
+}

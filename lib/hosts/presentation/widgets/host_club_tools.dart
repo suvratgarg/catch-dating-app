@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/clubs/presentation/club_action_keys.dart';
+import 'package:catch_dating_app/clubs/shared/club_action_keys.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -178,7 +178,12 @@ class HostStatChip extends StatelessWidget {
       backgroundColor: t.surface,
       borderWidth: 0,
       radius: CatchRadius.sm,
-      child: CatchStatColumn(icon: icon, value: value, label: label, center: true),
+      child: CatchStatColumn(
+        icon: icon,
+        value: value,
+        label: label,
+        center: true,
+      ),
     );
   }
 }

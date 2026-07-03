@@ -5,7 +5,9 @@ import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/events/domain/external_event.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'external_event_repository.g.dart';
 
 class ExternalEventDiscoveryQuery {
   ExternalEventDiscoveryQuery._({
@@ -137,13 +139,17 @@ bool _sameActivityKinds(List<ActivityKind> left, List<ActivityKind> right) {
   return true;
 }
 
-final externalEventRepositoryProvider = Provider<ExternalEventRepository>(
-  (ref) => ExternalEventRepository(ref.watch(firebaseFirestoreProvider)),
-);
+@riverpod
+ExternalEventRepository externalEventRepository(Ref ref) {
+  return ExternalEventRepository(ref.watch(firebaseFirestoreProvider));
+}
 
-final discoverableExternalEventsProvider =
-    FutureProvider.family<List<ExternalEvent>, ExternalEventDiscoveryQuery>(
-      (ref, query) => ref
-          .watch(externalEventRepositoryProvider)
-          .fetchDiscoverableExternalEvents(query),
-    );
+@riverpod
+Future<List<ExternalEvent>> discoverableExternalEvents(
+  Ref ref,
+  ExternalEventDiscoveryQuery query,
+) {
+  return ref
+      .watch(externalEventRepositoryProvider)
+      .fetchDiscoverableExternalEvents(query);
+}

@@ -54,7 +54,7 @@ class CatchJourneySteps extends StatelessWidget {
                   child: Column(
                     children: [
                       const SizedBox(height: CatchSpacing.micro3),
-                      _buildJourneyNode(context, accentColor),
+                      CatchJourneyStepNode(accent: accentColor),
                       if (i < steps.length - 1)
                         Expanded(
                           child: Container(
@@ -76,13 +76,13 @@ class CatchJourneySteps extends StatelessWidget {
                       children: [
                         Text(
                           steps[i].title,
-                          style: CatchTextStyles.titleS(context),
+                          style: CatchTextStyles.fieldRowTitle(context),
                         ),
                         if (steps[i].body != null) ...[
                           const SizedBox(height: CatchSpacing.micro3),
                           Text(
                             steps[i].body!,
-                            style: CatchTextStyles.bodyS(context),
+                            style: CatchTextStyles.supporting(context),
                           ),
                         ],
                       ],
@@ -97,15 +97,25 @@ class CatchJourneySteps extends StatelessWidget {
   }
 }
 
-Widget _buildJourneyNode(BuildContext context, Color accent) {
-  final t = CatchTokens.of(context);
-  return Container(
-    width: CatchLayout.journeyStepsNodeExtent,
-    height: CatchLayout.journeyStepsNodeExtent,
-    decoration: BoxDecoration(
-      shape: BoxShape.circle,
-      color: t.bg,
-      border: Border.all(color: accent, width: CatchStroke.clubMemberSeal),
-    ),
-  );
+class CatchJourneyStepNode extends StatelessWidget {
+  const CatchJourneyStepNode({super.key, this.accent});
+
+  final Color? accent;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Container(
+      width: CatchLayout.journeyStepsNodeExtent,
+      height: CatchLayout.journeyStepsNodeExtent,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: t.bg,
+        border: Border.all(
+          color: accent ?? t.primary,
+          width: CatchStroke.clubMemberSeal,
+        ),
+      ),
+    );
+  }
 }

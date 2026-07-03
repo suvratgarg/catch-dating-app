@@ -25,13 +25,35 @@ import type {
 } from "../../../shared/types/adminTypes";
 import {
   AdminButton,
+  AdminChecklistStack,
+  AdminDetailScreenStack,
+  AdminDiffList,
+  AdminDirectoryScreenStack,
+  AdminDiffRow,
+  AdminEditorGrid,
+  AdminEditorPanel,
+  AdminEditorSection,
+  AdminFieldGrid,
+  AdminForm,
   AdminLinkButton,
+  AdminMetricCard,
+  AdminMetricGrid,
+  AdminMutedCell,
+  AdminPublishingLoadbar,
+  AdminRoadmapList,
+  AdminRoadmapListItem,
+  AdminStatusGrid,
+  AdminSurfacePreview,
+  AdminTableRow,
   AdminTag,
+  AdminToolbar,
+  AdminWorkbenchStack,
   CheckboxField,
   DataTable,
   EmptyState,
   PageHeader,
   Panel,
+  QualityList,
   SearchField,
   SegmentedControl,
   SelectField,
@@ -39,11 +61,14 @@ import {
   TableActionButton,
   TextareaField,
   TextField,
+  AdminRowTitle,
+  AdminTagRow,
 } from "../../../shared/ui/AdminPrimitives";
 import {
   countBlockingIssues,
   countDiffRows,
   organizerNeedsPublish,
+  type OrganizerPublishingController,
   type OrganizerPublishingFilter,
   useOrganizerPublishingController,
 } from "../controllers/useOrganizerPublishingController";
@@ -53,10 +78,7 @@ import type {
   OrganizerValidationIssue,
   PublishChecklistState,
 } from "../controllers/organizerPublishingHelpers";
-
-type OrganizerPublishingController = ReturnType<
-  typeof useOrganizerPublishingController
->;
+import {useAdminFeedback} from "../../../shared/feedback/AdminFeedbackContext";
 
 const defaultPublicSiteOrigin = "https://catchdates.com";
 const publicSiteOrigin = String(
@@ -64,13 +86,30 @@ const publicSiteOrigin = String(
 ).replace(/\/+$/u, "");
 
 export function OrganizerPublishingScreen({
-  onError,
-  onNotice,
+  selectedClubId,
+  onBackToList,
+  onSelectClubId,
 }: {
-  onError: (message: string | null) => void;
-  onNotice: (message: string | null) => void;
+  selectedClubId?: string | null;
+  onBackToList?: () => void;
+  onSelectClubId?: (clubId: string) => void;
 }) {
-  const controller = useOrganizerPublishingController({onError, onNotice});
+  const {setError: onError, setNotice: onNotice} = useAdminFeedback();
+  const controller = useOrganizerPublishingController({
+    onBackToList,
+    onError,
+    onNotice,
+    onSelectClubId,
+    selectedClubId,
+  });
+  return <OrganizerPublishingWorkspace controller={controller} />;
+}
+
+export function OrganizerPublishingWorkspace({
+  controller,
+}: {
+  controller: OrganizerPublishingController;
+}) {
   const needsPublishCount = controller.rows.filter(organizerNeedsPublish).length;
   const publishedCount = controller.rows.filter((row) =>
     row.publishStatus === "published"
@@ -112,30 +151,30 @@ function OrganizerDirectoryView({
   searchIssueCount: number;
 }) {
   return (
-    <div className="workbench-stack admin-directory-screen">
+    <AdminDirectoryScreenStack>
       <PageHeader eyebrow="Organizers" title="Canonical Organizer Directory" />
-      <section className="metric-grid" aria-label="Organizer publishing state">
-        <Metric label="Canonical organizers" value={controller.rows.length} />
-        <Metric
+      <AdminMetricGrid ariaLabel="Organizer publishing state">
+        <AdminMetricCard label="Canonical organizers" value={controller.rows.length} />
+        <AdminMetricCard
           label="Needs review work"
           tone={needsPublishCount > 0 ? "attention" : "normal"}
           value={needsPublishCount}
         />
-        <Metric label="Published" value={publishedCount} />
-        <Metric
+        <AdminMetricCard label="Published" value={publishedCount} />
+        <AdminMetricCard
           label="Route issues"
           tone={routeIssueCount > 0 ? "attention" : "normal"}
           value={routeIssueCount}
         />
-        <Metric
+        <AdminMetricCard
           label="Search issues"
           tone={searchIssueCount > 0 ? "attention" : "normal"}
           value={searchIssueCount}
         />
-      </section>
+      </AdminMetricGrid>
 
       <OrganizerDirectoryPanel controller={controller} />
-    </div>
+    </AdminDirectoryScreenStack>
   );
 }
 
@@ -150,7 +189,7 @@ function OrganizerDetailView({
     controller.clubId ||
     "Organizer";
   return (
-    <div className="workbench-stack admin-detail-screen">
+    <AdminDetailScreenStack>
       <PageHeader
         actions={
           <AdminButton
@@ -186,7 +225,7 @@ function OrganizerDetailView({
       <OrganizerPublishingContractPanel
         generatedAt={controller.listGeneratedAt}
       />
-    </div>
+    </AdminDetailScreenStack>
   );
 }
 
@@ -197,7 +236,7 @@ function OrganizerDirectoryPanel({
 }) {
   return (
     <Panel
-      className="span-2"
+      span={2}
       icon={<Users size={18} strokeWidth={1.9} />}
       title="Canonical organizer directory"
       action={
@@ -206,7 +245,7 @@ function OrganizerDirectoryPanel({
           `${controller.filteredRows.length} shown`
       }
     >
-      <div className="workbench-toolbar">
+      <AdminToolbar>
         <SegmentedControl<OrganizerPublishingFilter>
           ariaLabel="Organizer filters"
           options={[
@@ -235,7 +274,7 @@ function OrganizerDirectoryPanel({
         >
           Refresh
         </AdminButton>
-      </div>
+      </AdminToolbar>
       <OrganizerDirectoryTable
         rows={controller.filteredRows}
         selectedClubId={controller.club?.clubId ?? controller.clubId}
@@ -254,12 +293,12 @@ function OrganizerDetailSummary({
   const form = controller.form;
   return (
     <Panel
-      className="span-2"
+      span={2}
       icon={<Users size={18} strokeWidth={1.9} />}
       title="Profile status"
       action={club?.publicPage.publishStatus ?? "Not loaded"}
     >
-      <div className="admin-status-grid">
+      <AdminStatusGrid>
         <StateRow label="Document" value={club?.clubId ?? controller.clubId} />
         <StateRow label="City" value={form?.cityName || club?.cityName} />
         <StateRow
@@ -280,7 +319,7 @@ function OrganizerDetailSummary({
           label="Changes"
           value={`${controller.diffRows.length} pending`}
         />
-      </div>
+      </AdminStatusGrid>
     </Panel>
   );
 }
@@ -296,7 +335,7 @@ function OrganizerPublishingContractPanel({
       title="Publishing contract"
       action="clubs"
     >
-      <div className="quality-list">
+      <QualityList>
         <StateRow label="Source of truth" value="Cloud Firestore clubs/{id}" />
         <StateRow
           label="Search/list"
@@ -318,7 +357,7 @@ function OrganizerPublishingContractPanel({
           label="Action cardinality"
           value="One publish state per organizer document"
         />
-      </div>
+      </QualityList>
     </Panel>
   );
 }
@@ -335,7 +374,7 @@ function OrganizerDirectoryTable({
   if (rows.length === 0) {
     return (
       <EmptyState
-        className="workbench-empty"
+        variant="workbench"
         icon={<FolderSearch size={16} strokeWidth={1.9} />}
       >
         No canonical organizers match this filter.
@@ -343,7 +382,7 @@ function OrganizerDirectoryTable({
     );
   }
   return (
-    <DataTable className="workbench-table">
+    <DataTable variant="workbench">
       <thead>
         <tr>
           <th>Organizer</th>
@@ -356,36 +395,33 @@ function OrganizerDirectoryTable({
       </thead>
       <tbody>
         {rows.map((row) => (
-          <tr
-            className={selectedClubId === row.clubId ? "selected-row" : ""}
-            key={row.clubId}
-          >
+          <AdminTableRow key={row.clubId} selected={selectedClubId === row.clubId}>
             <td>
-              <div className="row-title">
+              <AdminRowTitle>
                 <strong>{row.name}</strong>
                 <span>{row.clubId}</span>
-              </div>
+              </AdminRowTitle>
             </td>
             <td>
-              <div className="row-title compact">
+              <AdminRowTitle compact>
                 <span>{row.cityName ?? "Unknown city"}</span>
                 <span>{row.citySlug ?? "No city slug"}</span>
-              </div>
+              </AdminRowTitle>
             </td>
             <td>
-              <div className="row-title compact">
+              <AdminRowTitle compact>
                 <span>{row.canonicalPath ?? "No public path"}</span>
                 <span>{row.publishStatus ?? "no status"} / {row.indexStatus ?? "no index"}</span>
-              </div>
+              </AdminRowTitle>
             </td>
             <td>
-              <div className="tag-row">
+              <AdminTagRow>
                 <AdminTag tone="muted">{row.appVisibility ?? "unset"}</AdminTag>
                 <AdminTag tone="muted">{row.claimState ?? "no claim"}</AdminTag>
-              </div>
+              </AdminTagRow>
             </td>
             <td>
-              <div className="tag-row">
+              <AdminTagRow>
                 <AdminTag tone={row.routeStatus === "valid" ? "neutral" : "muted"}>
                   {row.routeStatus}
                 </AdminTag>
@@ -430,14 +466,14 @@ function OrganizerDirectoryTable({
                 <AdminTag tone="muted">
                   {organizerNeedsPublish(row) ? "needs work" : "ready"}
                 </AdminTag>
-              </div>
+              </AdminTagRow>
             </td>
             <td>
               <TableActionButton onClick={() => onSelect(row.clubId)}>
                 {selectedClubId === row.clubId ? "Selected" : "Open"}
               </TableActionButton>
             </td>
-          </tr>
+          </AdminTableRow>
         ))}
       </tbody>
     </DataTable>
@@ -506,14 +542,14 @@ function OrganizerEditor({
     !isSaving &&
     !isPublishing;
   return (
-    <section className="publishing-editor-grid">
-      <Panel
-        className="span-2 publishing-editor-panel"
+    <AdminEditorGrid>
+      <AdminEditorPanel
+        span={2}
         icon={<Settings2 size={18} strokeWidth={1.9} />}
         title="Canonical publisher"
         action={club?.clubId ?? "No organizer loaded"}
       >
-        <div className="publishing-loadbar">
+        <AdminPublishingLoadbar>
           <TextField
             aria-label="Organizer document id"
             label="Document ID"
@@ -543,13 +579,13 @@ function OrganizerEditor({
           >
             {isPublishing ? "Publishing" : "Save + publish"}
           </AdminButton>
-        </div>
+        </AdminPublishingLoadbar>
 
         {form ? (
-          <form className="publishing-form">
-            <fieldset className="editor-section">
+          <AdminForm variant="publishing">
+            <AdminEditorSection>
               <legend>Identity</legend>
-              <div className="form-grid two">
+              <AdminFieldGrid columns={2}>
                 <TextField
                   label="Name"
                   onChange={(value) => update("name", value)}
@@ -578,14 +614,14 @@ function OrganizerEditor({
                   onChange={(value) => update("area", value)}
                   value={form.area}
                 />
-              </div>
+              </AdminFieldGrid>
               <TextareaField
                 label="Description"
                 onChange={(value) => update("description", value)}
                 rows={4}
                 value={form.description}
               />
-              <div className="form-grid two">
+              <AdminFieldGrid columns={2}>
                 <TextareaField
                   label="Tags"
                   onChange={(value) => update("tagsText", value)}
@@ -598,12 +634,12 @@ function OrganizerEditor({
                   rows={4}
                   value={form.entitySubtypesText}
                 />
-              </div>
-            </fieldset>
+              </AdminFieldGrid>
+            </AdminEditorSection>
 
-            <fieldset className="editor-section">
+            <AdminEditorSection>
               <legend>Location And Contact</legend>
-              <div className="form-grid three">
+              <AdminFieldGrid columns={3}>
                 <TextField
                   label="Location slug"
                   onChange={(value) => update("location", value)}
@@ -651,12 +687,12 @@ function OrganizerEditor({
                   onChange={(value) => update("phoneNumber", value)}
                   value={form.phoneNumber}
                 />
-              </div>
-            </fieldset>
+              </AdminFieldGrid>
+            </AdminEditorSection>
 
-            <fieldset className="editor-section">
+            <AdminEditorSection>
               <legend>Public Page</legend>
-              <div className="form-grid two">
+              <AdminFieldGrid columns={2}>
                 <TextField
                   label="Slug"
                   onChange={(value) => update("publicPageSlug", value)}
@@ -699,10 +735,10 @@ function OrganizerEditor({
                   onChange={(value) => update("seoDescription", value)}
                   value={form.seoDescription}
                 />
-              </div>
-            </fieldset>
+              </AdminFieldGrid>
+            </AdminEditorSection>
 
-            <fieldset className="editor-section">
+            <AdminEditorSection>
               <legend>Listing Copy</legend>
               <TextField
                 label="Headline"
@@ -721,7 +757,7 @@ function OrganizerEditor({
                 rows={4}
                 value={form.sourceSummary}
               />
-              <div className="form-grid three">
+              <AdminFieldGrid columns={3}>
                 <TextareaField
                   label="Formats"
                   onChange={(value) => update("formatsText", value)}
@@ -740,12 +776,12 @@ function OrganizerEditor({
                   rows={5}
                   value={form.missingEvidenceText}
                 />
-              </div>
-            </fieldset>
+              </AdminFieldGrid>
+            </AdminEditorSection>
 
-            <fieldset className="editor-section">
+            <AdminEditorSection>
               <legend>Review State</legend>
-              <div className="form-grid three">
+              <AdminFieldGrid columns={3}>
                 <SelectField
                   label="Source confidence"
                   onChange={(value) =>
@@ -765,18 +801,18 @@ function OrganizerEditor({
                   onChange={(value) => update("reviewNote", value)}
                   value={form.reviewNote}
                 />
-              </div>
-            </fieldset>
-          </form>
+              </AdminFieldGrid>
+            </AdminEditorSection>
+          </AdminForm>
         ) : (
           <EmptyState
-            className="empty-editor"
+            variant="editor"
             icon={<Clock3 size={16} strokeWidth={1.9} />}
           >
             Load an organizer document to review canonical fields.
           </EmptyState>
         )}
-      </Panel>
+      </AdminEditorPanel>
 
       <PublishingSidePanel
         checklist={checklist}
@@ -787,7 +823,7 @@ function OrganizerEditor({
         publishingIssues={publishingIssues}
         validationIssues={validationIssues}
       />
-    </section>
+    </AdminEditorGrid>
   );
 }
 
@@ -809,7 +845,7 @@ function PublishingSidePanel({
   validationIssues: OrganizerValidationIssue[];
 }) {
   return (
-    <div className="workbench-stack">
+    <AdminWorkbenchStack>
       <Panel
         icon={<FileWarning size={18} strokeWidth={1.9} />}
         title="Save checks"
@@ -817,13 +853,12 @@ function PublishingSidePanel({
       >
         <IssueList issues={validationIssues} />
       </Panel>
-
       <Panel
         icon={<CheckCircle2 size={18} strokeWidth={1.9} />}
         title="Publish checklist"
         action={`${countBlockingIssues(publishingIssues)} blockers`}
       >
-        <div className="checklist-stack">
+        <AdminChecklistStack>
           {([
             ["sourceEvidenceVerified", "Source evidence verified"],
             ["mediaRightsVerified", "Media rights verified"],
@@ -838,9 +873,8 @@ function PublishingSidePanel({
                 onChecklistChange({...checklist, [key]: checked})}
             />
           ))}
-        </div>
+        </AdminChecklistStack>
       </Panel>
-
       <Panel
         icon={<FileWarning size={18} strokeWidth={1.9} />}
         title="Publishing checks"
@@ -848,7 +882,6 @@ function PublishingSidePanel({
       >
         <IssueList issues={publishingIssues} />
       </Panel>
-
       <Panel
         icon={<Database size={18} strokeWidth={1.9} />}
         title="Before / after diff"
@@ -856,7 +889,6 @@ function PublishingSidePanel({
       >
         <DiffList rows={diffRows} />
       </Panel>
-
       <Panel
         icon={<Smartphone size={18} strokeWidth={1.9} />}
         title="App listing preview"
@@ -870,14 +902,13 @@ function PublishingSidePanel({
           </EmptyState>
         )}
       </Panel>
-
       <Panel
         icon={<ExternalLink size={18} strokeWidth={1.9} />}
         title="Public page preview"
         action={club?.publicPage.indexStatus ?? "No page"}
       >
         {form ? (
-          <div className="quality-list">
+          <QualityList>
             <StateRow label="Claim" value={club?.claimState} />
             <StateRow label="Ownership" value={club?.ownershipState} />
             <StateRow label="Canonical" value={form.canonicalPath} />
@@ -891,14 +922,14 @@ function PublishingSidePanel({
                 Public preview
               </AdminLinkButton>
             )}
-          </div>
+          </QualityList>
         ) : (
           <EmptyState icon={<Clock3 size={16} strokeWidth={1.9} />}>
             No organizer loaded
           </EmptyState>
         )}
       </Panel>
-    </div>
+    </AdminWorkbenchStack>
   );
 }
 
@@ -924,7 +955,7 @@ function AppListingPreview({
     ...splitPreviewList(form.formatsText),
   ].slice(0, 6);
   return (
-    <div className="quality-list">
+    <QualityList>
       <StateRow label="Collection" value={`clubs/${club?.clubId ?? ""}`} />
       <StateRow label="App visibility" value={form.appVisibility} />
       <StateRow label="Image" value={form.imageUrl ? "imageUrl set" : "missing"} />
@@ -932,7 +963,7 @@ function AppListingPreview({
         label="Logo"
         value={form.profileImageUrl ? "profileImageUrl set" : "missing"}
       />
-      <div className="surface-preview">
+      <AdminSurfacePreview>
         <strong>{form.name || "Untitled organizer"}</strong>
         <span>
           {[form.displayCategory, location || form.location]
@@ -941,14 +972,14 @@ function AppListingPreview({
         </span>
         <span>{form.headline || form.summary || form.description}</span>
         {tags.length > 0 && (
-          <div className="tag-row">
+          <AdminTagRow>
             {tags.map((tag) => (
               <AdminTag key={tag} tone="muted">{tag}</AdminTag>
             ))}
-          </div>
+          </AdminTagRow>
         )}
-      </div>
-    </div>
+      </AdminSurfacePreview>
+    </QualityList>
   );
 }
 
@@ -962,63 +993,47 @@ function splitPreviewList(value: string): string[] {
 function IssueList({issues}: {issues: OrganizerValidationIssue[]}) {
   if (issues.length === 0) {
     return (
-      <div className="quality-list">
+      <QualityList>
         <StateRow label="Ready" value="No validation blockers" />
-      </div>
+      </QualityList>
     );
   }
   return (
-    <div className="roadmap-list">
+    <AdminRoadmapList>
       {issues.map((issue) => (
-        <div className="roadmap-list-item" key={issue.id}>
+        <AdminRoadmapListItem key={issue.id}>
           <FileWarning size={15} strokeWidth={1.9} />
           <span>
             <strong>{issue.label}:</strong> {issue.detail}
           </span>
-        </div>
+        </AdminRoadmapListItem>
       ))}
-    </div>
+    </AdminRoadmapList>
   );
 }
 
 function DiffList({rows}: {rows: OrganizerDiffRow[]}) {
   if (rows.length === 0) {
     return (
-      <div className="quality-list">
+      <QualityList>
         <StateRow label="Changes" value="No unsaved changes" />
-      </div>
+      </QualityList>
     );
   }
   return (
-    <div className="diff-list">
+    <AdminDiffList>
       {rows.slice(0, 12).map((row) => (
-        <div className="diff-row" key={row.field}>
-          <strong>{row.field}</strong>
-          <span>{row.before}</span>
-          <span>{row.after}</span>
-        </div>
+        <AdminDiffRow
+          key={row.field}
+          field={row.field}
+          before={row.before}
+          after={row.after}
+        />
       ))}
       {rows.length > 12 && (
-        <span className="muted-cell">{rows.length - 12} more changes</span>
+        <AdminMutedCell>{rows.length - 12} more changes</AdminMutedCell>
       )}
-    </div>
-  );
-}
-
-function Metric({
-  label,
-  tone = "normal",
-  value,
-}: {
-  label: string;
-  tone?: "normal" | "attention";
-  value: number;
-}) {
-  return (
-    <article className={`metric-card ${tone === "attention" ? "attention" : ""}`}>
-      <span>{label}</span>
-      <div className="metric-value">{value}</div>
-    </article>
+    </AdminDiffList>
   );
 }
 

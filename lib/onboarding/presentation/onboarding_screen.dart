@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
+import 'package:catch_dating_app/onboarding/presentation/onboarding_flow_state.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/gender_interest_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/instagram_page.dart';
@@ -72,21 +73,24 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     final data = ref.watch(onboardingControllerProvider);
-    final minStep = widget.runPreferencesOnly
-        ? OnboardingStep.runningPrefs
-        : widget.profileCompletionOnly &&
-              data.step.index >= OnboardingStep.photos.index
-        ? OnboardingStep.photos
-        : data.step.minimumBackStep;
-    final previousStep = data.step.previousWithin(minStep);
+    final flowState = OnboardingFlowState.from(
+      data: data,
+      profileCompletionOnly: widget.profileCompletionOnly,
+      runPreferencesOnly: widget.runPreferencesOnly,
+    );
     final currentStep = KeyedSubtree(
-      key: ValueKey(data.step),
-      child: _buildStep(data.step),
+      key: ValueKey(flowState.step),
+      child: OnboardingStepContent(
+        step: flowState.step,
+        profileCompletionOnly: widget.profileCompletionOnly,
+        runPreferencesOnly: widget.runPreferencesOnly,
+      ),
     );
 
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (_, _) {
+        final previousStep = flowState.previousStep;
         if (previousStep != null) {
           ref
               .read(onboardingControllerProvider.notifier)
@@ -94,21 +98,19 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         }
       },
       child: Scaffold(
-        body: data.step == OnboardingStep.welcome
+        body: flowState.showsWelcome
             ? currentStep
             : SafeArea(
                 child: Column(
                   children: [
-                    if (data.step.showsProgress) ...[
-                      _OnboardingTopBar(
-                        step: data.step,
-                        profileCompletionOnly: widget.profileCompletionOnly,
-                        runPreferencesOnly: widget.runPreferencesOnly,
-                        onBack: previousStep == null
+                    if (flowState.topBar case final topBarState?) ...[
+                      OnboardingTopBar(
+                        state: topBarState,
+                        onBack: flowState.previousStep == null
                             ? null
                             : () => ref
                                   .read(onboardingControllerProvider.notifier)
-                                  .goToStep(previousStep),
+                                  .goToStep(flowState.previousStep!),
                       ),
                       gapH8,
                     ],
@@ -119,63 +121,59 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       ),
     );
   }
+}
 
-  Widget _buildStep(OnboardingStep step) {
+class OnboardingStepContent extends StatelessWidget {
+  const OnboardingStepContent({
+    super.key,
+    required this.step,
+    required this.profileCompletionOnly,
+    required this.runPreferencesOnly,
+  });
+
+  final OnboardingStep step;
+  final bool profileCompletionOnly;
+  final bool runPreferencesOnly;
+
+  @override
+  Widget build(BuildContext context) {
     return switch (step) {
       OnboardingStep.welcome => const WelcomePage(),
       OnboardingStep.nameDob => const NameDobPage(),
       OnboardingStep.genderInterest => const GenderInterestPage(),
       OnboardingStep.instagram => const InstagramPage(),
       OnboardingStep.photos => PhotosPage(
-        profileCompletionOnly: widget.profileCompletionOnly,
+        profileCompletionOnly: profileCompletionOnly,
       ),
       OnboardingStep.prompts => ProfilePromptsPage(
-        profileCompletionOnly: widget.profileCompletionOnly,
+        profileCompletionOnly: profileCompletionOnly,
       ),
       OnboardingStep.runningPrefs => RunningPrefsPage(
-        profileCompletionOnly: widget.profileCompletionOnly,
-        runPreferencesOnly: widget.runPreferencesOnly,
+        profileCompletionOnly: profileCompletionOnly,
+        runPreferencesOnly: runPreferencesOnly,
       ),
     };
   }
 }
 
-class _OnboardingTopBar extends StatelessWidget {
-  const _OnboardingTopBar({
-    required this.step,
-    required this.profileCompletionOnly,
-    required this.runPreferencesOnly,
+class OnboardingTopBar extends StatelessWidget {
+  const OnboardingTopBar({
+    super.key,
+    required this.state,
     required this.onBack,
   });
 
-  final OnboardingStep step;
-  final bool profileCompletionOnly;
-  final bool runPreferencesOnly;
+  final OnboardingTopBarState state;
   final VoidCallback? onBack;
 
   @override
   Widget build(BuildContext context) {
-    final socialOnly =
-        profileCompletionOnly && step.index >= OnboardingStep.photos.index;
-    final progressStep = runPreferencesOnly
-        ? 0
-        : socialOnly
-        ? step.index - OnboardingStep.photos.index
-        : step == OnboardingStep.genderInterest
-        ? 1
-        : 0;
-    final progressTotal = runPreferencesOnly ? 1 : 2;
-    final copy = step.headerCopy(
-      profileCompletionOnly: profileCompletionOnly,
-      runPreferencesOnly: runPreferencesOnly,
-    );
-
     return CatchStepHeader(
-      title: copy.title,
-      subtitle: copy.subtitle,
-      step: progressStep + 1,
-      total: progressTotal,
-      onBack: onBack,
+      title: state.title,
+      subtitle: state.subtitle,
+      step: state.stepNumber,
+      total: state.stepTotal,
+      onBack: state.canGoBack ? onBack : null,
     );
   }
 }

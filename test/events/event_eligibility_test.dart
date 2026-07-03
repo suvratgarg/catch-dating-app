@@ -6,6 +6,8 @@ import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  final referenceNow = DateTime(2026, 1, 1, 8);
+
   // ── helpers ────────────────────────────────────────────────────────────────
 
   /// A future event with capacity, no sign-ups, no constraints — always Eligible.
@@ -57,9 +59,12 @@ void main() {
     () {
       final user = buildUser();
       final event = buildEvent(
-        startTime: DateTime.now().subtract(const Duration(hours: 2)),
+        startTime: referenceNow.subtract(const Duration(hours: 2)),
       );
-      expect(EventService.eligibilityFor(event, user), isA<EventPast>());
+      expect(
+        EventService.eligibilityFor(event, user, now: referenceNow),
+        isA<EventPast>(),
+      );
     },
   );
 
@@ -70,7 +75,11 @@ void main() {
 
     expect(EventService.eligibilityFor(event, user, now: now), isA<Eligible>());
     expect(
-      EventService.eligibilityFor(event, user, now: now.add(const Duration(hours: 1))),
+      EventService.eligibilityFor(
+        event,
+        user,
+        now: now.add(const Duration(hours: 1)),
+      ),
       isA<EventPast>(),
     );
   });
@@ -81,7 +90,7 @@ void main() {
     // User born 5 years ago → age ~5; minAge = 18
     final user = buildUser(birthYear: DateTime.now().year - 5);
     final event = buildEvent(constraints: const EventConstraints(minAge: 18));
-    final result = EventService.eligibilityFor(event, user);
+    final result = EventService.eligibilityFor(event, user, now: referenceNow);
     expect(result, isA<AgeTooYoung>());
     expect((result as AgeTooYoung).minAge, 18);
   });
@@ -92,7 +101,7 @@ void main() {
     // User born 60 years ago → age ~60; maxAge = 40
     final user = buildUser(birthYear: DateTime.now().year - 60);
     final event = buildEvent(constraints: const EventConstraints(maxAge: 40));
-    final result = EventService.eligibilityFor(event, user);
+    final result = EventService.eligibilityFor(event, user, now: referenceNow);
     expect(result, isA<AgeTooOld>());
     expect((result as AgeTooOld).maxAge, 40);
   });
@@ -107,7 +116,10 @@ void main() {
         constraints: const EventConstraints(maxMen: 2),
         genderCounts: {'man': 2}, // at cap
       );
-      expect(EventService.eligibilityFor(event, user), isA<EventFull>());
+      expect(
+        EventService.eligibilityFor(event, user, now: referenceNow),
+        isA<EventFull>(),
+      );
     },
   );
 
@@ -117,7 +129,10 @@ void main() {
       constraints: const EventConstraints(maxMen: 5),
       genderCounts: {'man': 4},
     );
-    expect(EventService.eligibilityFor(event, user), isA<Eligible>());
+    expect(
+      EventService.eligibilityFor(event, user, now: referenceNow),
+      isA<Eligible>(),
+    );
   });
 
   // ── #18: EventFull ──────────────────────────────────────────────────────────
@@ -127,7 +142,10 @@ void main() {
     () {
       final user = buildUser();
       final event = buildEvent(capacityLimit: 2, bookedCount: 2);
-      expect(EventService.eligibilityFor(event, user), isA<EventFull>());
+      expect(
+        EventService.eligibilityFor(event, user, now: referenceNow),
+        isA<EventFull>(),
+      );
     },
   );
 
@@ -139,7 +157,10 @@ void main() {
       final user = buildUser();
       final event =
           buildEvent(); // all defaults: future, 20 capacity, 0 sign-ups
-      expect(EventService.eligibilityFor(event, user), isA<Eligible>());
+      expect(
+        EventService.eligibilityFor(event, user, now: referenceNow),
+        isA<Eligible>(),
+      );
     },
   );
 
@@ -149,21 +170,24 @@ void main() {
     test('EventPast → EventSignUpStatus.past', () {
       final user = buildUser();
       final event = buildEvent(
-        startTime: DateTime.now().subtract(const Duration(days: 1)),
+        startTime: referenceNow.subtract(const Duration(days: 1)),
       );
-      expect(event.statusFor(user), EventSignUpStatus.past);
+      expect(event.statusFor(user, now: referenceNow), EventSignUpStatus.past);
     });
 
     test('EventFull → EventSignUpStatus.full', () {
       final user = buildUser();
       final event = buildEvent(capacityLimit: 1, bookedCount: 1);
-      expect(event.statusFor(user), EventSignUpStatus.full);
+      expect(event.statusFor(user, now: referenceNow), EventSignUpStatus.full);
     });
 
     test('Eligible → EventSignUpStatus.eligible', () {
       final user = buildUser();
       final event = buildEvent();
-      expect(event.statusFor(user), EventSignUpStatus.eligible);
+      expect(
+        event.statusFor(user, now: referenceNow),
+        EventSignUpStatus.eligible,
+      );
     });
 
     test('Waitlistable cohort cap → EventSignUpStatus.full', () {
@@ -172,7 +196,7 @@ void main() {
         constraints: const EventConstraints(maxMen: 1),
         genderCounts: {'man': 1},
       );
-      expect(event.statusFor(user), EventSignUpStatus.full);
+      expect(event.statusFor(user, now: referenceNow), EventSignUpStatus.full);
     });
   });
 }

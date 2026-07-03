@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -22,8 +23,10 @@ import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_schedule_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_success_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
 import 'package:catch_dating_app/locations/data/places_repository.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
@@ -56,6 +59,54 @@ void main() {
 
       expect(find.text('Required'), findsOneWidget);
       expect(find.text('Select a pace'), findsOneWidget);
+    });
+
+    testWidgets('route blocks users outside the club host team', (
+      tester,
+    ) async {
+      await pumpEventsTestApp(
+        tester,
+        HostCreateEventRouteScreen(clubId: 'club-1', initialClub: buildClub()),
+      );
+      await tester.pump();
+
+      expect(find.text('Host access required'), findsOneWidget);
+      expect(
+        find.text(
+          "Only this club's host team can create events for this club.",
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('Event basics'), findsNothing);
+    });
+
+    testWidgets('route hydrates wizard from initial club extra', (
+      tester,
+    ) async {
+      final initialClub = buildClub(
+        id: 'club-extra',
+        name: 'Extra Hydration Club',
+      );
+
+      await pumpEventsTestApp(
+        tester,
+        HostCreateEventRouteScreen(
+          clubId: initialClub.id,
+          initialClub: initialClub,
+        ),
+        overrides: [
+          fetchClubProvider(
+            initialClub.id,
+          ).overrideWithValue(const AsyncLoading<Club?>()),
+        ],
+        signedInUid: 'host-1',
+      );
+      await _pumpTestAnimation(tester);
+
+      expect(find.text('Event basics'), findsWidgets);
+      expect(find.text('Extra Hydration Club'), findsOneWidget);
+      expect(find.text('Loading club'), findsNothing);
+      expect(find.text('Host access required'), findsNothing);
     });
 
     testWidgets(
@@ -495,7 +546,8 @@ void main() {
     testWidgets('picks a map location and handles back navigation', (
       tester,
     ) async {
-      await _pumpCreateEventFlow(tester);
+      final now = DateTime(2099, 1, 2, 9, 30);
+      await _pumpCreateEventFlow(tester, now: () => now);
       await _openCreateEventFlow(tester);
 
       await _fillBasicsStep(tester);
@@ -529,6 +581,14 @@ void main() {
       await _pumpTestAnimation(tester);
       expect(find.text('Draft saved'), findsOneWidget);
       expect(find.text('Open'), findsOneWidget);
+
+      final draftRepository = EventDraftRepository(ErrorLogger());
+      final drafts = await draftRepository.loadDrafts(
+        clubId: 'club-1',
+        userId: 'runner-1',
+      );
+      expect(drafts.single.id, now.millisecondsSinceEpoch.toString());
+      expect(drafts.single.savedAt, now);
     });
 
     testWidgets('fills the location name from a Google place selection', (
@@ -584,6 +644,28 @@ void main() {
         ),
       );
       expect(nameField.controller?.text, 'Cubbon Park');
+    });
+
+    testWidgets('restored past schedule draft shows validation error', (
+      tester,
+    ) async {
+      final now = DateTime(2026, 5, 1, 14);
+      final selectedDate = DateTime(now.year, now.month, now.day);
+      await _pumpCreateEventFlow(
+        tester,
+        now: () => now,
+        initialDraft: _buildEventDraft(
+          id: 'past-schedule-draft',
+          savedAt: now,
+          selectedDateMillis: selectedDate.millisecondsSinceEpoch,
+          selectedStartHour: 13,
+          selectedStartMinute: 30,
+        ),
+        initialStep: 2,
+      );
+      await _openCreateEventFlow(tester);
+
+      expect(find.text(createEventFutureStartError), findsOneWidget);
     });
 
     testWidgets('shows the submission error banner when creation fails', (
@@ -766,6 +848,7 @@ void main() {
       ];
       final plan = EventSuccessPlan.defaultForEvent(
         event,
+        now: event.startTime,
       ).copyWith(status: EventSuccessPlanStatus.live);
 
       await pumpEventsTestApp(
@@ -1086,6 +1169,9 @@ EventDraft _buildEventDraft({
   String? distance,
   String? capacity,
   String? meetingPoint,
+  int? selectedDateMillis,
+  int? selectedStartHour,
+  int? selectedStartMinute,
 }) {
   return EventDraft(
     id: id,
@@ -1094,6 +1180,9 @@ EventDraft _buildEventDraft({
     distance: distance,
     capacity: capacity,
     meetingPoint: meetingPoint,
+    selectedDateMillis: selectedDateMillis,
+    selectedStartHour: selectedStartHour,
+    selectedStartMinute: selectedStartMinute,
   );
 }
 
@@ -1131,6 +1220,8 @@ Future<void> _pumpCreateEventFlow(
   bool alwaysUse24HourFormat = false,
   DateTime Function()? now,
   Club? clubOverride,
+  EventDraft? initialDraft,
+  int initialStep = 0,
 }) async {
   final club = clubOverride ?? buildClub();
   final router = GoRouter(
@@ -1153,6 +1244,8 @@ Future<void> _pumpCreateEventFlow(
           club: club,
           loadMapTiles: false,
           now: now ?? DateTime.now,
+          initialDraft: initialDraft,
+          initialStep: initialStep,
         ),
       ),
       GoRoute(

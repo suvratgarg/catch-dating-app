@@ -92,31 +92,31 @@ void main() {
     });
   });
 
-  // ── #3-4: isUpcoming ───────────────────────────────────────────────────────
+  // ── #3-4: isUpcomingAt ─────────────────────────────────────────────────────
 
-  group('Event.isUpcoming', () {
+  group('Event.isUpcomingAt', () {
+    final now = DateTime(2026, 5, 17, 12);
+
     test('#3 true when startTime is 1 h in the future', () {
-      final event = buildEvent(
-        startTime: DateTime.now().add(const Duration(hours: 1)),
-      );
-      expect(event.isUpcoming, isTrue);
+      final event = buildEvent(startTime: now.add(const Duration(hours: 1)));
+      expect(event.isUpcomingAt(now), isTrue);
     });
 
     test('#4 false when startTime is 1 h in the past', () {
       final event = buildEvent(
-        startTime: DateTime.now().subtract(const Duration(hours: 1)),
+        startTime: now.subtract(const Duration(hours: 1)),
       );
-      expect(event.isUpcoming, isFalse);
+      expect(event.isUpcomingAt(now), isFalse);
     });
 
     test('false when the event has been cancelled', () {
       final event = buildEvent(
         status: EventLifecycleStatus.cancelled,
-        startTime: DateTime.now().add(const Duration(hours: 1)),
+        startTime: now.add(const Duration(hours: 1)),
       );
 
       expect(event.isCancelled, isTrue);
-      expect(event.isUpcoming, isFalse);
+      expect(event.isUpcomingAt(now), isFalse);
     });
   });
 

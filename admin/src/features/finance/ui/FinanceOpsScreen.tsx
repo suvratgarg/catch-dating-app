@@ -8,18 +8,34 @@ import {
 } from "lucide-react";
 import {
   AdminButton,
+  AdminEditorGrid,
+  AdminEditorPanel,
+  AdminMetricCard,
+  AdminMetricGrid,
+  AdminRoadmapList,
+  AdminRoadmapListItem,
+  AdminTableRow,
   AdminTag,
+  AdminToolbar,
+  AdminWorkbenchStack,
   AlertRow,
   DataTable,
   EmptyState,
   Panel,
+  QualityList,
   RiskBadge,
   SearchField,
   SelectField,
   StateRow,
   TableActionButton,
+  AdminTagList,
+  AdminIntakeSection,
+  AdminIntakeSectionTitle,
+  AdminRowTitle,
+  AdminTagRow,
 } from "../../../shared/ui/AdminPrimitives";
 import {
+  type FinanceOpsController,
   type FinanceIssueKind,
   type FinanceIssueReview,
   type FinanceIssueRow,
@@ -39,30 +55,39 @@ export function FinanceOpsScreen({
   onError: (message: string | null) => void;
 }) {
   const controller = useFinanceOpsController({onError});
+  return <FinanceOpsWorkspace controller={controller} />;
+}
+
+export function FinanceOpsWorkspace({
+  controller,
+}: {
+  controller: FinanceOpsController;
+}) {
   return (
-    <div className="workbench-stack">
-      <section className="metric-grid" aria-label="Finance state">
-        <Metric label="Completed" value={controller.metrics.completedPayments} />
-        <Metric
+    <AdminWorkbenchStack>
+      <AdminMetricGrid ariaLabel="Finance state">
+        <AdminMetricCard label="Completed" value={numberValue(controller.metrics.completedPayments)} />
+        <AdminMetricCard
           label="Failed"
           tone={controller.metrics.failedPayments > 0 ? "attention" : "normal"}
-          value={controller.metrics.failedPayments}
+          value={numberValue(controller.metrics.failedPayments)}
         />
-        <Metric label="Signup failed" value={controller.metrics.signupFailedPayments} />
-        <Metric
+        <AdminMetricCard
+          label="Signup failed"
+          value={numberValue(controller.metrics.signupFailedPayments)}
+        />
+        <AdminMetricCard
           label="Revenue"
-          prefix="INR "
-          value={controller.metrics.revenueMinor / 100}
+          value={`INR ${numberValue(controller.metrics.revenueMinor / 100)}`}
         />
-      </section>
-
+      </AdminMetricGrid>
       <Panel
-        className="span-2"
+        span={2}
         icon={<CircleDollarSign size={18} strokeWidth={1.9} />}
         title="Finance issues"
         action={controller.isLoading ? "Loading" : `${controller.filteredRows.length} shown`}
       >
-        <div className="workbench-toolbar">
+        <AdminToolbar>
           <SearchField
             ariaLabel="Search finance issues"
             icon={<Search size={16} strokeWidth={1.8} />}
@@ -85,37 +110,36 @@ export function FinanceOpsScreen({
           >
             Refresh
           </AdminButton>
-        </div>
+        </AdminToolbar>
         <FinanceTable
           rows={controller.filteredRows}
           selectedId={controller.selected?.id ?? null}
           onSelect={controller.select}
         />
       </Panel>
-
-      <section className="publishing-editor-grid">
+      <AdminEditorGrid>
         <FinanceDetailPanel
           loadedAt={controller.loadedAt}
           selected={controller.selected}
           review={controller.selectedReview}
         />
-        <div className="workbench-stack">
+        <AdminWorkbenchStack>
           <Panel
             icon={<ShieldCheck size={18} strokeWidth={1.9} />}
             title="Authority boundary"
             action="read-only"
           >
-            <div className="quality-list">
+            <QualityList>
               <StateRow label="Sources" value="adminGetOverview, adminGetHostAnalytics" />
               <StateRow label="Mutations" value="None from this tab" />
               <StateRow label="Needed next" value="provider ledger/read model and audited finance callables" />
               <StateRow label="Not here" value="refund execution, payout release, settlement edits" />
-            </div>
+            </QualityList>
           </Panel>
           <FinanceReconciliationPanel review={controller.selectedReview} />
-        </div>
-      </section>
-    </div>
+        </AdminWorkbenchStack>
+      </AdminEditorGrid>
+    </AdminWorkbenchStack>
   );
 }
 
@@ -131,7 +155,7 @@ function FinanceTable({
   if (rows.length === 0) {
     return (
       <EmptyState
-        className="workbench-empty"
+        variant="workbench"
         icon={<Clock3 size={16} strokeWidth={1.9} />}
       >
         No finance issues match this filter.
@@ -139,7 +163,7 @@ function FinanceTable({
     );
   }
   return (
-    <DataTable className="workbench-table">
+    <DataTable variant="workbench">
       <thead>
         <tr>
           <th>Issue</th>
@@ -152,15 +176,12 @@ function FinanceTable({
       </thead>
       <tbody>
         {rows.map((row) => (
-          <tr
-            className={selectedId === row.id ? "selected-row" : ""}
-            key={row.id}
-          >
+          <AdminTableRow key={row.id} selected={selectedId === row.id}>
             <td>
-              <div className="row-title">
+              <AdminRowTitle>
                 <strong>{row.title}</strong>
                 <span>{row.kind} · {row.detail}</span>
-              </div>
+              </AdminRowTitle>
             </td>
             <td>
               <RiskBadge tone={riskTone(row.severity)}>
@@ -175,7 +196,7 @@ function FinanceTable({
                 Review
               </TableActionButton>
             </td>
-          </tr>
+          </AdminTableRow>
         ))}
       </tbody>
     </DataTable>
@@ -192,14 +213,13 @@ function FinanceDetailPanel({
   selected: FinanceIssueRow | null;
 }) {
   return (
-    <Panel
-      className="publishing-editor-panel"
+    <AdminEditorPanel
       icon={<CircleDollarSign size={18} strokeWidth={1.9} />}
       title="Issue detail"
       action={selected?.status ?? "No issue"}
     >
       {selected ? (
-        <div className="quality-list">
+        <QualityList>
           <StateRow label="Type" value={selected.kind} />
           <StateRow label="Target" value={selected.targetPath} />
           <StateRow label="Status" value={selected.status} />
@@ -216,12 +236,12 @@ function FinanceDetailPanel({
               >
                 {review.statusDetail}
               </AlertRow>
-              <div className="tag-row">
+              <AdminTagRow>
                 <AdminTag tone="muted">provider {review.provider}</AdminTag>
                 <AdminTag tone="muted">
                   {review.actionStatus.replaceAll("_", " ")}
                 </AdminTag>
-              </div>
+              </AdminTagRow>
               <StateRow label="Authority" value={review.sourceOfTruth} />
               <StateRow
                 label="Reconciliation"
@@ -230,16 +250,16 @@ function FinanceDetailPanel({
               <StateRow label="Mutation boundary" value={review.mutationBoundary} />
             </>
           ) : null}
-        </div>
+        </QualityList>
       ) : (
         <EmptyState
-          className="workbench-empty"
+          variant="workbench"
           icon={<Clock3 size={16} strokeWidth={1.9} />}
         >
           Select a finance issue to inspect.
         </EmptyState>
       )}
-    </Panel>
+    </AdminEditorPanel>
   );
 }
 
@@ -255,31 +275,31 @@ function FinanceReconciliationPanel({
       action={review ? review.actionStatus.replaceAll("_", " ") : "select issue"}
     >
       {review ? (
-        <div className="workbench-stack compact-stack">
-          <div className="quality-list">
+        <AdminWorkbenchStack compact>
+          <QualityList>
             <StateRow label="Source model" value={review.sourceModel} />
             <StateRow label="Provider authority" value={review.sourceOfTruth} />
-          </div>
-          <div className="intake-section">
-            <div className="intake-section-title">Required Evidence</div>
-            <div className="roadmap-list">
+          </QualityList>
+          <AdminIntakeSection>
+            <AdminIntakeSectionTitle>Required Evidence</AdminIntakeSectionTitle>
+            <AdminRoadmapList>
               {review.requiredEvidence.map((item) => (
                 <ReviewRow key={item} text={item} />
               ))}
-            </div>
-          </div>
-          <div className="intake-section">
-            <div className="intake-section-title">Blocked Here</div>
-            <div className="intake-tags">
+            </AdminRoadmapList>
+          </AdminIntakeSection>
+          <AdminIntakeSection>
+            <AdminIntakeSectionTitle>Blocked Here</AdminIntakeSectionTitle>
+            <AdminTagList>
               {review.blockedActions.map((action) => (
                 <AdminTag key={action}>{action}</AdminTag>
               ))}
-            </div>
-          </div>
-        </div>
+            </AdminTagList>
+          </AdminIntakeSection>
+        </AdminWorkbenchStack>
       ) : (
         <EmptyState
-          className="workbench-empty"
+          variant="workbench"
           icon={<Clock3 size={16} strokeWidth={1.9} />}
         >
           Select a finance issue to inspect reconciliation evidence.
@@ -291,29 +311,10 @@ function FinanceReconciliationPanel({
 
 function ReviewRow({text}: {text: string}) {
   return (
-    <div className="roadmap-list-item">
+    <AdminRoadmapListItem>
       <ShieldCheck size={15} strokeWidth={1.9} />
       <span>{text}</span>
-    </div>
-  );
-}
-
-function Metric({
-  label,
-  prefix = "",
-  tone = "normal",
-  value,
-}: {
-  label: string;
-  prefix?: string;
-  tone?: "normal" | "attention";
-  value: number;
-}) {
-  return (
-    <article className={`metric-card ${tone === "attention" ? "attention" : ""}`}>
-      <span>{label}</span>
-      <div className="metric-value">{prefix}{numberValue(value)}</div>
-    </article>
+    </AdminRoadmapListItem>
   );
 }
 

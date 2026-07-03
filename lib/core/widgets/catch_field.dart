@@ -782,7 +782,7 @@ class _CatchFieldState extends State<CatchField> {
   }
 
   Widget _buildAdd(CatchTokens t) {
-    return _CatchFieldRow.add(
+    return CatchFieldRow.add(
       onTap: widget.onTap,
       leading: Icon(
         widget.icon ?? CatchIcons.add,
@@ -791,7 +791,7 @@ class _CatchFieldState extends State<CatchField> {
       ),
       content: Text(
         _title ?? '',
-        style: CatchTextStyles.titleS(
+        style: CatchTextStyles.fieldRowTitle(
           context,
           color: _toneColor(t, primaryFallback: t.primary),
         ),
@@ -811,7 +811,7 @@ class _CatchFieldState extends State<CatchField> {
         canToggleRow ||
         (widget.onTap != null && !_isEdit) ||
         canFocusCollapsedTextEntry;
-    return _CatchFieldRow.standard(
+    return CatchFieldRow.standard(
       constraints: _rowConstraints,
       padding: _rowPadding,
       leading: _buildLeadingSlot(t),
@@ -873,10 +873,10 @@ class _CatchFieldState extends State<CatchField> {
   }
 
   Widget? _buildTrailingSlot(CatchTokens t) {
-    if (widget.valid && !_hasError) return _CatchFieldTrailing.valid();
+    if (widget.valid && !_hasError) return CatchFieldTrailing.valid();
 
     if (_mode == CatchFieldMode.toggle) {
-      return _CatchFieldTrailing.toggle(
+      return CatchFieldTrailing.toggle(
         value: widget.toggled,
         onChanged: widget.onToggle,
         semanticLabel: _title,
@@ -888,7 +888,7 @@ class _CatchFieldState extends State<CatchField> {
     }
 
     if (_hasControl) {
-      return _CatchFieldTrailing.rotatingChevron(
+      return CatchFieldTrailing.rotatingChevron(
         open: _open,
         color: _active ? t.ink : t.ink3,
         topPadding: _rowTrailingTopPadding,
@@ -910,7 +910,7 @@ class _CatchFieldState extends State<CatchField> {
       valueListenable: _controller,
       builder: (_, value, _) {
         if (value.text.isEmpty) return fallback ?? const SizedBox.shrink();
-        return _CatchFieldTrailing.clear(
+        return CatchFieldTrailing.clear(
           tooltip: 'Clear ${_title ?? 'field'}',
           onPressed: () {
             _controller.clear();
@@ -929,7 +929,7 @@ class _CatchFieldState extends State<CatchField> {
     if (valueText != null && valueText.isNotEmpty) {
       flexibleIndices.add(children.length);
       children.add(
-        _CatchFieldTrailing.valueText(
+        CatchFieldTrailing.valueText(
           text: valueText,
           maxLines: widget.valueMaxLines,
           topPadding: _rowTrailingTopPadding,
@@ -942,7 +942,7 @@ class _CatchFieldState extends State<CatchField> {
 
     if (includeChevron) {
       children.add(
-        _CatchFieldTrailing.fixedChevron(
+        CatchFieldTrailing.fixedChevron(
           color: t.ink3,
           topPadding: _rowTrailingTopPadding,
         ),
@@ -968,7 +968,7 @@ class _CatchFieldState extends State<CatchField> {
 
   Widget? _buildCustomTrailingSlot(CatchTokens t, Widget? child) {
     if (child == null) return null;
-    return _CatchFieldTrailing.custom(
+    return CatchFieldTrailing.custom(
       topPadding: _rowTrailingTopPadding,
       color: t.ink3,
       child: child,
@@ -1090,7 +1090,7 @@ class _CatchFieldState extends State<CatchField> {
     final effectiveValueStyle =
         valueStyle ??
         (labelEmphasized
-            ? CatchTextStyles.bodyS(context, color: t.ink3)
+            ? CatchTextStyles.supporting(context, color: t.ink3)
             : CatchTextStyles.fieldRowTitle(
                 context,
                 color: valueIsPlaceholder
@@ -1246,7 +1246,10 @@ class _CatchFieldState extends State<CatchField> {
                       if (widget.leadingUnit != null) ...[
                         Text(
                           widget.leadingUnit!,
-                          style: CatchTextStyles.titleS(context, color: t.ink2),
+                          style: CatchTextStyles.fieldRowTitle(
+                            context,
+                            color: t.ink2,
+                          ),
                         ),
                         const SizedBox(width: CatchSpacing.s1),
                       ],
@@ -1566,7 +1569,7 @@ class _CatchFieldState extends State<CatchField> {
               value: label,
               child: Focus(
                 focusNode: _focusNode,
-                child: _CatchFieldRow.standard(
+                child: CatchFieldRow.standard(
                   onTap: canOpen
                       ? () {
                           _focusNode.requestFocus();
@@ -1596,7 +1599,7 @@ class _CatchFieldState extends State<CatchField> {
                           : tokens.ink,
                     ),
                   ),
-                  trailing: _CatchFieldTrailing.rotatingChevron(
+                  trailing: CatchFieldTrailing.rotatingChevron(
                     open: controller.isOpen,
                     color: tokens.ink3,
                     topPadding: selectHasLabel
@@ -1838,8 +1841,9 @@ Duration _catchFieldMotionDuration(BuildContext context) {
   return disableAnimations == true ? Duration.zero : CatchMotion.fast;
 }
 
-class _CatchFieldRow extends StatelessWidget {
-  const _CatchFieldRow.standard({
+class CatchFieldRow extends StatelessWidget {
+  const CatchFieldRow.standard({
+    super.key,
     required this.content,
     this.leading,
     this.trailing,
@@ -1850,7 +1854,8 @@ class _CatchFieldRow extends StatelessWidget {
        leadingGap = CatchSpacing.s3,
        trailingGap = CatchSpacing.s2;
 
-  const _CatchFieldRow.add({
+  const CatchFieldRow.add({
+    super.key,
     required this.leading,
     required this.content,
     this.onTap,
@@ -1912,13 +1917,15 @@ class _CatchFieldRow extends StatelessWidget {
   }
 }
 
-class _CatchFieldTrailing extends StatelessWidget {
-  factory _CatchFieldTrailing.custom({
+class CatchFieldTrailing extends StatelessWidget {
+  factory CatchFieldTrailing.custom({
+    Key? key,
     required Widget child,
     Color? color,
     double topPadding = CatchSpacing.micro2,
   }) {
-    return _CatchFieldTrailing._(
+    return CatchFieldTrailing._(
+      key: key,
       topPadding: topPadding,
       builder: (context) {
         final t = CatchTokens.of(context);
@@ -1934,12 +1941,14 @@ class _CatchFieldTrailing extends StatelessWidget {
     );
   }
 
-  factory _CatchFieldTrailing.valueText({
+  factory CatchFieldTrailing.valueText({
+    Key? key,
     required String text,
     int maxLines = 1,
     double topPadding = CatchSpacing.micro2,
   }) {
-    return _CatchFieldTrailing._(
+    return CatchFieldTrailing._(
+      key: key,
       topPadding: topPadding,
       builder: (context) {
         final t = CatchTokens.of(context);
@@ -1950,17 +1959,19 @@ class _CatchFieldTrailing extends StatelessWidget {
             textAlign: TextAlign.right,
             maxLines: maxLines,
             overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.bodyS(context, color: t.ink),
+            style: CatchTextStyles.supporting(context, color: t.ink),
           ),
         );
       },
     );
   }
 
-  factory _CatchFieldTrailing.fixedChevron({
+  factory CatchFieldTrailing.fixedChevron({
+    Key? key,
     Color? color,
     double topPadding = CatchSpacing.micro2,
-  }) => _CatchFieldTrailing._(
+  }) => CatchFieldTrailing._(
+    key: key,
     topPadding: topPadding,
     builder: (context) => Icon(
       CatchIcons.chevronRightRounded,
@@ -1969,11 +1980,13 @@ class _CatchFieldTrailing extends StatelessWidget {
     ),
   );
 
-  factory _CatchFieldTrailing.rotatingChevron({
+  factory CatchFieldTrailing.rotatingChevron({
+    Key? key,
     required bool open,
     Color? color,
     double topPadding = CatchSpacing.micro2,
-  }) => _CatchFieldTrailing._(
+  }) => CatchFieldTrailing._(
+    key: key,
     topPadding: topPadding,
     builder: (context) => AnimatedRotation(
       turns: open ? 0.5 : 0,
@@ -1986,12 +1999,14 @@ class _CatchFieldTrailing extends StatelessWidget {
     ),
   );
 
-  factory _CatchFieldTrailing.toggle({
+  factory CatchFieldTrailing.toggle({
+    Key? key,
     required bool value,
     required ValueChanged<bool>? onChanged,
     String? semanticLabel,
     double topPadding = CatchSpacing.micro2,
-  }) => _CatchFieldTrailing._(
+  }) => CatchFieldTrailing._(
+    key: key,
     topPadding: topPadding,
     builder: (_) => CatchToggle(
       value: value,
@@ -2000,11 +2015,13 @@ class _CatchFieldTrailing extends StatelessWidget {
     ),
   );
 
-  factory _CatchFieldTrailing.clear({
+  factory CatchFieldTrailing.clear({
+    Key? key,
     required String tooltip,
     required VoidCallback onPressed,
     double topPadding = CatchSpacing.micro2,
-  }) => _CatchFieldTrailing._(
+  }) => CatchFieldTrailing._(
+    key: key,
     topPadding: topPadding,
     builder: (context) => IconButton(
       tooltip: tooltip,
@@ -2020,9 +2037,11 @@ class _CatchFieldTrailing extends StatelessWidget {
     ),
   );
 
-  factory _CatchFieldTrailing.valid({
+  factory CatchFieldTrailing.valid({
+    Key? key,
     double topPadding = CatchSpacing.micro2,
-  }) => _CatchFieldTrailing._(
+  }) => CatchFieldTrailing._(
+    key: key,
     topPadding: topPadding,
     builder: (context) => Icon(
       CatchIcons.checkCircle,
@@ -2031,7 +2050,8 @@ class _CatchFieldTrailing extends StatelessWidget {
     ),
   );
 
-  const _CatchFieldTrailing._({
+  const CatchFieldTrailing._({
+    super.key,
     required this.builder,
     this.topPadding = CatchSpacing.micro2,
   });

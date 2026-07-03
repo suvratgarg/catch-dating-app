@@ -7,6 +7,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  final today = DateTime(2026, 6, 24);
+
   UserProfile buildUser({required DateTime dateOfBirth}) => UserProfile(
     uid: 'user-1',
     name: 'Runner',
@@ -17,31 +19,27 @@ void main() {
     interestedInGenders: const [Gender.woman],
   );
 
-  group('UserProfile.age', () {
+  group('UserProfile.ageOn', () {
     test('#21 birthday earlier this year — full year counted', () {
-      final now = DateTime.now();
-      // DOB = Jan 1, (now.year - 30). Birthday has already passed this year.
-      final dob = DateTime(now.year - 30);
+      // DOB = Jan 1, (today.year - 30). Birthday has already passed this year.
+      final dob = DateTime(today.year - 30);
       final user = buildUser(dateOfBirth: dob);
-      expect(user.age, 30);
+      expect(user.ageOn(today), 30);
     });
 
     test('#22 birthday later this year — one year subtracted', () {
-      final now = DateTime.now();
       // DOB = Dec 31, (now.year - 30). Birthday not yet reached.
-      final dob = DateTime(now.year - 30, 12, 31);
+      final dob = DateTime(today.year - 30, 12, 31);
       final user = buildUser(dateOfBirth: dob);
       // If today is before Dec 31, age is still 29.
-      final expectedAge = now.isBefore(DateTime(now.year, 12, 31)) ? 29 : 30;
-      expect(user.age, expectedAge);
+      expect(user.ageOn(today), 29);
     });
 
     test('#23 exact birthday today — age is exact integer', () {
-      final now = DateTime.now();
       // DOB on today's month/day, 25 years ago.
-      final dob = DateTime(now.year - 25, now.month, now.day);
+      final dob = DateTime(today.year - 25, today.month, today.day);
       final user = buildUser(dateOfBirth: dob);
-      expect(user.age, 25);
+      expect(user.ageOn(today), 25);
     });
   });
 
@@ -69,8 +67,8 @@ void main() {
         dateOfBirth: DateTime(1995, 6, 15),
       ).copyWith(profileComplete: false);
 
-      expect(user.hasBookingReadyIdentity, isTrue);
-      expect(user.hasSocialReadyProfile, isFalse);
+      expect(user.hasBookingReadyIdentityOn(today), isTrue);
+      expect(user.hasSocialReadyProfileOn(today), isFalse);
     });
 
     test('booking-ready identity requires interested-in genders', () {
@@ -78,8 +76,8 @@ void main() {
         dateOfBirth: DateTime(1995, 6, 15),
       ).copyWith(interestedInGenders: const []);
 
-      expect(user.hasBookingReadyIdentity, isFalse);
-      expect(user.hasSocialReadyProfile, isFalse);
+      expect(user.hasBookingReadyIdentityOn(today), isFalse);
+      expect(user.hasSocialReadyProfileOn(today), isFalse);
     });
 
     test('social-ready profile requires completion, photos, and prompts', () {
@@ -91,8 +89,8 @@ void main() {
         profilePrompts: completePrompts().take(2).toList(),
       );
 
-      expect(user.hasSocialReadyProfile, isTrue);
-      expect(withoutPrompt.hasSocialReadyProfile, isFalse);
+      expect(user.hasSocialReadyProfileOn(today), isTrue);
+      expect(withoutPrompt.hasSocialReadyProfileOn(today), isFalse);
     });
 
     test('run preferences are separate from social readiness', () {
@@ -102,7 +100,7 @@ void main() {
         activityPreferences: const ActivityPreferences(),
       );
 
-      expect(user.hasSocialReadyProfile, isTrue);
+      expect(user.hasSocialReadyProfileOn(today), isTrue);
       expect(user.hasCurrentRunPreferences, isFalse);
       expect(
         user
@@ -319,7 +317,7 @@ void main() {
     expect(structured.accountDisplayName, 'Suvrat Garg');
     expect(structured.publicDisplayName, 'S.');
     expect(structured.greetingDisplayName, 'S.');
-    expect(publicProfileFromUserProfile(structured).name, 'S.');
+    expect(publicProfileFromUserProfile(structured, today: today).name, 'S.');
     expect(firstNameFallback.publicDisplayName, 'Suvrat');
     expect(firstNameFallback.greetingDisplayName, 'Suvrat');
     expect(legacy.publicDisplayName, 'Asha');
@@ -330,7 +328,10 @@ void main() {
     final user = buildUser(
       dateOfBirth: DateTime(1995, 6, 15),
     ).copyWith(latitude: 19.076, longitude: 72.8777);
-    final publicProfileJson = publicProfileFromUserProfile(user).toJson();
+    final publicProfileJson = publicProfileFromUserProfile(
+      user,
+      today: today,
+    ).toJson();
 
     expect(publicProfileJson.containsKey('latitude'), isFalse);
     expect(publicProfileJson.containsKey('longitude'), isFalse);
@@ -369,7 +370,7 @@ void main() {
       final fullOnly = user.copyWith(
         profilePhotos: [user.profilePhotos.single.copyWith(thumbnailUrl: '')],
       );
-      final publicProfile = publicProfileFromUserProfile(user);
+      final publicProfile = publicProfileFromUserProfile(user, today: today);
 
       expect(user.primaryPhotoThumbnailUrl, 'https://example.test/thumb.jpg');
       expect(

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/user_analytics/data/user_analytics_repository.dart';
-import 'package:catch_dating_app/user_analytics/presentation/user_analytics_panel.dart';
+import 'package:catch_dating_app/user_analytics/shared/user_analytics_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

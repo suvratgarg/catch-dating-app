@@ -1,10 +1,10 @@
-import 'package:catch_dating_app/chats/data/suvbot_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/domain/suvbot_action_item.dart';
+import 'package:catch_dating_app/chats/domain/suvbot_identity.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HostChatScreenState {
   const HostChatScreenState({
@@ -76,15 +76,17 @@ class HostChatScreenState {
   factory HostChatScreenState.resolve({
     required String matchId,
     required String? uid,
-    required AsyncValue<Match?> matchAsync,
-    required AsyncValue<List<ChatMessage>> messagesAsync,
-    required AsyncValue<List<SuvbotActionItem>> suvbotActionsAsync,
+    required CatchAsyncState<Match?> matchAsync,
+    required CatchAsyncState<List<ChatMessage>> messagesAsync,
+    required CatchAsyncState<List<SuvbotActionItem>> suvbotActionsAsync,
     required PublicProfile? profile,
     required ClubHostProfile? hostProfile,
     bool reportUserPending = false,
     bool blockUserPending = false,
   }) {
-    final match = matchAsync.asData?.value;
+    final match = matchAsync.status == CatchAsyncStatus.data
+        ? matchAsync.value
+        : null;
     final otherUid = uid == null ? null : match?.otherId(uid);
     final isSuvbot = isSuvbotConversation(matchId: matchId, otherUid: otherUid);
     final isHostInquiry = match?.isClubHostInquiry == true;
@@ -108,7 +110,7 @@ class HostChatScreenState {
       photoUrl: photoUrl,
       otherUid: isSuvbot ? null : otherUid,
       profile: isSuvbot ? null : profile,
-      routeError: matchAsync.hasError
+      routeError: matchAsync.status == CatchAsyncStatus.error
           ? HostChatRouteError(error: matchAsync.error!)
           : null,
       isSuvbot: isSuvbot,
@@ -131,10 +133,11 @@ class HostChatScreenState {
           : isHostInquiry
           ? name
           : profile?.name ?? 'your match',
-      messagesRetryIntent: messagesAsync.hasError
+      messagesRetryIntent: messagesAsync.status == CatchAsyncStatus.error
           ? HostChatRetryIntent.reloadMessages
           : null,
-      suvbotActionsRetryIntent: isSuvbot && suvbotActionsAsync.hasError
+      suvbotActionsRetryIntent:
+          isSuvbot && suvbotActionsAsync.status == CatchAsyncStatus.error
           ? HostChatRetryIntent.reloadSuvbotActions
           : null,
       composerDisabledReason: composerDisabledReason,
@@ -192,11 +195,11 @@ class HostChatRouteError {
 }
 
 String? _chatComposerDisabledReason({
-  required AsyncValue<Match?> matchAsync,
+  required CatchAsyncState<Match?> matchAsync,
   required Match? match,
 }) {
-  if (matchAsync.hasError) return 'Chat unavailable.';
-  if (matchAsync.isLoading) return 'Loading chat...';
+  if (matchAsync.status == CatchAsyncStatus.error) return 'Chat unavailable.';
+  if (matchAsync.status == CatchAsyncStatus.loading) return 'Loading chat...';
   if (match == null) return 'Chat unavailable.';
   if (match.isBlocked) return 'This chat is closed.';
   return null;

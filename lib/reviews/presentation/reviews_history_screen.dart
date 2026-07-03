@@ -3,7 +3,6 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -13,10 +12,10 @@ import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
-import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_state.dart';
-import 'package:catch_dating_app/reviews/presentation/reviews_section.dart';
-import 'package:catch_dating_app/reviews/presentation/write_review_sheet.dart';
+import 'package:catch_dating_app/reviews/presentation/reviews_history_view_model.dart';
+import 'package:catch_dating_app/reviews/shared/reviews_section.dart';
+import 'package:catch_dating_app/reviews/shared/write_review_sheet.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
@@ -28,139 +27,114 @@ class ReviewsHistoryScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final uidAsync = ref.watch(uidProvider);
+    final uid = uidAsync.asData?.value;
+    final userAsync = uid == null
+        ? const AsyncData<UserProfile?>(null)
+        : ref.watch(watchUserProfileProvider);
+    final reviewsAsync = uid == null
+        ? null
+        : ref.watch(watchReviewsByUserProvider(uid));
+    final reviews = reviewsAsync?.asData?.value;
+    AsyncValue<List<Event>> eventsAsync = const AsyncData<List<Event>>([]);
+    if (reviews != null && reviews.isNotEmpty) {
+      final eventIds = ReviewsHistoryState.eventIdsFor(reviews);
+      if (eventIds.isNotEmpty) {
+        eventsAsync = ref.watch(
+          watchEventsByIdsProvider(EventsByIdQuery(eventIds)),
+        );
+      }
+    }
+
+    final state = uidAsync.when<ReviewsHistoryState>(
+      loading: () => const ReviewsHistoryLoading(),
+      error: (_, _) => const ReviewsHistoryEmpty(
+        title: 'Sign in to see reviews',
+        message: 'Your past event reviews will appear here.',
+      ),
+      data: (uid) => buildReviewsHistoryState(
+        uid: uid,
+        user: userAsync,
+        reviews: reviewsAsync,
+        events: eventsAsync,
+      ),
+    );
+    void onRetryProfile() => ref.invalidate(watchUserProfileProvider);
+    VoidCallback? onRetryReviews;
+    if (uid != null) {
+      onRetryReviews = () => ref.invalidate(watchReviewsByUserProvider(uid));
+    }
 
     return Scaffold(
       appBar: const CatchTopBar(title: 'Review history', border: true),
-      body: CatchAsyncValueView<String?>(
-        value: uidAsync,
-        loadingBuilder: (_) => reviewsHistorySkeleton(),
-        errorBuilder: (_, _, _) => reviewsHistoryEmpty(
-          title: 'Sign in to see reviews',
-          message: 'Your past event reviews will appear here.',
-        ),
-        builder: (context, uid) {
-          if (uid == null) {
-            return reviewsHistoryEmpty(
-              title: 'Sign in to see reviews',
-              message: 'Your past event reviews will appear here.',
-            );
-          }
-          return reviewsHistoryProfileGate(uid: uid);
-        },
+      body: ReviewsHistoryBody(
+        state: state,
+        onRetryProfile: onRetryProfile,
+        onRetryReviews: onRetryReviews,
+        onEditReview: state is ReviewsHistoryContent
+            ? (row) => _showEditReviewSheet(context, state, row)
+            : null,
       ),
     );
   }
 }
 
-Widget reviewsHistoryProfileGate({required String uid}) {
-  return Consumer(
-    builder: (context, ref, _) {
-      final userAsync = ref.watch(watchUserProfileProvider);
+class ReviewsHistoryBody extends StatelessWidget {
+  const ReviewsHistoryBody({
+    super.key,
+    required this.state,
+    required this.onRetryProfile,
+    required this.onRetryReviews,
+    required this.onEditReview,
+  });
 
-      return CatchAsyncValueView(
-        value: userAsync,
-        loadingBuilder: (_) => reviewsHistorySkeleton(),
-        errorBuilder: (_, _, _) => CatchErrorState(
-          title: 'Reviews unavailable',
-          message: 'Could not load your profile.',
-          onRetry: () => ref.invalidate(watchUserProfileProvider),
+  final ReviewsHistoryState state;
+  final VoidCallback onRetryProfile;
+  final VoidCallback? onRetryReviews;
+  final ValueChanged<ReviewsHistoryRow>? onEditReview;
+
+  @override
+  Widget build(BuildContext context) {
+    return switch (state) {
+      ReviewsHistoryLoading() => const ReviewsHistorySkeleton(),
+      ReviewsHistoryEmpty(:final title, :final message) =>
+        ReviewsHistoryEmptyState(title: title, message: message),
+      ReviewsHistoryError(:final title, :final message, :final retryTarget) =>
+        CatchErrorState(
+          title: title,
+          message: message,
+          onRetry: switch (retryTarget) {
+            ReviewsHistoryRetryTarget.profile => onRetryProfile,
+            ReviewsHistoryRetryTarget.reviews => onRetryReviews,
+          },
         ),
-        builder: (context, user) {
-          if (user == null) return reviewsHistorySkeleton();
-          return reviewsHistoryReviewsGate(uid: uid, user: user);
-        },
-      );
-    },
-  );
-}
-
-Widget reviewsHistoryReviewsGate({
-  required String uid,
-  required UserProfile user,
-}) {
-  return Consumer(
-    builder: (context, ref, _) {
-      final reviewsAsync = ref.watch(watchReviewsByUserProvider(uid));
-      final reviews = reviewsAsync.asData?.value;
-      AsyncValue<List<Event>> eventsAsync = const AsyncData<List<Event>>([]);
-      if (reviews != null && reviews.isNotEmpty) {
-        final eventIds = ReviewsHistoryState.eventIdsFor(reviews);
-        if (eventIds.isNotEmpty) {
-          eventsAsync = ref.watch(
-            watchEventsByIdsProvider(EventsByIdQuery(eventIds)),
-          );
-        }
-      }
-      void onRetryReviews() => ref.invalidate(watchReviewsByUserProvider(uid));
-
-      return CatchAsyncValueView<List<Review>>(
-        value: reviewsAsync,
-        loadingBuilder: (_) => reviewsHistorySkeleton(),
-        errorBuilder: (_, _, _) => CatchErrorState(
-          title: 'Reviews unavailable',
-          message: 'Could not load your reviews.',
-          onRetry: onRetryReviews,
-        ),
-        builder: (context, reviews) {
-          final state = ReviewsHistoryState.fromAsync(
-            uid: uid,
-            user: AsyncData(user),
-            reviews: AsyncData(reviews),
-            events: eventsAsync,
-          );
-          return reviewsHistoryBody(
-            state: state,
-            onRetryProfile: () => ref.invalidate(watchUserProfileProvider),
-            onRetryReviews: onRetryReviews,
-            onEditReview: state is ReviewsHistoryContent
-                ? (row) => _showEditReviewSheet(context, state, row)
-                : null,
-          );
-        },
-      );
-    },
-  );
-}
-
-Widget reviewsHistoryBody({
-  required ReviewsHistoryState state,
-  required VoidCallback onRetryProfile,
-  required VoidCallback? onRetryReviews,
-  required ValueChanged<ReviewsHistoryRow>? onEditReview,
-}) {
-  return switch (state) {
-    ReviewsHistoryLoading() => reviewsHistorySkeleton(),
-    ReviewsHistoryEmpty(:final title, :final message) => reviewsHistoryEmpty(
-      title: title,
-      message: message,
-    ),
-    ReviewsHistoryError(:final title, :final message, :final retryTarget) =>
-      CatchErrorState(
-        title: title,
-        message: message,
-        onRetry: switch (retryTarget) {
-          ReviewsHistoryRetryTarget.profile => onRetryProfile,
-          ReviewsHistoryRetryTarget.reviews => onRetryReviews,
-        },
+      ReviewsHistoryContent(:final rows) => ReviewsHistoryList(
+        rows: rows,
+        onEditReview: onEditReview,
       ),
-    ReviewsHistoryContent(:final rows) => reviewsHistoryList(
-      rows: rows,
-      onEditReview: onEditReview,
-    ),
-  };
+    };
+  }
 }
 
-Widget reviewsHistoryList({
-  required List<ReviewsHistoryRow> rows,
-  required ValueChanged<ReviewsHistoryRow>? onEditReview,
-}) {
-  return ListView.separated(
-    padding: CatchInsets.pageBodyRelaxed,
-    itemCount: rows.length,
-    separatorBuilder: (_, _) => gapH14,
-    itemBuilder: (context, index) =>
-        ReviewHistoryItem(row: rows[index], onEditReview: onEditReview),
-  );
+class ReviewsHistoryList extends StatelessWidget {
+  const ReviewsHistoryList({
+    super.key,
+    required this.rows,
+    required this.onEditReview,
+  });
+
+  final List<ReviewsHistoryRow> rows;
+  final ValueChanged<ReviewsHistoryRow>? onEditReview;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      padding: CatchInsets.pageBodyRelaxed,
+      itemCount: rows.length,
+      separatorBuilder: (_, _) => gapH14,
+      itemBuilder: (context, index) =>
+          ReviewHistoryItem(row: rows[index], onEditReview: onEditReview),
+    );
+  }
 }
 
 class ReviewHistoryItem extends StatelessWidget {
@@ -197,76 +171,98 @@ class ReviewHistoryItem extends StatelessWidget {
   }
 }
 
-Widget reviewsHistoryEmpty({required String title, required String message}) {
-  return CatchScreenBody(
-    scrollable: false,
-    child: Center(
-      child: CatchEmptyState(
-        icon: CatchIcons.rateReviewOutlined,
-        title: title,
-        message: message,
-      ),
-    ),
-  );
-}
+class ReviewsHistoryEmptyState extends StatelessWidget {
+  const ReviewsHistoryEmptyState({
+    super.key,
+    required this.title,
+    required this.message,
+  });
 
-Widget reviewsHistorySkeleton() {
-  return ListView.separated(
-    padding: CatchInsets.pageBodyRelaxed,
-    itemCount: 4,
-    separatorBuilder: (_, _) => gapH14,
-    itemBuilder: (context, _) => reviewHistoryItemSkeleton(context),
-  );
-}
+  final String title;
+  final String message;
 
-Widget reviewHistoryItemSkeleton(BuildContext context) {
-  final t = CatchTokens.of(context);
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
-      gapH8,
-      CatchSurface(
-        borderColor: t.line,
-        padding: CatchInsets.tileContentCompact,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                CatchSkeleton.circle(size: CatchLayout.rosterRowAvatarExtent),
-                gapW8,
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CatchSkeleton.text(
-                        width: CatchLayout.skeletonTextLabelWidth,
-                      ),
-                      gapH6,
-                      Row(
-                        children: [
-                          for (var i = 0; i < 5; i++) ...[
-                            CatchSkeleton.box(
-                              width: CatchIcon.badge,
-                              height: CatchIcon.badge,
-                            ),
-                            if (i < 4) gapW3,
-                          ],
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            gapH10,
-            CatchSkeleton.textBlock(lines: 2),
-          ],
+  @override
+  Widget build(BuildContext context) {
+    return CatchScreenBody(
+      scrollable: false,
+      child: Center(
+        child: CatchEmptyState(
+          icon: CatchIcons.rateReviewOutlined,
+          title: title,
+          message: message,
         ),
       ),
-    ],
-  );
+    );
+  }
+}
+
+class ReviewsHistorySkeleton extends StatelessWidget {
+  const ReviewsHistorySkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      padding: CatchInsets.pageBodyRelaxed,
+      itemCount: 4,
+      separatorBuilder: (_, _) => gapH14,
+      itemBuilder: (context, _) => const ReviewHistoryItemSkeleton(),
+    );
+  }
+}
+
+class ReviewHistoryItemSkeleton extends StatelessWidget {
+  const ReviewHistoryItemSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
+        gapH8,
+        CatchSurface(
+          borderColor: t.line,
+          padding: CatchInsets.tileContentCompact,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  CatchSkeleton.circle(size: CatchLayout.rosterRowAvatarExtent),
+                  gapW8,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CatchSkeleton.text(
+                          width: CatchLayout.skeletonTextLabelWidth,
+                        ),
+                        gapH6,
+                        Row(
+                          children: [
+                            for (var i = 0; i < 5; i++) ...[
+                              CatchSkeleton.box(
+                                width: CatchIcon.badge,
+                                height: CatchIcon.badge,
+                              ),
+                              if (i < 4) gapW3,
+                            ],
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              gapH10,
+              CatchSkeleton.textBlock(lines: 2),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
 }
 
 Future<void> _showEditReviewSheet(

@@ -3,7 +3,6 @@ import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/safety/presentation/settings_controller.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:country_code_picker/country_code_picker.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final class SettingsAccountState {
   const SettingsAccountState({
@@ -12,24 +11,6 @@ final class SettingsAccountState {
     required this.blockedAccounts,
     required this.mutations,
   });
-
-  factory SettingsAccountState.fromAsync({
-    required AsyncValue<UserProfile?> profile,
-    required SettingsPreferenceValues preferences,
-    required AsyncValue<List<BlockedUser>> blockedUsers,
-    required AsyncValue<Map<String, PublicProfile>> blockedProfiles,
-    required SettingsMutationState mutations,
-  }) {
-    return SettingsAccountState(
-      profile: SettingsProfileState.fromAsync(profile),
-      preferences: preferences,
-      blockedAccounts: SettingsBlockedAccountsState.fromAsync(
-        blockedUsers: blockedUsers,
-        blockedProfiles: blockedProfiles,
-      ),
-      mutations: mutations,
-    );
-  }
 
   final SettingsProfileState profile;
   final SettingsPreferenceValues preferences;
@@ -40,40 +21,12 @@ final class SettingsAccountState {
 enum SettingsProfileStatus { loading, error, missing, loaded }
 
 final class SettingsProfileState {
-  const SettingsProfileState._({
+  const SettingsProfileState({
     required this.status,
     required this.phoneNumber,
     required this.email,
     this.error,
   });
-
-  factory SettingsProfileState.fromAsync(AsyncValue<UserProfile?> profile) {
-    return switch (profile) {
-      AsyncData(:final value) =>
-        value == null
-            ? const SettingsProfileState._(
-                status: SettingsProfileStatus.missing,
-                phoneNumber: 'Unavailable',
-                email: 'Unavailable',
-              )
-            : SettingsProfileState._(
-                status: SettingsProfileStatus.loaded,
-                phoneNumber: _formatPhoneForDisplay(value.phoneNumber),
-                email: _emailForDisplay(value.email),
-              ),
-      AsyncError(:final error) => SettingsProfileState._(
-        status: SettingsProfileStatus.error,
-        phoneNumber: 'Unavailable',
-        email: 'Unavailable',
-        error: error,
-      ),
-      _ => const SettingsProfileState._(
-        status: SettingsProfileStatus.loading,
-        phoneNumber: 'Loading',
-        email: 'Loading',
-      ),
-    };
-  }
 
   final SettingsProfileStatus status;
   final String phoneNumber;
@@ -211,54 +164,11 @@ final class SettingsPreferenceValues {
 enum SettingsBlockedAccountsStatus { loading, error, empty, content }
 
 final class SettingsBlockedAccountsState {
-  const SettingsBlockedAccountsState._({
+  const SettingsBlockedAccountsState({
     required this.status,
     required this.rows,
     this.error,
   });
-
-  factory SettingsBlockedAccountsState.fromAsync({
-    required AsyncValue<List<BlockedUser>> blockedUsers,
-    required AsyncValue<Map<String, PublicProfile>> blockedProfiles,
-  }) {
-    return switch (blockedUsers) {
-      AsyncError(:final error) => SettingsBlockedAccountsState._(
-        status: SettingsBlockedAccountsStatus.error,
-        rows: const [],
-        error: error,
-      ),
-      AsyncData(:final value) =>
-        value.isEmpty
-            ? const SettingsBlockedAccountsState._(
-                status: SettingsBlockedAccountsStatus.empty,
-                rows: [],
-              )
-            : switch (blockedProfiles) {
-                // Surface profile lookup errors instead of silently falling
-                // through to null profiles.
-                AsyncError(:final error) => SettingsBlockedAccountsState._(
-                  status: SettingsBlockedAccountsStatus.error,
-                  rows: [],
-                  error: error,
-                ),
-                _ => SettingsBlockedAccountsState._(
-                  status: SettingsBlockedAccountsStatus.content,
-                  rows: [
-                    for (final blocked in value)
-                      SettingsBlockedAccountRow.fromBlockedUser(
-                        blocked,
-                        profile:
-                            blockedProfiles.asData?.value[blocked.uid],
-                      ),
-                  ],
-                ),
-              },
-      _ => const SettingsBlockedAccountsState._(
-        status: SettingsBlockedAccountsStatus.loading,
-        rows: [],
-      ),
-    };
-  }
 
   final SettingsBlockedAccountsStatus status;
   final List<SettingsBlockedAccountRow> rows;
@@ -316,12 +226,12 @@ final class SettingsMutationState {
   final bool unblocking;
 }
 
-String _emailForDisplay(String email) {
+String settingsEmailForDisplay(String email) {
   final trimmed = email.trim();
   return trimmed.isEmpty ? 'Not added' : trimmed;
 }
 
-String _formatPhoneForDisplay(String phoneNumber) {
+String settingsFormatPhoneForDisplay(String phoneNumber) {
   if (phoneNumber.isEmpty) return '';
   if (!phoneNumber.startsWith('+')) return phoneNumber;
 

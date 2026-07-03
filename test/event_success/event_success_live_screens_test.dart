@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
@@ -18,6 +19,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_structure.da
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/event_success/event_success_companion_clock.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
@@ -26,6 +28,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
+import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -49,7 +52,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
 
     final event = buildEvent(bookedCount: 10, checkedInCount: 6);
-    final plan = EventSuccessPlan.defaultForEvent(event);
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
 
     await tester.pumpWidget(
       ProviderScope(
@@ -155,7 +158,7 @@ void main() {
       checkedInCount: 0,
       waitlistedCount: 0,
     );
-    final plan = EventSuccessPlan.defaultForEvent(event);
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
 
     await tester.pumpWidget(
       ProviderScope(
@@ -179,6 +182,17 @@ void main() {
                       plan: plan,
                       planIsPersisted: true,
                       roster: EventParticipationRoster.empty(),
+                      onSaveSetup: (request) =>
+                          EventSuccessController.saveSetupMutation.run(
+                            ref,
+                            (tx) => tx
+                                .get(eventSuccessControllerProvider.notifier)
+                                .saveSetup(
+                                  plan: request.plan,
+                                  draft: request.draft,
+                                  attendeePrompt: request.attendeePrompt,
+                                ),
+                          ),
                     ),
                   ),
                 ),
@@ -228,7 +242,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
 
     final event = buildEvent();
-    final plan = EventSuccessPlan.defaultForEvent(event);
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
 
     await tester.pumpWidget(
       ProviderScope(
@@ -354,6 +368,102 @@ void main() {
     expect(find.byType(CircularProgressIndicator), findsNothing);
   });
 
+  test('host section state maps provider waves to status and retry intent', () {
+    final event = buildEvent(id: 'event-host-section-state');
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
+    const roster = EventParticipationRoster(
+      bookedIds: ['runner-1'],
+      checkedInIds: [],
+      waitlistedIds: [],
+    );
+
+    EventSuccessHostSectionState resolve({
+      CatchAsyncState<EventSuccessPlan?>? planState,
+      CatchAsyncState<EventParticipationRoster>? rosterState,
+      CatchAsyncState<EventSuccessScorecard?>? scorecardState,
+      CatchAsyncState<List<EventSuccessAssignment>>? assignmentsState,
+      CatchAsyncState<List<PublicProfile>>? assignmentProfilesState,
+      CatchAsyncState<List<EventSuccessAssignment>>? rotationAssignmentsState,
+      CatchAsyncState<List<PublicProfile>>? rotationProfilesState,
+      CatchAsyncState<List<EventSuccessPreference>>? preferencesState,
+      CatchAsyncState<List<EventSuccessWingmanRequest>>? wingmanRequestsState,
+      CatchAsyncState<List<PublicProfile>>? wingmanProfilesState,
+    }) {
+      return EventSuccessHostSectionState.resolve(
+        event: event,
+        now: event.startTime,
+        planState: planState ?? CatchAsyncState<EventSuccessPlan?>.data(plan),
+        rosterState: rosterState ?? const CatchAsyncState.data(roster),
+        scorecardState:
+            scorecardState ??
+            const CatchAsyncState<EventSuccessScorecard?>.data(null),
+        assignmentsState:
+            assignmentsState ??
+            const CatchAsyncState<List<EventSuccessAssignment>>.data([]),
+        assignmentParticipantProfilesState:
+            assignmentProfilesState ??
+            const CatchAsyncState<List<PublicProfile>>.data([]),
+        rotationAssignmentsState:
+            rotationAssignmentsState ??
+            const CatchAsyncState<List<EventSuccessAssignment>>.data([]),
+        rotationParticipantProfilesState:
+            rotationProfilesState ??
+            const CatchAsyncState<List<PublicProfile>>.data([]),
+        preferencesState:
+            preferencesState ??
+            const CatchAsyncState<List<EventSuccessPreference>>.data([]),
+        wingmanRequestsState:
+            wingmanRequestsState ??
+            const CatchAsyncState<List<EventSuccessWingmanRequest>>.data([]),
+        wingmanProfilesState:
+            wingmanProfilesState ??
+            const CatchAsyncState<List<PublicProfile>>.data([]),
+      );
+    }
+
+    expect(
+      resolve(
+        planState: const CatchAsyncState<EventSuccessPlan?>.loading(),
+      ).status,
+      EventSuccessHostSectionStatus.loading,
+    );
+
+    final unsaved = resolve(
+      planState: const CatchAsyncState<EventSuccessPlan?>.data(null),
+    );
+    expect(unsaved.status, EventSuccessHostSectionStatus.ready);
+    expect(unsaved.planIsPersisted, isFalse);
+    expect(unsaved.plan.eventId, event.id);
+
+    final rosterError = StateError('roster failed');
+    final rosterState = resolve(
+      rosterState: CatchAsyncState<EventParticipationRoster>.error(rosterError),
+    );
+    expect(rosterState.status, EventSuccessHostSectionStatus.error);
+    expect(rosterState.retryIntent, EventSuccessHostRetryIntent.roster);
+    expect(rosterState.error, same(rosterError));
+
+    final profileError = StateError('profiles failed');
+    expect(
+      resolve(
+        assignmentProfilesState: CatchAsyncState<List<PublicProfile>>.error(
+          profileError,
+        ),
+      ).retryIntent,
+      EventSuccessHostRetryIntent.assignmentParticipantProfiles,
+    );
+
+    final scorecardError = StateError('scorecard failed');
+    expect(
+      resolve(
+        scorecardState: CatchAsyncState<EventSuccessScorecard?>.error(
+          scorecardError,
+        ),
+      ).retryIntent,
+      EventSuccessHostRetryIntent.scorecard,
+    );
+  });
+
   testWidgets('host report is hidden when host analytics is disabled', (
     tester,
   ) async {
@@ -363,11 +473,12 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
 
     final event = buildEvent();
-    final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
-      selectedModuleIds: EventSuccessPlaybookLibrary.socialRun.moduleIds
-          .where((id) => id != EventSuccessModuleCatalog.hostAnalytics.id)
-          .toList(),
-    );
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime)
+        .copyWith(
+          selectedModuleIds: EventSuccessPlaybookLibrary.socialRun.moduleIds
+              .where((id) => id != EventSuccessModuleCatalog.hostAnalytics.id)
+              .toList(),
+        );
 
     await tester.pumpWidget(
       ProviderScope(
@@ -403,7 +514,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
 
     final event = buildEvent(bookedCount: 6, checkedInCount: 5);
-    final plan = EventSuccessPlan.defaultForEvent(event);
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
     final now = DateTime(2026, 5, 21, 8);
 
     await tester.pumpWidget(
@@ -509,7 +620,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
 
     final event = buildEvent();
-    final plan = EventSuccessPlan.defaultForEvent(event);
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
     final now = DateTime(2026, 5, 21, 8);
 
     await tester.pumpWidget(
@@ -593,7 +704,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
 
     final event = buildEvent();
-    final plan = EventSuccessPlan.defaultForEvent(event);
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
     final now = DateTime(2026, 5, 21, 8);
 
     await tester.pumpWidget(
@@ -684,7 +795,7 @@ void main() {
       startTime: start,
       endTime: start.add(const Duration(hours: 1)),
     );
-    final plan = EventSuccessPlan.defaultForEvent(event);
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
 
     await tester.pumpWidget(
       ProviderScope(
@@ -817,7 +928,7 @@ void main() {
       startTime: start,
       endTime: start.add(const Duration(minutes: 60)),
     );
-    final plan = EventSuccessPlan.defaultForEvent(event);
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
     final assignments = [
       EventSuccessAssignment(
         id: eventSuccessAssignmentId(
@@ -1013,6 +1124,7 @@ void main() {
                     onNextStep: () => nextPressed++,
                     onCompletePlan: () => completePressed++,
                   ),
+                  onPlayLiveEffect: effects.play,
                   initialTab: EventSuccessHostTab.live,
                   showTabs: false,
                 ),
@@ -1321,6 +1433,7 @@ void main() {
       );
       final plan = EventSuccessPlan.defaultForEvent(
         event,
+        now: event.startTime,
       ).copyWith(activeStepIndex: 4);
 
       await tester.pumpWidget(
@@ -1359,6 +1472,18 @@ void main() {
                     ),
                   ],
                   now: start.add(const Duration(hours: 1)),
+                  onSaveWingmanRequest: (target, note) async {
+                    await EventSuccessController.wingmanRequestMutation.run(
+                      ref,
+                      (tx) => tx
+                          .get(eventSuccessControllerProvider.notifier)
+                          .saveWingmanRequest(
+                            event: event,
+                            target: target,
+                            note: note,
+                          ),
+                    );
+                  },
                 ),
               );
             },
@@ -1408,6 +1533,7 @@ void main() {
       );
       final plan = EventSuccessPlan.defaultForEvent(
         event,
+        now: event.startTime,
       ).copyWith(activeStepIndex: 4);
 
       await tester.pumpWidget(
@@ -1466,7 +1592,9 @@ void main() {
       endTime: start.add(const Duration(hours: 1)),
     );
     final plan = _withLiveReveal(
-      _withGuidedRotations(EventSuccessPlan.defaultForEvent(event)),
+      _withGuidedRotations(
+        EventSuccessPlan.defaultForEvent(event, now: event.startTime),
+      ),
     );
     final assignment = _rotationAssignment(
       event: event,
@@ -1528,13 +1656,14 @@ void main() {
       startTime: start,
       endTime: start.add(const Duration(hours: 2)),
     );
-    final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
-      selectedModuleIds: [
-        EventSuccessModuleCatalog.checkIn.id,
-        EventSuccessModuleCatalog.firstHelloCheckIn.id,
-        EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
-      ],
-    );
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime)
+        .copyWith(
+          selectedModuleIds: [
+            EventSuccessModuleCatalog.checkIn.id,
+            EventSuccessModuleCatalog.firstHelloCheckIn.id,
+            EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
+          ],
+        );
     final mission = EventSuccessArrivalMission(
       id: eventSuccessArrivalMissionId(eventId: event.id, uid: 'runner-1'),
       eventId: event.id,
@@ -1615,12 +1744,13 @@ void main() {
       startTime: start,
       endTime: start.add(const Duration(hours: 2)),
     );
-    final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
-      selectedModuleIds: [
-        EventSuccessModuleCatalog.checkIn.id,
-        EventSuccessModuleCatalog.firstHelloCheckIn.id,
-      ],
-    );
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime)
+        .copyWith(
+          selectedModuleIds: [
+            EventSuccessModuleCatalog.checkIn.id,
+            EventSuccessModuleCatalog.firstHelloCheckIn.id,
+          ],
+        );
     var startCalls = 0;
     var skipCalls = 0;
 
@@ -1671,12 +1801,13 @@ void main() {
       startTime: start,
       endTime: start.add(const Duration(hours: 2)),
     );
-    final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
-      selectedModuleIds: [
-        EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
-      ],
-      compatibilityAffectsRanking: true,
-    );
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime)
+        .copyWith(
+          selectedModuleIds: [
+            EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
+          ],
+          compatibilityAffectsRanking: true,
+        );
 
     await tester.pumpWidget(
       ProviderScope(
@@ -1701,6 +1832,19 @@ void main() {
                 ),
                 wingmanRequestCandidates: const [],
                 now: start.add(const Duration(minutes: 30)),
+                onSaveCompatibilityAnswers: (answerIds) async {
+                  await EventSuccessController.compatibilityResponseMutation
+                      .run(
+                        ref,
+                        (tx) => tx
+                            .get(eventSuccessControllerProvider.notifier)
+                            .saveCompatibilityResponse(
+                              event: event,
+                              answerIds: answerIds,
+                              questionnaireConfig: plan.questionnaireConfig,
+                            ),
+                      );
+                },
               ),
             );
           },
@@ -1742,12 +1886,13 @@ void main() {
       startTime: start,
       endTime: start.add(const Duration(hours: 2)),
     );
-    final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
-      selectedModuleIds: [
-        EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
-      ],
-      compatibilityAffectsRanking: true,
-    );
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime)
+        .copyWith(
+          selectedModuleIds: [
+            EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
+          ],
+          compatibilityAffectsRanking: true,
+        );
 
     await tester.pumpWidget(
       ProviderScope(
@@ -1808,7 +1953,7 @@ void main() {
       startTime: start,
       endTime: start.add(const Duration(hours: 1)),
     );
-    final plan = EventSuccessPlan.defaultForEvent(event);
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
 
     await tester.pumpWidget(
       ProviderScope(
@@ -1888,7 +2033,9 @@ void main() {
               ),
             ),
             watchEventSuccessPlanProvider(event.id).overrideWithValue(
-              AsyncData(EventSuccessPlan.defaultForEvent(event)),
+              AsyncData(
+                EventSuccessPlan.defaultForEvent(event, now: event.startTime),
+              ),
             ),
           ],
           child: MaterialApp(
@@ -1910,6 +2057,77 @@ void main() {
     },
   );
 
+  testWidgets('companion route shows loading while uid resolves', (
+    tester,
+  ) async {
+    final event = buildEvent(id: 'event-uid-loading-companion');
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWithValue(const AsyncLoading<String?>()),
+          watchEventProvider(
+            event.id,
+          ).overrideWithValue(AsyncData<Event?>(event)),
+          watchEventSuccessPlanProvider(event.id).overrideWithValue(
+            AsyncData(
+              EventSuccessPlan.defaultForEvent(event, now: event.startTime),
+            ),
+          ),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: EventSuccessCompanionRouteScreen(
+            clubId: event.clubId,
+            eventId: event.id,
+          ),
+        ),
+      ),
+    );
+
+    await tester.pump();
+
+    expect(find.text('Event companion'), findsOneWidget);
+    expect(find.byType(EventSuccessCompanionLoadingBody), findsOneWidget);
+    expect(find.text('Sign in required'), findsNothing);
+  });
+
+  testWidgets('companion route shows auth errors before signed-out copy', (
+    tester,
+  ) async {
+    final event = buildEvent(id: 'event-uid-error-companion');
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWithValue(
+            AsyncError<String?>(Exception('auth failed'), StackTrace.empty),
+          ),
+          watchEventProvider(
+            event.id,
+          ).overrideWithValue(AsyncData<Event?>(event)),
+          watchEventSuccessPlanProvider(event.id).overrideWithValue(
+            AsyncData(
+              EventSuccessPlan.defaultForEvent(event, now: event.startTime),
+            ),
+          ),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: EventSuccessCompanionRouteScreen(
+            clubId: event.clubId,
+            eventId: event.id,
+          ),
+        ),
+      ),
+    );
+
+    await tester.pump();
+
+    expect(find.text('Sign in problem'), findsOneWidget);
+    expect(find.text('Sign in required'), findsNothing);
+  });
+
   testWidgets(
     'companion screen shows post-event openers and feedback after attendance',
     (tester) async {
@@ -1919,7 +2137,10 @@ void main() {
         startTime: start,
         endTime: start.add(const Duration(hours: 1)),
       );
-      final plan = EventSuccessPlan.defaultForEvent(event);
+      final plan = EventSuccessPlan.defaultForEvent(
+        event,
+        now: event.startTime,
+      );
 
       await tester.pumpWidget(
         ProviderScope(
@@ -1951,6 +2172,14 @@ void main() {
                     ),
                   ],
                   now: start.add(const Duration(hours: 2)),
+                  onSubmitFeedback: (feedback) async {
+                    await EventSuccessController.feedbackMutation.run(
+                      ref,
+                      (tx) => tx
+                          .get(eventSuccessControllerProvider.notifier)
+                          .submitFeedback(feedback),
+                    );
+                  },
                 ),
               );
             },
@@ -2013,7 +2242,7 @@ void main() {
       startTime: start,
       endTime: start.add(const Duration(hours: 1)),
     );
-    final plan = EventSuccessPlan.defaultForEvent(event);
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
     final assignment = EventSuccessAssignment(
       id: eventSuccessAssignmentId(
         eventId: event.id,
@@ -2082,7 +2311,7 @@ void main() {
       startTime: start,
       endTime: start.add(const Duration(hours: 1)),
     );
-    final plan = EventSuccessPlan.defaultForEvent(event);
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
     final assignment = EventSuccessAssignment(
       id: eventSuccessAssignmentId(
         eventId: event.id,
@@ -2395,6 +2624,7 @@ void main() {
               ),
             ],
             now: start.subtract(const Duration(hours: 1)),
+            onPlayLiveEffect: effects.play,
           ),
         ),
       ),
@@ -2477,7 +2707,7 @@ void main() {
       startTime: start,
       endTime: start.add(const Duration(hours: 1)),
     );
-    final plan = EventSuccessPlan.defaultForEvent(event);
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
     final assignment = _assignment(
       event: event,
       uid: 'runner-1',
@@ -2526,7 +2756,7 @@ void main() {
 
     final firestore = FakeFirebaseFirestore();
     final event = buildEvent();
-    final plan = EventSuccessPlan.defaultForEvent(event);
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
     final assignment = _assignment(
       event: event,
       uid: 'runner-1',
@@ -2699,6 +2929,7 @@ void main() {
       );
       final plan = EventSuccessPlan.defaultForEvent(
         event,
+        now: event.startTime,
       ).copyWith(selectedModuleIds: [EventSuccessModuleCatalog.checkIn.id]);
 
       await tester.pumpWidget(
@@ -2816,7 +3047,7 @@ EventSuccessPlan _racketPlan(Event event) {
           )
           .toList()
         ..sort();
-  return EventSuccessPlan.defaultForEvent(event).copyWith(
+  return EventSuccessPlan.defaultForEvent(event, now: event.startTime).copyWith(
     playbookId: EventSuccessPlaybookLibrary.pickleball.id,
     selectedModuleIds: moduleIds,
   );

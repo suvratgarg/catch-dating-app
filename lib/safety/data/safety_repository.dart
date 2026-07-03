@@ -152,7 +152,14 @@ SafetyRepository safetyRepository(Ref ref) => SafetyRepository(
 
 @riverpod
 Stream<List<BlockedUser>> watchBlockedUsers(Ref ref) {
-  final uid = ref.watch(uidProvider).asData?.value;
-  if (uid == null) return const Stream.empty();
-  return ref.watch(safetyRepositoryProvider).watchBlockedUsers(uid: uid);
+  final uidAsync = ref.watch(uidProvider);
+  return switch (uidAsync) {
+    AsyncData(:final value) =>
+      value == null
+          ? const Stream<List<BlockedUser>>.empty()
+          : ref.watch(safetyRepositoryProvider).watchBlockedUsers(uid: value),
+    AsyncError(:final error, :final stackTrace) =>
+      Stream<List<BlockedUser>>.error(error, stackTrace),
+    _ => const Stream<List<BlockedUser>>.empty(),
+  };
 }

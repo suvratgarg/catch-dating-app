@@ -1,3 +1,4 @@
+import {useMutation} from "@tanstack/react-query";
 import {useCallback, useMemo, useState} from "react";
 import organizerIntakeBridgeJson from "../generated/organizerIntakeBridge.json";
 import {
@@ -27,23 +28,29 @@ import {
   surfaceForCandidateCuration,
 } from "./organizerIntakeHelpers";
 import type {
+  AdminDecideOrganizerEventCandidatePayload,
   AdminDecideOrganizerEventCandidateResponse,
   AdminDecideOrganizerIntakePayload,
   AdminDecideOrganizerIntakeResponse,
   AdminDecideOrganizerPolicyGapPayload,
   AdminDecideOrganizerPolicyGapResponse,
+  AdminRecordOrganizerCurationPayload,
   AdminRecordOrganizerCurationResponse,
+  AdminResolveOrganizerEventLocationPayload,
   AdminResolveOrganizerEventLocationResponse,
   OrganizerEventCandidateDecision,
   OrganizerIntakeDecision,
   OrganizerPolicyGapDecision,
 } from "../../../../shared/types/adminTypes";
 import type * as Intake from "../types/organizerIntakeTypes";
-
-export type IntakeWorkspaceTab = "events" | "organizers";
+import {adminQueryKeys} from "../../../../shared/query/queryKeys";
+import {usePendingMutationRecord} from "../../../../shared/query/usePendingMutationRecord";
 
 const organizerIntakeBridge =
   organizerIntakeBridgeJson as unknown as Intake.OrganizerIntakeBridge;
+
+type LocationResolutionMutationPayload =
+  AdminResolveOrganizerEventLocationPayload & {taskId: string};
 
 export function useOrganizerIntakeController({
   onError,
@@ -53,41 +60,93 @@ export function useOrganizerIntakeController({
   onNotice: (message: string | null) => void;
 }) {
   const bridge = organizerIntakeBridge;
-  const [activeWorkspace, setActiveWorkspace] =
-    useState<IntakeWorkspaceTab>("events");
   const [decisionNotes, setDecisionNotes] = useState<Record<string, string>>(
     {}
   );
-  const [decisionInFlight, setDecisionInFlight] =
-    useState<Record<string, OrganizerIntakeDecision>>({});
   const [localDecisions, setLocalDecisions] =
     useState<Record<string, AdminDecideOrganizerIntakeResponse>>({});
-  const [curationInFlight, setCurationInFlight] =
-    useState<Record<string, boolean>>({});
   const [localCuration, setLocalCuration] =
     useState<Record<string, AdminRecordOrganizerCurationResponse>>({});
   const [curationForms, setCurationForms] =
     useState<Record<string, Intake.OrganizerCurationFormState>>({});
   const [eventDecisionNotes, setEventDecisionNotes] =
     useState<Record<string, string>>({});
-  const [eventDecisionInFlight, setEventDecisionInFlight] =
-    useState<Record<string, OrganizerEventCandidateDecision>>({});
   const [localEventDecisions, setLocalEventDecisions] =
     useState<Record<string, AdminDecideOrganizerEventCandidateResponse>>({});
   const [locationResolutionForms, setLocationResolutionForms] =
     useState<Record<string, Intake.OrganizerLocationResolutionFormState>>({});
-  const [locationResolutionInFlight, setLocationResolutionInFlight] =
-    useState<Record<string, boolean>>({});
   const [localLocationResolutions, setLocalLocationResolutions] =
     useState<Record<string, AdminResolveOrganizerEventLocationResponse>>({});
   const [policyDecisionNotes, setPolicyDecisionNotes] =
     useState<Record<string, string>>({});
-  const [policyDecisionInFlight, setPolicyDecisionInFlight] =
-    useState<Record<string, OrganizerPolicyGapDecision>>({});
   const [localPolicyDecisions, setLocalPolicyDecisions] =
     useState<Record<string, AdminDecideOrganizerPolicyGapResponse>>({});
   const [manualReportAcknowledgements, setManualReportAcknowledgements] =
     useState<Record<string, boolean>>({});
+  const decisionMutationKey = adminQueryKeys.organizerIntake.decision();
+  const curationMutationKey = adminQueryKeys.organizerIntake.curation();
+  const eventDecisionMutationKey =
+    adminQueryKeys.organizerIntake.eventDecision();
+  const policyDecisionMutationKey =
+    adminQueryKeys.organizerIntake.policyDecision();
+  const locationResolutionMutationKey =
+    adminQueryKeys.organizerIntake.locationResolution();
+  const decideOrganizerIntakeMutation = useMutation({
+    mutationKey: decisionMutationKey,
+    mutationFn: decideOrganizerIntake,
+  });
+  const decideOrganizerEventCandidateMutation = useMutation({
+    mutationKey: eventDecisionMutationKey,
+    mutationFn: decideOrganizerEventCandidate,
+  });
+  const decideOrganizerPolicyGapMutation = useMutation({
+    mutationKey: policyDecisionMutationKey,
+    mutationFn: decideOrganizerPolicyGap,
+  });
+  const recordOrganizerCurationMutation = useMutation({
+    mutationKey: curationMutationKey,
+    mutationFn: recordOrganizerCuration,
+  });
+  const resolveOrganizerEventLocationMutation = useMutation({
+    mutationKey: locationResolutionMutationKey,
+    mutationFn: ({taskId: _taskId, ...payload}: LocationResolutionMutationPayload) =>
+      resolveOrganizerEventLocation(payload),
+  });
+  const decisionInFlight = usePendingMutationRecord<
+    AdminDecideOrganizerIntakePayload,
+    OrganizerIntakeDecision
+  >(decisionMutationKey, (payload) => ({
+    key: payload.entityId,
+    value: payload.decision,
+  }));
+  const curationInFlight = usePendingMutationRecord<
+    AdminRecordOrganizerCurationPayload,
+    boolean
+  >(curationMutationKey, (payload) => ({
+    key: curationKeyForPayload(payload),
+    value: true,
+  }));
+  const eventDecisionInFlight = usePendingMutationRecord<
+    AdminDecideOrganizerEventCandidatePayload,
+    OrganizerEventCandidateDecision
+  >(eventDecisionMutationKey, (payload) => ({
+    key: payload.candidateId,
+    value: payload.decision,
+  }));
+  const policyDecisionInFlight = usePendingMutationRecord<
+    AdminDecideOrganizerPolicyGapPayload,
+    OrganizerPolicyGapDecision
+  >(policyDecisionMutationKey, (payload) => ({
+    key: payload.gapId,
+    value: payload.decision,
+  }));
+  const locationResolutionInFlight = usePendingMutationRecord<
+    LocationResolutionMutationPayload,
+    boolean
+  >(locationResolutionMutationKey, (payload) => ({
+    key: payload.taskId,
+    value: true,
+  }));
 
   const publicationPacketByEntity = useMemo(() =>
     new Map(
@@ -175,14 +234,10 @@ export function useOrganizerIntakeController({
     }
     const note = decisionNotes[item.entityId]?.trim() ||
       defaultIntakeDecisionNote(item, decision);
-    setDecisionInFlight((current) => ({
-      ...current,
-      [item.entityId]: decision,
-    }));
     onError(null);
     onNotice(null);
     try {
-      const response = await decideOrganizerIntake({
+      const response = await decideOrganizerIntakeMutation.mutateAsync({
         entityId: item.entityId,
         decision,
         appVisibility: "hidden",
@@ -202,15 +257,10 @@ export function useOrganizerIntakeController({
           decisionError.message :
           "Unable to record organizer intake decision."
       );
-    } finally {
-      setDecisionInFlight((current) => {
-        const next = {...current};
-        delete next[item.entityId];
-        return next;
-      });
     }
   }, [
     decisionNotes,
+    decideOrganizerIntakeMutation,
     manualReportAcknowledgements,
     onError,
     onNotice,
@@ -225,14 +275,10 @@ export function useOrganizerIntakeController({
       onError("Choose a matched organizer before attaching this surface.");
       return;
     }
-    setCurationInFlight((current) => ({
-      ...current,
-      [candidate.candidateId]: true,
-    }));
     onError(null);
     onNotice(null);
     try {
-      const response = await recordOrganizerCuration({
+      const response = await recordOrganizerCurationMutation.mutateAsync({
         operationType: "attach_surface",
         entityId,
         sourceCandidateId: candidate.candidateId,
@@ -250,14 +296,8 @@ export function useOrganizerIntakeController({
           curationError.message :
           "Unable to record organizer curation operation."
       );
-    } finally {
-      setCurationInFlight((current) => {
-        const next = {...current};
-        delete next[candidate.candidateId];
-        return next;
-      });
     }
-  }, [onError, onNotice]);
+  }, [onError, onNotice, recordOrganizerCurationMutation]);
 
   const handleItemCuration = useCallback(async (
     item: Intake.OrganizerIntakeItem,
@@ -269,14 +309,10 @@ export function useOrganizerIntakeController({
       return;
     }
     const operationKey = curationFormKey(item, form);
-    setCurationInFlight((current) => ({
-      ...current,
-      [operationKey]: true,
-    }));
     onError(null);
     onNotice(null);
     try {
-      const response = await recordOrganizerCuration(payload.value);
+      const response = await recordOrganizerCurationMutation.mutateAsync(payload.value);
       setLocalCuration((current) => ({
         ...current,
         [operationKey]: response,
@@ -290,14 +326,8 @@ export function useOrganizerIntakeController({
           curationError.message :
           "Unable to record organizer curation operation."
       );
-    } finally {
-      setCurationInFlight((current) => {
-        const next = {...current};
-        delete next[operationKey];
-        return next;
-      });
     }
-  }, [onError, onNotice]);
+  }, [onError, onNotice, recordOrganizerCurationMutation]);
 
   const handleEventDecision = useCallback(async (
     candidate: Intake.OrganizerExternalEventCandidate,
@@ -311,14 +341,10 @@ export function useOrganizerIntakeController({
     }
     const note = eventDecisionNotes[candidate.candidateId]?.trim() ||
       defaultEventCandidateDecisionNote(candidate, decision);
-    setEventDecisionInFlight((current) => ({
-      ...current,
-      [candidate.candidateId]: decision,
-    }));
     onError(null);
     onNotice(null);
     try {
-      const response = await decideOrganizerEventCandidate({
+      const response = await decideOrganizerEventCandidateMutation.mutateAsync({
         candidateId: candidate.candidateId,
         decision,
         checklist,
@@ -337,14 +363,13 @@ export function useOrganizerIntakeController({
           decisionError.message :
           "Unable to record event candidate decision."
       );
-    } finally {
-      setEventDecisionInFlight((current) => {
-        const next = {...current};
-        delete next[candidate.candidateId];
-        return next;
-      });
     }
-  }, [eventDecisionNotes, onError, onNotice]);
+  }, [
+    decideOrganizerEventCandidateMutation,
+    eventDecisionNotes,
+    onError,
+    onNotice,
+  ]);
 
   const handlePolicyGapDecision = useCallback(async (
     gap: Intake.OrganizerPolicyGap,
@@ -362,14 +387,10 @@ export function useOrganizerIntakeController({
     }
     const note = policyDecisionNotes[gap.gapId]?.trim() ||
       defaultPolicyGapDecisionNote(gap, decision);
-    setPolicyDecisionInFlight((current) => ({
-      ...current,
-      [gap.gapId]: decision,
-    }));
     onError(null);
     onNotice(null);
     try {
-      const response = await decideOrganizerPolicyGap({
+      const response = await decideOrganizerPolicyGapMutation.mutateAsync({
         gapId: gap.gapId,
         decision,
         requiredInputsReviewed,
@@ -389,14 +410,13 @@ export function useOrganizerIntakeController({
           decisionError.message :
           "Unable to record policy gap decision."
       );
-    } finally {
-      setPolicyDecisionInFlight((current) => {
-        const next = {...current};
-        delete next[gap.gapId];
-        return next;
-      });
     }
-  }, [policyDecisionNotes, onError, onNotice]);
+  }, [
+    decideOrganizerPolicyGapMutation,
+    policyDecisionNotes,
+    onError,
+    onNotice,
+  ]);
 
   const handlePendingInputDecision = useCallback(async (
     input: Intake.OrganizerPendingInputItem,
@@ -415,12 +435,8 @@ export function useOrganizerIntakeController({
         onError("Pending input decision is not a publication decision.");
         return;
       }
-      setDecisionInFlight((current) => ({
-        ...current,
-        [input.subjectId]: intakeDecision,
-      }));
       try {
-        const response = await decideOrganizerIntake(
+        const response = await decideOrganizerIntakeMutation.mutateAsync(
           payload as unknown as AdminDecideOrganizerIntakePayload
         );
         setLocalDecisions((current) => ({
@@ -436,12 +452,6 @@ export function useOrganizerIntakeController({
             decisionError.message :
             "Unable to record organizer intake decision."
         );
-      } finally {
-        setDecisionInFlight((current) => {
-          const next = {...current};
-          delete next[input.subjectId];
-          return next;
-        });
       }
       return;
     }
@@ -451,12 +461,8 @@ export function useOrganizerIntakeController({
         onError("Pending input decision is not a policy decision.");
         return;
       }
-      setPolicyDecisionInFlight((current) => ({
-        ...current,
-        [input.subjectId]: policyDecision,
-      }));
       try {
-        const response = await decideOrganizerPolicyGap(
+        const response = await decideOrganizerPolicyGapMutation.mutateAsync(
           payload as unknown as AdminDecideOrganizerPolicyGapPayload
         );
         setLocalPolicyDecisions((current) => ({
@@ -472,17 +478,16 @@ export function useOrganizerIntakeController({
             decisionError.message :
             "Unable to record policy gap decision."
         );
-      } finally {
-        setPolicyDecisionInFlight((current) => {
-          const next = {...current};
-          delete next[input.subjectId];
-          return next;
-        });
       }
       return;
     }
     onError("Pending input request type is not wired for admin action.");
-  }, [onError, onNotice]);
+  }, [
+    decideOrganizerIntakeMutation,
+    decideOrganizerPolicyGapMutation,
+    onError,
+    onNotice,
+  ]);
 
   const handleLocationResolution = useCallback(async (
     task: Intake.OrganizerExternalEventLocationResolutionTask
@@ -505,14 +510,11 @@ export function useOrganizerIntakeController({
     }
     const note = form.note.trim() ||
       `Manual location QA complete for ${task.title}.`;
-    setLocationResolutionInFlight((current) => ({
-      ...current,
-      [task.taskId]: true,
-    }));
     onError(null);
     onNotice(null);
     try {
-      const response = await resolveOrganizerEventLocation({
+      const response = await resolveOrganizerEventLocationMutation.mutateAsync({
+        taskId: task.taskId,
         candidateId: task.candidateId,
         location: {
           name,
@@ -541,17 +543,15 @@ export function useOrganizerIntakeController({
           resolutionError.message :
           "Unable to record event location resolution."
       );
-    } finally {
-      setLocationResolutionInFlight((current) => {
-        const next = {...current};
-        delete next[task.taskId];
-        return next;
-      });
     }
-  }, [locationResolutionForms, onError, onNotice]);
+  }, [
+    locationResolutionForms,
+    onError,
+    onNotice,
+    resolveOrganizerEventLocationMutation,
+  ]);
 
   return {
-    activeWorkspace,
     bridge,
     curationForms,
     curationInFlight,
@@ -578,7 +578,6 @@ export function useOrganizerIntakeController({
     policyDecisionInFlight,
     policyDecisionNotes,
     publicationPacketByEntity,
-    setActiveWorkspace,
     setCurationForms,
     setDecisionNotes,
     setEventDecisionNotes,
@@ -587,3 +586,18 @@ export function useOrganizerIntakeController({
     setPolicyDecisionNotes,
   };
 }
+
+function curationKeyForPayload(payload: AdminRecordOrganizerCurationPayload) {
+  if (payload.sourceCandidateId) return payload.sourceCandidateId;
+  return [
+    payload.entityId ?? payload.sourceEntityId,
+    payload.operationType,
+    payload.targetEntityId,
+    payload.surfaceId,
+    payload.decision,
+    payload.newEntityId,
+  ].filter(Boolean).join(":");
+}
+
+export type OrganizerIntakeController =
+  ReturnType<typeof useOrganizerIntakeController>;

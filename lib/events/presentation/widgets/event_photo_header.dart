@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
+import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:flutter/material.dart';
 
 /// Hero visual for the event detail screen.

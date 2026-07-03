@@ -163,6 +163,7 @@ class PaymentRepository {
       // dismiss the native sheet (clear + recreate) so a late success cannot
       // charge the user after we have already surfaced a failure — there is no
       // server-side webhook reconciliation yet (see backlog: payment webhook).
+      // architecture:allow stream-timeout -- reason: Razorpay checkout deadline
       return await completer.future.timeout(
         const Duration(minutes: 10),
         onTimeout: () {
@@ -494,6 +495,8 @@ BackendErrorMapper _eventBookingErrorMapper({required String fallbackMessage}) {
   };
 }
 
+// keepalive: payment repository is a shared Functions/link facade for checkout
+// and confirmation flows.
 @Riverpod(keepAlive: true)
 PaymentRepository paymentRepository(Ref ref) {
   final repo = PaymentRepository(

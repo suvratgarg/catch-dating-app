@@ -28,13 +28,20 @@ class ChatController extends _$ChatController {
     required String senderId,
     required String text,
   }) async {
-    await ref
-        .read(conversationRepositoryProvider)
-        .sendTextMessage(
-          conversationId: matchId,
-          senderId: senderId,
-          text: text,
-        );
+    await withBackendErrorContext(
+      () => ref
+          .read(conversationRepositoryProvider)
+          .sendTextMessage(
+            conversationId: matchId,
+            senderId: senderId,
+            text: text,
+          ),
+      context: const BackendErrorContext(
+        service: BackendService.firestore,
+        action: 'send text message',
+        resource: 'conversations',
+      ),
+    );
   }
 
   Future<void> sendImage({

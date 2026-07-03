@@ -11,6 +11,8 @@ part of 'city_repository.dart';
 /// List of supported cities, fetched once and cached for the app lifetime.
 ///
 /// Returns the Firestore-backed list or the 9 hardcoded defaults.
+// keepalive: city repository backs global city selection and should remain a
+// single cached Firestore facade.
 
 @ProviderFor(cityRepository)
 final cityRepositoryProvider = CityRepositoryProvider._();
@@ -18,6 +20,8 @@ final cityRepositoryProvider = CityRepositoryProvider._();
 /// List of supported cities, fetched once and cached for the app lifetime.
 ///
 /// Returns the Firestore-backed list or the 9 hardcoded defaults.
+// keepalive: city repository backs global city selection and should remain a
+// single cached Firestore facade.
 
 final class CityRepositoryProvider
     extends $FunctionalProvider<CityRepository, CityRepository, CityRepository>
@@ -25,6 +29,8 @@ final class CityRepositoryProvider
   /// List of supported cities, fetched once and cached for the app lifetime.
   ///
   /// Returns the Firestore-backed list or the 9 hardcoded defaults.
+  // keepalive: city repository backs global city selection and should remain a
+  // single cached Firestore facade.
   CityRepositoryProvider._()
     : super(
         from: null,

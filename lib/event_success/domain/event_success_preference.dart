@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:catch_dating_app/core/firestore_converters.dart';
 
 final class EventSuccessPreference {
   const EventSuccessPreference({
@@ -21,8 +21,14 @@ final class EventSuccessPreference {
       microPodsOptedOut: json['microPodsOptedOut'] as bool? ?? false,
       guidedRotationsOptedOut:
           json['guidedRotationsOptedOut'] as bool? ?? false,
-      createdAt: _requiredTimestamp(json['createdAt'], 'createdAt'),
-      updatedAt: _requiredTimestamp(json['updatedAt'], 'updatedAt'),
+      createdAt: dateTimeFromFirestoreValue(
+        json['createdAt'],
+        field: 'createdAt',
+      ),
+      updatedAt: dateTimeFromFirestoreValue(
+        json['updatedAt'],
+        field: 'updatedAt',
+      ),
     );
   }
 
@@ -41,8 +47,8 @@ final class EventSuccessPreference {
     'uid': uid,
     'microPodsOptedOut': microPodsOptedOut,
     'guidedRotationsOptedOut': guidedRotationsOptedOut,
-    'createdAt': Timestamp.fromDate(createdAt),
-    'updatedAt': Timestamp.fromDate(updatedAt),
+    'createdAt': firestoreTimestampFromDateTime(createdAt),
+    'updatedAt': firestoreTimestampFromDateTime(updatedAt),
   };
 }
 
@@ -50,9 +56,3 @@ String eventSuccessPreferenceId({
   required String eventId,
   required String uid,
 }) => '${eventId}_$uid';
-
-DateTime _requiredTimestamp(Object? value, String field) {
-  if (value is Timestamp) return value.toDate();
-  if (value is DateTime) return value;
-  throw StateError('Missing timestamp field $field.');
-}

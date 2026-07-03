@@ -353,7 +353,7 @@ $ProfilePhotoModerationCopyWith<$Res>? get moderation {
 /// @nodoc
 mixin _$ProfilePhotoModeration {
 
- String get status; String? get reason;@TimestampConverter() DateTime? get reviewedAt;
+ String get status; String? get reason;@NullableTimestampConverter() DateTime? get reviewedAt;
 /// Create a copy of ProfilePhotoModeration
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -386,7 +386,7 @@ abstract mixin class $ProfilePhotoModerationCopyWith<$Res>  {
   factory $ProfilePhotoModerationCopyWith(ProfilePhotoModeration value, $Res Function(ProfilePhotoModeration) _then) = _$ProfilePhotoModerationCopyWithImpl;
 @useResult
 $Res call({
- String status, String? reason,@TimestampConverter() DateTime? reviewedAt
+ String status, String? reason,@NullableTimestampConverter() DateTime? reviewedAt
 });
 
 
@@ -493,7 +493,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String status,  String? reason, @TimestampConverter()  DateTime? reviewedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String status,  String? reason, @NullableTimestampConverter()  DateTime? reviewedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ProfilePhotoModeration() when $default != null:
 return $default(_that.status,_that.reason,_that.reviewedAt);case _:
@@ -514,7 +514,7 @@ return $default(_that.status,_that.reason,_that.reviewedAt);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String status,  String? reason, @TimestampConverter()  DateTime? reviewedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String status,  String? reason, @NullableTimestampConverter()  DateTime? reviewedAt)  $default,) {final _that = this;
 switch (_that) {
 case _ProfilePhotoModeration():
 return $default(_that.status,_that.reason,_that.reviewedAt);case _:
@@ -534,7 +534,7 @@ return $default(_that.status,_that.reason,_that.reviewedAt);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String status,  String? reason, @TimestampConverter()  DateTime? reviewedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String status,  String? reason, @NullableTimestampConverter()  DateTime? reviewedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _ProfilePhotoModeration() when $default != null:
 return $default(_that.status,_that.reason,_that.reviewedAt);case _:
@@ -549,12 +549,12 @@ return $default(_that.status,_that.reason,_that.reviewedAt);case _:
 @JsonSerializable()
 
 class _ProfilePhotoModeration extends ProfilePhotoModeration {
-  const _ProfilePhotoModeration({required this.status, this.reason, @TimestampConverter() this.reviewedAt}): super._();
+  const _ProfilePhotoModeration({required this.status, this.reason, @NullableTimestampConverter() this.reviewedAt}): super._();
   factory _ProfilePhotoModeration.fromJson(Map<String, dynamic> json) => _$ProfilePhotoModerationFromJson(json);
 
 @override final  String status;
 @override final  String? reason;
-@override@TimestampConverter() final  DateTime? reviewedAt;
+@override@NullableTimestampConverter() final  DateTime? reviewedAt;
 
 /// Create a copy of ProfilePhotoModeration
 /// with the given fields replaced by the non-null parameter values.
@@ -589,7 +589,7 @@ abstract mixin class _$ProfilePhotoModerationCopyWith<$Res> implements $ProfileP
   factory _$ProfilePhotoModerationCopyWith(_ProfilePhotoModeration value, $Res Function(_ProfilePhotoModeration) _then) = __$ProfilePhotoModerationCopyWithImpl;
 @override @useResult
 $Res call({
- String status, String? reason,@TimestampConverter() DateTime? reviewedAt
+ String status, String? reason,@NullableTimestampConverter() DateTime? reviewedAt
 });
 
 

@@ -9,10 +9,8 @@ part of 'event.dart';
 _Event _$EventFromJson(Map<String, dynamic> json) => _Event(
   id: json['id'] as String,
   clubId: json['clubId'] as String,
-  startTime: const TimestampConverter().fromJson(
-    json['startTime'] as Timestamp,
-  ),
-  endTime: const TimestampConverter().fromJson(json['endTime'] as Timestamp),
+  startTime: const TimestampConverter().fromJson(json['startTime']),
+  endTime: const TimestampConverter().fromJson(json['endTime']),
   meetingPoint: json['meetingPoint'] as String,
   meetingLocation: json['meetingLocation'] == null
       ? null
@@ -45,9 +43,7 @@ _Event _$EventFromJson(Map<String, dynamic> json) => _Event(
   status:
       $enumDecodeNullable(_$EventLifecycleStatusEnumMap, json['status']) ??
       EventLifecycleStatus.active,
-  cancelledAt: const NullableTimestampConverter().fromJson(
-    json['cancelledAt'] as Timestamp?,
-  ),
+  cancelledAt: const NullableTimestampConverter().fromJson(json['cancelledAt']),
   cancellationReason: json['cancellationReason'] as String?,
   constraints: json['constraints'] == null
       ? const EventConstraints()

@@ -9,6 +9,7 @@ import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/data/event_discovery_repository.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
@@ -19,12 +20,13 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/external_event.dart';
 import 'package:catch_dating_app/events/domain/saved_event.dart';
 import 'package:catch_dating_app/events/domain/viewer_event_availability.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
+import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
+import 'package:catch_dating_app/explore/data/explore_search_repository.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_filter_logic.dart';
+import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
-import 'package:catch_dating_app/explore/data/explore_search_repository.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -47,8 +49,652 @@ ClubMembership _membership({required String clubId, String uid = 'runner-1'}) =>
       joinedAt: DateTime(2026),
     );
 
+ExploreEventItem _exploreItem({
+  required String id,
+  required Club club,
+  required DateTime startTime,
+  bool isJoinedClubMember = false,
+  int? bookedCount,
+  int priceInPaise = 0,
+  double? distanceFromUserKm,
+}) {
+  return ExploreEventItem(
+    event: buildEvent(
+      id: id,
+      clubId: club.id,
+      startTime: startTime,
+      bookedCount: bookedCount,
+      priceInPaise: priceInPaise,
+    ),
+    club: club,
+    isJoinedClubMember: isJoinedClubMember,
+    distanceFromUserKm: distanceFromUserKm,
+  );
+}
+
 void main() {
   group('Explore state', () {
+    test('ExploreDiscoveryEmptyState derives provider-free empty actions', () {
+      final noSource = ExploreDiscoveryEmptyState.from(
+        cityLabel: 'Mumbai',
+        hasSourceClubs: false,
+        hasSearch: false,
+        filters: const ExploreFilterSelection(),
+      );
+      expect(noSource.kind, ExploreDiscoveryEmptyKind.noSourceClubs);
+      expect(noSource.action, ExploreDiscoveryEmptyAction.none);
+
+      final searchAndFilters = ExploreDiscoveryEmptyState.from(
+        cityLabel: 'Mumbai',
+        hasSourceClubs: true,
+        hasSearch: true,
+        filters: const ExploreFilterSelection(highRatedOnly: true),
+      );
+      expect(
+        searchAndFilters.kind,
+        ExploreDiscoveryEmptyKind.noFilteredSearchResults,
+      );
+      expect(
+        searchAndFilters.action,
+        ExploreDiscoveryEmptyAction.clearSearchAndFilters,
+      );
+      expect(searchAndFilters.clearSearch, true);
+      expect(searchAndFilters.clearFilters, true);
+
+      final filtersOnly = ExploreDiscoveryEmptyState.from(
+        cityLabel: 'Mumbai',
+        hasSourceClubs: true,
+        hasSearch: false,
+        filters: const ExploreFilterSelection(highRatedOnly: true),
+      );
+      expect(filtersOnly.kind, ExploreDiscoveryEmptyKind.noFilterResults);
+      expect(filtersOnly.action, ExploreDiscoveryEmptyAction.clearFilters);
+    });
+
+    test('ExploreEventsEmptyState derives provider-free event actions', () {
+      final search = ExploreEventsEmptyState.from(
+        filters: const ExploreFilterSelection(),
+        searchQuery: 'tempo',
+      );
+      expect(search.title, 'No events match this search');
+      expect(search.clearSearch, true);
+      expect(search.clearFilters, true);
+      expect(search.nextFilter, isNull);
+
+      final thisWeek = ExploreEventsEmptyState.from(
+        filters: const ExploreFilterSelection(
+          timeFilter: ExploreTimeFilter.thisWeek,
+        ),
+        searchQuery: '',
+      );
+      expect(thisWeek.title, 'Nothing this week');
+      expect(thisWeek.nextFilter, ExploreTimeFilter.anytime);
+      expect(thisWeek.clearFilters, false);
+
+      final anytime = ExploreEventsEmptyState.from(
+        filters: const ExploreFilterSelection(
+          timeFilter: ExploreTimeFilter.anytime,
+        ),
+        searchQuery: '',
+      );
+      expect(anytime.title, 'No upcoming events match this view');
+      expect(anytime.clearFilters, true);
+      expect(anytime.nextFilter, isNull);
+    });
+
+    test('ExploreMapLauncherState derives provider-free map labels', () {
+      expect(ExploreMapLauncherState.from(eventFeedCount: null).label, 'Map');
+      expect(ExploreMapLauncherState.from(eventFeedCount: 0).label, 'Map');
+      expect(ExploreMapLauncherState.from(eventFeedCount: 3).label, 'Map · 3');
+    });
+
+    test('ExploreCityTriggerState derives provider-free city chrome', () {
+      final idle = ExploreCityTriggerState.from(
+        city: _city('mumbai'),
+        focused: false,
+      );
+      expect(idle.tooltipLabel, 'Choose city: Mumbai');
+      expect(idle.semanticLabel, 'Choose city: Mumbai');
+      expect(idle.scopeLabel, 'EXPLORE · MUMBAI');
+      expect(idle.icon, CatchIcons.locationOnOutlined);
+
+      final focused = ExploreCityTriggerState.from(
+        city: _city('mumbai'),
+        focused: true,
+      );
+      expect(focused.icon, CatchIcons.locationOnRounded);
+    });
+
+    test(
+      'ExploreCityPickerState exposes provider-free picker availability',
+      () {
+        final ready = ExploreCityPickerState.from(
+          selectedCity: _city('mumbai'),
+          cities: [_city('mumbai'), _city('delhi')],
+          cityListLoading: false,
+          cityListError: null,
+        );
+
+        expect(ready.selectedCity, _city('mumbai'));
+        expect(ready.cities.map((city) => city.label), ['Mumbai', 'Delhi NCR']);
+        expect(ready.enabled, true);
+
+        final loading = ExploreCityPickerState.from(
+          selectedCity: _city('mumbai'),
+          cities: const [],
+          cityListLoading: true,
+          cityListError: null,
+        );
+        expect(loading.enabled, false);
+
+        final failed = ExploreCityPickerState.from(
+          selectedCity: _city('mumbai'),
+          cities: [_city('mumbai')],
+          cityListLoading: false,
+          cityListError: Object(),
+        );
+        expect(failed.enabled, false);
+      },
+    );
+
+    test('ExploreChromeState derives browse header labels', () {
+      final state = ExploreChromeState.browse(
+        query: 'pickleball dinner',
+        showSearchAction: true,
+      );
+
+      expect(state.title, 'Explore');
+      expect(state.subtitle, 'Find an event worth showing up for.');
+      expect(state.searchValue, 'pickleball dinner');
+      expect(state.searchPlaceholder, 'Search events or clubs');
+      expect(state.searchTooltip, 'Search events or clubs');
+      expect(state.searchSemanticLabel, 'Search events or clubs');
+      expect(state.showSearchAction, true);
+      expect(state.showCoverStory, false);
+      expect(state.searchExpanded, false);
+      expect(state.searchAutofocus, false);
+
+      final cityOnly = ExploreChromeState.browse(
+        query: '',
+        showSearchAction: false,
+      );
+      expect(cityOnly.showSearchAction, false);
+    });
+
+    test('ExploreChromeState derives discovery cover/search policy', () {
+      final cover = ExploreChromeState.discovery(
+        query: '',
+        searchRequested: false,
+        hasFeaturedItem: true,
+      );
+      expect(cover.showCoverStory, true);
+      expect(cover.searchExpanded, false);
+      expect(cover.searchAutofocus, false);
+
+      final requestedSearch = ExploreChromeState.discovery(
+        query: '',
+        searchRequested: true,
+        hasFeaturedItem: true,
+      );
+      expect(requestedSearch.showCoverStory, false);
+      expect(requestedSearch.searchExpanded, true);
+      expect(requestedSearch.searchAutofocus, true);
+
+      final activeSearch = ExploreChromeState.discovery(
+        query: 'tempo',
+        searchRequested: false,
+        hasFeaturedItem: true,
+      );
+      expect(activeSearch.showCoverStory, false);
+      expect(activeSearch.searchExpanded, true);
+      expect(activeSearch.searchAutofocus, false);
+
+      final noFeaturedItem = ExploreChromeState.discovery(
+        query: '',
+        searchRequested: false,
+        hasFeaturedItem: false,
+      );
+      expect(noFeaturedItem.showCoverStory, false);
+    });
+
+    test('ExploreFilterRailState derives active count and semantics', () {
+      final empty = ExploreFilterRailState.from(const ExploreFilterSelection());
+      expect(empty.activeCount, 0);
+      expect(empty.filterButtonSemanticLabel, 'Open explore filters');
+
+      final active = ExploreFilterRailState.from(
+        const ExploreFilterSelection(
+          distanceFilter: ExploreDistanceFilter.threeKm,
+          highRatedOnly: true,
+          joinedOnly: true,
+          activityTag: 'dinner',
+          area: 'Bandra',
+        ),
+      );
+      expect(active.activeCount, 5);
+      expect(
+        active.filterButtonSemanticLabel,
+        'Open explore filters, 5 active',
+      );
+    });
+
+    test('ExploreFilterSheetState derives distance and area options', () {
+      final sheetState = ExploreFilterSheetState.from(
+        filters: const ExploreFilterSelection(area: 'Bandra'),
+        sourceClubs: [
+          buildClub(id: 'area-khar', area: 'Khar'),
+          buildClub(id: 'area-empty', area: ''),
+        ],
+      );
+
+      expect(sheetState.distanceOptions.map((option) => option.label), [
+        'Any',
+        '1 km',
+        '3 km',
+        '5 km',
+        '10 km',
+      ]);
+      expect(sheetState.areaOptions, ['Bandra', 'Khar']);
+      expect(sheetState.activeCount, 1);
+    });
+
+    test('ExploreCollapsedMapSummaryState derives map scope copy', () {
+      final state = ExploreCollapsedMapSummaryState.from(
+        count: 4,
+        scopeLabel: 'Mumbai',
+        filters: const ExploreFilterSelection(
+          timeFilter: ExploreTimeFilter.thisWeek,
+          distanceFilter: ExploreDistanceFilter.threeKm,
+          highRatedOnly: true,
+          activityTag: 'dinner',
+        ),
+      );
+
+      expect(state.title, '4 events nearby');
+      expect(
+        state.scopeLabel,
+        'Mumbai · This week · within 3 km · high rated · dinner',
+      );
+
+      final loading = ExploreCollapsedMapSummaryState.from(
+        count: null,
+        scopeLabel: 'Mumbai',
+        filters: const ExploreFilterSelection(),
+      );
+      expect(loading.title, 'Finding events nearby');
+    });
+
+    test('ExplorePeekRailState derives nearby rail labels', () {
+      final single = ExplorePeekRailState.from(itemCount: 1);
+      expect(single.title, '1 event near you');
+      expect(single.seeAllLabel, 'See all nearby events');
+      expect(single.seeAllButtonLabel, 'See all');
+
+      final multiple = ExplorePeekRailState.from(itemCount: 3);
+      expect(multiple.title, '3 events near you');
+    });
+
+    test('ExploreMapEventTicketState derives map ticket labels', () {
+      final club = buildClub(id: 'map-club', name: 'Map Club');
+      final item = _exploreItem(
+        id: 'map-event',
+        club: club,
+        startTime: DateTime(2026, 7, 3, 18),
+        bookedCount: 12,
+        distanceFromUserKm: 2.4,
+      );
+
+      final state = ExploreMapEventTicketState.from(
+        item,
+        now: DateTime(2026, 7, 2, 10),
+      );
+
+      expect(state.title, item.event.title);
+      expect(state.subtitle, 'Map Club · Start');
+      expect(state.timeLabel, '6:00 PM');
+      expect(state.countdownLabel, 'Tomorrow');
+      expect(state.priceLabel, 'Free');
+      expect(state.capacityLabel, isNotEmpty);
+      expect(state.statusLabel, '2.4 km away');
+      expect(state.spotlightKicker, '2.4 km away');
+    });
+
+    test('ExploreCoverStoryState derives provider-free cover copy', () {
+      final club = buildClub(id: 'cover-club', name: 'Cover Club');
+      final item = _exploreItem(
+        id: 'cover-event',
+        club: club,
+        startTime: DateTime(2026, 7, 2, 18),
+        bookedCount: 19,
+      );
+
+      final state = ExploreCoverStoryState.from(
+        item,
+        now: DateTime(2026, 7, 2, 10),
+      );
+
+      expect(state.kicker, 'Tonight - Cover Club - Start');
+      expect(state.title, item.event.title);
+      expect(state.ctaLabel, 'Claim a seat');
+      expect(state.timePriceLabel, '6:00 PM - Free');
+      expect(state.attendanceLabel, '19 going - 1 left');
+    });
+
+    test('ExploreFeedSectionState derives mixed feed card plan', () {
+      final now = DateTime(2026, 7, 1, 10);
+      final eventClub = buildClub(id: 'event-club');
+      final joinedClub = buildClub(
+        id: 'joined-club',
+        name: 'Joined Club',
+        nextEventLabel: 'Tonight',
+      );
+      final spotlightClub = buildClub(
+        id: 'spotlight-club',
+        name: 'Spotlight Club',
+        nextEventLabel: 'Tomorrow',
+        imageUrl: 'https://example.com/club.jpg',
+        rating: 4.9,
+        memberCount: 200,
+      );
+
+      final state = ExploreFeedSectionState.from(
+        viewModel: ExploreFeedViewModel(
+          items: [
+            _exploreItem(
+              id: 'featured-event',
+              club: eventClub,
+              startTime: DateTime(2026, 7, 1, 18),
+            ),
+            _exploreItem(
+              id: 'second-event',
+              club: eventClub,
+              startTime: DateTime(2026, 7, 2, 18),
+            ),
+            _exploreItem(
+              id: 'third-event',
+              club: eventClub,
+              startTime: DateTime(2026, 7, 3, 18),
+            ),
+          ],
+        ),
+        candidateClubs: [joinedClub, spotlightClub],
+        joinedClubIds: {'joined-club'},
+        showThisWeekList: false,
+        now: now,
+      );
+
+      expect(state.bodyViewModel.items.map((item) => item.event.id), [
+        'second-event',
+        'third-event',
+      ]);
+      expect(state.resultCountLabel, '2 PLANS · JUL 2-3');
+      expect(state.cards, hasLength(3));
+      expect(
+        (state.cards[0] as ExploreMixedEventRowCard).item.event.id,
+        'second-event',
+      );
+      expect(
+        (state.cards[1] as ExploreMixedEventRowCard).item.event.id,
+        'third-event',
+      );
+      expect(
+        (state.cards[2] as ExploreMixedClubSpotlightCard).club.id,
+        'spotlight-club',
+      );
+    });
+
+    test('ExploreFeedSectionState promotes this-week only above threshold', () {
+      final now = DateTime(2026, 7, 1, 10);
+      final club = buildClub(id: 'week-club');
+      final featured = _exploreItem(
+        id: 'featured-event',
+        club: club,
+        startTime: DateTime(2026, 7, 1, 18),
+      );
+      final weekItems = [
+        for (
+          var index = 0;
+          index < minimumExploreThisWeekRecommendationCount;
+          index += 1
+        )
+          _exploreItem(
+            id: 'week-event-$index',
+            club: club,
+            startTime: DateTime(2026, 7, index + 2, 18),
+          ),
+      ];
+
+      final promoted = ExploreFeedSectionState.from(
+        viewModel: ExploreFeedViewModel(items: [featured, ...weekItems]),
+        candidateClubs: const [],
+        joinedClubIds: const {},
+        showThisWeekList: true,
+        now: now,
+      );
+      expect(promoted.thisWeekItems, hasLength(5));
+      expect(promoted.cards, isEmpty);
+      expect(promoted.isEmpty, false);
+
+      final belowThreshold = ExploreFeedSectionState.from(
+        viewModel: ExploreFeedViewModel(
+          items: [
+            featured,
+            ...weekItems.take(minimumExploreThisWeekRecommendationCount - 1),
+          ],
+        ),
+        candidateClubs: const [],
+        joinedClubIds: const {},
+        showThisWeekList: true,
+        now: now,
+      );
+      expect(belowThreshold.thisWeekItems, isEmpty);
+      expect(
+        belowThreshold.cards.whereType<ExploreMixedEventRowCard>(),
+        hasLength(4),
+      );
+    });
+
+    test('ExploreEventRowState derives provider-free event row labels', () {
+      final club = buildClub(id: 'row-club', name: 'Row Club');
+      final item = _exploreItem(
+        id: 'row-event',
+        club: club,
+        startTime: DateTime(2026, 7, 2, 18),
+        isJoinedClubMember: true,
+      );
+
+      final state = ExploreEventRowState.from(item);
+
+      expect(state.kicker, 'Row Club');
+      expect(state.supportingLabel, contains('Start'));
+      expect(state.priceLabel, 'Free');
+      expect(state.capacityLabel, isNotEmpty);
+      expect(state.statusLabel, 'Picked');
+    });
+
+    test('ExploreExternalEventRowState derives provider-free row labels', () {
+      final event = _externalEvent(
+        id: 'external-row',
+        title: 'Afterfly Social',
+        citySlug: 'mumbai',
+        startTime: DateTime(2026, 7, 2, 18),
+      );
+      final item = ExploreExternalEventItem(
+        event: event,
+        distanceFromUserKm: 2.4,
+      );
+
+      final state = ExploreExternalEventRowState.from(item);
+
+      expect(state.sourceLabel, 'FROM LUMA');
+      expect(
+        state.supportingLabel,
+        'Singles mixer · Bandra Amphitheatre · 2.4 km away',
+      );
+      expect(state.timePriceLabel, '6:00 PM · Price on source');
+      expect(state.actionLabel, 'Open');
+      expect(state.actionSemanticsLabel, 'Open external event source');
+      expect(state.readOnlySupplyLabel, 'READ-ONLY SUPPLY · NO CATCH BOOKING');
+      expect(state.hasExternalLink, true);
+    });
+
+    test(
+      'unclaimed organizer external event without link renders No link row state',
+      () {
+        final event = _externalEvent(
+          id: 'external-unclaimed-organizer',
+          title: 'Unclaimed Organizer Social',
+          citySlug: 'mumbai',
+          startTime: DateTime(2026, 7, 2, 18),
+          externalLinks: const [],
+        ).copyWith(canonicalHostId: '', compatibilityClubId: '');
+        final state = ExploreExternalEventRowState.from(
+          ExploreExternalEventItem(event: event),
+        );
+
+        expect(state.actionLabel, 'No link');
+        expect(state.actionSemanticsLabel, 'External event link unavailable');
+        expect(state.hasExternalLink, false);
+        expect(state.supportingLabel, contains('Bandra Amphitheatre'));
+      },
+    );
+
+    test('ExploreClubCardState derives shared club card labels', () {
+      final club = buildClub(
+        id: 'club-card',
+        name: 'Tempo House',
+        tags: const ['Bandra', 'music', 'social', 'late'],
+        memberCount: 42,
+        nextEventLabel: 'Fri 8 PM',
+      );
+
+      final state = ExploreClubCardState.from(club, isSynthetic: false);
+      final previewState = ExploreClubCardState.from(club, isSynthetic: true);
+
+      expect(state.memberCountLabel, '42 members');
+      expect(state.caption, 'FRI 8 PM');
+      expect(state.title, 'Tempo House');
+      expect(state.supportingLabel, 'Next: Fri 8 PM');
+      expect(state.actionLabel, 'View club');
+      expect(state.rowKicker, 'CLUB TO KNOW');
+      expect(state.tags, ['music', 'social']);
+      expect(previewState.actionLabel, 'Preview');
+    });
+
+    test('ExploreScreenBodyState derives route branch precedence', () {
+      final emptyState = ExploreDiscoveryEmptyState.from(
+        cityLabel: 'Mumbai',
+        hasSourceClubs: false,
+        hasSearch: false,
+        filters: const ExploreFilterSelection(),
+      );
+      const emptyViewModel = ExploreViewModel(joinedClubs: [], allClubs: []);
+      final populatedViewModel = ExploreViewModel(
+        joinedClubs: const [],
+        allClubs: [buildClub(id: 'club-content')],
+      );
+
+      ExploreScreenBodyState body({
+        bool viewModelLoading = false,
+        Object? viewModelError,
+        ExploreViewModel? viewModel,
+        bool eventFeedLoading = false,
+        Object? eventFeedError,
+        bool eventFeedHasContent = false,
+      }) {
+        return ExploreScreenBodyState.from(
+          viewModelLoading: viewModelLoading,
+          viewModelError: viewModelError,
+          viewModel: viewModel ?? emptyViewModel,
+          eventFeedLoading: eventFeedLoading,
+          eventFeedError: eventFeedError,
+          eventFeedHasContent: eventFeedHasContent,
+          emptyState: emptyState,
+        );
+      }
+
+      expect(body(viewModelLoading: true).kind, ExploreScreenBodyKind.loading);
+
+      final viewModelError = body(viewModelError: StateError('clubs failed'));
+      expect(viewModelError.kind, ExploreScreenBodyKind.error);
+      expect(viewModelError.retryTarget, ExploreScreenRetryTarget.explore);
+
+      final viewModelErrorWithFeed = body(
+        viewModelError: StateError('clubs failed'),
+        eventFeedHasContent: true,
+      );
+      expect(
+        viewModelErrorWithFeed.kind,
+        ExploreScreenBodyKind.contentWithoutClubs,
+      );
+      expect(
+        viewModelErrorWithFeed.retryTarget,
+        ExploreScreenRetryTarget.explore,
+      );
+
+      final populatedClubs = body(viewModel: populatedViewModel);
+      expect(populatedClubs.kind, ExploreScreenBodyKind.content);
+      expect(populatedClubs.viewModel, populatedViewModel);
+
+      final populatedEvents = body(eventFeedHasContent: true);
+      expect(populatedEvents.kind, ExploreScreenBodyKind.content);
+      expect(populatedEvents.viewModel, emptyViewModel);
+
+      expect(body(eventFeedLoading: true).kind, ExploreScreenBodyKind.loading);
+
+      final feedError = body(eventFeedError: StateError('events failed'));
+      expect(feedError.kind, ExploreScreenBodyKind.error);
+      expect(feedError.retryTarget, ExploreScreenRetryTarget.eventFeed);
+
+      final empty = body();
+      expect(empty.kind, ExploreScreenBodyKind.empty);
+      expect(empty.emptyState, emptyState);
+    });
+
+    test('ExploreDiscoveryScreenState derives route display state', () {
+      const emptyViewModel = ExploreViewModel(joinedClubs: [], allClubs: []);
+      final state = ExploreDiscoveryScreenState.from(
+        cityLabel: 'Mumbai',
+        query: 'padel',
+        filters: const ExploreFilterSelection(
+          distanceFilter: ExploreDistanceFilter.threeKm,
+        ),
+        hasSourceClubs: true,
+        eventFeedCount: 4,
+        viewModelLoading: false,
+        viewModel: emptyViewModel,
+        eventFeedLoading: false,
+        eventFeedHasContent: false,
+      );
+
+      expect(state.mapLauncherState.label, 'Map · 4');
+      expect(
+        state.emptyState.kind,
+        ExploreDiscoveryEmptyKind.noFilteredSearchResults,
+      );
+      expect(
+        state.emptyState.action,
+        ExploreDiscoveryEmptyAction.clearSearchAndFilters,
+      );
+      expect(state.bodyState.kind, ExploreScreenBodyKind.empty);
+      expect(state.bodyState.emptyState, state.emptyState);
+
+      final content = ExploreDiscoveryScreenState.from(
+        cityLabel: 'Mumbai',
+        query: '',
+        filters: const ExploreFilterSelection(),
+        hasSourceClubs: false,
+        eventFeedCount: 1,
+        viewModelLoading: false,
+        viewModel: emptyViewModel,
+        eventFeedLoading: false,
+        eventFeedHasContent: true,
+      );
+
+      expect(content.mapLauncherState.label, 'Map · 1');
+      expect(content.bodyState.kind, ExploreScreenBodyKind.content);
+    });
+
     test(
       'selectedExploreCityProvider defaults to Mumbai and clears search on change',
       () {
@@ -374,7 +1020,7 @@ void main() {
     );
 
     test(
-      'exploreViewModelProvider partitions joined and discover clubs',
+      'exploreClubsViewModelProvider partitions joined and discover clubs',
       () async {
         final memberClub = buildClub(id: 'member-club');
         final followedClub = buildClub(
@@ -409,7 +1055,7 @@ void main() {
         addTearDown(container.dispose);
 
         final subscription = container.listen(
-          exploreViewModelProvider,
+          exploreClubsViewModelProvider,
           (_, _) {},
           fireImmediately: true,
         );
@@ -439,7 +1085,7 @@ void main() {
     );
 
     test(
-      'exploreViewModelProvider shows empty city without waiting for auth',
+      'exploreClubsViewModelProvider shows empty city without waiting for auth',
       () async {
         final container = ProviderContainer(
           overrides: [
@@ -452,7 +1098,7 @@ void main() {
         addTearDown(container.dispose);
 
         final subscription = container.listen(
-          exploreViewModelProvider,
+          exploreClubsViewModelProvider,
           (_, _) {},
           fireImmediately: true,
         );
@@ -802,7 +1448,7 @@ void main() {
       },
     );
 
-    test('exploreViewModelProvider surfaces auth uid errors', () async {
+    test('exploreClubsViewModelProvider surfaces auth uid errors', () async {
       final container = ProviderContainer(
         overrides: [
           uidProvider.overrideWith(
@@ -816,7 +1462,7 @@ void main() {
       addTearDown(container.dispose);
 
       final subscription = container.listen(
-        exploreViewModelProvider,
+        exploreClubsViewModelProvider,
         (_, _) {},
         fireImmediately: true,
       );
@@ -827,28 +1473,31 @@ void main() {
       expect(subscription.read().error, isA<StateError>());
     });
 
-    test('exploreViewModelProvider surfaces filtered list errors', () async {
-      final container = ProviderContainer(
-        overrides: [
-          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-          filteredExploreClubsProvider.overrideWithValue(
-            AsyncError(StateError('filter failed'), StackTrace.empty),
-          ),
-        ],
-      );
-      addTearDown(container.dispose);
+    test(
+      'exploreClubsViewModelProvider surfaces filtered list errors',
+      () async {
+        final container = ProviderContainer(
+          overrides: [
+            uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+            filteredExploreClubsProvider.overrideWithValue(
+              AsyncError(StateError('filter failed'), StackTrace.empty),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
 
-      final subscription = container.listen(
-        exploreViewModelProvider,
-        (_, _) {},
-        fireImmediately: true,
-      );
-      addTearDown(subscription.close);
-      await container.pump();
+        final subscription = container.listen(
+          exploreClubsViewModelProvider,
+          (_, _) {},
+          fireImmediately: true,
+        );
+        addTearDown(subscription.close);
+        await container.pump();
 
-      expect(subscription.read().hasError, isTrue);
-      expect(subscription.read().error, isA<StateError>());
-    });
+        expect(subscription.read().hasError, isTrue);
+        expect(subscription.read().error, isA<StateError>());
+      },
+    );
   });
 }
 
@@ -892,6 +1541,16 @@ ExternalEvent _externalEvent({
   required String title,
   required String citySlug,
   required DateTime startTime,
+  List<ExternalEventLink> externalLinks = const [
+    ExternalEventLink(
+      platform: 'luma',
+      url: 'https://luma.com/e',
+      linkType: 'booking_or_event_page',
+      sourceEventKey: 'external-source-key',
+      candidateId: 'candidate-external',
+      primary: true,
+    ),
+  ],
 }) {
   return ExternalEvent(
     id: id,
@@ -907,16 +1566,7 @@ ExternalEvent _externalEvent({
     status: 'active',
     publicationStatus: 'public',
     citySlug: citySlug,
-    externalLinks: const [
-      ExternalEventLink(
-        platform: 'luma',
-        url: 'https://luma.com/e',
-        linkType: 'booking_or_event_page',
-        sourceEventKey: 'external-source-key',
-        candidateId: 'candidate-external',
-        primary: true,
-      ),
-    ],
+    externalLinks: externalLinks,
   );
 }
 

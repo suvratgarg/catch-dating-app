@@ -34,11 +34,13 @@ import 'package:catch_dating_app/event_success/domain/event_success_defaults.dar
 import 'package:catch_dating_app/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
+import 'package:catch_dating_app/explore/data/explore_search_repository.dart';
 import 'package:catch_dating_app/locations/data/places_callable_requests.dart';
 import 'package:catch_dating_app/locations/data/places_callable_responses.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/payments/data/payment_callable_requests.dart';
 import 'package:catch_dating_app/payments/data/payment_callable_responses.dart';
+import 'package:catch_dating_app/user_analytics/data/user_analytics_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 
@@ -331,6 +333,18 @@ void main() {
       final suvbotActionsResponse = _readValidFixtureMap(
         'list_suvbot_demo_actions_response.json',
       );
+      final stripeCheckoutResponse = _readValidFixtureMap(
+        'stripe_checkout_session_response.json',
+      );
+      final stripeHostOnboardingResponse = _readValidFixtureMap(
+        'stripe_host_onboarding_link_response.json',
+      );
+      final exploreSearchResponse = _readValidFixtureMap(
+        'explore_search_response.json',
+      );
+      final userAnalyticsResponse = _readValidFixtureMap(
+        'user_analytics_response.json',
+      );
 
       _expectValid('CreateClubCallableResponse', createClubResponse);
       expect(
@@ -389,6 +403,40 @@ void main() {
         ).actions.length,
         2,
       );
+      _expectValid(
+        'StripeCheckoutSessionCallableResponse',
+        stripeCheckoutResponse,
+      );
+      expect(
+        StripeCheckoutSessionCallableResponse.fromCallableData(
+          stripeCheckoutResponse,
+        ).checkoutUrl.host,
+        'checkout.stripe.com',
+      );
+      _expectValid(
+        'StripeHostOnboardingLinkCallableResponse',
+        stripeHostOnboardingResponse,
+      );
+      expect(
+        StripeHostOnboardingLinkCallableResponse.fromCallableData(
+          stripeHostOnboardingResponse,
+        ).accountId,
+        'acct_123456789',
+      );
+      _expectValid('ExploreSearchCallableResponse', exploreSearchResponse);
+      expect(
+        ExploreSearchResult.fromCallableData(
+          exploreSearchResponse,
+        ).eventIds.single,
+        'event-cubbon-social-run',
+      );
+      _expectValid('UserAnalyticsCallableResponse', userAnalyticsResponse);
+      expect(
+        UserAnalyticsReport.fromCallableData(
+          userAnalyticsResponse,
+        ).summaryCards.first.status,
+        UserAnalyticsMetricStatus.partial,
+      );
     });
 
     test('response parsers throw on malformed input', () {
@@ -440,6 +488,18 @@ void main() {
           'currency': '',
         }),
         throwsA(isA<RazorpayOrderCallableResponseFormatException>()),
+      );
+      expect(
+        () => StripeCheckoutSessionCallableResponse.fromCallableData(
+          <String, Object?>{'provider': 'razorpay'},
+        ),
+        throwsA(isA<StripeCheckoutSessionCallableResponseFormatException>()),
+      );
+      expect(
+        () => StripeHostOnboardingLinkCallableResponse.fromCallableData(
+          <String, Object?>{},
+        ),
+        throwsA(isA<StripeHostOnboardingLinkCallableResponseFormatException>()),
       );
 
       // PlacesAutocompleteCallableResponse is intentionally permissive:

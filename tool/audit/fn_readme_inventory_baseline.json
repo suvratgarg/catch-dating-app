@@ -1,0 +1,195 @@
+{
+  "version": 1,
+  "updated": "2026-07-02",
+  "description": "Current functions README inventory debt baseline. Normal scanner runs fail on exported functions not listed here.",
+  "allowedFindings": [
+    {
+      "rule": "missingReadmeFunction",
+      "function": "acceptEventWaitlistOffer"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "adminDecideAccessApplication"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "adminDecideClubClaim"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "adminDecideOrganizerEventCandidate"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "adminDecideOrganizerIntake"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "adminDecideOrganizerPolicyGap"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "adminGetEventIntakeDashboard"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "adminGetHostAnalytics"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "adminGetOverview"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "adminGetUserAnalytics"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "adminRecordEventIntakeReviewDecision"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "adminRecordOrganizerCuration"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "adminResolveOrganizerEventLocation"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "completeEventSuccessFirstHelloMission"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "createEventInviteLink"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "createEventWaitlistOffers"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "createPublicClubReview"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "createStripeCheckoutSession"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "createStripeHostOnboardingLink"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "decideEventJoinRequest"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "declineEventWaitlistOffer"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "disableEventInviteLink"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "expireEventWaitlistOffers"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "exploreSearch"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "generateClubLogoThumbnail"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "getHostAnalytics"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "getUserAnalytics"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "listPublicClubReviews"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "onEventInviteLinkWritten"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "onEventParticipationWritten"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "onEventWaitlistOfferWritten"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "onPaymentWritten"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "overrideEventSuccessGroups"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "razorpayWebhook"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "reconcileRazorpayOrders"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "recordEventInviteLinkOpen"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "recordOrganizerAnalyticsEvent"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "refreshStripeHostPaymentAccount"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "requestClubClaim"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "setReviewResponse"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "startClubHostConversation"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "startEventSuccessFirstHelloMission"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "stripeWebhook"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "syncAlgoliaClubIndex"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "syncAlgoliaEventIndex"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "syncHostProfile"
+    },
+    {
+      "rule": "missingReadmeFunction",
+      "function": "transferClubOwnership"
+    }
+  ]
+}

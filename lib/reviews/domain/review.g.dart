@@ -19,12 +19,8 @@ _Review _$ReviewFromJson(Map<String, dynamic> json) => _Review(
   moderationStatus: json['moderationStatus'] as String? ?? 'published',
   isAnonymous: json['isAnonymous'] as bool? ?? false,
   submittedFromPath: json['submittedFromPath'] as String?,
-  createdAt: const TimestampConverter().fromJson(
-    json['createdAt'] as Timestamp,
-  ),
-  updatedAt: const NullableTimestampConverter().fromJson(
-    json['updatedAt'] as Timestamp?,
-  ),
+  createdAt: const TimestampConverter().fromJson(json['createdAt']),
+  updatedAt: const NullableTimestampConverter().fromJson(json['updatedAt']),
   ownerResponse: json['ownerResponse'] == null
       ? null
       : ReviewOwnerResponse.fromJson(
@@ -55,12 +51,8 @@ _ReviewOwnerResponse _$ReviewOwnerResponseFromJson(Map<String, dynamic> json) =>
       hostName: json['hostName'] as String,
       hostAvatarUrl: json['hostAvatarUrl'] as String?,
       message: json['message'] as String,
-      createdAt: const TimestampConverter().fromJson(
-        json['createdAt'] as Timestamp,
-      ),
-      updatedAt: const TimestampConverter().fromJson(
-        json['updatedAt'] as Timestamp,
-      ),
+      createdAt: const TimestampConverter().fromJson(json['createdAt']),
+      updatedAt: const TimestampConverter().fromJson(json['updatedAt']),
     );
 
 Map<String, dynamic> _$ReviewOwnerResponseToJson(

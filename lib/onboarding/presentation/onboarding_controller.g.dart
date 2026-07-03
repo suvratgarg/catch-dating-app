@@ -19,6 +19,8 @@ part of 'onboarding_controller.dart';
 ///
 /// **When to use this pattern:** Multi-step flows where state must survive
 /// navigation and a freezed data class captures the full form state.
+// keepalive: onboarding state must survive step navigation until completion or
+// explicit invalidation.
 
 @ProviderFor(OnboardingController)
 final onboardingControllerProvider = OnboardingControllerProvider._();
@@ -34,6 +36,8 @@ final onboardingControllerProvider = OnboardingControllerProvider._();
 ///
 /// **When to use this pattern:** Multi-step flows where state must survive
 /// navigation and a freezed data class captures the full form state.
+// keepalive: onboarding state must survive step navigation until completion or
+// explicit invalidation.
 final class OnboardingControllerProvider
     extends $NotifierProvider<OnboardingController, OnboardingData> {
   /// **Pattern B: Flow controller with freezed state + Mutations**
@@ -47,6 +51,8 @@ final class OnboardingControllerProvider
   ///
   /// **When to use this pattern:** Multi-step flows where state must survive
   /// navigation and a freezed data class captures the full form state.
+  // keepalive: onboarding state must survive step navigation until completion or
+  // explicit invalidation.
   OnboardingControllerProvider._()
     : super(
         from: null,
@@ -75,7 +81,7 @@ final class OnboardingControllerProvider
 }
 
 String _$onboardingControllerHash() =>
-    r'ff40301f2e915e25b78a26326a44223f9a8e5163';
+    r'fbd06f015935a3815c3f440e87f31a1e2ab56994';
 
 /// **Pattern B: Flow controller with freezed state + Mutations**
 ///
@@ -88,6 +94,8 @@ String _$onboardingControllerHash() =>
 ///
 /// **When to use this pattern:** Multi-step flows where state must survive
 /// navigation and a freezed data class captures the full form state.
+// keepalive: onboarding state must survive step navigation until completion or
+// explicit invalidation.
 
 abstract class _$OnboardingController extends $Notifier<OnboardingData> {
   OnboardingData build();

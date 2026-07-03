@@ -2,9 +2,18 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/data/conversation_repository.dart';
 import 'package:catch_dating_app/chats/data/suvbot_repository.dart';
-import 'package:catch_dating_app/chats/domain/suvbot_action_item.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
+import 'package:catch_dating_app/chats/domain/suvbot_action_item.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/chat_inbox_screen.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/chats_list_screen_state.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/host_inbox_filter.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/widgets/chat_conversations_list.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_empty_state.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_list.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_list_body.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_sliver_header.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_event_context_header.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_message_list.dart';
@@ -26,15 +35,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/labs/design_fixtures/matches_chat_surface_fixtures.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/host_inbox_filter.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/chat_inbox_screen.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/widgets/chat_conversations_list.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_empty_state.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_list.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_list_body.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_sliver_header.dart';
-import 'package:catch_dating_app/matches/presentation/widgets/match_celebration_dialog.dart';
+import 'package:catch_dating_app/matches/shared/match_celebration_dialog.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -60,6 +61,7 @@ final _blockedMatch = MatchesChatSurfaceFixtures.blockedMatch();
 final _suvbotMatch = MatchesChatSurfaceFixtures.suvbotMatch();
 final _event = MatchesChatSurfaceFixtures.event;
 final _club = MatchesChatSurfaceFixtures.club;
+const _chatsListSkeletonPreviewHeight = 360.0;
 
 @widgetbook.UseCase(
   name: 'Consumer route states',
@@ -477,6 +479,56 @@ Widget chatsListSliverStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Skeleton states',
+  type: ChatsListSkeleton,
+  path: '[P1 product surfaces]/Matches and chat/Components',
+)
+Widget chatsListSkeletonStates(BuildContext context) {
+  return _AppRoleBoundary(
+    role: AppRole.consumer,
+    child: _MatchesCatalog(
+      title: 'ChatsListSkeleton',
+      contractId: 'component.messaging.chats_list_skeleton',
+      children: const [
+        _StateCard(
+          label: 'consumer loading',
+          child: _DeviceFrame(
+            height: _chatsListSkeletonPreviewHeight,
+            child: Scaffold(
+              body: SafeArea(
+                child: CustomScrollView(slivers: [ChatsListSkeleton()]),
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Skeleton states',
+  type: ChatPersonRowSkeleton,
+  path: '[P1 product surfaces]/Matches and chat/Components',
+)
+Widget chatPersonRowSkeletonStates(BuildContext context) {
+  return _MatchesCatalog(
+    title: 'ChatPersonRowSkeleton',
+    contractId: 'component.messaging.chat_person_row_skeleton',
+    children: const [
+      _StateCard(
+        label: 'match row',
+        child: ChatPersonRowSkeleton(divider: false, squareAvatar: false),
+      ),
+      _StateCard(
+        label: 'host inquiry row',
+        child: ChatPersonRowSkeleton(divider: true, squareAvatar: true),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Header states',
   type: ChatsBrowseHeader,
   path: '[P1 product surfaces]/Matches and chat/Components',
@@ -502,6 +554,8 @@ Widget chatsBrowseHeaderStates(BuildContext context) {
                     children: [
                       ChatsBrowseHeader(
                         showSearchAction: true,
+                        searchValue: '',
+                        onSearchChanged: (_) {},
                         hostFilter: HostInboxFilter.all,
                         hostUnreadCount: 2,
                         onHostFilterChanged: (_) {},
@@ -722,6 +776,49 @@ Widget chatShareCardStates(BuildContext context) {
               ),
             ),
           ),
+        ),
+      ],
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Share card header',
+  type: ShareCardHeader,
+  path: '[P1 product surfaces]/Matches and chat/Components',
+)
+Widget chatShareCardHeaderState(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  return Padding(
+    padding: CatchInsets.content,
+    child: ShareCardHeader(event: _event, accent: t.primary, visual: null),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Share card bubbles',
+  type: ShareCardBubble,
+  path: '[P1 product surfaces]/Matches and chat/Components',
+)
+Widget chatShareCardBubbleStates(BuildContext context) {
+  return const Padding(
+    padding: CatchInsets.content,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ShareCardBubble(
+          text: 'That was weirdly easy to say yes to.',
+          isMe: false,
+          isFirstInGroup: true,
+          isLastInGroup: false,
+        ),
+        ShareCardBubble(
+          text: 'Same. Coffee after?',
+          isMe: true,
+          isFirstInGroup: true,
+          isLastInGroup: true,
         ),
       ],
     ),
@@ -1332,6 +1429,45 @@ Widget chatInputBarPrimitiveStates(BuildContext context) {
           ),
         ),
       ],
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Timestamped message text',
+  type: TimestampedMessageText,
+  path: '[P1 product surfaces]/Matches and chat/Primitives',
+)
+Widget timestampedMessageTextState(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  return Padding(
+    padding: CatchInsets.content,
+    child: TimestampedMessageText(
+      text: 'That final kilometer was harder than advertised.',
+      timestamp: '7:42 PM',
+      textStyle: CatchTextStyles.chatMessage(context, color: t.ink),
+      timestampStyle: CatchTextStyles.meta(context, color: t.ink3),
+    ),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Media message body',
+  type: MediaMessageBody,
+  path: '[P1 product surfaces]/Matches and chat/Primitives',
+)
+Widget mediaMessageBodyState(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  return Padding(
+    padding: CatchInsets.content,
+    child: MediaMessageBody(
+      text: 'Route card from tonight.',
+      timestamp: '8:04 PM',
+      imageUrl: MatchesChatSurfaceFixtures.imageMessages.first.imageUrl,
+      textStyle: CatchTextStyles.chatMessage(context, color: t.ink),
+      timestampStyle: CatchTextStyles.meta(context, color: t.ink3),
     ),
   );
 }
@@ -2024,21 +2160,26 @@ class _ComposerStatesPreview extends StatefulWidget {
 
 class _ComposerStatesPreviewState extends State<_ComposerStatesPreview> {
   late final TextEditingController _readyController;
-  late final TextEditingController _pendingController;
+  late final TextEditingController _sendingController;
+  late final TextEditingController _imagePendingController;
   late final TextEditingController _disabledController;
 
   @override
   void initState() {
     super.initState();
     _readyController = TextEditingController(text: 'That last loop was fun.');
-    _pendingController = TextEditingController(text: 'Uploading a photo...');
+    _sendingController = TextEditingController(text: 'Sending this now...');
+    _imagePendingController = TextEditingController(
+      text: 'Uploading a photo...',
+    );
     _disabledController = TextEditingController();
   }
 
   @override
   void dispose() {
     _readyController.dispose();
-    _pendingController.dispose();
+    _sendingController.dispose();
+    _imagePendingController.dispose();
     _disabledController.dispose();
     super.dispose();
   }
@@ -2058,7 +2199,14 @@ class _ComposerStatesPreviewState extends State<_ComposerStatesPreview> {
             ),
             gapH12,
             ChatInputBar(
-              controller: _pendingController,
+              controller: _sendingController,
+              sending: true,
+              onSend: () {},
+              onSendImage: () {},
+            ),
+            gapH12,
+            ChatInputBar(
+              controller: _imagePendingController,
               sending: false,
               sendingImage: true,
               onSend: () {},

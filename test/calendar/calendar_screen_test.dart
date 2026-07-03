@@ -2,18 +2,18 @@ import 'dart:async';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/events/presentation/calendar/calendar_screen.dart';
-import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
+import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_participation.dart';
-import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/events/presentation/calendar/calendar_screen.dart';
+import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart' as app_router;
@@ -29,6 +29,34 @@ import '../test_pump_helpers.dart';
 
 void main() {
   group('CalendarScreen', () {
+    testWidgets('shows loading while the auth session resolves', (
+      tester,
+    ) async {
+      await _pumpCalendar(
+        tester,
+        uid: const AsyncLoading<String?>(),
+        overrides: const [],
+      );
+
+      expect(find.byType(CatchSkeleton), findsWidgets);
+      expect(find.text('Calendar'), findsOneWidget);
+      expect(find.text('No planned events yet'), findsNothing);
+    });
+
+    testWidgets('shows an auth error when the session fails to load', (
+      tester,
+    ) async {
+      await _pumpCalendar(
+        tester,
+        uid: AsyncError<String?>(Exception('auth failed'), StackTrace.empty),
+        overrides: const [],
+      );
+
+      expect(find.text('Sign in problem'), findsOneWidget);
+      expect(find.text('Try again'), findsOneWidget);
+      expect(find.text('No planned events yet'), findsNothing);
+    });
+
     testWidgets('shows a loading state while booked events are loading', (
       tester,
     ) async {
@@ -77,6 +105,50 @@ void main() {
       expect(find.byType(CatchSkeleton), findsWidgets);
       expect(find.byType(CircularProgressIndicator), findsNothing);
       expect(find.text(event.title), findsNothing);
+    });
+
+    testWidgets('seeds expanded month and selected date', (tester) async {
+      final now = DateTime(2026, 6, 1, 9);
+      final event = buildEvent(
+        id: 'seeded-calendar-event',
+        startTime: DateTime(2026, 6, 4, 7),
+        meetingPoint: 'Seeded Start',
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            uidProvider.overrideWithValue(const AsyncData<String?>('runner-1')),
+            watchSignedUpEventsProvider(
+              'runner-1',
+            ).overrideWithValue(AsyncData<List<Event>>([event])),
+            watchSavedEventDetailsForUserProvider(
+              'runner-1',
+            ).overrideWithValue(const AsyncData<List<Event>>([])),
+            clubNameLookupProvider(
+              ClubNameLookupQuery([event.clubId]),
+            ).overrideWithValue(
+              const AsyncData<Map<String, String>>({'club-1': 'Stride Social'}),
+            ),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: CalendarScreen(
+              referenceNow: now,
+              initialSelectedDate: event.startTime,
+              initialExpanded: true,
+            ),
+          ),
+        ),
+      );
+      await pumpFeatureUi(tester);
+
+      expect(find.text('June 2026'), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey<String>('calendar-month-day-2026-06-04')),
+        findsOneWidget,
+      );
+      expect(find.text(event.title), findsOneWidget);
     });
 
     testWidgets(
@@ -696,13 +768,14 @@ void main() {
 
 Future<void> _pumpCalendar(
   WidgetTester tester, {
+  AsyncValue<String?> uid = const AsyncData<String?>('runner-1'),
   required Iterable overrides,
   List<Event> savedEvents = const [],
 }) async {
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
-        uidProvider.overrideWithValue(const AsyncData<String?>('runner-1')),
+        uidProvider.overrideWithValue(uid),
         clubsRepositoryProvider.overrideWith(
           (ref) =>
               club_test.FakeClubsRepository()

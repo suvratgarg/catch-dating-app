@@ -17,9 +17,9 @@ export 'domain/blocked_user.dart';
 export 'data/safety_repository.dart';
 
 // ── Presentation — screens ──────────────────────────────────────────────────
-export 'presentation/settings_screen.dart';
+export 'presentation/settings_screen.dart'; // public-api: route entry point exposed to app routing
 
 // ── Presentation — controllers & state ──────────────────────────────────────
-export 'presentation/settings_controller.dart';
-export 'presentation/settings_account_state.dart';
-export 'presentation/settings_keys.dart';
+export 'presentation/settings_controller.dart'; // public-api: command seam for route-owned actions
+export 'presentation/settings_account_state.dart'; // public-api: provider-free display state reused by tests and routes
+export 'presentation/settings_keys.dart'; // public-api: presentation value/helper API used across feature boundaries

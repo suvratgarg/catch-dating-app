@@ -209,7 +209,24 @@ function validateStates(errors, screenLabel, states, captureIds) {
     if ((state?.status === "captured" || state?.status === "ready") && !state?.captureIds?.length) {
       errors.push(`${label}: ${state.status} states must list captureIds.`);
     }
+    const staleCaptureTextField = staleCapturedStateTextField(state);
+    if ((state?.status === "captured" || state?.status === "ready") && staleCaptureTextField) {
+      errors.push(
+        `${label}.${staleCaptureTextField}: ${state.status} state text says capture coverage is missing.`
+      );
+    }
   }
+}
+
+function staleCapturedStateTextField(state) {
+  const staleCapturedStateTextPattern =
+    /\b(?:no\b[^.]*\bcaptures?\b[^.]*\bexists?\s+yet|captures?\b[^.]*\bnot\s+yet\s+registered)\b/iu;
+  const fields = ["source", "nextAction", "notes"];
+  for (const field of fields) {
+    if (typeof state?.[field] !== "string") continue;
+    if (staleCapturedStateTextPattern.test(state[field])) return field;
+  }
+  return null;
 }
 
 function validateComposition(errors, screenLabel, composition, componentIds) {

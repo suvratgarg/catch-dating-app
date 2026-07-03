@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.2.1
-updated: 2026-06-30
+version: 1.4.13
+updated: 2026-07-03
 owner: recursive_audit_loop
 status: active
 ---
@@ -13,14 +13,8 @@ This is the canonical architecture spec for Catch's Flutter app code under
 boundaries, repository access, async state handling, error surfacing, widget
 ownership, enforcement, and migration policy.
 
-Use this document first when changing app architecture. It supersedes and
-replaces the old standalone controller, UI layout, and error architecture docs:
-
-- deleted: `docs/controller_patterns.md`;
-- deleted: `docs/ui_architecture.md`;
-- deleted: `docs/error-handling-audit.md`.
-
-Do not recreate separate controller/UI/error architecture docs. If a durable
+Use this document first when changing app architecture. It is the single active
+home for controller, UI layout, and error architecture guidance. If a durable
 rule belongs to app code organization, put it here. Keep only narrow generated
 inventories, implementation plans, or domain-specific contracts elsewhere.
 
@@ -30,14 +24,13 @@ This spec consolidates and normalizes guidance from:
 
 - `lib/README.md`: feature-first folder structure.
 - `PROJECT_CONTEXT.md`: current product/route/code map.
-- deleted `docs/controller_patterns.md`: action, flow, async, view-model
+- historical controller/view-model guidance: action, flow, async, view-model
   provider patterns, and realtime stream lifecycle.
-- deleted `docs/error-handling-audit.md`: app error taxonomy, branded error
+- historical error architecture guidance: app error taxonomy, branded error
   surfaces, mutation errors, operation context, scanner policy, and global
   reporting.
-- deleted `docs/ui_architecture.md`: screen padding, sliver/scroll ownership,
-  token tiers, sizing rules, design-tool boundaries, and analyzer-plugin
-  policy.
+- historical UI architecture guidance: screen padding, sliver/scroll ownership,
+  token tiers, sizing rules, design-tool boundaries, and analyzer-plugin policy.
 - `docs/widget_catalog.md`: widget ownership, primitive governance, public
   widget catalog, and private-helper remediation.
 - `docs/audit_registry/rules.json`: active enforceable rules such as
@@ -46,10 +39,10 @@ This spec consolidates and normalizes guidance from:
   `EXTERNAL-SIDE-EFFECT-001`, `UI-LINT-001`, and
   `WIDGET-CATALOG-001`.
 
-## Supersession And Overrides
+## Canonical Decisions And Overrides
 
-This section is intentionally explicit so older docs do not compete with this
-one.
+This section is intentionally explicit so architecture decisions stay in one
+place.
 
 1. Keep the canonical feature folder shape as `domain`, `data`, and
    `presentation`. Do not rename `data` to `repositories`.
@@ -58,10 +51,9 @@ one.
    It does have to use a named async state boundary: `CatchAsyncValueView`,
    `CatchAsyncValueSliver`, or a feature-owned typed UI-state adapter.
 
-3. Widgets should not read repository providers directly. Older wording that
-   allowed widgets to call repositories for "pure UI plumbing" is narrowed:
-   plugin/platform/local side effects must go through a provider, controller,
-   repository, or service seam with a test replacement path.
+3. Widgets should not read repository providers directly. Plugin, platform, and
+   local side effects must go through a provider, controller, repository, or
+   service seam with a test replacement path.
 
 4. Do not ban `StatefulWidget`. Use it for Flutter mechanics. Use controllers
    or view models for durable product state, async data, mutations, validation
@@ -143,6 +135,12 @@ Small features do not need every file. A feature may have only a repository and
 one screen if the behavior is simple. Large features may split by surface under
 `presentation/`, but should keep route-level screens easy to find.
 
+Files under `lib/**/presentation/**` ending in `_state.dart` are provider-free
+display adapters by naming convention. They may depend on domain/core/value
+types and `CatchAsyncState`, but they must not import Riverpod, declare
+providers, or call `ref.watch/read/listen`; provider-owned composition belongs
+in a neighboring `_view_model.dart`, `_controller.dart`, or route screen.
+
 Allowed exceptions:
 
 - `lib/core/**` for app-wide primitives, theme, shared widgets, global app
@@ -204,11 +202,36 @@ Hard rules:
 - `data` must not import feature presentation files.
 - `presentation/widgets/**` must not call repository methods or watch
   repository providers directly.
+- Aligned adopters whose architecture-tracker role declares provider-free body
+  or state behavior are machine-checked by
+  `node tool/architecture/check_adopted_architecture_boundaries.mjs`; do not
+  mark a file aligned/provider-free until routing and provider APIs have been
+  lifted to the route/controller boundary.
 - A route-level `*_screen.dart` may watch a feature view model or controller
   provider, and may watch mutation state for display. It should not reach
   around those seams into repositories.
 - Cross-feature reads must go through a named provider/view-model/repository
-  seam. Do not import sibling feature presentation code.
+  seam or an explicitly sanctioned presentation seam. Do not deep-import
+  sibling feature presentation internals. Sanctioned presentation seams are:
+  (a) a sibling feature's public controller (`presentation/*_controller.dart`)
+  imported from a route-level `*_screen.dart` or another `*_controller.dart`;
+  and (b) symbols exported by the sibling feature root barrel
+  (`lib/<feature>/<feature>.dart`). Every feature-root barrel export of a
+  `presentation/` file must carry a same-line or previous-line
+  `// public-api:` annotation explaining why that symbol is public. Widgets,
+  state adapters, domain files, data files, and arbitrary presentation helpers
+  do not get the direct-controller-import carve-out.
+- Firebase SDK types are not a domain contract. New domain files must stay pure
+  Dart plus approved annotation/value packages. Firestore, Auth, Functions,
+  Storage, Remote Config, App Check, and plugin-specific types belong in
+  repository/data boundaries or feature-neutral adapter seams that keep those
+  SDKs out of domain models and validators.
+- Domain serialization that still needs Firestore `Timestamp` handling routes
+  through `core/firestore_converters`. Existing direct Firebase imports in
+  domain are ratcheted debt in
+  `tool/architecture/dependency_direction_baseline.json`; new domain code must
+  not add them. The long-term target is no Firebase API calls or Firebase types
+  in domain signatures. Full DTO purity is not the target by default.
 - Platform/plugin effects such as URL launch, share, image picker, location,
   calendar, clipboard, haptics, notifications, and connectivity need a seam
   that tests can replace.
@@ -280,8 +303,6 @@ boundaries through `SliverToBoxAdapter`, but growing repeated content should use
 lazy slivers.
 
 ## Layout, Spacing, And UI Architecture
-
-This section replaces the deleted `docs/ui_architecture.md`.
 
 Use `CatchSpacing` from `lib/core/theme/catch_tokens.dart` for reusable layout
 contracts. Feature screens should usually consume the semantic layer
@@ -575,9 +596,9 @@ empty states.
 
 ## Error Handling Contract
 
-This section replaces the deleted `docs/error-handling-audit.md`. Historical
-error-migration counts and old pass notes remain in git/audit history; current
-architecture lives here.
+This section is the current error architecture contract. Historical migration
+counts and old pass notes remain in git and audit history; active guidance lives
+here.
 
 ### Current Error Surface Model
 
@@ -736,7 +757,12 @@ Rules:
 - Empty state means successful data load with zero items. It is not an error
   fallback.
 
-Every mutation watched for `isPending` must also surface `hasError`.
+Every mutation watched for `isPending` must also surface `hasError`. Mutation
+objects should use the same grain as the action cardinality contract: one
+visible action plus one scope key maps to one pending/error surface. Do not use
+one screen-wide mutation to drive several CTAs with different scope keys, and do
+not split one singleton action into multiple independent mutation objects unless
+the UI still renders one resulting state.
 
 ### Controller And Mutation Errors
 
@@ -841,12 +867,17 @@ Run the frontend/local scanner before frontend/local/plugin error work:
 
 ```sh
 dart tool/audit/frontend_error_candidates.dart
+dart tool/audit/frontend_error_candidates.dart --check
 ```
 
 Both scanners use stable buckets: `mustMigrate`, `review`, `verified`,
 `intentional`, `fixture`, and `migrated`. `mustMigrate` and `review` should stay
-at zero. The scanner is not proof by itself; it gives a single source of truth
-for what still needs migration and what was intentionally retained.
+at zero. The frontend check uses
+`tool/audit/frontend_error_candidates_baseline.json` as a temporary ratchet for
+reviewed legacy candidates, so new unbaselined `review` or `mustMigrate`
+findings fail without requiring unrelated Flutter edits in the same pass. The
+scanner is not proof by itself; it gives a single source of truth for what still
+needs migration and what was intentionally retained.
 
 Candidate patterns:
 
@@ -896,6 +927,16 @@ Use the smallest controller pattern that owns the lifecycle correctly:
 | Async state controller | loaded state that is then mutated by user actions | `AsyncNotifier<T>` |
 | View-model provider | read-only composition of repository streams/futures into screen-ready state | generated function provider |
 | Domain/use-case class | shared or complex business logic independent of Flutter | pure Dart class/function |
+
+Mutation key grain must match the UI interaction grain. Route-level single
+actions such as book, cancel, submit, and delete for the route's single subject
+may use static `Mutation` fields. Repeated row or list actions such as
+attendance, waitlist offers, join-request decisions, or any per-entity action
+rendered multiple times on one surface must key mutation state per target with
+`mutation(key)` family instances. Keys are typed Dart records with value
+equality, not concatenated strings. Use
+`lib/hosts/presentation/host_event_booking_controller.dart` as the reference
+implementation.
 
 ### Action Controller
 
@@ -998,7 +1039,10 @@ Use these lifecycle rules:
   reads. Let the provider close when the route is popped or when the screen
   stops watching it.
 - Use `@Riverpod(keepAlive: true)` only when the stream is deliberately global
-  or prewarmed. Document the reason at the provider or call site.
+  or prewarmed. Document the reason at the provider or call site with a
+  `// keepalive:` marker within the three lines above the annotation or
+  handwritten provider declaration; the dependency-direction scanner enforces
+  that marker.
 - For bottom-tab branches retained by `StatefulShellRoute.indexedStack`, decide
   whether the stream should remain active while its tab is inactive. If not,
   gate the screen/view model on the active tab before watching feature-owned
@@ -1215,6 +1259,9 @@ Rules:
 - Route definitions should construct screens and parse path/query parameters.
 - Route guards can redirect based on auth/profile/app state.
 - Route config should not perform repository mutations.
+- Production navigation outside `lib/routing/**` should use named routes, route
+  constants, or typed route helpers instead of raw path string literals. Raw
+  paths stay owned by route definitions and URL contract files.
 - Screen constructors receive simple route values, not repository instances.
 - Complex route extras should be normalized into a typed route argument object
   or handled by the screen/controller boundary.
@@ -1245,6 +1292,13 @@ more explicit.
 
 Use three enforcement levels.
 
+The enforcement registry is checked by
+`node tool/check_enforcement_integrity.mjs`. When a rule gains, loses, or
+changes enforcement, update `docs/audit_registry/rules.json`,
+`tool/tools_manifest.json`, the owner-doc anchor, and the known-bad proof or
+baseline receipt together. Manual enforcement is explicit with `stage: manual`;
+absence of an enforcement entry is drift.
+
 ### Analyzer plugin rules
 
 Use `packages/catch_ui_lints` or a future architecture lint package for
@@ -1253,7 +1307,8 @@ deterministic rules that should be visible in IDE/analyzer output.
 Good analyzer-rule candidates:
 
 - `presentation/widgets/**` must not import or watch `*RepositoryProvider`.
-- feature presentation must not import sibling feature presentation.
+- feature presentation must not import sibling feature presentation internals
+  except the sanctioned screen/controller-to-controller seam.
 - `domain/**` must not import Flutter, Riverpod, Firebase, or platform plugins.
 - direct raw Firebase UI messages are forbidden in presentation.
 - `*_screen.dart` classes should use a named async boundary when they watch
@@ -1269,6 +1324,8 @@ Good scanner candidates:
 
 - screen-ish widgets missing clear route/screen classification;
 - possible direct repository reads in presentation;
+- aligned provider-free adopters drifting back into provider/routing imports
+  via `tool/architecture/check_adopted_architecture_boundaries.mjs`;
 - possible missing mutation listeners;
 - overly complex widgets that should split rendering from behavior;
 - raw `AsyncValue.when` branches that may need a wrapper or typed state;
@@ -1299,6 +1356,440 @@ Examples:
 If overrides pile up for one rule, redesign the rule. If overrides are rare and
 specific, keep the rule and migrate the call sites.
 
+## Reference Implementation Workflow
+
+Architecture migration must proceed from a reference implementation, not from
+abstract prose alone. Before rolling a pattern across many files, create one
+high-quality prototype, copy the relevant code excerpt into this document as an
+exhibit, and record adopters in
+`docs/audit_registry/architecture_pattern_adoption.json`.
+
+The workflow is:
+
+1. Pick one concrete pattern id before editing the batch.
+   - Use ids such as `ARCH-UI-STATE-001` or `ARCH-CONTROLLER-001`.
+   - Record the prototype file, tests, Widgetbook/catalog surfaces if any, and
+     intended adopters in the tracker.
+
+2. Build one reference prototype first.
+   - The prototype should be better than the average migration target: clear
+     ownership, provider seams, stable tests, catalog coverage when UI is public,
+     and no private widget/helper drift.
+   - Do not start a mechanical rollout until the prototype passes its focused
+     tests and relevant scanners.
+
+3. Copy a real code excerpt into this document.
+   - The exhibit is not pseudocode. It should show the exact shape agents are
+     expected to preserve.
+   - Keep the excerpt short enough to review, but specific enough that another
+     agent can compare a candidate file against it.
+
+4. During rollout, classify every candidate.
+   - `aligned`: conforms to the current exhibit.
+   - `needs_update`: can conform with local edits.
+   - `variant_needed`: valid product constraint that the exhibit does not cover.
+   - `exception`: intentionally different, with a debt id or override.
+
+5. When a candidate reveals a better pattern, update the exhibit first.
+   - Then revisit every file already marked as an adopter of the previous
+     exhibit and either update it or record why it remains a variant/exception.
+   - A migration batch is not complete if earlier adopters silently lag behind
+     an edited exhibit.
+
+6. Stamp the pass with pattern evidence.
+   - Include the pattern id, prototype path, adopter paths, and verification
+     commands in the audit-registry pass receipt.
+
+Exhibit freshness is owned by this doc plus
+`docs/audit_registry/architecture_pattern_adoption.json`. Every exhibit block
+must carry an `exhibit-freshness` marker naming its tracker source and owner.
+`node tool/architecture/check_app_architecture_exhibits.mjs` checks those
+markers, verifies the tracker points back to the current doc anchor, and rejects
+known stale snippets from prior reference shapes.
+
+### Exhibit ARCH-SCREEN-001: Feature Screen Boundary
+
+<!-- exhibit-freshness: ARCH-SCREEN-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
+
+Reference files:
+
+- `lib/events/presentation/event_detail_screen.dart`
+- `lib/events/presentation/event_detail_controller.dart`
+- `lib/events/presentation/widgets/event_detail_body.dart`
+- `test/events/event_detail_controller_test.dart`
+- `test/events/event_detail_widgets_test.dart`
+- `design/screens/catch.screens.json`
+- `widgetbook/lib/events/event_detail_use_cases.dart`
+
+Use this pattern for route-level or major navigable feature screens. The screen
+owns route parameters, provider watches, top-level async/error branches, route
+`Scaffold`, bottom navigation, screen-level mutation listeners, navigation
+callbacks, retry invalidation, and controller/service side-effect calls. Loaded
+body widgets receive explicit view data, shell state, and callbacks; they do not
+reach around the screen for route-level repositories or app-shell decisions.
+
+`design/screens/catch.screens.json` is the screen inventory and screen
+composition map. Do not create a second screen-inventory document for the same
+purpose. The architecture pattern tracker records which screen files conform to
+this exhibit.
+
+`EventDetailBody` and `EventLocationMapScreen` do not expose direct scaffold
+compatibility. Direct Widgetbook or widget-test states may mount those bodies as
+body-only review surfaces, but any state that needs route chrome, bottom
+navigation, access/loading/error branches, or mutation listeners must mount the
+route screen with provider overrides. Body-only Event Detail fixtures must
+provide explicit save/share/calendar/back callbacks, display flags, companion
+state, host state, and route-intent callbacks; they must not rely on body-owned
+provider fallbacks for route side effects.
+
+Current aligned adopters:
+
+- `lib/events/presentation/event_location_map_screen.dart` uses
+  `EventLocationMapRouteScreen` as the route shell. The route watches
+  `EventDetailViewModel`, owns the chromeless `Scaffold`, floating back
+  controls, loading/error/not-found branches, exact-coordinate gate, retry
+  invalidation, and external directions side effect. It resolves
+  `EventLocationMapState` and passes that provider-free state plus
+  `onGetDirections` into `EventLocationMapScreen`. Direct
+  `EventLocationMapScreen` Widgetbook/test states are body-only states with the
+  same explicit state/callback API.
+
+- `lib/events/presentation/calendar/calendar_screen.dart` uses
+  `CalendarScreen` as the route shell. The screen owns uid/event provider
+  waves, the route `Scaffold`, loading/error branches, retry invalidation,
+  selected-date and expanded-header inputs, scroll-to-day behavior, and
+  event-detail navigation. It resolves `CalendarHomeState` for event
+  merge/sort, selected date, header mode, and club-id lookup input before
+  composing provider-free calendar header, stats, agenda, and state sections.
+
+- `lib/events/presentation/saved_events_screen.dart` uses
+  `SavedEventsScreen` as the route shell. The screen owns uid/saved-event
+  provider waves, the route `Scaffold`, loading/error/empty branches, retry
+  invalidation, club-name lookup, and saved-event detail navigation. It resolves
+  `SavedEventsListState` for ordering, saved/past labels, tile statuses, today,
+  and club-id lookup input before composing shared provider-free agenda rows.
+
+Defined variant:
+
+- `ARCH-SCREEN-001C` covers host workspaces such as
+  `lib/hosts/presentation/host_event_manage_screen.dart`. Host Event Manage is
+  not a mechanical Event Detail copy because one canonical route owns multiple
+  route aliases and lifecycle sections: Setup, Guests, Live, and Report.
+  `HostEventManageRouteScreen` keeps canonical route ids/aliases, uid/club/event
+  loading, missing-resource/error branches, host access gating, retry
+  invalidation, and initial section/deep-link inputs. The loaded workspace may
+  keep local tab/section state while migration is in progress, but the target is
+  a `HostEventManageScreenState` or split workspace adapters that feed
+  provider-free setup, roster, private-access, invite-link, Event Success,
+  report, and host-action sections with explicit display state and typed
+  callbacks. Do not move solved route loading/access work into the workspace
+  adapter, and do not duplicate attendance or Event Success aliases as separate
+  screen contracts.
+
+```dart
+@override
+Widget build(BuildContext context) {
+  final vmAsync = ref.watch(eventDetailViewModelProvider(widget.eventId));
+  final vm = vmAsync.asData?.value;
+  final isHostApp = AppConfig.appRole.isHost;
+
+  if (vm != null) {
+    final now = DateTime.now();
+    final viewerIsHost = vm.isHost;
+    final sectionVisibility = eventDetailSectionVisibilityStateFrom(
+      event: vm.event,
+      participation: vm.participation,
+      isHostApp: isHostApp,
+      isHost: viewerIsHost,
+      now: now,
+    );
+    final isSpotlightDark =
+        widget.presentationMode == EventDetailPresentationMode.spotlightDark;
+    final style = _eventDetailSurfaceStyle(
+      context,
+      presentationMode: widget.presentationMode,
+    );
+    final saveMutation = ref.watch(
+      EventDetailController.toggleSavedEventMutation,
+    );
+    final share = ref.watch(externalShareControllerProvider);
+    final calendar = ref.watch(eventCalendarControllerProvider);
+    final canOpenCompanion = eventDetailCanOpenCompanion(
+      participation: vm.participation,
+      showConsumerActions: sectionVisibility.showConsumerActions,
+    );
+    final companionState = eventDetailCompanionStateFrom(
+      participation: vm.participation,
+      showConsumerActions: sectionVisibility.showConsumerActions,
+      planState: canOpenCompanion
+          ? _catchAsyncState(
+              ref.watch(watchEventSuccessPlanProvider(vm.event.id)),
+            )
+          : null,
+    );
+    final hostState = eventDetailHostStateFrom(
+      clubState: _catchAsyncState(ref.watch(fetchClubProvider(widget.clubId))),
+      currentUid: vm.userProfile?.uid,
+      canMessageHost:
+          sectionVisibility.showConsumerActions && vm.isAuthenticated,
+    );
+    final socialState = eventDetailSocialStateFrom(
+      event: vm.event,
+      userProfile: vm.userProfile,
+      isAuthenticated: vm.isAuthenticated,
+      renderAsHost: sectionVisibility.renderSocialAsHost,
+      participation: vm.participation,
+      now: now,
+    );
+
+    if (vm.isAuthenticated) {
+      ref.listen(EventBookingController.bookMutation, (prev, next) {
+        if (prev?.isPending == true && next.isSuccess) {
+          showCatchSnackBar(context, 'Booking confirmed!');
+        }
+      });
+      ref.listen(EventBookingController.cancelMutation, (prev, next) {
+        if (prev?.isPending == true && next.isSuccess) {
+          showCatchSnackBar(context, 'Booking cancelled.');
+        }
+      });
+    }
+
+    void shareEvent(BuildContext buttonContext) => unawaited(
+      _shareEvent(
+        buttonContext,
+        vm.event,
+        share,
+        widget.inviteCode,
+        widget.inviteLinkId,
+      ),
+    );
+
+    return CatchMutationErrorListener(
+      mutation: EventDetailController.toggleSavedEventMutation,
+      errorContext: AppErrorContext.event,
+      child: Scaffold(
+        backgroundColor: style.pageBackground,
+        body: EventDetailBody(
+          event: vm.event,
+          userProfile: vm.userProfile,
+          clubId: widget.clubId,
+          reviews: vm.reviews,
+          isAuthenticated: vm.isAuthenticated,
+          sectionVisibility: sectionVisibility,
+          isSaved: vm.isSaved,
+          participation: vm.participation,
+          savePending: saveMutation.isPending,
+          surfaceStyle: style,
+          onBack: () => Navigator.of(context).pop(),
+          onShare: shareEvent,
+          showAddToCalendar: _canAddEventToCalendar(
+            event: vm.event,
+            participation: vm.participation,
+            isHost: sectionVisibility.renderSocialAsHost,
+            now: now,
+          ),
+          onAddToCalendar: (buttonContext) =>
+              unawaited(_addEventToCalendar(buttonContext, vm.event, calendar)),
+          onToggleSaved: () => _toggleSavedEvent(
+            context,
+            ref,
+            event: vm.event,
+            clubId: widget.clubId,
+            userProfile: vm.userProfile,
+            isAuthenticated: vm.isAuthenticated,
+            isSaved: vm.isSaved,
+          ),
+          companionState: companionState,
+          hostState: hostState,
+          socialState: socialState,
+          onLocationTap: vm.event.hasExactStartingPoint
+              ? () => context.pushNamed(
+                  Routes.eventLocationMapScreen.name,
+                  pathParameters: {'eventId': vm.event.id},
+                )
+              : null,
+          onOpenCompanion: () => context.pushNamed(
+            Routes.eventSuccessCompanionScreen.name,
+            pathParameters: {'clubId': widget.clubId, 'eventId': vm.event.id},
+            extra: vm.event,
+          ),
+          onRetryCompanion: () =>
+              ref.invalidate(watchEventSuccessPlanProvider(vm.event.id)),
+          onViewClub: (clubId) => context.pushNamed(
+            Routes.clubDetailScreen.name,
+            pathParameters: {'clubId': clubId},
+          ),
+          onMessageHost: (clubId, hostUid) => unawaited(
+            _messageHost(context, ref, clubId: clubId, hostUid: hostUid),
+          ),
+          onRetryHosts: () => ref.invalidate(fetchClubProvider(widget.clubId)),
+          inviteCode: widget.inviteCode,
+          inviteLinkId: widget.inviteLinkId,
+          now: now,
+          presentationMode: widget.presentationMode,
+          heroTag: widget.heroTag,
+        ),
+        bottomNavigationBar: _eventDetailBottomNavigationBar(
+          event: vm.event,
+          userProfile: vm.userProfile,
+          clubId: widget.clubId,
+          isAuthenticated: vm.isAuthenticated,
+          participation: vm.participation,
+          inviteCode: widget.inviteCode,
+          inviteLinkId: widget.inviteLinkId,
+          now: now,
+          darkSurface: isSpotlightDark,
+          sectionVisibility: sectionVisibility,
+          onGuestBook: () => _openEventSignIn(
+            context,
+            clubId: widget.clubId,
+            eventId: vm.event.id,
+            inviteCode: widget.inviteCode,
+            inviteLinkId: widget.inviteLinkId,
+          ),
+        ),
+      ),
+    );
+  }
+
+  if (vmAsync.isLoading && _initialEventMatchesRoute) {
+    return EventDetailOptimisticBody(
+      event: widget.initialEvent!,
+      clubId: widget.clubId,
+      presentationMode: widget.presentationMode,
+      heroTag: widget.heroTag,
+      inviteCode: widget.inviteCode,
+      inviteLinkId: widget.inviteLinkId,
+    );
+  }
+
+  if (vmAsync.isLoading) {
+    return EventDetailLoadingScreen(
+      presentationMode: widget.presentationMode,
+    );
+  }
+
+  if (vmAsync.hasError) {
+    return CatchErrorScaffold.fromError(
+      vmAsync.error!,
+      context: AppErrorContext.event,
+      onRetry: () =>
+          ref.invalidate(eventDetailViewModelProvider(widget.eventId)),
+    );
+  }
+
+  return const CatchErrorScaffold(
+    title: 'Event not found',
+    message: 'This event is no longer available.',
+  );
+}
+```
+
+### Exhibit ARCH-UI-STATE-001: Provider-Free Presentation State Model
+
+<!-- exhibit-freshness: ARCH-UI-STATE-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
+
+Reference files:
+
+- `lib/events/presentation/calendar/calendar_screen_state.dart`
+- `test/calendar/calendar_screen_state_test.dart`
+- `lib/events/presentation/calendar/calendar_screen.dart`
+
+Use this pattern when a screen needs a provider-free display model that merges
+repository/domain data into UI-ready state. The screen may watch providers at the
+route edge, but widgets below the screen consume the presentation state object
+instead of reading repositories or recomputing product policy. In this exhibit,
+`CalendarHomeState` owns the screen-level selected-date/header/view inputs and
+`CalendarEventSummary` owns the merged event list.
+
+This is a narrow state-boundary exhibit. The first full route/controller
+migration still needs its own reference exhibit before a broad rollout.
+`CalendarHomeState` is the reference route-edge state object; it composes the
+`CalendarEventSummary` adapter shown below.
+
+```dart
+class CalendarEventSummary {
+  const CalendarEventSummary({
+    required this.events,
+    required this.agendaEvents,
+    required this.savedOnlyEventIds,
+    required this.today,
+    required this.anchorDate,
+    required this.totalDistance,
+    this.nextEvent,
+  });
+
+  final List<Event> events;
+  final List<Event> agendaEvents;
+  final Set<String> savedOnlyEventIds;
+  final DateTime today;
+  final DateTime anchorDate;
+  final double totalDistance;
+  final Event? nextEvent;
+
+  bool isSavedOnly(Event event) => savedOnlyEventIds.contains(event.id);
+
+  static CalendarEventSummary from({
+    required List<Event> signedUpEvents,
+    List<Event> savedEvents = const <Event>[],
+    required DateTime now,
+  }) {
+    final signedUpIds = signedUpEvents.map((event) => event.id).toSet();
+    final savedOnlyEventIds = <String>{};
+    final byId = <String, Event>{};
+
+    for (final event in savedEvents) {
+      if (event.isCancelled || !event.startTime.isAfter(now)) continue;
+      byId[event.id] = event;
+      if (!signedUpIds.contains(event.id)) savedOnlyEventIds.add(event.id);
+    }
+    for (final event in signedUpEvents) {
+      byId[event.id] = event;
+    }
+
+    final sorted = byId.values.toList()
+      ..sort((a, b) => a.startTime.compareTo(b.startTime));
+    final today = DateUtils.dateOnly(now);
+    final totalDistance = sorted
+        .where((event) => !event.isCancelled)
+        .fold<double>(0, (sum, event) => sum + event.distanceKm);
+
+    final upcoming = <Event>[];
+    final cancelledUpcoming = <Event>[];
+    final past = <Event>[];
+    for (final event in sorted) {
+      if (!event.startTime.isBefore(now) && event.isCancelled) {
+        cancelledUpcoming.add(event);
+      } else if (event.startTime.isBefore(now)) {
+        past.add(event);
+      } else {
+        upcoming.add(event);
+      }
+    }
+
+    final nextEvent = upcoming.isEmpty ? null : upcoming.first;
+    final latestPastFirst = [...past]
+      ..sort((a, b) => b.startTime.compareTo(a.startTime));
+    final anchorDate = nextEvent?.startTime ?? today;
+
+    return CalendarEventSummary(
+      events: List.unmodifiable(sorted),
+      agendaEvents: List.unmodifiable([
+        ...upcoming,
+        ...cancelledUpcoming,
+        ...latestPastFirst,
+      ]),
+      savedOnlyEventIds: Set.unmodifiable(savedOnlyEventIds),
+      today: today,
+      anchorDate: anchorDate,
+      totalDistance: totalDistance,
+      nextEvent: nextEvent,
+    );
+  }
+}
+```
+
 ## Migration Plan
 
 Use this order for architecture cleanup:
@@ -1315,10 +1806,14 @@ Use this order for architecture cleanup:
    - `dart tool/audit/frontend_error_candidates.dart`
    - relevant `npm run design:widgets:*` checks for widget/catalog changes
 
-3. Pick one feature or one enforcement rule.
+3. Pick one feature, one enforcement rule, or one reference pattern.
    - Do not run a whole-app rewrite in one batch.
    - Prefer features with active repository reads in widgets, raw async
      branches, or mutation-error drift.
+   - If the batch rolls out an architecture pattern, update
+     `docs/audit_registry/architecture_pattern_adoption.json` before edits.
+   - If no reference exhibit exists for the pattern, create the prototype and
+     exhibit first.
 
 4. Establish the screen boundary.
    - Identify route-level screens.

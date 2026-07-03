@@ -546,6 +546,105 @@ Widget eventSuccessFeedbackFormStates(BuildContext context) {
   );
 }
 
+@widgetbook.UseCase(
+  name: 'Feedback rating row',
+  type: RatingRow,
+  path: '[P1 product surfaces]/Event Success companion',
+)
+Widget eventSuccessFeedbackRatingRowStates(BuildContext context) {
+  return _CompanionCatalog(
+    title: 'RatingRow',
+    contractId: 'component.event_success.companion.feedback.rating_row',
+    children: [
+      _StateCard(
+        label: 'partial rating',
+        child: _DeviceFrame(
+          child: _feedbackPartPreview(
+            RatingRow(label: 'Welcome', value: 3, onChanged: (_) {}),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'max rating',
+        child: _DeviceFrame(
+          child: _feedbackPartPreview(
+            RatingRow(label: 'Structure', value: 5, onChanged: (_) {}),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Feedback counter row',
+  type: CounterRow,
+  path: '[P1 product surfaces]/Event Success companion',
+)
+Widget eventSuccessFeedbackCounterRowStates(BuildContext context) {
+  return _CompanionCatalog(
+    title: 'CounterRow',
+    contractId: 'component.event_success.companion.feedback.counter_row',
+    children: [
+      _StateCard(
+        label: 'zero count',
+        child: _DeviceFrame(
+          child: _feedbackPartPreview(CounterRow(value: 0, onChanged: (_) {})),
+        ),
+      ),
+      _StateCard(
+        label: 'active count',
+        child: _DeviceFrame(
+          child: _feedbackPartPreview(CounterRow(value: 4, onChanged: (_) {})),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Feedback icon action',
+  type: FeedbackIconAction,
+  path: '[P1 product surfaces]/Event Success companion',
+)
+Widget eventSuccessFeedbackIconActionStates(BuildContext context) {
+  return _CompanionCatalog(
+    title: 'FeedbackIconAction',
+    contractId: 'component.event_success.companion.feedback.icon_action',
+    children: [
+      _StateCard(
+        label: 'enabled and disabled',
+        child: _DeviceFrame(
+          child: Builder(
+            builder: (context) {
+              final t = CatchTokens.of(context);
+              return _feedbackPartPreview(
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    FeedbackIconAction(
+                      tooltip: 'Positive signal',
+                      icon: Icons.check_circle_rounded,
+                      color: t.success,
+                      onPressed: () {},
+                    ),
+                    FeedbackIconAction(
+                      tooltip: 'Unavailable signal',
+                      icon: Icons.remove_circle_outline_rounded,
+                      color: t.ink3,
+                      onPressed: null,
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
 class _CompanionRouteScope extends StatelessWidget {
   const _CompanionRouteScope({
     this.uid = EventSuccessCompanionFixtures.viewerUid,
@@ -718,10 +817,29 @@ Widget _feedbackFormPreview({EventSuccessFeedback? existingFeedback}) {
                 child: EventSuccessFeedbackForm(
                   event: EventSuccessCompanionFixtures.socialEvent,
                   userProfile: EventSuccessCompanionFixtures.viewer,
+                  actionState: const EventSuccessFeedbackActionState(),
+                  onSubmitFeedback: (_) async {},
                   existingFeedback: existingFeedback,
                 ),
               ),
             ),
+          ),
+        ),
+      );
+    },
+  );
+}
+
+Widget _feedbackPartPreview(Widget child) {
+  return Builder(
+    builder: (context) {
+      final t = CatchTokens.of(context);
+      return Scaffold(
+        backgroundColor: t.bg,
+        body: SafeArea(
+          child: Padding(
+            padding: CatchInsets.content,
+            child: IgnorePointer(child: StagePanel(child: child)),
           ),
         ),
       );

@@ -12,7 +12,6 @@ import 'package:catch_dating_app/event_success/domain/event_success_preference.d
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'event_success_plan.freezed.dart';
@@ -57,8 +56,10 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
   factory EventSuccessPlan.fromJson(Map<String, dynamic> json) =>
       _$EventSuccessPlanFromJson(json);
 
-  factory EventSuccessPlan.defaultForEvent(Event event, {DateTime? now}) {
-    final createdAt = now ?? DateTime.now();
+  factory EventSuccessPlan.defaultForEvent(
+    Event event, {
+    required DateTime now,
+  }) {
     final draft = EventSuccessHostDraft.fromFormat(
       event.eventFormat,
       targetAttendeeCount: math.max(1, event.capacityLimit),
@@ -68,8 +69,8 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
       eventId: event.id,
       clubId: event.clubId,
       draft: draft,
-      createdAt: createdAt,
-      updatedAt: createdAt,
+      createdAt: now,
+      updatedAt: now,
     );
   }
 

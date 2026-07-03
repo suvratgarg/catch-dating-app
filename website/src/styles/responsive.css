@@ -1,0 +1,370 @@
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+@media (min-width: 720px) {
+  :root {
+    --gutter: 28px;
+  }
+
+  .hero h1 {
+    font-size: 116px;
+  }
+
+  .hero__headline {
+    font-size: 50px;
+  }
+
+  .hero__actions {
+    display: flex;
+    width: auto;
+  }
+
+  .app-download-ctas__buttons {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hero-panel {
+    align-self: end;
+  }
+
+  .format-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .loop-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .organizer-search-form {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+  }
+
+  .organizer-result-card a {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .listing-event-meta {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .listing-catch-event-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .listing-success-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .listing-review-empty {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .listing-review-workspace {
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 0.52fr);
+    align-items: start;
+  }
+
+  .product-board__nav {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .capture-grid,
+  .evidence-strip,
+  .listing-grid,
+  .surface-grid,
+  .trust-grid,
+  .host-console__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .proof-ledger__rows {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .download-section {
+    grid-template-columns: minmax(0, 1fr) minmax(340px, 0.56fr);
+    align-items: center;
+  }
+
+  .waitlist-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .claim-request-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .waitlist-form .button,
+  .form-status {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 980px) {
+  :root {
+    --gutter: 36px;
+  }
+
+  .site-nav {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    color: var(--website-nav-muted);
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .site-nav a:hover,
+  .site-nav a:focus-visible {
+    color: var(--website-text);
+  }
+
+  .hero__inner {
+    grid-template-columns: minmax(0, 1fr) 430px;
+  }
+
+  .hero h1 {
+    font-size: 142px;
+  }
+
+  .hero__headline {
+    font-size: 60px;
+  }
+
+  .format-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .loop-list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .organizer-results {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .proof-section,
+  .waitlist-section,
+  .host-evidence,
+  .host-hero__inner,
+  .listing-hero__inner,
+  .listing-section--split,
+  .claim-band {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  }
+
+  .product-board__main {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  }
+
+  .site-footer {
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+  }
+}
+
+@media (min-width: 1180px) {
+  .section-heading h2,
+  .proof-section__copy h2,
+  .waitlist__intro h2,
+  .download-section__copy h2,
+  .host-hero h1,
+  .organizer-search-hero h1,
+  .listing-hero h1,
+  .listing-section--split h2,
+  .claim-band h2 {
+    font-size: 64px;
+  }
+}
+
+@media (max-width: 520px) {
+  :root {
+    --gutter: 32px;
+  }
+
+  .listing-review-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .listing-review-summary > a {
+    min-width: 0;
+  }
+
+  .listing-review-empty {
+    align-items: start;
+  }
+
+  .hero__inner,
+  .host-hero__inner,
+  .listing-hero__inner,
+  .organizer-search-hero,
+  .directory-claim-pressure,
+  .organizer-results,
+  .host-evidence,
+  .host-fill-room,
+  .listing-section,
+  .claim-band,
+  .format-band,
+  .story-section,
+  .surface-section,
+  .proof-section,
+  .proof-ledger,
+  .captures-section,
+  .download-section,
+  .trust-section,
+  .waitlist-section,
+  .site-footer {
+    width: min(calc(100vw - 96px), var(--content));
+    margin-left: var(--gutter);
+    margin-right: auto;
+  }
+
+  .site-header__actions .button--ghost {
+    display: none;
+  }
+
+  .hero {
+    min-height: auto;
+  }
+
+  .hero__inner {
+    min-height: auto;
+    padding-top: 132px;
+  }
+
+  .hero-panel,
+  .host-console {
+    display: none;
+  }
+
+  .hero::before {
+    background:
+      linear-gradient(180deg, var(--website-hero-overlay-mid) 0%, var(--website-header-bg) 54%, var(--website-bg) 100%);
+  }
+
+  .hero__media img {
+    object-position: 68% center;
+  }
+
+  .hero__inner {
+    padding-bottom: 64px;
+  }
+
+  .hero h1 {
+    font-size: 70px;
+  }
+
+  .hero__headline {
+    font-size: 30px;
+    max-width: 10ch;
+  }
+
+  .hero__body {
+    font-size: 15px;
+  }
+
+  .section-heading h2,
+  .proof-section__copy h2,
+  .waitlist__intro h2,
+  .download-section__copy h2,
+  .host-hero h1,
+  .organizer-search-hero h1,
+  .listing-hero h1,
+  .listing-section--split h2,
+  .claim-band h2 {
+    font-size: 30px;
+  }
+
+  .hero__copy,
+  .host-hero__copy,
+  .listing-hero__copy,
+  .section-heading,
+  .proof-section__copy,
+  .waitlist__intro,
+  .download-section__copy {
+    max-width: 100%;
+  }
+
+  .section-heading h2,
+  .proof-section__copy h2,
+  .waitlist__intro h2,
+  .download-section__copy h2,
+  .host-hero h1,
+  .organizer-search-hero h1,
+  .listing-hero h1,
+  .listing-section--split h2,
+  .claim-band h2 {
+    max-width: 14ch;
+    text-wrap: balance;
+  }
+
+  .hero__body,
+  .host-hero__copy p,
+  .listing-hero__copy p,
+  .listing-section--split p,
+  .organizer-result-card p,
+  .section-heading p,
+  .proof-section__copy p,
+  .waitlist__intro p,
+  .download-section__copy p,
+  .app-download-ctas__status,
+  .format-card p,
+  .loop-list p,
+  .surface-grid p,
+  .proof-ledger__rows p,
+  .trust-grid p,
+  .listing-card p,
+  .event-action-card p,
+  .listing-event-download p,
+  .product-module-card p,
+  .review-signal-card p,
+  .review-signal-lane__head p,
+  .review-signal-lane__empty p,
+  .owner-response-prompt p,
+  .listing-event-card p,
+  .listing-catch-event-card p,
+  .listing-ledger p,
+  .module-stack p {
+    max-width: 28ch;
+  }
+}
+
+@media (max-width: 360px) {
+  :root {
+    --gutter: 20px;
+  }
+
+  .hero__inner,
+  .host-hero__inner,
+  .listing-hero__inner,
+  .organizer-search-hero,
+  .directory-claim-pressure,
+  .organizer-results,
+  .host-evidence,
+  .listing-section,
+  .claim-band,
+  .format-band,
+  .story-section,
+  .surface-section,
+  .proof-section,
+  .proof-ledger,
+  .captures-section,
+  .download-section,
+  .trust-section,
+  .waitlist-section,
+  .site-footer {
+    width: min(calc(100vw - (var(--gutter) * 2)), var(--content));
+    margin-left: auto;
+    margin-right: auto;
+  }
+}

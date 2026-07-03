@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
+import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
@@ -58,6 +58,8 @@ abstract class OnboardingData with _$OnboardingData {
 ///
 /// **When to use this pattern:** Multi-step flows where state must survive
 /// navigation and a freezed data class captures the full form state.
+// keepalive: onboarding state must survive step navigation until completion or
+// explicit invalidation.
 @Riverpod(keepAlive: true)
 class OnboardingController extends _$OnboardingController {
   static const welcomeStep = OnboardingStep.welcome;
@@ -94,9 +96,10 @@ class OnboardingController extends _$OnboardingController {
       return;
     }
 
+    final today = DateTime.now();
     if (runPreferencesOnly &&
         userProfile != null &&
-        userProfile.hasBookingReadyIdentity) {
+        userProfile.hasBookingReadyIdentityOn(today)) {
       _setStateIfChanged(
         state.copyWith(
           step: OnboardingStep.runningPrefs,
@@ -109,7 +112,7 @@ class OnboardingController extends _$OnboardingController {
 
     if (profileCompletionOnly &&
         userProfile != null &&
-        userProfile.hasBookingReadyIdentity) {
+        userProfile.hasBookingReadyIdentityOn(today)) {
       _setStateIfChanged(
         state.copyWith(
           step: _firstMissingSocialProfileStep(userProfile),
@@ -190,10 +193,10 @@ class OnboardingController extends _$OnboardingController {
       return;
     }
 
-    if (!userProfile.hasBookingReadyIdentity) {
+    if (!userProfile.hasBookingReadyIdentityOn(today)) {
       _setStateIfChanged(
         state.copyWith(
-          step: _firstMissingBookingIdentityStep(userProfile),
+          step: _firstMissingBookingIdentityStep(userProfile, today: today),
           phoneVerified: _authPhoneNumber.isNotEmpty,
           profileDraft: _profileDraftFromUserProfile(userProfile),
         ),
@@ -333,7 +336,9 @@ class OnboardingController extends _$OnboardingController {
           ),
         );
     await _deleteDraftNow();
-    ref.read(appAnalyticsProvider).logEvent(AnalyticsEvents.onboardingCompleted);
+    ref
+        .read(appAnalyticsProvider)
+        .logEvent(AnalyticsEvents.onboardingCompleted);
     ref.invalidateSelf();
   }
 
@@ -369,7 +374,9 @@ class OnboardingController extends _$OnboardingController {
     // The router will redirect away shortly.
     // Invalidate self so the keepAlive provider is disposed and its
     // state (including OnboardingData) is freed.
-    ref.read(appAnalyticsProvider).logEvent(AnalyticsEvents.onboardingCompleted);
+    ref
+        .read(appAnalyticsProvider)
+        .logEvent(AnalyticsEvents.onboardingCompleted);
     ref.invalidateSelf();
   }
 
@@ -381,12 +388,13 @@ class OnboardingController extends _$OnboardingController {
     );
     final dateOfBirth = draft.dateOfBirth;
     final gender = draft.gender;
+    final today = DateTime.now();
 
     if (validateRequiredProfileName(draft.firstName, label: 'First name') !=
             null ||
         validateRequiredProfileName(draft.lastName, label: 'Last name') !=
             null ||
-        validateRequiredDateOfBirth(dateOfBirth) != null) {
+        validateRequiredDateOfBirth(dateOfBirth, today: today) != null) {
       throw const ValidationException(
         'Please complete your basic profile details before continuing.',
         code: 'onboarding-incomplete-profile',
@@ -475,9 +483,13 @@ class OnboardingController extends _$OnboardingController {
     return draftStep;
   }
 
-  OnboardingStep _firstMissingBookingIdentityStep(UserProfile userProfile) {
+  OnboardingStep _firstMissingBookingIdentityStep(
+    UserProfile userProfile, {
+    required DateTime today,
+  }) {
     if (!userProfile.hasBookingReadyName ||
-        validateRequiredDateOfBirth(userProfile.dateOfBirth) != null ||
+        validateRequiredDateOfBirth(userProfile.dateOfBirth, today: today) !=
+            null ||
         validateRequiredPhoneNumber(userProfile.phoneNumber) != null) {
       return OnboardingStep.nameDob;
     }

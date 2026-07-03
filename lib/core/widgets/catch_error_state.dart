@@ -67,94 +67,108 @@ class CatchErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _buildCatchErrorBody(
-      context,
-      spec: _CatchErrorSpec(
-        title: title,
-        message: message,
-        icon: icon,
-        onRetry: onRetry,
-        retryLabel: retryLabel,
-        secondaryAction: secondaryAction,
-      ),
+    return CatchErrorBody(
+      title: title,
+      message: message,
+      icon: icon,
+      onRetry: onRetry,
+      retryLabel: retryLabel,
+      secondaryAction: secondaryAction,
       mode: mode,
     );
   }
 }
 
-Widget _buildCatchErrorBody(
-  BuildContext context, {
-  required _CatchErrorSpec spec,
-  required CatchErrorStateMode mode,
-}) {
-  final t = CatchTokens.of(context);
-  final isCompact = mode == CatchErrorStateMode.compact;
-  final secondaryAction = spec.secondaryAction;
-  final content = Column(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      CatchErrorIcon(
-        icon: spec.icon,
-        extent: isCompact ? 48 : 64,
-        iconSize: isCompact ? 24 : 30,
-      ),
-      SizedBox(height: isCompact ? CatchSpacing.s3 : CatchSpacing.s4),
-      Text(
-        spec.title,
-        style: isCompact
-            ? CatchTextStyles.sectionTitle(context)
-            : CatchTextStyles.titleL(context),
-        textAlign: TextAlign.center,
-      ),
-      gapH8,
-      Text(
-        spec.message,
-        style: CatchTextStyles.bodyLead(context, color: t.ink2),
-        textAlign: TextAlign.center,
-        // Cap message lines because unhandled exceptions can serialize stack
-        // traces into `error.toString()` and otherwise consume the viewport.
-        maxLines: isCompact ? 4 : 8,
-        overflow: TextOverflow.ellipsis,
-      ),
-      if (spec.onRetry != null || secondaryAction != null) ...[
-        SizedBox(height: isCompact ? CatchSpacing.s3 : CatchSpacing.s4),
-        Wrap(
-          alignment: WrapAlignment.center,
-          spacing: CatchSpacing.s3,
-          runSpacing: CatchSpacing.s2,
-          children: [
-            if (spec.onRetry != null)
-              CatchButton(
-                label: spec.retryLabel,
-                onPressed: spec.onRetry,
-                size: isCompact ? CatchButtonSize.sm : CatchButtonSize.md,
-                icon: Icon(CatchIcons.refreshRounded),
-              ),
-            ...?(secondaryAction == null ? null : [secondaryAction]),
-          ],
-        ),
-      ],
-    ],
-  );
+class CatchErrorBody extends StatelessWidget {
+  const CatchErrorBody({
+    super.key,
+    required this.title,
+    required this.message,
+    this.icon = CatchIcons.errorOutlineRounded,
+    this.onRetry,
+    this.retryLabel = 'Try again',
+    this.secondaryAction,
+    this.mode = CatchErrorStateMode.fullScreen,
+  });
 
-  if (mode == CatchErrorStateMode.inline ||
-      mode == CatchErrorStateMode.compact) {
-    return CatchSurface(
-      padding: EdgeInsets.all(isCompact ? CatchSpacing.s4 : CatchSpacing.s5),
-      borderColor: t.line,
-      child: content,
+  final String title;
+  final String message;
+  final IconData icon;
+  final VoidCallback? onRetry;
+  final String retryLabel;
+  final Widget? secondaryAction;
+  final CatchErrorStateMode mode;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final isCompact = mode == CatchErrorStateMode.compact;
+    final content = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        CatchErrorIcon(
+          icon: icon,
+          extent: isCompact ? 48 : 64,
+          iconSize: isCompact ? 24 : 30,
+        ),
+        SizedBox(height: isCompact ? CatchSpacing.s3 : CatchSpacing.s4),
+        Text(
+          title,
+          style: isCompact
+              ? CatchTextStyles.sectionTitle(context)
+              : CatchTextStyles.titleL(context),
+          textAlign: TextAlign.center,
+        ),
+        gapH8,
+        Text(
+          message,
+          style: CatchTextStyles.bodyLead(context, color: t.ink2),
+          textAlign: TextAlign.center,
+          // Cap message lines because unhandled exceptions can serialize stack
+          // traces into `error.toString()` and otherwise consume the viewport.
+          maxLines: isCompact ? 4 : 8,
+          overflow: TextOverflow.ellipsis,
+        ),
+        if (onRetry != null || secondaryAction != null) ...[
+          SizedBox(height: isCompact ? CatchSpacing.s3 : CatchSpacing.s4),
+          Wrap(
+            alignment: WrapAlignment.center,
+            spacing: CatchSpacing.s3,
+            runSpacing: CatchSpacing.s2,
+            children: [
+              if (onRetry != null)
+                CatchButton(
+                  label: retryLabel,
+                  onPressed: onRetry,
+                  size: isCompact ? CatchButtonSize.sm : CatchButtonSize.md,
+                  icon: Icon(CatchIcons.refreshRounded),
+                ),
+              ?secondaryAction,
+            ],
+          ),
+        ],
+      ],
+    );
+
+    if (mode == CatchErrorStateMode.inline ||
+        mode == CatchErrorStateMode.compact) {
+      return CatchSurface(
+        padding: EdgeInsets.all(isCompact ? CatchSpacing.s4 : CatchSpacing.s5),
+        borderColor: t.line,
+        child: content,
+      );
+    }
+
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(CatchSpacing.s5),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 420),
+          child: content,
+        ),
+      ),
     );
   }
-
-  return Center(
-    child: SingleChildScrollView(
-      padding: const EdgeInsets.all(CatchSpacing.s5),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 420),
-        child: content,
-      ),
-    ),
-  );
 }
 
 @immutable
@@ -246,16 +260,12 @@ class CatchErrorScaffold extends StatelessWidget {
     return Scaffold(
       backgroundColor: backgroundColor ?? CatchTokens.of(context).bg,
       body: SafeArea(
-        child: _buildCatchErrorBody(
-          context,
-          spec: _CatchErrorSpec(
-            title: title,
-            message: message,
-            icon: icon,
-            onRetry: onRetry,
-            retryLabel: retryLabel,
-          ),
-          mode: CatchErrorStateMode.fullScreen,
+        child: CatchErrorBody(
+          title: title,
+          message: message,
+          icon: icon,
+          onRetry: onRetry,
+          retryLabel: retryLabel,
         ),
       ),
     );
@@ -314,16 +324,12 @@ class CatchSliverErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final child = _buildCatchErrorBody(
-      context,
-      spec: _CatchErrorSpec(
-        title: title,
-        message: message,
-        icon: icon,
-        onRetry: onRetry,
-        retryLabel: retryLabel,
-      ),
-      mode: CatchErrorStateMode.fullScreen,
+    final child = CatchErrorBody(
+      title: title,
+      message: message,
+      icon: icon,
+      onRetry: onRetry,
+      retryLabel: retryLabel,
     );
 
     if (fillRemaining) {
@@ -386,15 +392,12 @@ class CatchInlineErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _buildCatchErrorBody(
-      context,
-      spec: _CatchErrorSpec(
-        title: title,
-        message: message,
-        icon: icon,
-        onRetry: onRetry,
-        retryLabel: retryLabel,
-      ),
+    return CatchErrorBody(
+      title: title,
+      message: message,
+      icon: icon,
+      onRetry: onRetry,
+      retryLabel: retryLabel,
       mode: compact ? CatchErrorStateMode.compact : CatchErrorStateMode.inline,
     );
   }

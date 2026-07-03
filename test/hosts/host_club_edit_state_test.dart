@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_create_club_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,7 +25,8 @@ void main() {
   test('HostClubEditState maps owner and co-host edit modes', () {
     final ownerState = HostClubEditState.resolve(
       club: club,
-      uid: const AsyncData<String?>('owner-1'),
+      uidLoading: false,
+      uid: 'owner-1',
     );
     expect(ownerState.mode, HostClubEditMode.ownerFull);
     expect(ownerState.canEdit, isTrue);
@@ -31,7 +34,8 @@ void main() {
 
     final cohostState = HostClubEditState.resolve(
       club: club,
-      uid: const AsyncData<String?>('cohost-1'),
+      uidLoading: false,
+      uid: 'cohost-1',
     );
     expect(cohostState.mode, HostClubEditMode.cohostMediaOnly);
     expect(cohostState.canEdit, isTrue);
@@ -40,25 +44,20 @@ void main() {
 
   test('HostClubEditState blocks missing and non-host identity', () {
     expect(
-      HostClubEditState.resolve(
-        club: club,
-        uid: const AsyncLoading<String?>(),
-      ).mode,
+      HostClubEditState.resolve(club: club, uidLoading: true, uid: null).mode,
       HostClubEditMode.loadingIdentity,
     );
 
     expect(
-      HostClubEditState.resolve(
-        club: club,
-        uid: const AsyncData<String?>(null),
-      ).mode,
+      HostClubEditState.resolve(club: club, uidLoading: false, uid: null).mode,
       HostClubEditMode.forbidden,
     );
 
     expect(
       HostClubEditState.resolve(
         club: club,
-        uid: const AsyncData<String?>('guest-1'),
+        uidLoading: false,
+        uid: 'guest-1',
       ).mode,
       HostClubEditMode.forbidden,
     );
@@ -81,5 +80,24 @@ void main() {
 
     expect(find.text('Host access required'), findsOneWidget);
     expect(find.text('Edit club'), findsNothing);
+  });
+
+  testWidgets('CreateClubScreen keeps edit mode loading while uid resolves', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWithValue(const AsyncLoading<String?>()),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: CreateClubScreen(initialClub: club),
+        ),
+      ),
+    );
+
+    expect(find.byType(CatchStartupLoadingScreen), findsOneWidget);
+    expect(find.text('Club name'), findsNothing);
   });
 }

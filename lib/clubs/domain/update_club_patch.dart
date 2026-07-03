@@ -1,9 +1,9 @@
 // ignore_for_file: use_null_aware_elements
 
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/sentinels.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// Typed patch helper for the `updateClub` callable.
 ///
@@ -39,10 +39,10 @@ final class UpdateClubPatch {
            'profileImageUrl': profileImageUrl,
          if (clubPhotos != null)
            'clubPhotos': clubPhotos
-               .map((photo) => _updateClubPatchJsonValue(photo.toJson()))
+               .map((photo) => firestoreCallableJsonValue(photo.toJson()))
                .toList(),
          if (!identical(logoPhoto, unsetSentinel))
-           'logoPhoto': _updateClubPatchJsonValue(
+           'logoPhoto': firestoreCallableJsonValue(
              (logoPhoto as UploadedPhoto?)?.toJson(),
            ),
          if (tags != null) 'tags': tags,
@@ -72,22 +72,4 @@ final class UpdateClubPatch {
     'clubId': clubId,
     'fields': toFieldsJson(),
   };
-}
-
-Object? _updateClubPatchJsonValue(Object? value) {
-  if (value is Timestamp) {
-    return {'_seconds': value.seconds, '_nanoseconds': value.nanoseconds};
-  }
-  if (value is DateTime) {
-    return _updateClubPatchJsonValue(Timestamp.fromDate(value));
-  }
-  if (value is Iterable) {
-    return value.map(_updateClubPatchJsonValue).toList();
-  }
-  if (value is Map) {
-    return value.map(
-      (key, child) => MapEntry(key, _updateClubPatchJsonValue(child)),
-    );
-  }
-  return value;
 }

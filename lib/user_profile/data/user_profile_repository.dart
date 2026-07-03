@@ -135,12 +135,16 @@ class UserProfileRepository {
   );
 }
 
+// keepalive: profile repository is a shared Firestore/Functions facade used by
+// profile, public profile, chat, and matching surfaces.
 @Riverpod(keepAlive: true)
 UserProfileRepository userProfileRepository(Ref ref) => UserProfileRepository(
   ref.watch(firebaseFirestoreProvider),
   ref.watch(firebaseFunctionsProvider),
 );
 
+// keepalive: current user profile is app-wide identity data reused by
+// navigation, onboarding, and profile surfaces.
 @Riverpod(keepAlive: true)
 Stream<UserProfile?> watchUserProfile(Ref ref) {
   final uidAsync = ref.watch(uidProvider);

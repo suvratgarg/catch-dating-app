@@ -7,13 +7,9 @@ import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+export 'package:catch_dating_app/chats/domain/suvbot_identity.dart';
+
 part 'suvbot_repository.g.dart';
-
-const suvbotUid = 'suvbot';
-
-bool isSuvbotConversation({required String matchId, String? otherUid}) {
-  return otherUid == suvbotUid || matchId.startsWith('${suvbotUid}_');
-}
 
 /// Typed response for `listSuvbotDemoActions`.
 ///

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$OnboardingDraft {
 
- int get step; int get draftVersion; String get firstName; String get lastName;@TimestampConverter() DateTime? get dateOfBirth; String get phoneNumber; String get countryCode; Gender? get gender; List<Gender> get interestedInGenders; String? get instagramHandle; List<ProfilePromptAnswer> get profilePrompts;
+ int get step; int get draftVersion; String get firstName; String get lastName;@NullableTimestampConverter() DateTime? get dateOfBirth; String get phoneNumber; String get countryCode; Gender? get gender; List<Gender> get interestedInGenders; String? get instagramHandle; List<ProfilePromptAnswer> get profilePrompts;
 /// Create a copy of OnboardingDraft
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $OnboardingDraftCopyWith<$Res>  {
   factory $OnboardingDraftCopyWith(OnboardingDraft value, $Res Function(OnboardingDraft) _then) = _$OnboardingDraftCopyWithImpl;
 @useResult
 $Res call({
- int step, int draftVersion, String firstName, String lastName,@TimestampConverter() DateTime? dateOfBirth, String phoneNumber, String countryCode, Gender? gender, List<Gender> interestedInGenders, String? instagramHandle, List<ProfilePromptAnswer> profilePrompts
+ int step, int draftVersion, String firstName, String lastName,@NullableTimestampConverter() DateTime? dateOfBirth, String phoneNumber, String countryCode, Gender? gender, List<Gender> interestedInGenders, String? instagramHandle, List<ProfilePromptAnswer> profilePrompts
 });
 
 
@@ -163,7 +163,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int step,  int draftVersion,  String firstName,  String lastName, @TimestampConverter()  DateTime? dateOfBirth,  String phoneNumber,  String countryCode,  Gender? gender,  List<Gender> interestedInGenders,  String? instagramHandle,  List<ProfilePromptAnswer> profilePrompts)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int step,  int draftVersion,  String firstName,  String lastName, @NullableTimestampConverter()  DateTime? dateOfBirth,  String phoneNumber,  String countryCode,  Gender? gender,  List<Gender> interestedInGenders,  String? instagramHandle,  List<ProfilePromptAnswer> profilePrompts)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _OnboardingDraft() when $default != null:
 return $default(_that.step,_that.draftVersion,_that.firstName,_that.lastName,_that.dateOfBirth,_that.phoneNumber,_that.countryCode,_that.gender,_that.interestedInGenders,_that.instagramHandle,_that.profilePrompts);case _:
@@ -184,7 +184,7 @@ return $default(_that.step,_that.draftVersion,_that.firstName,_that.lastName,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int step,  int draftVersion,  String firstName,  String lastName, @TimestampConverter()  DateTime? dateOfBirth,  String phoneNumber,  String countryCode,  Gender? gender,  List<Gender> interestedInGenders,  String? instagramHandle,  List<ProfilePromptAnswer> profilePrompts)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int step,  int draftVersion,  String firstName,  String lastName, @NullableTimestampConverter()  DateTime? dateOfBirth,  String phoneNumber,  String countryCode,  Gender? gender,  List<Gender> interestedInGenders,  String? instagramHandle,  List<ProfilePromptAnswer> profilePrompts)  $default,) {final _that = this;
 switch (_that) {
 case _OnboardingDraft():
 return $default(_that.step,_that.draftVersion,_that.firstName,_that.lastName,_that.dateOfBirth,_that.phoneNumber,_that.countryCode,_that.gender,_that.interestedInGenders,_that.instagramHandle,_that.profilePrompts);case _:
@@ -204,7 +204,7 @@ return $default(_that.step,_that.draftVersion,_that.firstName,_that.lastName,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int step,  int draftVersion,  String firstName,  String lastName, @TimestampConverter()  DateTime? dateOfBirth,  String phoneNumber,  String countryCode,  Gender? gender,  List<Gender> interestedInGenders,  String? instagramHandle,  List<ProfilePromptAnswer> profilePrompts)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int step,  int draftVersion,  String firstName,  String lastName, @NullableTimestampConverter()  DateTime? dateOfBirth,  String phoneNumber,  String countryCode,  Gender? gender,  List<Gender> interestedInGenders,  String? instagramHandle,  List<ProfilePromptAnswer> profilePrompts)?  $default,) {final _that = this;
 switch (_that) {
 case _OnboardingDraft() when $default != null:
 return $default(_that.step,_that.draftVersion,_that.firstName,_that.lastName,_that.dateOfBirth,_that.phoneNumber,_that.countryCode,_that.gender,_that.interestedInGenders,_that.instagramHandle,_that.profilePrompts);case _:
@@ -219,14 +219,14 @@ return $default(_that.step,_that.draftVersion,_that.firstName,_that.lastName,_th
 @JsonSerializable()
 
 class _OnboardingDraft extends OnboardingDraft {
-  const _OnboardingDraft({required this.step, this.draftVersion = 0, this.firstName = '', this.lastName = '', @TimestampConverter() this.dateOfBirth, this.phoneNumber = '', this.countryCode = defaultCountryDialCode, this.gender, final  List<Gender> interestedInGenders = const [], this.instagramHandle, final  List<ProfilePromptAnswer> profilePrompts = const []}): _interestedInGenders = interestedInGenders,_profilePrompts = profilePrompts,super._();
+  const _OnboardingDraft({required this.step, this.draftVersion = 0, this.firstName = '', this.lastName = '', @NullableTimestampConverter() this.dateOfBirth, this.phoneNumber = '', this.countryCode = defaultCountryDialCode, this.gender, final  List<Gender> interestedInGenders = const [], this.instagramHandle, final  List<ProfilePromptAnswer> profilePrompts = const []}): _interestedInGenders = interestedInGenders,_profilePrompts = profilePrompts,super._();
   factory _OnboardingDraft.fromJson(Map<String, dynamic> json) => _$OnboardingDraftFromJson(json);
 
 @override final  int step;
 @override@JsonKey() final  int draftVersion;
 @override@JsonKey() final  String firstName;
 @override@JsonKey() final  String lastName;
-@override@TimestampConverter() final  DateTime? dateOfBirth;
+@override@NullableTimestampConverter() final  DateTime? dateOfBirth;
 @override@JsonKey() final  String phoneNumber;
 @override@JsonKey() final  String countryCode;
 @override final  Gender? gender;
@@ -279,7 +279,7 @@ abstract mixin class _$OnboardingDraftCopyWith<$Res> implements $OnboardingDraft
   factory _$OnboardingDraftCopyWith(_OnboardingDraft value, $Res Function(_OnboardingDraft) _then) = __$OnboardingDraftCopyWithImpl;
 @override @useResult
 $Res call({
- int step, int draftVersion, String firstName, String lastName,@TimestampConverter() DateTime? dateOfBirth, String phoneNumber, String countryCode, Gender? gender, List<Gender> interestedInGenders, String? instagramHandle, List<ProfilePromptAnswer> profilePrompts
+ int step, int draftVersion, String firstName, String lastName,@NullableTimestampConverter() DateTime? dateOfBirth, String phoneNumber, String countryCode, Gender? gender, List<Gender> interestedInGenders, String? instagramHandle, List<ProfilePromptAnswer> profilePrompts
 });
 
 

@@ -51,6 +51,39 @@ void main() {
       expect(availability.canBookNow, isTrue);
     });
 
+    test(
+      'expired accepted waitlist offers stay waitlisted at the injected now',
+      () {
+        final referenceNow = DateTime(2099, 1, 1, 12);
+        final user = buildUser();
+        final event = buildEvent(
+          startTime: referenceNow.add(const Duration(days: 1)),
+        );
+        final participation = buildEventParticipation(
+          event: event,
+          uid: user.uid,
+          status: EventParticipationStatus.waitlisted,
+          waitlistOfferStatus: EventWaitlistOfferStatus.accepted,
+          waitlistOfferAcceptedAt: referenceNow.subtract(
+            const Duration(days: 3),
+          ),
+          waitlistOfferExpiresAt: referenceNow.subtract(
+            const Duration(days: 1),
+          ),
+        );
+
+        final availability = resolveViewerEventAvailability(
+          event: event,
+          userProfile: user,
+          participation: participation,
+          now: referenceNow,
+        );
+
+        expect(availability.status, ViewerEventAvailabilityStatus.waitlisted);
+        expect(availability.canBookNow, isFalse);
+      },
+    );
+
     test('saved open events keep saved state and viewer price quote', () {
       final user = buildUser();
       final event = buildEvent(

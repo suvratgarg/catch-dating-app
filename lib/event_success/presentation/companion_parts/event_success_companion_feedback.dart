@@ -1,15 +1,26 @@
 part of '../event_success_companion_screen.dart';
 
+@immutable
+class EventSuccessFeedbackActionState {
+  const EventSuccessFeedbackActionState({this.isSaving = false});
+
+  final bool isSaving;
+}
+
 class EventSuccessFeedbackForm extends StatefulWidget {
   const EventSuccessFeedbackForm({
     super.key,
     required this.event,
     required this.userProfile,
+    required this.actionState,
+    required this.onSubmitFeedback,
     this.existingFeedback,
   });
 
   final Event event;
   final UserProfile userProfile;
+  final EventSuccessFeedbackActionState actionState;
+  final Future<void> Function(EventSuccessFeedback feedback) onSubmitFeedback;
   final EventSuccessFeedback? existingFeedback;
 
   @override
@@ -22,6 +33,7 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
   late int _structure = widget.existingFeedback?.structureRating ?? 4;
   late int _metPeople = widget.existingFeedback?.metNewPeopleCount ?? 2;
   late bool _safetyConcern = widget.existingFeedback?.safetyConcern ?? false;
+  bool _submitPending = false;
   late final TextEditingController _noteController = TextEditingController(
     text: widget.existingFeedback?.privateNote ?? '',
   );
@@ -34,127 +46,110 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer(
-      builder: (context, ref, _) {
-        final mutation = ref.watch(EventSuccessController.feedbackMutation);
-        final t = CatchTokens.of(context);
-        return StagePanel(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    final saving = widget.actionState.isSaving || _submitPending;
+    final t = CatchTokens.of(context);
+    return StagePanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Wrap(
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s2,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              Wrap(
-                spacing: CatchSpacing.s2,
-                runSpacing: CatchSpacing.s2,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  Text(
-                    widget.existingFeedback == null
-                        ? 'How did it feel?'
-                        : 'Your feedback is saved',
-                    style: CatchTextStyles.titleL(context),
-                  ),
-                  const PrivacyBadge(_PrivacyAudience.catchPrivate),
-                ],
-              ),
-              gapH4,
               Text(
-                'This is private-first: hosts see aggregate trends, while private notes and safety concerns stay with Catch.',
-                style: CatchTextStyles.supporting(context, color: t.ink2),
+                widget.existingFeedback == null
+                    ? 'How did it feel?'
+                    : 'Your feedback is saved',
+                style: CatchTextStyles.titleL(context),
               ),
-              gapH12,
-              RatingRow(
-                label: 'Welcome',
-                value: _welcome,
-                onChanged: (value) => setState(() => _welcome = value),
-              ),
-              gapH8,
-              RatingRow(
-                label: 'Structure',
-                value: _structure,
-                onChanged: (value) => setState(() => _structure = value),
-              ),
-              gapH8,
-              CounterRow(
-                value: _metPeople,
-                onChanged: (value) => setState(() => _metPeople = value),
-              ),
-              gapH8,
-              CatchField.toggle(
-                title: 'I want Catch to review a safety or comfort concern',
-                titleMaxLines: 2,
-                value: _safetyConcern,
-                onChanged: (value) => setState(() => _safetyConcern = value),
-              ),
-              gapH8,
-              StageSoftBand(
-                child: CatchField.input(
-                  title: 'Private note to Catch',
-                  controller: _noteController,
-                  maxLines: 3,
-                  inputFormatters: [LengthLimitingTextInputFormatter(500)],
-                ),
-              ),
-              gapH12,
-              StageActionDock(
-                child: CatchButton(
-                  label: widget.existingFeedback == null
-                      ? 'Submit feedback'
-                      : 'Update feedback',
-                  isLoading: mutation.isPending,
-                  onPressed: mutation.isPending ? null : () => _submit(ref),
-                  fullWidth: true,
-                ),
-              ),
+              const PrivacyBadge(_PrivacyAudience.catchPrivate),
             ],
           ),
-        );
-      },
-    );
-  }
-
-  void _submit(WidgetRef ref) {
-    final now = DateTime.now();
-    final existing = widget.existingFeedback;
-    final feedback = EventSuccessFeedback(
-      id:
-          existing?.id ??
-          eventSuccessFeedbackId(
-            eventId: widget.event.id,
-            uid: widget.userProfile.uid,
+          gapH4,
+          Text(
+            'This is private-first: hosts see aggregate trends, while private notes and safety concerns stay with Catch.',
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
-      eventId: widget.event.id,
-      clubId: widget.event.clubId,
-      uid: widget.userProfile.uid,
-      welcomeRating: _welcome,
-      structureRating: _structure,
-      metNewPeopleCount: _metPeople,
-      safetyConcern: _safetyConcern,
-      privateNote: _noteController.text.trim().isEmpty
-          ? null
-          : _noteController.text.trim(),
-      createdAt: existing?.createdAt ?? now,
-      updatedAt: now,
-    );
-    EventSuccessController.feedbackMutation.run(
-      ref,
-      (tx) => tx
-          .get(eventSuccessControllerProvider.notifier)
-          .submitFeedback(feedback),
+          gapH12,
+          RatingRow(
+            label: 'Welcome',
+            value: _welcome,
+            onChanged: (value) => setState(() => _welcome = value),
+          ),
+          gapH8,
+          RatingRow(
+            label: 'Structure',
+            value: _structure,
+            onChanged: (value) => setState(() => _structure = value),
+          ),
+          gapH8,
+          CounterRow(
+            value: _metPeople,
+            onChanged: (value) => setState(() => _metPeople = value),
+          ),
+          gapH8,
+          CatchField.toggle(
+            title: 'I want Catch to review a safety or comfort concern',
+            titleMaxLines: 2,
+            value: _safetyConcern,
+            onChanged: (value) => setState(() => _safetyConcern = value),
+          ),
+          gapH8,
+          StageSoftBand(
+            child: CatchField.input(
+              title: 'Private note to Catch',
+              controller: _noteController,
+              maxLines: 3,
+              inputFormatters: [LengthLimitingTextInputFormatter(500)],
+            ),
+          ),
+          gapH12,
+          StageActionDock(
+            child: CatchButton(
+              label: widget.existingFeedback == null
+                  ? 'Submit feedback'
+                  : 'Update feedback',
+              isLoading: saving,
+              onPressed: saving ? null : _submit,
+              fullWidth: true,
+            ),
+          ),
+        ],
+      ),
     );
   }
-}
 
-EventSuccessRevealAssignmentKind? _revealKindForAttendeeMoment(
-  EventSuccessAttendeeMoment moment,
-) {
-  if (moment.assignmentModuleId ==
-      EventSuccessModuleCatalog.guidedRotations.id) {
-    return EventSuccessRevealAssignmentKind.rotations;
+  Future<void> _submit() async {
+    setState(() => _submitPending = true);
+    try {
+      final now = DateTime.now();
+      final existing = widget.existingFeedback;
+      final feedback = EventSuccessFeedback(
+        id:
+            existing?.id ??
+            eventSuccessFeedbackId(
+              eventId: widget.event.id,
+              uid: widget.userProfile.uid,
+            ),
+        eventId: widget.event.id,
+        clubId: widget.event.clubId,
+        uid: widget.userProfile.uid,
+        welcomeRating: _welcome,
+        structureRating: _structure,
+        metNewPeopleCount: _metPeople,
+        safetyConcern: _safetyConcern,
+        privateNote: _noteController.text.trim().isEmpty
+            ? null
+            : _noteController.text.trim(),
+        createdAt: existing?.createdAt ?? now,
+        updatedAt: now,
+      );
+      await widget.onSubmitFeedback(feedback);
+    } finally {
+      if (mounted) setState(() => _submitPending = false);
+    }
   }
-  if (moment.assignmentModuleId == EventSuccessModuleCatalog.microPods.id) {
-    return EventSuccessRevealAssignmentKind.microPods;
-  }
-  return null;
 }
 
 bool _sameAnswers(List<String>? a, List<String>? b) {
@@ -208,11 +203,7 @@ class RatingRow extends StatelessWidget {
 }
 
 class CounterRow extends StatelessWidget {
-  const CounterRow({
-    super.key,
-    required this.value,
-    required this.onChanged,
-  });
+  const CounterRow({super.key, required this.value, required this.onChanged});
 
   final int value;
   final ValueChanged<int> onChanged;

@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:catch_dating_app/core/firestore_converters.dart';
 
 enum EventSuccessArrivalMissionStatus { active, completed, skipped }
 
@@ -39,9 +39,15 @@ class EventSuccessArrivalMission {
         json['status'] as String,
       ),
       selectedAnswerId: json['selectedAnswerId'] as String?,
-      createdAt: _dateTimeFromFirestore(json['createdAt']),
-      updatedAt: _dateTimeFromFirestore(json['updatedAt']),
-      completedAt: _nullableDateTimeFromFirestore(json['completedAt']),
+      createdAt: dateTimeFromFirestoreValue(
+        json['createdAt'],
+        field: 'createdAt',
+      ),
+      updatedAt: dateTimeFromFirestoreValue(
+        json['updatedAt'],
+        field: 'updatedAt',
+      ),
+      completedAt: nullableDateTimeFromFirestoreValue(json['completedAt']),
     );
   }
 
@@ -75,9 +81,10 @@ class EventSuccessArrivalMission {
         .toList(growable: false),
     'status': status.name,
     if (selectedAnswerId != null) 'selectedAnswerId': selectedAnswerId,
-    'createdAt': Timestamp.fromDate(createdAt),
-    'updatedAt': Timestamp.fromDate(updatedAt),
-    if (completedAt != null) 'completedAt': Timestamp.fromDate(completedAt!),
+    'createdAt': firestoreTimestampFromDateTime(createdAt),
+    'updatedAt': firestoreTimestampFromDateTime(updatedAt),
+    if (completedAt != null)
+      'completedAt': firestoreTimestampFromDateTime(completedAt!),
   };
 }
 
@@ -104,14 +111,3 @@ String eventSuccessArrivalMissionId({
   required String eventId,
   required String uid,
 }) => '${eventId}_$uid';
-
-DateTime _dateTimeFromFirestore(Object? value) {
-  if (value is Timestamp) return value.toDate();
-  if (value is DateTime) return value;
-  throw StateError('Expected Firestore timestamp, got $value.');
-}
-
-DateTime? _nullableDateTimeFromFirestore(Object? value) {
-  if (value == null) return null;
-  return _dateTimeFromFirestore(value);
-}

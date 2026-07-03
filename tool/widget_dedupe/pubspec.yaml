@@ -1,0 +1,14 @@
+name: widget_dedupe
+publish_to: none
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  analyzer: ^12.1.0
+  args: ^2.7.0
+  crypto: ^3.0.7
+  path: ^1.9.1
+
+dev_dependencies:
+  test: ^1.31.0

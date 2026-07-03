@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -18,21 +20,22 @@ import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:catch_dating_app/swipes/presentation/catches_hub_screen_state.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_screen.dart';
+import 'package:catch_dating_app/swipes/presentation/event_recap_screen_state.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_view_model.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
-import 'package:catch_dating_app/swipes/presentation/profile_card_content.dart';
-import 'package:catch_dating_app/swipes/presentation/profile_redesign/catch_profile_view.dart';
-import 'package:catch_dating_app/swipes/presentation/profile_redesign/profile_view.dart';
-import 'package:catch_dating_app/swipes/presentation/profile_redesign/profile_view_mapper.dart';
-import 'package:catch_dating_app/swipes/presentation/profile_surface.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_card_content.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/catch_profile_view.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_view.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_view_mapper.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_empty_content.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_hub_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_screen.dart';
-import 'package:catch_dating_app/swipes/presentation/swipe_queue_notifier.dart';
+import 'package:catch_dating_app/swipes/presentation/swipe_queue_controller.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/attended_event_tile.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/catches_pass_button.dart';
-import 'package:catch_dating_app/swipes/presentation/widgets/profile_info_chip.dart';
-import 'package:catch_dating_app/swipes/presentation/widgets/profile_reaction_controls.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_info_chip.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_reaction_controls.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/swipe_empty_state.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -294,6 +297,39 @@ Widget catchesEventDeckRouteStates(BuildContext context) {
           ),
         ),
       ),
+      _StateCard(
+        label: 'pass pending',
+        child: _DeviceFrame(
+          child: CatchesProfileReview(
+            profile: CatchesSurfaceFixtures.candidates.first,
+            remainingCount: CatchesSurfaceFixtures.candidates.length,
+            viewerProfile: CatchesSurfaceFixtures.viewer,
+            sharedRunTitle: CatchesSurfaceFixtures.openWindowEvent().title,
+            actionState: const CatchesProfileReviewActionState.passPending(),
+            onBack: _noopTap,
+            onFilters: _noopTap,
+            onPass: _noopTap,
+            onReact: _noopReaction,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'reaction pending',
+        child: _DeviceFrame(
+          child: CatchesProfileReview(
+            profile: CatchesSurfaceFixtures.candidates.first,
+            remainingCount: CatchesSurfaceFixtures.candidates.length,
+            viewerProfile: CatchesSurfaceFixtures.viewer,
+            sharedRunTitle: CatchesSurfaceFixtures.openWindowEvent().title,
+            actionState:
+                const CatchesProfileReviewActionState.reactionPending(),
+            onBack: _noopTap,
+            onFilters: _noopTap,
+            onPass: _noopTap,
+            onReact: _noopReaction,
+          ),
+        ),
+      ),
     ],
   );
 }
@@ -305,9 +341,18 @@ Widget catchesEventDeckRouteStates(BuildContext context) {
 )
 Widget eventRecapScreenRouteStates(BuildContext context) {
   final event = CatchesSurfaceFixtures.closedWindowEvent();
+  final openEvent = CatchesSurfaceFixtures.openWindowEvent();
   final attendeeIds = CatchesSurfaceFixtures.candidates
       .map((profile) => profile.uid)
       .toList(growable: false);
+  final partialAttendeeIds = [
+    CatchesSurfaceFixtures.candidateUid,
+    _missingRecapProfileUid,
+  ];
+  final partialRoster = {
+    CatchesSurfaceFixtures.candidateUid:
+        CatchesSurfaceFixtures.candidates.first,
+  };
 
   return _CatchesCatalog(
     title: 'EventRecapScreen',
@@ -323,16 +368,57 @@ Widget eventRecapScreenRouteStates(BuildContext context) {
         ),
       ),
       _StateCard(
+        label: 'view-model error',
+        child: _DeviceFrame(
+          child: _RecapRouteScope(
+            event: event,
+            recapValue: AsyncError<EventRecapViewModel?>(
+              _offlineException(action: 'load event recap'),
+              StackTrace.empty,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
         label: 'checked-in roster',
         child: _DeviceFrame(
           child: _RecapRouteScope(
             event: event,
             recapValue: AsyncData(
-              EventRecapViewModel(
-                event: event,
-                attendeeIds: attendeeIds,
-                checkedInCount: attendeeIds.length + 1,
-              ),
+              _recapViewModel(event: event, attendeeIds: attendeeIds),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'partial profile fallback',
+        child: _DeviceFrame(
+          child: _RecapRouteScope(
+            event: event,
+            recapValue: AsyncData(
+              _recapViewModel(event: event, attendeeIds: partialAttendeeIds),
+            ),
+            rosterProfiles: partialRoster,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'selected vibe tile',
+        child: _DeviceFrame(
+          child: _RecapReadyBodyPreview(
+            event: event,
+            attendeeIds: attendeeIds,
+            selectedVibeIds: const {CatchesSurfaceFixtures.secondCandidateUid},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'open catch window',
+        child: _DeviceFrame(
+          child: _RecapRouteScope(
+            event: openEvent,
+            recapValue: AsyncData(
+              _recapViewModel(event: openEvent, attendeeIds: attendeeIds),
             ),
           ),
         ),
@@ -343,11 +429,7 @@ Widget eventRecapScreenRouteStates(BuildContext context) {
           child: _RecapRouteScope(
             event: event,
             recapValue: AsyncData(
-              EventRecapViewModel(
-                event: event,
-                attendeeIds: const [],
-                checkedInCount: 1,
-              ),
+              _recapViewModel(event: event, attendeeIds: const []),
             ),
           ),
         ),
@@ -358,6 +440,48 @@ Widget eventRecapScreenRouteStates(BuildContext context) {
           child: _RecapRouteScope(
             event: event,
             recapValue: const AsyncData<EventRecapViewModel?>(null),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'text scale 2.0',
+        child: _DeviceFrame(
+          child: _MediaOverride(
+            textScaler: const TextScaler.linear(2),
+            child: _RecapRouteScope(
+              event: event,
+              recapValue: AsyncData(
+                _recapViewModel(event: event, attendeeIds: attendeeIds),
+              ),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'reduced motion',
+        child: _DeviceFrame(
+          child: _MediaOverride(
+            disableAnimations: true,
+            child: _RecapRouteScope(
+              event: event,
+              recapValue: AsyncData(
+                _recapViewModel(event: event, attendeeIds: attendeeIds),
+              ),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'dark theme',
+        child: Theme(
+          data: AppTheme.dark,
+          child: _DeviceFrame(
+            child: _RecapRouteScope(
+              event: event,
+              recapValue: AsyncData(
+                _recapViewModel(event: event, attendeeIds: attendeeIds),
+              ),
+            ),
           ),
         ),
       ),
@@ -378,6 +502,104 @@ Widget eventRecapLoadingBodyStates(BuildContext context) {
       _StateCard(
         label: 'content skeleton',
         child: _DeviceFrame(child: EventRecapLoadingBody()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Ready body states',
+  type: EventRecapReadyBody,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget eventRecapReadyBodyStates(BuildContext context) {
+  final event = CatchesSurfaceFixtures.closedWindowEvent();
+  final attendeeIds = CatchesSurfaceFixtures.candidates
+      .map((profile) => profile.uid)
+      .toList(growable: false);
+
+  return _CatchesCatalog(
+    title: 'EventRecapReadyBody',
+    contractId: 'screen.catches.recap.ready_body',
+    children: [
+      _StateCard(
+        label: 'checked-in roster',
+        child: _DeviceFrame(
+          child: _RecapReadyBodyPreview(
+            event: event,
+            attendeeIds: attendeeIds,
+            selectedVibeIds: const <String>{},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'selected vibe tile',
+        child: _DeviceFrame(
+          child: _RecapReadyBodyPreview(
+            event: event,
+            attendeeIds: attendeeIds,
+            selectedVibeIds: const {CatchesSurfaceFixtures.secondCandidateUid},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'empty roster',
+        child: _DeviceFrame(
+          child: _RecapReadyBodyPreview(
+            event: event,
+            attendeeIds: const <String>[],
+            selectedVibeIds: const <String>{},
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Vibe grid states',
+  type: VibeGrid,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget eventRecapVibeGridStates(BuildContext context) {
+  final event = CatchesSurfaceFixtures.closedWindowEvent();
+  final attendeeIds = CatchesSurfaceFixtures.candidates
+      .map((profile) => profile.uid)
+      .toList(growable: false);
+  final partialAttendeeIds = [
+    CatchesSurfaceFixtures.candidateUid,
+    _missingRecapProfileUid,
+  ];
+  final partialRoster = {
+    CatchesSurfaceFixtures.candidateUid:
+        CatchesSurfaceFixtures.candidates.first,
+  };
+
+  return _CatchesCatalog(
+    title: 'VibeGrid',
+    contractId: 'component.catches.recap.vibe_grid',
+    children: [
+      _StateCard(
+        label: 'profile tiles',
+        child: VibeGrid(
+          rows: _recapReadyState(
+            event: event,
+            attendeeIds: attendeeIds,
+          ).attendeeRows,
+          onToggleVibe: _ignoreString,
+        ),
+      ),
+      _StateCard(
+        label: 'selected and fallback',
+        child: VibeGrid(
+          rows: _recapReadyState(
+            event: event,
+            attendeeIds: partialAttendeeIds,
+            rosterProfiles: partialRoster,
+            selectedVibeIds: const {CatchesSurfaceFixtures.candidateUid},
+          ).attendeeRows,
+          onToggleVibe: _ignoreString,
+        ),
       ),
     ],
   );
@@ -477,6 +699,328 @@ Widget catchProfileViewStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Hero states',
+  type: ProfileHeroWidget,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profileHeroWidgetStates(BuildContext context) {
+  final data = _profileView();
+  return _CatchesCatalog(
+    title: 'ProfileHeroWidget',
+    contractId: 'screen.catches.profile.hero',
+    children: [
+      _StateCard(
+        label: 'read only',
+        child: _SectionFrame(height: 520, child: ProfileHeroWidget(data: data)),
+      ),
+      _StateCard(
+        label: 'reactable',
+        child: _SectionFrame(
+          height: 520,
+          child: ProfileHeroWidget(data: data, onReact: _noopReaction),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Hero scrim states',
+  type: ProfileHeroScrim,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profileHeroScrimStates(BuildContext context) {
+  return const _CatchesCatalog(
+    title: 'ProfileHeroScrim',
+    contractId: 'screen.catches.profile.hero_scrim',
+    children: [
+      _StateCard(
+        label: 'dark gradient',
+        child: _SectionFrame(
+          height: 280,
+          child: DecoratedBox(
+            decoration: BoxDecoration(color: Color(0xFF111111)),
+            child: ProfileHeroScrim(base: Color(0xFF111111)),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Photo states',
+  type: ProfilePhoto,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profilePhotoStates(BuildContext context) {
+  final data = _profileView();
+  return _CatchesCatalog(
+    title: 'ProfilePhoto',
+    contractId: 'screen.catches.profile.photo',
+    children: [
+      _StateCard(
+        label: 'graded photo',
+        child: _SectionFrame(
+          height: 520,
+          child: ProfilePhoto(image: data.heroPhoto),
+        ),
+      ),
+      _StateCard(
+        label: 'activity fallback',
+        child: _SectionFrame(
+          height: 520,
+          child: ProfilePhoto(image: null, activity: data.kickerActivity),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Photo block states',
+  type: ProfilePhotoBlock,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profilePhotoBlockStates(BuildContext context) {
+  final section = _profileSection<ProfilePhotoSection>();
+  return _CatchesCatalog(
+    title: 'ProfilePhotoBlock',
+    contractId: 'screen.catches.profile.photo_block',
+    children: [
+      _StateCard(
+        label: 'caption',
+        child: _SectionFrame(
+          height: 520,
+          child: ProfilePhotoBlock(section: section),
+        ),
+      ),
+      _StateCard(
+        label: 'reactable',
+        child: _SectionFrame(
+          height: 520,
+          child: ProfilePhotoBlock(section: section, onReact: _noopReaction),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Photo caption states',
+  type: PhotoCaption,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget photoCaptionStates(BuildContext context) {
+  return const _CatchesCatalog(
+    title: 'PhotoCaption',
+    contractId: 'screen.catches.profile.photo_caption',
+    children: [
+      _StateCard(
+        label: 'overlay copy',
+        child: _DeckChromeFrame(
+          child: Align(
+            alignment: Alignment.bottomLeft,
+            child: Padding(
+              padding: CatchInsets.content,
+              child: PhotoCaption(text: 'Post-run coffee is non-negotiable.'),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Section dispatch states',
+  type: ProfileSectionView,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profileSectionViewStates(BuildContext context) {
+  final section = _profileSection<ProfileCompatibilitySection>();
+  return _CatchesCatalog(
+    title: 'ProfileSectionView',
+    contractId: 'screen.catches.profile.section_view',
+    children: [
+      _StateCard(
+        label: 'passive section',
+        child: _SectionFrame(
+          height: 220,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfileSectionView(section: section),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'reactable section',
+        child: _SectionFrame(
+          height: 260,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfileSectionView(section: section, onReact: _noopReaction),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Section kicker states',
+  type: ProfileSectionKicker,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profileSectionKickerStates(BuildContext context) {
+  return const _CatchesCatalog(
+    title: 'ProfileSectionKicker',
+    contractId: 'screen.catches.profile.section_kicker',
+    children: [
+      _StateCard(
+        label: 'mono label',
+        child: ProfileSectionKicker('Running rhythm'),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Compatibility states',
+  type: ProfileCompatibility,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profileCompatibilityStates(BuildContext context) {
+  return _CatchesCatalog(
+    title: 'ProfileCompatibility',
+    contractId: 'screen.catches.profile.compatibility',
+    children: [
+      _StateCard(
+        label: 'reasons and signals',
+        child: _SectionFrame(
+          height: 260,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfileCompatibility(
+              section: _profileSection<ProfileCompatibilitySection>(),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Prompt states',
+  type: ProfilePrompt,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profilePromptStates(BuildContext context) {
+  return _CatchesCatalog(
+    title: 'ProfilePrompt',
+    contractId: 'screen.catches.profile.prompt',
+    children: [
+      _StateCard(
+        label: 'prompt answer',
+        child: ProfilePrompt(
+          section: _profileSection<ProfilePromptSectionData>(),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Running states',
+  type: ProfileRunning,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profileRunningStates(BuildContext context) {
+  return _CatchesCatalog(
+    title: 'ProfileRunning',
+    contractId: 'screen.catches.profile.running',
+    children: [
+      _StateCard(
+        label: 'running rhythm',
+        child: _SectionFrame(
+          height: 230,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfileRunning(
+              section: _profileSection<ProfileRunningSection>(),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Running stat states',
+  type: RunningStat,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget runningStatStates(BuildContext context) {
+  return const _CatchesCatalog(
+    title: 'RunningStat',
+    contractId: 'screen.catches.profile.running_stat',
+    children: [
+      _StateCard(
+        label: 'pace',
+        child: RunningStat(label: 'Pace', value: '5:30/km'),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Facts states',
+  type: ProfileFacts,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profileFactsStates(BuildContext context) {
+  return _CatchesCatalog(
+    title: 'ProfileFacts',
+    contractId: 'screen.catches.profile.facts',
+    children: [
+      _StateCard(
+        label: 'details',
+        child: _SectionFrame(
+          height: 260,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: ProfileFacts(
+              section: _profileSection<ProfileFactsSection>(),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Rule states',
+  type: ProfileRule,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profileRuleStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+  return _CatchesCatalog(
+    title: 'ProfileRule',
+    contractId: 'screen.catches.profile.rule',
+    children: [
+      _StateCard(
+        label: 'hairline',
+        child: ProfileRule(color: t.line),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Profile skeleton states',
   type: ProfileSurfaceSkeleton,
   path: '[P1 product surfaces]/Catches/Sections',
@@ -489,6 +1033,127 @@ Widget profileSurfaceSkeletonStates(BuildContext context) {
       _StateCard(
         label: 'default',
         child: _DeviceFrame(child: ProfileSurfaceSkeleton()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Profile hero skeleton states',
+  type: ProfileSurfaceHeroSkeleton,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profileSurfaceHeroSkeletonStates(BuildContext context) {
+  return const _CatchesCatalog(
+    title: 'ProfileSurfaceHeroSkeleton',
+    contractId: 'screen.catches.profile.hero_skeleton',
+    children: [
+      _StateCard(
+        label: 'portrait hero',
+        child: _SectionFrame(height: 440, child: ProfileSurfaceHeroSkeleton()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Profile section skeleton states',
+  type: ProfileSurfaceSectionSkeleton,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profileSurfaceSectionSkeletonStates(BuildContext context) {
+  return const _CatchesCatalog(
+    title: 'ProfileSurfaceSectionSkeleton',
+    contractId: 'screen.catches.profile.section_skeleton',
+    children: [
+      _StateCard(
+        label: 'prompt block',
+        child: _SectionFrame(
+          height: 210,
+          child: ProfileSurfaceSectionSkeleton(lines: 3),
+        ),
+      ),
+      _StateCard(
+        label: 'compact block',
+        child: _SectionFrame(
+          height: 180,
+          child: ProfileSurfaceSectionSkeleton(lines: 1),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Profile running skeleton states',
+  type: ProfileSurfaceRunningSkeleton,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profileSurfaceRunningSkeletonStates(BuildContext context) {
+  return const _CatchesCatalog(
+    title: 'ProfileSurfaceRunningSkeleton',
+    contractId: 'screen.catches.profile.running_skeleton',
+    children: [
+      _StateCard(
+        label: 'running rhythm',
+        child: _SectionFrame(
+          height: 220,
+          child: ProfileSurfaceRunningSkeleton(),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Profile photo skeleton states',
+  type: ProfileSurfacePhotoSkeleton,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profileSurfacePhotoSkeletonStates(BuildContext context) {
+  return const _CatchesCatalog(
+    title: 'ProfileSurfacePhotoSkeleton',
+    contractId: 'screen.catches.profile.photo_skeleton',
+    children: [
+      _StateCard(
+        label: 'portrait photo block',
+        child: _SectionFrame(height: 460, child: ProfileSurfacePhotoSkeleton()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Profile facts skeleton states',
+  type: ProfileSurfaceFactsSkeleton,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profileSurfaceFactsSkeletonStates(BuildContext context) {
+  return const _CatchesCatalog(
+    title: 'ProfileSurfaceFactsSkeleton',
+    contractId: 'screen.catches.profile.facts_skeleton',
+    children: [
+      _StateCard(
+        label: 'fact rows',
+        child: _SectionFrame(height: 260, child: ProfileSurfaceFactsSkeleton()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Profile surface rule states',
+  type: ProfileSurfaceRule,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget profileSurfaceRuleStates(BuildContext context) {
+  return const _CatchesCatalog(
+    title: 'ProfileSurfaceRule',
+    contractId: 'screen.catches.profile.surface_rule',
+    children: [
+      _StateCard(
+        label: 'section divider',
+        child: _SectionFrame(height: 72, child: ProfileSurfaceRule()),
       ),
     ],
   );
@@ -739,6 +1404,21 @@ Widget catchesProfileSurfaceStates(BuildContext context) {
           ),
         ),
       ),
+      _StateCard(
+        label: 'reaction pending',
+        child: _DeviceFrame(
+          child: ProfileSurface(
+            profile: CatchesSurfaceFixtures.candidates.first,
+            mode: ProfileSurfaceMode.catches,
+            viewerProfile: CatchesSurfaceFixtures.viewer,
+            sharedRunTitle: CatchesSurfaceFixtures.openWindowEvent().title,
+            bottomPadding: CatchLayout.catchesProfileBottomPadding,
+            onReact: _noopReaction,
+            reactionsEnabled: false,
+            reactionsPending: true,
+          ),
+        ),
+      ),
     ],
   );
 }
@@ -803,6 +1483,22 @@ Widget catchesPassButtonStates(BuildContext context) {
           child: Center(child: CatchesPassButton(onPressed: _noopTap)),
         ),
       ),
+      _StateCard(
+        label: 'pending',
+        child: _SectionFrame(
+          height: 140,
+          child: Center(
+            child: CatchesPassButton(onPressed: _noopTap, isPending: true),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'disabled',
+        child: _SectionFrame(
+          height: 140,
+          child: Center(child: CatchesPassButton(onPressed: null)),
+        ),
+      ),
     ],
   );
 }
@@ -841,6 +1537,70 @@ Widget catchesReactionControlStates(BuildContext context) {
                   onReact: _noopReaction,
                   axis: Axis.vertical,
                 ),
+                ProfileReactionControls(
+                  target: _reactionTarget,
+                  onReact: _noopReaction,
+                  enabled: false,
+                ),
+                ProfileReactionControls(
+                  target: _reactionTarget,
+                  onReact: _noopReaction,
+                  isPending: true,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Reaction button states',
+  type: ReactionControlButton,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget reactionControlButtonStates(BuildContext context) {
+  return _CatchesCatalog(
+    title: 'ReactionControlButton',
+    contractId: 'screen.catches.event.reaction_button',
+    children: [
+      _StateCard(
+        label: 'surface',
+        child: _SectionFrame(
+          height: 140,
+          child: Center(
+            child: ReactionControlButton(
+              tooltip: 'Like prompt',
+              icon: CatchIcons.favoriteBorderRounded,
+              onPressed: _noopTap,
+              style: ProfileReactionControlsStyle.surface,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'overlay pending disabled',
+        child: _SectionFrame(
+          height: 140,
+          child: Center(
+            child: Wrap(
+              spacing: CatchSpacing.s3,
+              children: [
+                ReactionControlButton(
+                  tooltip: 'Comment on photo',
+                  icon: CatchIcons.chatBubbleOutlineRounded,
+                  onPressed: _noopTap,
+                  style: ProfileReactionControlsStyle.overlay,
+                  isPending: true,
+                ),
+                ReactionControlButton(
+                  tooltip: 'Like section unavailable',
+                  icon: CatchIcons.favoriteBorderRounded,
+                  onPressed: null,
+                  style: ProfileReactionControlsStyle.surface,
+                ),
               ],
             ),
           ),
@@ -861,10 +1621,20 @@ Widget profileReactionCommentSheetStates(BuildContext context) {
     contractId: 'screen.catches.event.reaction_comment_sheet',
     children: [
       _StateCard(
-        label: 'prompt target',
+        label: 'empty draft',
         child: _SectionFrame(
           height: 440,
           child: ProfileReactionCommentSheet(target: _reactionTarget),
+        ),
+      ),
+      _StateCard(
+        label: 'filled draft',
+        child: _SectionFrame(
+          height: 440,
+          child: ProfileReactionCommentSheet(
+            target: _reactionTarget,
+            initialComment: 'Your sunrise loop sounds like my kind of Sunday.',
+          ),
         ),
       ),
     ],
@@ -1090,29 +1860,83 @@ class _DeckRouteScope extends StatelessWidget {
 }
 
 class _RecapRouteScope extends StatelessWidget {
-  const _RecapRouteScope({required this.event, required this.recapValue});
+  const _RecapRouteScope({
+    required this.event,
+    required this.recapValue,
+    this.rosterProfiles,
+  });
 
   final Event event;
   final AsyncValue<EventRecapViewModel?> recapValue;
+  final Map<String, PublicProfile>? rosterProfiles;
 
   @override
   Widget build(BuildContext context) {
-    final roster = {
-      for (final profile in CatchesSurfaceFixtures.candidates)
-        profile.uid: profile,
-    };
+    final roster = rosterProfiles ?? _recapRosterProfiles();
+    final attendeeIds = recapValue.asData?.value?.attendeeIds ?? roster.keys;
 
     return ProviderScope(
       overrides: [
         eventRecapViewModelProvider(event.id).overrideWith((ref) => recapValue),
         publicProfilesByIdsProvider(
-          PublicProfilesQuery(roster.keys),
+          PublicProfilesQuery(attendeeIds),
         ).overrideWith((ref) async => roster),
       ],
       child: EventRecapScreen(eventId: event.id),
     );
   }
 }
+
+class _RecapReadyBodyPreview extends StatelessWidget {
+  const _RecapReadyBodyPreview({
+    required this.event,
+    required this.attendeeIds,
+    required this.selectedVibeIds,
+  });
+
+  final Event event;
+  final List<String> attendeeIds;
+  final Set<String> selectedVibeIds;
+
+  @override
+  Widget build(BuildContext context) {
+    final ready = _recapReadyState(
+      event: event,
+      attendeeIds: attendeeIds,
+      selectedVibeIds: selectedVibeIds,
+    );
+
+    return Scaffold(
+      backgroundColor: CatchTokens.of(context).bg,
+      body: EventRecapReadyBody(
+        state: ready,
+        onToggleVibe: _ignoreString,
+        onOpenCatchesDeck: _ignoreRecapOpenDeck,
+      ),
+    );
+  }
+}
+
+EventRecapReady _recapReadyState({
+  required Event event,
+  required List<String> attendeeIds,
+  Map<String, PublicProfile>? rosterProfiles,
+  Set<String> selectedVibeIds = const <String>{},
+}) {
+  final screenState = buildEventRecapScreenState(
+    eventId: event.id,
+    viewModel: CatchAsyncState.data(
+      _recapViewModel(event: event, attendeeIds: attendeeIds),
+    ),
+    rosterProfiles: rosterProfiles ?? _recapRosterProfiles(),
+    selectedVibeIds: selectedVibeIds,
+    now: CatchesSurfaceFixtures.now,
+  );
+
+  return screenState as EventRecapReady;
+}
+
+const _missingRecapProfileUid = 'design-catches-missing-profile';
 
 const _reactionTarget = ProfileReactionTarget(
   id: 'design-catches-prompt',
@@ -1136,6 +1960,24 @@ CatchesHubReady _hubReadyState() {
   );
 }
 
+Map<String, PublicProfile> _recapRosterProfiles() {
+  return {
+    for (final profile in CatchesSurfaceFixtures.candidates)
+      profile.uid: profile,
+  };
+}
+
+EventRecapViewModel _recapViewModel({
+  required Event event,
+  required List<String> attendeeIds,
+}) {
+  return EventRecapViewModel(
+    event: event,
+    attendeeIds: attendeeIds,
+    checkedInCount: attendeeIds.length + 1,
+  );
+}
+
 ProfileView _profileView() {
   final profile = CatchesSurfaceFixtures.candidates.first;
   final content = ProfileCardContent.fromProfile(
@@ -1155,9 +1997,17 @@ ProfileView _profileView() {
   );
 }
 
+T _profileSection<T extends ProfileSection>() {
+  return _profileView().sections.whereType<T>().first;
+}
+
 void _noopTap() {}
 
 void _ignoreCatchesRow(CatchesHubEventRow row) {}
+
+void _ignoreString(String value) {}
+
+void _ignoreRecapOpenDeck(EventRecapOpenDeckIntent intent) {}
 
 Future<void> _noopReaction(
   ProfileReactionTarget target,

@@ -13,11 +13,12 @@ export 'domain/event_success_preference.dart';
 export 'domain/event_success_runtime.dart';
 export 'domain/event_success_structure.dart';
 export 'domain/event_success_wingman_request.dart';
-export 'presentation/event_success_companion_screen.dart';
-export 'presentation/event_success_controller.dart';
-export 'presentation/event_success_event_preview_screen.dart';
-export 'presentation/event_success_host_screen.dart';
-export 'presentation/event_success_lab_screen.dart';
-export 'presentation/event_success_live_reveal_card.dart';
-export 'presentation/event_success_manual_qa_screen.dart';
-export 'presentation/event_success_questionnaire_config_editor.dart';
+export 'presentation/event_success_companion_screen.dart'; // public-api: route entry point exposed to app routing
+export 'presentation/event_success_controller.dart'; // public-api: command seam for route-owned actions
+export 'presentation/event_success_defaults_panel.dart'; // public-api: shared presentation component used outside this feature
+export 'presentation/event_success_event_preview_screen.dart'; // public-api: route entry point exposed to app routing
+export 'presentation/event_success_host_screen.dart'; // public-api: route entry point exposed to app routing
+export 'presentation/event_success_lab_screen.dart'; // public-api: route entry point exposed to app routing
+export 'presentation/event_success_live_reveal_card.dart'; // public-api: shared presentation component used outside this feature
+export 'presentation/event_success_manual_qa_screen.dart'; // public-api: route entry point exposed to app routing
+export 'presentation/event_success_questionnaire_config_editor.dart'; // public-api: shared presentation component used outside this feature

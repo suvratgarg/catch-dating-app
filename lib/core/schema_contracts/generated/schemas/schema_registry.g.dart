@@ -62,6 +62,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaPublicProfileDocumentSchema,
   ),
   SchemaContractDefinition(
+    name: 'HostProfileDocument',
+    source: 'firestore/host_profiles.schema.json',
+    schema: schemaHostProfileDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'ClubDocument',
     source: 'firestore/clubs.schema.json',
     schema: schemaClubDocumentSchema,
@@ -753,6 +758,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'OnboardingDraftDocument': schemaOnboardingDraftDocumentSchema,
   'UserProfileDocument': schemaUserProfileDocumentSchema,
   'PublicProfileDocument': schemaPublicProfileDocumentSchema,
+  'HostProfileDocument': schemaHostProfileDocumentSchema,
   'ClubDocument': schemaClubDocumentSchema,
   'ClubMembershipDocument': schemaClubMembershipDocumentSchema,
   'ClubHostClaimDocument': schemaClubHostClaimDocumentSchema,
@@ -901,6 +907,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'firestore/onboarding_drafts.schema.json': schemaOnboardingDraftDocumentSchema,
   'firestore/users.schema.json': schemaUserProfileDocumentSchema,
   'firestore/public_profiles.schema.json': schemaPublicProfileDocumentSchema,
+  'firestore/host_profiles.schema.json': schemaHostProfileDocumentSchema,
   'firestore/clubs.schema.json': schemaClubDocumentSchema,
   'firestore/club_memberships.schema.json': schemaClubMembershipDocumentSchema,
   'firestore/club_host_claims.schema.json': schemaClubHostClaimDocumentSchema,

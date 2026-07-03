@@ -73,6 +73,21 @@ standalone scanners:
 - `tool/check_ui_local_constant_wrappers.sh`
 - `tool/check_ui_system_raw_values.sh`
 
+## Where Enforcement Lives
+
+- Analyzer diagnostics live in `packages/catch_ui_lints` and are probe-tested
+  through `tool/check_catch_ui_lints.sh`.
+- Repo scanners with audit-registry awareness live in `tool/architecture/*.mjs`
+  and ship with Node `*.test.mjs` coverage.
+- Dart classification scanners live in `tool/audit/*.dart`.
+- Meta-gates that validate other tools live at the `tool/` root.
+- Checks that need the Flutter toolchain gate directly in
+  `.github/workflows/flutter-ci.yml`; pure Node and Bash gates run through
+  `tools-ci.yml` manifest categories.
+
+New scanners must ship with a manifest `role`, `rules`, `vacuityProof`, and a
+test containing a known-bad fixture.
+
 ## Remote Ops Manifest
 
 `tool/remote_ops_manifest.json` is the remote-operations index. It does not
@@ -128,6 +143,33 @@ node tool/marketing/export_app_screenshots.mjs --check-design-json
 node tool/marketing/export_app_screenshots.mjs --update-design-json
 ```
 
+## Marketing Website Route Contracts
+
+Public marketing website routes are tracked in `design/website/routes.json` and
+validated against the React route shell, metadata registry, postbuild static
+output, and generated organizer listings.
+
+```sh
+node tool/marketing/check_website_routes.mjs --check
+node tool/run.mjs check marketing:website-routes
+```
+
+## React Web Architecture Gates
+
+The React website/admin surfaces share scanners for route ownership, UI
+primitive ownership, governed component families, and server-state ownership.
+The query-state scanner is a baseline-backed ratchet: current manual async
+state candidates are listed in `tool/web/react_query_state_baseline.json`, and
+new feature controller or `use*` hook loading/saving/submitting/in-flight state
+fails the check unless it is intentionally baselined in an audit pass.
+
+```sh
+node tool/run.mjs check web:react-architecture-boundaries
+node tool/run.mjs check web:react-ui-primitives
+node tool/run.mjs check web:react-component-governance
+node tool/run.mjs check web:react-query-state
+```
+
 ## Host Discovery
 
 Organizer discovery starts with a machine-readable candidate backlog, not public
@@ -181,6 +223,7 @@ node tool/agent/context_pack.mjs --task architecture-refactor --paths lib/events
 node tool/agent/context_pack.mjs --task doc-hygiene --paths docs --json
 node tool/agent/check_agent_readiness.mjs
 node tool/agent/check_agent_readiness.mjs --record-metric
+node tool/agent/record_delegation_outcome.mjs --task-id example --mode worker-patch --status integrated --parent-review-outcome accepted --dry-run
 node tool/run.mjs check --category agent
 ```
 
@@ -189,6 +232,9 @@ node tool/run.mjs check --category agent
 `docs/agent_regression_ledger.json`, project-local skill routers in
 `docs/agent_skills/`, and trendable measurements in
 `docs/audit_registry/agent_metrics.jsonl`.
+When using parallel agents, keep subagent work in disposable Git worktrees and
+record the parent-reviewed result with
+`tool/agent/record_delegation_outcome.mjs`.
 
 ## Design Tokens
 

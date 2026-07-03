@@ -4,10 +4,13 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/data/conversation_repository.dart';
 import 'package:catch_dating_app/chats/data/suvbot_repository.dart';
 import 'package:catch_dating_app/chats/domain/suvbot_action_item.dart';
-import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/chat_controller.dart';
-import 'package:catch_dating_app/chats/presentation/chat_read_marker_state.dart';
+import 'package:catch_dating_app/chats/presentation/chat_read_marker_controller.dart';
+import 'package:catch_dating_app/chats/presentation/chat_retry_controller.dart';
 import 'package:catch_dating_app/chats/presentation/chat_route_state.dart';
+import 'package:catch_dating_app/chats/presentation/chat_route_view_model.dart';
+import 'package:catch_dating_app/chats/presentation/chat_scroll_coordinator.dart';
+import 'package:catch_dating_app/chats/presentation/chat_thread_action_controller.dart';
 import 'package:catch_dating_app/chats/presentation/host_chat_screen_state.dart';
 import 'package:catch_dating_app/chats/presentation/suvbot_controller.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_event_context_header.dart';
@@ -16,16 +19,13 @@ import 'package:catch_dating_app/chats/presentation/widgets/chat_message_list.da
 import 'package:catch_dating_app/chats/presentation/widgets/chat_share_card.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/suvbot_action_bar.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/external_share.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
@@ -33,122 +33,60 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
-  const ChatScreen({super.key, required this.matchId, this.otherProfile});
+  const ChatScreen({
+    super.key,
+    required this.matchId,
+    this.otherProfile,
+    this.initialDraftText,
+  });
 
   final String matchId;
   final PublicProfile? otherProfile;
+  final String? initialDraftText;
 
   @override
   ConsumerState<ChatScreen> createState() => _ChatScreenState();
 }
 
-void _retryHostChat(WidgetRef ref, String matchId, HostChatRetryIntent intent) {
-  switch (intent) {
-    case HostChatRetryIntent.reloadMatch:
-      ref.invalidate(matchStreamProvider(matchId));
-    case HostChatRetryIntent.reloadMessages:
-      ref.invalidate(watchConversationMessagesProvider(matchId));
-    case HostChatRetryIntent.reloadSuvbotActions:
-      ref.invalidate(suvbotActionsProvider);
-  }
-}
-
 class _ChatScreenState extends ConsumerState<ChatScreen> {
-  final _textController = TextEditingController();
-  final _scrollController = ScrollController();
-  final _readMarkerState = ChatReadMarkerState();
-  late final ConversationRepository _conversationRepository;
-  bool _didScrollToLatestMessage = false;
-  int _lastMessageCount = 0;
+  late final TextEditingController _textController;
+  late final ChatReadMarkerController _readMarkerController;
+  late final ChatScrollCoordinator _scrollCoordinator;
 
   @override
   void initState() {
     super.initState();
-    _conversationRepository = ref.read(conversationRepositoryProvider);
+    _textController = TextEditingController(text: widget.initialDraftText);
+    _readMarkerController = ChatReadMarkerController.fromReader(
+      conversationId: widget.matchId,
+      read: ref.read,
+    );
+    _scrollCoordinator = ChatScrollCoordinator(isMounted: () => mounted);
     _resetUnread(ref.read(uidProvider).value);
   }
 
   @override
   void dispose() {
-    final uid = _readMarkerState.disposeMarkUid;
-    if (uid != null) {
-      unawaited(
-        _conversationRepository.markRead(
-          conversationId: widget.matchId,
-          uid: uid,
-        ),
-      );
-    }
+    _readMarkerController.markOnDispose();
     _textController.dispose();
-    _scrollController.dispose();
+    _scrollCoordinator.dispose();
     super.dispose();
   }
 
   void _resetUnread(String? uid, {bool force = false}) {
-    final uidToMark = _readMarkerState.markForUid(uid, force: force);
-    if (uidToMark == null) return;
-    unawaited(
-      _conversationRepository.markRead(
-        conversationId: widget.matchId,
-        uid: uidToMark,
-      ),
-    );
+    _readMarkerController.markForUid(uid, force: force);
   }
 
-  bool _isNearBottom() {
-    if (!_scrollController.hasClients) return true;
-    final position = _scrollController.position;
-    return (position.maxScrollExtent - position.pixels) <= 80;
-  }
+  ChatThreadActionController get _threadActionController =>
+      ChatThreadActionController(
+        safetyRunner: RiverpodChatSafetyActionRunner(
+          ref: ref,
+          matchId: widget.matchId,
+        ),
+      );
 
-  void _scheduleScrollToBottom({bool animated = false}) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || !_scrollController.hasClients) return;
-
-      final target = _scrollController.position.maxScrollExtent;
-      if (animated) {
-        unawaited(
-          _scrollController.animateTo(
-            target,
-            duration: CatchMotion.chatScroll,
-            curve: CatchMotion.easeOutCurve,
-          ),
-        );
-        return;
-      }
-
-      _scrollController.jumpTo(target);
-    });
-  }
-
-  void _syncScrollWithMessages({
-    required List<ChatMessage> messages,
-    List<ChatMessage>? previousMessages,
-  }) {
-    final previousCount = previousMessages?.length ?? _lastMessageCount;
-    final nextCount = messages.length;
-
-    if (nextCount == 0) {
-      _lastMessageCount = 0;
-      return;
-    }
-
-    if (!_didScrollToLatestMessage) {
-      _didScrollToLatestMessage = true;
-      _lastMessageCount = nextCount;
-      _scheduleScrollToBottom();
-      return;
-    }
-
-    final hasNewMessages = nextCount > previousCount;
-    if (hasNewMessages && _isNearBottom()) {
-      _lastMessageCount = nextCount;
-      _scheduleScrollToBottom(animated: true);
-      return;
-    }
-
-    _lastMessageCount = nextCount;
-  }
+  ChatRetryController get _retryController =>
+      ChatRetryController(ref: ref, matchId: widget.matchId);
 
   Future<void> _send() async {
     final uid = ref.read(uidProvider).value;
@@ -170,15 +108,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       _textController.clear();
     }
 
-    if (_scrollController.hasClients) {
-      unawaited(
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: CatchMotion.chatScroll,
-          curve: CatchMotion.easeOutCurve,
-        ),
-      );
-    }
+    _scrollCoordinator.scrollAfterSendSuccess();
   }
 
   Future<void> _runSuvbotAction(SuvbotActionItem action) async {
@@ -230,116 +160,44 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     }
   }
 
-  Future<void> _confirmBlock({
-    required String targetUserId,
-    required String targetName,
-  }) async {
-    final confirmed = await showBlockUserDialog(
-      context: context,
-      name: targetName,
-    );
-    if (confirmed != true) return;
-
-    try {
-      await ChatController.blockUserMutation.run(ref, (tx) async {
-        await tx
-            .get(chatControllerProvider.notifier)
-            .blockUser(targetUserId: targetUserId);
-      });
-    } catch (_) {
-      return;
-    }
-    if (mounted) Navigator.of(context).pop();
-  }
-
-  Future<void> _reportUser({
-    required String targetUserId,
-    required String targetName,
-  }) async {
-    try {
-      await ChatController.reportUserMutation.run(ref, (tx) async {
-        await tx
-            .get(chatControllerProvider.notifier)
-            .reportUser(targetUserId: targetUserId, matchId: widget.matchId);
-      });
-    } catch (_) {
-      return;
-    }
-    if (!mounted) return;
-    showCatchSnackBar(context, 'Report submitted for $targetName.');
-  }
-
-  void _showShareCard({
-    required List<ChatMessage> messages,
-    required String? uid,
-    required Event? event,
-    required ExternalShareController share,
-  }) {
-    if (uid == null) return;
-    if (!hasShareableChatMessages(messages)) {
-      showCatchSnackBar(context, 'Send a message before sharing a card.');
-      return;
-    }
-
-    unawaited(
-      showChatShareCardSheet(
-        context,
-        messages: messages,
-        currentUid: uid,
-        event: event,
-        share: share,
-      ),
+  ChatThreadActionUi _threadActionUi() {
+    return ChatThreadActionUi(
+      showFeedback: (message) {
+        if (!mounted) return;
+        showCatchSnackBar(context, message);
+      },
+      showShareCard: (request) {
+        if (!mounted) return;
+        unawaited(
+          showChatShareCardSheet(
+            context,
+            messages: request.messages,
+            currentUid: request.currentUid,
+            event: request.event,
+            share: request.share,
+          ),
+        );
+      },
+      confirmBlock: (targetName) async {
+        if (!mounted) return false;
+        return await showBlockUserDialog(context: context, name: targetName) ==
+            true;
+      },
+      closeAfterBlock: () {
+        if (mounted) Navigator.of(context).pop();
+      },
     );
   }
 
   void _openOtherProfile(HostChatScreenState chatState) {
-    final otherUid = chatState.otherUid;
-    if (otherUid == null || !chatState.profileNavigationEnabled) return;
+    final request = _threadActionController.profileNavigationRequest(chatState);
+    if (request == null) return;
 
     context.pushNamed(
       Routes.publicProfileScreen.name,
-      pathParameters: {'uid': otherUid},
-      extra: chatState.profile,
+      pathParameters: {'uid': request.uid},
+      extra: request.profile,
     );
-  }
-
-  void _handleThreadAction({
-    required ChatThreadAction action,
-    required HostChatScreenState chatState,
-    required List<ChatMessage> messages,
-    required String? uid,
-    required Event? event,
-    required ExternalShareController share,
-  }) {
-    final intent = chatState.intentForThreadAction(action);
-    if (intent == null) return;
-
-    switch (intent.type) {
-      case HostChatActionIntentType.shareCard:
-        _showShareCard(
-          messages: messages,
-          uid: uid,
-          event: event,
-          share: share,
-        );
-        return;
-      case HostChatActionIntentType.reportUser:
-        unawaited(
-          _reportUser(
-            targetUserId: intent.targetUserId!,
-            targetName: intent.targetName!,
-          ),
-        );
-        return;
-      case HostChatActionIntentType.blockUser:
-        unawaited(
-          _confirmBlock(
-            targetUserId: intent.targetUserId!,
-            targetName: intent.targetName!,
-          ),
-        );
-        return;
-    }
   }
 
   CatchActionMenuItem<ChatThreadAction> _threadActionMenuItem(
@@ -385,21 +243,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     ) {
       final previousMessages = previous?.asData?.value;
       next.whenData((messages) {
-        _syncScrollWithMessages(
+        _scrollCoordinator.syncWithMessages(
           messages: messages,
           previousMessages: previousMessages,
         );
-        final uidToMark = _readMarkerState.markForIncomingLatest(
+        _readMarkerController.markForIncomingLatest(
           uid: ref.read(uidProvider).value,
           messages: messages,
         );
-        if (uidToMark != null) {
-          unawaited(
-            ref
-                .read(conversationRepositoryProvider)
-                .markRead(conversationId: widget.matchId, uid: uidToMark),
-          );
-        }
       });
     });
 
@@ -413,10 +264,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     );
     final chatState = routeState.chatState;
     final routeError = routeState.routeError;
-    if (!_didScrollToLatestMessage &&
+    final authError = routeState.authError;
+    if (!_scrollCoordinator.didScrollToLatestMessage &&
         routeState.initialMessages != null &&
         routeState.initialMessages!.isNotEmpty) {
-      _syncScrollWithMessages(messages: routeState.initialMessages!);
+      _scrollCoordinator.syncWithMessages(
+        messages: routeState.initialMessages!,
+      );
     }
 
     return CatchMutationErrorListeners(
@@ -441,13 +295,16 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             if (chatState.threadActions.isNotEmpty)
               CatchTopBarMenuAction<ChatThreadAction>(
                 tooltip: 'Chat actions',
-                onSelected: (action) => _handleThreadAction(
-                  action: action,
-                  chatState: chatState,
-                  messages: routeState.messages,
-                  uid: routeState.uid,
-                  event: routeState.event,
-                  share: routeState.share,
+                onSelected: (action) => unawaited(
+                  _threadActionController.runThreadAction(
+                    action: action,
+                    chatState: chatState,
+                    messages: routeState.messages,
+                    uid: routeState.uid,
+                    event: routeState.event,
+                    share: routeState.share,
+                    ui: _threadActionUi(),
+                  ),
                 ),
                 items: chatState.threadActions
                     .map(
@@ -463,40 +320,46 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             if (routeState.showEventContextHeader)
               ChatEventContextHeader(event: routeState.event),
             Expanded(
-              child: routeError == null
+              child: authError != null
+                  ? CatchErrorState.fromError(
+                      authError,
+                      context: AppErrorContext.auth,
+                      onRetry: () => ref.invalidate(uidProvider),
+                    )
+                  : routeError == null
                   ? ChatMessageList(
-                      messagesAsync: routeState.messagesAsync,
+                      messagesAsync: _asyncValue(
+                        routeState.displayMessagesAsync,
+                      ),
                       currentUid: routeState.uid,
                       event: routeState.event,
                       otherName: chatState.messageOtherName,
-                      scrollController: _scrollController,
+                      scrollController: _scrollCoordinator.scrollController,
                       onRetry: chatState.messagesRetryIntent == null
                           ? null
-                          : () => _retryHostChat(
-                              ref,
-                              widget.matchId,
+                          : () => _retryController.run(
                               chatState.messagesRetryIntent!,
                             ),
                     )
-                  : CatchErrorState.fromError(
-                      routeError.error,
-                      context: AppErrorContext.chat,
-                      onRetry: () => _retryHostChat(
-                        ref,
-                        widget.matchId,
-                        routeError.retryIntent,
+                  : CatchErrorState(
+                      title: 'Messages unavailable',
+                      message: appErrorMessage(
+                        routeError.error,
+                        context: AppErrorContext.chat,
                       ),
+                      icon: CatchIcons.chatBubbleOutlineRounded,
+                      onRetry: () =>
+                          _retryController.run(routeError.retryIntent),
+                      retryLabel: 'Reload messages',
                     ),
             ),
             if (routeState.showSuvbotActionBar)
               SuvbotActionBar(
-                actions: routeState.suvbotActionsAsync,
+                actions: _asyncValue(routeState.suvbotActionsAsync),
                 pending: routeState.suvbotPending,
                 onAction: _runSuvbotAction,
                 onTextAction: _runSuvbotTextAction,
-                onRetry: () => _retryHostChat(
-                  ref,
-                  widget.matchId,
+                onRetry: () => _retryController.run(
                   chatState.suvbotActionsRetryIntent ??
                       HostChatRetryIntent.reloadSuvbotActions,
                 ),
@@ -517,4 +380,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       ),
     );
   }
+}
+
+AsyncValue<T> _asyncValue<T>(CatchAsyncState<T> state) {
+  return switch (state.status) {
+    CatchAsyncStatus.data => AsyncData(state.value as T),
+    CatchAsyncStatus.loading => const AsyncLoading(),
+    CatchAsyncStatus.error => AsyncError(state.error!, StackTrace.empty),
+  };
 }

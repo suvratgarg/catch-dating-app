@@ -1,15 +1,11 @@
 import {
+  HostProfileDocument,
   UserProfileDocument,
 } from "./generated/firestoreAdminTypes";
 import {ClubHostProfile, ClubHostRole} from "./clubHosts";
 import {publicAvatarUrl, publicDisplayName} from "./profileProjection";
 
-export interface HostProfileDocument {
-  displayName?: string | null;
-  avatarUrl?: string | null;
-  roleTitle?: string | null;
-  status?: string | null;
-}
+export type {HostProfileDocument} from "./generated/firestoreAdminTypes";
 
 /**
  * Returns a professional host snapshot for club/event display.

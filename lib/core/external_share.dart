@@ -11,11 +11,14 @@ part 'external_share.g.dart';
 
 typedef ExternalShareLauncher = Future<void> Function(ShareParams params);
 
+// keepalive: share launcher is a platform facade shared by route controllers.
 @Riverpod(keepAlive: true)
 ExternalShareLauncher externalShareLauncher(Ref ref) => (params) async {
   await SharePlus.instance.share(params);
 };
 
+// keepalive: share controller centralizes external share behavior across host
+// and public flows.
 @Riverpod(keepAlive: true)
 ExternalShareController externalShareController(Ref ref) =>
     ExternalShareController(ref.watch(externalShareLauncherProvider));

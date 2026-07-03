@@ -2,11 +2,13 @@ import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-final hostClubEditControllerProvider = Provider<HostClubEditActions>(
-  (ref) => HostClubEditController(ref),
-);
+part 'host_club_edit_controller.g.dart';
+
+@riverpod
+HostClubEditActions hostClubEditController(Ref ref) =>
+    HostClubEditController(ref);
 
 abstract interface class HostClubEditActions {
   Future<void> updateClub({

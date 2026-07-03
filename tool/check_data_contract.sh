@@ -10,11 +10,13 @@ node tool/contracts/generate_business_rules.mjs --check
 
 echo "==> Checking schema contract sources"
 node tool/contracts/validate_schema_contracts.mjs
+node tool/contracts/check_migration_contracts.mjs
 
 echo "==> Checking generated schema contract outputs"
 node tool/contracts/generate_schema_contracts.mjs --check
 node --check tool/contracts/generated/schema_contract_validators.mjs
 node tool/contracts/check_schema_type_boundaries.mjs
+node tool/contracts/check_schema_fixtures.mjs
 
 echo "==> Checking generated domain classes are current"
 node tool/contracts/generate_domain_classes.mjs --check

@@ -7,6 +7,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'device_location.g.dart';
 
+// keepalive: device location should be resolved once and reused by discovery
+// surfaces instead of re-prompting across route rebuilds.
 @Riverpod(keepAlive: true)
 class DeviceLocation extends _$DeviceLocation {
   @override

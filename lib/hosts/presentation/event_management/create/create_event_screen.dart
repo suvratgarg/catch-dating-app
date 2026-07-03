@@ -4,20 +4,16 @@ import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/business_rules.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
-import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/device_location.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_flow.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
+import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
@@ -25,10 +21,18 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
-import 'package:catch_dating_app/events/presentation/location_picker_screen.dart';
+import 'package:catch_dating_app/events/events.dart'
+    show LocationPickerResult, LocationPickerScreen;
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_restore_state.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_snapshot.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_location_state.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_photo_draft_state.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_schedule_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_success_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_wizard_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/create_event_step_header.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/draft_picker_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_details_step.dart';
@@ -36,15 +40,43 @@ import 'package:catch_dating_app/hosts/presentation/event_management/widgets/eve
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_success_step.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/when_step.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/where_step.dart';
-import 'package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart';
-import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 DateTime _systemNow() => DateTime.now();
-const _maxEventPhotos = 6;
+
+const createEventUnsavedChangesDialogTitle = 'Unsaved changes';
+const createEventUnsavedChangesDialogMessage =
+    'You have unsaved changes. Would you like to save a draft?';
+const createEventUnsavedChangesDialogActions = <CatchDialogAction<bool>>[
+  CatchDialogAction(label: 'Discard', value: false),
+  CatchDialogAction(label: 'Save draft', value: true, isDefault: true),
+];
+
+class CreateEventUnsavedChangesDialog extends StatelessWidget {
+  const CreateEventUnsavedChangesDialog({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const CatchConfirmDialog<bool>(
+      title: createEventUnsavedChangesDialogTitle,
+      message: createEventUnsavedChangesDialogMessage,
+      actions: createEventUnsavedChangesDialogActions,
+    );
+  }
+}
+
+Future<bool?> showCreateEventUnsavedChangesDialog(BuildContext context) {
+  return showCatchAdaptiveDialog<bool>(
+    context: context,
+    title: createEventUnsavedChangesDialogTitle,
+    message: createEventUnsavedChangesDialogMessage,
+    actions: createEventUnsavedChangesDialogActions,
+  );
+}
 
 class CreateEventScreen extends ConsumerStatefulWidget {
   const CreateEventScreen({
@@ -90,13 +122,12 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   final _whenFormKey = GlobalKey<FormState>();
   final _eventPolicyFormKey = GlobalKey<FormState>();
 
-  List<CatchFormStepSpec> get _stepSpecs => [
-    CatchFormStepSpec(title: 'Event basics', formKey: _eventDetailsFormKey),
-    CatchFormStepSpec(title: 'Meeting location', formKey: _whereFormKey),
-    CatchFormStepSpec(title: 'When is the event?', formKey: _whenFormKey),
-    CatchFormStepSpec(title: 'Event policy', formKey: _eventPolicyFormKey),
-    const CatchFormStepSpec(title: 'Live event guide'),
-  ];
+  List<CatchFormStepSpec> get _stepSpecs => createEventWizardStepSpecs(
+    eventDetailsFormKey: _eventDetailsFormKey,
+    meetingLocationFormKey: _whereFormKey,
+    scheduleFormKey: _whenFormKey,
+    eventPolicyFormKey: _eventPolicyFormKey,
+  );
 
   // Step 2 — When
   final _dateController = TextEditingController();
@@ -106,14 +137,10 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   int _durationMinutes = CatchBusinessRules.eventDefaultDurationMinutes;
   String? _scheduleErrorText;
 
-  static const _futureStartError = 'Choose a start time later than now';
-
   // Step 1 — Where
   final _meetingPointController = TextEditingController();
   final _locationDetailsController = TextEditingController();
-  LocationCoordinate? _startingPoint;
-  String? _meetingLocationAddress;
-  String? _meetingLocationPlaceId;
+  CreateEventLocationState _locationState = const CreateEventLocationState();
 
   // Step 0 — Event details
   final _distanceController = TextEditingController();
@@ -125,8 +152,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   EventInteractionModel _selectedInteractionModel =
       ActivityKind.socialRun.defaultInteractionModel;
   PaceLevel? _selectedPace;
-  final _eventPhotos = <_PickedEventPhotoDraft>[];
-  var _nextPickedEventPhotoId = 0;
+  var _eventPhotos = const CreateEventPhotoDraftState.empty();
 
   // Step 3 — Rules
   final _minAgeController = TextEditingController();
@@ -136,23 +162,19 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   final _inviteCodeController = TextEditingController();
   final _dynamicPricingStepController = TextEditingController();
   final _dynamicPricingMaxController = TextEditingController();
-  EventAdmissionPreset _selectedAdmissionPreset =
-      EventAdmissionPreset.openCapacity;
-  bool _cohortCapsEnabled = false;
-  bool _dynamicPricingEnabled = false;
-  EventCancellationPolicyId _selectedCancellationPolicyId =
-      EventCancellationPolicyId.standard;
+  CreateEventPolicyState _policyState = const CreateEventPolicyState();
   EventSuccessDefaults _eventSuccessDefaults = const EventSuccessDefaults();
 
   String get _eventCurrencyCode =>
       currencyCodeForCityName(widget.club.location);
 
-  DateTime? get _selectedStartDateTime {
-    final selectedDate = _selectedDate;
-    final selectedStartTime = _selectedStartTime;
-    if (selectedDate == null || selectedStartTime == null) return null;
-    return _combine(selectedDate, selectedStartTime);
-  }
+  CreateEventScheduleState get _scheduleState => CreateEventScheduleState(
+    selectedDate: _selectedDate,
+    selectedStartTime: _selectedStartTime,
+    durationMinutes: _durationMinutes,
+  );
+
+  DateTime? get _selectedStartDateTime => _scheduleState.selectedStartDateTime;
 
   EventConstraints get _constraints => EventConstraints(
     minAge: _eventPolicyDefaults.minAge,
@@ -161,41 +183,29 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     maxWomen: _eventPolicyDefaults.toConstraints().maxWomen,
   );
 
-  EventPolicyDefaults get _eventPolicyDefaults => EventPolicyDefaults(
-    admissionPreset: _admissionDefaultPresetFromSelected(),
-    minAge: int.tryParse(_minAgeController.text.trim()) ?? 0,
-    maxAge: int.tryParse(_maxAgeController.text.trim()) ?? 99,
-    maxMen: int.tryParse(_maxMenController.text.trim()),
-    maxWomen: int.tryParse(_maxWomenController.text.trim()),
-    dynamicPricingEnabled: _dynamicPricingEnabled,
-    dynamicPricingStepInPaise: _currencyControllerValueInMinorUnits(
-      _dynamicPricingStepController,
-      currencyCode: _eventCurrencyCode,
-    ),
-    dynamicPricingMaxInPaise: _currencyControllerValueInMinorUnits(
-      _dynamicPricingMaxController,
-      currencyCode: _eventCurrencyCode,
-    ),
-    cancellationPolicyId: _selectedCancellationPolicyId,
-  );
+  EventPolicyDefaults get _eventPolicyDefaults =>
+      _policyState.defaultsFromFields(
+        minAge: _minAgeController.text,
+        maxAge: _maxAgeController.text,
+        maxMen: _maxMenController.text,
+        maxWomen: _maxWomenController.text,
+        dynamicPricingStep: _dynamicPricingStepController.text,
+        dynamicPricingMax: _dynamicPricingMaxController.text,
+        currencyCode: _eventCurrencyCode,
+      );
 
   EventPolicyBundle get _eventPolicy {
-    final capacityLimit = int.parse(_capacityController.text.trim());
-    final basePriceInPaise = _currencyControllerValueInMinorUnits(
-      _priceController,
+    return _policyState.eventPolicyFromFields(
+      capacity: _capacityController.text,
+      basePrice: _priceController.text,
+      inviteCode: _inviteCodeController.text,
+      minAge: _minAgeController.text,
+      maxAge: _maxAgeController.text,
+      maxMen: _maxMenController.text,
+      maxWomen: _maxWomenController.text,
+      dynamicPricingStep: _dynamicPricingStepController.text,
+      dynamicPricingMax: _dynamicPricingMaxController.text,
       currencyCode: _eventCurrencyCode,
-    )!;
-    if (_selectedAdmissionPreset == EventAdmissionPreset.requestToJoin) {
-      return EventPolicyBundle.requestToJoinEvent(
-        capacityLimit: capacityLimit,
-        basePriceInPaise: basePriceInPaise,
-        cancellationPolicy: _eventPolicyDefaults.cancellationPolicy,
-      );
-    }
-    return _eventPolicyDefaults.toEventPolicyBundle(
-      capacityLimit: capacityLimit,
-      basePriceInPaise: basePriceInPaise,
-      inviteCodeHint: _inviteCodeHint,
     );
   }
 
@@ -206,16 +216,20 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   }
 
   VoidCallback? get _decreaseDurationCallback =>
-      _durationMinutes > CatchBusinessRules.eventMinDurationMinutes
+      _scheduleState.canDecreaseDuration
       ? () => setState(
-          () => _durationMinutes -= CatchBusinessRules.eventDurationStepMinutes,
+          () => _durationMinutes = _scheduleState
+              .decreaseDuration()
+              .durationMinutes,
         )
       : null;
 
   VoidCallback? get _increaseDurationCallback =>
-      _durationMinutes < CatchBusinessRules.eventMaxDurationMinutes
+      _scheduleState.canIncreaseDuration
       ? () => setState(
-          () => _durationMinutes += CatchBusinessRules.eventDurationStepMinutes,
+          () => _durationMinutes = _scheduleState
+              .increaseDuration()
+              .durationMinutes,
         )
       : null;
 
@@ -232,18 +246,13 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       _lastSavedDraftSignature = _currentDraftContentSignature;
     }
     if (widget.initialPickedEventPhotos.isNotEmpty) {
-      _eventPhotos.addAll(
-        widget.initialPickedEventPhotos.map(
-          (photo) => _PickedEventPhotoDraft(_nextPickedEventPhotoId++, photo),
-        ),
+      _eventPhotos = CreateEventPhotoDraftState.fromPicked(
+        widget.initialPickedEventPhotos,
       );
     }
     _initialDraftContentSignature = _currentDraftContentSignature;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!_checkedDrafts) {
-        _checkedDrafts = true;
-        _checkForDrafts();
-      }
+      _checkForDrafts();
     });
   }
 
@@ -279,16 +288,13 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       title: 'Event date',
     );
     if (picked != null) {
-      final scheduleError = _scheduleErrorFor(picked, _selectedStartTime);
+      final result = _scheduleState.selectDate(picked, now: widget.now());
       setState(() {
-        _selectedDate = picked;
-        _dateController.text =
-            '${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}';
-        _scheduleErrorText = scheduleError;
-        if (scheduleError != null) {
-          _selectedStartTime = null;
-          _startTimeController.clear();
-        }
+        _selectedDate = result.selectedDate;
+        _selectedStartTime = result.selectedStartTime;
+        _dateController.text = result.dateText;
+        _startTimeController.text = result.startTimeText;
+        _scheduleErrorText = result.errorText;
       });
     }
   }
@@ -296,21 +302,18 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   Future<void> _pickStartTime() async {
     final picked = await showCatchTimePicker(
       context: context,
-      initialTime: _selectedStartTime ?? _initialStartTime(),
+      initialTime:
+          _selectedStartTime ??
+          _scheduleState.initialStartTime(now: widget.now()),
       title: 'Start time',
     );
     if (picked != null) {
-      final scheduleError = _scheduleErrorFor(_selectedDate, picked);
+      final result = _scheduleState.selectStartTime(picked, now: widget.now());
       setState(() {
-        if (scheduleError != null) {
-          _scheduleErrorText = scheduleError;
-          _selectedStartTime = null;
-          _startTimeController.clear();
-          return;
-        }
-        _scheduleErrorText = null;
-        _selectedStartTime = picked;
-        _startTimeController.text = _formatClockTime(picked);
+        _selectedDate = result.selectedDate;
+        _selectedStartTime = result.selectedStartTime;
+        _startTimeController.text = result.startTimeText;
+        _scheduleErrorText = result.errorText;
       });
     }
   }
@@ -321,107 +324,98 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       MaterialPageRoute(
         builder: (_) => LocationPickerScreen(
           countryIsoCode: countryIsoCodeForCityName(widget.club.location),
-          initialLocation: _startingPoint,
-          initialCenter: _startingPoint ?? deviceLocation,
-          initialLabel: _startingPoint == null
-              ? null
-              : _trimmedTextOrNull(_meetingPointController),
+          initialLocation: _locationState.startingPoint,
+          initialCenter: _locationState.initialCenter(deviceLocation),
+          initialLabel: _locationState.initialLabel(
+            meetingPoint: _meetingPointController.text,
+          ),
           loadMapTiles: widget.loadMapTiles,
         ),
         fullscreenDialog: true,
       ),
     );
     if (result != null) {
+      final selection = _locationState.selectLocation(
+        coordinate: result.coordinate,
+        displayName: result.displayName,
+        address: result.address,
+        placeId: result.placeId,
+      );
       setState(() {
-        _startingPoint = result.coordinate;
-        _meetingLocationAddress = result.address;
-        _meetingLocationPlaceId = result.placeId;
-        final placeName = result.displayName;
-        if (placeName != null) {
-          _meetingPointController.text = placeName;
+        _locationState = selection.state;
+        final meetingPointText = selection.meetingPointText;
+        if (meetingPointText != null) {
+          _meetingPointController.text = meetingPointText;
         }
       });
     }
   }
 
   Future<void> _pickEventPhotos() async {
-    final remainingSlots = _maxEventPhotos - _eventPhotos.length;
+    final remainingSlots = _eventPhotos.remainingSlots;
     if (remainingSlots <= 0) return;
     final picked = await ref
         .read(createEventControllerProvider.notifier)
         .pickEventPhotos(limit: remainingSlots);
     if (!mounted || picked.isEmpty) return;
-    setState(() {
-      _eventPhotos.addAll(
-        picked
-            .take(remainingSlots)
-            .map(
-              (photo) =>
-                  _PickedEventPhotoDraft(_nextPickedEventPhotoId++, photo),
-            ),
-      );
-    });
+    setState(() => _eventPhotos = _eventPhotos.addPicked(picked));
   }
 
   void _removeEventPhoto(int index) {
-    if (index < 0 || index >= _eventPhotos.length) return;
-    setState(() => _eventPhotos.removeAt(index));
+    setState(() => _eventPhotos = _eventPhotos.removeAt(index));
   }
 
   void _reorderEventPhoto(int fromIndex, int toIndex) {
-    if (fromIndex == toIndex ||
-        fromIndex < 0 ||
-        toIndex < 0 ||
-        fromIndex >= _eventPhotos.length ||
-        toIndex >= _eventPhotos.length) {
-      return;
-    }
-    setState(() {
-      final moved = _eventPhotos.removeAt(fromIndex);
-      _eventPhotos.insert(toIndex, moved);
-    });
+    setState(() => _eventPhotos = _eventPhotos.reorder(fromIndex, toIndex));
   }
 
-  void _back() {
-    if (_currentStep > 0) {
-      _goToStep(_currentStep - 1);
-    } else if (_hasUnsavedChanges) {
-      _showUnsavedChangesDialog();
-    } else {
-      Navigator.of(context).pop();
+  void _handleBackIntent(CreateEventWizardBackIntent intent) {
+    switch (intent) {
+      case CreateEventWizardBackIntent.previousStep:
+        _goToStep(_currentStep - 1);
+      case CreateEventWizardBackIntent.confirmUnsavedChanges:
+        _showUnsavedChangesDialog();
+      case CreateEventWizardBackIntent.close:
+        Navigator.of(context).pop();
     }
   }
 
-  void _next() {
-    if (!_validateCurrentStep() || !_validateCurrentSchedule()) return;
+  void _handlePrimaryIntent(CreateEventWizardPrimaryIntent intent) {
+    if (!_validateCurrentInput()) return;
 
-    if (_currentStep < _stepSpecs.length - 1) {
-      _goToStep(_currentStep + 1);
-    } else {
-      _submit();
+    switch (intent) {
+      case CreateEventWizardPrimaryIntent.nextStep:
+        _goToStep(_currentStep + 1);
+      case CreateEventWizardPrimaryIntent.submit:
+        _submit();
     }
   }
 
-  DateTime _combine(DateTime date, TimeOfDay time) =>
-      DateTime(date.year, date.month, date.day, time.hour, time.minute);
-
-  TimeOfDay _initialStartTime() {
-    final selectedDate = _selectedDate;
-    final now = widget.now();
-    if (selectedDate != null && DateUtils.isSameDay(selectedDate, now)) {
-      final soon = now.add(const Duration(minutes: 5));
-      if (DateUtils.isSameDay(selectedDate, soon)) {
-        return TimeOfDay(hour: soon.hour, minute: soon.minute);
-      }
+  Future<void> _handleSaveDraftIntent(CreateEventWizardSaveDraftIntent intent) {
+    switch (intent) {
+      case CreateEventWizardSaveDraftIntent.saveDraft:
+        return _saveDraft();
     }
-    return const TimeOfDay(hour: 7, minute: 0);
   }
 
-  String? _scheduleErrorFor(DateTime? date, TimeOfDay? startTime) {
-    if (date == null || startTime == null) return null;
-    return _combine(date, startTime).isAfter(widget.now())
-        ? null
-        : _futureStartError;
+  void _handleSuccessNavigationIntent(
+    CreateEventSuccessNavigationIntent intent,
+    CreateEventSuccessNavigationState state,
+  ) {
+    final effect = CreateEventSuccessNavigationEffect.resolve(
+      intent: intent,
+      state: state,
+    );
+    switch (effect.destination) {
+      case CreateEventSuccessNavigationDestination.manageEventRoute:
+        context.goNamed(
+          Routes.hostAppEventManageScreen.name,
+          pathParameters: effect.pathParameters,
+          extra: effect.extra,
+        );
+      case CreateEventSuccessNavigationDestination.popRoute:
+        Navigator.of(context).pop();
+    }
   }
 
   void _goToStep(int step) {
@@ -433,20 +427,18 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     );
   }
 
-  bool _validateCurrentStep() {
-    final formKey = formKeyForStep(_stepSpecs, _currentStep);
-    return formKey?.currentState?.validate() ?? true;
-  }
-
-  bool _validateCurrentSchedule() {
-    if (_currentStep != 2) return true;
-
-    final startTime = _selectedStartDateTime;
-    if (startTime == null) return false;
-    if (startTime.isAfter(widget.now())) return true;
-
-    setState(() => _scheduleErrorText = _futureStartError);
-    return false;
+  bool _validateCurrentInput() {
+    final plan = CreateEventWizardValidationPlan.resolve(
+      activeSteps: _stepSpecs,
+      currentStep: _currentStep,
+      scheduleState: _scheduleState,
+      now: widget.now(),
+    );
+    final formIsValid = plan.formKey?.currentState?.validate() ?? true;
+    if (plan.scheduleErrorText != null) {
+      setState(() => _scheduleErrorText = plan.scheduleErrorText);
+    }
+    return formIsValid && plan.scheduleAllowsContinue;
   }
 
   void _submit() {
@@ -471,9 +463,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
             constraints: _constraints,
             eventPolicy: _eventPolicy,
             inviteCode: _trimmedTextOrNull(_inviteCodeController),
-            photoImages: [
-              for (final eventPhoto in _eventPhotos) eventPhoto.photo.image,
-            ],
+            photoImages: _eventPhotos.pickedPhotos
+                .map((photo) => photo.image)
+                .toList(),
             eventSuccessDefaults: _eventSuccessDefaults,
           );
       if (mounted) {
@@ -481,14 +473,10 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       }
 
       // Delete the restored-from draft after successful submission.
-      final draftId = _activeDraftId;
-      if (draftId != null) {
-        await CreateEventDraftController.deleteDraftMutation.run(
-          ref,
-          (tx) async => tx
-              .get(createEventDraftControllerProvider.notifier)
-              .deleteDraft(clubId: widget.club.id, draftId: draftId),
-        );
+      final deleteIntent =
+          _draftSideEffectState.deleteAfterSuccessfulSubmitIntent;
+      if (deleteIntent != null) {
+        await _deleteDraft(deleteIntent);
       }
 
       return createdEvent;
@@ -496,54 +484,69 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   }
 
   bool get _hasUnsavedChanges {
-    final currentSignature = _currentDraftContentSignature;
-    if (_activeDraftId != null) {
-      return currentSignature != _lastSavedDraftSignature;
-    }
-    return currentSignature != _initialDraftContentSignature;
+    return _draftActionState.hasUnsavedChanges;
   }
 
-  Object get _currentDraftContentSignature => (
-    distance: _trimmedTextOrNull(_distanceController),
-    capacity: _trimmedTextOrNull(_capacityController),
-    price: _trimmedTextOrNull(_priceController),
-    description: _trimmedTextOrNull(_descriptionController),
-    activityKind: _selectedActivityKind.name,
-    customActivityLabel: _customActivityLabelDraftValue,
-    interactionModel: _interactionModelDraftValue,
-    paceName: _selectedPace?.name,
-    meetingPoint: _trimmedTextOrNull(_meetingPointController),
-    locationDetails: _trimmedTextOrNull(_locationDetailsController),
-    meetingLocationAddress: _meetingLocationAddress,
-    meetingLocationPlaceId: _meetingLocationPlaceId,
-    startingPointLat: _startingPoint?.latitude,
-    startingPointLng: _startingPoint?.longitude,
-    selectedDateMillis: _selectedDate?.millisecondsSinceEpoch,
-    selectedStartHour: _selectedStartTime?.hour,
-    selectedStartMinute: _selectedStartTime?.minute,
-    durationMinutes: _durationMinutes,
-    minAge: _trimmedTextOrNull(_minAgeController),
-    maxAge: _trimmedTextOrNull(_maxAgeController),
-    maxMen: _trimmedTextOrNull(_maxMenController),
-    maxWomen: _trimmedTextOrNull(_maxWomenController),
-    cohortCapsEnabled: _cohortCapsEnabled,
-    admissionPreset: _draftAdmissionPresetName,
-    inviteCode: _trimmedTextOrNull(_inviteCodeController),
-    dynamicPricingEnabled: _dynamicPricingEnabled,
-    dynamicPricingStep: _trimmedTextOrNull(_dynamicPricingStepController),
-    dynamicPricingMax: _trimmedTextOrNull(_dynamicPricingMaxController),
-    cancellationPolicy: _selectedCancellationPolicyId.name,
-    eventSuccessDefaults: _eventSuccessDefaults,
-    eventPhotoIds: [
-      for (final eventPhoto in _eventPhotos) eventPhoto.id,
-    ].join(','),
-  );
+  Object get _currentDraftContentSignature => _currentDraftSnapshot.signature;
+
+  CreateEventDraftSideEffectState get _draftSideEffectState =>
+      CreateEventDraftSideEffectState(
+        hasCheckedDrafts: _checkedDrafts,
+        activeDraftId: _activeDraftId,
+      );
+
+  CreateEventDraftActionState get _draftActionState =>
+      CreateEventDraftActionState(
+        activeDraftId: _activeDraftId,
+        initialDraftContentSignature: _initialDraftContentSignature,
+        lastSavedDraftSignature: _lastSavedDraftSignature,
+        currentDraftContentSignature: _currentDraftContentSignature,
+      );
+
+  CreateEventDraftSnapshot get _currentDraftSnapshot =>
+      CreateEventDraftSnapshot(
+        distance: _trimmedTextOrNull(_distanceController),
+        capacity: _trimmedTextOrNull(_capacityController),
+        price: _trimmedTextOrNull(_priceController),
+        description: _trimmedTextOrNull(_descriptionController),
+        activityKind: _selectedActivityKind.name,
+        customActivityLabel: _customActivityLabelDraftValue,
+        interactionModel: _interactionModelDraftValue,
+        paceName: _selectedPace?.name,
+        meetingPoint: _trimmedTextOrNull(_meetingPointController),
+        locationDetails: _trimmedTextOrNull(_locationDetailsController),
+        meetingLocationAddress: _locationState.meetingLocationAddress,
+        meetingLocationPlaceId: _locationState.meetingLocationPlaceId,
+        startingPointLat: _locationState.startingPoint?.latitude,
+        startingPointLng: _locationState.startingPoint?.longitude,
+        selectedDateMillis: _selectedDate?.millisecondsSinceEpoch,
+        selectedStartHour: _selectedStartTime?.hour,
+        selectedStartMinute: _selectedStartTime?.minute,
+        durationMinutes: _durationMinutes,
+        minAge: _trimmedTextOrNull(_minAgeController),
+        maxAge: _trimmedTextOrNull(_maxAgeController),
+        maxMen: _trimmedTextOrNull(_maxMenController),
+        maxWomen: _trimmedTextOrNull(_maxWomenController),
+        cohortCapsEnabled: _policyState.cohortCapsEnabled,
+        admissionPreset: _policyState.draftAdmissionPresetName,
+        inviteCode: _trimmedTextOrNull(_inviteCodeController),
+        dynamicPricingEnabled: _policyState.dynamicPricingEnabled,
+        dynamicPricingStep: _trimmedTextOrNull(_dynamicPricingStepController),
+        dynamicPricingMax: _trimmedTextOrNull(_dynamicPricingMaxController),
+        cancellationPolicy: _policyState.cancellationPolicyId.name,
+        eventSuccessDefaults: _eventSuccessDefaults,
+        eventPhotoIds: _eventPhotos.signature,
+      );
 
   Future<void> _checkForDrafts() async {
+    final sideEffectState = _draftSideEffectState;
+    if (!sideEffectState.shouldLoadDrafts) return;
+    _checkedDrafts = true;
+
     final drafts = await ref
         .read(createEventDraftControllerProvider.notifier)
         .loadDrafts(clubId: widget.club.id);
-    if (!mounted || drafts.isEmpty) return;
+    if (!mounted || !sideEffectState.shouldShowDraftPicker(drafts)) return;
 
     final picked = await showDraftPickerSheet(
       context: context,
@@ -565,147 +568,95 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   }
 
   void _applyDraftValues(EventDraft draft) {
-    // Event details
-    if (draft.distance != null) {
-      _distanceController.text = draft.distance!;
-    }
-    if (draft.capacity != null) {
-      _capacityController.text = draft.capacity!;
-    }
-    if (draft.price != null) {
-      _priceController.text = draft.price!;
-    }
-    if (draft.description != null) {
-      _descriptionController.text = draft.description!;
-    }
-    _selectedActivityKind = _activityKindFromName(draft.activityKind);
-    _customActivityLabelController.text = draft.customActivityLabel ?? '';
-    _selectedInteractionModel = _interactionModelFromName(
-      draft.interactionModel,
-      fallback: _selectedActivityKind.defaultInteractionModel,
+    final restore = CreateEventDraftRestoreState.fromDraft(
+      draft,
+      now: widget.now(),
     );
-    if (draft.paceName != null) {
-      try {
-        _selectedPace = PaceLevel.values.byName(draft.paceName!);
-      } catch (_) {
-        // Draft contained an unrecognized pace name — ignore and use default.
-      }
+
+    // Event details
+    if (restore.distanceText != null) {
+      _distanceController.text = restore.distanceText!;
     }
+    if (restore.capacityText != null) {
+      _capacityController.text = restore.capacityText!;
+    }
+    if (restore.priceText != null) {
+      _priceController.text = restore.priceText!;
+    }
+    if (restore.descriptionText != null) {
+      _descriptionController.text = restore.descriptionText!;
+    }
+    _selectedActivityKind = restore.activityKind;
+    _customActivityLabelController.text = restore.customActivityLabelText;
+    _selectedInteractionModel = restore.interactionModel;
+    _selectedPace = restore.pace;
 
     // Where
-    if (draft.meetingPoint != null) {
-      _meetingPointController.text = draft.meetingPoint!;
+    if (restore.meetingPointText != null) {
+      _meetingPointController.text = restore.meetingPointText!;
     }
-    if (draft.locationDetails != null) {
-      _locationDetailsController.text = draft.locationDetails!;
+    if (restore.locationDetailsText != null) {
+      _locationDetailsController.text = restore.locationDetailsText!;
     }
-    _meetingLocationAddress = draft.meetingLocationAddress;
-    _meetingLocationPlaceId = draft.meetingLocationPlaceId;
-    if (draft.startingPointLat != null && draft.startingPointLng != null) {
-      _startingPoint = LocationCoordinate(
-        draft.startingPointLat!,
-        draft.startingPointLng!,
-      );
-    }
+    _locationState = restore.locationState;
 
     // When
-    if (draft.selectedDateMillis != null) {
-      final date = DateTime.fromMillisecondsSinceEpoch(
-        draft.selectedDateMillis!,
-      );
-      _selectedDate = date;
-      _dateController.text =
-          '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
-    }
-    if (draft.selectedStartHour != null && draft.selectedStartMinute != null) {
-      _selectedStartTime = TimeOfDay(
-        hour: draft.selectedStartHour!,
-        minute: draft.selectedStartMinute!,
-      );
-      _startTimeController.text = _formatClockTime(_selectedStartTime!);
-    }
-    _durationMinutes = draft.durationMinutes;
+    _selectedDate = restore.selectedDate;
+    _selectedStartTime = restore.selectedStartTime;
+    _dateController.text = restore.dateText;
+    _startTimeController.text = restore.startTimeText;
+    _durationMinutes = restore.durationMinutes;
+    _scheduleErrorText = restore.scheduleErrorText;
 
     // Rules
-    if (draft.minAge != null) {
-      _minAgeController.text = draft.minAge!;
+    if (restore.minAgeText != null) {
+      _minAgeController.text = restore.minAgeText!;
     }
-    if (draft.maxAge != null) {
-      _maxAgeController.text = draft.maxAge!;
+    if (restore.maxAgeText != null) {
+      _maxAgeController.text = restore.maxAgeText!;
     }
-    if (draft.maxMen != null) {
-      _maxMenController.text = draft.maxMen!;
+    if (restore.maxMenText != null) {
+      _maxMenController.text = restore.maxMenText!;
     }
-    if (draft.maxWomen != null) {
-      _maxWomenController.text = draft.maxWomen!;
+    if (restore.maxWomenText != null) {
+      _maxWomenController.text = restore.maxWomenText!;
     }
-    _selectedAdmissionPreset = _admissionPresetFromName(draft.admissionPreset);
-    _cohortCapsEnabled =
-        draft.admissionPreset == 'fixedCohortCaps' ||
-        draft.maxMen != null ||
-        draft.maxWomen != null;
-    if (draft.inviteCode != null) {
-      _inviteCodeController.text = draft.inviteCode!;
+    if (restore.inviteCodeText != null) {
+      _inviteCodeController.text = restore.inviteCodeText!;
     }
-    _dynamicPricingEnabled = draft.dynamicPricingEnabled;
-    if (draft.dynamicPricingStep != null) {
-      _dynamicPricingStepController.text = draft.dynamicPricingStep!;
+    if (restore.dynamicPricingStepText != null) {
+      _dynamicPricingStepController.text = restore.dynamicPricingStepText!;
     }
-    if (draft.dynamicPricingMax != null) {
-      _dynamicPricingMaxController.text = draft.dynamicPricingMax!;
+    if (restore.dynamicPricingMaxText != null) {
+      _dynamicPricingMaxController.text = restore.dynamicPricingMaxText!;
     }
-    _selectedCancellationPolicyId = _cancellationPolicyFromName(
-      draft.cancellationPolicy,
-    );
-    _eventSuccessDefaults = draft.eventSuccessDefaults;
+    _policyState = restore.policyState;
+    _eventSuccessDefaults = restore.eventSuccessDefaults;
   }
 
   Future<void> _deleteDraftFromPicker(EventDraft draft) {
+    final intent = _draftSideEffectState.deleteFromPickerIntent(draft);
+    return _deleteDraft(intent);
+  }
+
+  Future<void> _deleteDraft(CreateEventDraftDeleteIntent intent) {
     return CreateEventDraftController.deleteDraftMutation.run(
       ref,
       (tx) async => tx
           .get(createEventDraftControllerProvider.notifier)
-          .deleteDraft(clubId: widget.club.id, draftId: draft.id),
+          .deleteDraft(clubId: widget.club.id, draftId: intent.draftId),
     );
   }
 
   Future<void> _saveDraft() async {
-    final draft = EventDraft(
-      id: _activeDraftId ?? DateTime.now().millisecondsSinceEpoch.toString(),
+    final draftAction = _draftActionState;
+    final now = widget.now();
+    final draft = _currentDraftSnapshot.toDraft(
+      id: draftAction.draftIdForSave(now: now),
       clubId: widget.club.id,
-      savedAt: DateTime.now(),
-      distance: _trimmedTextOrNull(_distanceController),
-      capacity: _trimmedTextOrNull(_capacityController),
-      price: _trimmedTextOrNull(_priceController),
-      description: _trimmedTextOrNull(_descriptionController),
-      activityKind: _selectedActivityKind.name,
-      customActivityLabel: _customActivityLabelDraftValue,
-      interactionModel: _interactionModelDraftValue,
-      paceName: _selectedPace?.name,
-      meetingPoint: _trimmedTextOrNull(_meetingPointController),
-      locationDetails: _trimmedTextOrNull(_locationDetailsController),
-      meetingLocationAddress: _meetingLocationAddress,
-      meetingLocationPlaceId: _meetingLocationPlaceId,
-      startingPointLat: _startingPoint?.latitude,
-      startingPointLng: _startingPoint?.longitude,
-      selectedDateMillis: _selectedDate?.millisecondsSinceEpoch,
-      selectedStartHour: _selectedStartTime?.hour,
-      selectedStartMinute: _selectedStartTime?.minute,
-      durationMinutes: _durationMinutes,
-      minAge: _trimmedTextOrNull(_minAgeController),
-      maxAge: _trimmedTextOrNull(_maxAgeController),
-      maxMen: _trimmedTextOrNull(_maxMenController),
-      maxWomen: _trimmedTextOrNull(_maxWomenController),
-      admissionPreset: _draftAdmissionPresetName,
-      inviteCode: _trimmedTextOrNull(_inviteCodeController),
-      dynamicPricingEnabled: _dynamicPricingEnabled,
-      dynamicPricingStep: _trimmedTextOrNull(_dynamicPricingStepController),
-      dynamicPricingMax: _trimmedTextOrNull(_dynamicPricingMaxController),
-      cancellationPolicy: _selectedCancellationPolicyId.name,
-      eventSuccessDefaults: _eventSuccessDefaults,
+      savedAt: now,
     );
 
-    final wasUpdate = _activeDraftId != null;
     final savedDraft = await CreateEventDraftController.saveDraftMutation.run(
       ref,
       (tx) async =>
@@ -717,19 +668,11 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     _lastSavedDraftSignature = _currentDraftContentSignature;
 
     if (!mounted) return;
-    showCatchSnackBar(context, wasUpdate ? 'Draft updated' : 'Draft saved');
+    showCatchSnackBar(context, draftAction.saveSuccessMessage);
   }
 
   void _showUnsavedChangesDialog() {
-    showCatchAdaptiveDialog<bool>(
-      context: context,
-      title: 'Unsaved changes',
-      message: 'You have unsaved changes. Would you like to save a draft?',
-      actions: const [
-        CatchDialogAction(label: 'Discard', value: false),
-        CatchDialogAction(label: 'Save draft', value: true, isDefault: true),
-      ],
-    ).then((save) async {
+    showCreateEventUnsavedChangesDialog(context).then((save) async {
       if (!mounted) return;
       if (save == true) {
         await _saveDraft();
@@ -745,9 +688,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     return text.isEmpty ? null : text;
   }
 
-  List<OrderedPhotoPreview> get _eventPhotoPreviews => [
-    for (final photo in _eventPhotos) photo.preview,
-  ];
+  List<OrderedPhotoPreview> get _eventPhotoPreviews => _eventPhotos.previews;
 
   String? get _customActivityLabelDraftValue {
     if (_selectedActivityKind != ActivityKind.openActivity) return null;
@@ -759,24 +700,11 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     return _selectedInteractionModel.name;
   }
 
-  String get _draftAdmissionPresetName =>
-      _selectedAdmissionPreset == EventAdmissionPreset.openCapacity &&
-          _cohortCapsEnabled
-      ? 'fixedCohortCaps'
-      : _selectedAdmissionPreset.name;
-
   EventMeetingLocation? get _currentMeetingLocation {
-    final coordinate = _startingPoint;
-    final name = _trimmedTextOrNull(_meetingPointController);
-    if (coordinate == null || name == null) return null;
-    return EventMeetingLocation(
-      name: name,
-      address: _meetingLocationAddress,
-      placeId: _meetingLocationPlaceId,
-      latitude: coordinate.latitude,
-      longitude: coordinate.longitude,
-      notes: _trimmedTextOrNull(_locationDetailsController),
-    ).normalized();
+    return _locationState.meetingLocation(
+      meetingPoint: _meetingPointController.text,
+      notes: _locationDetailsController.text,
+    );
   }
 
   EventFormatSnapshot get _selectedEventFormat {
@@ -790,131 +718,30 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     );
   }
 
-  static String _formatClockTime(TimeOfDay time) {
-    return AppTimeFormatters.clockTime(hour: time.hour, minute: time.minute);
-  }
-
-  static EventAdmissionPreset _admissionPresetFromName(String? name) {
-    if (name == null) return EventAdmissionPreset.openCapacity;
-    if (name == 'fixedCohortCaps') {
-      return EventAdmissionPreset.openCapacity;
-    }
-    return EventAdmissionPreset.values.firstWhere(
-      (preset) => preset.name == name,
-      orElse: () => EventAdmissionPreset.openCapacity,
-    );
-  }
-
-  static EventCancellationPolicyId _cancellationPolicyFromName(String? name) {
-    if (name == null) return EventCancellationPolicyId.standard;
-    return EventCancellationPolicyId.values.firstWhere(
-      (policyId) => policyId.name == name,
-      orElse: () => EventCancellationPolicyId.standard,
-    );
-  }
-
   void _applyClubDefaults(ClubHostDefaults defaults) {
     _selectedActivityKind = defaults.primaryActivityKind;
     _selectedInteractionModel = _selectedActivityKind.defaultInteractionModel;
     final policy = defaults.eventPolicy;
-    _selectedAdmissionPreset = _admissionPresetFromDefault(
-      policy.admissionPreset,
-    );
-    _cohortCapsEnabled =
-        policy.admissionPreset == EventAdmissionDefaultPreset.fixedCohortCaps ||
-        policy.maxMen != null ||
-        policy.maxWomen != null;
-    _minAgeController.text = policy.minAge == 0 ? '' : policy.minAge.toString();
-    _maxAgeController.text = policy.maxAge == 99
-        ? ''
-        : policy.maxAge.toString();
-    _maxMenController.text = policy.maxMen?.toString() ?? '';
-    _maxWomenController.text = policy.maxWomen?.toString() ?? '';
-    _dynamicPricingEnabled = policy.dynamicPricingEnabled;
-    _dynamicPricingStepController.text = _minorUnitsText(
-      policy.dynamicPricingStepInPaise,
+    final policyForm = CreateEventPolicyDefaultsFormState.fromDefaults(
+      policy,
       currencyCode: _eventCurrencyCode,
     );
-    _dynamicPricingMaxController.text = _minorUnitsText(
-      policy.dynamicPricingMaxInPaise,
-      currencyCode: _eventCurrencyCode,
-    );
-    _selectedCancellationPolicyId = policy.cancellationPolicyId;
+    _policyState = policyForm.policyState;
+    _minAgeController.text = policyForm.minAgeText;
+    _maxAgeController.text = policyForm.maxAgeText;
+    _maxMenController.text = policyForm.maxMenText;
+    _maxWomenController.text = policyForm.maxWomenText;
+    _dynamicPricingStepController.text = policyForm.dynamicPricingStepText;
+    _dynamicPricingMaxController.text = policyForm.dynamicPricingMaxText;
     _eventSuccessDefaults = defaults.eventSuccessForFormat(
       _selectedEventFormat,
     );
   }
 
-  String? get _inviteCodeHint {
-    final code = _inviteCodeController.text.trim();
-    if (code.length <= 4) return code.isEmpty ? null : code;
-    return '${code.substring(0, 2)}...${code.substring(code.length - 2)}';
-  }
-
-  static int? _currencyControllerValueInMinorUnits(
-    TextEditingController controller, {
-    required String currencyCode,
-  }) => parseMajorCurrencyAmountToMinorUnits(
-    controller.text,
-    currencyCode: currencyCode,
-  );
-
   double _distanceKmForSelectedActivity() {
     if (!_selectedActivityKind.isDistanceBased) return 0;
     return double.parse(_distanceController.text.trim());
   }
-
-  static ActivityKind _activityKindFromName(String? name) {
-    if (name == null) return ActivityKind.socialRun;
-    return ActivityKind.values.firstWhere(
-      (activityKind) => activityKind.name == name,
-      orElse: () => ActivityKind.socialRun,
-    );
-  }
-
-  static EventInteractionModel _interactionModelFromName(
-    String? name, {
-    required EventInteractionModel fallback,
-  }) {
-    if (name == null) return fallback;
-    return EventInteractionModel.values.firstWhere(
-      (model) => model.name == name,
-      orElse: () => fallback,
-    );
-  }
-
-  static EventAdmissionPreset _admissionPresetFromDefault(
-    EventAdmissionDefaultPreset preset,
-  ) {
-    return switch (preset) {
-      EventAdmissionDefaultPreset.openCapacity =>
-        EventAdmissionPreset.openCapacity,
-      EventAdmissionDefaultPreset.inviteOnly => EventAdmissionPreset.inviteOnly,
-      EventAdmissionDefaultPreset.balancedSingles =>
-        EventAdmissionPreset.balancedSingles,
-      EventAdmissionDefaultPreset.fixedCohortCaps =>
-        EventAdmissionPreset.openCapacity,
-    };
-  }
-
-  EventAdmissionDefaultPreset _admissionDefaultPresetFromSelected() {
-    if (_selectedAdmissionPreset == EventAdmissionPreset.openCapacity &&
-        _cohortCapsEnabled) {
-      return EventAdmissionDefaultPreset.fixedCohortCaps;
-    }
-    return switch (_selectedAdmissionPreset) {
-      EventAdmissionPreset.openCapacity =>
-        EventAdmissionDefaultPreset.openCapacity,
-      EventAdmissionPreset.inviteOnly => EventAdmissionDefaultPreset.inviteOnly,
-      EventAdmissionPreset.requestToJoin =>
-        EventAdmissionDefaultPreset.openCapacity,
-      EventAdmissionPreset.balancedSingles =>
-        EventAdmissionDefaultPreset.balancedSingles,
-    };
-  }
-
-  static String _minorUnitsText(int? value, {required String currencyCode}) =>
-      minorCurrencyAmountInputText(value, currencyCode: currencyCode);
 
   @override
   Widget build(BuildContext context) {
@@ -931,22 +758,32 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
             context: AppErrorContext.event,
           )
         : null;
+    final wizardState = CreateEventWizardState.resolve(
+      club: widget.club,
+      activeSteps: _stepSpecs,
+      currentStep: _currentStep,
+      submitPending: submitMutation.isPending,
+      saveDraftPending: saveDraftMutation.isPending,
+      mutationError: mutationError,
+      createdEvent: _createdEvent,
+      inviteCode: _trimmedTextOrNull(_inviteCodeController),
+      hasUnsavedChanges: _hasUnsavedChanges,
+    );
 
-    final createdEvent = _createdEvent;
-    if (createdEvent != null) {
+    final successNavigation = wizardState.successNavigation;
+    if (successNavigation != null) {
       return CreateEventSuccessScreen(
-        club: widget.club,
-        event: createdEvent,
-        inviteCode: _trimmedTextOrNull(_inviteCodeController),
-        onManageEvent: () => context.goNamed(
-          Routes.hostAppEventManageScreen.name,
-          pathParameters: {
-            'clubId': widget.club.id,
-            'eventId': createdEvent.id,
-          },
-          extra: createdEvent,
+        club: successNavigation.club,
+        event: successNavigation.event,
+        inviteCode: successNavigation.inviteCode,
+        onManageEvent: () => _handleSuccessNavigationIntent(
+          CreateEventSuccessNavigationIntent.manageEvent,
+          successNavigation,
         ),
-        onDone: () => Navigator.of(context).pop(),
+        onDone: () => _handleSuccessNavigationIntent(
+          CreateEventSuccessNavigationIntent.backToClub,
+          successNavigation,
+        ),
       );
     }
 
@@ -956,11 +793,11 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
         child: Column(
           children: [
             CreateEventStepHeader(
-              title: formTitleForStep(_stepSpecs, _currentStep),
-              clubName: widget.club.name,
-              currentStep: _currentStep,
-              totalSteps: _stepSpecs.length,
-              onBack: _back,
+              title: wizardState.title,
+              clubName: wizardState.club.name,
+              currentStep: wizardState.currentStep,
+              totalSteps: wizardState.totalSteps,
+              onBack: () => _handleBackIntent(wizardState.backIntent),
             ),
             gapH4,
             Expanded(
@@ -1012,7 +849,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                     autovalidateMode: widget.formAutovalidateMode,
                     meetingPointController: _meetingPointController,
                     locationDetailsController: _locationDetailsController,
-                    startingPoint: _startingPoint,
+                    startingPoint: _locationState.startingPoint,
                     onMeetingPointChanged: (_) => setState(() {}),
                     onPickLocation: _pickLocation,
                   ),
@@ -1042,25 +879,25 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                     maxAgeController: _maxAgeController,
                     maxMenController: _maxMenController,
                     maxWomenController: _maxWomenController,
-                    admissionPreset: _selectedAdmissionPreset,
+                    admissionPreset: _policyState.admissionPreset,
                     onAdmissionPresetChanged: (preset) => setState(() {
-                      _selectedAdmissionPreset = preset;
-                      if (preset != EventAdmissionPreset.balancedSingles) {
-                        _dynamicPricingEnabled = false;
-                      }
-                      if (preset != EventAdmissionPreset.openCapacity) {
-                        _cohortCapsEnabled = false;
-                      }
+                      _policyState = _policyState.selectAdmissionPreset(preset);
                     }),
-                    cohortCapsEnabled: _cohortCapsEnabled,
-                    onCohortCapsEnabledChanged: (enabled) =>
-                        setState(() => _cohortCapsEnabled = enabled),
-                    dynamicPricingEnabled: _dynamicPricingEnabled,
-                    onDynamicPricingChanged: (enabled) =>
-                        setState(() => _dynamicPricingEnabled = enabled),
-                    cancellationPolicyId: _selectedCancellationPolicyId,
+                    cohortCapsEnabled: _policyState.cohortCapsEnabled,
+                    onCohortCapsEnabledChanged: (enabled) => setState(() {
+                      _policyState = _policyState.setCohortCapsEnabled(enabled);
+                    }),
+                    dynamicPricingEnabled: _policyState.dynamicPricingEnabled,
+                    onDynamicPricingChanged: (enabled) => setState(() {
+                      _policyState = _policyState.setDynamicPricingEnabled(
+                        enabled,
+                      );
+                    }),
+                    cancellationPolicyId: _policyState.cancellationPolicyId,
                     onCancellationPolicyChanged: (policyId) => setState(
-                      () => _selectedCancellationPolicyId = policyId,
+                      () => _policyState = _policyState.setCancellationPolicy(
+                        policyId,
+                      ),
                     ),
                   ),
                   EventSuccessStep(
@@ -1074,76 +911,20 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                 ],
               ),
             ),
-            if (mutationError != null) CatchErrorBanner(message: mutationError),
-            _buildStepperFooter(
-              isLastStep: _currentStep == _stepSpecs.length - 1,
-              isLoading:
-                  submitMutation.isPending || saveDraftMutation.isPending,
-              onNext: _next,
-              onSaveDraft: _saveDraft,
+            if (wizardState.mutationError != null)
+              CatchErrorBanner(message: wizardState.mutationError!),
+            StepperFooter(
+              isLastStep: wizardState.isLastStep,
+              isLoading: wizardState.isLoading,
+              primaryLabel: wizardState.primaryActionLabel,
+              onPrimary: () => _handlePrimaryIntent(wizardState.primaryIntent),
+              onSaveDraft: wizardState.saveDraftIntent == null
+                  ? null
+                  : () => _handleSaveDraftIntent(wizardState.saveDraftIntent!),
             ),
           ],
         ),
       ),
     );
   }
-
-  Widget _buildStepperFooter({
-    required bool isLastStep,
-    required bool isLoading,
-    required VoidCallback onNext,
-    required VoidCallback? onSaveDraft,
-  }) {
-    final t = CatchTokens.of(context);
-    return CatchBottomDock(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s4,
-        CatchSpacing.s3,
-        CatchSpacing.s4,
-        CatchSpacing.s3,
-      ),
-      child: Row(
-        children: [
-          if (onSaveDraft != null) ...[
-            Expanded(
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: CatchButton(
-                  label: 'Save Draft',
-                  onPressed: isLoading ? null : onSaveDraft,
-                  variant: CatchButtonVariant.ghost,
-                  size: CatchButtonSize.lg,
-                  icon: Icon(CatchIcons.saveOutlined),
-                  foregroundColor: t.primary,
-                ),
-              ),
-            ),
-            const SizedBox(width: CatchSpacing.s3),
-          ],
-          Expanded(
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: CatchButton(
-                label: isLastStep ? 'Schedule event' : 'Next',
-                onPressed: onNext,
-                isLoading: isLoading,
-                fullWidth: true,
-                icon: isLastStep ? null : Icon(CatchIcons.arrowForwardRounded),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-final class _PickedEventPhotoDraft {
-  const _PickedEventPhotoDraft(this.id, this.photo);
-
-  final int id;
-  final PickedEventPhoto photo;
-
-  OrderedPhotoPreview get preview =>
-      OrderedPhotoPreview(id: 'picked_event_$id', bytes: photo.bytes);
 }

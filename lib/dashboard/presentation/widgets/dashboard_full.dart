@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/clubs/clubs.dart' show ClubAvatarRail;
 import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
-import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_avatar_rail.dart';
+import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -11,24 +11,24 @@ import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/dashboard/data/dashboard_recommendations_repository.dart';
+import 'package:catch_dating_app/dashboard/presentation/dashboard_event_focus_controller.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
-import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
-import 'package:catch_dating_app/dashboard/presentation/dashboard_stride_actions.dart';
+import 'package:catch_dating_app/dashboard/presentation/dashboard_stride_actions_controller.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_section_state_card.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_sliver_header.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_rail.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/quick_actions.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/recommendations.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/stride_card.dart';
+import 'package:catch_dating_app/dashboard/shared/quick_actions.dart';
 import 'package:catch_dating_app/event_success/event_success_companion_launcher.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/data/event_calendar_links.dart';
-import 'package:catch_dating_app/events/presentation/event_check_in_celebration_screen.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_location_links.dart';
+import 'package:catch_dating_app/events/shared/event_check_in_celebration_screen.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
-import 'package:catch_dating_app/reviews/presentation/write_review_sheet.dart';
+import 'package:catch_dating_app/reviews/shared/write_review_sheet.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
@@ -130,7 +130,7 @@ class _DashboardFullSliverBodyState
     );
     final clubNames = clubNamesAsync.asData?.value;
     final checkInMutation = ref.watch(
-      EventBookingController.selfCheckInMutation,
+      DashboardEventFocusController.selfCheckInMutation,
     );
 
     return SliverToBoxAdapter(
@@ -156,7 +156,7 @@ class _DashboardFullSliverBodyState
                         ? (checkInMutation as MutationError).error
                         : null,
                   ),
-                  actions: _buildEventFocusActions(context, ref),
+                  actions: _buildEventFocusActions(context),
                 ),
               DashboardStrideSection(
                 section: widget.viewModel.weeklyActivitySection,
@@ -173,7 +173,6 @@ class _DashboardFullSliverBodyState
               QuickActions(actions: _buildQuickActions(context)),
               if (widget.followedClubIds.isNotEmpty) _buildFollowedClubsRail(),
               ..._buildRecommendedEventsSection(
-                ref: ref,
                 recommendationsSection: widget.viewModel.recommendationsSection,
               ),
             ],
@@ -209,19 +208,16 @@ class _DashboardFullSliverBodyState
         : const SizedBox.shrink();
   }
 
-  EventFocusActions _buildEventFocusActions(
-    BuildContext context,
-    WidgetRef ref,
-  ) {
+  EventFocusActions _buildEventFocusActions(BuildContext context) {
     return EventFocusActions(
       onViewEvent: (event) => _openEvent(context, event),
-      onCheckIn: (event) => _checkIn(context, ref, event),
+      onCheckIn: (event) => _checkIn(context, event),
       onOpenSwipe: (event) => _openSwipe(context, event),
       onWriteReview: (event) => _writeReview(context, event),
-      onOpenDirections: (event) => _openDirections(ref, event),
-      onAddToCalendar: (event) => _addToCalendar(ref, event),
+      onOpenDirections: _openDirections,
+      onAddToCalendar: _addToCalendar,
       onResetCheckInError: () =>
-          EventBookingController.selfCheckInMutation.reset(ref),
+          DashboardEventFocusController(ref: ref).resetSelfCheckInError(),
     );
   }
 
@@ -240,7 +236,7 @@ class _DashboardFullSliverBodyState
     );
   }
 
-  void _openDirections(WidgetRef ref, Event event) {
+  void _openDirections(Event event) {
     unawaited(
       ref
           .read(externalLinkControllerProvider)
@@ -248,7 +244,7 @@ class _DashboardFullSliverBodyState
     );
   }
 
-  void _addToCalendar(WidgetRef ref, Event event) {
+  void _addToCalendar(Event event) {
     unawaited(ref.read(eventCalendarControllerProvider).addToCalendar(event));
   }
 
@@ -268,13 +264,12 @@ class _DashboardFullSliverBodyState
     );
   }
 
-  void _checkIn(BuildContext context, WidgetRef ref, Event event) {
+  void _checkIn(BuildContext context, Event event) {
+    final controller = DashboardEventFocusController(ref: ref);
     unawaited(
-      EventBookingController.selfCheckInMutation
+      DashboardEventFocusController.selfCheckInMutation
           .run(ref, (tx) async {
-            await tx
-                .get(eventBookingControllerProvider.notifier)
-                .selfCheckIn(eventId: event.id);
+            await controller.selfCheckIn(tx, event);
             if (!context.mounted) return;
             final launchResult = await launchEventSuccessCompanionIfAvailable(
               context: context,
@@ -342,7 +337,6 @@ class _DashboardFullSliverBodyState
   }
 
   List<Widget> _buildRecommendedEventsSection({
-    required WidgetRef ref,
     required DashboardSectionModel<List<DashboardEventRecommendation>>
     recommendationsSection,
   }) {

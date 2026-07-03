@@ -39,7 +39,7 @@ class SwipeCandidateRepository {
         // 1. Get the event to find attendees.
         final event = await _eventRepository.fetchEvent(eventId);
         if (event == null) return [];
-        if (!hasOpenSwipeWindow(event)) return [];
+        if (!hasOpenSwipeWindow(event, now: DateTime.now())) return [];
 
         final attendedParticipantIds = await _fetchAttendedParticipantIds(
           eventId: event.id,

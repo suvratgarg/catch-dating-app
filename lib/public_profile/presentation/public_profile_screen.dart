@@ -2,10 +2,10 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
-import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
@@ -13,8 +13,9 @@ import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_controller.dart';
-import 'package:catch_dating_app/swipes/presentation/profile_surface.dart';
-import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/public_profile/presentation/public_profile_screen_state.dart';
+import 'package:catch_dating_app/public_profile/presentation/public_profile_screen_view_model.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,60 +32,62 @@ class PublicProfileScreen extends ConsumerWidget {
   final PublicProfile? initialProfile;
   final String? sharedRunTitle;
 
-  Future<void> _confirmBlock({
-    required BuildContext context,
-    required WidgetRef ref,
-    required PublicProfile profile,
-  }) async {
-    final confirmed = await showBlockUserDialog(
-      context: context,
-      name: profile.name,
-    );
-    if (confirmed != true) return;
-    if (!context.mounted) return;
-
-    await PublicProfileController.blockUserMutation.run(ref, (tx) async {
-      await tx
-          .get(publicProfileControllerProvider.notifier)
-          .blockUser(targetUserId: profile.uid);
-    });
-  }
-
-  Future<void> _report({
-    required BuildContext context,
-    required WidgetRef ref,
-    required PublicProfile profile,
-  }) async {
-    final reason = await showModalBottomSheet<String>(
-      context: context,
-      useSafeArea: true,
-      builder: (context) => SafeArea(
-        child: PublicProfileReportSheet(
-          profileName: profile.name,
-          onReasonSelected: (reason) => Navigator.of(context).pop(reason),
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final screenState = ref.watch(
+      publicProfileScreenStateProvider(
+        PublicProfileScreenStateArgs(
+          uid: uid,
+          initialProfile: initialProfile,
+          sharedRunTitle: sharedRunTitle,
         ),
       ),
     );
-    if (reason == null) return;
-    if (!context.mounted) return;
+    final profile = screenState.profile;
 
-    await PublicProfileController.reportUserMutation.run(ref, (tx) async {
-      await tx
-          .get(publicProfileControllerProvider.notifier)
-          .reportUser(targetUserId: profile.uid, reasonCode: reason);
-    });
-  }
+    Future<void> confirmBlock(PublicProfile profile) async {
+      final confirmed = await showBlockUserDialog(
+        context: context,
+        name: profile.name,
+      );
+      if (confirmed != true) return;
+      if (!context.mounted) return;
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final profileAsync = ref.watch(watchPublicProfileProvider(uid));
-    final profile = profileAsync.asData?.value ?? initialProfile;
-    final blockMutation = ref.watch(PublicProfileController.blockUserMutation);
-    final reportMutation = ref.watch(
-      PublicProfileController.reportUserMutation,
-    );
-    final currentUser = ref.watch(watchUserProfileProvider).asData?.value;
-    final submitting = blockMutation.isPending || reportMutation.isPending;
+      try {
+        await PublicProfileController.blockUserMutation.run(ref, (tx) async {
+          await tx
+              .get(publicProfileControllerProvider.notifier)
+              .blockUser(targetUserId: profile.uid);
+        });
+      } catch (_) {
+        return;
+      }
+    }
+
+    Future<void> report(PublicProfile profile) async {
+      final reason = await showModalBottomSheet<String>(
+        context: context,
+        useSafeArea: true,
+        builder: (context) => SafeArea(
+          child: PublicProfileReportSheet(
+            profileName: profile.name,
+            onReasonSelected: (reason) => Navigator.of(context).pop(reason),
+          ),
+        ),
+      );
+      if (reason == null) return;
+      if (!context.mounted) return;
+
+      try {
+        await PublicProfileController.reportUserMutation.run(ref, (tx) async {
+          await tx
+              .get(publicProfileControllerProvider.notifier)
+              .reportUser(targetUserId: profile.uid, reasonCode: reason);
+        });
+      } catch (_) {
+        return;
+      }
+    }
 
     ref.listen(PublicProfileController.blockUserMutation, (previous, current) {
       if (previous?.isPending == true && current.isSuccess) {
@@ -107,21 +110,17 @@ class PublicProfileScreen extends ConsumerWidget {
         mutation: PublicProfileController.reportUserMutation,
         child: Scaffold(
           appBar: CatchTopBar(
-            title: profile?.name ?? 'Profile',
+            title: screenState.title,
             actions: [
-              if (profile != null)
+              if (screenState.showSafetyActions)
                 CatchTopBarMenuAction<String>(
                   tooltip: 'Profile actions',
-                  enabled: !submitting,
+                  enabled: screenState.enableSafetyActions,
                   onSelected: (value) {
                     if (value == 'report') {
-                      _report(context: context, ref: ref, profile: profile);
+                      report(profile!);
                     } else if (value == 'block') {
-                      _confirmBlock(
-                        context: context,
-                        ref: ref,
-                        profile: profile,
-                      );
+                      confirmBlock(profile!);
                     }
                   },
                   items: [
@@ -140,39 +139,55 @@ class PublicProfileScreen extends ConsumerWidget {
                 ),
             ],
           ),
-          body: CatchAsyncValueView<PublicProfile?>(
-            value: profileAsync,
-            errorContext: AppErrorContext.profile,
-            onRetry: () => ref.invalidate(watchPublicProfileProvider(uid)),
-            loading: () => profile == null
-                ? const ProfileSurfaceSkeleton(bottomPadding: CatchSpacing.s8)
-                : PublicProfileBody(
-                    profile: profile,
-                    submitting: submitting,
-                    viewerProfile: currentUser,
-                    sharedRunTitle: sharedRunTitle,
-                  ),
-            data: (loadedProfile) {
-              if (loadedProfile == null) {
-                return Center(
-                  child: CatchEmptyState(
-                    icon: CatchIcons.personOffOutlined,
-                    title: 'Profile unavailable',
-                    message: 'This profile is no longer available on Catch.',
-                  ),
-                );
-              }
-              return PublicProfileBody(
-                profile: loadedProfile,
-                submitting: submitting,
-                viewerProfile: currentUser,
-                sharedRunTitle: sharedRunTitle,
-              );
-            },
+          body: PublicProfileScreenBody(
+            state: screenState,
+            onRetry:
+                screenState.retryIntent ==
+                    PublicProfileRetryIntent.reloadProfile
+                ? () => ref.invalidate(
+                    watchPublicProfileProvider(screenState.uid),
+                  )
+                : null,
           ),
         ),
       ),
     );
+  }
+}
+
+class PublicProfileScreenBody extends StatelessWidget {
+  const PublicProfileScreenBody({super.key, required this.state, this.onRetry});
+
+  final PublicProfileScreenState state;
+  final VoidCallback? onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    switch (state.status) {
+      case PublicProfileRouteStatus.loading:
+        return const ProfileSurfaceSkeleton(bottomPadding: CatchSpacing.s8);
+      case PublicProfileRouteStatus.error:
+        return CatchErrorState.fromError(
+          state.error!,
+          context: AppErrorContext.profile,
+          onRetry: onRetry,
+        );
+      case PublicProfileRouteStatus.unavailable:
+        return Center(
+          child: CatchEmptyState(
+            icon: CatchIcons.personOffOutlined,
+            title: 'Profile unavailable',
+            message: 'This profile is no longer available on Catch.',
+          ),
+        );
+      case PublicProfileRouteStatus.ready:
+        return PublicProfileBody(
+          profile: state.profile!,
+          submitting: state.isSubmitting,
+          viewerProfile: state.viewerProfileForSurface,
+          sharedRunTitle: state.sharedRunTitle,
+        );
+    }
   }
 }
 

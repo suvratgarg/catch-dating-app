@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
-import 'package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart';
+import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:flutter/material.dart';
 
 class CreateEventPhotoPicker extends StatelessWidget {

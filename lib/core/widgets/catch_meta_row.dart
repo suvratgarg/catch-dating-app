@@ -35,8 +35,7 @@ class CatchMetaDotRow extends StatelessWidget {
       children: [
         Expanded(
           child: ClipRect(
-            child: _buildMetaEntryFlow(
-              context,
+            child: CatchMetaEntryFlow(
               entries: entries,
               color: inkColor,
               iconSize: iconSize,
@@ -46,10 +45,9 @@ class CatchMetaDotRow extends StatelessWidget {
         ),
         if (trailing != null) ...[
           gapW8,
-          _buildEntry(
-            context,
-            trailing!,
-            inkColor,
+          CatchMetaEntryView(
+            entry: trailing!,
+            color: inkColor,
             iconSize: iconSize,
             maxLines: maxLines,
             isStrong: true,
@@ -60,75 +58,99 @@ class CatchMetaDotRow extends StatelessWidget {
   }
 }
 
-Widget _buildMetaEntryFlow(
-  BuildContext context, {
-  required List<CatchMetaEntry> entries,
-  required Color color,
-  required double iconSize,
-  required int maxLines,
-}) {
-  final children = <Widget>[];
-  for (var i = 0; i < entries.length; i++) {
-    if (i > 0) {
+class CatchMetaEntryFlow extends StatelessWidget {
+  const CatchMetaEntryFlow({
+    super.key,
+    required this.entries,
+    this.color,
+    this.iconSize = CatchIcon.sm,
+    this.maxLines = 1,
+  });
+
+  final List<CatchMetaEntry> entries;
+  final Color? color;
+  final double iconSize;
+  final int maxLines;
+
+  @override
+  Widget build(BuildContext context) {
+    final inkColor = color ?? CatchTokens.of(context).ink2;
+    final children = <Widget>[];
+    for (var i = 0; i < entries.length; i++) {
+      if (i > 0) {
+        children.add(
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: CatchSpacing.micro6,
+            ),
+            child: Text(
+              '·',
+              style: CatchTextStyles.numericMeta(context, color: inkColor),
+            ),
+          ),
+        );
+      }
       children.add(
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.micro6),
-          child: Text(
-            '·',
-            style: CatchTextStyles.numericMeta(context, color: color),
+        Flexible(
+          child: CatchMetaEntryView(
+            entry: entries[i],
+            color: inkColor,
+            iconSize: iconSize,
+            maxLines: maxLines,
           ),
         ),
       );
     }
-    children.add(
-      Flexible(
-        child: _buildEntry(
-          context,
-          entries[i],
-          color,
-          iconSize: iconSize,
-          maxLines: maxLines,
-        ),
-      ),
-    );
+    return Row(mainAxisSize: MainAxisSize.min, children: children);
   }
-  return Row(mainAxisSize: MainAxisSize.min, children: children);
 }
 
-Widget _buildEntry(
-  BuildContext context,
-  CatchMetaEntry entry,
-  Color inkColor, {
-  required double iconSize,
-  required int maxLines,
-  bool isStrong = false,
-}) {
-  final iconColor = entry.iconColor ?? inkColor;
-  final textColor = entry.color ?? inkColor;
-  final style = isStrong
-      ? CatchTextStyles.numericMeta(
-          context,
-          color: textColor,
-        ).copyWith(fontWeight: FontWeight.w700)
-      : CatchTextStyles.numericMeta(context, color: textColor);
+class CatchMetaEntryView extends StatelessWidget {
+  const CatchMetaEntryView({
+    super.key,
+    required this.entry,
+    this.color,
+    this.iconSize = CatchIcon.sm,
+    this.maxLines = 1,
+    this.isStrong = false,
+  });
 
-  return Row(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      if (entry.icon != null) ...[
-        Icon(entry.icon, size: iconSize, color: iconColor),
-        gapW4,
-      ],
-      Flexible(
-        child: Text(
-          entry.label,
-          maxLines: maxLines,
-          overflow: TextOverflow.ellipsis,
-          style: style,
+  final CatchMetaEntry entry;
+  final Color? color;
+  final double iconSize;
+  final int maxLines;
+  final bool isStrong;
+
+  @override
+  Widget build(BuildContext context) {
+    final inkColor = color ?? CatchTokens.of(context).ink2;
+    final iconColor = entry.iconColor ?? inkColor;
+    final textColor = entry.color ?? inkColor;
+    final style = isStrong
+        ? CatchTextStyles.numericMeta(
+            context,
+            color: textColor,
+          ).copyWith(fontWeight: FontWeight.w700)
+        : CatchTextStyles.numericMeta(context, color: textColor);
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (entry.icon != null) ...[
+          Icon(entry.icon, size: iconSize, color: iconColor),
+          gapW4,
+        ],
+        Flexible(
+          child: Text(
+            entry.label,
+            maxLines: maxLines,
+            overflow: TextOverflow.ellipsis,
+            style: style,
+          ),
         ),
-      ),
-    ],
-  );
+      ],
+    );
+  }
 }
 
 class CatchMetaEntry {

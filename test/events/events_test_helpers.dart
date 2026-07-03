@@ -324,6 +324,7 @@ class FakeEventRepository extends Fake implements EventRepository {
   Object? updateEventError;
   Object? joinWaitlistError;
   Object? leaveWaitlistError;
+  Object? recordInviteOpenError;
   Object? createWaitlistOfferError;
   Object? acceptWaitlistOfferError;
   Object? declineWaitlistOfferError;
@@ -510,6 +511,9 @@ class FakeEventRepository extends Fake implements EventRepository {
     required String eventId,
     required String inviteLinkId,
   }) async {
+    if (recordInviteOpenError != null) {
+      throw recordInviteOpenError!;
+    }
     recordedInviteOpenEventId = eventId;
     recordedInviteOpenLinkId = inviteLinkId;
     return RecordEventInviteLinkOpenCallableResponse(
@@ -742,11 +746,13 @@ class ProcessPaymentCall {
 class FakePublicProfileRepository extends Fake
     implements PublicProfileRepository {
   List<String>? lastRequestedUids;
+  final List<List<String>> fetchPublicProfilesCalls = [];
   List<PublicProfile> profiles = const [];
 
   @override
   Future<List<PublicProfile>> fetchPublicProfiles(List<String> uids) async {
     lastRequestedUids = uids;
+    fetchPublicProfilesCalls.add(List.unmodifiable(uids));
     return profiles;
   }
 }
@@ -756,11 +762,13 @@ class FakeSavedEventRepository extends Fake implements SavedEventRepository {
   String? savedEventId;
   String? unsavedUid;
   String? unsavedEventId;
+  bool throwOnSave = false;
   final Map<String, List<Event>> savedEventDetails = {};
   final Map<String, List<saved_domain.SavedEvent>> savedEvents = {};
 
   @override
   Future<void> saveEvent({required String uid, required String eventId}) async {
+    if (throwOnSave) throw StateError('save failed');
     savedUid = uid;
     savedEventId = eventId;
   }

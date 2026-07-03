@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
@@ -21,7 +21,8 @@ class HostAppShell extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final uid = ref.watch(uidProvider).value ?? '';
+    final uidAsync = ref.watch(uidProvider);
+    final uid = uidAsync.asData?.value ?? '';
     final isAuthenticated = uid.isNotEmpty;
     final unreadCount = isAuthenticated
         ? ref.watch(totalUnreadCountProvider(uid))

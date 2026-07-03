@@ -28,9 +28,7 @@ _Club _$ClubFromJson(Map<String, dynamic> json) => _Club(
           ?.map((e) => ClubHostProfile.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const [],
-  createdAt: const TimestampConverter().fromJson(
-    json['createdAt'] as Timestamp,
-  ),
+  createdAt: const TimestampConverter().fromJson(json['createdAt']),
   imageUrl: json['imageUrl'] as String?,
   profileImageUrl: json['profileImageUrl'] as String?,
   clubPhotos:
@@ -47,10 +45,7 @@ _Club _$ClubFromJson(Map<String, dynamic> json) => _Club(
   memberCount: (json['memberCount'] as num?)?.toInt() ?? 0,
   rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
   reviewCount: (json['reviewCount'] as num?)?.toInt() ?? 0,
-  nextEventAt: _$JsonConverterFromJson<Timestamp, DateTime>(
-    json['nextEventAt'],
-    const TimestampConverter().fromJson,
-  ),
+  nextEventAt: const NullableTimestampConverter().fromJson(json['nextEventAt']),
   nextEventLabel: json['nextEventLabel'] as String?,
   instagramHandle: json['instagramHandle'] as String?,
   phoneNumber: json['phoneNumber'] as String?,
@@ -59,10 +54,7 @@ _Club _$ClubFromJson(Map<String, dynamic> json) => _Club(
       $enumDecodeNullable(_$ClubLifecycleStatusEnumMap, json['status']) ??
       ClubLifecycleStatus.active,
   archived: json['archived'] as bool? ?? false,
-  archivedAt: _$JsonConverterFromJson<Timestamp, DateTime>(
-    json['archivedAt'],
-    const TimestampConverter().fromJson,
-  ),
+  archivedAt: const NullableTimestampConverter().fromJson(json['archivedAt']),
   archiveReason: json['archiveReason'] as String?,
   appVisibility:
       $enumDecodeNullable(_$ClubAppVisibilityEnumMap, json['appVisibility']) ??
@@ -94,9 +86,8 @@ Map<String, dynamic> _$ClubToJson(_Club instance) => <String, dynamic>{
   'memberCount': instance.memberCount,
   'rating': instance.rating,
   'reviewCount': instance.reviewCount,
-  'nextEventAt': _$JsonConverterToJson<Timestamp, DateTime>(
+  'nextEventAt': const NullableTimestampConverter().toJson(
     instance.nextEventAt,
-    const TimestampConverter().toJson,
   ),
   'nextEventLabel': instance.nextEventLabel,
   'instagramHandle': instance.instagramHandle,
@@ -104,19 +95,11 @@ Map<String, dynamic> _$ClubToJson(_Club instance) => <String, dynamic>{
   'email': instance.email,
   'status': _$ClubLifecycleStatusEnumMap[instance.status]!,
   'archived': instance.archived,
-  'archivedAt': _$JsonConverterToJson<Timestamp, DateTime>(
-    instance.archivedAt,
-    const TimestampConverter().toJson,
-  ),
+  'archivedAt': const NullableTimestampConverter().toJson(instance.archivedAt),
   'archiveReason': instance.archiveReason,
   'appVisibility': _$ClubAppVisibilityEnumMap[instance.appVisibility]!,
   'hostDefaults': instance.hostDefaults.toJson(),
 };
-
-Value? _$JsonConverterFromJson<Json, Value>(
-  Object? json,
-  Value? Function(Json json) fromJson,
-) => json == null ? null : fromJson(json as Json);
 
 const _$ClubLifecycleStatusEnumMap = {
   ClubLifecycleStatus.active: 'active',
@@ -127,11 +110,6 @@ const _$ClubAppVisibilityEnumMap = {
   ClubAppVisibility.discoverable: 'discoverable',
   ClubAppVisibility.hidden: 'hidden',
 };
-
-Json? _$JsonConverterToJson<Json, Value>(
-  Value? value,
-  Json? Function(Value value) toJson,
-) => value == null ? null : toJson(value);
 
 _ClubHostProfile _$ClubHostProfileFromJson(Map<String, dynamic> json) =>
     _ClubHostProfile(

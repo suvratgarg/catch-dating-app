@@ -6,7 +6,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/labs/design_fixtures/profile_surface_fixtures.dart';
 import 'package:catch_dating_app/user_analytics/data/user_analytics_repository.dart';
-import 'package:catch_dating_app/user_analytics/presentation/user_analytics_panel.dart';
+import 'package:catch_dating_app/user_analytics/shared/user_analytics_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -56,6 +56,289 @@ Widget userAnalyticsPanelStates(BuildContext context) {
             repository: _ErrorUserAnalyticsRepository(),
           ),
         ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Report states',
+  type: UserAnalyticsReportView,
+  path: '[P1 product surfaces]/User analytics',
+)
+Widget userAnalyticsReportViewStates(BuildContext context) {
+  return _UserAnalyticsCatalog(
+    title: 'UserAnalyticsReportView',
+    contractId: 'component.profile.user_analytics.report',
+    children: [
+      _StateCard(
+        label: 'loaded',
+        child: UserAnalyticsReportView(
+          report: ProfileSurfaceFixtures.analyticsReport,
+        ),
+      ),
+      _StateCard(
+        label: 'empty',
+        child: UserAnalyticsReportView(
+          report: ProfileSurfaceFixtures.emptyAnalyticsReport,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Empty state',
+  type: UserAnalyticsEmptyState,
+  path: '[P1 product surfaces]/User analytics',
+)
+Widget userAnalyticsEmptyState(BuildContext context) {
+  return const _UserAnalyticsCatalog(
+    title: 'UserAnalyticsEmptyState',
+    contractId: 'component.profile.user_analytics.empty',
+    children: [
+      _StateCard(label: 'no measurable data', child: UserAnalyticsEmptyState()),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Report skeleton',
+  type: UserAnalyticsReportSkeleton,
+  path: '[P1 product surfaces]/User analytics',
+)
+Widget userAnalyticsReportSkeleton(BuildContext context) {
+  return const _UserAnalyticsCatalog(
+    title: 'UserAnalyticsReportSkeleton',
+    contractId: 'component.profile.user_analytics.skeleton',
+    children: [
+      _StateCard(label: 'loading report', child: UserAnalyticsReportSkeleton()),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Metric grid states',
+  type: UserAnalyticsMetricGrid,
+  path: '[P1 product surfaces]/User analytics',
+)
+Widget userAnalyticsMetricGridStates(BuildContext context) {
+  return _UserAnalyticsCatalog(
+    title: 'UserAnalyticsMetricGrid',
+    contractId: 'component.profile.user_analytics.metric_grid',
+    children: [
+      _StateCard(
+        label: 'summary cards',
+        child: UserAnalyticsMetricGrid(
+          metrics: ProfileSurfaceFixtures.analyticsReport.summaryCards,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Metric tile states',
+  type: UserAnalyticsMetricTile,
+  path: '[P1 product surfaces]/User analytics',
+)
+Widget userAnalyticsMetricTileStates(BuildContext context) {
+  return _UserAnalyticsCatalog(
+    title: 'UserAnalyticsMetricTile',
+    contractId: 'component.profile.user_analytics.metric_tile',
+    children: [
+      _StateCard(
+        label: 'ready',
+        child: UserAnalyticsMetricTile(
+          metric: ProfileSurfaceFixtures.analyticsReport.summaryCards.first,
+        ),
+      ),
+      _StateCard(
+        label: 'partial',
+        child: UserAnalyticsMetricTile(
+          metric: ProfileSurfaceFixtures.analyticsReport.summaryCards.last,
+        ),
+      ),
+      _StateCard(
+        label: 'missing',
+        child: UserAnalyticsMetricTile(
+          metric:
+              ProfileSurfaceFixtures.emptyAnalyticsReport.summaryCards.first,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Trend panel states',
+  type: UserAnalyticsTrendPanel,
+  path: '[P1 product surfaces]/User analytics',
+)
+Widget userAnalyticsTrendPanelStates(BuildContext context) {
+  return _UserAnalyticsCatalog(
+    title: 'UserAnalyticsTrendPanel',
+    contractId: 'component.profile.user_analytics.trend_panel',
+    children: [
+      _StateCard(
+        label: 'trend',
+        child: UserAnalyticsTrendPanel(
+          points: ProfileSurfaceFixtures.analyticsReport.trend,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Bar states',
+  type: UserAnalyticsBar,
+  path: '[P1 product surfaces]/User analytics',
+)
+Widget userAnalyticsBarStates(BuildContext context) {
+  return const _UserAnalyticsCatalog(
+    title: 'UserAnalyticsBar',
+    contractId: 'component.profile.user_analytics.bar',
+    children: [
+      _StateCard(
+        label: 'range',
+        child: SizedBox(
+          height: 96,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Expanded(child: UserAnalyticsBar(value: 0, maxValue: 12)),
+              SizedBox(width: CatchSpacing.micro6),
+              Expanded(child: UserAnalyticsBar(value: 3, maxValue: 12)),
+              SizedBox(width: CatchSpacing.micro6),
+              Expanded(child: UserAnalyticsBar(value: 8, maxValue: 12)),
+              SizedBox(width: CatchSpacing.micro6),
+              Expanded(child: UserAnalyticsBar(value: 12, maxValue: 12)),
+            ],
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Tips panel states',
+  type: UserAnalyticsTipsPanel,
+  path: '[P1 product surfaces]/User analytics',
+)
+Widget userAnalyticsTipsPanelStates(BuildContext context) {
+  return _UserAnalyticsCatalog(
+    title: 'UserAnalyticsTipsPanel',
+    contractId: 'component.profile.user_analytics.tips_panel',
+    children: [
+      _StateCard(
+        label: 'coaching tips',
+        child: UserAnalyticsTipsPanel(
+          tips: ProfileSurfaceFixtures.analyticsReport.coachingTipRefs,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Tip row states',
+  type: UserAnalyticsTipRow,
+  path: '[P1 product surfaces]/User analytics',
+)
+Widget userAnalyticsTipRowStates(BuildContext context) {
+  return _UserAnalyticsCatalog(
+    title: 'UserAnalyticsTipRow',
+    contractId: 'component.profile.user_analytics.tip_row',
+    children: [
+      _StateCard(
+        label: 'prompt refresh',
+        child: UserAnalyticsTipRow(
+          tip: ProfileSurfaceFixtures.analyticsReport.coachingTipRefs.first,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Data quality panel states',
+  type: UserAnalyticsDataQualityPanel,
+  path: '[P1 product surfaces]/User analytics',
+)
+Widget userAnalyticsDataQualityPanelStates(BuildContext context) {
+  return _UserAnalyticsCatalog(
+    title: 'UserAnalyticsDataQualityPanel',
+    contractId: 'component.profile.user_analytics.data_quality_panel',
+    children: [
+      _StateCard(
+        label: 'quality rows',
+        child: UserAnalyticsDataQualityPanel(
+          rows: ProfileSurfaceFixtures.analyticsReport.dataQuality,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Data quality row states',
+  type: UserAnalyticsDataQualityRow,
+  path: '[P1 product surfaces]/User analytics',
+)
+Widget userAnalyticsDataQualityRowStates(BuildContext context) {
+  final rows = ProfileSurfaceFixtures.analyticsReport.dataQuality;
+  return _UserAnalyticsCatalog(
+    title: 'UserAnalyticsDataQualityRow',
+    contractId: 'component.profile.user_analytics.data_quality_row',
+    children: [
+      _StateCard(
+        label: 'ready',
+        child: UserAnalyticsDataQualityRow(row: rows[0]),
+      ),
+      _StateCard(
+        label: 'partial',
+        child: UserAnalyticsDataQualityRow(row: rows[1]),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Section states',
+  type: UserAnalyticsSection,
+  path: '[P1 product surfaces]/User analytics',
+)
+Widget userAnalyticsSectionStates(BuildContext context) {
+  return const _UserAnalyticsCatalog(
+    title: 'UserAnalyticsSection',
+    contractId: 'component.profile.user_analytics.section',
+    children: [
+      _StateCard(
+        label: 'labeled child',
+        child: UserAnalyticsSection(
+          label: 'Suggestions',
+          child: UserAnalyticsInlineStat(label: 'Caught you', value: '38'),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Inline stat states',
+  type: UserAnalyticsInlineStat,
+  path: '[P1 product surfaces]/User analytics',
+)
+Widget userAnalyticsInlineStatStates(BuildContext context) {
+  return const _UserAnalyticsCatalog(
+    title: 'UserAnalyticsInlineStat',
+    contractId: 'component.profile.user_analytics.inline_stat',
+    children: [
+      _StateCard(
+        label: 'count',
+        child: UserAnalyticsInlineStat(label: 'Mutual catches', value: '9'),
       ),
     ],
   );

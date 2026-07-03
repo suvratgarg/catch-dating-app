@@ -14,6 +14,7 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/swipes/presentation/catches_hub_screen_state.dart';
+import 'package:catch_dating_app/swipes/presentation/catches_hub_view_model.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/attended_event_tile.dart';
 import 'package:flutter/material.dart';
@@ -47,10 +48,7 @@ class SwipeHubScreen extends ConsumerWidget {
 }
 
 class CatchesHubStateView extends ConsumerWidget {
-  const CatchesHubStateView({
-    super.key,
-    required this.state,
-  });
+  const CatchesHubStateView({super.key, required this.state});
 
   final CatchesHubScreenState state;
 
@@ -204,75 +202,68 @@ class CatchesIntroCard extends StatelessWidget {
         borderWidth: 0,
         clipBehavior: Clip.antiAlias,
         child: Stack(
-        children: [
-          Positioned(
-            right: CatchLayout.catchesHubBackgroundIconRightOffset,
-            top: CatchLayout.catchesHubBackgroundIconTopOffset,
-            child: Icon(
-              CatchIcons.favoriteRounded,
-              size: CatchLayout.catchesHubBackgroundIconSize,
-              color: t.ink.withValues(alpha: CatchOpacity.clubRatingFill),
+          children: [
+            Positioned(
+              right: CatchLayout.catchesHubBackgroundIconRightOffset,
+              top: CatchLayout.catchesHubBackgroundIconTopOffset,
+              child: Icon(
+                CatchIcons.favoriteRounded,
+                size: CatchLayout.catchesHubBackgroundIconSize,
+                color: t.ink.withValues(alpha: CatchOpacity.clubRatingFill),
+              ),
             ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '24H WINDOW OPEN',
-                style: CatchTextStyles.kicker(context, color: t.ink),
-              ),
-              gapH10,
-              Text(
-                'You ran together.\nNow you can catch.',
-                style: CatchTextStyles.headline(context, color: t.ink),
-              ),
-              gapH10,
-              Text(
-                row.introSubtitle,
-                style: CatchTextStyles.proseM(
-                  context,
-                  color: t.ink.withValues(
-                    alpha: CatchOpacity.photoSlotDeleteChrome,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '24H WINDOW OPEN',
+                  style: CatchTextStyles.kicker(context, color: t.ink),
+                ),
+                gapH10,
+                Text(
+                  'You ran together.\nNow you can catch.',
+                  style: CatchTextStyles.headline(context, color: t.ink),
+                ),
+                gapH10,
+                Text(
+                  row.introSubtitle,
+                  style: CatchTextStyles.proseM(
+                    context,
+                    color: t.ink.withValues(
+                      alpha: CatchOpacity.photoSlotDeleteChrome,
+                    ),
                   ),
                 ),
-              ),
-              gapH18,
-              Row(
-                children: [
-                  PillStat(
-                    label: 'Closes in',
-                    value: row.introCountdownLabel,
-                  ),
-                  gapW10,
-                  PillStat(
-                    label: 'Roster',
-                    value: row.attendedCountLabel,
-                  ),
-                ],
-              ),
-              gapH18,
-              const CatchButton(
-                label: 'Start catching',
-                onPressed: null,
-                variant: CatchButtonVariant.light,
-                fullWidth: true,
-                isInteractive: false,
-              ),
-            ],
-          ),
-        ],
-      ),
+                gapH18,
+                Row(
+                  children: [
+                    PillStat(
+                      label: 'Closes in',
+                      value: row.introCountdownLabel,
+                    ),
+                    gapW10,
+                    PillStat(label: 'Roster', value: row.attendedCountLabel),
+                  ],
+                ),
+                gapH18,
+                const CatchButton(
+                  label: 'Start catching',
+                  onPressed: null,
+                  variant: CatchButtonVariant.light,
+                  fullWidth: true,
+                  isInteractive: false,
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
 class PillStat extends StatelessWidget {
-  const PillStat({
-    super.key,
-    required this.label,
-    required this.value,
-  });
+  const PillStat({super.key, required this.label, required this.value});
 
   final String label;
   final String value;

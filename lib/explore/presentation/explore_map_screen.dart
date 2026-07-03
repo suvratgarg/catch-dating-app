@@ -3,9 +3,9 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
-import 'package:catch_dating_app/events/presentation/event_map_screen.dart';
-import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
+import 'package:catch_dating_app/events/events.dart'
+    show EventMapItem, EventMapView, EventMapViewModel, hasEventMapPin;
+import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -20,17 +20,36 @@ import 'package:go_router/go_router.dart';
 /// same nearby events as pins. Tapping a pin opens that event; the distance ring
 /// cycles the shared Explore distance filter.
 class ExploreMapScreen extends ConsumerWidget {
-  const ExploreMapScreen({super.key, this.enableNetworkTiles = true});
+  const ExploreMapScreen({
+    super.key,
+    this.enableNetworkTiles = true,
+    this.initialSelectedEventId,
+  });
 
   final bool enableNetworkTiles;
+  final String? initialSelectedEventId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
     final feedAsync = ref.watch(exploreFeedViewModelProvider);
     final filters = ref.watch(exploreFiltersProvider);
-    final distanceRingRadiusKm = exploreDistanceFilterKm(filters.distanceFilter);
+    final distanceRingRadiusKm = exploreDistanceFilterKm(
+      filters.distanceFilter,
+    );
     final mapViewModel = feedAsync.whenData(exploreMapViewModelFromFeed);
+    void cycleDistanceFilter() {
+      catchSelectionHaptic();
+      final controller = ref.read(exploreFiltersProvider.notifier);
+      final current = ref.read(exploreFiltersProvider).distanceFilter;
+      controller.setDistanceFilter(switch (current) {
+        ExploreDistanceFilter.any => ExploreDistanceFilter.oneKm,
+        ExploreDistanceFilter.oneKm => ExploreDistanceFilter.threeKm,
+        ExploreDistanceFilter.threeKm => ExploreDistanceFilter.fiveKm,
+        ExploreDistanceFilter.fiveKm => ExploreDistanceFilter.tenKm,
+        ExploreDistanceFilter.tenKm => ExploreDistanceFilter.any,
+      });
+    }
 
     return Scaffold(
       backgroundColor: t.bg,
@@ -41,9 +60,10 @@ class ExploreMapScreen extends ConsumerWidget {
               enableNetworkTiles: enableNetworkTiles,
               viewModel: mapViewModel,
               distanceRingRadiusKm: distanceRingRadiusKm,
+              initialSelectedEventId: initialSelectedEventId,
               onRetry: () => ref.invalidate(exploreFeedViewModelProvider),
               onEventSelected: (event) => _openEvent(context, event),
-              onDistanceRingTapped: () => _cycleDistanceFilter(ref),
+              onDistanceRingTapped: cycleDistanceFilter,
             ),
           ),
           Positioned(
@@ -54,6 +74,7 @@ class ExploreMapScreen extends ConsumerWidget {
                 padding: const EdgeInsets.all(CatchSpacing.s5),
                 child: CatchIconButton(
                   variant: CatchIconButtonVariant.float,
+                  tooltip: 'Back to Explore',
                   onTap: () {
                     catchSelectionHaptic();
                     if (context.canPop()) context.pop();
@@ -75,19 +96,6 @@ class ExploreMapScreen extends ConsumerWidget {
       pathParameters: {'clubId': event.clubId, 'eventId': event.id},
       extra: EventDetailRouteExtra(initialEvent: event),
     );
-  }
-
-  void _cycleDistanceFilter(WidgetRef ref) {
-    catchSelectionHaptic();
-    final controller = ref.read(exploreFiltersProvider.notifier);
-    final current = ref.read(exploreFiltersProvider).distanceFilter;
-    controller.setDistanceFilter(switch (current) {
-      ExploreDistanceFilter.any => ExploreDistanceFilter.oneKm,
-      ExploreDistanceFilter.oneKm => ExploreDistanceFilter.threeKm,
-      ExploreDistanceFilter.threeKm => ExploreDistanceFilter.fiveKm,
-      ExploreDistanceFilter.fiveKm => ExploreDistanceFilter.tenKm,
-      ExploreDistanceFilter.tenKm => ExploreDistanceFilter.any,
-    });
   }
 }
 

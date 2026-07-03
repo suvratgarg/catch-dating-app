@@ -130,6 +130,32 @@ void main() {
       },
     );
 
+    test(
+      'rejects invalid country codes before calling Firebase Auth',
+      () async {
+        final repository = FakeAuthRepository();
+        final container = _authControllerContainer(repository);
+        addTearDown(repository.dispose);
+        addTearDown(container.dispose);
+
+        await expectLater(
+          container
+              .read(authControllerProvider.notifier)
+              .sendOtp('9999999999', '91'),
+          throwsA(
+            isA<StateError>().having(
+              (error) => error.message,
+              'message',
+              AuthInput.invalidCountryCodeMessage,
+            ),
+          ),
+        );
+
+        expect(repository.verifyPhoneNumberCallCount, 0);
+        expect(container.read(authControllerProvider), const AuthScreenState());
+      },
+    );
+
     test('uses signInWithCredential during auto verification', () async {
       final credential = PhoneAuthProvider.credential(
         verificationId: 'verification-id',

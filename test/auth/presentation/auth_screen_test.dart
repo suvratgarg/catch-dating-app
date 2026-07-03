@@ -91,7 +91,7 @@ void main() {
         themeMode: ThemeMode.dark,
       );
 
-      await tester.tap(find.text('+91'));
+      await tester.tap(find.byKey(AuthFormKeys.countryCode));
       await pumpFeatureUi(tester);
 
       expect(find.text('Select Country'), findsOneWidget);
@@ -160,6 +160,31 @@ void main() {
       expect(repository.verifiedPhoneNumber, '+919999999999');
       expect(container.read(authControllerProvider).step, AuthStep.otp);
       expect(find.text('Enter the code'), findsOneWidget);
+    });
+
+    testWidgets('phone form shows validation before sending OTP', (
+      tester,
+    ) async {
+      final repository = FakeAuthRepository();
+      final container = _authControllerContainer(repository);
+      addTearDown(repository.dispose);
+      addTearDown(container.dispose);
+
+      await pumpAuthScreen(tester, container: container);
+
+      await tester.enterText(
+        find.descendant(
+          of: find.byKey(AuthFormKeys.phoneField),
+          matching: find.byType(EditableText),
+        ),
+        '123',
+      );
+      await tester.tap(find.byKey(AuthFormKeys.sendCode));
+      await tester.pump();
+
+      expect(find.text('Please enter a valid phone number.'), findsOneWidget);
+      expect(repository.verifyPhoneNumberCallCount, 0);
+      expect(container.read(authControllerProvider).step, AuthStep.phone);
     });
 
     testWidgets('OTP entry verifies with the stored verification id', (

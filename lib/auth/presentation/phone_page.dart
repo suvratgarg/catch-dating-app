@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/auth/presentation/auth_form_keys.dart';
 import 'package:catch_dating_app/auth/presentation/auth_input.dart';
+import 'package:catch_dating_app/auth/presentation/auth_presentation_state.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
@@ -15,7 +16,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
-import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_layout.dart';
+import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -64,9 +65,11 @@ class _PhonePageState extends ConsumerState<PhonePage> {
 
   @override
   Widget build(BuildContext context) {
+    final data = ref.watch(authControllerProvider);
     final mutation = ref.watch(AuthController.sendOtpMutation);
-    final shouldAutofocus = ref.watch(
-      authControllerProvider.select((data) => data.step == AuthStep.phone),
+    final viewState = AuthPhoneEntryViewState.from(
+      data: data,
+      isSendPending: mutation.isPending,
     );
 
     return Form(
@@ -77,7 +80,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
           label: 'Send code',
           icon: Icon(CatchIcons.arrowForwardRounded),
           onPressed: _submit,
-          isLoading: mutation.isPending,
+          isLoading: viewState.sendButtonLoading,
           fullWidth: true,
           size: CatchButtonSize.lg,
         ),
@@ -94,11 +97,8 @@ class _PhonePageState extends ConsumerState<PhonePage> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _countryCodeSelector(
-                context: context,
-                countryCode: ref.watch(
-                  authControllerProvider.select((d) => d.countryCode),
-                ),
+              CountryCodeSelector(
+                countryCode: viewState.countryCode,
                 onChanged: (code) {
                   ref
                       .read(authControllerProvider.notifier)
@@ -113,7 +113,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
                   title: 'Mobile number',
                   showLabel: false,
                   controller: _phoneController,
-                  autofocus: shouldAutofocus,
+                  autofocus: viewState.shouldAutofocus,
                   keyboardType: TextInputType.phone,
                   textInputAction: TextInputAction.done,
                   autofillHints: const [AutofillHints.telephoneNumberNational],
@@ -144,69 +144,78 @@ class _PhonePageState extends ConsumerState<PhonePage> {
   }
 }
 
-Widget _countryCodeSelector({
-  required BuildContext context,
-  required String countryCode,
-  required ValueChanged<String> onChanged,
-}) {
-  final t = CatchTokens.of(context);
+class CountryCodeSelector extends StatelessWidget {
+  const CountryCodeSelector({
+    super.key,
+    required this.countryCode,
+    required this.onChanged,
+  });
 
-  return SizedBox(
-    width: CatchLayout.countryCodeSelectorWidth,
-    height: CatchField.mdControlHeight,
-    child: CatchControlShell(
-      padding: EdgeInsets.zero,
-      child: CountryCodePicker(
-        initialSelection: countryIsoForDialCode(countryCode),
-        onChanged: (code) {
-          final dialCode = code.dialCode;
-          if (dialCode == null || dialCode.isEmpty) return;
-          onChanged(dialCode);
-        },
-        showFlagMain: true,
-        showFlagDialog: true,
-        showDropDownButton: true,
-        favorite: supportedCountryPickerFavorites,
-        textStyle: CatchTextStyles.bodyLead(context, color: t.ink),
-        dialogTextStyle: CatchTextStyles.bodyLead(context, color: t.ink),
-        searchStyle: CatchTextStyles.bodyLead(context, color: t.ink),
-        headerTextStyle: CatchTextStyles.sectionTitle(context, color: t.ink),
-        dialogBackgroundColor: t.surface,
-        backgroundColor: t.surface,
-        barrierColor: CatchTokens.editorialDark.withValues(
-          alpha: CatchOpacity.mutedBorder,
-        ),
-        boxDecoration: BoxDecoration(
-          color: t.surface,
-          borderRadius: BorderRadius.circular(CatchRadius.md),
-          border: Border.all(color: t.line),
-        ),
-        searchDecoration: InputDecoration(
-          hintText: 'Search country',
-          hintStyle: CatchTextStyles.bodyLead(context, color: t.ink3),
-          filled: true,
-          fillColor: t.raised,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(CatchRadius.sm),
-            borderSide: BorderSide(color: t.line),
+  final String countryCode;
+  final ValueChanged<String> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return SizedBox(
+      key: AuthFormKeys.countryCode,
+      width: CatchLayout.countryCodeSelectorWidth,
+      height: CatchField.mdControlHeight,
+      child: CatchControlShell(
+        padding: EdgeInsets.zero,
+        child: CountryCodePicker(
+          initialSelection: countryIsoForDialCode(countryCode),
+          onChanged: (code) {
+            final dialCode = code.dialCode;
+            if (dialCode == null || dialCode.isEmpty) return;
+            onChanged(dialCode);
+          },
+          showFlagMain: true,
+          showFlagDialog: true,
+          showDropDownButton: true,
+          favorite: supportedCountryPickerFavorites,
+          textStyle: CatchTextStyles.bodyLead(context, color: t.ink),
+          dialogTextStyle: CatchTextStyles.bodyLead(context, color: t.ink),
+          searchStyle: CatchTextStyles.bodyLead(context, color: t.ink),
+          headerTextStyle: CatchTextStyles.sectionTitle(context, color: t.ink),
+          dialogBackgroundColor: t.surface,
+          backgroundColor: t.surface,
+          barrierColor: CatchTokens.editorialDark.withValues(
+            alpha: CatchOpacity.mutedBorder,
           ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(CatchRadius.sm),
-            borderSide: BorderSide(color: t.line),
+          boxDecoration: BoxDecoration(
+            color: t.surface,
+            borderRadius: BorderRadius.circular(CatchRadius.md),
+            border: Border.all(color: t.line),
           ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(CatchRadius.sm),
-            borderSide: BorderSide(color: t.primary),
+          searchDecoration: InputDecoration(
+            hintText: 'Search country',
+            hintStyle: CatchTextStyles.bodyLead(context, color: t.ink3),
+            filled: true,
+            fillColor: t.raised,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(CatchRadius.sm),
+              borderSide: BorderSide(color: t.line),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(CatchRadius.sm),
+              borderSide: BorderSide(color: t.line),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(CatchRadius.sm),
+              borderSide: BorderSide(color: t.primary),
+            ),
           ),
-        ),
-        closeIcon: Icon(CatchIcons.closeRounded, color: t.ink2),
-        padding: CatchInsets.inlineHorizontal,
-        margin: const EdgeInsets.only(right: CatchSpacing.micro6),
-        flagWidth: CatchSpacing.s6,
-        flagDecoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(CatchRadius.xs),
+          closeIcon: Icon(CatchIcons.closeRounded, color: t.ink2),
+          padding: CatchInsets.inlineHorizontal,
+          margin: CatchInsets.countryCodeFlagMargin,
+          flagWidth: CatchSpacing.s6,
+          flagDecoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(CatchRadius.xs),
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }

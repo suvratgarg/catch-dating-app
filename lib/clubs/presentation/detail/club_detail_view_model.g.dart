@@ -103,7 +103,7 @@ final class ClubDetailViewModelProvider
 }
 
 String _$clubDetailViewModelHash() =>
-    r'e37e1c6096a3d3ddb4522def2ad6b4423b60b1c0';
+    r'fb8fa9c578912137d943f270a4d75ad7c16c0bd9';
 
 /// **Pattern D: View-model provider**
 ///

@@ -105,13 +105,13 @@ class BookingConflictSheet extends StatelessWidget {
                 style: CatchTextStyles.proseM(context, color: t.ink2),
               ),
               gapH18,
-              _BookingConflictEventRow(
+              BookingConflictEventRow(
                 tag: 'Already booked',
                 tagColor: t.ink3,
                 event: existing,
               ),
               gapH10,
-              _BookingConflictEventRow(
+              BookingConflictEventRow(
                 tag: 'New',
                 tagColor: t.warning,
                 event: incoming,
@@ -148,8 +148,9 @@ class BookingConflictSheet extends StatelessWidget {
   }
 }
 
-class _BookingConflictEventRow extends StatelessWidget {
-  const _BookingConflictEventRow({
+class BookingConflictEventRow extends StatelessWidget {
+  const BookingConflictEventRow({
+    super.key,
     required this.tag,
     required this.tagColor,
     required this.event,

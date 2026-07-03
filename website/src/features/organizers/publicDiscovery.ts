@@ -2,9 +2,8 @@ import type {
   EventActionCardModel,
   PublicEventCardModel,
   PublicSearchSuggestion,
-} from "../../components/site";
+} from "../../shared/ui/primitives";
 import {activityMeta, type ActivityMeta} from "../marketing/content";
-import {trackOrganizerAnalytics} from "./analytics";
 import {isFutureCatchEvent} from "./selectors";
 import type {HostListing, HostListingCatchEvent, HostListingExternalEvent} from "./types";
 
@@ -287,12 +286,6 @@ export function eventActionCardForListing(
       href: eventDeepLinkForListing(listing, event),
       label: isFuture ? "Open event link" : "Open event record",
       trackingLabel: isFuture ? "listing_event_open_upcoming" : "listing_event_open_past",
-      onClick: () => trackOrganizerAnalytics(
-        listing,
-        "eventView",
-        "catch_event_card",
-        event.id
-      ),
     },
   ];
 
@@ -302,12 +295,6 @@ export function eventActionCardForListing(
       label: "See outcomes",
       variant: "secondary",
       trackingLabel: "listing_event_success",
-      onClick: () => trackOrganizerAnalytics(
-        listing,
-        "eventView",
-        "event_success_panel",
-        event.id
-      ),
     });
   } else {
     actions.push({
@@ -370,12 +357,6 @@ export function externalEventActionCardForListing(
         target: "_blank",
         rel: "noreferrer",
         trackingLabel: "external_event_source",
-        onClick: () => trackOrganizerAnalytics(
-          listing,
-          "outboundClick",
-          "external_event_card",
-          event.id
-        ),
       },
       {
         href: "#claim",

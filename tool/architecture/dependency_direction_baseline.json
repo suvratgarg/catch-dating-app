@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "updated": "2026-07-03",
+  "description": "Current dependency-direction debt baseline. Normal scanner runs fail on findings not listed here.",
+  "allowedFindings": []
+}

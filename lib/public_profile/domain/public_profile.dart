@@ -50,10 +50,13 @@ abstract class PublicProfile with _$PublicProfile {
 ///
 /// This is still useful on the client for previews and tests, but the
 /// persisted `publicProfiles/{uid}` document is owned by Cloud Functions.
-PublicProfile publicProfileFromUserProfile(UserProfile user) => PublicProfile(
+PublicProfile publicProfileFromUserProfile(
+  UserProfile user, {
+  required DateTime today,
+}) => PublicProfile(
   uid: user.uid,
   name: user.publicDisplayName,
-  age: user.age,
+  age: user.ageOn(today),
   gender: user.gender,
   profilePrompts: user.profilePrompts,
   profilePhotos: user.effectiveProfilePhotos,

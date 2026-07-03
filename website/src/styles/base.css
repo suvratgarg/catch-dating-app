@@ -1,0 +1,81 @@
+:root {
+  --website-bg: var(--catch-color-light-bg);
+  --website-surface: var(--catch-color-light-surface);
+  --website-raised: var(--catch-color-light-raised);
+  --website-text: var(--catch-color-light-ink);
+  --website-text-muted: var(--catch-color-light-ink2);
+  --website-text-faint: var(--catch-color-light-ink3);
+  --website-line: var(--catch-color-light-line);
+  --website-line-strong: var(--catch-color-light-line2);
+  --website-accent: var(--catch-color-light-primary);
+  --website-accent-muted: var(--catch-color-light-ink2);
+  --website-danger: var(--catch-color-light-danger);
+  --website-light-bg: var(--catch-color-light-bg);
+  --website-light-surface: var(--catch-color-light-surface);
+  --website-light-raised: var(--catch-color-light-raised);
+  --website-light-text: var(--catch-color-light-ink);
+  --website-light-muted: var(--catch-color-light-ink2);
+  --website-light-faint: var(--catch-color-light-ink3);
+  --website-light-line: var(--catch-color-light-line2);
+  --website-activity-dinner: var(--catch-activity-dinner-accent);
+  --website-shadow-soft: 0 18px 44px rgba(26, 20, 16, 0.08);
+  --website-copy: color-mix(in srgb, var(--website-text) 78%, transparent);
+  --website-copy-muted: color-mix(in srgb, var(--website-text) 72%, transparent);
+  --website-copy-faint: color-mix(in srgb, var(--website-text) 68%, transparent);
+  --website-copy-label: color-mix(in srgb, var(--website-text) 70%, transparent);
+  --website-copy-meta: color-mix(in srgb, var(--website-text) 76%, transparent);
+  --website-nav-muted: color-mix(in srgb, var(--website-text) 74%, transparent);
+  --website-header-bg: color-mix(in srgb, var(--website-bg) 92%, transparent);
+  --website-panel-bg: color-mix(in srgb, var(--website-surface) 88%, transparent);
+  --website-panel-bg-strong: color-mix(in srgb, var(--website-surface) 96%, transparent);
+  --website-panel-light-bg: color-mix(in srgb, var(--website-text) 95%, transparent);
+  --website-panel-light-wash: color-mix(in srgb, var(--website-bg) 10%, transparent);
+  --website-ghost-border: color-mix(in srgb, var(--website-text) 42%, transparent);
+  --website-ghost-bg: color-mix(in srgb, var(--website-text) 4%, transparent);
+  --website-ghost-hover-bg: color-mix(in srgb, var(--website-accent) 8%, transparent);
+  --website-accent-border: color-mix(in srgb, var(--website-accent) 50%, transparent);
+  --website-input-border: color-mix(in srgb, var(--website-text) 24%, transparent);
+  --website-card-wash: color-mix(in srgb, var(--website-text) 6%, transparent);
+  --website-hero-overlay-strong: color-mix(in srgb, var(--website-bg) 96%, transparent);
+  --website-hero-overlay-mid: color-mix(in srgb, var(--website-bg) 78%, transparent);
+  --website-hero-overlay-soft: color-mix(in srgb, var(--website-bg) 26%, transparent);
+  --website-hero-overlay-glaze: color-mix(in srgb, var(--website-bg) 66%, transparent);
+  --website-host-gradient: color-mix(in srgb, var(--website-activity-dinner) 55%, transparent);
+  --website-host-glow: color-mix(in srgb, var(--website-accent) 16%, transparent);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--website-bg);
+  color: var(--website-text);
+  font-family: var(--catch-font-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-optical-sizing: auto;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+main {
+  overflow: clip;
+}

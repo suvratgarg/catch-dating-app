@@ -4,6 +4,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_draft.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
@@ -15,23 +16,30 @@ import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_flow.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
+import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_draft_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_basics_step.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_details_step.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_event_success_defaults_step.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart';
-import 'package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+export 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_screen_state.dart';
 
 const _maxClubPhotos = 6;
 
@@ -59,60 +67,75 @@ class CreateClubScreen extends ConsumerStatefulWidget {
   ConsumerState<CreateClubScreen> createState() => _CreateClubScreenState();
 }
 
-@immutable
-class HostClubCreateState {
-  const HostClubCreateState({
-    required this.isEditing,
-    required this.mediaOnly,
-    required this.currentStep,
-    required this.totalSteps,
-    required this.title,
-    required this.subtitle,
-    required this.showEditScaffold,
-    required this.canSaveDraft,
-    required this.lastStepLabel,
-    required this.isLoading,
+sealed class HostClubCreateRouteIntent {
+  const HostClubCreateRouteIntent();
+}
+
+final class HostClubCreateBackIntent extends HostClubCreateRouteIntent {
+  const HostClubCreateBackIntent();
+}
+
+final class HostClubCreatePickProfileImageIntent
+    extends HostClubCreateRouteIntent {
+  const HostClubCreatePickProfileImageIntent();
+}
+
+final class HostClubCreatePickClubPhotosIntent
+    extends HostClubCreateRouteIntent {
+  const HostClubCreatePickClubPhotosIntent();
+}
+
+final class HostClubCreateRemoveClubPhotoIntent
+    extends HostClubCreateRouteIntent {
+  const HostClubCreateRemoveClubPhotoIntent(this.index);
+
+  final int index;
+}
+
+final class HostClubCreateReorderClubPhotoIntent
+    extends HostClubCreateRouteIntent {
+  const HostClubCreateReorderClubPhotoIntent({
+    required this.fromIndex,
+    required this.toIndex,
   });
 
-  final bool isEditing;
-  final bool mediaOnly;
-  final int currentStep;
-  final int totalSteps;
-  final String title;
-  final String? subtitle;
-  final bool showEditScaffold;
-  final bool canSaveDraft;
-  final String lastStepLabel;
-  final bool isLoading;
-
-  factory HostClubCreateState.resolve({
-    required bool isEditing,
-    required bool mediaOnly,
-    required int currentStep,
-    required List<CatchFormStepSpec> activeSteps,
-    required Club? initialClub,
-    required bool submitPending,
-    required bool saveDraftPending,
-  }) {
-    final clampedStep = currentStep.clamp(0, activeSteps.length - 1).toInt();
-    return HostClubCreateState(
-      isEditing: isEditing,
-      mediaOnly: mediaOnly,
-      currentStep: clampedStep,
-      totalSteps: activeSteps.length,
-      title: formTitleForStep(activeSteps, clampedStep),
-      subtitle: isEditing ? initialClub!.name : null,
-      showEditScaffold: isEditing && !mediaOnly,
-      canSaveDraft: !isEditing && !mediaOnly,
-      lastStepLabel: mediaOnly
-          ? 'Save photos'
-          : isEditing
-          ? 'Save changes'
-          : 'Create club',
-      isLoading: submitPending || saveDraftPending,
-    );
-  }
+  final int fromIndex;
+  final int toIndex;
 }
+
+final class HostClubCreateCityChangedIntent extends HostClubCreateRouteIntent {
+  const HostClubCreateCityChangedIntent(this.city);
+
+  final CityOption? city;
+}
+
+final class HostClubCreateDefaultsChangedIntent
+    extends HostClubCreateRouteIntent {
+  const HostClubCreateDefaultsChangedIntent(this.defaults);
+
+  final ClubHostDefaults defaults;
+}
+
+final class HostClubCreateIdentityChangedIntent
+    extends HostClubCreateRouteIntent {
+  const HostClubCreateIdentityChangedIntent(this.value);
+
+  final String value;
+}
+
+final class HostClubCreateSaveEditIntent extends HostClubCreateRouteIntent {
+  const HostClubCreateSaveEditIntent();
+}
+
+final class HostClubCreatePickCityIntent {
+  const HostClubCreatePickCityIntent();
+}
+
+typedef HostClubCreateRouteIntentCallback =
+    void Function(HostClubCreateRouteIntent intent);
+
+typedef HostClubCreatePickCityCallback =
+    Future<CityOption?> Function(HostClubCreatePickCityIntent intent);
 
 class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
   late final PageController _pageController;
@@ -140,15 +163,15 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
   ClubHostDefaults _hostDefaults = const ClubHostDefaults();
 
   bool get _isEditing => widget.initialClub != null;
-  bool get _shouldShowEditSectionErrors =>
-      _editSubmitAttempted ||
-      widget.formAutovalidateMode != AutovalidateMode.disabled;
-  bool get _editIdentityHasError =>
-      _shouldShowEditSectionErrors &&
-      (_nameController.text.trim().isEmpty ||
-          (_selectedCity == null || _selectedCity!.trim().isEmpty) ||
-          _areaController.text.trim().isEmpty ||
-          _descriptionController.text.trim().isEmpty);
+  HostClubEditValidationState get _editValidationState =>
+      HostClubEditValidationState.resolve(
+        editSubmitAttempted: _editSubmitAttempted,
+        formAutovalidateMode: widget.formAutovalidateMode,
+        name: _nameController.text,
+        selectedCity: _selectedCity,
+        area: _areaController.text,
+        description: _descriptionController.text,
+      );
 
   List<CatchFormStepSpec> get _activeSteps {
     final uid = ref.read(uidProvider).asData?.value;
@@ -228,25 +251,32 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
   }
 
   Future<void> _restoreSavedDraft() async {
-    final ClubDraft? draft;
     try {
-      draft = await ref
-          .read(createClubDraftControllerProvider.notifier)
-          .loadDraft();
-    } catch (_) {
+      final draft = await CreateClubDraftController.loadDraftMutation.run(
+        ref,
+        (tx) => tx.get(createClubDraftControllerProvider.notifier).loadDraft(),
+      );
+      if (!mounted || draft == null || draft.isEmpty) {
+        return;
+      }
+      final restoredDraft = draft;
+
+      setState(() {
+        _restoreFromDraft(restoredDraft);
+        _restoredDraft = true;
+      });
+
+      showCatchSnackBar(context, 'Restored your club draft');
+    } catch (error, stackTrace) {
+      ref
+          .read(errorLoggerProvider)
+          .logError(
+            error,
+            stackTrace,
+            reason: 'CreateClubScreen._restoreSavedDraft failed',
+          );
       return;
     }
-    if (!mounted || draft == null || draft.isEmpty) {
-      return;
-    }
-    final restoredDraft = draft;
-
-    setState(() {
-      _restoreFromDraft(restoredDraft);
-      _restoredDraft = true;
-    });
-
-    showCatchSnackBar(context, 'Restored your club draft');
   }
 
   void _seedInitialMedia() {
@@ -377,19 +407,45 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
     Navigator.of(context).maybePop();
   }
 
-  void _next() {
+  void _handlePrimaryIntent(HostClubCreatePrimaryIntent intent) {
     final steps = _activeSteps;
     final formKey = formKeyForStep(steps, _currentStep);
     if (!(formKey?.currentState?.validate() ?? true)) {
       return;
     }
 
-    if (_currentStep < steps.length - 1) {
-      _goToStep(_currentStep + 1);
-      return;
+    switch (intent) {
+      case HostClubCreatePrimaryIntent.nextStep:
+        if (_currentStep < steps.length - 1) {
+          _goToStep(_currentStep + 1);
+          return;
+        }
+        _submit();
+        return;
+      case HostClubCreatePrimaryIntent.submit:
+        _submit();
+        return;
     }
+  }
 
-    _submit();
+  Future<void> _handleSaveDraftIntent(
+    HostClubCreateSaveDraftIntent intent,
+  ) async {
+    switch (intent) {
+      case HostClubCreateSaveDraftIntent.saveDraft:
+        await _saveDraft();
+        return;
+    }
+  }
+
+  Future<void> _handleDraftRestoreIntent(
+    HostClubCreateDraftRestoreIntent intent,
+  ) async {
+    switch (intent) {
+      case HostClubCreateDraftRestoreIntent.retry:
+        await _restoreSavedDraft();
+        return;
+    }
   }
 
   void _submitEdit() {
@@ -412,28 +468,63 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
   }
 
   void _handleEditIdentityChanged(String _) {
-    if (_shouldShowEditSectionErrors) setState(() {});
+    if (_editValidationState.shouldShowErrors) setState(() {});
+  }
+
+  void _handleRouteIntent(HostClubCreateRouteIntent intent) {
+    switch (intent) {
+      case HostClubCreateBackIntent():
+        _back();
+      case HostClubCreatePickProfileImageIntent():
+        unawaited(_pickProfileImage());
+      case HostClubCreatePickClubPhotosIntent():
+        unawaited(_pickClubPhotos());
+      case HostClubCreateRemoveClubPhotoIntent(:final index):
+        _removeClubPhoto(index);
+      case HostClubCreateReorderClubPhotoIntent(
+        :final fromIndex,
+        :final toIndex,
+      ):
+        _reorderClubPhoto(fromIndex, toIndex);
+      case HostClubCreateCityChangedIntent(:final city):
+        setState(() => _selectedCity = city?.effectiveMarketId);
+      case HostClubCreateDefaultsChangedIntent(:final defaults):
+        setState(() => _hostDefaults = defaults);
+      case HostClubCreateIdentityChangedIntent(:final value):
+        _handleEditIdentityChanged(value);
+      case HostClubCreateSaveEditIntent():
+        _submitEdit();
+    }
+  }
+
+  Future<CityOption?> _handlePickCityIntent(
+    HostClubCreatePickCityIntent intent,
+  ) {
+    switch (intent) {
+      case HostClubCreatePickCityIntent():
+        return _pickCityForEdit();
+    }
   }
 
   Future<void> _saveDraft() async {
     if (_isEditing) return;
 
-    final draft = ClubDraft(
-      savedAt: DateTime.now(),
-      name: _trimmedTextOrNull(_nameController),
-      area: _trimmedTextOrNull(_areaController),
-      description: _trimmedTextOrNull(_descriptionController),
-      location: _selectedCity,
-      instagramHandle: _trimmedTextOrNull(_instagramController),
-      phoneNumber: _trimmedTextOrNull(_phoneController),
-      email: _trimmedTextOrNull(_emailController),
+    final draftRequest = HostClubCreateDraftRequest.fromForm(
+      name: _nameController.text,
+      area: _areaController.text,
+      description: _descriptionController.text,
+      selectedCity: _selectedCity,
+      instagramHandle: _instagramController.text,
+      phoneNumber: _phoneController.text,
+      email: _emailController.text,
       hostDefaults: _hostDefaults,
     );
 
     final savedDraft = await CreateClubDraftController.saveDraftMutation.run(
       ref,
-      (tx) async =>
-          tx.get(createClubDraftControllerProvider.notifier).saveDraft(draft),
+      (tx) async => tx
+          .get(createClubDraftControllerProvider.notifier)
+          .saveDraft(draftRequest.toDraft(savedAt: DateTime.now())),
     );
     if (!mounted || savedDraft == null) return;
 
@@ -448,20 +539,33 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
     unawaited(
       CreateClubController.submitMutation
           .run(ref, (transaction) async {
+            final request = HostClubCreateSubmitRequest.fromForm(
+              name: _nameController.text,
+              selectedCity: _selectedCity,
+              area: _areaController.text,
+              description: _descriptionController.text,
+              existingClub: widget.initialClub,
+              clubPhotoInputs: _clubPhotoInputsForSubmit,
+              profileImage: _profileImage,
+              instagramHandle: _instagramController.text,
+              phoneNumber: _phoneController.text,
+              email: _emailController.text,
+              hostDefaults: _hostDefaults,
+            );
             await transaction
                 .get(createClubControllerProvider.notifier)
                 .submit(
-                  name: _nameController.text.trim(),
-                  location: _selectedCity!,
-                  area: _areaController.text.trim(),
-                  description: _descriptionController.text.trim(),
-                  existingClub: widget.initialClub,
-                  clubPhotoInputs: _clubPhotoInputsForSubmit,
-                  profileImage: _profileImage?.image,
-                  instagramHandle: _trimmedTextOrNull(_instagramController),
-                  phoneNumber: _trimmedTextOrNull(_phoneController),
-                  email: _trimmedTextOrNull(_emailController),
-                  hostDefaults: _hostDefaults,
+                  name: request.name,
+                  location: request.location,
+                  area: request.area,
+                  description: request.description,
+                  existingClub: request.existingClub,
+                  clubPhotoInputs: request.clubPhotoInputs,
+                  profileImage: request.profileImage?.image,
+                  instagramHandle: request.instagramHandle,
+                  phoneNumber: request.phoneNumber,
+                  email: request.email,
+                  hostDefaults: request.hostDefaults,
                 );
 
             if (!_isEditing) {
@@ -471,14 +575,15 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
             }
           })
           .catchError((error, stackTrace) {
-            ref.read(errorLoggerProvider).logError(error, stackTrace, reason: 'CreateClubScreen._submit failed');
+            ref
+                .read(errorLoggerProvider)
+                .logError(
+                  error,
+                  stackTrace,
+                  reason: 'CreateClubScreen._submit failed',
+                );
           }),
     );
-  }
-
-  static String? _trimmedTextOrNull(TextEditingController controller) {
-    final text = controller.text.trim();
-    return text.isEmpty ? null : text;
   }
 
   List<OrderedPhotoPreview> get _clubPhotoPreviews => [
@@ -493,17 +598,34 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final uid = ref.watch(uidProvider).asData?.value;
+    final uidAsync = ref.watch(uidProvider);
+    if (_isEditing && uidAsync.isLoading) {
+      return const CatchStartupLoadingScreen();
+    }
+    if (_isEditing && uidAsync.hasError) {
+      return CatchErrorScaffold.fromError(
+        uidAsync.error!,
+        context: AppErrorContext.auth,
+        onRetry: () => ref.invalidate(uidProvider),
+      );
+    }
+    final uid = uidAsync.asData?.value;
     final mediaOnly = _isMediaOnlyForUid(uid);
     final activeSteps = _activeSteps;
     final submitMutation = ref.watch(CreateClubController.submitMutation);
     final saveDraftMutation = ref.watch(
       CreateClubDraftController.saveDraftMutation,
     );
+    final loadDraftMutation = ref.watch(
+      CreateClubDraftController.loadDraftMutation,
+    );
     final mutationError = submitMutation.hasError
         ? mutationErrorMessage(submitMutation)
         : saveDraftMutation.hasError
         ? mutationErrorMessage(saveDraftMutation)
+        : null;
+    final draftLoadError = loadDraftMutation.hasError
+        ? (loadDraftMutation as MutationError).error
         : null;
     final screenState = HostClubCreateState.resolve(
       isEditing: _isEditing,
@@ -513,19 +635,53 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
       initialClub: widget.initialClub,
       submitPending: submitMutation.isPending,
       saveDraftPending: saveDraftMutation.isPending,
+      draftLoadPending: loadDraftMutation.isPending,
+      draftLoadError: draftLoadError,
+      draftRestoreEnabled: widget.restoreSavedDraft && !_restoredDraft,
+      mutationError: mutationError,
+      clubPhotoPreviews: _clubPhotoPreviews,
+      profileImage: _profileImage,
+      editSubmitAttempted: _editSubmitAttempted,
+      formAutovalidateMode: widget.formAutovalidateMode,
+      name: _nameController.text,
+      selectedCity: _selectedCity,
+      area: _areaController.text,
+      description: _descriptionController.text,
     );
 
     ref.listen(CreateClubController.submitMutation, (previous, current) {
-      if (previous?.isPending == true && current.isSuccess) {
+      final submitOutcome = HostClubSubmitOutcomeState.fromTransition(
+        wasPending: previous?.isPending == true,
+        isSuccess: current.isSuccess,
+      );
+      if (submitOutcome.shouldCloseRoute) {
         Navigator.of(context).pop();
       }
     });
 
-    if (screenState.showEditScaffold) {
-      return _buildEditClubScaffold(
-        tokens: t,
-        isSubmitting: submitMutation.isPending,
-        mutationError: mutationError,
+    final editScaffold = screenState.editScaffold;
+    if (editScaffold != null) {
+      return HostClubEditScaffold(
+        scaffoldState: editScaffold,
+        media: screenState.media,
+        mutationError: screenState.mutationError,
+        basicsFormKey: _basicsFormKey,
+        defaultsFormKey: _defaultsFormKey,
+        eventSuccessFormKey: _eventSuccessFormKey,
+        autovalidateMode: screenState.editValidation.autovalidateMode,
+        editIdentityHasError: screenState.editValidation.identityHasError,
+        nameController: _nameController,
+        selectedCity: screenState.fields.selectedCity,
+        rawCityName: screenState.fields.rawCityName,
+        areaController: _areaController,
+        descriptionController: _descriptionController,
+        instagramController: _instagramController,
+        phoneController: _phoneController,
+        emailController: _emailController,
+        hostDefaults: _hostDefaults,
+        currencyCode: screenState.fields.currencyCode,
+        onIntent: _handleRouteIntent,
+        onPickCity: _handlePickCityIntent,
       );
     }
 
@@ -539,7 +695,8 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
               subtitle: screenState.subtitle,
               step: screenState.currentStep + 1,
               total: screenState.totalSteps,
-              onBack: _back,
+              onBack: () =>
+                  _handleRouteIntent(const HostClubCreateBackIntent()),
             ),
             gapH4,
             Expanded(
@@ -551,33 +708,42 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                     formKey: _basicsFormKey,
                     autovalidateMode: widget.formAutovalidateMode,
                     nameController: _nameController,
-                    selectedCity: cityOptionByName(_selectedCity),
-                    onCityChanged: (city) => setState(() {
-                      _selectedCity = city?.effectiveMarketId;
-                    }),
+                    selectedCity: screenState.fields.selectedCity,
+                    onCityChanged: (city) => _handleRouteIntent(
+                      HostClubCreateCityChangedIntent(city),
+                    ),
                     areaController: _areaController,
-                    detailsEnabled: !mediaOnly,
-                    clubPhotoPreviews: _clubPhotoPreviews,
-                    existingImageUrl: _clubPhotos.isEmpty
-                        ? widget.initialClub?.imageUrl
-                        : null,
-                    profileImageBytes: _profileImage?.bytes,
+                    detailsEnabled: screenState.fields.detailsEnabled,
+                    clubPhotoPreviews: screenState.media.clubPhotoPreviews,
+                    existingImageUrl: screenState.media.existingCoverImageUrl,
+                    profileImageBytes: screenState.media.profileImageBytes,
                     existingProfileImageUrl:
-                        widget.initialClub?.profileImageUrl,
-                    onPickClubPhotos: submitMutation.isPending
-                        ? null
-                        : _pickClubPhotos,
-                    onRemoveClubPhoto: submitMutation.isPending
-                        ? null
-                        : _removeClubPhoto,
-                    onReorderClubPhoto: submitMutation.isPending
-                        ? null
-                        : _reorderClubPhoto,
-                    onPickProfileImage: submitMutation.isPending
-                        ? null
-                        : _pickProfileImage,
+                        screenState.media.existingProfileImageUrl,
+                    onPickClubPhotos: screenState.media.enabled
+                        ? () => _handleRouteIntent(
+                            const HostClubCreatePickClubPhotosIntent(),
+                          )
+                        : null,
+                    onRemoveClubPhoto: screenState.media.enabled
+                        ? (index) => _handleRouteIntent(
+                            HostClubCreateRemoveClubPhotoIntent(index),
+                          )
+                        : null,
+                    onReorderClubPhoto: screenState.media.enabled
+                        ? (fromIndex, toIndex) => _handleRouteIntent(
+                            HostClubCreateReorderClubPhotoIntent(
+                              fromIndex: fromIndex,
+                              toIndex: toIndex,
+                            ),
+                          )
+                        : null,
+                    onPickProfileImage: screenState.media.enabled
+                        ? () => _handleRouteIntent(
+                            const HostClubCreatePickProfileImageIntent(),
+                          )
+                        : null,
                   ),
-                  if (!mediaOnly) ...[
+                  if (!screenState.mediaOnly) ...[
                     ClubDetailsStep(
                       formKey: _detailsFormKey,
                       descriptionController: _descriptionController,
@@ -588,94 +754,172 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                     ClubHostDefaultsStep(
                       formKey: _defaultsFormKey,
                       defaults: _hostDefaults,
-                      currencyCode: currencyCodeForCityName(_selectedCity),
-                      onChanged: (defaults) =>
-                          setState(() => _hostDefaults = defaults),
+                      currencyCode: screenState.fields.currencyCode,
+                      onChanged: (defaults) => _handleRouteIntent(
+                        HostClubCreateDefaultsChangedIntent(defaults),
+                      ),
                     ),
                     ClubEventSuccessDefaultsStep(
                       formKey: _eventSuccessFormKey,
                       defaults: _hostDefaults,
-                      onChanged: (defaults) =>
-                          setState(() => _hostDefaults = defaults),
+                      onChanged: (defaults) => _handleRouteIntent(
+                        HostClubCreateDefaultsChangedIntent(defaults),
+                      ),
                     ),
                   ],
                 ],
               ),
             ),
-            if (mutationError != null) CatchErrorBanner(message: mutationError),
-            _buildStepperFooter(
-              isLastStep: screenState.currentStep == activeSteps.length - 1,
-              isLoading: screenState.isLoading,
-              onNext: _next,
-              onSaveDraft: screenState.canSaveDraft ? _saveDraft : null,
-              lastStepLabel: screenState.lastStepLabel,
+            if (screenState.mutationError != null)
+              CatchErrorBanner(message: screenState.mutationError!),
+            if (screenState.draftRestore.hasError)
+              CatchErrorBanner.fromError(
+                screenState.draftRestore.error!,
+                context: AppErrorContext.club,
+                onRetry:
+                    screenState.draftRestore.retryIntent == null ||
+                        screenState.draftRestore.isLoading
+                    ? null
+                    : () => unawaited(
+                        _handleDraftRestoreIntent(
+                          screenState.draftRestore.retryIntent!,
+                        ),
+                      ),
+              ),
+            StepperFooter(
+              isLastStep: screenState.footer.isLastStep,
+              isLoading: screenState.footer.isLoading,
+              primaryLabel: screenState.footer.primaryLabel,
+              onPrimary: () =>
+                  _handlePrimaryIntent(screenState.footer.primaryIntent),
+              onSaveDraft: screenState.footer.saveDraftIntent == null
+                  ? null
+                  : () => _handleSaveDraftIntent(
+                      screenState.footer.saveDraftIntent!,
+                    ),
             ),
           ],
         ),
       ),
     );
   }
+}
 
-  Widget _buildEditClubScaffold({
-    required CatchTokens tokens,
-    required bool isSubmitting,
-    required String? mutationError,
-  }) {
+class HostClubEditScaffold extends StatelessWidget {
+  const HostClubEditScaffold({
+    super.key,
+    required this.scaffoldState,
+    required this.media,
+    required this.mutationError,
+    required this.basicsFormKey,
+    required this.defaultsFormKey,
+    required this.eventSuccessFormKey,
+    required this.autovalidateMode,
+    required this.editIdentityHasError,
+    required this.nameController,
+    required this.selectedCity,
+    required this.rawCityName,
+    required this.areaController,
+    required this.descriptionController,
+    required this.instagramController,
+    required this.phoneController,
+    required this.emailController,
+    required this.hostDefaults,
+    required this.currencyCode,
+    required this.onIntent,
+    required this.onPickCity,
+  });
+
+  final HostClubEditScaffoldState scaffoldState;
+  final HostClubCreateMediaState media;
+  final String? mutationError;
+  final GlobalKey<FormState> basicsFormKey;
+  final GlobalKey<FormState> defaultsFormKey;
+  final GlobalKey<FormState> eventSuccessFormKey;
+  final AutovalidateMode autovalidateMode;
+  final bool editIdentityHasError;
+  final TextEditingController nameController;
+  final CityOption? selectedCity;
+  final String? rawCityName;
+  final TextEditingController areaController;
+  final TextEditingController descriptionController;
+  final TextEditingController instagramController;
+  final TextEditingController phoneController;
+  final TextEditingController emailController;
+  final ClubHostDefaults hostDefaults;
+  final String currencyCode;
+  final HostClubCreateRouteIntentCallback onIntent;
+  final HostClubCreatePickCityCallback onPickCity;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
     return Scaffold(
-      backgroundColor: tokens.bg,
+      backgroundColor: t.bg,
       appBar: CatchTopBar(
         title: 'Edit club',
         leadingType: CatchTopBarLeading.back,
-        onBack: _back,
+        onBack: () => onIntent(const HostClubCreateBackIntent()),
       ),
       body: Column(
         children: [
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(
-                CatchSpacing.s5,
-                CatchSpacing.s4,
-                CatchSpacing.s5,
-                CatchSpacing.s7,
-              ),
+              padding: CatchInsets.formEditBodyRelaxed,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   CreateClubProfileImagePicker(
-                    imageBytes: _profileImage?.bytes,
-                    existingImageUrl: widget.initialClub?.profileImageUrl,
-                    onTap: isSubmitting ? null : _pickProfileImage,
+                    imageBytes: media.profileImageBytes,
+                    existingImageUrl: media.existingProfileImageUrl,
+                    onTap: scaffoldState.mediaEnabled
+                        ? () => onIntent(
+                            const HostClubCreatePickProfileImageIntent(),
+                          )
+                        : null,
                     variant: CreateClubProfileImagePickerVariant.editLogo,
                   ),
                   gapH20,
                   CreateClubPhotosPicker(
-                    photos: _clubPhotoPreviews,
-                    existingImageUrl: _clubPhotos.isEmpty
-                        ? widget.initialClub?.imageUrl
+                    photos: media.clubPhotoPreviews,
+                    existingImageUrl: media.existingCoverImageUrl,
+                    onAddPhotos: scaffoldState.mediaEnabled
+                        ? () => onIntent(
+                            const HostClubCreatePickClubPhotosIntent(),
+                          )
                         : null,
-                    onAddPhotos: isSubmitting ? null : _pickClubPhotos,
-                    onRemovePhoto: isSubmitting ? null : _removeClubPhoto,
-                    onReorderPhoto: isSubmitting ? null : _reorderClubPhoto,
+                    onRemovePhoto: scaffoldState.mediaEnabled
+                        ? (index) => onIntent(
+                            HostClubCreateRemoveClubPhotoIntent(index),
+                          )
+                        : null,
+                    onReorderPhoto: scaffoldState.mediaEnabled
+                        ? (fromIndex, toIndex) => onIntent(
+                            HostClubCreateReorderClubPhotoIntent(
+                              fromIndex: fromIndex,
+                              toIndex: toIndex,
+                            ),
+                          )
+                        : null,
                     variant: CreateClubPhotosPickerVariant.editStrip,
                   ),
                   Form(
-                    key: _basicsFormKey,
-                    autovalidateMode: _editSubmitAttempted
-                        ? AutovalidateMode.always
-                        : widget.formAutovalidateMode,
+                    key: basicsFormKey,
+                    autovalidateMode: autovalidateMode,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        _buildEditClubSection(
-                          context: context,
+                        HostClubEditSection(
                           label: 'Identity',
                           child: CatchSection.contained(
-                            hasError: _editIdentityHasError,
+                            hasError: editIdentityHasError,
                             children: [
                               CatchField.input(
                                 title: 'Club name',
-                                controller: _nameController,
-                                onChanged: _handleEditIdentityChanged,
+                                controller: nameController,
+                                onChanged: (value) => onIntent(
+                                  HostClubCreateIdentityChangedIntent(value),
+                                ),
                                 icon: CatchIcons.groupOutlined,
                                 textCapitalization: TextCapitalization.words,
                                 textInputAction: TextInputAction.next,
@@ -686,16 +930,18 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                                   return null;
                                 },
                               ),
-                              _buildEditClubCityField(
-                                city: cityOptionByName(_selectedCity),
-                                rawCityName: _selectedCity,
-                                enabled: !isSubmitting,
-                                onPickCity: _pickCityForEdit,
+                              HostClubEditCityField(
+                                city: selectedCity,
+                                rawCityName: rawCityName,
+                                enabled: scaffoldState.cityPickerEnabled,
+                                onPickCity: onPickCity,
                               ),
                               CatchField.input(
                                 title: 'Area / neighbourhood',
-                                controller: _areaController,
-                                onChanged: _handleEditIdentityChanged,
+                                controller: areaController,
+                                onChanged: (value) => onIntent(
+                                  HostClubCreateIdentityChangedIntent(value),
+                                ),
                                 icon: CatchIcons.locationOnOutlined,
                                 placeholder: 'e.g. Bandra, Koramangala',
                                 textCapitalization: TextCapitalization.words,
@@ -709,8 +955,10 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                               ),
                               CatchField.input(
                                 title: 'Description',
-                                controller: _descriptionController,
-                                onChanged: _handleEditIdentityChanged,
+                                controller: descriptionController,
+                                onChanged: (value) => onIntent(
+                                  HostClubCreateIdentityChangedIntent(value),
+                                ),
                                 icon: CatchIcons.editNoteOutlined,
                                 maxLines: 4,
                                 minLines: 2,
@@ -727,28 +975,27 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                             ],
                           ),
                         ),
-                        _buildEditClubSection(
-                          context: context,
+                        HostClubEditSection(
                           label: 'Contact',
                           child: CatchSection.contained(
                             children: [
                               CatchField.input(
                                 title: 'Instagram',
-                                controller: _instagramController,
+                                controller: instagramController,
                                 icon: CatchIcons.alternateEmailOutlined,
                                 leadingUnit: '@',
                                 textInputAction: TextInputAction.next,
                               ),
                               CatchField.input(
                                 title: 'Phone',
-                                controller: _phoneController,
+                                controller: phoneController,
                                 icon: CatchIcons.phoneOutlined,
                                 keyboardType: TextInputType.phone,
                                 textInputAction: TextInputAction.next,
                               ),
                               CatchField.input(
                                 title: 'Email',
-                                controller: _emailController,
+                                controller: emailController,
                                 icon: CatchIcons.emailOutlined,
                                 keyboardType: TextInputType.emailAddress,
                                 textInputAction: TextInputAction.done,
@@ -759,27 +1006,28 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                       ],
                     ),
                   ),
-                  _buildEditClubSection(
-                    context: context,
+                  HostClubEditSection(
                     label: 'Event defaults',
                     subtitle: 'Prefill every new event this club creates.',
                     child: Column(
                       children: [
                         ClubHostDefaultsStep(
-                          formKey: _defaultsFormKey,
-                          defaults: _hostDefaults,
-                          currencyCode: currencyCodeForCityName(_selectedCity),
-                          onChanged: (defaults) =>
-                              setState(() => _hostDefaults = defaults),
+                          formKey: defaultsFormKey,
+                          defaults: hostDefaults,
+                          currencyCode: currencyCode,
+                          onChanged: (defaults) => onIntent(
+                            HostClubCreateDefaultsChangedIntent(defaults),
+                          ),
                           scrollable: false,
                           padding: EdgeInsets.zero,
                         ),
                         gapH16,
                         ClubEventSuccessDefaultsStep(
-                          formKey: _eventSuccessFormKey,
-                          defaults: _hostDefaults,
-                          onChanged: (defaults) =>
-                              setState(() => _hostDefaults = defaults),
+                          formKey: eventSuccessFormKey,
+                          defaults: hostDefaults,
+                          onChanged: (defaults) => onIntent(
+                            HostClubCreateDefaultsChangedIntent(defaults),
+                          ),
                           scrollable: false,
                           padding: EdgeInsets.zero,
                         ),
@@ -790,72 +1038,34 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
               ),
             ),
           ),
-          if (mutationError != null) CatchErrorBanner(message: mutationError),
-          _buildEditClubFooter(isLoading: isSubmitting, onSave: _submitEdit),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStepperFooter({
-    required bool isLastStep,
-    required bool isLoading,
-    required VoidCallback onNext,
-    required VoidCallback? onSaveDraft,
-    required String lastStepLabel,
-  }) {
-    final t = CatchTokens.of(context);
-    return CatchBottomDock(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s4,
-        CatchSpacing.s3,
-        CatchSpacing.s4,
-        CatchSpacing.s3,
-      ),
-      child: Row(
-        children: [
-          if (onSaveDraft != null) ...[
-            Expanded(
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: CatchButton(
-                  label: 'Save Draft',
-                  onPressed: isLoading ? null : onSaveDraft,
-                  variant: CatchButtonVariant.ghost,
-                  size: CatchButtonSize.lg,
-                  icon: Icon(CatchIcons.saveOutlined),
-                  foregroundColor: t.primary,
-                ),
-              ),
-            ),
-            const SizedBox(width: CatchSpacing.s3),
-          ],
-          Expanded(
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: CatchButton(
-                label: isLastStep ? lastStepLabel : 'Next',
-                onPressed: onNext,
-                isLoading: isLoading,
-                fullWidth: true,
-                icon: isLastStep ? null : Icon(CatchIcons.arrowForwardRounded),
-              ),
-            ),
+          if (mutationError != null) CatchErrorBanner(message: mutationError!),
+          HostClubEditFooter(
+            footer: scaffoldState.footer,
+            onSave: () => onIntent(const HostClubCreateSaveEditIntent()),
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildEditClubSection({
-    required BuildContext context,
-    required String label,
-    required Widget child,
-    String? subtitle,
-  }) {
+class HostClubEditSection extends StatelessWidget {
+  const HostClubEditSection({
+    super.key,
+    required this.label,
+    required this.child,
+    this.subtitle,
+  });
+
+  final String label;
+  final Widget child;
+  final String? subtitle;
+
+  @override
+  Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return Padding(
-      padding: const EdgeInsets.only(top: CatchSpacing.s2),
+      padding: CatchInsets.formSectionTop,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -865,7 +1075,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
           if (subtitle != null) ...[
             gapH4,
             Text(
-              subtitle,
+              subtitle!,
               style: CatchTextStyles.supporting(context, color: t.ink3),
             ),
           ],
@@ -875,18 +1085,29 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
       ),
     );
   }
+}
 
-  Widget _buildEditClubCityField({
-    required CityOption? city,
-    required String? rawCityName,
-    required bool enabled,
-    required Future<CityOption?> Function() onPickCity,
-  }) {
+class HostClubEditCityField extends StatelessWidget {
+  const HostClubEditCityField({
+    super.key,
+    required this.city,
+    required this.rawCityName,
+    required this.enabled,
+    required this.onPickCity,
+  });
+
+  final CityOption? city;
+  final String? rawCityName;
+  final bool enabled;
+  final HostClubCreatePickCityCallback onPickCity;
+
+  @override
+  Widget build(BuildContext context) {
     return FormField<CityOption>(
       initialValue: city,
       validator: (_) {
-        final hasCity =
-            city != null || (rawCityName != null && rawCityName.isNotEmpty);
+        final raw = rawCityName;
+        final hasCity = city != null || (raw != null && raw.isNotEmpty);
         return hasCity ? null : 'Please select a city';
       },
       builder: (field) {
@@ -901,7 +1122,9 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
           error: field.errorText,
           onTap: enabled
               ? () async {
-                  final picked = await onPickCity();
+                  final picked = await onPickCity(
+                    const HostClubCreatePickCityIntent(),
+                  );
                   if (picked != null) field.didChange(picked);
                 }
               : null,
@@ -909,24 +1132,28 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
       },
     );
   }
+}
 
-  Widget _buildEditClubFooter({
-    required bool isLoading,
-    required VoidCallback onSave,
-  }) {
+class HostClubEditFooter extends StatelessWidget {
+  const HostClubEditFooter({
+    super.key,
+    required this.footer,
+    required this.onSave,
+  });
+
+  final HostClubCreateFooterState footer;
+  final VoidCallback onSave;
+
+  @override
+  Widget build(BuildContext context) {
     return CatchBottomDock(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s5,
-        CatchSpacing.s3,
-        CatchSpacing.s5,
-        CatchSpacing.micro18,
-      ),
+      padding: CatchInsets.formActionDock,
       child: CatchButton(
-        label: 'Save changes',
+        label: footer.primaryLabel,
         icon: Icon(CatchIcons.saveOutlined),
-        isLoading: isLoading,
+        isLoading: footer.isLoading,
         fullWidth: true,
-        onPressed: isLoading ? null : onSave,
+        onPressed: footer.primaryEnabled ? onSave : null,
       ),
     );
   }

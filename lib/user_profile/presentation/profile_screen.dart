@@ -7,13 +7,15 @@ import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_pager_focus_boundary.dart';
-import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
+import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
-import 'package:catch_dating_app/swipes/presentation/profile_surface.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/presentation/self_profile_screen_state.dart';
+import 'package:catch_dating_app/user_profile/presentation/self_profile_screen_state_provider.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/preview_scroll_physics.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/preview_tab.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_insights_tab.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/preview_scroll_physics.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_sliver_header.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
 import 'package:flutter/material.dart';
@@ -89,8 +91,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    final userProfileAsync = ref.watch(watchUserProfileProvider);
-    final uploadState = ref.watch(photoUploadControllerProvider);
+    final screenState = ref.watch(selfProfileScreenStateProvider);
 
     ref.listen(photoUploadControllerProvider, (_, state) {
       final uploadError = state.uploadError;
@@ -134,87 +135,119 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                 ),
               ];
             },
-            body: userProfileAsync.when<Widget>(
-              loading: () => TabBarView(
-                controller: _tabController,
-                children: [
-                  ProfileTabScrollView(
-                    scrollKey: const PageStorageKey('profile-edit-tab-loading'),
-                    slivers: const [ProfileTabSkeletonSliverBody()],
-                  ),
-                  ProfileTabScrollView(
-                    scrollKey: const PageStorageKey(
-                      'profile-preview-tab-loading',
-                    ),
-                    slivers: [
-                      PreviewTabSkeletonSliverBody(
-                        scrollController: _previewScrollController,
-                        onForwardScroll: _handlePreviewForwardScroll,
-                        onLeadingOverscroll: _handlePreviewLeadingOverscroll,
-                      ),
-                    ],
-                  ),
-                  ProfileTabScrollView(
-                    scrollKey: const PageStorageKey(
-                      'profile-insights-tab-loading',
-                    ),
-                    slivers: const [ProfileInsightsTabSliverBody()],
-                  ),
-                ],
-              ),
-              error: (e, _) => CatchErrorState.fromError(
-                e,
-                context: AppErrorContext.profile,
-                onRetry: () => ref.invalidate(watchUserProfileProvider),
-              ),
-              data: (user) {
-                if (user == null) {
-                  return _profileUnavailableBody();
-                }
-
-                return TabBarView(
-                  controller: _tabController,
-                  children: [
-                    ProfileTabScrollView(
-                      scrollKey: const PageStorageKey(
-                        'profile-edit-tab-scroll',
-                      ),
-                      slivers: [
-                        ProfileTabSliverBody(
-                          user: user,
-                          uploadState: uploadState,
-                        ),
-                      ],
-                    ),
-                    ProfileTabScrollView(
-                      scrollKey: const PageStorageKey(
-                        'profile-preview-tab-scroll',
-                      ),
-                      slivers: [
-                        PreviewTabSliverBody(
-                          profile: publicProfileFromUserProfile(user),
-                          scrollController: _previewScrollController,
-                          onForwardScroll: _handlePreviewForwardScroll,
-                          onLeadingOverscroll: _handlePreviewLeadingOverscroll,
-                        ),
-                      ],
-                    ),
-                    ProfileTabScrollView(
-                      scrollKey: const PageStorageKey(
-                        'profile-insights-tab-scroll',
-                      ),
-                      slivers: const [ProfileInsightsTabSliverBody()],
-                    ),
-                  ],
-                );
-              },
+            body: SelfProfileTabBody(
+              state: screenState,
+              controller: _tabController,
+              previewScrollController: _previewScrollController,
+              onPreviewForwardScroll: _handlePreviewForwardScroll,
+              onPreviewLeadingOverscroll: _handlePreviewLeadingOverscroll,
+              onRetry: () => _handleRetry(screenState.retryIntent),
             ),
           ),
         ),
       ),
     );
   }
+
+  void _handleRetry(SelfProfileRetryIntent? intent) {
+    switch (intent) {
+      case SelfProfileRetryIntent.reloadProfile:
+        ref.invalidate(watchUserProfileProvider);
+      case null:
+        break;
+    }
+  }
 }
+
+class SelfProfileTabBody extends StatelessWidget {
+  const SelfProfileTabBody({
+    super.key,
+    required this.state,
+    required this.controller,
+    required this.previewScrollController,
+    required this.onPreviewForwardScroll,
+    required this.onPreviewLeadingOverscroll,
+    this.onRetry,
+  });
+
+  final SelfProfileScreenState state;
+  final TabController controller;
+  final ScrollController previewScrollController;
+  final double Function(double scrollDelta) onPreviewForwardScroll;
+  final ValueChanged<double> onPreviewLeadingOverscroll;
+  final VoidCallback? onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    switch (state.status) {
+      case SelfProfileRouteStatus.loading:
+        return TabBarView(
+          controller: controller,
+          children: [
+            const ProfileTabScrollView(
+              scrollKey: PageStorageKey('profile-edit-tab-loading'),
+              slivers: [ProfileTabSkeletonSliverBody()],
+            ),
+            ProfileTabScrollView(
+              scrollKey: const PageStorageKey('profile-preview-tab-loading'),
+              slivers: [
+                PreviewTabSkeletonSliverBody(
+                  scrollController: previewScrollController,
+                  onForwardScroll: onPreviewForwardScroll,
+                  onLeadingOverscroll: onPreviewLeadingOverscroll,
+                ),
+              ],
+            ),
+            const ProfileTabScrollView(
+              scrollKey: PageStorageKey('profile-insights-tab-loading'),
+              slivers: [ProfileInsightsTabSliverBody()],
+            ),
+          ],
+        );
+      case SelfProfileRouteStatus.error:
+        return CatchErrorState.fromError(
+          state.error!,
+          context: AppErrorContext.profile,
+          onRetry: onRetry,
+        );
+      case SelfProfileRouteStatus.unavailable:
+        return const ProfileUnavailableBody();
+      case SelfProfileRouteStatus.ready:
+        final user = state.user!;
+        final previewProfile = state.previewProfile!;
+        return TabBarView(
+          controller: controller,
+          children: [
+            ProfileTabScrollView(
+              scrollKey: const PageStorageKey('profile-edit-tab-scroll'),
+              slivers: [
+                ProfileTabSliverBody(
+                  user: user,
+                  uploadState: state.uploadState,
+                ),
+              ],
+            ),
+            ProfileTabScrollView(
+              scrollKey: const PageStorageKey('profile-preview-tab-scroll'),
+              slivers: [
+                PreviewTabSliverBody(
+                  profile: previewProfile,
+                  scrollController: previewScrollController,
+                  onForwardScroll: onPreviewForwardScroll,
+                  onLeadingOverscroll: onPreviewLeadingOverscroll,
+                ),
+              ],
+            ),
+            const ProfileTabScrollView(
+              scrollKey: PageStorageKey('profile-insights-tab-scroll'),
+              slivers: [ProfileInsightsTabSliverBody()],
+            ),
+          ],
+        );
+    }
+  }
+}
+
 class ProfileTabScrollView extends StatelessWidget {
   const ProfileTabScrollView({
     super.key,
@@ -234,7 +267,9 @@ class ProfileTabScrollView extends StatelessWidget {
             key: scrollKey,
             slivers: [
               SliverOverlapInjector(
-                handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+                handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
+                  context,
+                ),
               ),
               ...slivers,
             ],
@@ -245,14 +280,19 @@ class ProfileTabScrollView extends StatelessWidget {
   }
 }
 
-Widget _profileUnavailableBody() {
-  return Center(
-    child: CatchEmptyState(
-      icon: CatchIcons.personOffOutlined,
-      title: 'Profile not available',
-      message: 'Finish onboarding or sign in again to load your profile.',
-    ),
-  );
+class ProfileUnavailableBody extends StatelessWidget {
+  const ProfileUnavailableBody({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: CatchEmptyState(
+        icon: CatchIcons.personOffOutlined,
+        title: 'Profile not available',
+        message: 'Finish onboarding or sign in again to load your profile.',
+      ),
+    );
+  }
 }
 
 class PreviewTabSkeletonSliverBody extends StatelessWidget {

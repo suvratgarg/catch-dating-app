@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/safety/presentation/settings_account_state.dart';
+import 'package:catch_dating_app/safety/presentation/settings_account_view_model.dart';
 import 'package:catch_dating_app/safety/presentation/settings_controller.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,7 +25,7 @@ void main() {
       ),
     ];
 
-    final state = SettingsAccountState.fromAsync(
+    final state = buildSettingsAccountState(
       profile: AsyncData<UserProfile?>(user),
       preferences: SettingsPreferenceValues.fromProfile(user),
       blockedUsers: AsyncData(blockedUsers),
@@ -68,19 +69,17 @@ void main() {
     final error = StateError('profile failed');
 
     expect(
-      SettingsProfileState.fromAsync(const AsyncLoading<UserProfile?>()).status,
+      buildSettingsProfileState(const AsyncLoading<UserProfile?>()).status,
       SettingsProfileStatus.loading,
     );
     expect(
-      SettingsProfileState.fromAsync(
+      buildSettingsProfileState(
         AsyncError<UserProfile?>(error, StackTrace.empty),
       ).error,
       error,
     );
     expect(
-      SettingsProfileState.fromAsync(
-        const AsyncData<UserProfile?>(null),
-      ).status,
+      buildSettingsProfileState(const AsyncData<UserProfile?>(null)).status,
       SettingsProfileStatus.missing,
     );
   });

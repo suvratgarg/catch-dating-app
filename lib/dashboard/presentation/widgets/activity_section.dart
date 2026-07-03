@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/dashboard/presentation/notification_route_util.dart';
 import 'package:catch_dating_app/dashboard/presentation/notifications_list_state.dart';
+import 'package:catch_dating_app/dashboard/presentation/notifications_list_view_model.dart';
 import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:flutter/material.dart';
@@ -196,8 +197,7 @@ class ActivitySectionSkeleton extends StatelessWidget {
       children: [
         CatchSkeleton.text(width: CatchLayout.skeletonTextMetaLabelWidth),
         gapH8,
-        for (var i = 0; i < count; i++)
-          NotificationRowSkeleton(divider: i > 0),
+        for (var i = 0; i < count; i++) NotificationRowSkeleton(divider: i > 0),
       ],
     );
   }
@@ -230,7 +230,9 @@ class NotificationRowSkeleton extends StatelessWidget {
                   children: [
                     Expanded(child: CatchSkeleton.text()),
                     gapW8,
-                    CatchSkeleton.text(width: CatchLayout.skeletonTextTimeWidth),
+                    CatchSkeleton.text(
+                      width: CatchLayout.skeletonTextTimeWidth,
+                    ),
                   ],
                 ),
                 gapH6,

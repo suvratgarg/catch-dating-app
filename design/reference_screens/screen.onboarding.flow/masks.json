@@ -1,11 +1,19 @@
 {
   "version": 1,
   "screenId": "screen.onboarding.flow",
-  "updated": "2026-06-22",
+  "updated": "2026-07-03",
   "regions": [
     {
       "id": "status_bar",
-      "stateIds": ["welcome_entry"],
+      "stateIds": [
+        "welcome_entry",
+        "name_dob_step",
+        "gender_interest_step",
+        "instagram_step",
+        "photos_photo_gate",
+        "prompts_step",
+        "running_prefs_step"
+      ],
       "rect": {
         "x": 0,
         "y": 0,
@@ -16,7 +24,15 @@
     },
     {
       "id": "bottom_safe_area",
-      "stateIds": ["welcome_entry"],
+      "stateIds": [
+        "welcome_entry",
+        "name_dob_step",
+        "gender_interest_step",
+        "instagram_step",
+        "photos_photo_gate",
+        "prompts_step",
+        "running_prefs_step"
+      ],
       "rect": {
         "x": 0,
         "y": 772,

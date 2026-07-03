@@ -101,3 +101,25 @@ export function readableError(error: unknown): string {
     error.message :
     "Something went wrong. Please try again.";
 }
+
+export function claimContactValidationMessage({
+  businessEmail,
+  businessPhone,
+  parsedProofUrls,
+  requesterName,
+  requesterRole,
+}: {
+  businessEmail: string | null;
+  businessPhone: string | null;
+  parsedProofUrls: string[];
+  requesterName: string;
+  requesterRole: ClaimRole | "";
+}) {
+  if (!requesterName.trim() || !requesterRole) {
+    return "Add your name and role before submitting.";
+  }
+  if (!businessEmail && !businessPhone && parsedProofUrls.length === 0) {
+    return "Add a business email, phone, or proof link.";
+  }
+  return null;
+}

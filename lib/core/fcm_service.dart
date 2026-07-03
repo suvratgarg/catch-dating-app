@@ -252,6 +252,7 @@ class FcmService {
   }
 }
 
+// keepalive: FCM service owns app-wide token/message registration lifecycle.
 @Riverpod(keepAlive: true)
 FcmService fcmService(Ref ref) {
   final service = FcmService(

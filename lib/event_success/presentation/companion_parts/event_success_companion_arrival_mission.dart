@@ -1,14 +1,30 @@
 part of '../event_success_companion_screen.dart';
 
-class FirstHelloCheckInCard extends ConsumerStatefulWidget {
+@immutable
+class FirstHelloActionState {
+  const FirstHelloActionState({
+    this.startPending = false,
+    this.completePending = false,
+    this.skipPending = false,
+  });
+
+  final bool startPending;
+  final bool completePending;
+  final bool skipPending;
+}
+
+class FirstHelloCheckInCard extends StatefulWidget {
   const FirstHelloCheckInCard({
     required this.mission,
+    required this.actionState,
     required this.onStart,
     required this.onComplete,
     required this.onSkip,
+    this.onPlayCompleteEffect,
   });
 
   final EventSuccessArrivalMission? mission;
+  final FirstHelloActionState actionState;
   final Future<void> Function()? onStart;
   final Future<void> Function(
     EventSuccessArrivalMission mission,
@@ -16,13 +32,13 @@ class FirstHelloCheckInCard extends ConsumerStatefulWidget {
   )?
   onComplete;
   final VoidCallback? onSkip;
+  final Future<void> Function()? onPlayCompleteEffect;
 
   @override
-  ConsumerState<FirstHelloCheckInCard> createState() =>
-      _FirstHelloCheckInCardState();
+  State<FirstHelloCheckInCard> createState() => _FirstHelloCheckInCardState();
 }
 
-class _FirstHelloCheckInCardState extends ConsumerState<FirstHelloCheckInCard>
+class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
     with SingleTickerProviderStateMixin {
   String? _answerId;
   bool _starting = false;
@@ -50,6 +66,9 @@ class _FirstHelloCheckInCardState extends ConsumerState<FirstHelloCheckInCard>
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final mission = widget.mission;
+    final starting = widget.actionState.startPending || _starting;
+    final saving = widget.actionState.completePending || _saving;
+    final skipping = widget.actionState.skipPending;
     if (mission == null) {
       return StagePanel(
         child: Column(
@@ -106,8 +125,8 @@ class _FirstHelloCheckInCardState extends ConsumerState<FirstHelloCheckInCard>
                   CatchButton(
                     label: 'Start First Hello',
                     icon: Icon(CatchIcons.playArrowRounded),
-                    isLoading: _starting,
-                    onPressed: _starting || widget.onStart == null
+                    isLoading: starting,
+                    onPressed: starting || widget.onStart == null
                         ? null
                         : _start,
                     fullWidth: true,
@@ -117,7 +136,8 @@ class _FirstHelloCheckInCardState extends ConsumerState<FirstHelloCheckInCard>
                     label: 'Use normal check-in',
                     variant: CatchButtonVariant.ghost,
                     icon: Icon(CatchIcons.qrCode2Rounded),
-                    onPressed: _starting ? null : widget.onSkip,
+                    isLoading: skipping,
+                    onPressed: starting || skipping ? null : widget.onSkip,
                     fullWidth: true,
                   ),
                 ],
@@ -132,7 +152,14 @@ class _FirstHelloCheckInCardState extends ConsumerState<FirstHelloCheckInCard>
     return Stack(
       children: [
         StagePanel(
-          child: _missionEditor(context, mission, selectedAnswerId, t),
+          child: _missionEditor(
+            context,
+            mission,
+            selectedAnswerId,
+            t,
+            saving: saving,
+            skipping: skipping,
+          ),
         ),
         if (_celebrating)
           Positioned.fill(
@@ -186,8 +213,10 @@ class _FirstHelloCheckInCardState extends ConsumerState<FirstHelloCheckInCard>
     BuildContext context,
     EventSuccessArrivalMission mission,
     String? selectedAnswerId,
-    CatchTokens t,
-  ) {
+    CatchTokens t, {
+    required bool saving,
+    required bool skipping,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -243,7 +272,7 @@ class _FirstHelloCheckInCardState extends ConsumerState<FirstHelloCheckInCard>
               StageBouncyChip(
                 label: option.label,
                 active: selectedAnswerId == option.id,
-                onTap: _saving
+                onTap: saving
                     ? null
                     : () => setState(() => _answerId = option.id),
               ),
@@ -262,10 +291,10 @@ class _FirstHelloCheckInCardState extends ConsumerState<FirstHelloCheckInCard>
               CatchButton(
                 label: 'Complete check-in',
                 icon: Icon(CatchIcons.checkRounded),
-                isLoading: _saving,
+                isLoading: saving,
                 onPressed:
                     selectedAnswerId == null ||
-                        _saving ||
+                        saving ||
                         widget.onComplete == null
                     ? null
                     : () => _complete(selectedAnswerId),
@@ -276,7 +305,8 @@ class _FirstHelloCheckInCardState extends ConsumerState<FirstHelloCheckInCard>
                 label: 'Can\'t find them',
                 variant: CatchButtonVariant.ghost,
                 icon: Icon(CatchIcons.swapHorizRounded),
-                onPressed: _saving ? null : widget.onSkip,
+                isLoading: skipping,
+                onPressed: saving || skipping ? null : widget.onSkip,
                 fullWidth: true,
               ),
             ],
@@ -307,11 +337,8 @@ class _FirstHelloCheckInCardState extends ConsumerState<FirstHelloCheckInCard>
     });
     // Layer haptic + chime first so the user feels the celebration land
     // before the gradient sweep finishes.
-    unawaited(
-      ref
-          .read(eventSuccessLiveEffectsControllerProvider)
-          .play(EventSuccessLiveEffectKind.guideComplete),
-    );
+    final playCompleteEffect = widget.onPlayCompleteEffect;
+    if (playCompleteEffect != null) unawaited(playCompleteEffect());
     final celebrationFuture = _kStageAnimationsEnabled
         ? _celebration.forward(from: 0)
         : Future<void>.value();

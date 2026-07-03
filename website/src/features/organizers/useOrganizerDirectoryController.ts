@@ -1,4 +1,5 @@
-import {type FormEvent, useEffect, useMemo, useState} from "react";
+import {type FormEvent, useCallback, useMemo} from "react";
+import {useSearchParams} from "react-router";
 import {trackMarketingEvent} from "../../analytics";
 import {trackOrganizerSearchAppearance} from "./analytics";
 import {hostListings} from "./data";
@@ -11,15 +12,18 @@ import {
   isVerifiedListing,
   organizerAppearanceContext,
   organizerDirectorySearchText,
+  organizerDirectorySearchParams,
   readOrganizerFiltersFromUrl,
-  replaceOrganizerDirectoryUrl,
   type OrganizerDirectoryFilters,
   type OrganizerSort,
   type OrganizerStatusFilter,
 } from "./selectors";
 import type {HostListing} from "./types";
 
+type FieldUpdater<T> = T | ((current: T) => T);
+
 export function useOrganizerDirectoryController() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const cityOptions = useMemo(
     () => [...new Set(hostListings.map((listing) => listing.city))].sort(),
     []
@@ -28,52 +32,81 @@ export function useOrganizerDirectoryController() {
     () => [...new Set(hostListings.flatMap((listing) => listing.formats))].sort(),
     []
   );
-  const initialFilters = useMemo(
-    () => readOrganizerFiltersFromUrl(cityOptions, formatOptions),
-    [cityOptions, formatOptions]
+  const currentFilters = useMemo(
+    () => readOrganizerFiltersFromUrl(cityOptions, formatOptions, searchParams),
+    [cityOptions, formatOptions, searchParams]
   );
-  const [query, setQuery] = useState(initialFilters.query);
-  const [statusFilter, setStatusFilter] =
-    useState<OrganizerStatusFilter>(initialFilters.statusFilter);
-  const [formatFilter, setFormatFilter] = useState(initialFilters.formatFilter);
-  const [cityFilter, setCityFilter] = useState(initialFilters.cityFilter);
-  const [upcomingOnly, setUpcomingOnly] = useState(initialFilters.upcomingOnly);
-  const [minRating, setMinRating] = useState(initialFilters.minRating);
-  const [sort, setSort] = useState<OrganizerSort>(initialFilters.sort);
+  const {
+    cityFilter,
+    formatFilter,
+    minRating,
+    query,
+    sort,
+    statusFilter,
+    upcomingOnly,
+  } = currentFilters;
   const normalizedQuery = query.trim().toLowerCase();
   const queryTerms = useMemo(
     () => normalizedQuery.split(/\s+/).filter(Boolean),
     [normalizedQuery]
   );
-  const currentFilters: OrganizerDirectoryFilters = {
-    query,
-    statusFilter,
-    formatFilter,
-    cityFilter,
-    upcomingOnly,
-    minRating,
-    sort,
-  };
   const appearanceContext = organizerAppearanceContext(currentFilters);
 
-  useEffect(() => {
-    const syncFromUrl = () => {
-      const next = readOrganizerFiltersFromUrl(cityOptions, formatOptions);
-      setQuery(next.query);
-      setStatusFilter(next.statusFilter);
-      setFormatFilter(next.formatFilter);
-      setCityFilter(next.cityFilter);
-      setUpcomingOnly(next.upcomingOnly);
-      setMinRating(next.minRating);
-      setSort(next.sort);
-    };
-    window.addEventListener("popstate", syncFromUrl);
-    return () => window.removeEventListener("popstate", syncFromUrl);
-  }, [cityOptions, formatOptions]);
+  const updateFilters = useCallback((
+    updater: OrganizerDirectoryFilters | ((current: OrganizerDirectoryFilters) => OrganizerDirectoryFilters)
+  ) => {
+    const next = typeof updater === "function" ? updater(currentFilters) : updater;
+    setSearchParams(organizerDirectorySearchParams(next), {replace: true});
+  }, [currentFilters, setSearchParams]);
 
-  useEffect(() => {
-    replaceOrganizerDirectoryUrl(currentFilters);
-  }, [cityFilter, formatFilter, minRating, query, sort, statusFilter, upcomingOnly]);
+  const setQuery = useCallback((next: FieldUpdater<string>) => {
+    updateFilters((current) => ({
+      ...current,
+      query: resolveFieldUpdate(next, current.query),
+    }));
+  }, [updateFilters]);
+
+  const setStatusFilter = useCallback((next: FieldUpdater<OrganizerStatusFilter>) => {
+    updateFilters((current) => ({
+      ...current,
+      statusFilter: resolveFieldUpdate(next, current.statusFilter),
+    }));
+  }, [updateFilters]);
+
+  const setFormatFilter = useCallback((next: FieldUpdater<string>) => {
+    updateFilters((current) => ({
+      ...current,
+      formatFilter: resolveFieldUpdate(next, current.formatFilter),
+    }));
+  }, [updateFilters]);
+
+  const setCityFilter = useCallback((next: FieldUpdater<string>) => {
+    updateFilters((current) => ({
+      ...current,
+      cityFilter: resolveFieldUpdate(next, current.cityFilter),
+    }));
+  }, [updateFilters]);
+
+  const setUpcomingOnly = useCallback((next: FieldUpdater<boolean>) => {
+    updateFilters((current) => ({
+      ...current,
+      upcomingOnly: resolveFieldUpdate(next, current.upcomingOnly),
+    }));
+  }, [updateFilters]);
+
+  const setMinRating = useCallback((next: FieldUpdater<number>) => {
+    updateFilters((current) => ({
+      ...current,
+      minRating: resolveFieldUpdate(next, current.minRating),
+    }));
+  }, [updateFilters]);
+
+  const setSort = useCallback((next: FieldUpdater<OrganizerSort>) => {
+    updateFilters((current) => ({
+      ...current,
+      sort: resolveFieldUpdate(next, current.sort),
+    }));
+  }, [updateFilters]);
 
   const results = useMemo(() => {
     const filtered = hostListings.filter((listing) => {
@@ -115,7 +148,6 @@ export function useOrganizerDirectoryController() {
 
   function handleSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    replaceOrganizerDirectoryUrl(currentFilters);
     trackMarketingEvent("organizer_search_submitted", {
       query: normalizedQuery,
       result_count: results.length,
@@ -133,14 +165,7 @@ export function useOrganizerDirectoryController() {
 
   function clearFilters() {
     const next = defaultOrganizerDirectoryFilters();
-    setQuery(next.query);
-    setStatusFilter(next.statusFilter);
-    setFormatFilter(next.formatFilter);
-    setCityFilter(next.cityFilter);
-    setUpcomingOnly(next.upcomingOnly);
-    setMinRating(next.minRating);
-    setSort(next.sort);
-    replaceOrganizerDirectoryUrl(next);
+    updateFilters(next);
     trackMarketingEvent("organizer_search_filters_cleared", {});
   }
 
@@ -170,4 +195,12 @@ export function useOrganizerDirectoryController() {
     summary,
     upcomingOnly,
   };
+}
+
+export type OrganizerDirectoryController = ReturnType<typeof useOrganizerDirectoryController>;
+
+function resolveFieldUpdate<T>(updater: FieldUpdater<T>, current: T) {
+  return typeof updater === "function" ?
+    (updater as (current: T) => T)(current) :
+    updater;
 }

@@ -19,12 +19,10 @@ final RegExp _stackedPromptNewlineCollapsePattern = RegExp(
   r'\n[ \t]*\n(?:[ \t]*\n)+',
 );
 
-int calculateAge(DateTime dateOfBirth, {DateTime? today}) {
-  final currentDate = today ?? DateTime.now();
-  int age = currentDate.year - dateOfBirth.year;
-  if (currentDate.month < dateOfBirth.month ||
-      (currentDate.month == dateOfBirth.month &&
-          currentDate.day < dateOfBirth.day)) {
+int calculateAge(DateTime dateOfBirth, {required DateTime today}) {
+  int age = today.year - dateOfBirth.year;
+  if (today.month < dateOfBirth.month ||
+      (today.month == dateOfBirth.month && today.day < dateOfBirth.day)) {
     age--;
   }
   return age;
@@ -32,16 +30,15 @@ int calculateAge(DateTime dateOfBirth, {DateTime? today}) {
 
 DateTime latestAllowedDateOfBirth({
   int minimumAge = minimumProfileAge,
-  DateTime? today,
+  required DateTime today,
 }) {
-  final now = today ?? DateTime.now();
-  return DateTime(now.year - minimumAge, now.month, now.day);
+  return DateTime(today.year - minimumAge, today.month, today.day);
 }
 
 bool isAtLeastAge(
   DateTime dateOfBirth, {
   int minimumAge = minimumProfileAge,
-  DateTime? today,
+  required DateTime today,
 }) {
   final normalizedDob = DateTime(
     dateOfBirth.year,
@@ -152,11 +149,14 @@ String? validateOptionalInstagramHandle(String? value) {
   return valid ? null : 'Enter a valid Instagram handle';
 }
 
-String? validateRequiredDateOfBirth(DateTime? dateOfBirth) {
+String? validateRequiredDateOfBirth(
+  DateTime? dateOfBirth, {
+  required DateTime today,
+}) {
   if (dateOfBirth == null) {
     return 'Please select your date of birth';
   }
-  if (!isAtLeastAge(dateOfBirth)) {
+  if (!isAtLeastAge(dateOfBirth, today: today)) {
     return 'You must be at least $minimumProfileAge years old';
   }
   return null;

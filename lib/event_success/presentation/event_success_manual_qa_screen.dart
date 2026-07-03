@@ -34,9 +34,11 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
-import 'package:catch_dating_app/events/presentation/attendance_sheet_view_model.dart';
-import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
-import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
+import 'package:catch_dating_app/events/events.dart'
+    show attendeeProfilesProvider;
+import 'package:catch_dating_app/events/shared/attendance_sheet_view_model.dart';
+import 'package:catch_dating_app/hosts/hosts.dart'
+    show HostEventManageScreen, HostEventManageSection;
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -728,6 +730,13 @@ class ManualQaSideBySide extends StatelessWidget {
                     onSaveCompatibilityAnswers: onCompatibilityAnswersSaved,
                     onCompleteArrivalMission: onFirstHelloCompleted,
                     onSkipArrivalMission: onFirstHelloSkipped,
+                    onSetMicroPodsIncluded: (include) =>
+                        onMicroPodsOptOutChanged(!include),
+                    onSetGuidedRotationsIncluded: (include) =>
+                        onGuidedRotationsOptOutChanged(!include),
+                    onSelfCheckIn: () async {
+                      onToggleAttendance(data.participation.uid);
+                    },
                   ),
                 ),
               ),
