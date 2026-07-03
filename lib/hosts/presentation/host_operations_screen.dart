@@ -16,6 +16,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/catch_analytics_bar.dart';
+import 'package:catch_dating_app/core/widgets/catch_analytics_kit.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
@@ -3060,7 +3061,12 @@ class HostAnalyticsReportView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        HostAnalyticsMetricGrid(metrics: report.summaryCards),
+        CatchAnalyticsMetricGrid(
+          metrics: [
+            for (final metric in report.summaryCards)
+              _hostMetricCardData(metric),
+          ],
+        ),
         gapH24,
         HostAnalyticsTrendPanel(points: report.trend),
         gapH24,
@@ -3075,100 +3081,6 @@ class HostAnalyticsReportView extends StatelessWidget {
         gapH24,
         HostAnalyticsDataQualityPanel(rows: report.dataQuality),
       ],
-    );
-  }
-}
-
-class HostAnalyticsMetricGrid extends StatelessWidget {
-  const HostAnalyticsMetricGrid({super.key, required this.metrics});
-
-  final List<HostAnalyticsMetricCard> metrics;
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final itemWidth = (constraints.maxWidth - CatchSpacing.s3) / 2;
-        return Wrap(
-          spacing: CatchSpacing.s3,
-          runSpacing: CatchSpacing.s3,
-          children: [
-            for (final metric in metrics)
-              SizedBox(
-                width: itemWidth,
-                child: HostAnalyticsMetricTile(metric: metric),
-              ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-class HostAnalyticsMetricTile extends StatelessWidget {
-  const HostAnalyticsMetricTile({super.key, required this.metric});
-
-  final HostAnalyticsMetricCard metric;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final muted = metric.status == HostAnalyticsMetricStatus.missing;
-    return CatchSurface(
-      padding: CatchInsets.content,
-      borderColor: muted
-          ? t.warning.withValues(alpha: CatchOpacity.mutedBorderUrgent)
-          : t.line,
-      backgroundColor: muted
-          ? t.warning.withValues(alpha: CatchOpacity.warningFill)
-          : t.surface,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(_metricIcon(metric.id), size: CatchIcon.sm, color: t.ink2),
-              const Spacer(),
-              if (metric.status != HostAnalyticsMetricStatus.ready)
-                CatchBadge(
-                  label: metric.status == HostAnalyticsMetricStatus.partial
-                      ? 'Partial'
-                      : 'Missing',
-                  tone: metric.status == HostAnalyticsMetricStatus.partial
-                      ? CatchBadgeTone.warning
-                      : CatchBadgeTone.neutral,
-                ),
-            ],
-          ),
-          gapH12,
-          Text(
-            _formatMetricValue(metric),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.numericLarge(
-              context,
-              color: muted ? t.ink3 : t.ink,
-            ),
-          ),
-          gapH4,
-          Text(
-            metric.label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.labelM(context, color: t.ink2),
-          ),
-          if (metric.caption case final caption?
-              when caption.trim().isNotEmpty) ...[
-            gapH8,
-            Text(
-              caption,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.supporting(context, color: t.ink3),
-            ),
-          ],
-        ],
-      ),
     );
   }
 }
@@ -3193,7 +3105,7 @@ class HostAnalyticsTrendPanel extends StatelessWidget {
       return value > max ? value : max;
     });
 
-    return HostAnalyticsSection(
+    return CatchAnalyticsSection(
       label: 'Funnel',
       child: CatchSurface(
         padding: CatchInsets.content,
@@ -3259,7 +3171,7 @@ class HostAnalyticsEventList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return HostAnalyticsSection(
+    return CatchAnalyticsSection(
       label: selectedEventId == null ? 'Top events' : 'Selected event',
       child: Column(
         children: [
@@ -3448,7 +3360,7 @@ class HostAnalyticsReviewDiscoveryPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return HostAnalyticsSection(
+    return CatchAnalyticsSection(
       label: 'Reviews and saves',
       child: CatchSurface(
         padding: CatchInsets.content,
@@ -3505,7 +3417,7 @@ class HostAnalyticsDataQualityPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return HostAnalyticsSection(
+    return CatchAnalyticsSection(
       label: 'Data quality',
       child: Column(
         children: [
@@ -3577,29 +3489,6 @@ class HostAnalyticsInlineStat extends StatelessWidget {
   }
 }
 
-class HostAnalyticsSection extends StatelessWidget {
-  const HostAnalyticsSection({
-    super.key,
-    required this.label,
-    required this.child,
-  });
-
-  final String label;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        HostSectionLabel(label: label),
-        gapH8,
-        child,
-      ],
-    );
-  }
-}
-
 IconData _metricIcon(String metricId) {
   return switch (metricId) {
     'listingViews' || 'eventViews' => CatchIcons.visibilityOutlined,
@@ -3613,6 +3502,20 @@ IconData _metricIcon(String metricId) {
     'chats' => CatchIcons.chatBubbleOutlineRounded,
     _ => CatchIcons.insightsOutlined,
   };
+}
+
+CatchMetricCardData _hostMetricCardData(HostAnalyticsMetricCard metric) {
+  return CatchMetricCardData(
+    icon: _metricIcon(metric.id),
+    value: _formatMetricValue(metric),
+    label: metric.label,
+    caption: metric.caption,
+    status: switch (metric.status) {
+      HostAnalyticsMetricStatus.ready => CatchMetricStatus.ready,
+      HostAnalyticsMetricStatus.partial => CatchMetricStatus.partial,
+      HostAnalyticsMetricStatus.missing => CatchMetricStatus.missing,
+    },
+  );
 }
 
 String _formatMetricValue(HostAnalyticsMetricCard metric) {

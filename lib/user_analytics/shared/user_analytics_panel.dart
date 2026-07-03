@@ -4,7 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_analytics_bar.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_analytics_kit.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -98,7 +98,13 @@ class UserAnalyticsReportView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        UserAnalyticsMetricGrid(metrics: report.summaryCards),
+        CatchAnalyticsMetricGrid(
+          metrics: [
+            for (final metric in report.summaryCards)
+              _userMetricCardData(metric),
+          ],
+          maxItems: 6,
+        ),
         gapH20,
         UserAnalyticsTrendPanel(points: report.trend),
         if (report.coachingTipRefs.isNotEmpty) ...[
@@ -207,7 +213,7 @@ class UserAnalyticsReportSkeleton extends StatelessWidget {
           },
         ),
         gapH20,
-        UserAnalyticsSection(
+        CatchAnalyticsSection(
           label: UserAnalyticsCopy.trendTitle,
           child: CatchSurface(
             padding: CatchInsets.content,
@@ -249,7 +255,7 @@ class UserAnalyticsReportSkeleton extends StatelessWidget {
           ),
         ),
         gapH20,
-        UserAnalyticsSection(
+        CatchAnalyticsSection(
           label: UserAnalyticsCopy.tipsTitle,
           child: CatchSurface(
             padding: CatchInsets.content,
@@ -275,7 +281,7 @@ class UserAnalyticsReportSkeleton extends StatelessWidget {
           ),
         ),
         gapH20,
-        UserAnalyticsSection(
+        CatchAnalyticsSection(
           label: UserAnalyticsCopy.dataQualityTitle,
           child: CatchSurface(
             padding: CatchInsets.content,
@@ -308,96 +314,6 @@ class UserAnalyticsReportSkeleton extends StatelessWidget {
   }
 }
 
-class UserAnalyticsMetricGrid extends StatelessWidget {
-  const UserAnalyticsMetricGrid({super.key, required this.metrics});
-
-  final List<UserAnalyticsMetricCard> metrics;
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final itemWidth = (constraints.maxWidth - CatchSpacing.s3) / 2;
-        return Wrap(
-          spacing: CatchSpacing.s3,
-          runSpacing: CatchSpacing.s3,
-          children: [
-            for (final metric in metrics.take(6))
-              SizedBox(
-                width: itemWidth,
-                child: UserAnalyticsMetricTile(metric: metric),
-              ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-class UserAnalyticsMetricTile extends StatelessWidget {
-  const UserAnalyticsMetricTile({super.key, required this.metric});
-
-  final UserAnalyticsMetricCard metric;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final muted = metric.status == UserAnalyticsMetricStatus.missing;
-    final badge = _statusBadge(metric.status);
-    return CatchSurface(
-      padding: CatchInsets.content,
-      borderColor: muted
-          ? t.warning.withValues(alpha: CatchOpacity.mutedBorderUrgent)
-          : t.line,
-      backgroundColor: muted
-          ? t.warning.withValues(alpha: CatchOpacity.warningFill)
-          : t.surface,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(_metricIcon(metric.id), size: CatchIcon.sm, color: t.ink2),
-              const Spacer(),
-              ?badge,
-            ],
-          ),
-          gapH12,
-          Text(
-            _formatMetricValue(metric),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.numericLarge(
-              context,
-              color: muted ? t.ink3 : t.ink,
-            ),
-          ),
-          gapH4,
-          Text(
-            UserAnalyticsCopy.metricLabel(metric.id, fallback: metric.label),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.labelM(context, color: t.ink2),
-          ),
-          if (UserAnalyticsCopy.metricCaption(
-                metric.id,
-                fallback: metric.caption,
-              )
-              case final caption? when caption.trim().isNotEmpty) ...[
-            gapH8,
-            Text(
-              caption,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.supporting(context, color: t.ink3),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
 class UserAnalyticsTrendPanel extends StatelessWidget {
   const UserAnalyticsTrendPanel({super.key, required this.points});
 
@@ -418,7 +334,7 @@ class UserAnalyticsTrendPanel extends StatelessWidget {
       (sum, point) => sum + (point.metrics['mutualCatches'] ?? 0),
     );
 
-    return UserAnalyticsSection(
+    return CatchAnalyticsSection(
       label: UserAnalyticsCopy.trendTitle,
       child: CatchSurface(
         padding: CatchInsets.content,
@@ -475,7 +391,7 @@ class UserAnalyticsTipsPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return UserAnalyticsSection(
+    return CatchAnalyticsSection(
       label: UserAnalyticsCopy.tipsTitle,
       child: CatchSurface(
         padding: CatchInsets.content,
@@ -535,7 +451,7 @@ class UserAnalyticsDataQualityPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return UserAnalyticsSection(
+    return CatchAnalyticsSection(
       label: UserAnalyticsCopy.dataQualityTitle,
       child: CatchSurface(
         padding: CatchInsets.content,
@@ -578,42 +494,6 @@ class UserAnalyticsDataQualityRow extends StatelessWidget {
   }
 }
 
-class UserAnalyticsSection extends StatelessWidget {
-  const UserAnalyticsSection({
-    super.key,
-    required this.label,
-    required this.child,
-  });
-
-  final String label;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(label, style: CatchTextStyles.labelL(context)),
-        gapH8,
-        child,
-      ],
-    );
-  }
-}
-
-CatchBadge? _statusBadge(UserAnalyticsMetricStatus status) {
-  return switch (status) {
-    UserAnalyticsMetricStatus.partial => const CatchBadge(
-      label: UserAnalyticsCopy.partialBadge,
-      tone: CatchBadgeTone.warning,
-    ),
-    UserAnalyticsMetricStatus.missing => const CatchBadge(
-      label: UserAnalyticsCopy.missingBadge,
-    ),
-    UserAnalyticsMetricStatus.ready => null,
-  };
-}
-
 IconData _metricIcon(String id) => switch (id) {
   'profileViews' => CatchIcons.eye,
   'caughtYou' => CatchIcons.favoriteOutline,
@@ -623,6 +503,29 @@ IconData _metricIcon(String id) => switch (id) {
   'followThroughRate' => CatchIcons.autoGraphRounded,
   _ => CatchIcons.autoGraphRounded,
 };
+
+CatchMetricCardData _userMetricCardData(UserAnalyticsMetricCard metric) {
+  return CatchMetricCardData(
+    icon: _metricIcon(metric.id),
+    value: _formatMetricValue(metric),
+    label: UserAnalyticsCopy.metricLabel(metric.id, fallback: metric.label),
+    caption: UserAnalyticsCopy.metricCaption(
+      metric.id,
+      fallback: metric.caption,
+    ),
+    status: switch (metric.status) {
+      UserAnalyticsMetricStatus.ready => CatchMetricStatus.ready,
+      UserAnalyticsMetricStatus.partial => CatchMetricStatus.partial,
+      UserAnalyticsMetricStatus.missing => CatchMetricStatus.missing,
+    },
+    partialBadgeLabel: _userAnalyticsPartialBadgeLabel(),
+    missingBadgeLabel: _userAnalyticsMissingBadgeLabel(),
+  );
+}
+
+String _userAnalyticsPartialBadgeLabel() => UserAnalyticsCopy.partialBadge;
+
+String _userAnalyticsMissingBadgeLabel() => UserAnalyticsCopy.missingBadge;
 
 IconData _qualityIcon(UserAnalyticsDataQualityState state) => switch (state) {
   UserAnalyticsDataQualityState.ok => CatchIcons.checkCircleOutlineRounded,

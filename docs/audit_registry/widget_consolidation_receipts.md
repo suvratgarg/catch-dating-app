@@ -2162,3 +2162,76 @@ Known blockers / inherited debt:
 - Full Widgetbook analyzer and coverage gates remain under the inherited
   HostOperations queue; this helper-only edit did not change Widgetbook
   coverage.
+
+## 2026-07-03 - WO-018 analytics kit v1
+
+Scope:
+
+- Added `lib/core/widgets/catch_analytics_kit.dart` with
+  `CatchMetricCardData`, `CatchMetricStatus`, `CatchAnalyticsMetricTile`,
+  `CatchAnalyticsMetricGrid`, and `CatchAnalyticsSection`.
+- Migrated host and profile analytics reports, trend panels, list panels,
+  data-quality panels, and profile analytics skeleton sections onto the shared
+  analytics kit.
+- Kept metric id switches, value formatting, and user copy indirection in the
+  host/user feature files through `_hostMetricCardData` and
+  `_userMetricCardData` mappers.
+- Removed the absorbed `HostAnalyticsMetricGrid`, `HostAnalyticsMetricTile`,
+  `HostAnalyticsSection`, `UserAnalyticsMetricGrid`,
+  `UserAnalyticsMetricTile`, `UserAnalyticsSection`, and the user `_statusBadge`
+  helper.
+- Retained `HostSectionLabel`; it is still used by non-analytics host home and
+  club sections.
+- Added primitive Widgetbook coverage for the kit tile, grid, and section;
+  removed host/user feature Widgetbook entries for the absorbed wrappers.
+- Updated `docs/widget_catalog.md` to register the kit and remove the absorbed
+  user analytics wrapper rows.
+
+Commands:
+
+- `node tool/agent/context_pack.mjs --task widget-consolidation-wo-018-analytics-kit --paths docs/design_parity/widget_consolidation,docs/audit_registry/widget_similarity.json,docs/audit_registry/widget_classification.json,docs/audit_registry/widget_consolidation_receipts.md,lib/core/widgets,lib/hosts/presentation/host_operations_screen.dart,lib/user_analytics/shared/user_analytics_panel.dart,widgetbook/lib`
+- `dart format lib/core/widgets/catch_analytics_kit.dart lib/hosts/presentation/host_operations_screen.dart lib/user_analytics/shared/user_analytics_panel.dart widgetbook/lib/primitives/analytics_kit_use_cases.dart widgetbook/lib/hosts/host_operations_use_cases.dart widgetbook/lib/user_analytics/user_analytics_use_cases.dart`
+- `dart run build_runner build --delete-conflicting-outputs` in `widgetbook/`
+- `rg -n "HostAnalyticsMetricGrid|HostAnalyticsMetricTile|HostAnalyticsSection|UserAnalyticsMetricGrid|UserAnalyticsMetricTile|UserAnalyticsSection|_statusBadge" lib widgetbook/lib docs/widget_catalog.md design/components/catch.components.json --glob '!*.g.dart'`
+- `dart analyze lib/core/widgets/catch_analytics_kit.dart lib/hosts/presentation/host_operations_screen.dart lib/user_analytics/shared/user_analytics_panel.dart widgetbook/lib/primitives/analytics_kit_use_cases.dart`
+- `dart analyze lib/core/widgets/catch_analytics_kit.dart lib/hosts/presentation/host_operations_screen.dart lib/user_analytics/shared/user_analytics_panel.dart widgetbook/lib/primitives/analytics_kit_use_cases.dart widgetbook/lib/user_analytics/user_analytics_use_cases.dart`
+- `npm run design:widgets:classify`
+- `npm run design:widgets:check`
+- `node tool/design/build_widget_similarity.mjs`
+- `node tool/design/build_widget_similarity.mjs --check`
+- `npm run design:widgets:new:check`
+- `npm run design:widgets:variants`
+- `npm run design:widgets:variants:check`
+- `node tool/design/check_widgetbook_coverage.mjs --check`
+- `node tool/design/check_widgetbook_contract_refs.mjs --check`
+- `dart tool/audit_registry.dart refresh`
+
+Verification:
+
+- Focused analyzer for the changed app/core files and new primitive Widgetbook
+  file reported no issues.
+- Widgetbook build_runner completed and `widgetbook/lib/main.directories.g.dart`
+  now exposes `CatchAnalyticsMetricTile`, `CatchAnalyticsMetricGrid`, and
+  `CatchAnalyticsSection`.
+- Stale retired-symbol scan found no absorbed wrapper references; the only
+  remaining similarly named hit is the intentionally distinct
+  `HostAnalyticsMetricGridSkeleton`.
+- Widget classification check passed with 1,142 entries, 48 review items, and
+  0 private widget classes flagged.
+- Widget similarity check passed with 1,038 widgets, 50 clusters, 200 ranked
+  pairs, 222 name families, and 8 absorb candidates.
+- New-widget inventory check passed with 3 added public widget classes, all
+  covered by Widgetbook and `docs/widget_catalog.md`.
+- Widget variant inventory check passed with 883 use cases, 1,751 state cards,
+  and 36 review candidates.
+
+Known blockers / inherited debt:
+
+- Focused analyzer including `widgetbook/lib/user_analytics/user_analytics_use_cases.dart`
+  still reports the pre-existing raw-size warnings at lines 155, 366, and 393;
+  the changed app/core files and new primitive page are clean.
+- `node tool/design/check_widgetbook_coverage.mjs --check` still fails on the
+  inherited 131-item decision queue; the changed `core/widgets` area is fully
+  covered at 147/147.
+- `node tool/design/check_widgetbook_contract_refs.mjs --check` still fails on
+  inherited host preview-id drift for HostOperations home and host-team states.

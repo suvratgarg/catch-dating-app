@@ -120,59 +120,6 @@ Widget userAnalyticsReportSkeleton(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Metric grid states',
-  type: UserAnalyticsMetricGrid,
-  path: '[P1 product surfaces]/User analytics',
-)
-Widget userAnalyticsMetricGridStates(BuildContext context) {
-  return _UserAnalyticsCatalog(
-    title: 'UserAnalyticsMetricGrid',
-    contractId: 'component.profile.user_analytics.metric_grid',
-    children: [
-      _StateCard(
-        label: 'summary cards',
-        child: UserAnalyticsMetricGrid(
-          metrics: ProfileSurfaceFixtures.analyticsReport.summaryCards,
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Metric tile states',
-  type: UserAnalyticsMetricTile,
-  path: '[P1 product surfaces]/User analytics',
-)
-Widget userAnalyticsMetricTileStates(BuildContext context) {
-  return _UserAnalyticsCatalog(
-    title: 'UserAnalyticsMetricTile',
-    contractId: 'component.profile.user_analytics.metric_tile',
-    children: [
-      _StateCard(
-        label: 'ready',
-        child: UserAnalyticsMetricTile(
-          metric: ProfileSurfaceFixtures.analyticsReport.summaryCards.first,
-        ),
-      ),
-      _StateCard(
-        label: 'partial',
-        child: UserAnalyticsMetricTile(
-          metric: ProfileSurfaceFixtures.analyticsReport.summaryCards.last,
-        ),
-      ),
-      _StateCard(
-        label: 'missing',
-        child: UserAnalyticsMetricTile(
-          metric:
-              ProfileSurfaceFixtures.emptyAnalyticsReport.summaryCards.first,
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
   name: 'Trend panel states',
   type: UserAnalyticsTrendPanel,
   path: '[P1 product surfaces]/User analytics',
@@ -302,27 +249,6 @@ Widget userAnalyticsDataQualityRowStates(BuildContext context) {
       _StateCard(
         label: 'partial',
         child: UserAnalyticsDataQualityRow(row: rows[1]),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Section states',
-  type: UserAnalyticsSection,
-  path: '[P1 product surfaces]/User analytics',
-)
-Widget userAnalyticsSectionStates(BuildContext context) {
-  return const _UserAnalyticsCatalog(
-    title: 'UserAnalyticsSection',
-    contractId: 'component.profile.user_analytics.section',
-    children: [
-      _StateCard(
-        label: 'labeled child',
-        child: UserAnalyticsSection(
-          label: 'Suggestions',
-          child: CatchStatColumn(label: 'Caught you', value: '38'),
-        ),
       ),
     ],
   );

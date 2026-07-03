@@ -35,6 +35,8 @@ import 'package:widgetbook_workspace/matches/matches_chat_use_cases.dart'
     as _widgetbook_workspace_matches_matches_chat_use_cases;
 import 'package:widgetbook_workspace/onboarding/onboarding_use_cases.dart'
     as _widgetbook_workspace_onboarding_onboarding_use_cases;
+import 'package:widgetbook_workspace/primitives/analytics_kit_use_cases.dart'
+    as _widgetbook_workspace_primitives_analytics_kit_use_cases;
 import 'package:widgetbook_workspace/primitives/core_catalog_use_cases.dart'
     as _widgetbook_workspace_primitives_core_catalog_use_cases;
 import 'package:widgetbook_workspace/primitives/primitive_contract_use_cases.dart'
@@ -1736,6 +1738,44 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchDistanceRingContractStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Analytics kit',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchAnalyticsMetricGrid',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Grid states',
+                builder:
+                    _widgetbook_workspace_primitives_analytics_kit_use_cases
+                        .catchAnalyticsMetricGridStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchAnalyticsMetricTile',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Tile states',
+                builder:
+                    _widgetbook_workspace_primitives_analytics_kit_use_cases
+                        .catchAnalyticsMetricTileStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchAnalyticsSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Section states',
+                builder:
+                    _widgetbook_workspace_primitives_analytics_kit_use_cases
+                        .catchAnalyticsSectionStates,
               ),
             ],
           ),
@@ -8081,28 +8121,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostAnalyticsMetricGrid',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostAnalyticsMetricGridCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostAnalyticsMetricTile',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostAnalyticsMetricTileCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostAnalyticsReportSkeleton',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -8131,17 +8149,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Exact catalog',
                     builder: _widgetbook_workspace_hosts_host_operations_use_cases
                         .hostStrictHostAnalyticsReviewDiscoveryPanelCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostAnalyticsSection',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostAnalyticsSectionCatalogStates,
                   ),
                 ],
               ),
@@ -9485,28 +9492,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'UserAnalyticsMetricGrid',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Metric grid states',
-                builder:
-                    _widgetbook_workspace_user_analytics_user_analytics_use_cases
-                        .userAnalyticsMetricGridStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'UserAnalyticsMetricTile',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Metric tile states',
-                builder:
-                    _widgetbook_workspace_user_analytics_user_analytics_use_cases
-                        .userAnalyticsMetricTileStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'UserAnalyticsPanel',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -9536,17 +9521,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_user_analytics_user_analytics_use_cases
                         .userAnalyticsReportViewStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'UserAnalyticsSection',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Section states',
-                builder:
-                    _widgetbook_workspace_user_analytics_user_analytics_use_cases
-                        .userAnalyticsSectionStates,
               ),
             ],
           ),

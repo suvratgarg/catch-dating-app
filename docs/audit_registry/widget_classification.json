@@ -10,28 +10,28 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1145,
-    "widgetClasses": 1038,
+    "total": 1142,
+    "widgetClasses": 1035,
     "stateClasses": 107,
-    "publicClasses": 1038,
+    "publicClasses": 1035,
     "privateClasses": 107,
     "byRole": {
       "atom": 57,
       "composition": 318,
       "feature-adapter": 322,
       "pattern": 16,
-      "screen": 325,
+      "screen": 322,
       "widget-state": 107
     },
     "byDecision": {
       "keep-canonical-contract": 173,
-      "keep-public-cataloged": 820,
+      "keep-public-cataloged": 814,
       "keep-widget-state": 107,
       "review-catalog-coverage": 37,
-      "review-promote-or-consolidate": 8
+      "review-promote-or-consolidate": 11
     },
     "byCatalogStatus": {
-      "cataloged": 734,
+      "cataloged": 731,
       "contracted": 173,
       "not-applicable": 107,
       "route-covered": 94,
@@ -2591,6 +2591,87 @@
       "visibility": "public",
       "role": "composition",
       "canonicalFamily": "catch.analytics_bar",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract"
+      ]
+    },
+    {
+      "name": "CatchAnalyticsMetricGrid",
+      "file": "lib/core/widgets/catch_analytics_kit.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.analytics_metric_grid",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract"
+      ]
+    },
+    {
+      "name": "CatchAnalyticsMetricTile",
+      "file": "lib/core/widgets/catch_analytics_kit.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.analytics_metric_tile",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract"
+      ]
+    },
+    {
+      "name": "CatchAnalyticsSection",
+      "file": "lib/core/widgets/catch_analytics_kit.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.analytics_section",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,
@@ -19599,52 +19680,6 @@
       "flags": []
     },
     {
-      "name": "HostAnalyticsMetricGrid",
-      "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.host_analytics_metric_grid",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "HostAnalyticsMetricTile",
-      "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.host_analytics_metric_tile",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
       "name": "HostAnalyticsReportView",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
       "classKind": "widget",
@@ -19675,29 +19710,6 @@
       "visibility": "public",
       "role": "screen",
       "canonicalFamily": "screen.host_analytics_review_discovery_panel",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "HostAnalyticsSection",
-      "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.host_analytics_section",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,
@@ -25426,58 +25438,6 @@
       "flags": []
     },
     {
-      "name": "UserAnalyticsMetricGrid",
-      "file": "lib/user_analytics/shared/user_analytics_panel.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.user_analytics_metric_grid",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": [
-        "primitive-imports-data-layer",
-        "primitive-imports-provider-layer"
-      ]
-    },
-    {
-      "name": "UserAnalyticsMetricTile",
-      "file": "lib/user_analytics/shared/user_analytics_panel.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.user_analytics_metric_tile",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": [
-        "primitive-imports-data-layer",
-        "primitive-imports-provider-layer"
-      ]
-    },
-    {
       "name": "UserAnalyticsPanel",
       "file": "lib/user_analytics/shared/user_analytics_panel.dart",
       "classKind": "widget",
@@ -25548,32 +25508,6 @@
         "mergeIntoCanonical"
       ],
       "flags": []
-    },
-    {
-      "name": "UserAnalyticsSection",
-      "file": "lib/user_analytics/shared/user_analytics_panel.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.user_analytics_section",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": [
-        "primitive-imports-data-layer",
-        "primitive-imports-provider-layer"
-      ]
     },
     {
       "name": "UserAnalyticsTipRow",

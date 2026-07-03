@@ -1279,9 +1279,9 @@ class CatchAnalyticsSection extends StatelessWidget {
 5. regen + registries + receipts. Expected: widget count −5 (6 absorbed, 3 kit
    widgets added, minus HostSectionLabel if orphaned).
 
-- [ ] kit file + widgetbook
-- [ ] mappers + migrations + deletions
-- [ ] regen + registries + receipts
+- [x] kit file + widgetbook
+- [x] mappers + migrations + deletions
+- [x] regen + registries + receipts
 
 ## WO-019 — Pill merge + privacy badge unification
 

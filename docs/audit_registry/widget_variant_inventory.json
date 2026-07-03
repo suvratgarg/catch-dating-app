@@ -1,16 +1,16 @@
 {
-  "generatedAt": "2026-07-03T15:22:46.915Z",
+  "generatedAt": "2026-07-03T17:58:52.202Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
     "useCases": 883,
-    "components": 859,
-    "stateCards": 1750,
-    "reviewCandidates": 35,
+    "components": 858,
+    "stateCards": 1751,
+    "reviewCandidates": 36,
     "oversizedUseCases": 43,
-    "multiUseCaseComponents": 23
+    "multiUseCaseComponents": 24
   },
   "reviewCandidates": [
     {
@@ -1595,6 +1595,106 @@
             {
               "label": "dark theme",
               "normalizedLabel": "dark theme"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchEmptyState",
+      "useCaseCount": 2,
+      "stateCardCount": 12,
+      "paths": [
+        "[Core primitives]/Feedback",
+        "[Explore]/Sections"
+      ],
+      "labels": [
+        "bubble-icon",
+        "empty city",
+        "filter only",
+        "inline",
+        "message-only",
+        "offline copy candidate",
+        "search only",
+        "search plus filters",
+        "stacked",
+        "surface",
+        "title-only",
+        "with-action"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "large-state-matrix",
+          "split-across-use-cases"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchEmptyStateContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Feedback",
+          "stateCardCount": 7,
+          "stateCards": [
+            {
+              "label": "stacked",
+              "normalizedLabel": "stacked"
+            },
+            {
+              "label": "inline",
+              "normalizedLabel": "inline"
+            },
+            {
+              "label": "surface",
+              "normalizedLabel": "surface"
+            },
+            {
+              "label": "bubble-icon",
+              "normalizedLabel": "bubble icon"
+            },
+            {
+              "label": "with-action",
+              "normalizedLabel": "with action"
+            },
+            {
+              "label": "title-only",
+              "normalizedLabel": "title only"
+            },
+            {
+              "label": "message-only",
+              "normalizedLabel": "message only"
+            }
+          ]
+        },
+        {
+          "name": "Empty states",
+          "functionName": "exploreEmptyStateStates",
+          "file": "widgetbook/lib/explore/explore_use_cases.dart",
+          "path": "[Explore]/Sections",
+          "stateCardCount": 5,
+          "stateCards": [
+            {
+              "label": "empty city",
+              "normalizedLabel": "empty city"
+            },
+            {
+              "label": "search only",
+              "normalizedLabel": "search only"
+            },
+            {
+              "label": "filter only",
+              "normalizedLabel": "filter only"
+            },
+            {
+              "label": "search plus filters",
+              "normalizedLabel": "search plus filters"
+            },
+            {
+              "label": "offline copy candidate",
+              "normalizedLabel": "offline copy candidate"
             }
           ]
         }
@@ -5119,6 +5219,106 @@
       ]
     },
     {
+      "component": "CatchEmptyState",
+      "useCaseCount": 2,
+      "stateCardCount": 12,
+      "paths": [
+        "[Core primitives]/Feedback",
+        "[Explore]/Sections"
+      ],
+      "labels": [
+        "bubble-icon",
+        "empty city",
+        "filter only",
+        "inline",
+        "message-only",
+        "offline copy candidate",
+        "search only",
+        "search plus filters",
+        "stacked",
+        "surface",
+        "title-only",
+        "with-action"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "large-state-matrix",
+          "split-across-use-cases"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchEmptyStateContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Feedback",
+          "stateCardCount": 7,
+          "stateCards": [
+            {
+              "label": "stacked",
+              "normalizedLabel": "stacked"
+            },
+            {
+              "label": "inline",
+              "normalizedLabel": "inline"
+            },
+            {
+              "label": "surface",
+              "normalizedLabel": "surface"
+            },
+            {
+              "label": "bubble-icon",
+              "normalizedLabel": "bubble icon"
+            },
+            {
+              "label": "with-action",
+              "normalizedLabel": "with action"
+            },
+            {
+              "label": "title-only",
+              "normalizedLabel": "title only"
+            },
+            {
+              "label": "message-only",
+              "normalizedLabel": "message only"
+            }
+          ]
+        },
+        {
+          "name": "Empty states",
+          "functionName": "exploreEmptyStateStates",
+          "file": "widgetbook/lib/explore/explore_use_cases.dart",
+          "path": "[Explore]/Sections",
+          "stateCardCount": 5,
+          "stateCards": [
+            {
+              "label": "empty city",
+              "normalizedLabel": "empty city"
+            },
+            {
+              "label": "search only",
+              "normalizedLabel": "search only"
+            },
+            {
+              "label": "filter only",
+              "normalizedLabel": "filter only"
+            },
+            {
+              "label": "search plus filters",
+              "normalizedLabel": "search plus filters"
+            },
+            {
+              "label": "offline copy candidate",
+              "normalizedLabel": "offline copy candidate"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "ReviewsHistoryScreen",
       "useCaseCount": 2,
       "stateCardCount": 12,
@@ -7727,68 +7927,6 @@
       ]
     },
     {
-      "component": "CatchEmptyState",
-      "useCaseCount": 1,
-      "stateCardCount": 7,
-      "paths": [
-        "[Core primitives]/Feedback"
-      ],
-      "labels": [
-        "bubble-icon",
-        "inline",
-        "message-only",
-        "stacked",
-        "surface",
-        "title-only",
-        "with-action"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Contract states",
-          "functionName": "catchEmptyStateContractStates",
-          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
-          "path": "[Core primitives]/Feedback",
-          "stateCardCount": 7,
-          "stateCards": [
-            {
-              "label": "stacked",
-              "normalizedLabel": "stacked"
-            },
-            {
-              "label": "inline",
-              "normalizedLabel": "inline"
-            },
-            {
-              "label": "surface",
-              "normalizedLabel": "surface"
-            },
-            {
-              "label": "bubble-icon",
-              "normalizedLabel": "bubble icon"
-            },
-            {
-              "label": "with-action",
-              "normalizedLabel": "with action"
-            },
-            {
-              "label": "title-only",
-              "normalizedLabel": "title only"
-            },
-            {
-              "label": "message-only",
-              "normalizedLabel": "message only"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "CatchFieldTrailing",
       "useCaseCount": 1,
       "stateCardCount": 7,
@@ -10069,58 +10207,6 @@
       ]
     },
     {
-      "component": "ExploreEmptyState",
-      "useCaseCount": 1,
-      "stateCardCount": 5,
-      "paths": [
-        "[Explore]/Sections"
-      ],
-      "labels": [
-        "empty city",
-        "filter only",
-        "offline copy candidate",
-        "search only",
-        "search plus filters"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Empty states",
-          "functionName": "exploreEmptyStateStates",
-          "file": "widgetbook/lib/explore/explore_use_cases.dart",
-          "path": "[Explore]/Sections",
-          "stateCardCount": 5,
-          "stateCards": [
-            {
-              "label": "empty city",
-              "normalizedLabel": "empty city"
-            },
-            {
-              "label": "search only",
-              "normalizedLabel": "search only"
-            },
-            {
-              "label": "filter only",
-              "normalizedLabel": "filter only"
-            },
-            {
-              "label": "search plus filters",
-              "normalizedLabel": "search plus filters"
-            },
-            {
-              "label": "offline copy candidate",
-              "normalizedLabel": "offline copy candidate"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "ExploreMapScreen",
       "useCaseCount": 1,
       "stateCardCount": 5,
@@ -11413,6 +11499,53 @@
       ]
     },
     {
+      "component": "CatchSkeletonRows",
+      "useCaseCount": 1,
+      "stateCardCount": 4,
+      "paths": [
+        "[Core catalog]/Loading compositions"
+      ],
+      "labels": [
+        "avatar titled",
+        "divided media tile",
+        "icon",
+        "media tile"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Rows",
+          "functionName": "catchSkeletonRowsCatalogStates",
+          "file": "widgetbook/lib/primitives/skeleton_layout_use_cases.dart",
+          "path": "[Core catalog]/Loading compositions",
+          "stateCardCount": 4,
+          "stateCards": [
+            {
+              "label": "avatar titled",
+              "normalizedLabel": "avatar titled"
+            },
+            {
+              "label": "media tile",
+              "normalizedLabel": "media tile"
+            },
+            {
+              "label": "icon",
+              "normalizedLabel": "icon"
+            },
+            {
+              "label": "divided media tile",
+              "normalizedLabel": "divided media tile"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "CatchStatusBar",
       "useCaseCount": 1,
       "stateCardCount": 4,
@@ -12561,6 +12694,48 @@
       ]
     },
     {
+      "component": "CatchAnalyticsMetricTile",
+      "useCaseCount": 1,
+      "stateCardCount": 3,
+      "paths": [
+        "[Core primitives]/Analytics kit"
+      ],
+      "labels": [
+        "missing",
+        "partial",
+        "ready"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Tile states",
+          "functionName": "catchAnalyticsMetricTileStates",
+          "file": "widgetbook/lib/primitives/analytics_kit_use_cases.dart",
+          "path": "[Core primitives]/Analytics kit",
+          "stateCardCount": 3,
+          "stateCards": [
+            {
+              "label": "ready",
+              "normalizedLabel": "ready"
+            },
+            {
+              "label": "partial",
+              "normalizedLabel": "partial"
+            },
+            {
+              "label": "missing",
+              "normalizedLabel": "missing"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "CatchBottomDockCta",
       "useCaseCount": 1,
       "stateCardCount": 3,
@@ -13563,48 +13738,6 @@
             {
               "label": "expanded-surface",
               "normalizedLabel": "expanded surface"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "CatchSkeletonRows",
-      "useCaseCount": 1,
-      "stateCardCount": 3,
-      "paths": [
-        "[Core catalog]/Loading compositions"
-      ],
-      "labels": [
-        "avatar titled",
-        "icon",
-        "media tile"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Rows",
-          "functionName": "catchSkeletonRowsCatalogStates",
-          "file": "widgetbook/lib/primitives/skeleton_layout_use_cases.dart",
-          "path": "[Core catalog]/Loading compositions",
-          "stateCardCount": 3,
-          "stateCards": [
-            {
-              "label": "avatar titled",
-              "normalizedLabel": "avatar titled"
-            },
-            {
-              "label": "media tile",
-              "normalizedLabel": "media tile"
-            },
-            {
-              "label": "icon",
-              "normalizedLabel": "icon"
             }
           ]
         }
@@ -15159,48 +15292,6 @@
             {
               "label": "surface-styled",
               "normalizedLabel": "surface styled"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "UserAnalyticsMetricTile",
-      "useCaseCount": 1,
-      "stateCardCount": 3,
-      "paths": [
-        "[P1 product surfaces]/User analytics"
-      ],
-      "labels": [
-        "missing",
-        "partial",
-        "ready"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Metric tile states",
-          "functionName": "userAnalyticsMetricTileStates",
-          "file": "widgetbook/lib/user_analytics/user_analytics_use_cases.dart",
-          "path": "[P1 product surfaces]/User analytics",
-          "stateCardCount": 3,
-          "stateCards": [
-            {
-              "label": "ready",
-              "normalizedLabel": "ready"
-            },
-            {
-              "label": "partial",
-              "normalizedLabel": "partial"
-            },
-            {
-              "label": "missing",
-              "normalizedLabel": "missing"
             }
           ]
         }
@@ -22086,6 +22177,70 @@
       ]
     },
     {
+      "component": "CatchAnalyticsMetricGrid",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[Core primitives]/Analytics kit"
+      ],
+      "labels": [
+        "two-column metrics"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Grid states",
+          "functionName": "catchAnalyticsMetricGridStates",
+          "file": "widgetbook/lib/primitives/analytics_kit_use_cases.dart",
+          "path": "[Core primitives]/Analytics kit",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "two-column metrics",
+              "normalizedLabel": "two column metrics"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchAnalyticsSection",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[Core primitives]/Analytics kit"
+      ],
+      "labels": [
+        "labeled analytics group"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Section states",
+          "functionName": "catchAnalyticsSectionStates",
+          "file": "widgetbook/lib/primitives/analytics_kit_use_cases.dart",
+          "path": "[Core primitives]/Analytics kit",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "labeled analytics group",
+              "normalizedLabel": "labeled analytics group"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "CatchAsyncScreenLoading",
       "useCaseCount": 1,
       "stateCardCount": 1,
@@ -28870,38 +29025,6 @@
       ]
     },
     {
-      "component": "UserAnalyticsMetricGrid",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[P1 product surfaces]/User analytics"
-      ],
-      "labels": [
-        "summary cards"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Metric grid states",
-          "functionName": "userAnalyticsMetricGridStates",
-          "file": "widgetbook/lib/user_analytics/user_analytics_use_cases.dart",
-          "path": "[P1 product surfaces]/User analytics",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "summary cards",
-              "normalizedLabel": "summary cards"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "UserAnalyticsReportSkeleton",
       "useCaseCount": 1,
       "stateCardCount": 1,
@@ -28928,38 +29051,6 @@
             {
               "label": "loading report",
               "normalizedLabel": "loading report"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "UserAnalyticsSection",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[P1 product surfaces]/User analytics"
-      ],
-      "labels": [
-        "labeled child"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Section states",
-          "functionName": "userAnalyticsSectionStates",
-          "file": "widgetbook/lib/user_analytics/user_analytics_use_cases.dart",
-          "path": "[P1 product surfaces]/User analytics",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "labeled child",
-              "normalizedLabel": "labeled child"
             }
           ]
         }

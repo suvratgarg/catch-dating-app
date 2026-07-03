@@ -1100,12 +1100,6 @@ Widget _hostAnalyticsPreviewFor(String focus) {
       label: 'Bookings',
       value: '126',
     ),
-    'HostAnalyticsMetricGrid' => HostAnalyticsMetricGrid(
-      metrics: report.summaryCards,
-    ),
-    'HostAnalyticsMetricTile' => HostAnalyticsMetricTile(
-      metric: report.summaryCards.first,
-    ),
     'HostAnalyticsReportView' => HostAnalyticsReportView(
       report: report,
       selectedEventId: report.topEvents.first.eventId,
@@ -1114,10 +1108,6 @@ Widget _hostAnalyticsPreviewFor(String focus) {
     ),
     'HostAnalyticsReviewDiscoveryPanel' => HostAnalyticsReviewDiscoveryPanel(
       report: report,
-    ),
-    'HostAnalyticsSection' => HostAnalyticsSection(
-      label: 'Section label',
-      child: HostAnalyticsMetricTile(metric: report.summaryCards.first),
     ),
     'HostAnalyticsTrendPanel' => HostAnalyticsTrendPanel(points: report.trend),
     _ => Text('No exact preview registered for $focus.'),
@@ -4497,22 +4487,6 @@ Widget hostStrictHostAnalyticsInlineStatCatalogStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostAnalyticsMetricGrid,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostAnalyticsMetricGridCatalogStates(BuildContext context) =>
-    _hostAnalyticsExactCatalog(context, 'HostAnalyticsMetricGrid');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostAnalyticsMetricTile,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostAnalyticsMetricTileCatalogStates(BuildContext context) =>
-    _hostAnalyticsExactCatalog(context, 'HostAnalyticsMetricTile');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
   type: HostAnalyticsReportSkeleton,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
@@ -4536,14 +4510,6 @@ Widget hostStrictHostAnalyticsReportViewCatalogStates(BuildContext context) =>
 Widget hostStrictHostAnalyticsReviewDiscoveryPanelCatalogStates(
   BuildContext context,
 ) => _hostAnalyticsExactCatalog(context, 'HostAnalyticsReviewDiscoveryPanel');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostAnalyticsSection,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostAnalyticsSectionCatalogStates(BuildContext context) =>
-    _hostAnalyticsExactCatalog(context, 'HostAnalyticsSection');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
