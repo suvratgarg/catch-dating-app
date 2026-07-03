@@ -1877,21 +1877,22 @@
     },
     {
       "clusterId": "ranked-pair: HostAnalyticsMetricTile/UserAnalyticsMetricTile",
-      "decision": "escalate",
+      "decision": "merge-new-primitive",
       "members": [
         {
           "name": "HostAnalyticsMetricTile",
-          "action": "escalate"
+          "action": "absorb"
         },
         {
           "name": "UserAnalyticsMetricTile",
-          "action": "escalate"
+          "action": "absorb"
         }
       ],
-      "rationale": "K2 domain fork: the tiles share the same card skeleton, but they render parallel HostAnalyticsMetricCard/UserAnalyticsMetricCard data, status enums, status-copy rules, and user analytics copy helpers. AUDIT (claude, 2026-07-03): K2 misapplied \u2014 bodies are structurally parallel presentation over parallel view-model types (same surfaces, tokens, layout; only typed field access/metric keys differ). Re-opened for the host/user analytics-kit unification review.",
-      "decidedBy": "codex-rule:K2 -> claude-audit",
+      "rationale": "K2 domain fork: the tiles share the same card skeleton, but they render parallel HostAnalyticsMetricCard/UserAnalyticsMetricCard data, status enums, status-copy rules, and user analytics copy helpers. AUDIT (claude, 2026-07-03): K2 misapplied \u2014 bodies are structurally parallel presentation over parallel view-model types (same surfaces, tokens, layout; only typed field access/metric keys differ). Re-opened for the host/user analytics-kit unification review. REVIEW (claude, 2026-07-03): identical layout/tokens over identical model shapes; kit takes display-ready CatchMetricCardData, features keep icon/format/copy mapping.",
+      "decidedBy": "codex-rule:K2 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-analytics-kit"
+      "status": "work-order WO-018",
+      "canonicalSymbol": "CatchAnalyticsMetricTile"
     },
     {
       "clusterId": "ranked-pair: EditHostedEventPickerTile/WhenStepPickerTile",
@@ -1913,39 +1914,40 @@
     },
     {
       "clusterId": "ranked-pair: HostAnalyticsTrendPanel/UserAnalyticsTrendPanel",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "HostAnalyticsTrendPanel",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "UserAnalyticsTrendPanel",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K2 domain fork: the trend panels share chart chrome and CatchAnalyticsBar, but they read parallel HostAnalyticsTrendPoint/UserAnalyticsTrendPoint metrics with different metric keys, section shells, and summary stat copy. AUDIT (claude, 2026-07-03): K2 misapplied \u2014 bodies are structurally parallel presentation over parallel view-model types (same surfaces, tokens, layout; only typed field access/metric keys differ). Re-opened for the host/user analytics-kit unification review.",
-      "decidedBy": "codex-rule:K2 -> claude-audit",
+      "rationale": "K2 domain fork: the trend panels share chart chrome and CatchAnalyticsBar, but they read parallel HostAnalyticsTrendPoint/UserAnalyticsTrendPoint metrics with different metric keys, section shells, and summary stat copy. AUDIT (claude, 2026-07-03): K2 misapplied \u2014 bodies are structurally parallel presentation over parallel view-model types (same surfaces, tokens, layout; only typed field access/metric keys differ). Re-opened for the host/user analytics-kit unification review. REVIEW (claude, 2026-07-03): aggregation + chart composition are feature semantics; both already share CatchAnalyticsBar and will share CatchAnalyticsSection. Remaining duplication dissolves with kit v1.",
+      "decidedBy": "codex-rule:K2 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-analytics-kit"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: HostAnalyticsMetricGrid/UserAnalyticsMetricGrid",
-      "decision": "escalate",
+      "decision": "merge-new-primitive",
       "members": [
         {
           "name": "HostAnalyticsMetricGrid",
-          "action": "escalate"
+          "action": "absorb"
         },
         {
           "name": "UserAnalyticsMetricGrid",
-          "action": "escalate"
+          "action": "absorb"
         }
       ],
-      "rationale": "K2 domain fork: the grid skeleton is shared, but the members render parallel metric-card domains and tile types; the user grid also caps at six cards while the host grid renders the supplied host summary cards. AUDIT (claude, 2026-07-03): K2 misapplied \u2014 bodies are structurally parallel presentation over parallel view-model types (same surfaces, tokens, layout; only typed field access/metric keys differ). Re-opened for the host/user analytics-kit unification review.",
-      "decidedBy": "codex-rule:K2 -> claude-audit",
+      "rationale": "K2 domain fork: the grid skeleton is shared, but the members render parallel metric-card domains and tile types; the user grid also caps at six cards while the host grid renders the supplied host summary cards. AUDIT (claude, 2026-07-03): K2 misapplied \u2014 bodies are structurally parallel presentation over parallel view-model types (same surfaces, tokens, layout; only typed field access/metric keys differ). Re-opened for the host/user analytics-kit unification review. REVIEW (claude, 2026-07-03): identical 2-col Wrap grid; user .take(6) becomes maxItems param.",
+      "decidedBy": "codex-rule:K2 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-analytics-kit"
+      "status": "work-order WO-018",
+      "canonicalSymbol": "CatchAnalyticsMetricGrid"
     },
     {
       "clusterId": "ranked-pair: DarkPill/EventSuccessDarkPill",
@@ -3335,21 +3337,21 @@
     },
     {
       "clusterId": "ranked-pair: HostAnalyticsDataQualityPanel/UserAnalyticsDataQualityPanel",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "HostAnalyticsDataQualityPanel",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "UserAnalyticsDataQualityPanel",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K2 domain fork: host and user analytics quality panels use parallel role-specific row models, section shells, warning states, and copy contracts. AUDIT (claude, 2026-07-03): K2 misapplied \u2014 bodies are structurally parallel presentation over parallel view-model types (same surfaces, tokens, layout; only typed field access/metric keys differ). Re-opened for the host/user analytics-kit unification review.",
-      "decidedBy": "codex-rule:K2 -> claude-audit",
+      "rationale": "K2 domain fork: host and user analytics quality panels use parallel role-specific row models, section shells, warning states, and copy contracts. AUDIT (claude, 2026-07-03): K2 misapplied \u2014 bodies are structurally parallel presentation over parallel view-model types (same surfaces, tokens, layout; only typed field access/metric keys differ). Re-opened for the host/user analytics-kit unification review. REVIEW (claude, 2026-07-03): same concept, genuinely different treatments (per-row warning surfaces vs single divided surface); kit v2 candidate (CatchAnalyticsDataQualityList) after v1 lands.",
+      "decidedBy": "codex-rule:K2 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-analytics-kit"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: EventActionCardHeader/EventPolicyLabHeader",
@@ -3659,21 +3661,21 @@
     },
     {
       "clusterId": "ranked-pair: AttendedEventTile/HostAnalyticsEventTile",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "AttendedEventTile",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "HostAnalyticsEventTile",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K2 domain fork: attended-event catch tiles and host analytics event tiles consume different row models, actions, metrics, and role-specific copy. AUDIT (claude, 2026-07-03): K2 misapplied \u2014 bodies are structurally parallel presentation over parallel view-model types (same surfaces, tokens, layout; only typed field access/metric keys differ). Re-opened for the host/user analytics-kit unification review.",
-      "decidedBy": "codex-rule:K2 -> claude-audit",
+      "rationale": "K2 domain fork: attended-event catch tiles and host analytics event tiles consume different row models, actions, metrics, and role-specific copy. AUDIT (claude, 2026-07-03): K2 misapplied \u2014 bodies are structurally parallel presentation over parallel view-model types (same surfaces, tokens, layout; only typed field access/metric keys differ). Re-opened for the host/user analytics-kit unification review. REVIEW (claude, 2026-07-03): audit flip reverted \u2014 code read shows genuinely different widgets (swipes-hub tile with art block + catch/recap actions vs analytics list row with divider/selected state). Original K2 keep stands.",
+      "decidedBy": "codex-rule:K2 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-analytics-kit"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: EventSuccessPromptCard/StagePromptCard",
@@ -4520,6 +4522,25 @@
       "decidedBy": "codex-rule:K2",
       "date": "2026-07-03",
       "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "analytics-kit: HostAnalyticsSection/UserAnalyticsSection",
+      "decision": "merge-new-primitive",
+      "canonicalSymbol": "CatchAnalyticsSection",
+      "members": [
+        {
+          "name": "HostAnalyticsSection",
+          "action": "absorb"
+        },
+        {
+          "name": "UserAnalyticsSection",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Same label+gap+child section shell with drifted label typography (kicker ink3 vs labelL). Standardize on the kicker treatment (DS editorial section language); intentional visual change on the user side.",
+      "decidedBy": "claude",
+      "date": "2026-07-03",
+      "status": "work-order WO-018"
     }
   ]
 }

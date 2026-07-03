@@ -1165,6 +1165,124 @@ reference to `CatchScrim`, and recorded the receipt.
 
 ---
 
+## WO-018 — Analytics kit v1 (CatchAnalyticsMetricTile / MetricGrid / Section)
+
+Resolves the `escalated-analytics-kit` ledger entries. Design principle: the
+kit renders **display-ready data**; feature-specific metric-id switches,
+value formatters, and copy tables STAY in the features, which map their typed
+models into the kit model at call sites.
+
+1. New `lib/core/widgets/catch_analytics_kit.dart` (imports mirror
+   catch_analytics_bar.dart plus badge/text/tokens):
+
+```dart
+enum CatchMetricStatus { ready, partial, missing }
+
+/// Display-ready payload for one analytics metric tile.
+class CatchMetricCardData {
+  const CatchMetricCardData({
+    required this.icon,
+    required this.value,
+    required this.label,
+    this.caption,
+    this.status = CatchMetricStatus.ready,
+    this.partialBadgeLabel = 'Partial',
+    this.missingBadgeLabel = 'Missing',
+  });
+
+  final IconData icon;
+  final String value;
+  final String label;
+  final String? caption;
+  final CatchMetricStatus status;
+  final String partialBadgeLabel;
+  final String missingBadgeLabel;
+}
+
+/// Metric tile: icon + status badge, numeric value, label, optional caption.
+class CatchAnalyticsMetricTile extends StatelessWidget {
+  const CatchAnalyticsMetricTile({super.key, required this.data});
+
+  final CatchMetricCardData data;
+
+  // build: verbatim shared body of the two old tiles —
+  // muted = status == missing;
+  // CatchSurface(padding: CatchInsets.content,
+  //   borderColor: muted ? t.warning.withValues(alpha: CatchOpacity.mutedBorderUrgent) : t.line,
+  //   backgroundColor: muted ? t.warning.withValues(alpha: CatchOpacity.warningFill) : t.surface,
+  //   child: Column(start, [
+  //     Row([Icon(data.icon, size: CatchIcon.sm, color: t.ink2), Spacer(),
+  //          if (status != ready) CatchBadge(
+  //            label: partial ? data.partialBadgeLabel : data.missingBadgeLabel,
+  //            tone: partial ? CatchBadgeTone.warning : CatchBadgeTone.neutral)]),
+  //     gapH12,
+  //     Text(data.value, maxLines: 1, ellipsis, numericLarge(muted ? t.ink3 : t.ink)),
+  //     gapH4,
+  //     Text(data.label, maxLines: 1, ellipsis, labelM(t.ink2)),
+  //     if (data.caption non-blank) gapH8 + Text(caption, maxLines: 2, ellipsis,
+  //       supporting(t.ink3)),
+  //   ]))
+}
+
+/// Two-column wrap grid of metric tiles.
+class CatchAnalyticsMetricGrid extends StatelessWidget {
+  const CatchAnalyticsMetricGrid({
+    super.key,
+    required this.metrics,
+    this.maxItems,
+  });
+
+  final List<CatchMetricCardData> metrics;
+  final int? maxItems;
+  // build: verbatim old grid (LayoutBuilder, itemWidth = (maxWidth - s3)/2,
+  // Wrap s3/s3); iterate maxItems == null ? metrics : metrics.take(maxItems!).
+}
+
+/// Labeled analytics section: kicker label + gap + child.
+class CatchAnalyticsSection extends StatelessWidget {
+  const CatchAnalyticsSection({
+    super.key,
+    required this.label,
+    required this.child,
+  });
+
+  final String label;
+  final Widget child;
+  // build: Column(crossAxisAlignment: stretch, [
+  //   Text(label, style: CatchTextStyles.kicker(context, color: t.ink3)),
+  //   gapH8, child])
+  // NOTE: intentional standardization — user side moves labelL -> kicker.
+}
+```
+
+2. Feature mappers (place next to the existing helpers in each file):
+   - `lib/hosts/presentation/host_operations_screen.dart`:
+     `CatchMetricCardData _hostMetricCardData(HostAnalyticsMetricCard m) =>
+     CatchMetricCardData(icon: _metricIcon(m.id), value: _formatMetricValue(m),
+     label: m.label, caption: m.caption, status: <switch on m.status>);`
+   - `lib/user_analytics/shared/user_analytics_panel.dart`: same shape, but
+     label/caption via the existing `UserAnalyticsCopy.metricLabel/metricCaption`
+     indirection, and pass `partialBadgeLabel: UserAnalyticsCopy.partialBadge,
+     missingBadgeLabel: UserAnalyticsCopy.missingBadge`. The old `_statusBadge`
+     helper dies with the old tile.
+3. Migrations (then delete the six old widgets; gotchas 1/2/5/6):
+   - `HostAnalyticsMetricTile(metric: m)` → `CatchAnalyticsMetricTile(data: _hostMetricCardData(m))`
+   - `UserAnalyticsMetricTile(metric: m)` → same pattern with the user mapper
+   - `HostAnalyticsMetricGrid(metrics: xs)` → `CatchAnalyticsMetricGrid(metrics: [for (final m in xs) _hostMetricCardData(m)])`
+   - `UserAnalyticsMetricGrid(metrics: xs)` → same + `maxItems: 6`
+   - `HostAnalyticsSection` / `UserAnalyticsSection` → `CatchAnalyticsSection`
+     (all call sites incl. the trend/data-quality panels, which otherwise stay)
+   - `HostSectionLabel`: check remaining usages after migration; if analytics
+     sections were its only consumers, delete it too, else leave.
+4. Widgetbook: one kit use-case under primitives (tile ready/partial/missing,
+   grid, section); repoint/delete old-typed blocks (gotcha 2).
+5. regen + registries + receipts. Expected: widget count −5 (6 absorbed, 3 kit
+   widgets added, minus HostSectionLabel if orphaned).
+
+- [ ] kit file + widgetbook
+- [ ] mappers + migrations + deletions
+- [ ] regen + registries + receipts
+
 ## Audit note (2026-07-03, claude): WO-015 sweep quality
 
 Code-level audit of sampled sweep decisions: 3 of 4 sampled keeps verified
