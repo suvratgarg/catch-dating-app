@@ -70,10 +70,6 @@
     {
       "rule": "multiRouteScreenFile",
       "path": "lib/payments/presentation/payment_confirmation_screen.dart"
-    },
-    {
-      "rule": "widgetRefParameter",
-      "path": "lib/event_success/presentation/event_success_host_screen.dart"
     }
   ]
 }

@@ -337,7 +337,7 @@ class EventSuccessHostSectionState {
 }
 
 MutationState<void>? _firstHostRosterMutationError(
-  WidgetRef ref, {
+  MutationState<void> Function(Mutation<void> mutation) watchMutation, {
   required String eventId,
   required EventParticipationRoster? roster,
 }) {
@@ -371,11 +371,11 @@ MutationState<void>? _firstHostRosterMutationError(
       ),
     ];
     for (final mutation in mutations) {
-      final state = ref.watch(mutation);
+      final state = watchMutation(mutation);
       if (state.hasError) return state;
     }
   }
-  final bulkOfferState = ref.watch(
+  final bulkOfferState = watchMutation(
     HostEventBookingController.createWaitlistOfferMutation(
       HostEventBookingController.bulkWaitlistOfferMutationKey(eventId: eventId),
     ),
@@ -383,7 +383,7 @@ MutationState<void>? _firstHostRosterMutationError(
   return bulkOfferState.hasError ? bulkOfferState : null;
 }
 
-class EventSuccessHostSection extends ConsumerWidget {
+class EventSuccessHostSection extends ConsumerStatefulWidget {
   const EventSuccessHostSection({
     super.key,
     required this.event,
@@ -402,7 +402,20 @@ class EventSuccessHostSection extends ConsumerWidget {
   final EventSuccessHostFixtureActions? fixtureActions;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<EventSuccessHostSection> createState() =>
+      _EventSuccessHostSectionState();
+}
+
+class _EventSuccessHostSectionState
+    extends ConsumerState<EventSuccessHostSection> {
+  @override
+  Widget build(BuildContext context) {
+    final event = widget.event;
+    final initialTab = widget.initialTab;
+    final showTabs = widget.showTabs;
+    final liveRoster = widget.liveRoster;
+    final compactLiveControls = widget.compactLiveControls;
+    final fixtureActions = widget.fixtureActions;
     final planAsync = ref.watch(watchEventSuccessPlanProvider(event.id));
     final ensureMutation = ref.watch(EventSuccessController.ensurePlanMutation);
     final saveSetupMutation = ref.watch(
@@ -445,7 +458,7 @@ class EventSuccessHostSection extends ConsumerWidget {
     final attendanceErrorMutation = liveRoster == null
         ? null
         : _firstHostRosterMutationError(
-            ref,
+            (mutation) => ref.watch(mutation),
             eventId: event.id,
             roster: rosterAsync.asData?.value,
           );
@@ -536,7 +549,6 @@ class EventSuccessHostSection extends ConsumerWidget {
           state.error!,
           context: _eventSuccessHostRetryContext(retryIntent),
           onRetry: () => _retryEventSuccessHostSection(
-            ref: ref,
             eventId: event.id,
             retryIntent: retryIntent,
             assignmentParticipantUidsKey: assignmentParticipantUidsKey,
@@ -569,16 +581,16 @@ class EventSuccessHostSection extends ConsumerWidget {
         ensureMutation: ensureMutation,
         saveMutation: saveSetupMutation,
       ),
-      onSaveSetup: (request) => _saveEventSuccessSetup(ref, request),
+      onSaveSetup: _saveEventSuccessSetup,
       liveActionState: EventSuccessLiveActionState.resolve(
         stepMutation: updateStepMutation,
         completeMutation: completePlanMutation,
         attendanceErrorMutation: attendanceErrorMutation,
       ),
       onSetLiveStep: (index) =>
-          _setEventSuccessLiveStep(ref: ref, eventId: event.id, index: index),
+          _setEventSuccessLiveStep(eventId: event.id, index: index),
       onCompleteLiveGuide: () =>
-          _completeEventSuccessLiveGuide(ref: ref, eventId: event.id),
+          _completeEventSuccessLiveGuide(eventId: event.id),
       microPodsGenerationState:
           EventSuccessAssignmentGenerationActionState.resolve(
             generateMicroPodsMutation,
@@ -588,18 +600,16 @@ class EventSuccessHostSection extends ConsumerWidget {
             generateGuidedRotationsMutation,
           ),
       onGenerateMicroPods: () =>
-          _generateEventSuccessMicroPods(ref: ref, eventId: event.id),
+          _generateEventSuccessMicroPods(eventId: event.id),
       onGenerateGuidedRotations: () =>
-          _generateEventSuccessGuidedRotations(ref: ref, eventId: event.id),
+          _generateEventSuccessGuidedRotations(eventId: event.id),
       onOverrideGroupAssignments: (rounds) =>
           _overrideEventSuccessGroupAssignments(
-            ref: ref,
             eventId: event.id,
             rounds: rounds,
           ),
       onOverrideGuidedRotations: (rounds) =>
           _overrideEventSuccessGuidedRotations(
-            ref: ref,
             eventId: event.id,
             rounds: rounds,
           ),
@@ -610,162 +620,178 @@ class EventSuccessHostSection extends ConsumerWidget {
       ),
       onStartRevealCountdown: (roundIndex, _) =>
           _startEventSuccessRevealCountdown(
-            ref: ref,
             eventId: event.id,
             roundIndex: roundIndex,
           ),
-      onRevealRound: (roundIndex) => _revealEventSuccessRound(
-        ref: ref,
-        eventId: event.id,
-        roundIndex: roundIndex,
-      ),
-      onResetReveal: () =>
-          _resetEventSuccessReveal(ref: ref, eventId: event.id),
+      onRevealRound: (roundIndex) =>
+          _revealEventSuccessRound(eventId: event.id, roundIndex: roundIndex),
+      onResetReveal: () => _resetEventSuccessReveal(eventId: event.id),
       fixtureActions: fixtureActions,
     );
   }
-}
 
-Future<void> _saveEventSuccessSetup(
-  WidgetRef ref,
-  EventSuccessSetupSaveRequest request,
-) {
-  return EventSuccessController.saveSetupMutation.run(ref, (tx) async {
-    final basePlan = request.planIsPersisted
-        ? request.plan
-        : await tx
-              .get(eventSuccessControllerProvider.notifier)
-              .ensurePlan(request.event);
-    await tx
-        .get(eventSuccessControllerProvider.notifier)
-        .saveSetup(
-          plan: basePlan,
-          draft: request.draft,
-          attendeePrompt: request.attendeePrompt,
+  Future<void> _saveEventSuccessSetup(EventSuccessSetupSaveRequest request) {
+    return EventSuccessController.saveSetupMutation.run(ref, (tx) async {
+      final basePlan = request.planIsPersisted
+          ? request.plan
+          : await tx
+                .get(eventSuccessControllerProvider.notifier)
+                .ensurePlan(request.event);
+      await tx
+          .get(eventSuccessControllerProvider.notifier)
+          .saveSetup(
+            plan: basePlan,
+            draft: request.draft,
+            attendeePrompt: request.attendeePrompt,
+          );
+    });
+  }
+
+  Future<void> _generateEventSuccessMicroPods({required String eventId}) {
+    return EventSuccessController.generateMicroPodsMutation.run(
+      ref,
+      (tx) => tx
+          .get(eventSuccessControllerProvider.notifier)
+          .generateMicroPods(eventId: eventId),
+    );
+  }
+
+  Future<void> _generateEventSuccessGuidedRotations({required String eventId}) {
+    return EventSuccessController.generateGuidedRotationsMutation.run(
+      ref,
+      (tx) => tx
+          .get(eventSuccessControllerProvider.notifier)
+          .generateGuidedRotations(eventId: eventId),
+    );
+  }
+
+  Future<void> _startEventSuccessRevealCountdown({
+    required String eventId,
+    required int roundIndex,
+  }) {
+    return EventSuccessController.startRevealCountdownMutation.run(
+      ref,
+      (tx) => tx
+          .get(eventSuccessControllerProvider.notifier)
+          .startRevealCountdown(eventId: eventId, roundIndex: roundIndex),
+    );
+  }
+
+  Future<void> _revealEventSuccessRound({
+    required String eventId,
+    required int roundIndex,
+  }) {
+    return EventSuccessController.revealRoundMutation.run(
+      ref,
+      (tx) => tx
+          .get(eventSuccessControllerProvider.notifier)
+          .revealRound(eventId: eventId, roundIndex: roundIndex),
+    );
+  }
+
+  Future<void> _resetEventSuccessReveal({required String eventId}) {
+    return EventSuccessController.resetRevealMutation.run(
+      ref,
+      (tx) => tx
+          .get(eventSuccessControllerProvider.notifier)
+          .resetReveal(eventId: eventId),
+    );
+  }
+
+  Future<void> _overrideEventSuccessGroupAssignments({
+    required String eventId,
+    required List<EventSuccessGroupOverrideRound> rounds,
+  }) {
+    return EventSuccessController.overrideGroupAssignmentsMutation.run(
+      ref,
+      (tx) => tx
+          .get(eventSuccessControllerProvider.notifier)
+          .overrideGroupAssignments(eventId: eventId, rounds: rounds),
+    );
+  }
+
+  Future<void> _overrideEventSuccessGuidedRotations({
+    required String eventId,
+    required List<EventSuccessRotationOverrideRound> rounds,
+  }) {
+    return EventSuccessController.overrideGuidedRotationsMutation.run(
+      ref,
+      (tx) => tx
+          .get(eventSuccessControllerProvider.notifier)
+          .overrideGuidedRotations(eventId: eventId, rounds: rounds),
+    );
+  }
+
+  Future<void> _setEventSuccessLiveStep({
+    required String eventId,
+    required int index,
+  }) {
+    unawaited(
+      ref
+          .read(eventSuccessLiveEffectsControllerProvider)
+          .play(EventSuccessLiveEffectKind.stepChange),
+    );
+    return EventSuccessController.updateStepMutation.run(
+      ref,
+      (tx) => tx
+          .get(eventSuccessControllerProvider.notifier)
+          .updateActiveStep(eventId: eventId, activeStepIndex: index),
+    );
+  }
+
+  Future<void> _completeEventSuccessLiveGuide({required String eventId}) {
+    unawaited(
+      ref
+          .read(eventSuccessLiveEffectsControllerProvider)
+          .play(EventSuccessLiveEffectKind.guideComplete),
+    );
+    return EventSuccessController.completePlanMutation.run(
+      ref,
+      (tx) =>
+          tx.get(eventSuccessControllerProvider.notifier).completePlan(eventId),
+    );
+  }
+
+  void _retryEventSuccessHostSection({
+    required String eventId,
+    required EventSuccessHostRetryIntent retryIntent,
+    required String assignmentParticipantUidsKey,
+    required String rotationParticipantUidsKey,
+    required String wingmanProfilesKey,
+  }) {
+    switch (retryIntent) {
+      case EventSuccessHostRetryIntent.plan:
+        ref.invalidate(watchEventSuccessPlanProvider(eventId));
+      case EventSuccessHostRetryIntent.roster:
+        ref.invalidate(watchEventParticipationRosterProvider(eventId));
+      case EventSuccessHostRetryIntent.assignments:
+        ref.invalidate(watchEventSuccessAssignmentsProvider(eventId));
+      case EventSuccessHostRetryIntent.rotationAssignments:
+        ref.invalidate(watchEventSuccessRotationAssignmentsProvider(eventId));
+      case EventSuccessHostRetryIntent.assignmentParticipantProfiles:
+        ref.invalidate(
+          eventSuccessAssignmentPeerProfilesProvider(
+            assignmentParticipantUidsKey,
+          ),
         );
-  });
-}
-
-Future<void> _generateEventSuccessMicroPods({
-  required WidgetRef ref,
-  required String eventId,
-}) {
-  return EventSuccessController.generateMicroPodsMutation.run(
-    ref,
-    (tx) => tx
-        .get(eventSuccessControllerProvider.notifier)
-        .generateMicroPods(eventId: eventId),
-  );
-}
-
-Future<void> _generateEventSuccessGuidedRotations({
-  required WidgetRef ref,
-  required String eventId,
-}) {
-  return EventSuccessController.generateGuidedRotationsMutation.run(
-    ref,
-    (tx) => tx
-        .get(eventSuccessControllerProvider.notifier)
-        .generateGuidedRotations(eventId: eventId),
-  );
-}
-
-Future<void> _startEventSuccessRevealCountdown({
-  required WidgetRef ref,
-  required String eventId,
-  required int roundIndex,
-}) {
-  return EventSuccessController.startRevealCountdownMutation.run(
-    ref,
-    (tx) => tx
-        .get(eventSuccessControllerProvider.notifier)
-        .startRevealCountdown(eventId: eventId, roundIndex: roundIndex),
-  );
-}
-
-Future<void> _revealEventSuccessRound({
-  required WidgetRef ref,
-  required String eventId,
-  required int roundIndex,
-}) {
-  return EventSuccessController.revealRoundMutation.run(
-    ref,
-    (tx) => tx
-        .get(eventSuccessControllerProvider.notifier)
-        .revealRound(eventId: eventId, roundIndex: roundIndex),
-  );
-}
-
-Future<void> _resetEventSuccessReveal({
-  required WidgetRef ref,
-  required String eventId,
-}) {
-  return EventSuccessController.resetRevealMutation.run(
-    ref,
-    (tx) => tx
-        .get(eventSuccessControllerProvider.notifier)
-        .resetReveal(eventId: eventId),
-  );
-}
-
-Future<void> _overrideEventSuccessGroupAssignments({
-  required WidgetRef ref,
-  required String eventId,
-  required List<EventSuccessGroupOverrideRound> rounds,
-}) {
-  return EventSuccessController.overrideGroupAssignmentsMutation.run(
-    ref,
-    (tx) => tx
-        .get(eventSuccessControllerProvider.notifier)
-        .overrideGroupAssignments(eventId: eventId, rounds: rounds),
-  );
-}
-
-Future<void> _overrideEventSuccessGuidedRotations({
-  required WidgetRef ref,
-  required String eventId,
-  required List<EventSuccessRotationOverrideRound> rounds,
-}) {
-  return EventSuccessController.overrideGuidedRotationsMutation.run(
-    ref,
-    (tx) => tx
-        .get(eventSuccessControllerProvider.notifier)
-        .overrideGuidedRotations(eventId: eventId, rounds: rounds),
-  );
-}
-
-Future<void> _setEventSuccessLiveStep({
-  required WidgetRef ref,
-  required String eventId,
-  required int index,
-}) {
-  unawaited(
-    ref
-        .read(eventSuccessLiveEffectsControllerProvider)
-        .play(EventSuccessLiveEffectKind.stepChange),
-  );
-  return EventSuccessController.updateStepMutation.run(
-    ref,
-    (tx) => tx
-        .get(eventSuccessControllerProvider.notifier)
-        .updateActiveStep(eventId: eventId, activeStepIndex: index),
-  );
-}
-
-Future<void> _completeEventSuccessLiveGuide({
-  required WidgetRef ref,
-  required String eventId,
-}) {
-  unawaited(
-    ref
-        .read(eventSuccessLiveEffectsControllerProvider)
-        .play(EventSuccessLiveEffectKind.guideComplete),
-  );
-  return EventSuccessController.completePlanMutation.run(
-    ref,
-    (tx) =>
-        tx.get(eventSuccessControllerProvider.notifier).completePlan(eventId),
-  );
+      case EventSuccessHostRetryIntent.rotationParticipantProfiles:
+        ref.invalidate(
+          eventSuccessAssignmentPeerProfilesProvider(
+            rotationParticipantUidsKey,
+          ),
+        );
+      case EventSuccessHostRetryIntent.preferences:
+        ref.invalidate(watchEventSuccessPreferencesProvider(eventId));
+      case EventSuccessHostRetryIntent.wingmanRequests:
+        ref.invalidate(watchEventSuccessWingmanRequestsProvider(eventId));
+      case EventSuccessHostRetryIntent.wingmanProfiles:
+        ref.invalidate(
+          eventSuccessAssignmentPeerProfilesProvider(wingmanProfilesKey),
+        );
+      case EventSuccessHostRetryIntent.scorecard:
+        ref.invalidate(watchEventSuccessScorecardProvider(eventId));
+    }
+  }
 }
 
 AppErrorContext _eventSuccessHostRetryContext(
@@ -783,46 +809,6 @@ AppErrorContext _eventSuccessHostRetryContext(
     EventSuccessHostRetryIntent.wingmanRequests ||
     EventSuccessHostRetryIntent.scorecard => AppErrorContext.event,
   };
-}
-
-void _retryEventSuccessHostSection({
-  required WidgetRef ref,
-  required String eventId,
-  required EventSuccessHostRetryIntent retryIntent,
-  required String assignmentParticipantUidsKey,
-  required String rotationParticipantUidsKey,
-  required String wingmanProfilesKey,
-}) {
-  switch (retryIntent) {
-    case EventSuccessHostRetryIntent.plan:
-      ref.invalidate(watchEventSuccessPlanProvider(eventId));
-    case EventSuccessHostRetryIntent.roster:
-      ref.invalidate(watchEventParticipationRosterProvider(eventId));
-    case EventSuccessHostRetryIntent.assignments:
-      ref.invalidate(watchEventSuccessAssignmentsProvider(eventId));
-    case EventSuccessHostRetryIntent.rotationAssignments:
-      ref.invalidate(watchEventSuccessRotationAssignmentsProvider(eventId));
-    case EventSuccessHostRetryIntent.assignmentParticipantProfiles:
-      ref.invalidate(
-        eventSuccessAssignmentPeerProfilesProvider(
-          assignmentParticipantUidsKey,
-        ),
-      );
-    case EventSuccessHostRetryIntent.rotationParticipantProfiles:
-      ref.invalidate(
-        eventSuccessAssignmentPeerProfilesProvider(rotationParticipantUidsKey),
-      );
-    case EventSuccessHostRetryIntent.preferences:
-      ref.invalidate(watchEventSuccessPreferencesProvider(eventId));
-    case EventSuccessHostRetryIntent.wingmanRequests:
-      ref.invalidate(watchEventSuccessWingmanRequestsProvider(eventId));
-    case EventSuccessHostRetryIntent.wingmanProfiles:
-      ref.invalidate(
-        eventSuccessAssignmentPeerProfilesProvider(wingmanProfilesKey),
-      );
-    case EventSuccessHostRetryIntent.scorecard:
-      ref.invalidate(watchEventSuccessScorecardProvider(eventId));
-  }
 }
 
 class EventSuccessHostSectionSkeleton extends StatelessWidget {
