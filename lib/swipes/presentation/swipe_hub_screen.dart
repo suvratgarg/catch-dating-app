@@ -316,59 +316,89 @@ class CatchesHubEmptyState extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     return SafeArea(
-      child: ListView(
-        padding: CatchInsets.pageBodyHero,
-        children: [
-          Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: CatchLayout.maxContentWidth,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const CatchesHubHeader(),
-                  gapH40,
-                  CatchEmptyState(
-                    icon: CatchIcons.directionsRunRounded,
-                    title: 'No active catches',
-                    message:
-                        'Book a group event, show up, and your 24-hour catch window opens here after check-in.',
-                    action: CatchButton(
-                      label: 'Find an event',
-                      onPressed: onFindEvent,
-                      variant: CatchButtonVariant.secondary,
-                    ),
+      child: CustomScrollView(
+        slivers: [
+          SliverPadding(
+            padding: CatchInsets.pageBodyHero.copyWith(bottom: 0),
+            sliver: SliverToBoxAdapter(
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxWidth: CatchLayout.maxContentWidth,
                   ),
-                  gapH18,
-                  CatchSurface(
-                    padding: CatchInsets.content,
-                    tone: CatchSurfaceTone.raised,
-                    borderColor: t.line,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(
-                          CatchIcons.lockClockRounded,
-                          color: t.primary,
-                          size: CatchIcon.control,
-                        ),
-                        gapW10,
-                        Expanded(
-                          child: Text(
-                            'Dating stays locked until you actually run together. No cold stranger browsing.',
-                            style: CatchTextStyles.proseM(
-                              context,
-                              color: t.ink2,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                  child: const CatchesHubHeader(),
+                ),
               ),
             ),
+          ),
+          SliverLayoutBuilder(
+            builder: (context, constraints) {
+              final remainingHeight =
+                  constraints.viewportMainAxisExtent -
+                  constraints.precedingScrollExtent;
+              return SliverToBoxAdapter(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: remainingHeight.clamp(0.0, double.infinity),
+                  ),
+                  child: Padding(
+                    padding: CatchInsets.pageBodyHero.copyWith(
+                      top: CatchSpacing.s4,
+                    ),
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxWidth: CatchLayout.maxContentWidth,
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            CatchEmptyState(
+                              icon: CatchIcons.directionsRunRounded,
+                              title: 'No active catches',
+                              message:
+                                  'Book a group event, show up, and your 24-hour catch window opens here after check-in.',
+                              action: CatchButton(
+                                label: 'Find an event',
+                                onPressed: onFindEvent,
+                                variant: CatchButtonVariant.secondary,
+                              ),
+                            ),
+                            gapH18,
+                            CatchSurface(
+                              padding: CatchInsets.content,
+                              tone: CatchSurfaceTone.raised,
+                              borderColor: t.line,
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Icon(
+                                    CatchIcons.lockClockRounded,
+                                    color: t.primary,
+                                    size: CatchIcon.control,
+                                  ),
+                                  gapW10,
+                                  Expanded(
+                                    child: Text(
+                                      'Dating stays locked until you actually run together. No cold stranger browsing.',
+                                      style: CatchTextStyles.proseM(
+                                        context,
+                                        color: t.ink2,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
         ],
       ),

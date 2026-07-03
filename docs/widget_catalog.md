@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.568
+version: 2.5.569
 updated: 2026-07-04
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.569
+
+- Changed `CatchesHubEmptyState` from a top-stacked `ListView` body to a
+  header sliver plus centered remaining-body empty state. Route-level empty
+  states should center inside the available screen body; inline section/list
+  empty states keep their local placement.
 
 ### 2.5.568
 
@@ -5808,7 +5815,7 @@ Generated 2026-05-06.
 | `ProfilePhotoBlock` | `lib/swipes/presentation/profile_redesign/catch_profile_view.dart:540` | Standalone profile photo section. Uses the same `ProfilePhoto` media renderer, optional caption, and optional overlay reaction controls for photo-specific reactions. |
 | `PhotoCaption` | `lib/swipes/presentation/profile_redesign/catch_profile_view.dart:591` | Dark translucent caption pill used over standalone profile photos. |
 | `ProfileRule` | `lib/swipes/presentation/profile_redesign/catch_profile_view.dart:614` | Hairline divider inserted between profile body sections. |
-| `CatchesHubEmptyState` | `lib/swipes/presentation/swipe_hub_screen.dart:299` | Provider-free empty state when no active catch windows exist. Receives the "Find an event" callback from `SwipeHubScreen` so Widgetbook and tests can render it without router side effects. |
+| `CatchesHubEmptyState` | `lib/swipes/presentation/swipe_hub_screen.dart:299` | Provider-free route-level empty state when no active catch windows exist. Renders the Catches header as top chrome, then centers the empty-state body plus privacy note in the remaining viewport with scroll fallback. Receives the "Find an event" callback from `SwipeHubScreen` so Widgetbook and tests can render it without router side effects. |
 | `CatchesProfileReviewSkeleton` | `lib/swipes/presentation/swipe_screen.dart:178` | Profile-shaped Catches deck loading shell. Reuses `ProfileSurfaceSkeleton`, preserves the top overlay geometry with circular/pill placeholders, keeps the bottom scrim, and shows a pass-button placeholder while the queue loads. |
 | `CatchesProfileReview` | `lib/swipes/presentation/swipe_screen.dart:224` | Provider-free Catches deck composition. Layers the reactable `ProfileSurface`, `CatchesTopOverlay`, `CatchesBottomScrim`, and floating `CatchesPassButton` while receiving back/filter/pass/reaction callbacks plus immutable action-state display data from `SwipeScreen`. |
 | `CatchesTopOverlay` | `lib/swipes/presentation/swipe_screen.dart:363` | Floating deck top overlay with back and filter controls plus the remaining-candidate pill. Intended to stay callback-driven by the route adapter. |

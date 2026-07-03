@@ -3,6 +3,8 @@ import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/swipes/presentation/catches_hub_screen_state.dart';
@@ -159,5 +161,32 @@ void main() {
     expect(button.variant, CatchButtonVariant.light);
     expect(button.isInteractive, isFalse);
     expect(label.style?.color, CatchTokens.sunsetLight.ink);
+  });
+
+  testWidgets('Catches empty body centers below the header', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(390, 844);
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: Scaffold(body: CatchesHubEmptyState(onFindEvent: () {})),
+      ),
+    );
+    await tester.pump();
+
+    final headerRect = tester.getRect(find.byType(CatchesHubHeader));
+    final emptyRect = tester.getRect(find.byType(CatchEmptyState));
+    final noteRect = tester.getRect(find.byType(CatchSurface));
+    final emptyBodyRect = emptyRect.expandToInclude(noteRect);
+    final availableBodyCenterY = (headerRect.bottom + 844) / 2;
+
+    expect(emptyBodyRect.top - headerRect.bottom, greaterThan(100));
+    expect(
+      (emptyBodyRect.center.dy - availableBodyCenterY).abs(),
+      lessThan(36),
+    );
   });
 }
