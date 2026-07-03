@@ -1,5 +1,6 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import type {FormEvent} from "react";
+import {useState} from "react";
 import {SectionHeader} from "../shared/site/SectionHeader";
 import {
   ActionGroup,
@@ -27,6 +28,7 @@ import {
   ProductShell,
   ProofLedgerRows,
   SelectField,
+  StepRail,
   TextField,
   UiLabel,
   WaitlistFormShell,
@@ -153,6 +155,18 @@ export const FieldGridStory: Story = {
       />
     </FieldGrid>
   ),
+};
+
+export const StepRailStory: Story = {
+  name: "Step rail",
+  parameters: {
+    catchComponent: {
+      id: "shared_operational_step_rail",
+      routeIds: ["host", "claim"],
+      states: ["current", "complete", "disabled"],
+    },
+  },
+  render: () => <StepRailDemo />,
 };
 
 export const WaitlistSectionStory: Story = {
@@ -427,4 +441,36 @@ export const ListingSuccessMetricGridStory: Story = {
 
 function preventSubmit(event: FormEvent<HTMLFormElement>) {
   event.preventDefault();
+}
+
+function StepRailDemo() {
+  const [activeId, setActiveId] = useState("proof");
+  const items = [
+    {
+      id: "identity",
+      label: "Identity",
+      body: "Organizer, city, and source proof.",
+    },
+    {
+      id: "proof",
+      label: "Proof",
+      body: "Events, links, and ownership checks.",
+    },
+    {
+      id: "publish",
+      label: "Publish",
+      body: "Route and review evidence ready.",
+    },
+  ];
+  const currentIndex = Math.max(0, items.findIndex((item) => item.id === activeId));
+
+  return (
+    <StepRail
+      currentIndex={currentIndex}
+      getDisabled={(_, index) => index > currentIndex + 1}
+      items={items}
+      label="Storybook operational steps"
+      onSelect={setActiveId}
+    />
+  );
 }

@@ -945,6 +945,19 @@ const componentFamilies = [
     guidance: "Use the surface FieldGrid/AdminFieldGrid primitive instead of rendering a field layout grid directly.",
   },
   {
+    family: "website-operational-step-rail",
+    surfaces: ["website"],
+    jsxPatterns: [
+      {
+        pattern:
+          /\bclassName=\{?["'`][^"'`]*\boperational-step-rail\b[^"'`]*["'`]\}?/gu,
+        description: "raw website operational step rail class",
+      },
+    ],
+    createElementPattern: null,
+    guidance: "Use StepRail instead of rendering website operational step rail shells directly.",
+  },
+  {
     family: "admin-summary-metrics",
     surfaces: ["admin"],
     jsxPatterns: [
@@ -2250,9 +2263,9 @@ function fail(message) {
 }
 
 function printFamiliesJson() {
-  console.log(`${JSON.stringify({
+  process.stdout.write(`${JSON.stringify({
     version: 1,
-    updated: "2026-07-02",
+    updated: "2026-07-03",
     source: "tool/web/check_react_component_governance.mjs",
     limitation:
       "Known-family blocklist. Passing the scanner does not classify novel component shell families; reviewers must add new families when drift repeats.",
@@ -2303,6 +2316,22 @@ function runSelfTest() {
   });
   assert.equal(violations.length, 1);
   assert.equal(violations[0].family, "website-legacy-site-barrel");
+
+  violations.length = 0;
+  overrideNotes.length = 0;
+  scanLines({
+    lines: [
+      "export function Feature() {",
+      "  return <nav className=\"operational-step-rail\" aria-label=\"Steps\" />;",
+      "}",
+    ],
+    relativePath: "website/src/features/example/Example.tsx",
+    scansJsx: true,
+    surfaceName: "website",
+  });
+  assert.equal(violations.length, 1);
+  assert.equal(violations[0].family, "website-operational-step-rail");
+  assert.equal(violations[0].line, 2);
 
   console.log("React component governance scanner self-test passed.");
 }
