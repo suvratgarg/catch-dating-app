@@ -385,8 +385,6 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             onDeleted: onDeleted,
           ),
           onSharePrivateLink: (inviteLink) => _shareHostPrivateLink(
-            context: context,
-            ref: ref,
             club: club,
             event: event,
             inviteLink: inviteLink,
@@ -407,35 +405,19 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             onRetryInviteLinks: () =>
                 ref.invalidate(watchEventInviteLinksProvider(event.id)),
             onSharePrivateLink: (inviteLink) => _shareHostPrivateLink(
-              context: context,
-              ref: ref,
               club: club,
               event: event,
               inviteLink: inviteLink,
             ),
             onCreateInviteLink: (draft) => _createNamedInviteLink(
-              context: context,
-              ref: ref,
               event: event,
               inviteCode: privateLinkActionState!.inviteCode!,
               draft: draft,
             ),
-            onCopyInviteLink: (link, url) => unawaited(
-              _copyNamedInviteLink(
-                context: context,
-                ref: ref,
-                link: link,
-                url: url,
-              ),
-            ),
-            onDisableInviteLink: (link) => unawaited(
-              _disableNamedInviteLink(
-                context: context,
-                ref: ref,
-                event: event,
-                link: link,
-              ),
-            ),
+            onCopyInviteLink: (link, url) =>
+                unawaited(_copyNamedInviteLink(link: link, url: url)),
+            onDisableInviteLink: (link) =>
+                unawaited(_disableNamedInviteLink(event: event, link: link)),
           ),
         ],
         gapH20,
@@ -566,8 +548,6 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
   }
 
   Future<void> _createNamedInviteLink({
-    required BuildContext context,
-    required WidgetRef ref,
     required Event event,
     required String inviteCode,
     required HostInviteLinkDraft draft,
@@ -584,7 +564,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
                   draft: draft,
                 ),
           );
-      if (!context.mounted) return;
+      if (!mounted) return;
       showCatchSnackBar(context, '$label copied.');
     } catch (error, stackTrace) {
       ref
@@ -598,8 +578,6 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
   }
 
   Future<void> _copyNamedInviteLink({
-    required BuildContext context,
-    required WidgetRef ref,
     required EventInviteLink link,
     required String url,
   }) async {
@@ -610,7 +588,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             .get(hostEventManageActionsProvider)
             .copyInviteLink(label: link.label, url: url),
       );
-      if (!context.mounted) return;
+      if (!mounted) return;
       showCatchSnackBar(context, '$label copied.');
     } catch (error, stackTrace) {
       ref
@@ -624,8 +602,6 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
   }
 
   Future<void> _disableNamedInviteLink({
-    required BuildContext context,
-    required WidgetRef ref,
     required Event event,
     required EventInviteLink link,
   }) async {
@@ -640,7 +616,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       ],
     );
     if (confirmed != true) return;
-    if (!context.mounted) return;
+    if (!mounted) return;
     try {
       final label = await HostEventManageController.disableInviteLinkMutation
           .run(
@@ -649,7 +625,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
                 .get(hostEventManageActionsProvider)
                 .disableInviteLink(event: event, link: link),
           );
-      if (!context.mounted) return;
+      if (!mounted) return;
       showCatchSnackBar(context, '$label disabled.');
     } catch (error, stackTrace) {
       ref
@@ -660,6 +636,44 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             reason: 'HostEventManageScreen._disableNamedInviteLink failed',
           );
     }
+  }
+
+  void _shareHostPrivateLink({
+    required Club club,
+    required Event event,
+    required String inviteLink,
+  }) {
+    final box = context.findRenderObject() as RenderBox?;
+    final origin = box == null
+        ? null
+        : box.localToGlobal(Offset.zero) & box.size;
+    unawaited(
+      HostEventManageController.sharePrivateLinkMutation
+          .run(
+            ref,
+            (tx) => tx
+                .get(hostEventManageActionsProvider)
+                .sharePrivateLink(
+                  club: club,
+                  event: event,
+                  inviteLink: inviteLink,
+                  origin: origin,
+                ),
+          )
+          .then<void>(
+            (_) {},
+            onError: (Object error, StackTrace stackTrace) {
+              ref
+                  .read(errorLoggerProvider)
+                  .logError(
+                    error,
+                    stackTrace,
+                    reason:
+                        'HostEventManageScreen._shareHostPrivateLink failed',
+                  );
+            },
+          ),
+    );
   }
 }
 
@@ -999,43 +1013,6 @@ class HostPrivateAccessBody extends StatelessWidget {
       ),
     );
   }
-}
-
-void _shareHostPrivateLink({
-  required BuildContext context,
-  required WidgetRef ref,
-  required Club club,
-  required Event event,
-  required String inviteLink,
-}) {
-  final box = context.findRenderObject() as RenderBox?;
-  final origin = box == null ? null : box.localToGlobal(Offset.zero) & box.size;
-  unawaited(
-    HostEventManageController.sharePrivateLinkMutation
-        .run(
-          ref,
-          (tx) => tx
-              .get(hostEventManageActionsProvider)
-              .sharePrivateLink(
-                club: club,
-                event: event,
-                inviteLink: inviteLink,
-                origin: origin,
-              ),
-        )
-        .then<void>(
-          (_) {},
-          onError: (Object error, StackTrace stackTrace) {
-            ref
-                .read(errorLoggerProvider)
-                .logError(
-                  error,
-                  stackTrace,
-                  reason: '_shareHostPrivateLink failed',
-                );
-          },
-        ),
-  );
 }
 
 class HostInviteLinksList extends StatelessWidget {

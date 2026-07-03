@@ -77,10 +77,6 @@
     },
     {
       "rule": "widgetRefParameter",
-      "path": "lib/hosts/presentation/host_event_manage_screen.dart"
-    },
-    {
-      "rule": "widgetRefParameter",
       "path": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart"
     }
   ]
