@@ -13440,8 +13440,8 @@
         },
         {
           "id": "DS-HOST-EVENT-MANAGE-005",
-          "status": "open",
-          "nextAction": "Setup/private-access, attendance roster, live console, post-event report, private-access missing-code, invite-link disabled-row, and invite-link long-label/source states have deterministic captures; remaining work is masks for additional dynamic host data once canonical exports exist."
+          "status": "blocked",
+          "nextAction": "Blocked/reference-only until canonical edge-state exports exist: setup/private-access, attendance roster, live console, post-event report, private-access missing-code, invite-link disabled-row, and invite-link long-label/source states have deterministic captures. Remaining work is masks for additional dynamic host data once canonical exports exist."
         }
       ],
       "captureIds": [
@@ -16612,7 +16612,7 @@
         },
         {
           "id": "DS-ONBOARDING-004",
-          "status": "open",
+          "status": "blocked",
           "nextAction": "Blocked/reference-only until a canonical interaction source exists: primary onboarding step references are exported and manifest-registered for welcome, name/DOB, gender/interest, Instagram filled, photos count-met, prompts partial, and running preferences. Remaining references and masks are interaction-specific keyboard, date picker, photo picker/upload, prompt picker/copy variants, mutation feedback, accessibility, and theme variants."
         }
       ]
