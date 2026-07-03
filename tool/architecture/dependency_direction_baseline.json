@@ -21,10 +21,6 @@
     },
     {
       "rule": "multiRouteScreenFile",
-      "path": "lib/hosts/presentation/event_management/host_create_event_screen.dart"
-    },
-    {
-      "rule": "multiRouteScreenFile",
       "path": "lib/hosts/presentation/host_event_manage_screen.dart"
     },
     {
