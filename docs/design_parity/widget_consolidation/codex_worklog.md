@@ -1032,6 +1032,14 @@ decisions: `c026-slot-row`, `c034-celebration-details-card`,
 `c036-dashboard-full`, `c037-card`, `c038-profile-tab`, and `c042-editor`. No
 code was changed in this ledger-only batch.
 
+Progress by Codex: triaged eight small widget clusters. Kept `c028-panel` and
+`c031-event-detail-policy-summary` under K4; escalated
+`c012-pill`, `c018-icon`, and
+`c030-catch-framework-error-debug-details` under K5; escalated
+`c010-choice-entry-editor`, `c014-catch-option-group-item`, and
+`c035-reveal-host-copy` as no-exact-match design/API questions. No code was
+changed in this ledger-only batch.
+
 ## WO-016 — Review answers from the WO-001..014 audit
 
 1. **`CatchSkeletonRows.divided` flag** (answers the WO-006 skip): add
@@ -1108,6 +1116,34 @@ code was changed in this ledger-only batch.
   outer tap-row shell but differ in selected filter semantics, title/count
   treatment, overflow-expander semantics, kicker typography, and arrow
   affordance.
+- WO-015: `c010-choice-entry-editor` members
+  `ProfileInlineMultiChoiceEntryEditor`, `ProfileInlineSingleChoiceEntryEditor`
+  — nearest rule: no exact K/R match, blocked because single-choice owns
+  nullable selected state and empty-selection behavior while multi-choice owns
+  `Set<T>` state, optional removal rules, and latest-profile patching.
+- WO-015: `c012-pill` members `EventSharePill`, `EventSuccessDarkPill` —
+  nearest rule: K5 concept mismatch, blocked because the former is a light
+  share-card metadata pill and the latter is a dark editorial overlay pill with
+  different token roles and typography.
+- WO-015: `c014-catch-option-group-item` members `CatchOptionGroupItem`,
+  `ExploreRailLabel` — nearest rule: no exact K/R match, blocked because
+  absorbing the rail label needs a core option-item API/design decision around
+  selected rule color, variant handling, option typing, and whether explore
+  filter rails are option groups.
+- WO-015: `c018-icon` members `CatchErrorIcon`, `PaperCelebrationIcon` —
+  nearest rule: K5 concept mismatch, blocked because the former is the core
+  danger/error medallion while the latter is celebration-specific primary art
+  direction with fixed sizing.
+- WO-015: `c030-catch-framework-error-debug-details` members
+  `CatchFrameworkErrorDebugDetails`, `SetupDisclosureSection` — nearest rule:
+  K5 concept mismatch, blocked because developer-error debug disclosure and
+  Event Success setup disclosure have different content contracts and token
+  roles.
+- WO-015: `c035-reveal-host-copy` members `RevealHostCopy`,
+  `StructureNumberField` — nearest rule: no exact K/R match, blocked because
+  reveal host copy is dark live-reveal content while `StructureNumberField` is
+  a setup form-field label/detail/child wrapper already kept distinct from
+  stat/header concepts.
 
 ## Completed
 

@@ -1487,3 +1487,53 @@ Known blockers / inherited debt:
 
 - WO-015 remains open: 21 current similarity clusters still need rule-driven
   decisions or review escalation by the simple cluster ledger check.
+
+## 2026-07-03 — WO-015 small-widget triage
+
+Scope:
+
+- Validated and logged eight current small-widget cluster outcomes already
+  present in `decisions.json`: `c010-choice-entry-editor`, `c012-pill`,
+  `c014-catch-option-group-item`, `c018-icon`, `c028-panel`,
+  `c030-catch-framework-error-debug-details`,
+  `c031-event-detail-policy-summary`, and `c035-reveal-host-copy`.
+- Added the matching worklog progress and escalation lines for the K5 and
+  no-exact-match outcomes.
+- No production Dart, Widgetbook, generated widget registries, or visual output
+  changed.
+
+Commands:
+
+- `node tool/agent/context_pack.mjs --task widget-consolidation-wo-015-small-widget-triage --paths docs/design_parity/widget_consolidation/decisions.json,docs/design_parity/widget_consolidation/codex_worklog.md,docs/audit_registry/widget_consolidation_receipts.md,docs/design_parity/widget_consolidation/consolidation_rules.md,docs/audit_registry/widget_similarity.json,lib/user_profile/presentation/widgets/inline_editor_choice.dart,lib/events/shared/event_share_card.dart,lib/event_success/presentation/event_success_feature_blocks.dart,lib/core/widgets/catch_option_group.dart,lib/explore/presentation/widgets/explore_filter_rail.dart,lib/core/widgets/catch_error_icon.dart,lib/core/celebration/catch_celebration_screen.dart,lib/user_analytics/shared/user_analytics_panel.dart,lib/core/widgets/catch_framework_error_view.dart,lib/event_success/presentation/event_success_setup_body.dart,lib/events/presentation/widgets/event_detail_overview_section.dart`
+- `rg -n "class ProfileInlineMultiChoiceEntryEditor|class ProfileInlineSingleChoiceEntryEditor|ProfileInlineMultiChoiceEntryEditor\\(|ProfileInlineSingleChoiceEntryEditor\\(" lib widgetbook/lib test --glob '*.dart'`
+- `rg -n "class EventSharePill|class EventSuccessDarkPill|EventSharePill\\(|EventSuccessDarkPill\\(" lib widgetbook/lib test --glob '*.dart'`
+- `rg -n "class CatchOptionGroupItem|class ExploreRailLabel|CatchOptionGroupItem\\(|ExploreRailLabel\\(" lib widgetbook/lib test --glob '*.dart'`
+- `rg -n "class CatchErrorIcon|class PaperCelebrationIcon|CatchErrorIcon\\(|PaperCelebrationIcon\\(" lib widgetbook/lib test --glob '*.dart'`
+- `rg -n "class UserAnalyticsDataQualityPanel|class UserAnalyticsTipsPanel|UserAnalyticsDataQualityPanel\\(|UserAnalyticsTipsPanel\\(" lib widgetbook/lib test --glob '*.dart'`
+- `rg -n "class CatchFrameworkErrorDebugDetails|class SetupDisclosureSection|CatchFrameworkErrorDebugDetails\\(|SetupDisclosureSection\\(" lib widgetbook/lib test --glob '*.dart'`
+- `rg -n "class EventDetailPolicySummary|class WhatToExpectSection|EventDetailPolicySummary\\(|WhatToExpectSection\\(" lib widgetbook/lib test --glob '*.dart'`
+- `rg -n "class RevealHostCopy|RevealHostCopy\\(|class StructureNumberField|StructureNumberField\\(" lib widgetbook/lib test --glob '*.dart'`
+- `node - <<'NODE' ... JSON.parse(...) ... NODE`
+- `dart tool/audit_registry.dart refresh`
+- `dart tool/audit_registry.dart mark-pass --pass widget-consolidation-wo-015-small-widget-triage --rules AUDIT-REGISTRY-001,WIDGET-CATALOG-001 --paths docs/design_parity/widget_consolidation/decisions.json,docs/design_parity/widget_consolidation/codex_worklog.md,docs/audit_registry/widget_consolidation_receipts.md --proof "WO-015 small-widget triage validated eight current ledger outcomes; no production Dart changed" --status clean`
+- `dart tool/audit_registry.dart report`
+- `node tool/agent/check_agent_readiness.mjs`
+- `git diff --check`
+
+Headline numbers:
+
+| metric | value |
+|---|---:|
+| small-widget clusters triaged | 8 |
+| K4 keeps recorded | 2 |
+| K5 escalations recorded | 3 |
+| no-exact-match escalations recorded | 3 |
+| code changes | 0 |
+| rule-authorized merges/deletions | 0 |
+| undecided similarity clusters after this ledger pass | 13 |
+
+Known blockers / inherited debt:
+
+- WO-015 remains open: 13 current similarity clusters still need rule-driven
+  decisions, review escalation, or rule-authorized execution by the simple
+  cluster ledger check.
