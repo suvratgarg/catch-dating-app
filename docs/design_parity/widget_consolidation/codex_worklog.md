@@ -1283,6 +1283,36 @@ class CatchAnalyticsSection extends StatelessWidget {
 - [ ] mappers + migrations + deletions
 - [ ] regen + registries + receipts
 
+## WO-019 — Pill merge + privacy badge unification
+
+1. **DarkPill → EventSuccessDarkPill** (ledger: absorb): move
+   `EventSuccessDarkPill` from `event_success_feature_blocks.dart` to a
+   shared event_success location if needed for the manual-QA import, replace
+   `DarkPill(...)` call sites in
+   `lib/event_success/presentation/event_success_manual_qa_screen.dart`
+   (label pass-through; the reveal token treatment wins — intentional visual
+   change on the QA screen), delete `DarkPill`. Then check
+   `CatchOpacity.manualQaPillFill` / `manualQaPillBorder` for remaining
+   usages; if orphaned, remove the tokens (token file + any token tests).
+2. **PrivacyBadge → CatchPrivacyBadge** (ledger: absorb): extend
+   `CatchPrivacyBadgeKind` (in `lib/core/widgets/catch_privacy_badge.dart`)
+   with `privateToYou`, `hostCanSee`, `catchPrivate`; labels/icons verbatim
+   from `PrivacyBadge` in
+   `lib/event_success/presentation/companion_parts/event_success_companion_shared.dart`
+   ('Private to you'/lockOutlineRounded, 'Host can see'/visibilityOutlined,
+   'Catch private'/shieldOutlined). Replace `PrivacyBadge(audience)` call
+   sites with `CatchPrivacyBadge(kind: ...)` (the private `_PrivacyAudience`
+   enum dies with the widget). Companion moves from the CatchBadge treatment
+   to the core mono-pill — intentional standardization.
+3. **D1 fix**: `Icon(data.icon, size: 11, ...)` in catch_privacy_badge.dart →
+   `size: CatchIcon.micro`.
+4. Widgetbook: add the three new kinds to the CatchPrivacyBadge use-case;
+   repoint/delete old-typed blocks (gotcha 2). regen + registries + receipts.
+
+- [ ] dark pill merge + token orphan check
+- [ ] privacy badge kinds + migration + micro-icon fix
+- [ ] widgetbook + regen + registries + receipts
+
 ## Audit note (2026-07-03, claude): WO-015 sweep quality
 
 Code-level audit of sampled sweep decisions: 3 of 4 sampled keeps verified

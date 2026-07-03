@@ -1374,21 +1374,21 @@
     },
     {
       "clusterId": "c012-pill",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "EventSharePill",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "EventSuccessDarkPill",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: EventSharePill is a light share-card metadata pill using primarySoft/labelS/compactLabelContent; EventSuccessDarkPill is a dark editorial overlay pill using editorialLight alpha/labelL/compactControlContent.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: EventSharePill is a light share-card metadata pill using primarySoft/labelS/compactLabelContent; EventSuccessDarkPill is a dark editorial overlay pill using editorialLight alpha/labelL/compactControlContent. REVIEW (claude, 2026-07-03): light vs dark tone recipes; deliberate surface-specific variants.",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015"
+      "status": "recorded"
     },
     {
       "clusterId": "c014-catch-option-group-item",
@@ -1951,21 +1951,22 @@
     },
     {
       "clusterId": "ranked-pair: DarkPill/EventSuccessDarkPill",
-      "decision": "escalate",
+      "decision": "absorb-into-existing",
       "members": [
         {
           "name": "DarkPill",
-          "action": "escalate"
+          "action": "absorb"
         },
         {
           "name": "EventSuccessDarkPill",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: both are dark pill shells, but DarkPill is a manual-QA accent-ink pill while EventSuccessDarkPill is a reused Event Success editorial overlay primitive with an optional foreground override and more than ten external usages.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: both are dark pill shells, but DarkPill is a manual-QA accent-ink pill while EventSuccessDarkPill is a reused Event Success editorial overlay primitive with an optional foreground override and more than ten external usages. REVIEW (claude, 2026-07-03): same dark pill concept; manual-QA screen mimics the feature surface and must reuse its pill. Reveal tokens win; manualQaPill* opacity tokens become orphan candidates.",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "work-order WO-019",
+      "canonicalSymbol": "EventSuccessDarkPill"
     },
     {
       "clusterId": "ranked-pair: CatchBrandedSheetHeader/CatchPlainSheetHeader",
@@ -2041,21 +2042,21 @@
     },
     {
       "clusterId": "ranked-pair: CatchSectionLabel/StageSectionLabel",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "CatchSectionLabel",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "StageSectionLabel",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: CatchSectionLabel is a core kicker/header label with optional icon and bounded-width behavior, while StageSectionLabel is an Event Success live-stage row using labelL typography, required color, and two-line text.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: CatchSectionLabel is a core kicker/header label with optional icon and bounded-width behavior, while StageSectionLabel is an Event Success live-stage row using labelL typography, required color, and two-line text. REVIEW (claude, 2026-07-03): StageSectionLabel belongs to the companion stage/paper art direction (celebration-cards precedent); CatchSectionLabel already covers the kicker+icon case for standard surfaces.",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: ClubPhotoStrip/EventDetailPhotoStrip",
@@ -2383,21 +2384,22 @@
     },
     {
       "clusterId": "ranked-pair: CatchPrivacyBadge/PrivacyBadge",
-      "decision": "escalate",
+      "decision": "absorb-into-existing",
       "members": [
         {
           "name": "CatchPrivacyBadge",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "PrivacyBadge",
-          "action": "escalate"
+          "action": "absorb"
         }
       ],
-      "rationale": "K5 concept mismatch: CatchPrivacyBadge is a core uppercase privacy token badge with transparent surface styling, while the Event Success PrivacyBadge maps a private audience enum to CatchBadge labels and icons.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: CatchPrivacyBadge is a core uppercase privacy token badge with transparent surface styling, while the Event Success PrivacyBadge maps a private audience enum to CatchBadge labels and icons. REVIEW (claude, 2026-07-03): privacy vocabulary is a trust surface \u2014 one component. Extend CatchPrivacyBadgeKind with privateToYou/hostCanSee/catchPrivate (labels/icons from the companion widget); companion standardizes to the core mono-pill treatment (intentional visual change). Also fix raw size: 11 -> CatchIcon.micro in the core badge.",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "work-order WO-019",
+      "canonicalSymbol": "CatchPrivacyBadge"
     },
     {
       "clusterId": "ranked-pair: CatchFieldRow/ProfileFieldRow",
@@ -2437,21 +2439,21 @@
     },
     {
       "clusterId": "ranked-pair: DarkPill/EventSharePill",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "DarkPill",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "EventSharePill",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: DarkPill is a manual-QA dark accent pill while EventSharePill is a light event share-card metadata pill with different surface and typography roles.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: DarkPill is a manual-QA dark accent pill while EventSharePill is a light event share-card metadata pill with different surface and typography roles. REVIEW (claude, 2026-07-03): light-primary share pill vs dark reveal pill \u2014 different tone recipes for different surfaces; DarkPill itself merges into EventSuccessDarkPill (WO-019).",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: FiltersSection/StageCard",
@@ -3445,21 +3447,21 @@
     },
     {
       "clusterId": "ranked-pair: CountdownBeatPill/CountdownCuePill",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "CountdownBeatPill",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "CountdownCuePill",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: countdown beat pills show reveal-progress state, while cue pills are instructional cue cards with title/body copy and different token roles.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: countdown beat pills show reveal-progress state, while cue pills are instructional cue cards with title/body copy and different token roles. REVIEW (claude, 2026-07-03): verified structurally different (beat pill with active states vs icon+two-line cue panel). Naming-pass note: CountdownCuePill is a card, not a pill \u2014 rename candidate.",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: ProfileMultiChipValue/ProfileSingleChipValue",
