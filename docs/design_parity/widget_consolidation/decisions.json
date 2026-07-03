@@ -3836,6 +3836,690 @@
       "decidedBy": "codex-rule:K2",
       "date": "2026-07-03",
       "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: HostAnalyticsEventList/HostInviteLinksList",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "HostAnalyticsEventList",
+          "action": "keep"
+        },
+        {
+          "name": "HostInviteLinksList",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K2 domain fork: host analytics event lists and invite-link management lists own different row models, async state, actions, and host workflows.",
+      "decidedBy": "codex-rule:K2",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: ReadOnlyHostedEventScheduleCard/RotationScheduleCard",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "ReadOnlyHostedEventScheduleCard",
+          "action": "keep"
+        },
+        {
+          "name": "RotationScheduleCard",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K2 domain fork: hosted-event schedule cards and Event Success rotation schedule cards carry different event management and companion-stage schedule contracts.",
+      "decidedBy": "codex-rule:K2",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: ClubHostRow/HostTeamOwnerHostRow",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "ClubHostRow",
+          "action": "keep"
+        },
+        {
+          "name": "HostTeamOwnerHostRow",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K2 domain fork: club detail host rows present public host identity while host-team owner rows expose management actions and role controls.",
+      "decidedBy": "codex-rule:K2",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: HostTodayClubPill/HostTodayCountdownPill",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "HostTodayClubPill",
+          "action": "escalate"
+        },
+        {
+          "name": "HostTodayCountdownPill",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: host today club identity pills and countdown urgency pills have different token roles, copy, and status semantics.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: HostAnalyticsMetricGrid/HostReportSignalGrid",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "HostAnalyticsMetricGrid",
+          "action": "keep"
+        },
+        {
+          "name": "HostReportSignalGrid",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K2 domain fork: host analytics metric grids and Event Success report signal grids render different metric models and report contexts.",
+      "decidedBy": "codex-rule:K2",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: ClubDirectorySkeletonCard/ClubShareCard",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "ClubDirectorySkeletonCard",
+          "action": "escalate"
+        },
+        {
+          "name": "ClubShareCard",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: directory loading skeleton cards and rich club share cards are different surfaces despite similar card outlines.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: EventDetailTicketSurface/EventSuccessSkeletonSurface",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "EventDetailTicketSurface",
+          "action": "escalate"
+        },
+        {
+          "name": "EventSuccessSkeletonSurface",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: event-detail ticket surfaces are live ticket chrome while Event Success skeleton surfaces are loading placeholders.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: HostOrganizerHeader/HostTodayHeader",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "HostOrganizerHeader",
+          "action": "escalate"
+        },
+        {
+          "name": "HostTodayHeader",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: organizer identity headers and today-dashboard headers own different host contexts, actions, and information hierarchy.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: PaperProgressRail/QuestionProgressRail",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "PaperProgressRail",
+          "action": "escalate"
+        },
+        {
+          "name": "QuestionProgressRail",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: paper progress rails show passive companion-step progress while questionnaire rails are interactive progress controls.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: ExploreBrowseHeaderContent/ExplorePeekRailContent",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "ExploreBrowseHeaderContent",
+          "action": "escalate"
+        },
+        {
+          "name": "ExplorePeekRailContent",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: explore browse headers own search/city chrome while peek rails own compact preview navigation and feed state.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: EventPolicyLabScreen/EventSuccessLabScreen",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "EventPolicyLabScreen",
+          "action": "escalate"
+        },
+        {
+          "name": "EventSuccessLabScreen",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "No exact K/R match: these are separate screen-level lab compositions with different feature domains, state, and review ownership.",
+      "decidedBy": "codex-rule:no-exact",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: WingmanCandidateRow/WingmanRequestHostRow",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "WingmanCandidateRow",
+          "action": "keep"
+        },
+        {
+          "name": "WingmanRequestHostRow",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K2 domain fork: wingman candidate rows and host request rows use different Event Success models, actions, and host/attendee contexts.",
+      "decidedBy": "codex-rule:K2",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: HostAnalyticsMetricGridSkeleton/VibeGridSkeleton",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "HostAnalyticsMetricGridSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "VibeGridSkeleton",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: analytics metric and recap vibe skeleton grids have different card counts, geometry, and surrounding loading states.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: HostClubInsightsPane/HostClubPreviewPane",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "HostClubInsightsPane",
+          "action": "escalate"
+        },
+        {
+          "name": "HostClubPreviewPane",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "No exact K/R match: host club insights and preview panes are screen-pane compositions with different providers, state, and host operations responsibilities.",
+      "decidedBy": "codex-rule:no-exact",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: PresetReviewCard/ReviewCard",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "PresetReviewCard",
+          "action": "escalate"
+        },
+        {
+          "name": "ReviewCard",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: Event Success preset review cards and user review cards carry different data, actions, and review semantics.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: PaymentHistoryScreen/ReviewsHistoryScreen",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "PaymentHistoryScreen",
+          "action": "escalate"
+        },
+        {
+          "name": "ReviewsHistoryScreen",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "No exact K/R match: payment history and review history are separate screen-level flows with different providers, empty/error states, and navigation.",
+      "decidedBy": "codex-rule:no-exact",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: CreateClubScreen/CreateEventScreen",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "CreateClubScreen",
+          "action": "escalate"
+        },
+        {
+          "name": "CreateEventScreen",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "No exact K/R match: create-club and create-event screens are separate route-level workflows with different controllers, models, and persistence contracts.",
+      "decidedBy": "codex-rule:no-exact",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: PaymentConfirmationScreen/PaymentHistoryScreen",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "PaymentConfirmationScreen",
+          "action": "escalate"
+        },
+        {
+          "name": "PaymentHistoryScreen",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "No exact K/R match: payment confirmation and payment history screens are different payment routes with different async state and user tasks.",
+      "decidedBy": "codex-rule:no-exact",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: CatchesProfileReviewSkeleton/CatchesTopOverlaySkeleton",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "CatchesProfileReviewSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "CatchesTopOverlaySkeleton",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: catches profile-review and top-overlay skeletons are small loading shapes with different placement and geometry.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: HostActionRow/SuvbotResetActionRow",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "HostActionRow",
+          "action": "escalate"
+        },
+        {
+          "name": "SuvbotResetActionRow",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: host management action rows and Suvbot reset actions are different command surfaces despite similar label/detail row structure.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: PaperExpectationCard/PaperPrivacyCard",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "PaperExpectationCard",
+          "action": "escalate"
+        },
+        {
+          "name": "PaperPrivacyCard",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: companion expectation cards and privacy cards carry different paper-mode concepts, iconography, and copy contracts.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: ClubDetailScreen/EventDetailScreen",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "ClubDetailScreen",
+          "action": "escalate"
+        },
+        {
+          "name": "EventDetailScreen",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "No exact K/R match: club detail and event detail are route-level screens with different providers, state machines, and detail-body ownership.",
+      "decidedBy": "codex-rule:no-exact",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: CalendarDateHeaderSkeleton/CalendarStatsHeaderSkeleton",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "CalendarDateHeaderSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "CalendarStatsHeaderSkeleton",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: calendar date and stats header skeletons have different header/stat geometry and would require skeleton-only layout knobs.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: ExploreCityPickerSheet/ExploreFilterSheet",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "ExploreCityPickerSheet",
+          "action": "escalate"
+        },
+        {
+          "name": "ExploreFilterSheet",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "No exact K/R match: explore city and filter sheets share modal chrome but own different option models, selected state, and callbacks.",
+      "decidedBy": "codex-rule:no-exact",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: AttendeeQaControls/ManualQaControls",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "AttendeeQaControls",
+          "action": "escalate"
+        },
+        {
+          "name": "ManualQaControls",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: attendee QA toggles and manual fixture scenario controls are different QA concepts with different ownership and actions.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: PaymentConfirmationBodyController/PaymentPendingCheckoutController",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "PaymentConfirmationBodyController",
+          "action": "keep"
+        },
+        {
+          "name": "PaymentPendingCheckoutController",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K1 composition is not duplication: PaymentPendingCheckoutController owns pending/failed payment state and delegates to PaymentConfirmationBodyController after completion.",
+      "decidedBy": "codex-rule:K1",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: HostEventRows/HostSettingsProfileRows",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "HostEventRows",
+          "action": "keep"
+        },
+        {
+          "name": "HostSettingsProfileRows",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K2 domain fork: host event summary rows and host settings profile rows expose different row models, labels, and actions.",
+      "decidedBy": "codex-rule:K2",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: EventSuccessDefaultsPanel/EventSuccessHostPanel",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "EventSuccessDefaultsPanel",
+          "action": "keep"
+        },
+        {
+          "name": "EventSuccessHostPanel",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K2 domain fork: create-event defaults panels and host manage Event Success panels own different state, persistence, tabs, and live/report workflows.",
+      "decidedBy": "codex-rule:K2",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: HostAnalyticsReportView/UserAnalyticsReportView",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "HostAnalyticsReportView",
+          "action": "keep"
+        },
+        {
+          "name": "UserAnalyticsReportView",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K2 domain fork: host and user analytics report views share high-level chart rhythm but use role-specific metrics, panels, empty states, and event/tip sections.",
+      "decidedBy": "codex-rule:K2",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: EventActionCardHeader/ShareCardHeader",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "EventActionCardHeader",
+          "action": "escalate"
+        },
+        {
+          "name": "ShareCardHeader",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: event action card headers and share card headers use different badge, title, and sharing-context contracts.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: ProfileInfoSkeletonSection/ProfilePhotosSkeletonSection",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "ProfileInfoSkeletonSection",
+          "action": "keep"
+        },
+        {
+          "name": "ProfilePhotosSkeletonSection",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: profile info and photos skeleton sections have different section titles, row/grid geometry, and placeholder counts.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: CreateEventScreen/EditHostedEventScreen",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "CreateEventScreen",
+          "action": "escalate"
+        },
+        {
+          "name": "EditHostedEventScreen",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "No exact K/R match: create and edit event screens are route-level form workflows with different controllers, initialization, and persistence paths.",
+      "decidedBy": "codex-rule:no-exact",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: DraftPickerSheet/ExploreCityPickerSheet",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "DraftPickerSheet",
+          "action": "escalate"
+        },
+        {
+          "name": "ExploreCityPickerSheet",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "No exact K/R match: draft and city picker sheets share bottom-sheet chrome but own different option data, destructive actions, and completion behavior.",
+      "decidedBy": "codex-rule:no-exact",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: HostProfileScreen/PublicProfileScreen",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "HostProfileScreen",
+          "action": "escalate"
+        },
+        {
+          "name": "PublicProfileScreen",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "No exact K/R match: host and public profile screens are separate route-level flows with different providers, editing affordances, and profile ownership.",
+      "decidedBy": "codex-rule:no-exact",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: EventPolicyScenarioPicker/EventSuccessTabPicker",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "EventPolicyScenarioPicker",
+          "action": "escalate"
+        },
+        {
+          "name": "EventSuccessTabPicker",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: policy scenario pickers and Event Success tab pickers have different option domains, labels, and surrounding chrome.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: CalendarDateHeader/CalendarStatsHeader",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "CalendarDateHeader",
+          "action": "escalate"
+        },
+        {
+          "name": "CalendarStatsHeader",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: calendar date selectors and calendar stats headers have different interaction, data, and typography contracts.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: EventLocationMapScreen/ExploreMapScreen",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "EventLocationMapScreen",
+          "action": "escalate"
+        },
+        {
+          "name": "ExploreMapScreen",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "No exact K/R match: event location maps and explore maps are route-level map screens with different data sources, markers, and navigation behavior.",
+      "decidedBy": "codex-rule:no-exact",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: ChatConversationsList/ChatMessageList",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "ChatConversationsList",
+          "action": "keep"
+        },
+        {
+          "name": "ChatMessageList",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K2 domain fork: chat thread lists and chat message lists use different chat models, async state, scrolling, row rendering, and empty/error handling.",
+      "decidedBy": "codex-rule:K2",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
     }
   ]
 }

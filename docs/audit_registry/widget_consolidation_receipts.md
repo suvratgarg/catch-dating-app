@@ -2019,3 +2019,71 @@ Known blockers / inherited debt:
 - WO-015 remains open for the remaining 38 ranked-pair-only candidates.
 - No Flutter analyzer or Widgetbook analyzer was run because this batch changed
   only consolidation ledgers and receipts.
+
+## 2026-07-03 - WO-015 ranked-pair ledger batch 6
+
+Scope:
+
+- Triaged the final ranked-pair-only candidates 161-200 after batch 5.
+- Recorded one K1 keep, nine K2 keeps, and four K4 keeps.
+- Recorded thirteen K5 escalations and eleven no-exact escalations for the
+  remaining 24 pairs in the batch.
+- Marked WO-015 complete for its amended clusters + ranked-pairs scope after
+  member-set comparison reported zero uncovered ranked pairs.
+- No production Dart, Widgetbook, generated registry, or visual output changed.
+
+Commands:
+
+- `node -e '... list uncovered ranked-pair candidates 161-200 ...'`
+- `rg -n "class (HostAnalyticsEventList|HostInviteLinksList|ReadOnlyHostedEventScheduleCard|RotationScheduleCard|ClubHostRow|HostTeamOwnerHostRow|HostTodayClubPill|HostTodayCountdownPill|HostAnalyticsMetricGrid|HostReportSignalGrid|ClubDirectorySkeletonCard|ClubShareCard|EventDetailTicketSurface|EventSuccessSkeletonSurface|HostOrganizerHeader|HostTodayHeader|PaperProgressRail|QuestionProgressRail|ExploreBrowseHeaderContent|ExplorePeekRailContent|EventPolicyLabScreen|EventSuccessLabScreen|WingmanCandidateRow|WingmanRequestHostRow|HostAnalyticsMetricGridSkeleton|VibeGridSkeleton|HostClubInsightsPane|HostClubPreviewPane|PresetReviewCard|ReviewCard|PaymentHistoryScreen|ReviewsHistoryScreen|CreateClubScreen|CreateEventScreen|PaymentConfirmationScreen|CatchesProfileReviewSkeleton|CatchesTopOverlaySkeleton|HostActionRow|SuvbotResetActionRow|PaperExpectationCard|PaperPrivacyCard|ClubDetailScreen|EventDetailScreen|CalendarDateHeaderSkeleton|CalendarStatsHeaderSkeleton|ExploreCityPickerSheet|ExploreFilterSheet|AttendeeQaControls|ManualQaControls|PaymentConfirmationBodyController|PaymentPendingCheckoutController|HostEventRows|HostSettingsProfileRows|EventSuccessDefaultsPanel|EventSuccessHostPanel|HostAnalyticsReportView|UserAnalyticsReportView|EventActionCardHeader|ShareCardHeader|ProfileInfoSkeletonSection|ProfilePhotosSkeletonSection|DraftPickerSheet|HostProfileScreen|PublicProfileScreen|EventPolicyScenarioPicker|EventSuccessTabPicker|CalendarDateHeader|CalendarStatsHeader|EventLocationMapScreen|ExploreMapScreen|ChatConversationsList|ChatMessageList)\\b" lib widgetbook/lib test --glob "*.dart"`
+- `sed -n '60,135p' lib/clubs/presentation/detail/widgets/club_host_section.dart`
+- `sed -n '260,330p' lib/hosts/presentation/widgets/host_team_management_section.dart`
+- `sed -n '250,310p' lib/event_success/presentation/companion_parts/event_success_companion_shared.dart`
+- `sed -n '215,260p' lib/event_success/presentation/companion_parts/event_success_companion_questionnaire.dart`
+- `sed -n '65,125p' lib/payments/presentation/payment_confirmation_screen.dart`
+- `sed -n '400,455p' lib/payments/presentation/payment_confirmation_screen.dart`
+- `sed -n '3235,3288p' lib/hosts/presentation/host_operations_screen.dart`
+- `sed -n '900,950p' lib/hosts/presentation/host_event_manage_screen.dart`
+- `sed -n '3035,3105p' lib/hosts/presentation/host_operations_screen.dart`
+- `sed -n '75,115p' lib/user_analytics/shared/user_analytics_panel.dart`
+- `sed -n '1,80p' lib/event_success/presentation/event_success_defaults_panel.dart`
+- `sed -n '785,850p' lib/event_success/presentation/event_success_host_screen.dart`
+- `sed -n '620,690p' lib/event_success/presentation/event_success_setup_body.dart`
+- `sed -n '260,315p' lib/reviews/shared/reviews_section.dart`
+- `sed -n '545,590p' lib/event_success/presentation/event_success_manual_qa_screen.dart`
+- `sed -n '845,890p' lib/event_success/presentation/event_success_manual_qa_screen.dart`
+- `sed -n '420,705p' lib/events/presentation/calendar/calendar_screen.dart`
+- `sed -n '45,115p' lib/user_profile/presentation/widgets/profile_tab_skeleton.dart`
+- `sed -n '1,70p' lib/chats/presentation/inbox/widgets/chat_conversations_list.dart`
+- `sed -n '1,70p' lib/chats/presentation/widgets/chat_message_list.dart`
+- `sed -n '1,70p' lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart`
+- `sed -n '145,190p' lib/explore/presentation/widgets/explore_city_picker.dart`
+- `node -e '... parse decisions JSON and recompute ranked-pair uncovered count ...'`
+- `git diff --check`
+
+Headline numbers:
+
+| metric | value |
+|---|---:|
+| ranked-pair-only candidates triaged | 38 |
+| K1 keeps recorded | 1 |
+| K2 keeps recorded | 9 |
+| K3 keeps recorded | 0 |
+| K4 keeps recorded | 4 |
+| K5 escalations recorded | 13 |
+| no-exact-match escalations recorded | 11 |
+| rule-authorized merges/deletions | 0 |
+| code changes | 0 |
+| ranked-pair-only candidates still open | 0 |
+
+Verification:
+
+- `decisions.json` parsed successfully.
+- Member-set comparison reported 0 uncovered ranked pairs after this batch.
+- `git diff --check`: passed.
+
+Known blockers / inherited debt:
+
+- No ranked-pair-only candidates remain open under WO-015's amended scope.
+- No Flutter analyzer or Widgetbook analyzer was run because this batch changed
+  only consolidation ledgers and receipts.

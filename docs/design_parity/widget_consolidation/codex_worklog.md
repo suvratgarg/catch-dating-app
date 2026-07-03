@@ -980,9 +980,9 @@ in `docs/audit_registry/widget_similarity.json` that has NO entry in
 5. Receipt: counts of candidates triaged per rule, escalated, merged,
    deleted.
 
-- [ ] sweep + ledger entries + escalations
-- [ ] rule-authorized executions in batches
-- [ ] receipts with per-rule counts
+- [x] sweep + ledger entries + escalations
+- [x] rule-authorized executions in batches
+- [x] receipts with per-rule counts
 
 **Operating amendments (2026-07-03 review of WO-001..014 — read before
 continuing the sweep):**
@@ -1094,6 +1094,14 @@ and thirteen small/state/skeleton pairs under K4. Escalated eight K5 concept
 mismatches and one no-exact screen-scope/API question. No code was changed in
 this ledger-only batch. Ranked-pair-only candidates still remain open after
 this targeted triage.
+
+Progress by Codex: triaged the final ranked-pair-only candidates 161-200 by
+member set. Kept one composition-wrapper pair under K1, nine domain-fork pairs
+under K2, and four small/skeleton pairs under K4. Escalated thirteen K5 concept
+mismatches and eleven no-exact screen-scope/API questions. No code was changed
+in this ledger-only batch. Member-set comparison now reports zero uncovered
+ranked pairs, so WO-015 is complete for the amended clusters + ranked-pairs
+scope.
 
 ## WO-016 — Review answers from the WO-001..014 audit
 
@@ -1391,6 +1399,87 @@ listed in the receipt.
   `ProfileReactionControls` — nearest rule: K5 concept mismatch, blocked
   because numeric height steppers and profile reaction controls are different
   interaction concepts.
+- WO-015 ranked-pair: `HostTodayClubPill`, `HostTodayCountdownPill` —
+  nearest rule: K5 concept mismatch, blocked because host today club identity
+  pills and countdown urgency pills have different token roles, copy, and
+  status semantics.
+- WO-015 ranked-pair: `ClubDirectorySkeletonCard`, `ClubShareCard` — nearest
+  rule: K5 concept mismatch, blocked because directory loading skeleton cards
+  and rich club share cards are different surfaces.
+- WO-015 ranked-pair: `EventDetailTicketSurface`,
+  `EventSuccessSkeletonSurface` — nearest rule: K5 concept mismatch, blocked
+  because live ticket chrome and Event Success loading placeholders are
+  different concepts.
+- WO-015 ranked-pair: `HostOrganizerHeader`, `HostTodayHeader` — nearest
+  rule: K5 concept mismatch, blocked because organizer identity headers and
+  today-dashboard headers have different host contexts and information
+  hierarchy.
+- WO-015 ranked-pair: `PaperProgressRail`, `QuestionProgressRail` — nearest
+  rule: K5 concept mismatch, blocked because passive companion-step rails and
+  interactive questionnaire rails have different behavior contracts.
+- WO-015 ranked-pair: `ExploreBrowseHeaderContent`, `ExplorePeekRailContent`
+  — nearest rule: K5 concept mismatch, blocked because browse search/city
+  chrome and peek-rail preview navigation are different concepts.
+- WO-015 ranked-pair: `EventPolicyLabScreen`, `EventSuccessLabScreen` —
+  nearest rule: no exact K/R match, blocked because these are separate
+  screen-level lab compositions.
+- WO-015 ranked-pair: `HostClubInsightsPane`, `HostClubPreviewPane` —
+  nearest rule: no exact K/R match, blocked because these are screen-pane
+  compositions with different providers, state, and host operations tasks.
+- WO-015 ranked-pair: `PresetReviewCard`, `ReviewCard` — nearest rule: K5
+  concept mismatch, blocked because Event Success preset review cards and user
+  review cards carry different data, actions, and review semantics.
+- WO-015 ranked-pair: `PaymentHistoryScreen`, `ReviewsHistoryScreen` —
+  nearest rule: no exact K/R match, blocked because payment history and review
+  history are separate screen-level flows.
+- WO-015 ranked-pair: `CreateClubScreen`, `CreateEventScreen` — nearest rule:
+  no exact K/R match, blocked because create-club and create-event screens are
+  separate route-level workflows with different models and persistence
+  contracts.
+- WO-015 ranked-pair: `PaymentConfirmationScreen`, `PaymentHistoryScreen` —
+  nearest rule: no exact K/R match, blocked because confirmation and history
+  are different payment routes with different async state and user tasks.
+- WO-015 ranked-pair: `HostActionRow`, `SuvbotResetActionRow` — nearest rule:
+  K5 concept mismatch, blocked because host management action rows and Suvbot
+  reset actions are different command surfaces.
+- WO-015 ranked-pair: `PaperExpectationCard`, `PaperPrivacyCard` — nearest
+  rule: K5 concept mismatch, blocked because companion expectation cards and
+  privacy cards carry different paper-mode concepts.
+- WO-015 ranked-pair: `ClubDetailScreen`, `EventDetailScreen` — nearest rule:
+  no exact K/R match, blocked because club detail and event detail are
+  route-level screens with different providers and state machines.
+- WO-015 ranked-pair: `ExploreCityPickerSheet`, `ExploreFilterSheet` —
+  nearest rule: no exact K/R match, blocked because city and filter sheets
+  share modal chrome but own different option models and callbacks.
+- WO-015 ranked-pair: `AttendeeQaControls`, `ManualQaControls` — nearest
+  rule: K5 concept mismatch, blocked because attendee QA toggles and manual
+  fixture scenario controls are different QA concepts.
+- WO-015 ranked-pair: `EventActionCardHeader`, `ShareCardHeader` — nearest
+  rule: K5 concept mismatch, blocked because event action card headers and
+  share card headers use different badge, title, and sharing-context
+  contracts.
+- WO-015 ranked-pair: `CreateEventScreen`, `EditHostedEventScreen` — nearest
+  rule: no exact K/R match, blocked because create and edit event screens are
+  route-level form workflows with different initialization and persistence
+  paths.
+- WO-015 ranked-pair: `DraftPickerSheet`, `ExploreCityPickerSheet` —
+  nearest rule: no exact K/R match, blocked because draft and city picker
+  sheets share bottom-sheet chrome but own different option data, destructive
+  actions, and completion behavior.
+- WO-015 ranked-pair: `HostProfileScreen`, `PublicProfileScreen` — nearest
+  rule: no exact K/R match, blocked because host and public profile screens
+  are route-level flows with different providers and editing affordances.
+- WO-015 ranked-pair: `EventPolicyScenarioPicker`, `EventSuccessTabPicker` —
+  nearest rule: K5 concept mismatch, blocked because policy scenario pickers
+  and Event Success tab pickers have different option domains and surrounding
+  chrome.
+- WO-015 ranked-pair: `CalendarDateHeader`, `CalendarStatsHeader` — nearest
+  rule: K5 concept mismatch, blocked because calendar date selectors and
+  calendar stats headers have different interaction, data, and typography
+  contracts.
+- WO-015 ranked-pair: `EventLocationMapScreen`, `ExploreMapScreen` — nearest
+  rule: no exact K/R match, blocked because event location maps and explore
+  maps are route-level map screens with different data sources and markers.
 
 ## Completed
 
