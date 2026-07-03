@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/data/city_repository.dart';
 import 'package:catch_dating_app/core/device_location.dart';
@@ -15,7 +17,24 @@ part 'explore_city_controller.g.dart';
 @riverpod
 class ExploreCityController extends _$ExploreCityController {
   @override
-  void build() {}
+  void build() {
+    ref.listen(deviceLocationProvider, (_, next) {
+      next.whenData((_) => _scheduleAutoSelectCity());
+    });
+    ref.listen(watchUserProfileProvider, (_, next) {
+      next.whenData((_) => _scheduleAutoSelectCity());
+    });
+    _scheduleAutoSelectCity();
+  }
+
+  void _scheduleAutoSelectCity() {
+    unawaited(
+      Future<void>.microtask(() async {
+        if (!ref.mounted) return;
+        await autoSelectCity();
+      }),
+    );
+  }
 
   Future<void> autoSelectCity() async {
     final profileCityName = ref

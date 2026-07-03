@@ -1,15 +1,13 @@
+import 'package:catch_dating_app/core/data/city_repository.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/data/city_repository.dart';
-import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/explore/presentation/explore_city_controller.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
-import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -33,24 +31,10 @@ class _ExploreCityPickerState extends ConsumerState<ExploreCityPicker> {
   bool _isSheetOpen = false;
 
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _autoSelectCity();
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    ref.watch(exploreCityControllerProvider);
     final selectedCity = ref.watch(selectedExploreCityProvider);
     final citiesAsync = ref.watch(cityListProvider);
-
-    ref.listen(deviceLocationProvider, (_, next) {
-      next.whenData((_) => _autoSelectCity());
-    });
-    ref.listen(watchUserProfileProvider, (_, next) {
-      next.whenData((_) => _autoSelectCity());
-    });
 
     return citiesAsync.when(
       data: (cities) => CityTrigger(
@@ -95,10 +79,6 @@ class _ExploreCityPickerState extends ConsumerState<ExploreCityPicker> {
     );
     if (!mounted) return;
     setState(() => _isSheetOpen = false);
-  }
-
-  void _autoSelectCity() {
-    ref.read(exploreCityControllerProvider.notifier).autoSelectCity();
   }
 }
 

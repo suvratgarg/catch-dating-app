@@ -57,7 +57,7 @@ final class ExploreCityControllerProvider
 }
 
 String _$exploreCityControllerHash() =>
-    r'edbdae3a4cb81a4bd603537a87cb9d18b0e4acfb';
+    r'b86221096cedf152d7bfcf8c559a1877823aa2bf';
 
 /// Owns Explore city auto-selection policy.
 ///

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/data/city_repository.dart';
 import 'package:catch_dating_app/core/device_location.dart';
@@ -7,6 +9,7 @@ import 'package:catch_dating_app/explore/presentation/explore_city_controller.da
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -79,6 +82,41 @@ void main() {
           .autoSelectCity();
 
       expect(container.read(selectedExploreCityProvider).label, _mumbai.label);
+    },
+  );
+
+  test(
+    'watching the controller auto-selects when profile data arrives',
+    () async {
+      final profileStream = StreamController<UserProfile?>();
+      final firestore = FakeFirebaseFirestore();
+      await firestore.doc('config/cities').set({
+        'cities': [_mumbai.toJson(), _delhi.toJson()],
+      });
+      final container = ProviderContainer(
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+          watchUserProfileProvider.overrideWith((ref) => profileStream.stream),
+          cityRepositoryProvider.overrideWithValue(
+            CityRepository(firestore, ErrorLogger(shouldReportErrors: false)),
+          ),
+          deviceLocationProvider.overrideWith(() => _FakeDeviceLocation(null)),
+        ],
+      );
+      addTearDown(() async {
+        container.dispose();
+        await profileStream.close();
+      });
+
+      container.listen(exploreCityControllerProvider, (_, _) {});
+      profileStream.add(event_test.buildUser().copyWith(city: 'Delhi'));
+      await container.pump();
+      await container.pump();
+
+      expect(
+        container.read(selectedExploreCityProvider).label,
+        contains('Delhi'),
+      );
     },
   );
 }
