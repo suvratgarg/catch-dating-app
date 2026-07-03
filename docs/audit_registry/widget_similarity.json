@@ -35,30 +35,30 @@
     },
     {
       "hammingBucket": "20-24",
-      "pairs": 14,
+      "pairs": 13,
       "jaccardMin": 0.5806,
-      "jaccardMean": 0.6766,
+      "jaccardMean": 0.6806,
       "jaccardMax": 0.7647
     },
     {
       "hammingBucket": "25-29",
-      "pairs": 37,
+      "pairs": 38,
       "jaccardMin": 0.3333,
-      "jaccardMean": 0.546,
+      "jaccardMean": 0.5493,
       "jaccardMax": 0.75
     },
     {
       "hammingBucket": "30-34",
-      "pairs": 88,
+      "pairs": 89,
       "jaccardMin": 0.1273,
-      "jaccardMean": 0.4071,
+      "jaccardMean": 0.4087,
       "jaccardMax": 0.7353
     },
     {
       "hammingBucket": "35-39",
-      "pairs": 196,
+      "pairs": 195,
       "jaccardMin": 0.0395,
-      "jaccardMean": 0.3196,
+      "jaccardMean": 0.3185,
       "jaccardMax": 0.5682
     },
     {
@@ -72,57 +72,57 @@
       "hammingBucket": "45-49",
       "pairs": 1152,
       "jaccardMin": 0,
-      "jaccardMean": 0.1538,
+      "jaccardMean": 0.1539,
       "jaccardMax": 0.4902
     },
     {
       "hammingBucket": "50-54",
-      "pairs": 2272,
+      "pairs": 2268,
       "jaccardMin": 0,
-      "jaccardMean": 0.1029,
+      "jaccardMean": 0.103,
       "jaccardMax": 0.4412
     },
     {
       "hammingBucket": "55-59",
-      "pairs": 3459,
+      "pairs": 3450,
       "jaccardMin": 0,
-      "jaccardMean": 0.0647,
+      "jaccardMean": 0.0648,
       "jaccardMax": 0.3256
     },
     {
       "hammingBucket": "60-64",
-      "pairs": 3427,
+      "pairs": 3417,
       "jaccardMin": 0,
       "jaccardMean": 0.039,
       "jaccardMax": 0.2982
     },
     {
       "hammingBucket": "65-69",
-      "pairs": 1979,
+      "pairs": 1990,
       "jaccardMin": 0,
-      "jaccardMean": 0.0253,
+      "jaccardMean": 0.0252,
       "jaccardMax": 0.2143
     },
     {
       "hammingBucket": "70-74",
-      "pairs": 709,
+      "pairs": 715,
       "jaccardMin": 0,
       "jaccardMean": 0.0151,
       "jaccardMax": 0.1304
     },
     {
       "hammingBucket": "75-79",
-      "pairs": 120,
+      "pairs": 125,
       "jaccardMin": 0,
-      "jaccardMean": 0.0111,
+      "jaccardMean": 0.0116,
       "jaccardMax": 0.1333
     },
     {
       "hammingBucket": "80-84",
-      "pairs": 7,
+      "pairs": 8,
       "jaccardMin": 0,
-      "jaccardMean": 0.0034,
-      "jaccardMax": 0.0161
+      "jaccardMean": 0.0055,
+      "jaccardMax": 0.0204
     },
     {
       "hammingBucket": "85-89",
@@ -6390,9 +6390,9 @@
       "name": "EventPreviewCompanionSkeleton",
       "file": "lib/event_success/presentation/event_success_event_preview_loading_screen.dart",
       "role": "screen",
-      "shapeHash": "fa6b3bcefff196e218a092f730c1c34c1fa1881d82950fa54e31e8e55eb8760b",
-      "coarseShapeHash": "20b64fecb095c644965429c11862efbcd61e22010803e811e0a92f3ba6888d04",
-      "simhash128": "3167806c733c1c63b267ff88a5b9519f",
+      "shapeHash": "d5670dddbbbafdfccb3e704ce1fe3f45bfea1e5839c056f05e24df51630be3c2",
+      "coarseShapeHash": "c07627188719663f5cd3f9a4b1227fb1c2eecfa009d960615c835a4174b7d6e8",
+      "simhash128": "f5ef807e77fd153bef67ff88b7b9b9bf",
       "tokenStreamLength": 7,
       "coarseTokenStreamLength": 7,
       "usageCountRaw": 3,
@@ -6429,9 +6429,9 @@
       "name": "EventPreviewLiveSkeleton",
       "file": "lib/event_success/presentation/event_success_event_preview_loading_screen.dart",
       "role": "screen",
-      "shapeHash": "fa6b3bcefff196e218a092f730c1c34c1fa1881d82950fa54e31e8e55eb8760b",
-      "coarseShapeHash": "20b64fecb095c644965429c11862efbcd61e22010803e811e0a92f3ba6888d04",
-      "simhash128": "3167806c733c1c63b267ff88a5b9519f",
+      "shapeHash": "79802eda258de7d6d4cf5a7429aaf65e5bd46190340411cf6030f9a217383eb8",
+      "coarseShapeHash": "c07627188719663f5cd3f9a4b1227fb1c2eecfa009d960615c835a4174b7d6e8",
+      "simhash128": "f5ef807e77fd153bef67ff88b7b9b9bf",
       "tokenStreamLength": 7,
       "coarseTokenStreamLength": 7,
       "usageCountRaw": 3,
@@ -6442,9 +6442,9 @@
       "name": "EventPreviewNotesSkeleton",
       "file": "lib/event_success/presentation/event_success_event_preview_loading_screen.dart",
       "role": "screen",
-      "shapeHash": "fa6b3bcefff196e218a092f730c1c34c1fa1881d82950fa54e31e8e55eb8760b",
-      "coarseShapeHash": "20b64fecb095c644965429c11862efbcd61e22010803e811e0a92f3ba6888d04",
-      "simhash128": "3167806c733c1c63b267ff88a5b9519f",
+      "shapeHash": "4243f08db8f14e386cc2a70b07c46415e546b6f304fd9538255851d9f28c54d4",
+      "coarseShapeHash": "c07627188719663f5cd3f9a4b1227fb1c2eecfa009d960615c835a4174b7d6e8",
+      "simhash128": "f5ef807e77fd153bef67ff88b7b9b9bf",
       "tokenStreamLength": 7,
       "coarseTokenStreamLength": 7,
       "usageCountRaw": 3,
@@ -6455,9 +6455,9 @@
       "name": "EventPreviewReportSkeleton",
       "file": "lib/event_success/presentation/event_success_event_preview_loading_screen.dart",
       "role": "screen",
-      "shapeHash": "fa6b3bcefff196e218a092f730c1c34c1fa1881d82950fa54e31e8e55eb8760b",
-      "coarseShapeHash": "20b64fecb095c644965429c11862efbcd61e22010803e811e0a92f3ba6888d04",
-      "simhash128": "3167806c733c1c63b267ff88a5b9519f",
+      "shapeHash": "d6646d576c55d4ba12c2005239fd07f58443efe52f45f81fda3771bc7065d3e5",
+      "coarseShapeHash": "c07627188719663f5cd3f9a4b1227fb1c2eecfa009d960615c835a4174b7d6e8",
+      "simhash128": "f5ef807e77fd153bef67ff88b7b9b9bf",
       "tokenStreamLength": 7,
       "coarseTokenStreamLength": 7,
       "usageCountRaw": 3,
@@ -6468,9 +6468,9 @@
       "name": "EventPreviewSetupSkeleton",
       "file": "lib/event_success/presentation/event_success_event_preview_loading_screen.dart",
       "role": "screen",
-      "shapeHash": "fa6b3bcefff196e218a092f730c1c34c1fa1881d82950fa54e31e8e55eb8760b",
-      "coarseShapeHash": "20b64fecb095c644965429c11862efbcd61e22010803e811e0a92f3ba6888d04",
-      "simhash128": "3167806c733c1c63b267ff88a5b9519f",
+      "shapeHash": "3027a65652ed9fc054afd036048299a8303d47e3e789e98ab58a1873c4cba5fc",
+      "coarseShapeHash": "c07627188719663f5cd3f9a4b1227fb1c2eecfa009d960615c835a4174b7d6e8",
+      "simhash128": "f5ef807e77fd153bef67ff88b7b9b9bf",
       "tokenStreamLength": 7,
       "coarseTokenStreamLength": 7,
       "usageCountRaw": 3,
@@ -6845,9 +6845,9 @@
       "name": "EventSuccessLiveTabSkeleton",
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
       "role": "screen",
-      "shapeHash": "6941f367bdb7f04af89dccddc1bcba22759f06a1e9508fbb64c6f3ba2632818a",
-      "coarseShapeHash": "a4a90972c72f0d14065b15528ffc88938e675179129c6bdf4aef1ac92741e575",
-      "simhash128": "b9e3806eb33a3ed3eae7ae8c9cdbc1bb",
+      "shapeHash": "012060a1067f77b93519071868e5a5ba8184e1ebd23984eeca9bdfab5f0262cc",
+      "coarseShapeHash": "a787d46f06a8fd0a8973c51bcb11f1d4c6fcbc4d769b6d1d237c1fec22a717e6",
+      "simhash128": "b1a20062b73b35daea65aa8c9fdac9bb",
       "tokenStreamLength": 22,
       "coarseTokenStreamLength": 22,
       "usageCountRaw": 3,
@@ -6949,9 +6949,9 @@
       "name": "EventSuccessReportTabSkeleton",
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
       "role": "screen",
-      "shapeHash": "127c45d6052b3f255867feb8acc5acfce56e5e57c113b53fd0b207aa347cbf8d",
-      "coarseShapeHash": "0626cf5359cbe6bb270ade6b287eca2f745a38ed5de6996c2d2283d7611fe346",
-      "simhash128": "916fceecf3bf74dbe177be8d9ff9b3bf",
+      "shapeHash": "4c93dfbd25be5a2354bc52616c05cd8d183a9796185e9f7848e4e44b69f2665f",
+      "coarseShapeHash": "e143d7524c864d3ba61d28be13251a0b19659b58d47595a13a96dc1ab221ce4e",
+      "simhash128": "916b807cf7a9359ae175b28897e8b1bf",
       "tokenStreamLength": 20,
       "coarseTokenStreamLength": 20,
       "usageCountRaw": 3,
@@ -6988,9 +6988,9 @@
       "name": "EventSuccessSetupTabSkeleton",
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
       "role": "screen",
-      "shapeHash": "09294bb0e353c4df5b38ae75cd9e2ad8b96f092855f5fa7166c943d8c95accae",
-      "coarseShapeHash": "8a51abe40e5644c7007f67f647bf50a7a2e6a36882cd5176ce82e15d30390b12",
-      "simhash128": "396f866cf33b3c5362e7ae889fd8539b",
+      "shapeHash": "32363aa2b3dcf04ca4a45e2a7f0192a62b11e1f9cd390b4c31798cd99cf4e04e",
+      "coarseShapeHash": "a7c65930375ef9ef04bf15475fb1329301c044dcb2ebcde29c7fede0a7bf2507",
+      "simhash128": "b90b806cf321345a6265ae8817d81b93",
       "tokenStreamLength": 20,
       "coarseTokenStreamLength": 20,
       "usageCountRaw": 3,
@@ -14350,8 +14350,35 @@
       "scope": "screen"
     },
     {
-      "id": "c016-icon",
+      "id": "c016-tab-skeleton",
       "rank": 16,
+      "score": 14.6209,
+      "cohesion": 0.6092,
+      "absorbCandidate": false,
+      "nameSignal": "TabSkeleton",
+      "detectors": [
+        "structural",
+        "name"
+      ],
+      "members": [
+        "EventSuccessLiveTabSkeleton",
+        "EventSuccessReportTabSkeleton",
+        "EventSuccessSetupTabSkeleton"
+      ],
+      "paramCompatibility": {
+        "min": 1,
+        "mean": 1
+      },
+      "structuralSignals": [
+        "small-widget",
+        "structural"
+      ],
+      "visualBridges": [],
+      "scope": "screen"
+    },
+    {
+      "id": "c017-icon",
+      "rank": 17,
       "score": 14.4444,
       "cohesion": 0.5556,
       "absorbCandidate": true,
@@ -14374,8 +14401,8 @@
       "scope": "widget"
     },
     {
-      "id": "c017-card",
-      "rank": 17,
+      "id": "c018-card",
+      "rank": 18,
       "score": 14.2105,
       "cohesion": 0.7105,
       "absorbCandidate": false,
@@ -14399,8 +14426,8 @@
       "scope": "widget"
     },
     {
-      "id": "c018-pill",
-      "rank": 18,
+      "id": "c019-pill",
+      "rank": 19,
       "score": 14.1176,
       "cohesion": 0.4706,
       "absorbCandidate": false,
@@ -14422,33 +14449,6 @@
       ],
       "visualBridges": [],
       "scope": "widget"
-    },
-    {
-      "id": "c019-tab-skeleton",
-      "rank": 19,
-      "score": 14.0353,
-      "cohesion": 0.5848,
-      "absorbCandidate": false,
-      "nameSignal": "TabSkeleton",
-      "detectors": [
-        "structural",
-        "name"
-      ],
-      "members": [
-        "EventSuccessLiveTabSkeleton",
-        "EventSuccessReportTabSkeleton",
-        "EventSuccessSetupTabSkeleton"
-      ],
-      "paramCompatibility": {
-        "min": 1,
-        "mean": 1
-      },
-      "structuralSignals": [
-        "small-widget",
-        "structural"
-      ],
-      "visualBridges": [],
-      "scope": "screen"
     },
     {
       "id": "c020-skeleton",
@@ -15850,6 +15850,34 @@
     },
     {
       "rank": 21,
+      "a": "EventSuccessLiveTabSkeleton",
+      "b": "EventSuccessSetupTabSkeleton",
+      "jaccard": 0.6471,
+      "containment": 0.8462,
+      "score": 0.8462,
+      "smallWidgetMultisetJaccard": 0.8261,
+      "hamming": 29,
+      "flags": [],
+      "detectors": [
+        "structural",
+        "name"
+      ],
+      "signals": [
+        "structural",
+        "small-widget"
+      ],
+      "nameStems": [
+        "EventSkeleton",
+        "TabSkeleton"
+      ],
+      "visualHamming": null,
+      "selectionSources": [
+        "name-family"
+      ],
+      "absorbCandidate": false
+    },
+    {
+      "rank": 22,
       "a": "EventPolicyCancellationRows",
       "b": "EventPolicyResultRows",
       "jaccard": 0.6957,
@@ -15868,34 +15896,6 @@
       ],
       "nameStems": [
         "EventRows"
-      ],
-      "visualHamming": null,
-      "selectionSources": [
-        "name-family"
-      ],
-      "absorbCandidate": false
-    },
-    {
-      "rank": 22,
-      "a": "EventSuccessLiveTabSkeleton",
-      "b": "EventSuccessSetupTabSkeleton",
-      "jaccard": 0.625,
-      "containment": 0.8333,
-      "score": 0.8333,
-      "smallWidgetMultisetJaccard": 0.8261,
-      "hamming": 22,
-      "flags": [],
-      "detectors": [
-        "structural",
-        "name"
-      ],
-      "signals": [
-        "structural",
-        "small-widget"
-      ],
-      "nameStems": [
-        "EventSkeleton",
-        "TabSkeleton"
       ],
       "visualHamming": null,
       "selectionSources": [

@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.556
+version: 2.5.557
 updated: 2026-07-03
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,11 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.557
+
+- Replaced raw Event Success skeleton title widths in host tab and event-preview
+  loading surfaces with nearest existing `CatchLayout.skeletonText*` tokens.
 
 ### 2.5.556
 

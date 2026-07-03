@@ -870,7 +870,14 @@ skeleton noise — nearest token is fine; do NOT add new tokens. Also sweep the
 rest of that file and `event_success_event_preview_loading_screen.dart` for
 other raw skeleton widths while there. The widgets themselves stay.
 
-- [ ] token sweep + regen + receipts
+- [x] token sweep + regen + receipts
+
+Completed by Codex: replaced raw `EventSuccessSkeletonSurface.titleWidth`
+values in the Host Setup/Live/Report tab skeletons and Event Success preview
+loading skeletons with nearest existing `CatchLayout.skeletonText*` tokens,
+confirmed no raw `titleWidth`/`width` literals remain in the WO-013 scope,
+regenerated widget classification/fingerprint/similarity artifacts, and
+recorded the receipt.
 
 ## WO-014 — Batch A/B merges (directory card, paper ticket, hero shell)
 

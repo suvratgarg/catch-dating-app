@@ -651,13 +651,13 @@ class EventSuccessSetupTabSkeleton extends StatelessWidget {
       gap: CatchSpacing.s3,
       children: [
         EventSuccessSkeletonSurface(
-          titleWidth: 170,
+          titleWidth: CatchLayout.skeletonTextActionLabelWidth,
           textLines: 3,
           trailingCount: 3,
         ),
         EventSuccessSetupControlsSkeleton(),
         EventSuccessSkeletonSurface(
-          titleWidth: 150,
+          titleWidth: CatchLayout.skeletonTextWideWidth,
           textLines: 2,
           trailingCount: 2,
         ),
@@ -676,13 +676,13 @@ class EventSuccessLiveTabSkeleton extends StatelessWidget {
       gap: CatchSpacing.s3,
       children: [
         EventSuccessSkeletonSurface(
-          titleWidth: 148,
+          titleWidth: CatchLayout.skeletonTextInlineTitleWidth,
           textLines: 2,
           trailingCount: 2,
         ),
         CatchSkeletonRows(titleWidth: CatchLayout.skeletonTextTitleWidth),
         EventSuccessSkeletonSurface(
-          titleWidth: 190,
+          titleWidth: CatchLayout.skeletonTextLongWidth,
           textLines: 3,
           trailingCount: 0,
         ),
@@ -702,12 +702,12 @@ class EventSuccessReportTabSkeleton extends StatelessWidget {
       children: [
         EventSuccessReportMetricsSkeleton(),
         EventSuccessSkeletonSurface(
-          titleWidth: 180,
+          titleWidth: CatchLayout.skeletonTextCardTitleWidth,
           textLines: 3,
           trailingCount: 2,
         ),
         EventSuccessSkeletonSurface(
-          titleWidth: 140,
+          titleWidth: CatchLayout.skeletonTextBodyWideWidth,
           textLines: 2,
           trailingCount: 0,
         ),

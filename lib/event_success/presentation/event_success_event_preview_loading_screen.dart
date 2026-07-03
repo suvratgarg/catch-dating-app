@@ -126,7 +126,7 @@ class EventPreviewNotesSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const EventSuccessSkeletonSurface(
-      titleWidth: 210,
+      titleWidth: CatchLayout.skeletonTextFeatureWidth,
       textLines: 3,
       trailingCount: 0,
     );
@@ -139,7 +139,7 @@ class EventPreviewSetupSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const EventSuccessSkeletonSurface(
-      titleWidth: 150,
+      titleWidth: CatchLayout.skeletonTextWideWidth,
       textLines: 3,
       trailingCount: 3,
     );
@@ -152,7 +152,7 @@ class EventPreviewLiveSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const EventSuccessSkeletonSurface(
-      titleWidth: 132,
+      titleWidth: CatchLayout.skeletonTextTitleWidth,
       textLines: 2,
       trailingCount: 2,
     );
@@ -165,7 +165,7 @@ class EventPreviewCompanionSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const EventSuccessSkeletonSurface(
-      titleWidth: 170,
+      titleWidth: CatchLayout.skeletonTextActionLabelWidth,
       textLines: 3,
       trailingCount: 1,
     );
@@ -178,7 +178,7 @@ class EventPreviewReportSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const EventSuccessSkeletonSurface(
-      titleWidth: 188,
+      titleWidth: CatchLayout.skeletonTextBodyLongWidth,
       textLines: 2,
       trailingCount: 3,
     );

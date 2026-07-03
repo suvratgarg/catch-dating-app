@@ -820,6 +820,83 @@ Known blockers / inherited debt:
   wrapper attempted SDK cache writes outside the workspace before reporting
   `Widget dedupe probes passed`.
 
+## 2026-07-03 — WO-013 Event Success skeleton title-width tokens
+
+Scope:
+
+- Replaced raw `EventSuccessSkeletonSurface.titleWidth` values in
+  `EventSuccessSetupTabSkeleton`, `EventSuccessLiveTabSkeleton`, and
+  `EventSuccessReportTabSkeleton` with nearest existing
+  `CatchLayout.skeletonText*` tokens.
+- Swept `event_success_event_preview_loading_screen.dart` and replaced raw
+  preview loading skeleton title widths with nearest existing tokens.
+- No new skeleton width tokens were added.
+
+Token mapping:
+
+| raw width | replacement |
+|---:|---|
+| 132 | `CatchLayout.skeletonTextTitleWidth` |
+| 140 | `CatchLayout.skeletonTextBodyWideWidth` |
+| 148 | `CatchLayout.skeletonTextInlineTitleWidth` |
+| 150 | `CatchLayout.skeletonTextWideWidth` |
+| 170 | `CatchLayout.skeletonTextActionLabelWidth` |
+| 180 | `CatchLayout.skeletonTextCardTitleWidth` |
+| 188 | `CatchLayout.skeletonTextBodyLongWidth` |
+| 190 | `CatchLayout.skeletonTextLongWidth` |
+| 210 | `CatchLayout.skeletonTextFeatureWidth` |
+
+Commands:
+
+- `node tool/agent/context_pack.mjs --task widget-consolidation-wo-013 --paths lib/event_success/presentation/event_success_host_screen.dart,lib/event_success/presentation/event_success_event_preview_loading_screen.dart,docs/design_parity/widget_consolidation/codex_worklog.md,docs/widget_catalog.md,docs/audit_registry/widget_consolidation_receipts.md`
+- `rg -n "skeletonText" lib/core/theme`
+- `rg -n "EventSuccessLiveTabSkeleton|EventSuccessSetupTabSkeleton|EventSuccessReportTabSkeleton|EventSuccessSkeletonSurface|width: [0-9]" lib/event_success/presentation/event_success_host_screen.dart lib/event_success/presentation/event_success_event_preview_loading_screen.dart`
+- `dart format lib/event_success/presentation/event_success_host_screen.dart lib/event_success/presentation/event_success_event_preview_loading_screen.dart`
+- `rg -n "titleWidth: [0-9]|width: [0-9]" lib/event_success/presentation/event_success_host_screen.dart lib/event_success/presentation/event_success_event_preview_loading_screen.dart`
+- `flutter analyze --no-fatal-infos lib/event_success/presentation/event_success_host_screen.dart lib/event_success/presentation/event_success_event_preview_loading_screen.dart`
+- `node tool/design/generate_widget_classification.mjs`
+- `node tool/design/check_widget_classification.mjs`
+- `dart run tool/widget_dedupe/bin/extract_fingerprints.dart`
+- `node tool/design/build_widget_similarity.mjs`
+- `node tool/design/build_widget_similarity.mjs --check`
+- `node tool/design/check_widgetbook_coverage.mjs --check`
+- `node tool/design/check_widget_dedupe_probes.mjs`
+- `flutter analyze --no-fatal-infos lib`
+- `flutter analyze` in `widgetbook/`
+- `bash tool/widget_cleanup_scan.sh --summary`
+- `node tool/run.mjs check --manifest-only`
+- `node -e "const fs=require('fs'); const files=['docs/audit_registry/widget_classification.json','docs/audit_registry/widget_similarity.json','docs/audit_registry/doc_versions.json']; for (const f of files) JSON.parse(fs.readFileSync(f,'utf8')); console.log('json ok', files.length);"`
+
+Headline numbers:
+
+| metric | value |
+|---|---:|
+| widget classification entries | 1,148 |
+| classification review items | 46 |
+| private widget classes flagged | 0 |
+| widget fingerprints | 1,041 |
+| fingerprint failures | 0 |
+| similarity clusters | 53 |
+| ranked pairs | 200 |
+| name families | 223 |
+| absorb candidates | 8 |
+| Widgetbook coverage decision queue | 132 |
+| Widgetbook coverage stale decisions | 0 |
+| root lib analyzer infos | 192 |
+| Widgetbook analyzer issues | 65 |
+| widget cleanup scan categories with findings | 0 |
+
+Known blockers / inherited debt:
+
+- `node tool/design/check_widgetbook_coverage.mjs --check` still fails on the
+  existing catalog-or-replace decision queue: 132 public widgets need
+  decisions, with 0 stale decisions.
+- `(cd widgetbook && flutter analyze)` still fails on 65 existing Widgetbook
+  issues in `lib/hosts/host_operations_use_cases.dart`.
+- The dedupe-probe script needed unsandboxed access because Flutter's Dart
+  wrapper attempted SDK cache writes outside the workspace before reporting
+  `Widget dedupe probes passed`.
+
 ## 2026-07-03 WO-008 Empty-state wrapper inlines
 
 Scope:
