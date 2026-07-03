@@ -1041,7 +1041,7 @@
               "kind": "empty",
               "status": "captured",
               "previewIds": [
-                "ExploreEmptyState/Empty states",
+                "CatchEmptyState/Empty states",
                 "ExploreScreen/Screen states"
               ],
               "tests": [
@@ -1057,7 +1057,7 @@
               "kind": "empty",
               "status": "captured",
               "previewIds": [
-                "ExploreEmptyState/Empty states",
+                "CatchEmptyState/Empty states",
                 "ExploreEventsSection/Feed states",
                 "ExploreScreen/Screen states"
               ],
@@ -1096,7 +1096,7 @@
               "previewIds": [
                 "ExploreBrowseHeaderContent/Chrome states",
                 "ExploreScreen/Screen states",
-                "ExploreEmptyState/Empty states"
+                "CatchEmptyState/Empty states"
               ],
               "tests": [
                 "test/explore/explore_view_model_test.dart",
@@ -1214,7 +1214,7 @@
                 "explore_offline"
               ],
               "previewIds": [
-                "ExploreEmptyState/Empty states"
+                "CatchEmptyState/Empty states"
               ],
               "notes": "Captured offline-mapped source-club and feed failures through the shared Explore retry branch."
             },

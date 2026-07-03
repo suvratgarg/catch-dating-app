@@ -1800,9 +1800,9 @@
           "id": "empty_city",
           "kind": "empty",
           "status": "captured",
-          "source": "ExploreEmptyState(cityLabel) renders when the selected city has no source clubs.",
+          "source": "CatchEmptyState renders with Explore empty-city copy when the selected city has no source clubs.",
           "previewIds": [
-            "ExploreEmptyState/Empty states",
+            "CatchEmptyState/Empty states",
             "ExploreScreen/Screen states"
           ],
           "tests": [
@@ -1817,9 +1817,9 @@
           "id": "no_search_results",
           "kind": "empty",
           "status": "captured",
-          "source": "ExploreEmptyState.noSearchResults and noFilteredSearchResults render for narrowed query states.",
+          "source": "CatchEmptyState renders with Explore search/filter copy for narrowed query states.",
           "previewIds": [
-            "ExploreEmptyState/Empty states",
+            "CatchEmptyState/Empty states",
             "ExploreEventsSection/Feed states",
             "ExploreScreen/Screen states"
           ],
@@ -1860,7 +1860,7 @@
           "previewIds": [
             "ExploreBrowseHeaderContent/Chrome states",
             "ExploreScreen/Screen states",
-            "ExploreEmptyState/Empty states"
+            "CatchEmptyState/Empty states"
           ],
           "tests": [
             "test/explore/explore_view_model_test.dart",
@@ -2032,7 +2032,7 @@
             "explore_offline"
           ],
           "previewIds": [
-            "ExploreEmptyState/Empty states"
+            "CatchEmptyState/Empty states"
           ],
           "nextAction": "Offline copy is captured through the shared Explore error branch; keep this shared mapping unless product requests distinct club-source/feed offline copy."
         },
@@ -2271,8 +2271,8 @@
               "Section"
             ],
             "flutter": {
-              "file": "lib/explore/presentation/widgets/explore_empty_state.dart",
-              "symbol": "ExploreEmptyState"
+              "file": "lib/core/widgets/catch_empty_state.dart",
+              "symbol": "CatchEmptyState"
             },
             "currentOwner": "ExploreScreen, ExploreScreenBodyState, ExploreDiscoveryEmptyState, ExploreEventsEmptyState, and ExploreEventsSection",
             "targetOwner": "registered Explore empty/error state adapter",
@@ -2288,7 +2288,7 @@
               "event_feed_error"
             ],
             "previewIds": [
-              "ExploreEmptyState/Empty states",
+              "CatchEmptyState/Empty states",
               "ExploreEventsSection/Feed states",
               "ExploreScreen/Screen states"
             ],

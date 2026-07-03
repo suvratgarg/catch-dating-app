@@ -1855,6 +1855,25 @@
       "decidedBy": "codex-rule:K2",
       "date": "2026-07-03",
       "status": "recorded-WO-015"
+    },
+    {
+      "clusterId": "ranked-pair: CatchEmptyState/ExploreEmptyState",
+      "decision": "delete",
+      "canonicalSymbol": "CatchEmptyState",
+      "members": [
+        {
+          "name": "CatchEmptyState",
+          "action": "keep"
+        },
+        {
+          "name": "ExploreEmptyState",
+          "action": "delete"
+        }
+      ],
+      "rationale": "R2 thin wrapper: ExploreEmptyState only wrapped CatchEmptyState in Center/Padding with fixed Explore copy variants and optional actions; production and Widgetbook uses were inlined with the same icon/copy/action values.",
+      "decidedBy": "codex-rule:R2",
+      "date": "2026-07-03",
+      "status": "executed-WO-015-ranked-pair"
     }
   ]
 }

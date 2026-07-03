@@ -4098,6 +4098,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchEmptyState',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Empty states',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .exploreEmptyStateStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'ClubDirectorySkeletonCard',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -4194,16 +4204,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Cover header states',
                 builder: _widgetbook_workspace_explore_explore_use_cases
                     .exploreDiscoveryCoverHeaderStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ExploreEmptyState',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Empty states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
-                    .exploreEmptyStateStates,
               ),
             ],
           ),

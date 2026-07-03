@@ -1051,6 +1051,14 @@ and `c044-event-focus-rail` under K2/K4; escalated
 code was changed in this ledger-only batch. Ranked-pair-only candidates remain
 for the next WO-015 pass.
 
+Progress by Codex: executed ranked-pair R2 for
+`CatchEmptyState`/`ExploreEmptyState`. Deleted the feature wrapper, inlined the
+Explore empty/search/filter copies into direct `CatchEmptyState` compositions in
+production and Widgetbook, updated Explore design-contract preview ids to
+`CatchEmptyState/Empty states`, regenerated Widgetbook and widget registries,
+and recorded the receipt. Ranked-pair-only candidates still remain open after
+this targeted execution.
+
 ## WO-016 — Review answers from the WO-001..014 audit
 
 1. **`CatchSkeletonRows.divided` flag** (answers the WO-006 skip): add

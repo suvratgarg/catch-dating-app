@@ -1668,3 +1668,81 @@ Known blockers / inherited debt:
 
 - WO-015 is not fully closed: ranked-pair-only candidates still need a separate
   top-down pass. The current-cluster queue is clean by member-set matching.
+
+## 2026-07-03 - WO-015 ranked-pair R2 ExploreEmptyState
+
+Scope:
+
+- Executed ranked-pair `CatchEmptyState` / `ExploreEmptyState` under R2.
+- Deleted `lib/explore/presentation/widgets/explore_empty_state.dart`.
+- Inlined the Explore empty-city, search-empty, filter-empty, and combined
+  search/filter copy into direct `CatchEmptyState` compositions in
+  `ExploreScreenEmptyState`, `ExploreListEmptyState`, and Explore Widgetbook.
+- Updated Explore design-contract/state-matrix preview ids to
+  `CatchEmptyState/Empty states`, updated `docs/widget_catalog.md`, and
+  regenerated Widgetbook directories, widget classification, fingerprints, and
+  similarity output.
+
+Commands:
+
+- `rg -n "class ExploreEmptyState|ExploreEmptyState\\(" lib widgetbook/lib test --glob "*.dart"`
+- `dart format lib/explore/presentation/explore_screen.dart lib/explore/presentation/widgets/explore_list.dart widgetbook/lib/explore/explore_use_cases.dart`
+- `(cd widgetbook && dart run build_runner build --delete-conflicting-outputs)`
+- `node tool/design/generate_widget_classification.mjs`
+- `dart run tool/widget_dedupe/bin/extract_fingerprints.dart`
+- `node tool/design/build_widget_similarity.mjs`
+- `node tool/design/check_widget_classification.mjs`
+- `node tool/design/build_widget_similarity.mjs --check`
+- `flutter analyze --no-fatal-infos lib/explore/explore.dart lib/explore/presentation/explore_screen.dart lib/explore/presentation/widgets/explore_list.dart`
+- `(cd widgetbook && flutter analyze --no-fatal-infos lib/explore/explore_use_cases.dart lib/main.directories.g.dart)`
+- `node tool/design/check_widgetbook_coverage.mjs --check`
+- `node tool/design/check_widgetbook_contract_refs.mjs --check`
+- `bash tool/widget_cleanup_scan.sh --summary`
+- `node tool/run.mjs check --manifest-only`
+- `node -e '... parse decisions/classification/similarity/fingerprints JSON ...'`
+- `env DART=/Users/suvratgarg/Development/flutter/bin/dart node tool/design/check_widget_dedupe_probes.mjs`
+- `flutter analyze --no-fatal-infos lib`
+- `git diff --check`
+
+Headline numbers:
+
+| metric | value |
+|---|---:|
+| ranked pairs executed | 1 |
+| wrapper classes deleted | 1 |
+| production call sites inlined | 6 |
+| Widgetbook states migrated | 5 |
+| Widgetbook directory build outputs | 15 |
+| widget classification entries | 1145 |
+| widget classification review items | 45 |
+| private widget classes flagged | 0 |
+| dedupe fingerprints | 1038 |
+| dedupe extraction failures | 0 |
+| similarity clusters | 50 |
+| similarity ranked pairs | 200 |
+| similarity name families | 222 |
+| similarity absorb candidates | 8 |
+| full app analyzer info baseline | 186 |
+| Widgetbook coverage public decision queue | 131 |
+| stale Widgetbook coverage decisions | 0 |
+
+Verification:
+
+- Focused app analyzer for touched Explore files: clean.
+- Focused Widgetbook analyzer for Explore use cases and generated directories:
+  clean.
+- Full app `flutter analyze --no-fatal-infos lib`: passed with 186 inherited
+  info-level diagnostics and no warnings/errors.
+- Widget classification check, similarity check, dedupe probes, cleanup scan,
+  manifest check, changed JSON parse, design-contract JSON parse, and
+  `git diff --check`: passed.
+- Widgetbook coverage remains blocked by the existing 131 public
+  catalog-or-replace decisions.
+- Widgetbook contract-reference check is back to the inherited HostOperations
+  preview-id drift only.
+
+Known blockers / inherited debt:
+
+- WO-015 remains open for the ranked-pair-only pass beyond this R2 execution.
+- Full Widgetbook package analysis remains blocked by the inherited
+  HostOperations fixture errors recorded in the WO-016 receipt.

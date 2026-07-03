@@ -12,6 +12,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
+import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -26,7 +27,6 @@ import 'package:catch_dating_app/explore/presentation/widgets/catch_cover_story.
 import 'package:catch_dating_app/explore/presentation/widgets/catch_cross_paths_card.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_body.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_city_picker.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/explore_empty_state.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_event_type_browse_grid.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_events_section.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_filter_rail.dart';
@@ -1724,43 +1724,58 @@ Widget exploreEventsLoadingSliverStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Empty states',
-  type: ExploreEmptyState,
+  type: CatchEmptyState,
   path: '[Explore]/Sections',
 )
 Widget exploreEmptyStateStates(BuildContext context) {
   return _CatalogScreen(
-    title: 'ExploreEmptyState',
+    title: 'Explore empty states',
     catalogId: 'section.explore.empty_error',
     children: [
       _StateCard(
         label: 'empty city',
-        child: ExploreEmptyState(
-          cityLabel: 'Mumbai',
+        child: CatchEmptyState(
+          icon: CatchIcons.groupsOutlined,
+          title: 'No clubs in Mumbai yet',
+          message:
+              'Try another city from the location control, or create the first '
+              'club when you are ready to host.',
           action: _secondaryAction('Try another city'),
         ),
       ),
       _StateCard(
         label: 'search only',
-        child: ExploreEmptyState.noSearchResults(
-          hasFilters: false,
+        child: CatchEmptyState(
+          icon: CatchIcons.groupsOutlined,
+          title: 'No clubs match this search',
+          message: 'Try another club, neighborhood, host, or tag.',
           action: _secondaryAction('Clear search'),
         ),
       ),
       _StateCard(
         label: 'filter only',
-        child: ExploreEmptyState.noFilterResults(
+        child: CatchEmptyState(
+          icon: CatchIcons.groupsOutlined,
+          title: 'No clubs match these filters',
+          message:
+              'Clear one or more filters to bring nearby clubs back into view.',
           action: _secondaryAction('Clear filters'),
         ),
       ),
       _StateCard(
         label: 'search plus filters',
-        child: ExploreEmptyState.noFilteredSearchResults(
+        child: CatchEmptyState(
+          icon: CatchIcons.groupsOutlined,
+          title: 'No clubs match this search',
+          message:
+              'Clear the search or filters to bring nearby clubs back into view.',
           action: _secondaryAction('Clear search and filters'),
         ),
       ),
       _StateCard(
         label: 'offline copy candidate',
-        child: ExploreEmptyState.generic(
+        child: CatchEmptyState(
+          icon: CatchIcons.groupsOutlined,
           title: 'Explore is offline',
           message:
               'Check your connection and try again to reload clubs and events.',

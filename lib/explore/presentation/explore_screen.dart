@@ -13,6 +13,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
+import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
@@ -22,7 +23,6 @@ import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.da
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_body.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/explore_empty_state.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_filter_rail.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_header.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -401,16 +401,54 @@ class ExploreScreenEmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     final action = _actionForState();
     return switch (state.kind) {
-      ExploreDiscoveryEmptyKind.noSourceClubs => ExploreEmptyState(
-        cityLabel: state.cityLabel,
-        action: action,
+      ExploreDiscoveryEmptyKind.noSourceClubs => Center(
+        child: Padding(
+          padding: CatchInsets.contentRelaxed,
+          child: CatchEmptyState(
+            icon: CatchIcons.groupsOutlined,
+            title: 'No clubs in ${state.cityLabel} yet',
+            message:
+                'Try another city from the location control, or create the '
+                'first club when you are ready to host.',
+            action: action,
+          ),
+        ),
       ),
-      ExploreDiscoveryEmptyKind.noFilteredSearchResults =>
-        ExploreEmptyState.noFilteredSearchResults(action: action),
-      ExploreDiscoveryEmptyKind.noSearchResults =>
-        ExploreEmptyState.noSearchResults(hasFilters: false, action: action),
-      ExploreDiscoveryEmptyKind.noFilterResults =>
-        ExploreEmptyState.noFilterResults(action: action),
+      ExploreDiscoveryEmptyKind.noFilteredSearchResults => Center(
+        child: Padding(
+          padding: CatchInsets.contentRelaxed,
+          child: CatchEmptyState(
+            icon: CatchIcons.groupsOutlined,
+            title: 'No clubs match this search',
+            message:
+                'Clear the search or filters to bring nearby clubs back into view.',
+            action: action,
+          ),
+        ),
+      ),
+      ExploreDiscoveryEmptyKind.noSearchResults => Center(
+        child: Padding(
+          padding: CatchInsets.contentRelaxed,
+          child: CatchEmptyState(
+            icon: CatchIcons.groupsOutlined,
+            title: 'No clubs match this search',
+            message: 'Try another club, neighborhood, host, or tag.',
+            action: action,
+          ),
+        ),
+      ),
+      ExploreDiscoveryEmptyKind.noFilterResults => Center(
+        child: Padding(
+          padding: CatchInsets.contentRelaxed,
+          child: CatchEmptyState(
+            icon: CatchIcons.groupsOutlined,
+            title: 'No clubs match these filters',
+            message:
+                'Clear one or more filters to bring nearby clubs back into view.',
+            action: action,
+          ),
+        ),
+      ),
     };
   }
 

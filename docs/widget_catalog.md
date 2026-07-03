@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.559
+version: 2.5.560
 updated: 2026-07-03
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,12 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.560
+
+- Inlined `ExploreEmptyState` into direct `CatchEmptyState` compositions for
+  the Explore empty/search/filter states; Explore Widgetbook coverage now renders
+  the core primitive with Explore copy.
 
 ### 2.5.559
 
@@ -6081,8 +6087,7 @@ Generated 2026-05-06.
 | `ClubDiscoverList` | `lib/clubs/presentation/discovery/widgets/club_discover_list.dart:8` | Club directory section of Explore with a real `SliverList` of directory cards. Passes joined and hosted club IDs separately so host-owned clubs are not mislabeled as ordinary joined clubs. |
 | `ClubIdentityAtoms` | `lib/clubs/presentation/shared/club_identity_atoms.dart:11` | Shared club-card identity helpers and widgets: member-count label, tag filtering, member seal, tag wrap, hosted-by line, host avatar, host role badge, and rating pill. Use this before adding club-card-local member labels, tag wraps, host rows, or rating chips. |
 | `ClubListTile` | `lib/clubs/presentation/discovery/widgets/club_list_tile.dart:33` | Club tile rendered as directory card or avatar chip. Directory cards now use the productionized concept-lab club language and shared club identity atoms: image-backed clubs get a bounded photo card with member seal, centrally themed `CatchTextStyles.clubDisplay` title, tags, host row, and role sash; no-image clubs get an identity card that reuses the shared fallback palette. Display-only tile rendering does not watch provider state; only the join button owns the mutation provider. |
-| `ExploreEmptyState` | `lib/explore/presentation/widgets/explore_empty_state.dart:4` | Empty state for empty-city, search-empty, filter-empty, and combined search/filter-empty cases. Uses `CatchEmptyState` with recovery copy and optional clear actions owned by `ExploreList`. |
-| `ExploreScreenEmptyState` | `lib/explore/presentation/explore_screen.dart:164` | Route-level Explore empty-state adapter. Receives provider-free `ExploreDiscoveryEmptyState` plus clear-search/filter callbacks from `ExploreScreen`, then delegates visual copy to `ExploreEmptyState` and action rendering to `ExploreClearAction`. |
+| `ExploreScreenEmptyState` | `lib/explore/presentation/explore_screen.dart:164` | Route-level Explore empty-state adapter. Receives provider-free `ExploreDiscoveryEmptyState` plus clear-search/filter callbacks from `ExploreScreen`, then renders `CatchEmptyState` directly with Explore copy and `ExploreClearAction`. |
 | `ExploreClearAction` | `lib/explore/presentation/explore_screen.dart:204` | Provider-free secondary clear action used by Explore route/list empty states. Encodes clear-search, clear-filters, and combined clear behavior without reading providers or routing. |
 | `ExploreFeedEventRow` | `lib/explore/presentation/widgets/explore_events_section.dart:243` | Compact mixed-feed event row. Converts `ExploreEventItem` into `EventDateRailCard` copy/status through `ExploreEventRowState`, applies the analytics-source hero tag, and keeps navigation/analytics as a tap callback owned by the Explore feed. |
 | `ExploreExternalEventRow` | `lib/explore/presentation/widgets/explore_events_section.dart:278` | Read-only external supply row for imported organizer/source events. Shows source platform, activity stamp, event time/price, external-link action availability, and the no-Catch-booking disclosure while outbound opening stays behind the external-link controller. |
