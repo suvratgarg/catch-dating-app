@@ -64,6 +64,29 @@
   "next_up": [],
   "completed": [
     {
+      "id": "UID-LOADING-CONFLATION-2026-07-02-DONE",
+      "title": "Separate signed-in uid resolution from downstream loading states",
+      "completed": "2026-07-03",
+      "rules": [
+        "ASYNC-UI-001",
+        "AUDIT-REGISTRY-001"
+      ],
+      "summary": "Verified current event uid-gated surfaces no longer conflate auth loading, signed-out, and downstream event loading: CalendarScreen and SavedEventsScreen branch on uidProvider loading/error before reading event repositories, signed-out users get empty states without querying user event providers, and signed-in users retain separate downstream loading/error states. Verified: flutter analyze --no-fatal-infos lib/events/presentation/calendar/calendar_screen.dart lib/events/presentation/saved_events_screen.dart test/calendar/calendar_screen_test.dart test/events/calendar_screen_test.dart test/events/saved_events_screen_test.dart; flutter test --reporter compact test/calendar/calendar_screen_test.dart test/events/saved_events_screen_test.dart test/events/calendar_screen_test.dart.",
+      "source": "2026-07-02-enforcement-integrity-follow-up"
+    },
+    {
+      "id": "DEBT-AUTH-LOADING-STATE-001-DONE",
+      "title": "Separate auth loading from signed-out and empty event states",
+      "completed": "2026-07-03",
+      "rules": [
+        "ASYNC-UI-001",
+        "AUDIT-REGISTRY-001",
+        "WIDGET-TEST-001"
+      ],
+      "summary": "Verified CalendarScreen and SavedEventsScreen distinguish uidProvider auth loading, auth error, signed-out empty, signed-in empty, downstream event loading, and downstream event error. Existing regression tests cover auth-loading skeletons and auth-error copy before signed-out/empty copy for both screens. Verified: flutter analyze --no-fatal-infos lib/events/presentation/calendar/calendar_screen.dart lib/events/presentation/saved_events_screen.dart test/calendar/calendar_screen_test.dart test/events/calendar_screen_test.dart test/events/saved_events_screen_test.dart; flutter test --reporter compact test/calendar/calendar_screen_test.dart test/events/saved_events_screen_test.dart test/events/calendar_screen_test.dart.",
+      "source": "rules_registry_and_enforcement_hardening_spec"
+    },
+    {
       "id": "NEW-WIDGET-INVENTORY-2026-06-30-DONE",
       "title": "Close remaining new-widget Widgetbook/catalog inventory gaps",
       "completed": "2026-07-01",
