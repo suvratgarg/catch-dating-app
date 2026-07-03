@@ -2432,6 +2432,330 @@
       "decidedBy": "codex-rule:K1",
       "date": "2026-07-03",
       "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: DarkPill/EventSharePill",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "DarkPill",
+          "action": "escalate"
+        },
+        {
+          "name": "EventSharePill",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: DarkPill is a manual-QA dark accent pill while EventSharePill is a light event share-card metadata pill with different surface and typography roles.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: FiltersSection/StageCard",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "FiltersSection",
+          "action": "escalate"
+        },
+        {
+          "name": "StageCard",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: FiltersSection is a filter/editing section surface while StageCard is an Event Success stage card; the shared surface skeleton hides different user tasks and data contracts.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: CompanionStageSkeleton/HostChartSkeleton",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "CompanionStageSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "HostChartSkeleton",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: both are skeleton surfaces, but one stands in for companion stage content and the other for host analytics chart rows; merging would add feature-specific knobs for loading noise.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: HostAnalyticsInlineStat/StructureNumberField",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "HostAnalyticsInlineStat",
+          "action": "escalate"
+        },
+        {
+          "name": "StructureNumberField",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: HostAnalyticsInlineStat is a compact analytics stat, while StructureNumberField is a setup form-field label/detail/child wrapper already kept distinct from stat concepts.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: DashboardFocusLoadingCard/HostChartSkeleton",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "DashboardFocusLoadingCard",
+          "action": "keep"
+        },
+        {
+          "name": "HostChartSkeleton",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: both are loading placeholders, but the dashboard focus card and host chart skeleton represent different surfaces and a merge would only centralize skeleton noise.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: DashboardLoadingHeader/HostSummarySkeleton",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "DashboardLoadingHeader",
+          "action": "keep"
+        },
+        {
+          "name": "HostSummarySkeleton",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: the overlap is generic text-row skeleton structure, while the dashboard header and host summary skeletons are different loading contexts.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: ReadOnlyHostedEventPolicyCard/ReadOnlyHostedEventScheduleCard",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "ReadOnlyHostedEventPolicyCard",
+          "action": "keep"
+        },
+        {
+          "name": "ReadOnlyHostedEventScheduleCard",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: the cards share a read-only CatchSurface shell, but the policy card owns policy rows and formatting while the schedule card owns date/time copy; parameterizing them would just move the content lists around.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: FirstHelloCheckInCard/SelfCheckInCard",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "FirstHelloCheckInCard",
+          "action": "keep"
+        },
+        {
+          "name": "SelfCheckInCard",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: both are Event Success check-in cards, but First Hello owns mission answer state, start/complete/skip flows, and celebration state while SelfCheckIn owns QR/manual check-in behavior.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: EventPolicyLabSectionTitle/StageSectionLabel",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "EventPolicyLabSectionTitle",
+          "action": "escalate"
+        },
+        {
+          "name": "StageSectionLabel",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: EventPolicyLabSectionTitle is a policy-lab section row with optional trailing control, while StageSectionLabel is an Event Success live-stage label with required color and two-line wrapping.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: EventPolicyLabSectionTitle/PreviewLine",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "EventPolicyLabSectionTitle",
+          "action": "escalate"
+        },
+        {
+          "name": "PreviewLine",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: EventPolicyLabSectionTitle is a policy-lab section header, while PreviewLine is preview/detail copy inside Event Success composition.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: EventPolicyLabScreen/EventSuccessEventPreviewLoadingScreen",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "EventPolicyLabScreen",
+          "action": "escalate"
+        },
+        {
+          "name": "EventSuccessEventPreviewLoadingScreen",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "No exact K/R match: both are screen-level compositions, but the policy lab and Event Success preview loading screen are separate routes/states and should not be merged by widget similarity.",
+      "decidedBy": "codex-rule:no-exact",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: HostEventManageRouteScreen/HostLoadingScreen",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "HostEventManageRouteScreen",
+          "action": "escalate"
+        },
+        {
+          "name": "HostLoadingScreen",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "No exact K/R match: HostEventManageRouteScreen is a route/provider composition while HostLoadingScreen is a generic host loading state; this is screen-scope similarity, not duplication.",
+      "decidedBy": "codex-rule:no-exact",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: EventSuccessEventPreviewLoadingScreen/EventSuccessEventPreviewScreen",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "EventSuccessEventPreviewLoadingScreen",
+          "action": "escalate"
+        },
+        {
+          "name": "EventSuccessEventPreviewScreen",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "No exact K/R match: the loading screen and loaded preview route are screen-level state variants; merging would require an Event Success preview screen-state contract.",
+      "decidedBy": "codex-rule:no-exact",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: EventSuccessEventPreviewLoadingScreen/EventSuccessManualQaScreen",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "EventSuccessEventPreviewLoadingScreen",
+          "action": "escalate"
+        },
+        {
+          "name": "EventSuccessManualQaScreen",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "No exact K/R match: the Event Success preview loading screen and manual QA screen are separate screen-level compositions with different data and workflow ownership.",
+      "decidedBy": "codex-rule:no-exact",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: CompanionPrimaryActionSkeleton/HostChartSkeleton",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "CompanionPrimaryActionSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "HostChartSkeleton",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: both are skeleton placeholders, but companion primary actions and host charts have distinct loading geometry and a shared primitive would only add shape knobs.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: HostPaymentAccountErrorCard/HostPaymentAccountLoadingCard",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "HostPaymentAccountErrorCard",
+          "action": "keep"
+        },
+        {
+          "name": "HostPaymentAccountLoadingCard",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: both cards share the Payouts shell, but one renders loading skeletons while the other renders CatchErrorState and retry behavior; they are intentional state variants.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: EditHostedEventRouteScreen/HostEventManageRouteScreen",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "EditHostedEventRouteScreen",
+          "action": "escalate"
+        },
+        {
+          "name": "HostEventManageRouteScreen",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "No exact K/R match: both are host route-level screens with provider/action ownership; route screens are not merged by structural similarity without an architecture review.",
+      "decidedBy": "codex-rule:no-exact",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: StageConversationCueCard/StagePromptCard",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "StageConversationCueCard",
+          "action": "keep"
+        },
+        {
+          "name": "StagePromptCard",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: both use StagePanel and StageSectionLabel, but StagePromptCard renders one prompt while StageConversationCueCard renders optional subtitle plus up to three cue lines.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
     }
   ]
 }

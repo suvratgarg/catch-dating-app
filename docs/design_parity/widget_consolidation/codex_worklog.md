@@ -1075,6 +1075,12 @@ mismatches and four no-exact API/screen-state questions. No code was changed in
 this ledger-only batch. Ranked-pair-only candidates still remain open after
 this targeted triage.
 
+Progress by Codex: triaged ranked-pair-only candidates 58-99 by member set.
+Kept eight skeleton/state/small-card pairs under K4. Escalated five K5 concept
+mismatches and five no-exact screen-scope/API questions. No code was changed in
+this ledger-only batch. Ranked-pair-only candidates still remain open after
+this targeted triage.
+
 ## WO-016 — Review answers from the WO-001..014 audit
 
 1. **`CatchSkeletonRows.divided` flag** (answers the WO-006 skip): add
@@ -1271,6 +1277,40 @@ listed in the receipt.
 - WO-015 ranked-pair: `CatchFieldRow`, `ProfileFieldRow` — nearest rule: no
   exact K/R match, blocked because the core row layout primitive and profile
   descriptor/editor dispatcher live at different abstraction levels.
+- WO-015 ranked-pair: `DarkPill`, `EventSharePill` — nearest rule: K5 concept
+  mismatch, blocked because manual-QA dark accent pills and light event
+  share-card metadata pills use different surface and typography roles.
+- WO-015 ranked-pair: `FiltersSection`, `StageCard` — nearest rule: K5 concept
+  mismatch, blocked because filter/editing section surfaces and Event Success
+  stage cards have different user tasks and data contracts.
+- WO-015 ranked-pair: `HostAnalyticsInlineStat`, `StructureNumberField` —
+  nearest rule: K5 concept mismatch, blocked because compact analytics stats
+  and setup form-field label/detail/child wrappers are different concepts.
+- WO-015 ranked-pair: `EventPolicyLabSectionTitle`, `StageSectionLabel` —
+  nearest rule: K5 concept mismatch, blocked because policy-lab section headers
+  and Event Success live-stage labels have different trailing, color, and
+  wrapping contracts.
+- WO-015 ranked-pair: `EventPolicyLabSectionTitle`, `PreviewLine` — nearest
+  rule: K5 concept mismatch, blocked because policy-lab section headers and
+  Event Success preview/detail copy lines are different concepts.
+- WO-015 ranked-pair: `EventPolicyLabScreen`,
+  `EventSuccessEventPreviewLoadingScreen` — nearest rule: no exact K/R match,
+  blocked because these are separate screen-level compositions.
+- WO-015 ranked-pair: `HostEventManageRouteScreen`, `HostLoadingScreen` —
+  nearest rule: no exact K/R match, blocked because route/provider screens and
+  generic host loading states are not the same abstraction.
+- WO-015 ranked-pair: `EventSuccessEventPreviewLoadingScreen`,
+  `EventSuccessEventPreviewScreen` — nearest rule: no exact K/R match, blocked
+  because loading and loaded preview screens need an Event Success screen-state
+  contract before any merge.
+- WO-015 ranked-pair: `EventSuccessEventPreviewLoadingScreen`,
+  `EventSuccessManualQaScreen` — nearest rule: no exact K/R match, blocked
+  because preview loading and manual-QA screens have different data/workflow
+  ownership.
+- WO-015 ranked-pair: `EditHostedEventRouteScreen`,
+  `HostEventManageRouteScreen` — nearest rule: no exact K/R match, blocked
+  because host route-level screens are architecture decisions, not widget-shape
+  merges.
 
 ## Completed
 

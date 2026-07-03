@@ -1859,3 +1859,56 @@ Known blockers / inherited debt:
 - WO-015 remains open for the remaining 116 ranked-pair-only candidates.
 - No Flutter analyzer or Widgetbook analyzer was run because this batch changed
   only consolidation ledgers and receipts.
+
+## 2026-07-03 - WO-015 ranked-pair ledger batch 3
+
+Scope:
+
+- Triaged ranked-pair-only candidates 58-99 after batch 2.
+- Recorded K4 keeps for eight skeleton/state/small-card pairs:
+  `CompanionStageSkeleton`/`HostChartSkeleton`,
+  `DashboardFocusLoadingCard`/`HostChartSkeleton`,
+  `DashboardLoadingHeader`/`HostSummarySkeleton`,
+  `ReadOnlyHostedEventPolicyCard`/`ReadOnlyHostedEventScheduleCard`,
+  `FirstHelloCheckInCard`/`SelfCheckInCard`,
+  `CompanionPrimaryActionSkeleton`/`HostChartSkeleton`,
+  `HostPaymentAccountErrorCard`/`HostPaymentAccountLoadingCard`, and
+  `StageConversationCueCard`/`StagePromptCard`.
+- Recorded K5/no-exact escalations for the remaining ten pairs in the batch.
+- No production Dart, Widgetbook, generated registry, or visual output changed.
+
+Commands:
+
+- `rg -n "class ReadOnlyHostedEventPolicyCard|class ReadOnlyHostedEventScheduleCard|ReadOnlyHostedEventPolicyCard\\(|ReadOnlyHostedEventScheduleCard\\(" lib widgetbook/lib test --glob "*.dart"`
+- `rg -n "class FirstHelloCheckInCard|class SelfCheckInCard|FirstHelloCheckInCard\\(|SelfCheckInCard\\(" lib widgetbook/lib test --glob "*.dart"`
+- `nl -ba lib/hosts/presentation/edit_hosted_event_screen.dart | sed -n '1200,1365p'`
+- `nl -ba lib/event_success/presentation/companion_parts/event_success_companion_arrival_mission.dart | sed -n '1,130p'`
+- `nl -ba lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart | sed -n '480,610p'`
+- `nl -ba lib/hosts/presentation/payments/host_payment_account_card.dart | sed -n '300,415p'`
+- `nl -ba lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart | sed -n '690,785p'`
+- `node -e '... parse decisions JSON and recompute ranked-pair uncovered count ...'`
+- `git diff --check`
+
+Headline numbers:
+
+| metric | value |
+|---|---:|
+| ranked-pair-only candidates triaged | 18 |
+| K4 keeps recorded | 8 |
+| K5 escalations recorded | 5 |
+| no-exact-match escalations recorded | 5 |
+| rule-authorized merges/deletions | 0 |
+| code changes | 0 |
+| ranked-pair-only candidates still open | 98 |
+
+Verification:
+
+- `decisions.json` parsed successfully.
+- Member-set comparison reported 98 uncovered ranked pairs after this batch.
+- `git diff --check`: passed.
+
+Known blockers / inherited debt:
+
+- WO-015 remains open for the remaining 98 ranked-pair-only candidates.
+- No Flutter analyzer or Widgetbook analyzer was run because this batch changed
+  only consolidation ledgers and receipts.
