@@ -1059,9 +1059,10 @@ and recorded the receipt. Ranked-pair-only candidates still remain open after
 this targeted execution.
 
 Progress by Codex: triaged the next eight ranked-pair-only candidates by member
-set: kept the three Host/User analytics metric/tile/trend pairs under K2,
-kept the branded/plain sheet header pair under K4, and escalated four design/API
-questions (`EditHostedEventPickerTile`/`WhenStepPickerTile`,
+set: the three Host/User analytics metric/tile/trend pairs are now reopened as
+analytics-kit escalations under the v0.2 K2 discriminator, the branded/plain
+sheet header pair remains a K4 keep, and four design/API questions remain
+escalated (`EditHostedEventPickerTile`/`WhenStepPickerTile`,
 `DarkPill`/`EventSuccessDarkPill`, `CatchMetaRow`/`EventPolicyLabSectionTitle`,
 and `CatchTopBarIconAction`/`OverlayIconAction`). No code was changed in this
 ledger-only batch. Ranked-pair-only candidates still remain open after this
@@ -1088,19 +1089,21 @@ questions. No code was changed in this ledger-only batch. Ranked-pair-only
 candidates still remain open after this targeted triage.
 
 Progress by Codex: triaged ranked-pair-only candidates 131-160 by member set.
-Kept one composition-wrapper pair under K1, seven domain-fork pairs under K2,
-and thirteen small/state/skeleton pairs under K4. Escalated eight K5 concept
-mismatches and one no-exact screen-scope/API question. No code was changed in
-this ledger-only batch. Ranked-pair-only candidates still remain open after
-this targeted triage.
+Kept one composition-wrapper pair under K1, five domain-fork pairs under K2,
+and thirteen small/state/skeleton pairs under K4. Reopened two analytics-kit
+candidates under the v0.2 K2 discriminator, escalated eight K5 concept
+mismatches, and escalated one no-exact screen-scope/API question. No code was
+changed in this ledger-only batch. Ranked-pair-only candidates still remain
+open after this targeted triage.
 
 Progress by Codex: triaged the final ranked-pair-only candidates 161-200 by
-member set. Kept one composition-wrapper pair under K1, nine domain-fork pairs
-under K2, and four small/skeleton pairs under K4. Escalated thirteen K5 concept
-mismatches and eleven no-exact screen-scope/API questions. No code was changed
-in this ledger-only batch. Member-set comparison now reports zero uncovered
-ranked pairs, so WO-015 is complete for the amended clusters + ranked-pairs
-scope.
+member set. Kept one composition-wrapper pair under K1, eight domain-fork pairs
+under K2, and four small/skeleton pairs under K4. Reopened one analytics-kit
+candidate under the v0.2 K2 discriminator, escalated thirteen K5 concept
+mismatches, and escalated eleven no-exact screen-scope/API questions. No code
+was changed in this ledger-only batch. Member-set comparison now reports zero
+uncovered ranked pairs, so WO-015 is complete for the amended clusters +
+ranked-pairs scope.
 
 ## WO-016 — Review answers from the WO-001..014 audit
 
@@ -1161,9 +1164,9 @@ Code-level audit of sampled sweep decisions: 3 of 4 sampled keeps verified
 correct against source (dashboard loading cards, count pills, row skeletons —
 K4 applied honestly). One systematic misapplication found and corrected:
 **K2 was applied to the Host/User analytics kit** (MetricTile, TrendPanel,
-MetricGrid, DataQualityPanel, EventTile pairs), whose bodies are
-near-identical presentation over parallel view-model types. Those five
-ledger entries are re-opened as `escalated-analytics-kit`; the rulebook
+MetricGrid, DataQualityPanel, EventTile, and ReportView pairs), whose bodies are
+near-identical presentation over parallel view-model types. Those six ledger
+entries are re-opened as `escalated-analytics-kit`; the rulebook
 gained a K2 discriminator (v0.2.0). The **analytics-kit unification is a
 review-session item** (needs a shared presentation-model API design) — Codex
 must not attempt it.

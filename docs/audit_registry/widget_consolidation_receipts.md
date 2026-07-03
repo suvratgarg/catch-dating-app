@@ -1753,8 +1753,8 @@ Scope:
 
 - Triaged the next eight uncovered ranked-pair-only candidates after the
   Explore empty-state execution.
-- Recorded K2 keeps for the Host/User analytics metric tile, trend panel, and
-  metric grid pairs.
+- Reopened the Host/User analytics metric tile, trend panel, and metric grid
+  pairs as analytics-kit escalations under the v0.2 K2 discriminator.
 - Recorded a K4 keep for `CatchBrandedSheetHeader` /
   `CatchPlainSheetHeader`.
 - Recorded K5/no-exact escalations for the host picker-tile pair,
@@ -1782,7 +1782,8 @@ Headline numbers:
 | metric | value |
 |---|---:|
 | ranked-pair-only candidates triaged | 8 |
-| K2 keeps recorded | 3 |
+| K2 keeps recorded | 0 |
+| analytics-kit escalations recorded | 3 |
 | K4 keeps recorded | 1 |
 | K5 escalations recorded | 2 |
 | no-exact-match escalations recorded | 2 |
@@ -1966,9 +1967,9 @@ Known blockers / inherited debt:
 Scope:
 
 - Triaged ranked-pair-only candidates 131-160 after batch 4.
-- Recorded one K1 keep, seven K2 keeps, and thirteen K4 keeps.
-- Recorded eight K5 escalations and one no-exact escalation for the remaining
-  nine pairs in the batch.
+- Recorded one K1 keep, five K2 keeps, and thirteen K4 keeps.
+- Reopened two analytics-kit candidates under the v0.2 K2 discriminator.
+- Recorded eight K5 escalations and one no-exact escalation.
 - No production Dart, Widgetbook, generated registry, or visual output changed.
 
 Commands:
@@ -1999,7 +2000,8 @@ Headline numbers:
 |---|---:|
 | ranked-pair-only candidates triaged | 30 |
 | K1 keeps recorded | 1 |
-| K2 keeps recorded | 7 |
+| K2 keeps recorded | 5 |
+| analytics-kit escalations recorded | 2 |
 | K3 keeps recorded | 0 |
 | K4 keeps recorded | 13 |
 | K5 escalations recorded | 8 |
@@ -2025,9 +2027,9 @@ Known blockers / inherited debt:
 Scope:
 
 - Triaged the final ranked-pair-only candidates 161-200 after batch 5.
-- Recorded one K1 keep, nine K2 keeps, and four K4 keeps.
-- Recorded thirteen K5 escalations and eleven no-exact escalations for the
-  remaining 24 pairs in the batch.
+- Recorded one K1 keep, eight K2 keeps, and four K4 keeps.
+- Reopened one analytics-kit candidate under the v0.2 K2 discriminator.
+- Recorded thirteen K5 escalations and eleven no-exact escalations.
 - Marked WO-015 complete for its amended clusters + ranked-pairs scope after
   member-set comparison reported zero uncovered ranked pairs.
 - No production Dart, Widgetbook, generated registry, or visual output changed.
@@ -2067,7 +2069,8 @@ Headline numbers:
 |---|---:|
 | ranked-pair-only candidates triaged | 38 |
 | K1 keeps recorded | 1 |
-| K2 keeps recorded | 9 |
+| K2 keeps recorded | 8 |
+| analytics-kit escalations recorded | 1 |
 | K3 keeps recorded | 0 |
 | K4 keeps recorded | 4 |
 | K5 escalations recorded | 13 |
@@ -2087,3 +2090,38 @@ Known blockers / inherited debt:
 - No ranked-pair-only candidates remain open under WO-015's amended scope.
 - No Flutter analyzer or Widgetbook analyzer was run because this batch changed
   only consolidation ledgers and receipts.
+
+## 2026-07-03 - WO-015 K2 discriminator audit integration
+
+Scope:
+
+- Integrated the v0.2.0 K2 discriminator from the parallel audit.
+- Reopened six analytics-kit ledger entries:
+  `HostAnalyticsMetricTile`/`UserAnalyticsMetricTile`,
+  `HostAnalyticsTrendPanel`/`UserAnalyticsTrendPanel`,
+  `HostAnalyticsMetricGrid`/`UserAnalyticsMetricGrid`,
+  `HostAnalyticsDataQualityPanel`/`UserAnalyticsDataQualityPanel`,
+  `AttendedEventTile`/`HostAnalyticsEventTile`, and
+  `HostAnalyticsReportView`/`UserAnalyticsReportView`.
+- Updated WO-015 worklog and receipts so current per-rule counts include
+  analytics-kit escalations rather than stale K2 keeps.
+- No production Dart, Widgetbook, generated registry, or visual output changed.
+
+Commands:
+
+- `git diff -- docs/design_parity/widget_consolidation/consolidation_rules.md`
+- `git diff -- docs/design_parity/widget_consolidation/decisions.json`
+- `rg -n "HostAnalyticsMetricTile/UserAnalyticsMetricTile|HostAnalyticsTrendPanel/UserAnalyticsTrendPanel|HostAnalyticsMetricGrid/UserAnalyticsMetricGrid|HostAnalyticsDataQualityPanel/UserAnalyticsDataQualityPanel|HostAnalyticsReportView/UserAnalyticsReportView|HostAnalyticsBar/UserAnalyticsBar" docs/design_parity/widget_consolidation/decisions.json docs/design_parity/widget_consolidation/codex_worklog.md docs/audit_registry/widget_consolidation_receipts.md`
+- `node -e '... parse decisions JSON and recompute ranked-pair uncovered count ...'`
+- `git diff --check`
+
+Verification:
+
+- `decisions.json` parsed successfully.
+- Member-set comparison still reported 0 uncovered ranked pairs.
+- `git diff --check`: passed.
+
+Known blockers / inherited debt:
+
+- Analytics-kit unification is a review-session API-design item; Codex should
+  not implement a shared host/user analytics kit without that decision.

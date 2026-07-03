@@ -4343,21 +4343,21 @@
     },
     {
       "clusterId": "ranked-pair: HostAnalyticsReportView/UserAnalyticsReportView",
-      "decision": "keep-distinct",
+      "decision": "escalate",
       "members": [
         {
           "name": "HostAnalyticsReportView",
-          "action": "keep"
+          "action": "escalate"
         },
         {
           "name": "UserAnalyticsReportView",
-          "action": "keep"
+          "action": "escalate"
         }
       ],
-      "rationale": "K2 domain fork: host and user analytics report views share high-level chart rhythm but use role-specific metrics, panels, empty states, and event/tip sections.",
-      "decidedBy": "codex-rule:K2",
+      "rationale": "K2 discriminator audit: host and user analytics report views are structurally parallel presentation kits over role-specific analytics view models; reopen for host/user analytics-kit unification review.",
+      "decidedBy": "codex-rule:K2-discriminator",
       "date": "2026-07-03",
-      "status": "recorded-WO-015-ranked-pair"
+      "status": "escalated-analytics-kit"
     },
     {
       "clusterId": "ranked-pair: EventActionCardHeader/ShareCardHeader",
