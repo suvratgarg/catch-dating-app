@@ -7,9 +7,19 @@
       "decision": "absorb-into-existing",
       "canonicalSymbol": "CatchStatColumn",
       "members": [
-        {"name": "RunningStat", "action": "absorb"},
-        {"name": "UserAnalyticsInlineStat", "action": "absorb"},
-        {"name": "HostTrendKpi", "action": "absorb", "note": "monoValue: true"}
+        {
+          "name": "RunningStat",
+          "action": "absorb"
+        },
+        {
+          "name": "UserAnalyticsInlineStat",
+          "action": "absorb"
+        },
+        {
+          "name": "HostTrendKpi",
+          "action": "absorb",
+          "note": "monoValue: true"
+        }
       ],
       "rationale": "Three ad-hoc label/value stat treatments; CatchStatColumn already covers all with monoValue flag. Standardizes stat typography (RunningStat flips from label-first kicker to value-first).",
       "decidedBy": "owner+claude",
@@ -21,8 +31,15 @@
       "decision": "absorb-into-existing",
       "canonicalSymbol": "CatchSectionHeader",
       "members": [
-        {"name": "LiveSectionHeader", "action": "absorb"},
-        {"name": "SetupSectionTitle", "action": "absorb", "note": "heavy: true"}
+        {
+          "name": "LiveSectionHeader",
+          "action": "absorb"
+        },
+        {
+          "name": "SetupSectionTitle",
+          "action": "absorb",
+          "note": "heavy: true"
+        }
       ],
       "rationale": "Title+subtitle section headers; CatchSectionHeader gained an optional subtitle slot. Call sites pass padding: EdgeInsets.zero to stay pixel-faithful.",
       "decidedBy": "owner+claude",
@@ -32,7 +49,12 @@
     {
       "clusterId": "c008-live-section-header (StructureNumberField)",
       "decision": "keep-distinct",
-      "members": [{"name": "StructureNumberField", "action": "keep"}],
+      "members": [
+        {
+          "name": "StructureNumberField",
+          "action": "keep"
+        }
+      ],
       "rationale": "Form-field wrapper (label + detail + child slot), not a stat; coarse fingerprint conflated it. Revisit against labelled.dart/CatchFormFieldLabel in a form-field pass.",
       "decidedBy": "owner+claude",
       "date": "2026-07-03",
@@ -43,8 +65,14 @@
       "decision": "absorb-into-existing",
       "canonicalSymbol": "CatchTopBarIconAction",
       "members": [
-        {"name": "FeedbackIconAction", "action": "absorb"},
-        {"name": "HostOverrideIconAction", "action": "absorb"}
+        {
+          "name": "FeedbackIconAction",
+          "action": "absorb"
+        },
+        {
+          "name": "HostOverrideIconAction",
+          "action": "absorb"
+        }
       ],
       "rationale": "Both re-implement Tooltip+CatchIconButton. Call sites pass size: CatchIconButton.defaultSize (canonical defaults navSize) and foregroundColor. Future candidate: rename CatchTopBarIconAction -> CatchIconAction since it is now used off top bars.",
       "decidedBy": "owner+claude",
@@ -56,10 +84,25 @@
       "decision": "merge-new-primitive",
       "canonicalSymbol": "CatchMetaRow",
       "members": [
-        {"name": "ClubShareMetaRow", "action": "absorb"},
-        {"name": "EventShareMetaRow", "action": "absorb", "note": "accent: -> color:"},
-        {"name": "HostManageMetaItem", "action": "absorb", "note": "color: maps to icon tint; label defaults ink2"},
-        {"name": "StageSectionLabel", "action": "keep", "note": "icon section title, not meta; candidate for CatchSectionHeader icon variant later"}
+        {
+          "name": "ClubShareMetaRow",
+          "action": "absorb"
+        },
+        {
+          "name": "EventShareMetaRow",
+          "action": "absorb",
+          "note": "accent: -> color:"
+        },
+        {
+          "name": "HostManageMetaItem",
+          "action": "absorb",
+          "note": "color: maps to icon tint; label defaults ink2"
+        },
+        {
+          "name": "StageSectionLabel",
+          "action": "keep",
+          "note": "icon section title, not meta; candidate for CatchSectionHeader icon variant later"
+        }
       ],
       "rationale": "One standard icon+label meta treatment (sm icon, labelM ink2, single line) added to catch_meta_row.dart beside CatchMetaDotRow.",
       "decidedBy": "owner+claude",
@@ -71,10 +114,26 @@
       "decision": "merge-new-primitive",
       "canonicalSymbol": "CatchScrim",
       "members": [
-        {"name": "CatchDetailHeroScrim", "action": "absorb", "note": "becomes CatchScrim.detailHero()"},
-        {"name": "ClubPhotoScrim", "action": "absorb", "note": "becomes CatchScrim.photoFrame()"},
-        {"name": "ProfileHeroScrim", "action": "absorb", "note": "becomes CatchScrim.heroTint(base: ...)"},
-        {"name": "CatchEventThumbnailScrimOverlay", "action": "keep", "note": "already a parameterized core primitive tied to thumbnail styles; may delegate to CatchScrim later"}
+        {
+          "name": "CatchDetailHeroScrim",
+          "action": "absorb",
+          "note": "becomes CatchScrim.detailHero()"
+        },
+        {
+          "name": "ClubPhotoScrim",
+          "action": "absorb",
+          "note": "becomes CatchScrim.photoFrame()"
+        },
+        {
+          "name": "ProfileHeroScrim",
+          "action": "absorb",
+          "note": "becomes CatchScrim.heroTint(base: ...)"
+        },
+        {
+          "name": "CatchEventThumbnailScrimOverlay",
+          "action": "keep",
+          "note": "already a parameterized core primitive tied to thumbnail styles; may delegate to CatchScrim later"
+        }
       ],
       "rationale": "Four gradient recipes on one skeleton; centralizing them makes the photo-treatment language a design-system asset and standardizes IgnorePointer wrapping.",
       "decidedBy": "owner+claude",
@@ -85,12 +144,36 @@
       "clusterId": "c009-event-map-empty-state",
       "decision": "delete",
       "members": [
-        {"name": "EventMapEmptyState", "action": "delete", "note": "inline"},
-        {"name": "EventMapNoPinnedEventsState", "action": "delete", "note": "inline"},
-        {"name": "LaunchAccessDisabledView", "action": "delete", "note": "inline"},
-        {"name": "LaunchAccessSignedOutView", "action": "delete", "note": "inline"},
-        {"name": "LaunchAccessStatusView", "action": "delete", "note": "inline incl. status conditionals"},
-        {"name": "ProfileUnavailableBody", "action": "delete", "note": "inline"}
+        {
+          "name": "EventMapEmptyState",
+          "action": "delete",
+          "note": "inline"
+        },
+        {
+          "name": "EventMapNoPinnedEventsState",
+          "action": "delete",
+          "note": "inline"
+        },
+        {
+          "name": "LaunchAccessDisabledView",
+          "action": "delete",
+          "note": "inline"
+        },
+        {
+          "name": "LaunchAccessSignedOutView",
+          "action": "delete",
+          "note": "inline"
+        },
+        {
+          "name": "LaunchAccessStatusView",
+          "action": "delete",
+          "note": "inline incl. status conditionals"
+        },
+        {
+          "name": "ProfileUnavailableBody",
+          "action": "delete",
+          "note": "inline"
+        }
       ],
       "rationale": "All six are thin Center(child: CatchEmptyState(...)) content bindings around the existing primitive. Not components; catalogue noise. Inline at single call sites and delete.",
       "decidedBy": "owner+claude",
@@ -101,8 +184,14 @@
       "clusterId": "c001-error-state",
       "decision": "keep-distinct",
       "members": [
-        {"name": "CatchErrorState", "action": "keep"},
-        {"name": "CatchInlineErrorState", "action": "keep"}
+        {
+          "name": "CatchErrorState",
+          "action": "keep"
+        },
+        {
+          "name": "CatchInlineErrorState",
+          "action": "keep"
+        }
       ],
       "rationale": "Already consolidated internally: both delegate to shared _CatchErrorSpec + CatchErrorBody. Two named entry points (full-screen vs inline) are intentional API ergonomics; merging is churn without UI improvement.",
       "decidedBy": "claude",
@@ -113,8 +202,15 @@
       "clusterId": "c005-layout",
       "decision": "keep-distinct",
       "members": [
-        {"name": "CatchPersonChatLayout", "action": "keep"},
-        {"name": "CatchPersonRosterLayout", "action": "keep", "note": "fix raw `size: 11` -> CatchIcon.micro (token drift vs chat layout)"}
+        {
+          "name": "CatchPersonChatLayout",
+          "action": "keep"
+        },
+        {
+          "name": "CatchPersonRosterLayout",
+          "action": "keep",
+          "note": "fix raw `size: 11` -> CatchIcon.micro (token drift vs chat layout)"
+        }
       ],
       "rationale": "Intentional presentation variants over shared CatchPersonRowData (chat preview with unread emphasis vs roster meta). Merging with flags would be a conditional mess. Real finding is the raw icon size literal.",
       "decidedBy": "claude",
@@ -126,8 +222,14 @@
       "decision": "merge-new-primitive",
       "canonicalSymbol": "CatchAnalyticsBar",
       "members": [
-        {"name": "HostAnalyticsBar", "action": "absorb"},
-        {"name": "UserAnalyticsBar", "action": "absorb"}
+        {
+          "name": "HostAnalyticsBar",
+          "action": "absorb"
+        },
+        {
+          "name": "UserAnalyticsBar",
+          "action": "absorb"
+        }
       ],
       "rationale": "Byte-identical fractional bar-fill across host/user analytics. Note the trend: MetricTile (0.73) and panel pairs suggest a full host/user analytics-kit dedupe pass later.",
       "decidedBy": "claude",
@@ -139,8 +241,14 @@
       "decision": "delete",
       "canonicalSymbol": "EventDetailSocialSkeleton",
       "members": [
-        {"name": "EventDetailSocialSkeleton", "action": "keep"},
-        {"name": "OptimisticSocialSkeleton", "action": "delete"}
+        {
+          "name": "EventDetailSocialSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "OptimisticSocialSkeleton",
+          "action": "delete"
+        }
       ],
       "rationale": "Byte-identical 'Who's going' skeleton duplicated across two files of the same feature.",
       "decidedBy": "claude",
@@ -152,11 +260,31 @@
       "decision": "merge-new-primitive",
       "canonicalSymbol": "CatchSkeletonRows",
       "members": [
-        {"name": "HostEventRowsSkeleton", "action": "absorb", "note": "leading: mediaTile"},
-        {"name": "HostRosterSkeleton", "action": "absorb", "note": "leading: avatar, titled"},
-        {"name": "HostSettingsRowsSkeleton", "action": "absorb", "note": "leading: icon"},
-        {"name": "CompanionPeerListSkeleton", "action": "absorb", "note": "leading: avatar, titled"},
-        {"name": "EventSuccessLiveRosterSkeleton", "action": "absorb", "note": "leading: avatar, titled"}
+        {
+          "name": "HostEventRowsSkeleton",
+          "action": "absorb",
+          "note": "leading: mediaTile"
+        },
+        {
+          "name": "HostRosterSkeleton",
+          "action": "absorb",
+          "note": "leading: avatar, titled"
+        },
+        {
+          "name": "HostSettingsRowsSkeleton",
+          "action": "absorb",
+          "note": "leading: icon"
+        },
+        {
+          "name": "CompanionPeerListSkeleton",
+          "action": "absorb",
+          "note": "leading: avatar, titled"
+        },
+        {
+          "name": "EventSuccessLiveRosterSkeleton",
+          "action": "absorb",
+          "note": "leading: avatar, titled"
+        }
       ],
       "rationale": "Five compositions of the same 'surface + N (leading shape, text lines) rows [+ title]' pattern across three features. One core primitive with a leading-shape enum; standardized text-width jitter (exact per-row widths are skeleton noise).",
       "decidedBy": "claude",
@@ -168,8 +296,14 @@
       "decision": "merge-new-primitive",
       "canonicalSymbol": "CatchSkeletonBoxRow",
       "members": [
-        {"name": "DashboardQuickActionsLoadingRow", "action": "absorb"},
-        {"name": "EventSuccessTabPickerSkeleton", "action": "absorb"}
+        {
+          "name": "DashboardQuickActionsLoadingRow",
+          "action": "absorb"
+        },
+        {
+          "name": "EventSuccessTabPickerSkeleton",
+          "action": "absorb"
+        }
       ],
       "rationale": "Both are 'row of N equal Expanded skeleton boxes with gap' (quick actions, tab pickers). Generic enough for the catch_skeleton.dart convenience family.",
       "decidedBy": "claude",
@@ -181,8 +315,15 @@
       "decision": "merge-new-primitive",
       "canonicalSymbol": "CatchSkeletonChips",
       "members": [
-        {"name": "ClubTagLoadingSkeleton", "action": "absorb"},
-        {"name": "GenderFilterSkeleton", "action": "absorb", "note": "height param stays: chips it stands in for are taller"}
+        {
+          "name": "ClubTagLoadingSkeleton",
+          "action": "absorb"
+        },
+        {
+          "name": "GenderFilterSkeleton",
+          "action": "absorb",
+          "note": "height param stays: chips it stands in for are taller"
+        }
       ],
       "rationale": "Same jittered chip-wrap skeleton with drifted heights (s8 vs s9) and meaningless width jitter differences; standardize jitter, parameterize height.",
       "decidedBy": "claude",
@@ -194,8 +335,15 @@
       "decision": "merge-new-primitive",
       "canonicalSymbol": "EventSuccessSkeletonSurface (feature-level)",
       "members": [
-        {"name": "EventSuccessSkeletonSurface", "action": "keep", "note": "unify params to (titleWidth, textLines, trailingCount)"},
-        {"name": "EventPreviewSectionSkeleton", "action": "absorb"}
+        {
+          "name": "EventSuccessSkeletonSurface",
+          "action": "keep",
+          "note": "unify params to (titleWidth, textLines, trailingCount)"
+        },
+        {
+          "name": "EventPreviewSectionSkeleton",
+          "action": "absorb"
+        }
       ],
       "rationale": "Same titled-surface + text-block + trailing-boxes skeleton, both event_success. Stays feature-level (single-feature composition). Codex must diff bodies below the shared prefix and escalate if not isomorphic.",
       "decidedBy": "claude",
@@ -207,9 +355,20 @@
       "decision": "absorb-into-existing",
       "canonicalSymbol": "CatchShareCardSheet",
       "members": [
-        {"name": "ChatShareCardSheet", "action": "absorb"},
-        {"name": "ShareCardHeader", "action": "keep", "note": "chat card internals, not sheet"},
-        {"name": "ShareCardBubble", "action": "keep", "note": "chat card internals, not sheet"}
+        {
+          "name": "ChatShareCardSheet",
+          "action": "absorb"
+        },
+        {
+          "name": "ShareCardHeader",
+          "action": "keep",
+          "note": "chat card internals, not sheet"
+        },
+        {
+          "name": "ShareCardBubble",
+          "action": "keep",
+          "note": "chat card internals, not sheet"
+        }
       ],
       "rationale": "ChatShareCardSheet hand-rolls capture/grabber/share-button that CatchShareCardSheet already provides (club/event share flows use it in production). Parameter mapping is one-to-one; chat keeps its card widget.",
       "decidedBy": "claude",
@@ -220,20 +379,62 @@
       "clusterId": "group/rotation family (c016, c028, c029, c030, c033, c044, c052 + VisibleGroupRotationSlots pairs)",
       "decision": "keep-distinct",
       "members": [
-        {"name": "GroupOverrideSheet", "action": "keep"},
-        {"name": "RotationOverrideSheet", "action": "keep"},
-        {"name": "GroupOverrideRoundEditor", "action": "keep"},
-        {"name": "RotationOverrideRoundEditor", "action": "keep"},
-        {"name": "GroupOverrideMemberEditor", "action": "keep"},
-        {"name": "RotationOverridePairEditor", "action": "keep"},
-        {"name": "MicroPodsHostCard", "action": "keep"},
-        {"name": "RotationsHostCard", "action": "keep"},
-        {"name": "MicroPodCard", "action": "keep"},
-        {"name": "RotationScheduleCard", "action": "keep"},
-        {"name": "GroupRotationSlotRow", "action": "keep"},
-        {"name": "RevealGroupSlotRow", "action": "keep"},
-        {"name": "VisibleGroupRotationSlots", "action": "keep"},
-        {"name": "VisibleRotationSlots", "action": "keep"}
+        {
+          "name": "GroupOverrideSheet",
+          "action": "keep"
+        },
+        {
+          "name": "RotationOverrideSheet",
+          "action": "keep"
+        },
+        {
+          "name": "GroupOverrideRoundEditor",
+          "action": "keep"
+        },
+        {
+          "name": "RotationOverrideRoundEditor",
+          "action": "keep"
+        },
+        {
+          "name": "GroupOverrideMemberEditor",
+          "action": "keep"
+        },
+        {
+          "name": "RotationOverridePairEditor",
+          "action": "keep"
+        },
+        {
+          "name": "MicroPodsHostCard",
+          "action": "keep"
+        },
+        {
+          "name": "RotationsHostCard",
+          "action": "keep"
+        },
+        {
+          "name": "MicroPodCard",
+          "action": "keep"
+        },
+        {
+          "name": "RotationScheduleCard",
+          "action": "keep"
+        },
+        {
+          "name": "GroupRotationSlotRow",
+          "action": "keep"
+        },
+        {
+          "name": "RevealGroupSlotRow",
+          "action": "keep"
+        },
+        {
+          "name": "VisibleGroupRotationSlots",
+          "action": "keep"
+        },
+        {
+          "name": "VisibleRotationSlots",
+          "action": "keep"
+        }
       ],
       "rationale": "Domain fork, not UI drift: micro-pods vs guided-rotations carry parallel typed rounds (EventSuccessGroupOverrideRound vs RotationOverrideRound) and genuinely different business logic (opt-out semantics, intervals, fairness totals). Generic unification would trade duplication for conditional complexity. Both compose tokenized primitives already. Rule of three: revisit if a third assignment mode appears.",
       "decidedBy": "claude",
@@ -245,8 +446,15 @@
       "decision": "merge-new-primitive",
       "canonicalSymbol": "CatchCountBadge",
       "members": [
-        {"name": "AppShellNavigationBadge", "action": "absorb"},
-        {"name": "CatchTabDockIcon", "action": "keep", "note": "rewrite to delegate its badge overlay to CatchCountBadge"}
+        {
+          "name": "AppShellNavigationBadge",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchTabDockIcon",
+          "action": "keep",
+          "note": "rewrite to delegate its badge overlay to CatchCountBadge"
+        }
       ],
       "rationale": "CatchTabDockIcon copy-pastes the entire count-badge overlay (same layout tokens, same 99+ logic). Promote the overlay as CatchCountBadge(count, child); tab dock icon becomes a thin composition.",
       "decidedBy": "claude",
@@ -257,12 +465,28 @@
       "clusterId": "c018-history-empty-state + c059-message",
       "decision": "delete",
       "members": [
-        {"name": "PaymentHistoryEmptyState", "action": "delete", "note": "inline"},
-        {"name": "ReviewsHistoryEmptyState", "action": "delete", "note": "inline"},
-        {"name": "CalendarMessage", "action": "delete", "note": "inline; keep its style-override set"},
-        {"name": "SavedEventsMessage", "action": "delete", "note": "inline; unify overrides to CalendarMessage's set (fixes eventInfoTileExtent icon-size token misuse)"}
+        {
+          "name": "PaymentHistoryEmptyState",
+          "action": "delete",
+          "note": "inline"
+        },
+        {
+          "name": "ReviewsHistoryEmptyState",
+          "action": "delete",
+          "note": "inline"
+        },
+        {
+          "name": "CalendarMessage",
+          "action": "delete",
+          "note": "inline; keep its style-override set"
+        },
+        {
+          "name": "SavedEventsMessage",
+          "action": "delete",
+          "note": "inline; unify overrides to CalendarMessage's set (fixes eventInfoTileExtent icon-size token misuse)"
+        }
       ],
-      "rationale": "Thin CatchEmptyState wrappers (same policy as c009). CalendarMessage/SavedEventsMessage additionally drifted on typography overrides; standardize both surfaces on the calendar treatment. Recon task: count the CatchScreenBody+Center(CatchEmptyState) pattern repo-wide — if >=4, next batch designs a CatchEmptyState screen variant.",
+      "rationale": "Thin CatchEmptyState wrappers (same policy as c009). CalendarMessage/SavedEventsMessage additionally drifted on typography overrides; standardize both surfaces on the calendar treatment. Recon task: count the CatchScreenBody+Center(CatchEmptyState) pattern repo-wide \u2014 if >=4, next batch designs a CatchEmptyState screen variant.",
       "decidedBy": "claude",
       "date": "2026-07-03",
       "status": "work-order WO-008"
@@ -271,8 +495,16 @@
       "clusterId": "c040-map-pill",
       "decision": "keep-distinct",
       "members": [
-        {"name": "MapPill", "action": "keep", "note": "tokenize raw 0.93 alpha as CatchOpacity.overlayPillFill"},
-        {"name": "PhotoSlotMainBadge", "action": "absorb", "note": "into existing CatchBadge via uppercase + ink/inverse styling"}
+        {
+          "name": "MapPill",
+          "action": "keep",
+          "note": "tokenize raw 0.93 alpha as CatchOpacity.overlayPillFill"
+        },
+        {
+          "name": "PhotoSlotMainBadge",
+          "action": "absorb",
+          "note": "into existing CatchBadge via uppercase + ink/inverse styling"
+        }
       ],
       "rationale": "Different concepts sharing a skeleton: MapPill is a translucent mono overlay pill for imagery (keep; fix raw alpha literal), PhotoSlotMainBadge is a status badge CatchBadge already covers.",
       "decidedBy": "claude",
@@ -283,10 +515,17 @@
       "clusterId": "c006-dialog",
       "decision": "keep-distinct",
       "members": [
-        {"name": "CatchConfirmDialog", "action": "keep", "note": "rewrite internals to delegate shell to CatchFormDialog if shells are copy-pasted"},
-        {"name": "CatchFormDialog", "action": "keep"}
+        {
+          "name": "CatchConfirmDialog",
+          "action": "keep",
+          "note": "rewrite internals to delegate shell to CatchFormDialog if shells are copy-pasted"
+        },
+        {
+          "name": "CatchFormDialog",
+          "action": "keep"
+        }
       ],
-      "rationale": "Two entry points (confirm vs form) are good API ergonomics, same as the error-state pair. The overlay shell (Dialog + CatchSurface + title + actions row) must be shared internally, not duplicated — verify and delegate.",
+      "rationale": "Two entry points (confirm vs form) are good API ergonomics, same as the error-state pair. The overlay shell (Dialog + CatchSurface + title + actions row) must be shared internally, not duplicated \u2014 verify and delegate.",
       "decidedBy": "claude",
       "date": "2026-07-03",
       "status": "work-order WO-010"
@@ -296,8 +535,14 @@
       "decision": "merge-new-primitive",
       "canonicalSymbol": "CatchTabRail<T>",
       "members": [
-        {"name": "HostClubTabRail", "action": "absorb"},
-        {"name": "HostSettingsTabRail", "action": "absorb"}
+        {
+          "name": "HostClubTabRail",
+          "action": "absorb"
+        },
+        {
+          "name": "HostSettingsTabRail",
+          "action": "absorb"
+        }
       ],
       "rationale": "Identical PreferredSizeWidget shells (48-height padded CatchOptionGroup) differing only in option enum. Generic core primitive; tokenizes the raw 48 as CatchLayout.tabRailHeight.",
       "decidedBy": "claude",
@@ -309,9 +554,19 @@
       "decision": "merge-new-primitive",
       "canonicalSymbol": "HostEmptyActionCard (feature-level)",
       "members": [
-        {"name": "HostEmptyState", "action": "absorb"},
-        {"name": "HostProfileMissingState", "action": "absorb", "note": "keeps its ListView wrapper at call site"},
-        {"name": "HostTodayEmptyEvents", "action": "absorb"}
+        {
+          "name": "HostEmptyState",
+          "action": "absorb"
+        },
+        {
+          "name": "HostProfileMissingState",
+          "action": "absorb",
+          "note": "keeps its ListView wrapper at call site"
+        },
+        {
+          "name": "HostTodayEmptyEvents",
+          "action": "absorb"
+        }
       ],
       "rationale": "Same 'surface + sectionTitle + supporting body + CTA actions' empty card three times in hosts. Feature-level for now; promote to core if WO-008 recon shows the pattern is cross-feature.",
       "decidedBy": "claude",
@@ -322,8 +577,14 @@
       "clusterId": "c061-companion-error",
       "decision": "keep-distinct",
       "members": [
-        {"name": "CompanionError", "action": "keep"},
-        {"name": "CompanionMessage", "action": "keep"}
+        {
+          "name": "CompanionError",
+          "action": "keep"
+        },
+        {
+          "name": "CompanionMessage",
+          "action": "keep"
+        }
       ],
       "rationale": "Six-line shared shell around CatchInlineErrorState with clear intent-carrying names; merge value below churn threshold.",
       "decidedBy": "claude",
@@ -334,11 +595,20 @@
       "clusterId": "c021-tab-skeleton",
       "decision": "keep-distinct",
       "members": [
-        {"name": "EventSuccessLiveTabSkeleton", "action": "keep"},
-        {"name": "EventSuccessSetupTabSkeleton", "action": "keep"},
-        {"name": "EventSuccessReportTabSkeleton", "action": "keep"}
+        {
+          "name": "EventSuccessLiveTabSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "EventSuccessSetupTabSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "EventSuccessReportTabSkeleton",
+          "action": "keep"
+        }
       ],
-      "rationale": "Per-tab skeleton compositions; parameterizing would move the same jitter to call sites. Real finding: raw title-width literals (148/190/170/150) instead of CatchLayout.skeletonText* tokens — drift fix in WO-013.",
+      "rationale": "Per-tab skeleton compositions; parameterizing would move the same jitter to call sites. Real finding: raw title-width literals (148/190/170/150) instead of CatchLayout.skeletonText* tokens \u2014 drift fix in WO-013.",
       "decidedBy": "claude",
       "date": "2026-07-03",
       "status": "work-order WO-013 (token fix only)"
@@ -347,12 +617,30 @@
       "clusterId": "c046-profile-tab + c043-dashboard-full + c057-home-screen",
       "decision": "keep-distinct",
       "members": [
-        {"name": "ProfileTab", "action": "keep"},
-        {"name": "ProfileTabContent", "action": "keep"},
-        {"name": "DashboardFull", "action": "keep"},
-        {"name": "DashboardFullSliverBody", "action": "keep"},
-        {"name": "DashboardEmptyHomeScreen", "action": "keep"},
-        {"name": "DashboardHomeScreen", "action": "keep"}
+        {
+          "name": "ProfileTab",
+          "action": "keep"
+        },
+        {
+          "name": "ProfileTabContent",
+          "action": "keep"
+        },
+        {
+          "name": "DashboardFull",
+          "action": "keep"
+        },
+        {
+          "name": "DashboardFullSliverBody",
+          "action": "keep"
+        },
+        {
+          "name": "DashboardEmptyHomeScreen",
+          "action": "keep"
+        },
+        {
+          "name": "DashboardHomeScreen",
+          "action": "keep"
+        }
       ],
       "rationale": "Composition relationships, not duplication: one member instantiates the other (screen wraps its body/content via builder). Fingerprint similarity is pass-through plumbing. Rule K1.",
       "decidedBy": "claude",
@@ -364,8 +652,14 @@
       "decision": "merge-new-primitive",
       "canonicalSymbol": "DirectoryClubCard (feature-level)",
       "members": [
-        {"name": "DirectoryIdentityCard", "action": "absorb"},
-        {"name": "DirectoryPhotoCard", "action": "absorb"}
+        {
+          "name": "DirectoryIdentityCard",
+          "action": "absorb"
+        },
+        {
+          "name": "DirectoryPhotoCard",
+          "action": "absorb"
+        }
       ],
       "rationale": "Same file, identical bodies except the media: argument (polaroid artwork vs photo overlay). Single widget; if call sites pick the variant from photo availability, fold that choice inside (mirroring ClubShareArtwork), else keep a media param.",
       "decidedBy": "claude",
@@ -377,8 +671,15 @@
       "decision": "absorb-into-existing",
       "canonicalSymbol": "PaperTicketDetail",
       "members": [
-        {"name": "PaperTicketDetail", "action": "keep"},
-        {"name": "PaperTicketSerial", "action": "keep", "note": "rewrite build to compute strings then return PaperTicketDetail (accepts value maxLines 1->2)"}
+        {
+          "name": "PaperTicketDetail",
+          "action": "keep"
+        },
+        {
+          "name": "PaperTicketSerial",
+          "action": "keep",
+          "note": "rewrite build to compute strings then return PaperTicketDetail (accepts value maxLines 1->2)"
+        }
       ],
       "rationale": "Serial is Detail with computed content; delegate internally, both APIs stay.",
       "decidedBy": "claude",
@@ -389,8 +690,14 @@
       "clusterId": "c041-celebration-details-card",
       "decision": "keep-distinct",
       "members": [
-        {"name": "CelebrationDetailsCard", "action": "keep"},
-        {"name": "PaperCelebrationDetailsCard", "action": "keep"}
+        {
+          "name": "CelebrationDetailsCard",
+          "action": "keep"
+        },
+        {
+          "name": "PaperCelebrationDetailsCard",
+          "action": "keep"
+        }
       ],
       "rationale": "Deliberate dual art direction (celebration cream overlay vs paper surface) on the known celebration-screen debt file; parameterizing four visual knobs for a 20-line loop is churn.",
       "decidedBy": "claude",
@@ -401,10 +708,22 @@
       "clusterId": "c032/c035 event policy rows",
       "decision": "keep-distinct",
       "members": [
-        {"name": "EventPolicyCancellationRow", "action": "keep"},
-        {"name": "EventPolicyResultRow", "action": "keep"},
-        {"name": "EventPolicyCancellationRows", "action": "keep"},
-        {"name": "EventPolicyResultRows", "action": "keep"}
+        {
+          "name": "EventPolicyCancellationRow",
+          "action": "keep"
+        },
+        {
+          "name": "EventPolicyResultRow",
+          "action": "keep"
+        },
+        {
+          "name": "EventPolicyCancellationRows",
+          "action": "keep"
+        },
+        {
+          "name": "EventPolicyResultRows",
+          "action": "keep"
+        }
       ],
       "rationale": "Typed domain rows in an internal policy lab screen; generics over preview-row models is complexity without user-facing value. Rule K2 (domain fork) on a lab surface.",
       "decidedBy": "claude",
@@ -416,9 +735,21 @@
       "decision": "merge-new-primitive",
       "canonicalSymbol": "EventSuccessHeroSurface (feature-level)",
       "members": [
-        {"name": "EventPreviewHero", "action": "keep", "note": "delegates shell"},
-        {"name": "LabHero", "action": "keep", "note": "delegates shell; keeps its outer Padding/Center/ConstrainedBox"},
-        {"name": "ManualQaHero", "action": "keep", "note": "delegates shell"}
+        {
+          "name": "EventPreviewHero",
+          "action": "keep",
+          "note": "delegates shell"
+        },
+        {
+          "name": "LabHero",
+          "action": "keep",
+          "note": "delegates shell; keeps its outer Padding/Center/ConstrainedBox"
+        },
+        {
+          "name": "ManualQaHero",
+          "action": "keep",
+          "note": "delegates shell"
+        }
       ],
       "rationale": "The accent->ink diagonal gradient hero recipe (gradient + transparent border + contentRelaxed) is copy-pasted across three event_success screens. Extract the shell as a shared feature widget; each hero keeps its content.",
       "decidedBy": "claude",
@@ -429,10 +760,26 @@
       "clusterId": "c015-choice-entry-editor + c017-catch-option-group-item",
       "decision": "keep-distinct",
       "members": [
-        {"name": "ProfileInlineMultiChoiceEntryEditor", "action": "keep", "note": "deferred — generic classes, need type-aware read"},
-        {"name": "ProfileInlineSingleChoiceEntryEditor", "action": "keep", "note": "deferred"},
-        {"name": "CatchOptionGroupItem", "action": "keep", "note": "deferred"},
-        {"name": "ExploreRailLabel", "action": "keep", "note": "deferred — possible overlap with CatchOptionGroup item rendering"}
+        {
+          "name": "ProfileInlineMultiChoiceEntryEditor",
+          "action": "keep",
+          "note": "deferred \u2014 generic classes, need type-aware read"
+        },
+        {
+          "name": "ProfileInlineSingleChoiceEntryEditor",
+          "action": "keep",
+          "note": "deferred"
+        },
+        {
+          "name": "CatchOptionGroupItem",
+          "action": "keep",
+          "note": "deferred"
+        },
+        {
+          "name": "ExploreRailLabel",
+          "action": "keep",
+          "note": "deferred \u2014 possible overlap with CatchOptionGroup item rendering"
+        }
       ],
       "rationale": "Deferred, not decided: classes are generic (class X<T>) and need a proper read in the next batch.",
       "decidedBy": "claude",
@@ -444,9 +791,19 @@
       "decision": "merge-new-primitive",
       "canonicalSymbol": "EventCtaStatusLeading (feature-level)",
       "members": [
-        {"name": "AttendedLeading", "action": "absorb"},
-        {"name": "BookedLeading", "action": "absorb"},
-        {"name": "UnsavedChangesPill", "action": "keep", "note": "warning-dot status indicator, distinct concept and tokens"}
+        {
+          "name": "AttendedLeading",
+          "action": "absorb"
+        },
+        {
+          "name": "BookedLeading",
+          "action": "absorb"
+        },
+        {
+          "name": "UnsavedChangesPill",
+          "action": "keep",
+          "note": "warning-dot status indicator, distinct concept and tokens"
+        }
       ],
       "rationale": "Two content variants of the same CTA leading in the same file; parameterize icon+label. Not promoted to core: CTA-leading is an event-detail concept with 2 uses.",
       "decidedBy": "owner+claude",
@@ -457,10 +814,22 @@
       "clusterId": "c011-event-success-report-metrics-skeleton",
       "decision": "escalate",
       "members": [
-        {"name": "EventSuccessReportMetricsSkeleton", "action": "escalate"},
-        {"name": "EventSuccessSetupControlsSkeleton", "action": "escalate"},
-        {"name": "PaymentConfirmationLoadingScreen", "action": "escalate"},
-        {"name": "ReviewHistoryItemSkeleton", "action": "escalate"}
+        {
+          "name": "EventSuccessReportMetricsSkeleton",
+          "action": "escalate"
+        },
+        {
+          "name": "EventSuccessSetupControlsSkeleton",
+          "action": "escalate"
+        },
+        {
+          "name": "PaymentConfirmationLoadingScreen",
+          "action": "escalate"
+        },
+        {
+          "name": "ReviewHistoryItemSkeleton",
+          "action": "escalate"
+        }
       ],
       "rationale": "Rulebook scope limit: current cluster is scope: screen, so it needs review instead of mechanical merge.",
       "decidedBy": "codex-rule:scope-screen",
@@ -471,8 +840,14 @@
       "clusterId": "c016-loading-screen",
       "decision": "escalate",
       "members": [
-        {"name": "EventSuccessEventPreviewLoadingScreen", "action": "escalate"},
-        {"name": "HostLoadingScreen", "action": "escalate"}
+        {
+          "name": "EventSuccessEventPreviewLoadingScreen",
+          "action": "escalate"
+        },
+        {
+          "name": "HostLoadingScreen",
+          "action": "escalate"
+        }
       ],
       "rationale": "Rulebook scope limit: current cluster is scope: screen, so it needs review instead of mechanical merge.",
       "decidedBy": "codex-rule:scope-screen",
@@ -483,8 +858,14 @@
       "clusterId": "c039-filters-section",
       "decision": "escalate",
       "members": [
-        {"name": "FiltersSection", "action": "escalate"},
-        {"name": "ReadOnlyHostedEventScheduleCard", "action": "escalate"}
+        {
+          "name": "FiltersSection",
+          "action": "escalate"
+        },
+        {
+          "name": "ReadOnlyHostedEventScheduleCard",
+          "action": "escalate"
+        }
       ],
       "rationale": "Rulebook scope limit: current cluster is scope: screen, so it needs review instead of mechanical merge.",
       "decidedBy": "codex-rule:scope-screen",
@@ -495,8 +876,14 @@
       "clusterId": "c043-calendar-stats-header",
       "decision": "escalate",
       "members": [
-        {"name": "CalendarStatsHeader", "action": "escalate"},
-        {"name": "CalendarStatsHeaderSkeleton", "action": "escalate"}
+        {
+          "name": "CalendarStatsHeader",
+          "action": "escalate"
+        },
+        {
+          "name": "CalendarStatsHeaderSkeleton",
+          "action": "escalate"
+        }
       ],
       "rationale": "Rulebook scope limit: current cluster is scope: screen, so it needs review instead of mechanical merge.",
       "decidedBy": "codex-rule:scope-screen",
@@ -507,9 +894,18 @@
       "clusterId": "c048-companion-primary-action-skeleton",
       "decision": "escalate",
       "members": [
-        {"name": "CompanionPrimaryActionSkeleton", "action": "escalate"},
-        {"name": "CompanionStageSkeleton", "action": "escalate"},
-        {"name": "DashboardFocusLoadingCard", "action": "escalate"}
+        {
+          "name": "CompanionPrimaryActionSkeleton",
+          "action": "escalate"
+        },
+        {
+          "name": "CompanionStageSkeleton",
+          "action": "escalate"
+        },
+        {
+          "name": "DashboardFocusLoadingCard",
+          "action": "escalate"
+        }
       ],
       "rationale": "Rulebook scope limit: current cluster is scope: screen, so it needs review instead of mechanical merge.",
       "decidedBy": "codex-rule:scope-screen",
@@ -520,8 +916,14 @@
       "clusterId": "c049-sliver-body",
       "decision": "escalate",
       "members": [
-        {"name": "PreviewTabSkeletonSliverBody", "action": "escalate"},
-        {"name": "PreviewTabSliverBody", "action": "escalate"}
+        {
+          "name": "PreviewTabSkeletonSliverBody",
+          "action": "escalate"
+        },
+        {
+          "name": "PreviewTabSliverBody",
+          "action": "escalate"
+        }
       ],
       "rationale": "Rulebook scope limit: current cluster is scope: screen, so it needs review instead of mechanical merge.",
       "decidedBy": "codex-rule:scope-screen",
@@ -532,8 +934,14 @@
       "clusterId": "c051-footer",
       "decision": "escalate",
       "members": [
-        {"name": "EditHostedEventFooter", "action": "escalate"},
-        {"name": "HostClubEditFooter", "action": "escalate"}
+        {
+          "name": "EditHostedEventFooter",
+          "action": "escalate"
+        },
+        {
+          "name": "HostClubEditFooter",
+          "action": "escalate"
+        }
       ],
       "rationale": "Rulebook scope limit: current cluster is scope: screen, so it needs review instead of mechanical merge.",
       "decidedBy": "codex-rule:scope-screen",
@@ -544,8 +952,14 @@
       "clusterId": "c003-catch-meta-row",
       "decision": "keep-distinct",
       "members": [
-        {"name": "CatchMetaRow", "action": "keep"},
-        {"name": "StageSectionLabel", "action": "keep"}
+        {
+          "name": "CatchMetaRow",
+          "action": "keep"
+        },
+        {
+          "name": "StageSectionLabel",
+          "action": "keep"
+        }
       ],
       "rationale": "Current-registry id for the prior c006 owner decision: StageSectionLabel is an icon section title, not an icon+label meta row; folding it into CatchMetaRow would cross section-title and meta-row concepts.",
       "decidedBy": "owner+claude-reconciled",
@@ -556,8 +970,14 @@
       "clusterId": "c033-event-cta-status-leading",
       "decision": "keep-distinct",
       "members": [
-        {"name": "EventCtaStatusLeading", "action": "keep"},
-        {"name": "UnsavedChangesPill", "action": "keep"}
+        {
+          "name": "EventCtaStatusLeading",
+          "action": "keep"
+        },
+        {
+          "name": "UnsavedChangesPill",
+          "action": "keep"
+        }
       ],
       "rationale": "Current-registry id for the prior small-widget owner decision: UnsavedChangesPill is a warning-dot status indicator with distinct tokens, not an event-detail CTA leading icon+label.",
       "decidedBy": "owner+claude-reconciled",
@@ -566,22 +986,34 @@
     },
     {
       "clusterId": "c044-row",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
-        {"name": "ActivityTypeRow", "action": "escalate"},
-        {"name": "MoreActivityTypesRow", "action": "escalate"}
+        {
+          "name": "ActivityTypeRow",
+          "action": "keep"
+        },
+        {
+          "name": "MoreActivityTypesRow",
+          "action": "keep"
+        }
       ],
-      "rationale": "K5 territory: both share the Semantics/InkWell/DecoratedBox/ConstrainedBox shell, but ActivityTypeRow's body is ActivityDot + titleL label + titleL count with selected semantics while MoreActivityTypesRow's body is kicker '+ n MORE TYPES' + forward arrow expand affordance.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 territory: both share the Semantics/InkWell/DecoratedBox/ConstrainedBox shell, but ActivityTypeRow's body is ActivityDot + titleL label + titleL count with selected semantics while MoreActivityTypesRow's body is kicker '+ n MORE TYPES' + forward arrow expand affordance. REVIEW ANSWER (claude, 2026-07-03): keep-distinct \u2014 divergent semantics would need ~5 knobs to reproduce; churn over value (K4/K5).",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015"
+      "status": "recorded"
     },
     {
       "clusterId": "c004-layout",
       "decision": "keep-distinct",
       "members": [
-        {"name": "CatchPersonChatLayout", "action": "keep"},
-        {"name": "CatchPersonRosterLayout", "action": "keep"}
+        {
+          "name": "CatchPersonChatLayout",
+          "action": "keep"
+        },
+        {
+          "name": "CatchPersonRosterLayout",
+          "action": "keep"
+        }
       ],
       "rationale": "Current-registry id for prior c005-layout decision: chat preview with unread emphasis and roster meta are intentional presentation variants over CatchPersonRowData; the only drift was the raw roster icon size fixed in WO-005.",
       "decidedBy": "owner+claude-reconciled",
@@ -592,8 +1024,14 @@
       "clusterId": "c005-dialog",
       "decision": "keep-distinct",
       "members": [
-        {"name": "CatchConfirmDialog", "action": "keep"},
-        {"name": "CatchFormDialog", "action": "keep"}
+        {
+          "name": "CatchConfirmDialog",
+          "action": "keep"
+        },
+        {
+          "name": "CatchFormDialog",
+          "action": "keep"
+        }
       ],
       "rationale": "Current-registry id for prior c006-dialog/WO-010 decision: confirm and form dialogs remain separate public entry points; full-body inspection rejected direct delegation because action layout and content-slot contracts differ.",
       "decidedBy": "owner+claude-reconciled",
@@ -604,8 +1042,14 @@
       "clusterId": "c009-rows-skeleton",
       "decision": "keep-distinct",
       "members": [
-        {"name": "HostEventRowsSkeleton", "action": "keep"},
-        {"name": "HostSettingsRowsSkeleton", "action": "keep"}
+        {
+          "name": "HostEventRowsSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "HostSettingsRowsSkeleton",
+          "action": "keep"
+        }
       ],
       "rationale": "Current-registry id for WO-006 skipped members: both full bodies use divider-separated rows, while CatchSkeletonRows models gap-separated rows; merging would change structure instead of removing drift.",
       "decidedBy": "codex-wo006-reconciled",
@@ -616,8 +1060,14 @@
       "clusterId": "c013-host-card",
       "decision": "keep-distinct",
       "members": [
-        {"name": "MicroPodsHostCard", "action": "keep"},
-        {"name": "RotationsHostCard", "action": "keep"}
+        {
+          "name": "MicroPodsHostCard",
+          "action": "keep"
+        },
+        {
+          "name": "RotationsHostCard",
+          "action": "keep"
+        }
       ],
       "rationale": "K2 domain fork: micro-pods and guided rotations carry parallel typed business logic and already compose tokenized primitives; generic unification would add conditional complexity.",
       "decidedBy": "codex-rule:K2",
@@ -628,8 +1078,14 @@
       "clusterId": "c021-rotation-slots",
       "decision": "keep-distinct",
       "members": [
-        {"name": "VisibleGroupRotationSlots", "action": "keep"},
-        {"name": "VisibleRotationSlots", "action": "keep"}
+        {
+          "name": "VisibleGroupRotationSlots",
+          "action": "keep"
+        },
+        {
+          "name": "VisibleRotationSlots",
+          "action": "keep"
+        }
       ],
       "rationale": "K2 domain fork: group rotation slots and rotation slots bind to different assignment families with different semantics; keep the public widgets split until a third assignment mode appears.",
       "decidedBy": "codex-rule:K2",
@@ -640,8 +1096,14 @@
       "clusterId": "c022-override-sheet",
       "decision": "keep-distinct",
       "members": [
-        {"name": "GroupOverrideSheet", "action": "keep"},
-        {"name": "RotationOverrideSheet", "action": "keep"}
+        {
+          "name": "GroupOverrideSheet",
+          "action": "keep"
+        },
+        {
+          "name": "RotationOverrideSheet",
+          "action": "keep"
+        }
       ],
       "rationale": "K2 domain fork: group override and rotation override sheets are backed by parallel override model families and different business rules, so a generic sheet would concentrate conditional logic.",
       "decidedBy": "codex-rule:K2",
@@ -652,8 +1114,14 @@
       "clusterId": "c023-override-round-editor",
       "decision": "keep-distinct",
       "members": [
-        {"name": "GroupOverrideRoundEditor", "action": "keep"},
-        {"name": "RotationOverrideRoundEditor", "action": "keep"}
+        {
+          "name": "GroupOverrideRoundEditor",
+          "action": "keep"
+        },
+        {
+          "name": "RotationOverrideRoundEditor",
+          "action": "keep"
+        }
       ],
       "rationale": "K2 domain fork: the round editors operate on EventSuccessGroupOverrideRound versus RotationOverrideRound and differ in opt-out/fairness/interval behavior, not just row chrome.",
       "decidedBy": "codex-rule:K2",
@@ -664,9 +1132,18 @@
       "clusterId": "c017-tab-skeleton",
       "decision": "keep-distinct",
       "members": [
-        {"name": "EventSuccessLiveTabSkeleton", "action": "keep"},
-        {"name": "EventSuccessReportTabSkeleton", "action": "keep"},
-        {"name": "EventSuccessSetupTabSkeleton", "action": "keep"}
+        {
+          "name": "EventSuccessLiveTabSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "EventSuccessReportTabSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "EventSuccessSetupTabSkeleton",
+          "action": "keep"
+        }
       ],
       "rationale": "Current-registry id for prior c021-tab-skeleton/WO-013 decision: per-tab skeleton compositions stay distinct; the actionable drift was raw title-width literals, already tokenized in WO-013.",
       "decidedBy": "owner+claude-reconciled",
@@ -677,8 +1154,14 @@
       "clusterId": "c025-rows",
       "decision": "keep-distinct",
       "members": [
-        {"name": "EventPolicyCancellationRows", "action": "keep"},
-        {"name": "EventPolicyResultRows", "action": "keep"}
+        {
+          "name": "EventPolicyCancellationRows",
+          "action": "keep"
+        },
+        {
+          "name": "EventPolicyResultRows",
+          "action": "keep"
+        }
       ],
       "rationale": "K2 domain fork from the prior event-policy rows decision: typed cancellation/result row groups live in an internal policy lab and generics would add complexity without user-facing value.",
       "decidedBy": "codex-rule:K2",
@@ -689,8 +1172,14 @@
       "clusterId": "c029-row",
       "decision": "keep-distinct",
       "members": [
-        {"name": "EventPolicyCancellationRow", "action": "keep"},
-        {"name": "EventPolicyResultRow", "action": "keep"}
+        {
+          "name": "EventPolicyCancellationRow",
+          "action": "keep"
+        },
+        {
+          "name": "EventPolicyResultRow",
+          "action": "keep"
+        }
       ],
       "rationale": "K2 domain fork from the prior event-policy rows decision: cancellation and result preview rows bind to different policy preview models and should not be unified by generic conditionals.",
       "decidedBy": "codex-rule:K2",
@@ -702,8 +1191,16 @@
       "decision": "merge-new-primitive",
       "canonicalSymbol": "EventSuccessHeroSurface (feature-level)",
       "members": [
-        {"name": "EventPreviewHero", "action": "keep", "note": "delegates shell"},
-        {"name": "ManualQaHero", "action": "keep", "note": "delegates shell"}
+        {
+          "name": "EventPreviewHero",
+          "action": "keep",
+          "note": "delegates shell"
+        },
+        {
+          "name": "ManualQaHero",
+          "action": "keep",
+          "note": "delegates shell"
+        }
       ],
       "rationale": "Current-registry id for prior c045-hero/WO-014 decision: the shared gradient hero shell was extracted as EventSuccessHeroSurface and the public heroes now delegate while keeping their content APIs.",
       "decidedBy": "owner+claude-reconciled",
@@ -714,8 +1211,14 @@
       "clusterId": "c047-home-screen",
       "decision": "keep-distinct",
       "members": [
-        {"name": "DashboardEmptyHomeScreen", "action": "keep"},
-        {"name": "DashboardHomeScreen", "action": "keep"}
+        {
+          "name": "DashboardEmptyHomeScreen",
+          "action": "keep"
+        },
+        {
+          "name": "DashboardHomeScreen",
+          "action": "keep"
+        }
       ],
       "rationale": "K1 composition relationship from prior c046/c043/c057 decision: dashboard home variants are screen composition, not duplicate primitives.",
       "decidedBy": "codex-rule:K1",
@@ -726,8 +1229,14 @@
       "clusterId": "c050-companion-error",
       "decision": "keep-distinct",
       "members": [
-        {"name": "CompanionError", "action": "keep"},
-        {"name": "CompanionMessage", "action": "keep"}
+        {
+          "name": "CompanionError",
+          "action": "keep"
+        },
+        {
+          "name": "CompanionMessage",
+          "action": "keep"
+        }
       ],
       "rationale": "K4 churn threshold from prior c061-companion-error decision: six-line shared shell around CatchInlineErrorState is below the threshold, and the names carry distinct intent.",
       "decidedBy": "codex-rule:K4",
@@ -738,8 +1247,14 @@
       "clusterId": "c026-slot-row",
       "decision": "keep-distinct",
       "members": [
-        {"name": "GroupRotationSlotRow", "action": "keep"},
-        {"name": "RevealGroupSlotRow", "action": "keep"}
+        {
+          "name": "GroupRotationSlotRow",
+          "action": "keep"
+        },
+        {
+          "name": "RevealGroupSlotRow",
+          "action": "keep"
+        }
       ],
       "rationale": "K2 domain fork from the group/rotation family decision: group and reveal rotation slots carry different assignment semantics even though their row chrome is similar.",
       "decidedBy": "codex-rule:K2",
@@ -750,8 +1265,14 @@
       "clusterId": "c034-celebration-details-card",
       "decision": "keep-distinct",
       "members": [
-        {"name": "CelebrationDetailsCard", "action": "keep"},
-        {"name": "PaperCelebrationDetailsCard", "action": "keep"}
+        {
+          "name": "CelebrationDetailsCard",
+          "action": "keep"
+        },
+        {
+          "name": "PaperCelebrationDetailsCard",
+          "action": "keep"
+        }
       ],
       "rationale": "K4 churn threshold from prior c041-celebration-details-card decision: the cards intentionally carry different art direction, and parameterizing the visual knobs is churn.",
       "decidedBy": "codex-rule:K4",
@@ -762,8 +1283,14 @@
       "clusterId": "c036-dashboard-full",
       "decision": "keep-distinct",
       "members": [
-        {"name": "DashboardFull", "action": "keep"},
-        {"name": "DashboardFullSliverBody", "action": "keep"}
+        {
+          "name": "DashboardFull",
+          "action": "keep"
+        },
+        {
+          "name": "DashboardFullSliverBody",
+          "action": "keep"
+        }
       ],
       "rationale": "K1 composition relationship from prior c046/c043/c057 decision: DashboardFull wraps DashboardFullSliverBody, so the similarity is pass-through composition rather than duplication.",
       "decidedBy": "codex-rule:K1",
@@ -774,8 +1301,14 @@
       "clusterId": "c037-card",
       "decision": "keep-distinct",
       "members": [
-        {"name": "MicroPodCard", "action": "keep"},
-        {"name": "RotationScheduleCard", "action": "keep"}
+        {
+          "name": "MicroPodCard",
+          "action": "keep"
+        },
+        {
+          "name": "RotationScheduleCard",
+          "action": "keep"
+        }
       ],
       "rationale": "K2 domain fork from the group/rotation family decision: micro-pod and rotation schedule cards expose different assignment models and business logic.",
       "decidedBy": "codex-rule:K2",
@@ -786,8 +1319,14 @@
       "clusterId": "c038-profile-tab",
       "decision": "keep-distinct",
       "members": [
-        {"name": "ProfileTab", "action": "keep"},
-        {"name": "ProfileTabContent", "action": "keep"}
+        {
+          "name": "ProfileTab",
+          "action": "keep"
+        },
+        {
+          "name": "ProfileTabContent",
+          "action": "keep"
+        }
       ],
       "rationale": "K1 composition relationship from prior c046/c043/c057 decision: ProfileTab instantiates ProfileTabContent, so the match is wrapper/content composition.",
       "decidedBy": "codex-rule:K1",
@@ -798,13 +1337,163 @@
       "clusterId": "c042-editor",
       "decision": "keep-distinct",
       "members": [
-        {"name": "GroupOverrideMemberEditor", "action": "keep"},
-        {"name": "RotationOverridePairEditor", "action": "keep"}
+        {
+          "name": "GroupOverrideMemberEditor",
+          "action": "keep"
+        },
+        {
+          "name": "RotationOverridePairEditor",
+          "action": "keep"
+        }
       ],
       "rationale": "K2 domain fork from the group/rotation family decision: member and pair editors are backed by different override model families and should not be unified by conditional generics.",
       "decidedBy": "codex-rule:K2",
       "date": "2026-07-03",
       "status": "recorded-WO-015"
+    },
+    {
+      "clusterId": "c010-choice-entry-editor",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "ProfileInlineMultiChoiceEntryEditor",
+          "action": "escalate"
+        },
+        {
+          "name": "ProfileInlineSingleChoiceEntryEditor",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "No exact K/R match: both are profile inline choice editors, but single-choice owns nullable selected state and optional empty-selection behavior while multi-choice owns Set<T> state, optional/non-optional removal rules, and patchForLatestProfile handling.",
+      "decidedBy": "codex-rule:no-exact",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015"
+    },
+    {
+      "clusterId": "c012-pill",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "EventSharePill",
+          "action": "escalate"
+        },
+        {
+          "name": "EventSuccessDarkPill",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: EventSharePill is a light share-card metadata pill using primarySoft/labelS/compactLabelContent; EventSuccessDarkPill is a dark editorial overlay pill using editorialLight alpha/labelL/compactControlContent.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015"
+    },
+    {
+      "clusterId": "c014-catch-option-group-item",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "CatchOptionGroupItem",
+          "action": "escalate"
+        },
+        {
+          "name": "ExploreRailLabel",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "No exact K/R match: ExploreRailLabel is structurally close to core CatchOptionGroupItem, but absorbing it requires a core option-item API decision around selectedRule, variant, option typing, and whether explore filter rails are option groups.",
+      "decidedBy": "codex-rule:no-exact",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015"
+    },
+    {
+      "clusterId": "c018-icon",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "CatchErrorIcon",
+          "action": "escalate"
+        },
+        {
+          "name": "PaperCelebrationIcon",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: both render circular icon medallions, but CatchErrorIcon is the core danger/error medallion with configurable extent/iconSize while PaperCelebrationIcon is celebration-specific primary art direction with fixed 64/30 sizing.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015"
+    },
+    {
+      "clusterId": "c028-panel",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "UserAnalyticsDataQualityPanel",
+          "action": "keep"
+        },
+        {
+          "name": "UserAnalyticsTipsPanel",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: the mergeable shell is a small UserAnalyticsSection + CatchSurface + Column loop, but a shared panel would need label, row data, row builder, and separator policy knobs for two intent-carrying analytics concepts.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015"
+    },
+    {
+      "clusterId": "c030-catch-framework-error-debug-details",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "CatchFrameworkErrorDebugDetails",
+          "action": "escalate"
+        },
+        {
+          "name": "SetupDisclosureSection",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: both are expandable disclosure shells, but CatchFrameworkErrorDebugDetails is core developer-error detail UI with danger label and debug text while SetupDisclosureSection is Event Success setup content with title, subtitle, and children.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015"
+    },
+    {
+      "clusterId": "c031-event-detail-policy-summary",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "EventDetailPolicySummary",
+          "action": "keep"
+        },
+        {
+          "name": "WhatToExpectSection",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: both use the same Event Detail surface/title/line spacing shell, but unifying them would require title, data derivation, conditional policy lines, and item-builder knobs for distinct overview concepts.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015"
+    },
+    {
+      "clusterId": "c035-reveal-host-copy",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "RevealHostCopy",
+          "action": "escalate"
+        },
+        {
+          "name": "StructureNumberField",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "No exact K/R match: StructureNumberField was already kept as a form-field wrapper, while RevealHostCopy is event-success copy content; the shared skeleton does not identify one canonical component.",
+      "decidedBy": "codex-rule:no-exact",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015"
     }
   ]
 }
