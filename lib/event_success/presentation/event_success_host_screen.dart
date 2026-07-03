@@ -614,9 +614,18 @@ class _EventSuccessHostSectionState
             rounds: rounds,
           ),
       revealActionState: EventSuccessRevealActionState.resolve(
-        startMutation: startRevealCountdownMutation,
-        revealMutation: revealRoundMutation,
-        resetMutation: resetRevealMutation,
+        startPending: startRevealCountdownMutation.isPending,
+        revealPending: revealRoundMutation.isPending,
+        resetPending: resetRevealMutation.isPending,
+        startError: startRevealCountdownMutation.hasError
+            ? (startRevealCountdownMutation as MutationError).error
+            : null,
+        revealError: revealRoundMutation.hasError
+            ? (revealRoundMutation as MutationError).error
+            : null,
+        resetError: resetRevealMutation.hasError
+            ? (resetRevealMutation as MutationError).error
+            : null,
       ),
       onStartRevealCountdown: (roundIndex, _) =>
           _startEventSuccessRevealCountdown(

@@ -333,6 +333,25 @@
           "role": "HostEventEditScreenState save display, editability, lock, error, and success policy behavior coverage",
           "status": "aligned",
           "lastReviewedPass": "2026-07-02-host-event-edit-screen-state-adapter"
+        },
+        {
+          "path": "lib/event_success/presentation/event_success_live_reveal_card_state.dart",
+          "role": "provider-free Event Success live reveal action-state adapter for countdown, reveal, and reset pending/error display snapshots",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-event-success-live-reveal-action-state"
+        },
+        {
+          "path": "test/event_success/event_success_live_reveal_card_state_test.dart",
+          "role": "EventSuccessRevealActionState pending and error-priority behavior coverage",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-event-success-live-reveal-action-state"
+        },
+        {
+          "path": "test/event_success/event_success_live_screens_test.dart",
+          "role": "Event Success host live reveal behavior coverage for reveal action state, generation, overrides, and ceremony effects",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-event-success-live-reveal-action-state"
         }
       ],
       "variantPatterns": [],
