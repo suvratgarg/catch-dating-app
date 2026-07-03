@@ -1874,6 +1874,150 @@
       "decidedBy": "codex-rule:R2",
       "date": "2026-07-03",
       "status": "executed-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: HostAnalyticsMetricTile/UserAnalyticsMetricTile",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "HostAnalyticsMetricTile",
+          "action": "keep"
+        },
+        {
+          "name": "UserAnalyticsMetricTile",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K2 domain fork: the tiles share the same card skeleton, but they render parallel HostAnalyticsMetricCard/UserAnalyticsMetricCard data, status enums, status-copy rules, and user analytics copy helpers.",
+      "decidedBy": "codex-rule:K2",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: EditHostedEventPickerTile/WhenStepPickerTile",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "EditHostedEventPickerTile",
+          "action": "escalate"
+        },
+        {
+          "name": "WhenStepPickerTile",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "No exact K/R match: the bodies are near-identical host picker tiles, but they live in separate create/edit event surfaces and merging requires a shared host picker-tile contract, file ownership decision, and empty-string behavior standardization.",
+      "decidedBy": "codex-rule:no-exact",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: HostAnalyticsTrendPanel/UserAnalyticsTrendPanel",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "HostAnalyticsTrendPanel",
+          "action": "keep"
+        },
+        {
+          "name": "UserAnalyticsTrendPanel",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K2 domain fork: the trend panels share chart chrome and CatchAnalyticsBar, but they read parallel HostAnalyticsTrendPoint/UserAnalyticsTrendPoint metrics with different metric keys, section shells, and summary stat copy.",
+      "decidedBy": "codex-rule:K2",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: HostAnalyticsMetricGrid/UserAnalyticsMetricGrid",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "HostAnalyticsMetricGrid",
+          "action": "keep"
+        },
+        {
+          "name": "UserAnalyticsMetricGrid",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K2 domain fork: the grid skeleton is shared, but the members render parallel metric-card domains and tile types; the user grid also caps at six cards while the host grid renders the supplied host summary cards.",
+      "decidedBy": "codex-rule:K2",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: DarkPill/EventSuccessDarkPill",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "DarkPill",
+          "action": "escalate"
+        },
+        {
+          "name": "EventSuccessDarkPill",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: both are dark pill shells, but DarkPill is a manual-QA accent-ink pill while EventSuccessDarkPill is a reused Event Success editorial overlay primitive with an optional foreground override and more than ten external usages.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: CatchBrandedSheetHeader/CatchPlainSheetHeader",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "CatchBrandedSheetHeader",
+          "action": "keep"
+        },
+        {
+          "name": "CatchPlainSheetHeader",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: both headers share title/subtitle/trailing structure, but branded sheets own a glyph tile, tighter subtitle gap, and smaller subtitle type while plain sheets are text-first; merging would add variant knobs without reducing meaningful duplication.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: CatchMetaRow/EventPolicyLabSectionTitle",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "CatchMetaRow",
+          "action": "escalate"
+        },
+        {
+          "name": "EventPolicyLabSectionTitle",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: CatchMetaRow is icon plus single-line metadata using labelM/ink2, while EventPolicyLabSectionTitle is a section-title row with md icon, sectionTitle typography, and optional trailing controls.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: CatchTopBarIconAction/OverlayIconAction",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "CatchTopBarIconAction",
+          "action": "escalate"
+        },
+        {
+          "name": "OverlayIconAction",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "No exact K/R match: OverlayIconAction is close to CatchTopBarIconAction, but preserving it requires a reviewed API decision for semantic wrapper ownership, floating-control background alpha, button extent, and row-sized icon support.",
+      "decidedBy": "codex-rule:no-exact",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
     }
   ]
 }

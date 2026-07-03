@@ -1059,6 +1059,15 @@ production and Widgetbook, updated Explore design-contract preview ids to
 and recorded the receipt. Ranked-pair-only candidates still remain open after
 this targeted execution.
 
+Progress by Codex: triaged the next eight ranked-pair-only candidates by member
+set: kept the three Host/User analytics metric/tile/trend pairs under K2,
+kept the branded/plain sheet header pair under K4, and escalated four design/API
+questions (`EditHostedEventPickerTile`/`WhenStepPickerTile`,
+`DarkPill`/`EventSuccessDarkPill`, `CatchMetaRow`/`EventPolicyLabSectionTitle`,
+and `CatchTopBarIconAction`/`OverlayIconAction`). No code was changed in this
+ledger-only batch. Ranked-pair-only candidates still remain open after this
+targeted triage.
+
 ## WO-016 — Review answers from the WO-001..014 audit
 
 1. **`CatchSkeletonRows.divided` flag** (answers the WO-006 skip): add
@@ -1200,6 +1209,23 @@ listed in the receipt.
   `RotationCadenceChips` — nearest rule: no exact K/R match, blocked because
   the shared chip-wrap shape hides different multi-select, questionnaire,
   reveal countdown, and rotation-cadence APIs that need feature-level design.
+- WO-015 ranked-pair: `EditHostedEventPickerTile`, `WhenStepPickerTile` —
+  nearest rule: no exact K/R match, blocked because merging the near-identical
+  host picker tiles requires a shared host picker-tile contract, file ownership
+  decision, and empty-string behavior standardization across create/edit event
+  surfaces.
+- WO-015 ranked-pair: `DarkPill`, `EventSuccessDarkPill` — nearest rule: K5
+  concept mismatch, blocked because the former is a manual-QA accent-ink pill
+  while the latter is an Event Success editorial overlay primitive with an
+  optional foreground override and more than ten external usages.
+- WO-015 ranked-pair: `CatchMetaRow`, `EventPolicyLabSectionTitle` — nearest
+  rule: K5 concept mismatch, blocked because metadata rows and policy-lab
+  section-title rows use different typography, trailing affordance, and icon
+  sizing contracts.
+- WO-015 ranked-pair: `CatchTopBarIconAction`, `OverlayIconAction` — nearest
+  rule: no exact K/R match, blocked because absorbing the overlay action needs
+  reviewed core API support for semantic wrapper ownership, floating-control
+  background alpha, button extent, and row-sized icons.
 
 ## Completed
 

@@ -1746,3 +1746,61 @@ Known blockers / inherited debt:
 - WO-015 remains open for the ranked-pair-only pass beyond this R2 execution.
 - Full Widgetbook package analysis remains blocked by the inherited
   HostOperations fixture errors recorded in the WO-016 receipt.
+
+## 2026-07-03 - WO-015 ranked-pair ledger batch 1
+
+Scope:
+
+- Triaged the next eight uncovered ranked-pair-only candidates after the
+  Explore empty-state execution.
+- Recorded K2 keeps for the Host/User analytics metric tile, trend panel, and
+  metric grid pairs.
+- Recorded a K4 keep for `CatchBrandedSheetHeader` /
+  `CatchPlainSheetHeader`.
+- Recorded K5/no-exact escalations for the host picker-tile pair,
+  dark-pill pair, meta-row/section-title pair, and overlay icon-action pair.
+- No production Dart, Widgetbook, generated registry, or visual output changed.
+
+Commands:
+
+- `dart tool/audit_registry.dart refresh`
+- `node tool/agent/context_pack.mjs --task widget-consolidation-queue --paths docs/design_parity/widget_consolidation,docs/audit_registry/widget_similarity.json,docs/audit_registry/widget_classification.json,docs/audit_registry/consolidation_candidates.json,docs/widget_catalog.md,lib,widgetbook/lib`
+- `node -e '... compare docs/audit_registry/widget_similarity.json rankedPairs against docs/design_parity/widget_consolidation/decisions.json by member set ...'`
+- `rg -n "class HostAnalyticsMetricTile|class UserAnalyticsMetricTile|HostAnalyticsMetricTile\\(|UserAnalyticsMetricTile\\(" lib widgetbook/lib test --glob "*.dart"`
+- `rg -n "class HostAnalyticsTrendPanel|class UserAnalyticsTrendPanel|HostAnalyticsTrendPanel\\(|UserAnalyticsTrendPanel\\(" lib widgetbook/lib test --glob "*.dart"`
+- `rg -n "class HostAnalyticsMetricGrid|class UserAnalyticsMetricGrid|HostAnalyticsMetricGrid\\(|UserAnalyticsMetricGrid\\(" lib widgetbook/lib test --glob "*.dart"`
+- `rg -n "class CatchBrandedSheetHeader|class CatchPlainSheetHeader|CatchBrandedSheetHeader\\(|CatchPlainSheetHeader\\(" lib widgetbook/lib test --glob "*.dart"`
+- `rg -n "class OverlayIconAction|OverlayIconAction\\(|class CatchTopBarIconAction|CatchTopBarIconAction\\(" lib widgetbook/lib test --glob "*.dart"`
+- `node -e '... source-snippet extraction for reviewed ranked-pair members ...'`
+- `node -e '... parse decisions JSON and recompute ranked-pair uncovered count ...'`
+- `git diff --check`
+- `node tool/agent/check_agent_readiness.mjs`
+- `dart tool/audit_registry.dart report`
+
+Headline numbers:
+
+| metric | value |
+|---|---:|
+| ranked-pair-only candidates triaged | 8 |
+| K2 keeps recorded | 3 |
+| K4 keeps recorded | 1 |
+| K5 escalations recorded | 2 |
+| no-exact-match escalations recorded | 2 |
+| rule-authorized merges/deletions | 0 |
+| code changes | 0 |
+| ranked-pair-only candidates still open | 139 |
+| agent readiness score | 100/100 |
+
+Verification:
+
+- `decisions.json` and `widget_similarity.json` parsed successfully.
+- Member-set comparison reported 139 uncovered ranked pairs after this batch.
+- `git diff --check`: passed.
+- `node tool/agent/check_agent_readiness.mjs`: passed at 100/100.
+- `dart tool/audit_registry.dart report`: completed against 3,173 file entries.
+
+Known blockers / inherited debt:
+
+- WO-015 remains open for the remaining 139 ranked-pair-only candidates.
+- No Flutter analyzer or Widgetbook analyzer was run because this batch changed
+  only consolidation ledgers and receipts.
