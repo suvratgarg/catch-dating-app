@@ -12,7 +12,6 @@ import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet_grabber.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/dashboard/shared/quick_actions.dart';
@@ -26,10 +25,13 @@ import 'package:catch_dating_app/payments/domain/payment.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_controller.dart';
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_keys.dart';
+import 'package:catch_dating_app/payments/presentation/payment_confirmation_loading_screen.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+export 'package:catch_dating_app/payments/presentation/payment_confirmation_loading_screen.dart';
 
 class PaymentConfirmationScreen extends ConsumerWidget {
   const PaymentConfirmationScreen({super.key, required this.data});
@@ -64,73 +66,6 @@ class PaymentConfirmationScreen extends ConsumerWidget {
         }
         return PaymentConfirmationBodyController(data: data, event: event);
       },
-    );
-  }
-}
-
-class PaymentConfirmationLoadingScreen extends StatelessWidget {
-  const PaymentConfirmationLoadingScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Scaffold(
-      backgroundColor: t.bg,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: CatchInsets.pageBody,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Center(child: CatchSkeleton.circle(size: CatchIcon.forceUpdate)),
-              gapH24,
-              Center(
-                child: CatchSkeleton.text(
-                  width: CatchLayout.skeletonTextTitleWidth,
-                ),
-              ),
-              gapH12,
-              CatchSkeleton.textBlock(lines: 2),
-              gapH24,
-              CatchSurface(
-                padding: CatchInsets.content,
-                borderColor: t.line,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CatchSkeleton.text(
-                      width: CatchLayout.skeletonTextTitleWidth,
-                    ),
-                    gapH8,
-                    CatchSkeleton.text(
-                      width: CatchLayout.skeletonTextShortWidth,
-                    ),
-                    gapH16,
-                    CatchSkeleton.card(
-                      height: CatchLayout.skeletonCardCompactHeight,
-                    ),
-                  ],
-                ),
-              ),
-              gapH20,
-              Row(
-                children: [
-                  for (var index = 0; index < 3; index++) ...[
-                    Expanded(
-                      child: CatchSkeleton.card(
-                        height: CatchLayout.skeletonCardCompactHeight,
-                      ),
-                    ),
-                    if (index < 2) gapW8,
-                  ],
-                ],
-              ),
-              gapH20,
-              CatchSkeleton.card(height: CatchLayout.buttonLgHeight),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
