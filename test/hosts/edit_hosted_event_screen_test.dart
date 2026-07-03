@@ -333,6 +333,45 @@ void main() {
     expect(empty.pickerInitialLabel, isNull);
   });
 
+  test('HostEventEditFieldDisplayState maps form field display values', () {
+    final state = HostEventEditFieldDisplayState.fromForm(
+      canEdit: true,
+      scheduleLocked: false,
+      selectedDate: DateTime(2026, 5, 22),
+      selectedStartTime: const TimeOfDay(hour: 7, minute: 30),
+      durationMinutes: 75,
+      scheduleErrorText: 'Event start must be in the future.',
+      isDistanceBased: true,
+      startingPoint: const LocationCoordinate(19.08, 72.88),
+      meetingPoint: ' New gate ',
+      locationDetails: ' Blue gate ',
+      distanceText: '7.5',
+      selectedPace: PaceLevel.fast,
+      description: ' Updated route notes ',
+      currencyCode: 'INR',
+      admissionPreset: EventAdmissionPreset.balancedSingles,
+      cohortCapsEnabled: false,
+      dynamicPricingEnabled: true,
+      cancellationPolicyId: EventCancellationPolicyId.flexible,
+    );
+
+    expect(state.schedule.dateValue, '22/05/2026');
+    expect(state.schedule.startTimeValue, '7:30 AM');
+    expect(state.schedule.durationMinutes, 75);
+    expect(state.schedule.errorText, 'Event start must be in the future.');
+    expect(state.locationDetails.location.selectedLabel, 'New gate');
+    expect(state.locationDetails.location.pickerInitialLabel, 'New gate');
+    expect(state.locationDetails.isDistanceBased, isTrue);
+    expect(state.locationDetails.distanceText, '7.5');
+    expect(state.locationDetails.selectedPace, PaceLevel.fast);
+    expect(state.policy.currencyCode, 'INR');
+    expect(state.policy.admissionPreset, EventAdmissionPreset.balancedSingles);
+    expect(state.policy.showDynamicPricingToggle, isTrue);
+    expect(state.policy.showDynamicPricingFields, isTrue);
+    expect(state.policy.showCohortCapsToggle, isFalse);
+    expect(state.policy.cancellationSummary, isNotEmpty);
+  });
+
   test('HostEventEditScheduleValidationState maps start-time validation', () {
     final now = DateTime(2026, 5, 22, 7);
 

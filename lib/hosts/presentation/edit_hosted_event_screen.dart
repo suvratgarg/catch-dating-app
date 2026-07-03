@@ -13,7 +13,6 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
@@ -204,8 +203,6 @@ class EditHostedEventScreen extends ConsumerStatefulWidget {
 
 class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _dateController = TextEditingController();
-  final _startTimeController = TextEditingController();
   final _meetingPointController = TextEditingController();
   final _locationDetailsController = TextEditingController();
   final _distanceController = TextEditingController();
@@ -262,11 +259,6 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
     _meetingLocationPlaceId = meetingLocation?.placeId;
     _selectedPace = event.pace;
 
-    _dateController.text = _formatDate(_selectedDate);
-    _startTimeController.text = AppTimeFormatters.clockTime(
-      hour: _selectedStartTime.hour,
-      minute: _selectedStartTime.minute,
-    );
     _meetingPointController.text = event.locationName;
     _locationDetailsController.text = event.locationNotes ?? '';
     _distanceController.text = EventFormatters.distanceKm(
@@ -306,8 +298,6 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
 
   @override
   void dispose() {
-    _dateController.dispose();
-    _startTimeController.dispose();
     _meetingPointController.dispose();
     _locationDetailsController.dispose();
     _distanceController.dispose();
@@ -333,17 +323,42 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
     final saveError = mutation.hasError
         ? (mutation as MutationError).error
         : null;
+    final canEdit = HostEventEditScreenState.eventCanEdit(widget.event);
+    final scheduleLocked = HostEventEditScreenState.eventScheduleLocked(
+      widget.event,
+      _now,
+    );
+    final fieldState = HostEventEditFieldDisplayState.fromForm(
+      canEdit: canEdit,
+      scheduleLocked: scheduleLocked,
+      selectedDate: _selectedDate,
+      selectedStartTime: _selectedStartTime,
+      durationMinutes: _durationMinutes,
+      scheduleErrorText: _scheduleErrorText,
+      isDistanceBased: widget.event.eventFormat.activityKind.isDistanceBased,
+      startingPoint: _startingPoint,
+      meetingPoint: _meetingPointController.text,
+      locationDetails: _locationDetailsController.text,
+      distanceText: _distanceController.text,
+      selectedPace: _selectedPace,
+      description: _descriptionController.text,
+      currencyCode: widget.event.currency,
+      admissionPreset: _selectedAdmissionPreset,
+      cohortCapsEnabled: _cohortCapsEnabled,
+      dynamicPricingEnabled: _dynamicPricingEnabled,
+      cancellationPolicyId: _selectedCancellationPolicyId,
+    );
     final screenState = HostEventEditScreenState.from(
       event: widget.event,
       now: _now,
       savePending: mutation.isPending,
+      fields: fieldState,
       saveError: saveError,
     );
-    final locationState = HostEventEditLocationState.from(
-      canEdit: screenState.canEdit,
-      startingPoint: _startingPoint,
-      meetingPoint: _meetingPointController.text,
-    );
+    final fields = screenState.fields;
+    final scheduleFields = fields.schedule;
+    final detailsFields = fields.locationDetails;
+    final locationState = detailsFields.location;
     final privateAccessAsync =
         _selectedAdmissionPreset == EventAdmissionPreset.inviteOnly
         ? ref.watch(watchEventPrivateAccessProvider(widget.event.id))
@@ -398,7 +413,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                 EditHostedEventPickerTile(
                   key: CreateEventFormKeys.datePicker,
                   icon: CatchIcons.calendarTodayOutlined,
-                  value: _dateController.text,
+                  value: scheduleFields.dateValue,
                   placeholder: 'Select a date',
                   onTap: () =>
                       _handleIntent(const HostEventEditPickDateIntent()),
@@ -407,15 +422,15 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                 EditHostedEventPickerTile(
                   key: CreateEventFormKeys.timePicker,
                   icon: CatchIcons.scheduleOutlined,
-                  value: _startTimeController.text,
+                  value: scheduleFields.startTimeValue,
                   placeholder: 'Select start time',
                   onTap: () =>
                       _handleIntent(const HostEventEditPickStartTimeIntent()),
                 ),
-                if (_scheduleErrorText != null) ...[
+                if (scheduleFields.hasError) ...[
                   gapH6,
                   Text(
-                    _scheduleErrorText!,
+                    scheduleFields.errorText!,
                     style: CatchTextStyles.supporting(
                       context,
                       color: t.primary,
@@ -426,7 +441,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                 const CatchFormFieldLabel(label: 'Duration', large: true),
                 gapH8,
                 CatchNumberStepper(
-                  value: _durationMinutes,
+                  value: scheduleFields.durationMinutes,
                   min: CatchBusinessRules.eventMinDurationMinutes,
                   max: CatchBusinessRules.eventMaxDurationMinutes,
                   step: CatchBusinessRules.eventDurationStepMinutes,
@@ -481,7 +496,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                 textCapitalization: TextCapitalization.sentences,
                 textInputAction: TextInputAction.next,
               ),
-              if (widget.event.eventFormat.activityKind.isDistanceBased) ...[
+              if (detailsFields.isDistanceBased) ...[
                 gapH24,
                 const CatchFormFieldLabel(label: 'Event details', large: true),
                 gapH8,
@@ -517,7 +532,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                       .map(
                         (pace) => CatchSelectChip(
                           label: pace.label,
-                          active: _selectedPace == pace,
+                          active: detailsFields.selectedPace == pace,
                           enabled: screenState.canEdit,
                           semanticsLabel: 'Select ${pace.label} pace',
                           onTap: screenState.canEdit
@@ -551,7 +566,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                 ReadOnlyHostedEventPolicyCard(event: widget.event)
               else
                 EditableHostedEventPolicyCard(
-                  currencyCode: widget.event.currency,
+                  state: fields.policy,
                   capacityController: _capacityController,
                   priceController: _priceController,
                   minAgeController: _minAgeController,
@@ -561,19 +576,15 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                   inviteCodeController: _inviteCodeController,
                   dynamicPricingStepController: _dynamicPricingStepController,
                   dynamicPricingMaxController: _dynamicPricingMaxController,
-                  admissionPreset: _selectedAdmissionPreset,
                   onAdmissionPresetChanged: (preset) => _handleIntent(
                     HostEventEditAdmissionPresetChangedIntent(preset),
                   ),
-                  cohortCapsEnabled: _cohortCapsEnabled,
                   onCohortCapsEnabledChanged: (value) => _handleIntent(
                     HostEventEditCohortCapsChangedIntent(value),
                   ),
-                  dynamicPricingEnabled: _dynamicPricingEnabled,
                   onDynamicPricingChanged: (value) => _handleIntent(
                     HostEventEditDynamicPricingChangedIntent(value),
                   ),
-                  cancellationPolicyId: _selectedCancellationPolicyId,
                   onCancellationPolicyChanged: (policyId) => _handleIntent(
                     HostEventEditCancellationPolicyChangedIntent(policyId),
                   ),
@@ -608,7 +619,6 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
     ).errorText;
     setState(() {
       _selectedDate = DateUtils.dateOnly(picked);
-      _dateController.text = _formatDate(_selectedDate);
       _scheduleErrorText = scheduleError;
     });
   }
@@ -626,10 +636,6 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
     ).errorText;
     setState(() {
       _selectedStartTime = picked;
-      _startTimeController.text = AppTimeFormatters.clockTime(
-        hour: picked.hour,
-        minute: picked.minute,
-      );
       _scheduleErrorText = scheduleError;
     });
   }
@@ -952,7 +958,7 @@ class EditHostedEventScopeNotice extends StatelessWidget {
 class EditableHostedEventPolicyCard extends StatelessWidget {
   const EditableHostedEventPolicyCard({
     super.key,
-    required this.currencyCode,
+    required this.state,
     required this.capacityController,
     required this.priceController,
     required this.minAgeController,
@@ -962,18 +968,14 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
     required this.inviteCodeController,
     required this.dynamicPricingStepController,
     required this.dynamicPricingMaxController,
-    required this.admissionPreset,
     required this.onAdmissionPresetChanged,
-    required this.cohortCapsEnabled,
     required this.onCohortCapsEnabledChanged,
-    required this.dynamicPricingEnabled,
     required this.onDynamicPricingChanged,
-    required this.cancellationPolicyId,
     required this.onCancellationPolicyChanged,
     required this.privateAccessAsync,
   });
 
-  final String currencyCode;
+  final HostEventEditPolicyFieldState state;
   final TextEditingController capacityController;
   final TextEditingController priceController;
   final TextEditingController minAgeController;
@@ -983,13 +985,9 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
   final TextEditingController inviteCodeController;
   final TextEditingController dynamicPricingStepController;
   final TextEditingController dynamicPricingMaxController;
-  final EventAdmissionPreset admissionPreset;
   final ValueChanged<EventAdmissionPreset> onAdmissionPresetChanged;
-  final bool cohortCapsEnabled;
   final ValueChanged<bool> onCohortCapsEnabledChanged;
-  final bool dynamicPricingEnabled;
   final ValueChanged<bool> onDynamicPricingChanged;
-  final EventCancellationPolicyId cancellationPolicyId;
   final ValueChanged<EventCancellationPolicyId> onCancellationPolicyChanged;
   final CatchAsyncState<EventPrivateAccess?> privateAccessAsync;
 
@@ -1021,7 +1019,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
               gapW12,
               Expanded(
                 child: CatchField.input(
-                  title: 'Base price ($currencyCode)',
+                  title: 'Base price (${state.currencyCode})',
                   controller: priceController,
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
@@ -1031,7 +1029,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                   ],
                   validator: (value) => _moneyRequiredValidator(
                     value,
-                    currencyCode: currencyCode,
+                    currencyCode: state.currencyCode,
                   ),
                 ),
               ),
@@ -1047,7 +1045,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
               for (final preset in EventAdmissionPreset.values)
                 CatchSelectChip(
                   label: preset.label,
-                  active: admissionPreset == preset,
+                  active: state.admissionPreset == preset,
                   semanticsLabel: preset.title,
                   onTap: () => onAdmissionPresetChanged(preset),
                 ),
@@ -1055,10 +1053,10 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
           ),
           gapH8,
           Text(
-            admissionPreset.description,
+            state.admissionDescription,
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
-          if (admissionPreset == EventAdmissionPreset.inviteOnly) ...[
+          if (state.showInviteCode) ...[
             gapH16,
             if (privateAccessAsync.status == CatchAsyncStatus.loading)
               Text(
@@ -1074,21 +1072,19 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9_-]')),
               ],
-              validator: admissionPreset == EventAdmissionPreset.inviteOnly
-                  ? inviteCodeValidator
-                  : null,
+              validator: state.showInviteCode ? inviteCodeValidator : null,
             ),
           ],
-          if (admissionPreset == EventAdmissionPreset.openCapacity) ...[
+          if (state.showCohortCapsToggle) ...[
             gapH12,
             CatchField.toggle(
               title: 'Cohort caps',
               body:
                   'Optionally cap straight men and straight women without making this a separate admission format.',
-              value: cohortCapsEnabled,
+              value: state.cohortCapsEnabled,
               onChanged: onCohortCapsEnabledChanged,
             ),
-            if (cohortCapsEnabled) ...[
+            if (state.showCohortCapsFields) ...[
               gapH12,
               Row(
                 children: [
@@ -1117,29 +1113,29 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
               ),
             ],
           ],
-          if (admissionPreset == EventAdmissionPreset.requestToJoin) ...[
+          if (state.showRequestToJoinCopy) ...[
             gapH12,
             Text(
               'Requests appear in host manage with each person\'s public profile so the host can review fit before confirming spots.',
               style: CatchTextStyles.supporting(context, color: t.ink2),
             ),
           ],
-          if (admissionPreset == EventAdmissionPreset.balancedSingles) ...[
+          if (state.showDynamicPricingToggle) ...[
             gapH12,
             CatchField.toggle(
               title: 'Demand pricing',
               body:
                   'Increase price for the over-demand cohort while preserving the event balance.',
-              value: dynamicPricingEnabled,
+              value: state.dynamicPricingEnabled,
               onChanged: onDynamicPricingChanged,
             ),
-            if (dynamicPricingEnabled) ...[
+            if (state.showDynamicPricingFields) ...[
               gapH12,
               Row(
                 children: [
                   Expanded(
                     child: CatchField.input(
-                      title: 'Step ($currencyCode)',
+                      title: 'Step (${state.currencyCode})',
                       controller: dynamicPricingStepController,
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -1149,7 +1145,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                   gapW12,
                   Expanded(
                     child: CatchField.input(
-                      title: 'Max ($currencyCode)',
+                      title: 'Max (${state.currencyCode})',
                       controller: dynamicPricingMaxController,
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -1206,7 +1202,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
               for (final policyId in EventCancellationPolicyId.values)
                 CatchSelectChip(
                   label: policyFor(policyId).title.toUpperCase(),
-                  active: cancellationPolicyId == policyId,
+                  active: state.cancellationPolicyId == policyId,
                   semanticsLabel: policyFor(policyId).title,
                   onTap: () => onCancellationPolicyChanged(policyId),
                 ),
@@ -1214,7 +1210,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
           ),
           gapH8,
           Text(
-            policyFor(cancellationPolicyId).attendeeSummary,
+            state.cancellationSummary,
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
         ],
@@ -1341,12 +1337,6 @@ class ReadOnlyHostedEventScheduleCard extends StatelessWidget {
       ),
     );
   }
-}
-
-String _formatDate(DateTime date) {
-  return '${date.day.toString().padLeft(2, '0')}/'
-      '${date.month.toString().padLeft(2, '0')}/'
-      '${date.year}';
 }
 
 String? _trimToNull(String value) {
