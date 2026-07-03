@@ -17,6 +17,8 @@ import 'package:catch_dating_app/onboarding/presentation/onboarding_form_keys.da
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/gender_interest_page.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/instagram_page.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/instagram_page_state.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/name_dob_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/name_dob_page_state.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/photos_page.dart';
@@ -450,6 +452,108 @@ void main() {
             .active,
         isTrue,
       );
+    });
+  });
+
+  group('InstagramPage', () {
+    test('state trims continue handles and clears skipped handles', () {
+      final state = OnboardingInstagramState.fromDraft(
+        handle: ' sundayseaface ',
+      );
+
+      expect(state.handleText, ' sundayseaface ');
+      expect(
+        state.continueIntent(handle: state.handleText).instagramHandle,
+        'sundayseaface',
+      );
+      expect(state.continueIntent(handle: '   ').instagramHandle, isNull);
+      expect(state.skipIntent.instagramHandle, isNull);
+    });
+
+    testWidgets('provider-free step forwards continue and skip actions', (
+      tester,
+    ) async {
+      final controllers = OnboardingInstagramTextControllers(
+        handle: TextEditingController(text: 'sundayseaface'),
+      );
+      addTearDown(controllers.handle.dispose);
+      var continueCount = 0;
+      var skipCount = 0;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: OnboardingInstagramStep(
+              controllers: controllers,
+              callbacks: OnboardingInstagramCallbacks(
+                onContinue: () => continueCount += 1,
+                onSkip: () => skipCount += 1,
+              ),
+            ),
+          ),
+        ),
+      );
+      await pumpOnboardingUi(tester);
+
+      await tester.tap(find.widgetWithText(CatchButton, 'Continue'));
+      await tester.tap(find.widgetWithText(CatchButton, 'Skip for now'));
+      await pumpOnboardingUi(tester);
+
+      expect(continueCount, 1);
+      expect(skipCount, 1);
+    });
+
+    testWidgets('continues with a trimmed handle and advances to photos', (
+      tester,
+    ) async {
+      final container = createOnboardingTestContainer();
+      addTearDown(container.dispose);
+      container
+          .read(onboardingControllerProvider.notifier)
+          .goToStep(OnboardingStep.instagram);
+      container
+          .read(onboardingControllerProvider.notifier)
+          .setInstagramHandle(' sundayseaface ');
+
+      await pumpOnboardingPage(
+        tester,
+        container: container,
+        child: const InstagramPage(),
+      );
+
+      await tester.tap(find.widgetWithText(CatchButton, 'Continue'));
+      await pumpOnboardingUi(tester);
+
+      final data = container.read(onboardingControllerProvider);
+      expect(data.step, OnboardingStep.photos);
+      expect(data.instagramHandle, 'sundayseaface');
+    });
+
+    testWidgets('skip clears the handle and advances to photos', (
+      tester,
+    ) async {
+      final container = createOnboardingTestContainer();
+      addTearDown(container.dispose);
+      container
+          .read(onboardingControllerProvider.notifier)
+          .goToStep(OnboardingStep.instagram);
+      container
+          .read(onboardingControllerProvider.notifier)
+          .setInstagramHandle('sundayseaface');
+
+      await pumpOnboardingPage(
+        tester,
+        container: container,
+        child: const InstagramPage(),
+      );
+
+      await tester.tap(find.widgetWithText(CatchButton, 'Skip for now'));
+      await pumpOnboardingUi(tester);
+
+      final data = container.read(onboardingControllerProvider);
+      expect(data.step, OnboardingStep.photos);
+      expect(data.instagramHandle, isNull);
     });
   });
 

@@ -15967,6 +15967,14 @@
             "symbol": "InstagramPage"
           },
           {
+            "file": "lib/onboarding/presentation/pages/instagram_page_state.dart",
+            "symbol": "OnboardingInstagramState"
+          },
+          {
+            "file": "lib/onboarding/presentation/pages/instagram_page.dart",
+            "symbol": "OnboardingInstagramStep"
+          },
+          {
             "file": "lib/onboarding/presentation/pages/photos_page.dart",
             "symbol": "PhotosPage"
           },
@@ -16222,13 +16230,13 @@
           "id": "instagram_step",
           "kind": "populated",
           "status": "captured",
-          "source": "InstagramPage captures the optional verification handle as part of the onboarding profile draft.",
+          "source": "InstagramPage owns the route/provider edge while OnboardingInstagramState and OnboardingInstagramStep own optional handle seed text, trimmed continue intent, skip intent, and typed callbacks.",
           "captureIds": [
             "onboarding_instagram",
             "onboarding_instagram_filled",
             "onboarding_instagram_skipped"
           ],
-          "nextAction": "Deterministic route captures cover default, filled, and skipped handle states. Add invalid-handle coverage only if Instagram validation is introduced, plus state-specific reference variants."
+          "nextAction": "Provider-free step adapter coverage now validates optional-handle trimming, empty-handle normalization, skip clearing, continue callback, and skip callback. Deterministic route captures cover default, filled, and skipped handle states. Add invalid-handle coverage only if Instagram validation is introduced, plus state-specific reference variants."
         },
         {
           "id": "photos_photo_gate",
@@ -16445,7 +16453,7 @@
               "file": "lib/onboarding/presentation/pages/name_dob_page.dart",
               "symbol": "NameDobPage"
             },
-            "currentOwner": "NameDobPage adapter over OnboardingNameDobState + OnboardingNameDobStep; GenderInterestPage + InstagramPage still page-owned",
+            "currentOwner": "NameDobPage adapter over OnboardingNameDobState + OnboardingNameDobStep; InstagramPage adapter over OnboardingInstagramState + OnboardingInstagramStep; GenderInterestPage still page-owned",
             "targetOwner": "provider-free identity step sections",
             "dependencies": [
               "catch.field",
@@ -16460,7 +16468,7 @@
               "required_field_errors",
               "save_profile_mutation"
             ],
-            "migration": "Name/DOB field display data, date policy, validation, and submit intent now live in provider-free adapter state. Move remaining gender/interest and Instagram display data, validation, and save/advance modes into adapter state while preserving step-specific form widgets."
+            "migration": "Name/DOB field display data, date policy, validation, and submit intent now live in provider-free adapter state. Instagram optional-handle display seed and continue/skip intents now live in provider-free adapter state. Move remaining gender/interest display data, validation, and save modes into adapter state while preserving step-specific form widgets."
           },
           {
             "id": "section.onboarding.photos_step",

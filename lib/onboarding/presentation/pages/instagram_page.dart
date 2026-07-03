@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/instagram_page_state.dart';
 import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,7 +22,10 @@ class _InstagramPageState extends ConsumerState<InstagramPage> {
   void initState() {
     super.initState();
     final data = ref.read(onboardingControllerProvider);
-    _controller = TextEditingController(text: data.instagramHandle ?? '');
+    final state = OnboardingInstagramState.fromDraft(
+      handle: data.instagramHandle,
+    );
+    _controller = TextEditingController(text: state.handleText);
   }
 
   @override
@@ -30,12 +34,45 @@ class _InstagramPageState extends ConsumerState<InstagramPage> {
     super.dispose();
   }
 
-  void _submit() {
-    final raw = _controller.text.trim();
+  void _continue() {
+    final intent = OnboardingInstagramState.fromDraft(
+      handle: _controller.text,
+    ).continueIntent(handle: _controller.text);
     ref
         .read(onboardingControllerProvider.notifier)
-        .advanceToPhotos(instagramHandle: raw.isEmpty ? null : raw);
+        .advanceToPhotos(instagramHandle: intent.instagramHandle);
   }
+
+  void _skip() {
+    final intent = OnboardingInstagramState.fromDraft(
+      handle: _controller.text,
+    ).skipIntent;
+    ref
+        .read(onboardingControllerProvider.notifier)
+        .advanceToPhotos(instagramHandle: intent.instagramHandle);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return OnboardingInstagramStep(
+      controllers: OnboardingInstagramTextControllers(handle: _controller),
+      callbacks: OnboardingInstagramCallbacks(
+        onContinue: _continue,
+        onSkip: _skip,
+      ),
+    );
+  }
+}
+
+class OnboardingInstagramStep extends StatelessWidget {
+  const OnboardingInstagramStep({
+    super.key,
+    required this.controllers,
+    required this.callbacks,
+  });
+
+  final OnboardingInstagramTextControllers controllers;
+  final OnboardingInstagramCallbacks callbacks;
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +85,7 @@ class _InstagramPageState extends ConsumerState<InstagramPage> {
         children: [
           CatchButton(
             label: 'Continue',
-            onPressed: _submit,
+            onPressed: callbacks.onContinue,
             fullWidth: true,
             size: CatchButtonSize.lg,
           ),
@@ -56,9 +93,7 @@ class _InstagramPageState extends ConsumerState<InstagramPage> {
           Center(
             child: CatchButton(
               label: 'Skip for now',
-              onPressed: () => ref
-                  .read(onboardingControllerProvider.notifier)
-                  .advanceToPhotos(),
+              onPressed: callbacks.onSkip,
               variant: CatchButtonVariant.ghost,
               size: CatchButtonSize.sm,
               foregroundColor: t.ink2,
@@ -68,11 +103,11 @@ class _InstagramPageState extends ConsumerState<InstagramPage> {
       ),
       children: [
         CatchField.input(
-          controller: _controller,
+          controller: controllers.handle,
           title: 'HANDLE',
           placeholder: '@yourhandle',
           textInputAction: TextInputAction.done,
-          onSubmitted: (_) => _submit(),
+          onSubmitted: (_) => callbacks.onContinue(),
           prefixText: '@',
         ),
       ],
