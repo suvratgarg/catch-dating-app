@@ -4761,8 +4761,8 @@
             },
             {
               "id": "DP-HOST-HOME-002",
-              "status": "open",
-              "nextAction": "Captured signed-out/access, club loading/error/offline, no clubs, Today dashboard, co-host empty events, Events loading/error/offline, text-scale, reduced-motion, and light/dark. Remaining captures are single-owned-only if visually distinct and additional pixel-reference variants."
+              "status": "blocked",
+              "nextAction": "Blocked/reference-only until a visually distinct owner-only variant or additional pixel-reference source exists: signed-out/access, club loading/error/offline, no clubs, Today dashboard, co-host empty events, Events loading/error/offline, text-scale, reduced-motion, and light/dark are captured."
             },
             {
               "id": "DP-HOST-HOME-003",
@@ -4771,8 +4771,8 @@
             },
             {
               "id": "DP-HOST-HOME-004",
-              "status": "open",
-              "nextAction": "Host Today and Host Events-list references and masks are exported and registered. The current registered references are both within advisory threshold: Today 17.48% / 15.54, Events 6.76% / 12.26. Claude references are still needed for loading, empty, role/cohost, offline/error, text-scale, reduced-motion, light/dark, and additional event-list variants."
+              "status": "blocked",
+              "nextAction": "Blocked/reference-only until canonical state-variant exports exist: Host Today and Host Events-list references and masks are exported and registered, and both are within advisory threshold: Today 17.48% / 15.54, Events 6.76% / 12.26. The current Claude sources only provide the base Today and Events compositions; loading, empty, role/cohost, offline/error, text-scale, reduced-motion, light/dark, and additional event-list variants need source exports before reference work can continue."
             }
           ]
         },
