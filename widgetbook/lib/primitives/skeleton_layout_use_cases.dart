@@ -34,6 +34,14 @@ Widget catchSkeletonRowsCatalogStates(BuildContext context) {
           count: 2,
         ),
       ),
+      _StateCard(
+        label: 'divided media tile',
+        child: CatchSkeletonRows(
+          leading: CatchSkeletonRowLeading.mediaTile,
+          count: 2,
+          divided: true,
+        ),
+      ),
     ],
   );
 }

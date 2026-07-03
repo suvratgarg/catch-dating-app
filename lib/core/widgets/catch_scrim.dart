@@ -22,7 +22,7 @@ class CatchScrim extends StatelessWidget {
       _alphas = const [
         CatchOpacity.photoScrimLight,
         CatchOpacity.none,
-        CatchOpacity.eventSuccessSubtleBorder,
+        CatchOpacity.photoFrameEdge,
       ];
 
   /// Profile hero: caller-tinted, readable top and bottom thirds.

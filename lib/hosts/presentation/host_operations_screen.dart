@@ -29,6 +29,7 @@ import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
@@ -187,7 +188,11 @@ class _HostProfileScreenState extends ConsumerState<HostProfileScreen> {
   }) {
     return switch (state) {
       HostProfileEditAuthRequired() => const SizedBox.shrink(),
-      HostProfileEditLoading() => const HostSettingsRowsSkeleton(rowCount: 4),
+      HostProfileEditLoading() => const CatchSkeletonRows(
+        leading: CatchSkeletonRowLeading.icon,
+        count: 4,
+        divided: true,
+      ),
       HostProfileEditError(:final error) => CatchErrorState.fromError(
         error,
         context: AppErrorContext.profile,
@@ -1119,7 +1124,10 @@ class HostTodayLoadingBody extends StatelessWidget {
       children: [
         HostSummarySkeleton(),
         gapH14,
-        HostEventRowsSkeleton(count: 3),
+        CatchSkeletonRows(
+          leading: CatchSkeletonRowLeading.mediaTile,
+          divided: true,
+        ),
       ],
     );
   }
@@ -1573,7 +1581,11 @@ class HostEventsClubSection extends StatelessWidget {
         const HostSectionLabel(label: 'Upcoming'),
         gapH8,
         switch (eventsState.status) {
-          HostHomeEventsStatus.loading => const HostEventRowsSkeleton(),
+          HostHomeEventsStatus.loading => const CatchSkeletonRows(
+            leading: CatchSkeletonRowLeading.mediaTile,
+            count: 2,
+            divided: true,
+          ),
           HostHomeEventsStatus.error => CatchInlineErrorState.fromError(
             eventsState.error!,
             context: AppErrorContext.event,

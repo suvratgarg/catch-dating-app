@@ -225,7 +225,10 @@ class HostSettingsProfileSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return switch (state) {
-      HostSettingsProfileLoading() => const HostSettingsRowsSkeleton(),
+      HostSettingsProfileLoading() => const CatchSkeletonRows(
+        leading: CatchSkeletonRowLeading.icon,
+        divided: true,
+      ),
       HostSettingsProfileError(:final error) => CatchErrorState.fromError(
         error,
         context: AppErrorContext.profile,
@@ -351,8 +354,10 @@ class HostSettingsClubsSection extends StatelessWidget {
       label: 'Clubs you host',
       children: [
         switch (state) {
-          HostSettingsClubsLoading() => const HostSettingsRowsSkeleton(
-            rowCount: 2,
+          HostSettingsClubsLoading() => const CatchSkeletonRows(
+            leading: CatchSkeletonRowLeading.icon,
+            count: 2,
+            divided: true,
           ),
           HostSettingsClubsError(:final error) => CatchErrorState.fromError(
             error,

@@ -135,10 +135,10 @@
           "note": "already a parameterized core primitive tied to thumbnail styles; may delegate to CatchScrim later"
         }
       ],
-      "rationale": "Four gradient recipes on one skeleton; centralizing them makes the photo-treatment language a design-system asset and standardizes IgnorePointer wrapping.",
+      "rationale": "Four gradient recipes on one skeleton; centralizing them makes the photo-treatment language a design-system asset and standardizes IgnorePointer wrapping. WO-016 added CatchOpacity.photoFrameEdge so the photo-frame preset no longer borrows the Event Success border token.",
       "decidedBy": "owner+claude",
       "date": "2026-07-03",
-      "status": "work-order WO-002"
+      "status": "executed-through-WO-016"
     },
     {
       "clusterId": "c009-event-map-empty-state",
@@ -286,10 +286,10 @@
           "note": "leading: avatar, titled"
         }
       ],
-      "rationale": "Five compositions of the same 'surface + N (leading shape, text lines) rows [+ title]' pattern across three features. One core primitive with a leading-shape enum; standardized text-width jitter (exact per-row widths are skeleton noise).",
+      "rationale": "Five compositions of the same 'surface + N (leading shape, text lines) rows [+ title]' pattern across three features. One core primitive with a leading-shape enum; standardized text-width jitter (exact per-row widths are skeleton noise). WO-016 added divided-row support and absorbed the two previously skipped host wrappers.",
       "decidedBy": "claude",
       "date": "2026-07-03",
-      "status": "work-order WO-006"
+      "status": "executed-through-WO-016"
     },
     {
       "clusterId": "ranked-pair: DashboardQuickActionsLoadingRow/EventSuccessTabPickerSkeleton (J=1.0)",
@@ -1040,21 +1040,24 @@
     },
     {
       "clusterId": "c009-rows-skeleton",
-      "decision": "keep-distinct",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchSkeletonRows",
       "members": [
         {
           "name": "HostEventRowsSkeleton",
-          "action": "keep"
+          "action": "absorb",
+          "note": "leading: mediaTile, divided: true"
         },
         {
           "name": "HostSettingsRowsSkeleton",
-          "action": "keep"
+          "action": "absorb",
+          "note": "leading: icon, divided: true"
         }
       ],
-      "rationale": "Current-registry id for WO-006 skipped members: both full bodies use divider-separated rows, while CatchSkeletonRows models gap-separated rows; merging would change structure instead of removing drift.",
-      "decidedBy": "codex-wo006-reconciled",
+      "rationale": "Current-registry id for the WO-006 skipped members. WO-016 added CatchSkeletonRows.divided and absorbed both divider-separated host wrappers into the shared primitive.",
+      "decidedBy": "codex-wo016",
       "date": "2026-07-03",
-      "status": "recorded-WO-015"
+      "status": "executed-through-WO-016"
     },
     {
       "clusterId": "c013-host-card",

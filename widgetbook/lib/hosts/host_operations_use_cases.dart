@@ -787,16 +787,6 @@ Widget hostHomeEventSectionStates(BuildContext context) {
 )
 @widgetbook.UseCase(
   name: 'Skeleton states',
-  type: HostSettingsRowsSkeleton,
-  path: '[P1 product surfaces]/Host operations/Components',
-)
-@widgetbook.UseCase(
-  name: 'Skeleton states',
-  type: HostEventRowsSkeleton,
-  path: '[P1 product surfaces]/Host operations/Components',
-)
-@widgetbook.UseCase(
-  name: 'Skeleton states',
   type: HostAnalyticsReportSkeleton,
   path: '[P1 product surfaces]/Host operations/Components',
 )
@@ -836,9 +826,17 @@ Widget hostLoadingSkeletonCatalogStates(BuildContext context) {
         label: 'row and settings groups',
         child: Column(
           children: [
-            HostEventRowsSkeleton(count: 2),
+            CatchSkeletonRows(
+              leading: CatchSkeletonRowLeading.mediaTile,
+              count: 2,
+              divided: true,
+            ),
             gapH12,
-            HostSettingsRowsSkeleton(rowCount: 2),
+            CatchSkeletonRows(
+              leading: CatchSkeletonRowLeading.icon,
+              count: 2,
+              divided: true,
+            ),
           ],
         ),
       ),
@@ -4685,14 +4683,6 @@ Widget hostStrictHostEventParticipantsPanelCatalogStates(
 )
 Widget hostStrictHostEventRowsCatalogStates(BuildContext context) =>
     hostHomeEventSectionStates(context);
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostEventRowsSkeleton,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostEventRowsSkeletonCatalogStates(BuildContext context) =>
-    hostLoadingSkeletonCatalogStates(context);
 
 @widgetbook.UseCase(
   name: 'Exact catalog',

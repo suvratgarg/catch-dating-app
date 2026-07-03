@@ -1537,3 +1537,88 @@ Known blockers / inherited debt:
 - WO-015 remains open: 13 current similarity clusters still need rule-driven
   decisions, review escalation, or rule-authorized execution by the simple
   cluster ledger check.
+
+## 2026-07-03 - WO-016 divided skeleton rows and photo-frame token
+
+Scope:
+
+- Added `CatchSkeletonRows.divided` to support divider-separated rows inside the
+  existing skeleton-row primitive.
+- Absorbed `HostEventRowsSkeleton` and `HostSettingsRowsSkeleton` into
+  `CatchSkeletonRows` call sites with `leading: mediaTile/icon` and
+  `divided: true`, then removed the two host wrapper classes and stale
+  Widgetbook use cases.
+- Added `CatchOpacity.photoFrameEdge` and switched `CatchScrim.photoFrame` away
+  from the Event Success-specific opacity token.
+- Updated the widget catalog and consolidation decision ledger, regenerated
+  Widgetbook directories, widget classification, dedupe fingerprints, and widget
+  similarity output.
+
+Commands:
+
+- `node tool/agent/context_pack.mjs --task widget-consolidation-wo-016 --paths docs/design_parity/widget_consolidation/decisions.json,docs/design_parity/widget_consolidation/codex_worklog.md,docs/widget_catalog.md,lib/core/widgets/catch_skeleton_layouts.dart,lib/core/widgets/catch_scrim.dart,lib/core/theme/catch_tokens.dart,lib/hosts/presentation/widgets/host_loading_skeletons.dart,lib/hosts/presentation/host_operations_screen.dart,lib/hosts/presentation/host_account_screen.dart,widgetbook/lib/hosts/host_operations_use_cases.dart,widgetbook/lib/primitives/skeleton_layout_use_cases.dart`
+- `dart format lib/core/widgets/catch_skeleton_layouts.dart lib/hosts/presentation/widgets/host_loading_skeletons.dart lib/hosts/presentation/host_operations_screen.dart lib/hosts/presentation/host_account_screen.dart lib/core/theme/catch_tokens.dart lib/core/widgets/catch_scrim.dart widgetbook/lib/hosts/host_operations_use_cases.dart widgetbook/lib/primitives/skeleton_layout_use_cases.dart`
+- `(cd widgetbook && dart run build_runner build --delete-conflicting-outputs)`
+- `flutter analyze --no-fatal-infos lib/core/widgets/catch_skeleton_layouts.dart lib/hosts/presentation/widgets/host_loading_skeletons.dart lib/hosts/presentation/host_operations_screen.dart lib/hosts/presentation/host_account_screen.dart lib/core/theme/catch_tokens.dart lib/core/widgets/catch_scrim.dart`
+- `(cd widgetbook && flutter analyze --no-fatal-infos lib/primitives/skeleton_layout_use_cases.dart lib/main.directories.g.dart)`
+- `flutter analyze --no-fatal-infos lib`
+- `(cd widgetbook && flutter analyze)`
+- `node tool/design/generate_widget_classification.mjs`
+- `node tool/design/check_widget_classification.mjs`
+- `dart run tool/widget_dedupe/bin/extract_fingerprints.dart`
+- `node tool/design/build_widget_similarity.mjs`
+- `node tool/design/build_widget_similarity.mjs --check`
+- `node tool/design/check_widgetbook_coverage.mjs --check`
+- `node tool/design/check_widgetbook_contract_refs.mjs --check`
+- `DART=/Users/suvratgarg/Development/flutter/bin/dart node tool/design/check_widget_dedupe_probes.mjs`
+- `bash tool/widget_cleanup_scan.sh --summary`
+- `node tool/run.mjs check --manifest-only`
+- `node -e "JSON.parse(require('fs').readFileSync('docs/design_parity/widget_consolidation/decisions.json','utf8')); JSON.parse(require('fs').readFileSync('docs/audit_registry/widget_classification.json','utf8')); JSON.parse(require('fs').readFileSync('docs/audit_registry/widget_similarity.json','utf8')); JSON.parse(require('fs').readFileSync('artifacts/widget_dedupe/fingerprints.json','utf8')); console.log('Changed JSON parsed successfully.');"`
+- `git diff --check`
+
+Headline numbers:
+
+| metric | value |
+|---|---:|
+| host skeleton wrapper classes deleted | 2 |
+| production host skeleton call sites migrated | 5 |
+| new skeleton primitive flags | 1 |
+| new opacity tokens | 1 |
+| Widgetbook directory build outputs | 20 |
+| widget classification entries | 1146 |
+| widget classification review items | 45 |
+| private widget classes flagged | 0 |
+| dedupe fingerprints | 1039 |
+| dedupe extraction failures | 0 |
+| similarity clusters | 50 |
+| similarity ranked pairs | 200 |
+| similarity name families | 222 |
+| similarity absorb candidates | 8 |
+| Widgetbook coverage public decision queue | 131 |
+| stale Widgetbook coverage decisions | 0 |
+
+Verification:
+
+- Focused app analyzer for the changed Dart files: clean.
+- Focused Widgetbook analyzer for the changed primitive/generated files: clean.
+- Full app `flutter analyze --no-fatal-infos lib`: passed with 188 inherited
+  info-level diagnostics and no warnings/errors.
+- Full Widgetbook `flutter analyze`: failed with 65 inherited diagnostics in
+  `widgetbook/lib/hosts/host_operations_use_cases.dart`.
+- Widget classification check, similarity check, cleanup scan, manifest check,
+  changed JSON parse, and `git diff --check`: passed.
+- Widgetbook coverage check remains blocked by the existing 131 public
+  catalog-or-replace decisions.
+- Widgetbook contract-reference check remains blocked by existing
+  HostOperations preview-id drift.
+
+Known blockers / inherited debt:
+
+- Full Widgetbook analyzer still fails on the pre-existing HostOperations
+  preview fixture queue, including missing `_HostCreateEventMutationPreview`,
+  stale Host analytics enum types, and outdated constructor calls around lines
+  1068, 3169-3248, 4627-4660, 4816-4847, 5432-5452, and 5530-5542.
+- Full Widgetbook analyzer also reports unused helper warnings in the same
+  HostOperations file that were not introduced by the WO-016 diff.
+- Coverage/contract-reference gates remain blocked by the existing 131-item
+  catalog queue and unknown HostOperations preview IDs.

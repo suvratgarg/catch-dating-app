@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.558
+version: 2.5.559
 updated: 2026-07-03
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.559
+
+- Added divided-row support to `CatchSkeletonRows` and absorbed the host event
+  and settings row skeleton wrappers into the shared primitive.
+- Added `CatchOpacity.photoFrameEdge` for `CatchScrim.photoFrame` so the
+  photo-frame scrim no longer reuses the Event Success border token.
 
 ### 2.5.558
 
@@ -73,9 +80,7 @@ a feature section here only when auditing that feature's widget surface.
   `CatchSkeletonChips` composition primitives; absorbed matching roster,
   tab/action-row, chip, and optimistic social skeleton duplicates; moved the
   shared Event Success section skeleton surface into
-  `event_success_skeletons.dart`. `HostEventRowsSkeleton` and
-  `HostSettingsRowsSkeleton` stay distinct pending a divider-preserving row
-  primitive.
+  `event_success_skeletons.dart`.
 
 ### 2.5.550
 
@@ -5394,9 +5399,9 @@ Generated 2026-05-06.
 | `CatchOptionGroupItem<T>` | `lib/core/widgets/catch_option_group.dart:78` | Direct underline option renderer used by `CatchOptionGroup`. Owns selected/unselected semantics, mono uppercase labels, animated rule padding, selected-rule color, and one-line label truncation. |
 | `CatchSkeleton` | `lib/core/widgets/catch_skeleton.dart:20` | Shimmer-based loading placeholder. Named constructors: `.card()`, `.box()` with optional border color, `.text()`, `.textBlock()`, `.circle()`, `.custom()`. Uses the `shimmer` package with Catch-themed colors. |
 | `CatchSkeletonList` | `lib/core/widgets/catch_skeleton.dart:127` | Convenience widget rendering a vertical column of `count` skeleton cards with configurable spacing. |
-| `CatchSkeletonRows` | `lib/core/widgets/catch_skeleton_layouts.dart:10` | Shared surface-wrapped skeleton row composition for avatar, media-tile, or icon leading rows with optional section-title placeholder. Used for roster/peer-list loading states that do not need row dividers. |
-| `CatchSkeletonBoxRow` | `lib/core/widgets/catch_skeleton_layouts.dart:92` | Equal-width skeleton box row for compact tab pickers and quick-action loading rows. Owns count, height, radius, and gap so repeated action skeletons do not hand-roll row layout. |
-| `CatchSkeletonChips` | `lib/core/widgets/catch_skeleton_layouts.dart:122` | Jittered pill skeleton wrap for loading chip/tag rows. Owns stable widths, spacing, run spacing, and pill radius while callers choose compact/default height. |
+| `CatchSkeletonRows` | `lib/core/widgets/catch_skeleton_layouts.dart:10` | Shared surface-wrapped skeleton row composition for avatar, media-tile, or icon leading rows with optional section-title placeholder and optional divided row separators. Used for roster, peer-list, host event, and host settings loading states. |
+| `CatchSkeletonBoxRow` | `lib/core/widgets/catch_skeleton_layouts.dart:96` | Equal-width skeleton box row for compact tab pickers and quick-action loading rows. Owns count, height, radius, and gap so repeated action skeletons do not hand-roll row layout. |
+| `CatchSkeletonChips` | `lib/core/widgets/catch_skeleton_layouts.dart:126` | Jittered pill skeleton wrap for loading chip/tag rows. Owns stable widths, spacing, run spacing, and pill radius while callers choose compact/default height. |
 | `CatchHorizontalRail` | `lib/core/widgets/catch_horizontal_rail.dart:12` | Section with a `CatchSectionHeader` title and a horizontally-scrolling `ListView.separated` of items. Supports optional trailing content and custom header/list padding for embedded layouts. |
 | `CatchVerticalSection` | `lib/core/widgets/catch_vertical_section.dart:25` | Section with a `CatchSectionHeader` title and a vertical `ListView.separated` of items (non-scrollable, meant for embedding in a parent scroll view). |
 | `CatchLoadingIndicator` | `lib/core/widgets/catch_loading_indicator.dart:3` | Simple centered `CircularProgressIndicator` for use during async loading states. |
@@ -5616,14 +5621,12 @@ Generated 2026-05-06.
 | `HostEventToolCard` | `lib/hosts/presentation/widgets/host_event_tools.dart:208` | Shared operational card for one hosted event. Adapts host event lifecycle, bounded in-card progress, date/time, meet point, booked/waitlist counts, and one contextual CTA into `EventActionCard` using the host palette. |
 | `HostToolPalette` | `lib/hosts/presentation/widgets/host_event_tools.dart:304` | Token-backed host-tool color helper for default host panels and attendance states. Use this instead of local orange-tinted containers for host chrome. |
 | `HostRouteLoadingBody` | `lib/hosts/presentation/widgets/host_loading_skeletons.dart:8` | Host app route loading body. Mirrors the selected-club summary, optional tab rail, event rows, analytics card, and settings rows used across Host Events, Host Clubs, Host Manage, and Host Edit route gates. |
-| `HostSummarySkeleton` | `lib/hosts/presentation/widgets/host_loading_skeletons.dart:34` | Host summary-card skeleton for selected club/event identity, role badges, metadata, and a primary host action placeholder. |
-| `HostTabRailSkeleton` | `lib/hosts/presentation/widgets/host_loading_skeletons.dart:70` | Token-sized segmented/tab rail skeleton used when Host Clubs or Host Manage preserve tab chrome while data resolves. |
-| `HostSettingsRowsSkeleton` | `lib/hosts/presentation/widgets/host_loading_skeletons.dart:97` | Settings/profile row skeleton for Host Account, Host Profile, and Host Clubs field-row waves. Retained separately from `CatchSkeletonRows` because it owns divider separators between rows. |
-| `HostEventRowsSkeleton` | `lib/hosts/presentation/widgets/host_loading_skeletons.dart:144` | Hosted-event list skeleton that mirrors `CatchField` event rows with icon, title, secondary metadata, value lane, and chevron placeholder. Retained separately from `CatchSkeletonRows` because it owns divider separators between rows. |
-| `HostAnalyticsReportSkeleton` | `lib/hosts/presentation/widgets/host_loading_skeletons.dart:195` | Host analytics loading body with metric-grid, chart, and row-summary placeholders for the Insights tab. |
-| `HostAnalyticsMetricGridSkeleton` | `lib/hosts/presentation/widgets/host_loading_skeletons.dart:249` | Two-card metric-grid placeholder used by host analytics loading states. Keeps compact stat-card geometry reviewable independently from the full report skeleton. |
-| `HostChartSkeleton` | `lib/hosts/presentation/widgets/host_loading_skeletons.dart:213` | Reusable host chart placeholder used inside analytics/report loading states. |
-| `HostInlineSkeletonIcon` | `lib/hosts/presentation/widgets/host_loading_skeletons.dart:238` | Compact square skeleton for tiny host inline pending states such as draft-picker delete and private-link metadata loading. |
+| `HostSummarySkeleton` | `lib/hosts/presentation/widgets/host_loading_skeletons.dart:39` | Host summary-card skeleton for selected club/event identity, role badges, metadata, and a primary host action placeholder. |
+| `HostTabRailSkeleton` | `lib/hosts/presentation/widgets/host_loading_skeletons.dart:79` | Token-sized segmented/tab rail skeleton used when Host Clubs or Host Manage preserve tab chrome while data resolves. |
+| `HostAnalyticsReportSkeleton` | `lib/hosts/presentation/widgets/host_loading_skeletons.dart:102` | Host analytics loading body with metric-grid, chart, and shared divided `CatchSkeletonRows` placeholders for the Insights tab. |
+| `HostAnalyticsMetricGridSkeleton` | `lib/hosts/presentation/widgets/host_loading_skeletons.dart:160` | Two-card metric-grid placeholder used by host analytics loading states. Keeps compact stat-card geometry reviewable independently from the full report skeleton. |
+| `HostChartSkeleton` | `lib/hosts/presentation/widgets/host_loading_skeletons.dart:124` | Reusable host chart placeholder used inside analytics/report loading states. |
+| `HostInlineSkeletonIcon` | `lib/hosts/presentation/widgets/host_loading_skeletons.dart:149` | Compact square skeleton for tiny host inline pending states such as draft-picker delete and private-link metadata loading. |
 | `CatchRosterTiles` | `lib/hosts/presentation/widgets/catch_roster_board.dart:39` | Handoff `RosterTiles` filter row for host roster boards. Renders selectable count tiles in functional tones, flips the selected tile to the ink fill, and keeps filter selection provider-free through an optional `onSelect` callback. Registered as formal component contract `catch.roster_tiles`; Widgetbook contract states are the canonical review surface for default, selected, read-only, warning, and danger. |
 | `CatchRosterRow` | `lib/hosts/presentation/widgets/catch_roster_board.dart:199` | Handoff `RosterRow` participant row. Uses a fixed 5/3/3 identity/signal/action grid with `CatchPersonAvatar`, condensed name/meta copy, `CatchBadge` signal, and typed action-cell variants for button, approve/decline, badge, and text outcomes. Registered as formal component contract `catch.roster_row`; Widgetbook contract states are the canonical review surface for button, decision, badge, text, empty-signal, disabled-action, and truncation. |
 | `CatchRosterTable` | `lib/hosts/presentation/widgets/catch_roster_board.dart:416` | Handoff `RosterTable` shell for host roster boards. Owns the hairline table surface, mono three-column header, fixed row proportions matching `CatchRosterRow`, row composition, and built-in empty state. Registered as formal component contract `catch.roster_table`; Widgetbook contract states are the canonical review surface for populated, empty, partial-column, and long-copy tables. |
@@ -5660,7 +5663,7 @@ Generated 2026-05-06.
 | Widget | File | Purpose |
 |---|---|---|
 | `HostProfileEditorSheet` | `lib/hosts/presentation/host_operations_screen.dart:692` | Source-backed Host Account editor sheet. Reuses `HostProfileFields`, watches save pending state, and saves display name, role title, and bio through `HostProfileController` without pushing the full-screen editor route. |
-| `HostProfileScreen` | `lib/hosts/presentation/host_operations_screen.dart:775` | Direct professional host profile editor route registered as `screen.host.profile`. It resolves uid/profile loading through `HostProfileEditState`, renders `HostSettingsRowsSkeleton` for loading, handles error and missing states, syncs display name, role title, bio, and status into controllers, composes provider-free `HostProfileForm` plus shared `HostEmptyActionCard` for the missing-profile branch, routes create/save through `HostProfileController`, exposes a default-disabled `formAutovalidateMode` for deterministic validation captures, and shows save success feedback through `showCatchSnackBar` while keeping navigation behavior at the route edge until a broader route-action adapter exists. |
+| `HostProfileScreen` | `lib/hosts/presentation/host_operations_screen.dart:81` | Direct professional host profile editor route registered as `screen.host.profile`. It resolves uid/profile loading through `HostProfileEditState`, renders divided `CatchSkeletonRows` for loading, handles error and missing states, syncs display name, role title, bio, and status into controllers, composes provider-free `HostProfileForm` plus shared `HostEmptyActionCard` for the missing-profile branch, routes create/save through `HostProfileController`, exposes a default-disabled `formAutovalidateMode` for deterministic validation captures, and shows save success feedback through `showCatchSnackBar` while keeping navigation behavior at the route edge until a broader route-action adapter exists. |
 | `HostClubInsightsState` | `lib/hosts/presentation/host_operations_screen.dart:284` | Immutable Host Clubs analytics state. Owns range, granularity, custom date bounds, selected event scope, provider query derivation, and club-switch event-scope clearing so retry invalidation uses the same `HostAnalyticsQuery` key as the current UI. |
 | `_HostClubInsightsPane` | `lib/hosts/presentation/host_operations_screen.dart:2142` | Host Clubs Insights tab body. Owns local date-picker presentation while delegating analytics range, granularity, custom-date, event-scope, and `hostAnalyticsProvider` query derivation to `HostClubInsightsState`; loading renders `HostAnalyticsReportSkeleton`. A future migration can still split the private analytics sections into a provider-free public section adapter if the design reference requires deeper review states. |
 

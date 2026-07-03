@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 
@@ -23,7 +24,10 @@ class HostRouteLoadingBody extends StatelessWidget {
           children: [
             if (showTabRail) const HostTabRailSkeleton(),
             const HostSummarySkeleton(),
-            const HostEventRowsSkeleton(count: 3),
+            const CatchSkeletonRows(
+              leading: CatchSkeletonRowLeading.mediaTile,
+              divided: true,
+            ),
           ],
         ),
       ),
@@ -94,104 +98,6 @@ class HostTabRailSkeleton extends StatelessWidget {
   }
 }
 
-class HostSettingsRowsSkeleton extends StatelessWidget {
-  const HostSettingsRowsSkeleton({super.key, this.rowCount = 3});
-
-  final int rowCount;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.content,
-      child: Column(
-        children: [
-          for (var i = 0; i < rowCount; i++) ...[
-            Row(
-              children: [
-                CatchSkeleton.box(
-                  width: CatchIcon.md,
-                  height: CatchIcon.md,
-                  radius: CatchRadius.sm,
-                ),
-                gapW12,
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CatchSkeleton.text(width: i == 0 ? 112 : 136),
-                      gapH6,
-                      CatchSkeleton.text(width: i == 1 ? 176 : 148),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            if (i < rowCount - 1) ...[
-              gapH14,
-              Divider(color: t.line, height: 1, thickness: 1),
-              gapH14,
-            ],
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class HostEventRowsSkeleton extends StatelessWidget {
-  const HostEventRowsSkeleton({super.key, this.count = 2});
-
-  final int count;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.content,
-      child: Column(
-        children: [
-          for (var i = 0; i < count; i++) ...[
-            Row(
-              children: [
-                CatchSkeleton.box(
-                  width: CatchLayout.skeletonMediaTileExtent,
-                  height: CatchLayout.skeletonMediaTileExtent,
-                  radius: CatchRadius.sm,
-                ),
-                gapW12,
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CatchSkeleton.text(
-                        width: i == 0
-                            ? CatchLayout.skeletonTextBodyLongWidth
-                            : CatchLayout.skeletonTextDetailWidth,
-                      ),
-                      gapH8,
-                      CatchSkeleton.text(width: i == 1 ? 128 : 166),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            if (i < count - 1) ...[
-              gapH14,
-              Divider(color: t.line, height: 1, thickness: 1),
-              gapH14,
-            ],
-          ],
-        ],
-      ),
-    );
-  }
-}
-
 class HostAnalyticsReportSkeleton extends StatelessWidget {
   const HostAnalyticsReportSkeleton({super.key});
 
@@ -203,8 +109,11 @@ class HostAnalyticsReportSkeleton extends StatelessWidget {
       children: [
         HostAnalyticsMetricGridSkeleton(),
         HostChartSkeleton(),
-        HostEventRowsSkeleton(count: 3),
-        HostSettingsRowsSkeleton(),
+        CatchSkeletonRows(
+          leading: CatchSkeletonRowLeading.mediaTile,
+          divided: true,
+        ),
+        CatchSkeletonRows(leading: CatchSkeletonRowLeading.icon, divided: true),
       ],
     );
   }

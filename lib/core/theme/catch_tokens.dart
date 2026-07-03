@@ -958,6 +958,9 @@ abstract final class CatchOpacity {
   /// Mid-light image scrim stop for hero/photo gradients.
   static const double photoScrimMedium = 0.16;
 
+  /// Bottom-edge alpha for photo-frame scrims.
+  static const double photoFrameEdge = 0.18;
+
   /// Hairline border on subtle-tint containers (date pills, soft badges).
   static const double subtleBorder = 0.22;
 

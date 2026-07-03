@@ -1063,9 +1063,22 @@ changed in this ledger-only batch.
 3. regen + registries + receipts; ledger both under the existing decision
    entries (update status), member-set matching per gotcha 10.
 
-- [ ] divided flag + two absorptions
-- [ ] photoFrameEdge token swap
-- [ ] regen + registries + receipts
+- [x] divided flag + two absorptions
+- [x] photoFrameEdge token swap
+- [x] regen + registries + receipts
+
+Progress by Codex: added `CatchSkeletonRows.divided`, absorbed
+`HostEventRowsSkeleton` and `HostSettingsRowsSkeleton` into the shared
+primitive, added `CatchOpacity.photoFrameEdge`, and switched
+`CatchScrim.photoFrame` to the new token. Widgetbook directories,
+classification, fingerprints, and similarity were regenerated; final registry
+checks and receipt stamping are still in progress.
+
+Receipt by Codex: completed the regeneration and receipt pass. Focused app and
+Widgetbook analyzers for the changed files were clean; full app analyzer stayed
+at the inherited info-only baseline; full Widgetbook analyzer, coverage, and
+contract-reference gates remain blocked by the existing HostOperations queue
+listed in the receipt.
 
 ---
 
@@ -1077,10 +1090,9 @@ changed in this ledger-only batch.
 > below are acknowledged and queued for the next review batch — no further
 > action from Codex.
 
-- WO-002: `CatchScrim.photoFrame` keeps using
-  `CatchOpacity.eventSuccessSubtleBorder` for its bottom-edge alpha to stay
-  pixel-faithful, but the token name is event-success-specific and should be
-  renamed or aliased by the owner in a token pass.
+- WO-002: resolved by WO-016 — `CatchScrim.photoFrame` now uses
+  `CatchOpacity.photoFrameEdge`; `CatchOpacity.eventSuccessSubtleBorder` remains
+  only for Event Success usages.
 - WO-015: `c011-event-success-report-metrics-skeleton` members
   `EventSuccessReportMetricsSkeleton`, `EventSuccessSetupControlsSkeleton`,
   `PaymentConfirmationLoadingScreen`, `ReviewHistoryItemSkeleton` — nearest

@@ -13,11 +13,13 @@ class CatchSkeletonRows extends StatelessWidget {
     this.leading = CatchSkeletonRowLeading.avatar,
     this.count = 3,
     this.titleWidth,
+    this.divided = false,
   });
 
   final CatchSkeletonRowLeading leading;
   final int count;
   final double? titleWidth;
+  final bool divided;
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +57,16 @@ class CatchSkeletonRows extends StatelessWidget {
                 ),
               ],
             ),
-            if (i < count - 1) gapH14,
+            if (i < count - 1)
+              if (divided) ...[
+                gapH14,
+                SizedBox(
+                  width: double.infinity,
+                  child: Divider(color: t.line, height: 1, thickness: 1),
+                ),
+                gapH14,
+              ] else
+                gapH14,
           ],
         ],
       ),
