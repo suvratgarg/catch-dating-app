@@ -452,6 +452,93 @@
       "decidedBy": "owner+claude",
       "date": "2026-07-03",
       "status": "work-order WO-004"
+    },
+    {
+      "clusterId": "c011-event-success-report-metrics-skeleton",
+      "decision": "escalate",
+      "members": [
+        {"name": "EventSuccessReportMetricsSkeleton", "action": "escalate"},
+        {"name": "EventSuccessSetupControlsSkeleton", "action": "escalate"},
+        {"name": "PaymentConfirmationLoadingScreen", "action": "escalate"},
+        {"name": "ReviewHistoryItemSkeleton", "action": "escalate"}
+      ],
+      "rationale": "Rulebook scope limit: current cluster is scope: screen, so it needs review instead of mechanical merge.",
+      "decidedBy": "codex-rule:scope-screen",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015"
+    },
+    {
+      "clusterId": "c016-loading-screen",
+      "decision": "escalate",
+      "members": [
+        {"name": "EventSuccessEventPreviewLoadingScreen", "action": "escalate"},
+        {"name": "HostLoadingScreen", "action": "escalate"}
+      ],
+      "rationale": "Rulebook scope limit: current cluster is scope: screen, so it needs review instead of mechanical merge.",
+      "decidedBy": "codex-rule:scope-screen",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015"
+    },
+    {
+      "clusterId": "c039-filters-section",
+      "decision": "escalate",
+      "members": [
+        {"name": "FiltersSection", "action": "escalate"},
+        {"name": "ReadOnlyHostedEventScheduleCard", "action": "escalate"}
+      ],
+      "rationale": "Rulebook scope limit: current cluster is scope: screen, so it needs review instead of mechanical merge.",
+      "decidedBy": "codex-rule:scope-screen",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015"
+    },
+    {
+      "clusterId": "c043-calendar-stats-header",
+      "decision": "escalate",
+      "members": [
+        {"name": "CalendarStatsHeader", "action": "escalate"},
+        {"name": "CalendarStatsHeaderSkeleton", "action": "escalate"}
+      ],
+      "rationale": "Rulebook scope limit: current cluster is scope: screen, so it needs review instead of mechanical merge.",
+      "decidedBy": "codex-rule:scope-screen",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015"
+    },
+    {
+      "clusterId": "c048-companion-primary-action-skeleton",
+      "decision": "escalate",
+      "members": [
+        {"name": "CompanionPrimaryActionSkeleton", "action": "escalate"},
+        {"name": "CompanionStageSkeleton", "action": "escalate"},
+        {"name": "DashboardFocusLoadingCard", "action": "escalate"}
+      ],
+      "rationale": "Rulebook scope limit: current cluster is scope: screen, so it needs review instead of mechanical merge.",
+      "decidedBy": "codex-rule:scope-screen",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015"
+    },
+    {
+      "clusterId": "c049-sliver-body",
+      "decision": "escalate",
+      "members": [
+        {"name": "PreviewTabSkeletonSliverBody", "action": "escalate"},
+        {"name": "PreviewTabSliverBody", "action": "escalate"}
+      ],
+      "rationale": "Rulebook scope limit: current cluster is scope: screen, so it needs review instead of mechanical merge.",
+      "decidedBy": "codex-rule:scope-screen",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015"
+    },
+    {
+      "clusterId": "c051-footer",
+      "decision": "escalate",
+      "members": [
+        {"name": "EditHostedEventFooter", "action": "escalate"},
+        {"name": "HostClubEditFooter", "action": "escalate"}
+      ],
+      "rationale": "Rulebook scope limit: current cluster is scope: screen, so it needs review instead of mechanical merge.",
+      "decidedBy": "codex-rule:scope-screen",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015"
     }
   ]
 }

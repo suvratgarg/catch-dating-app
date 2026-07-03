@@ -987,6 +987,44 @@ Known blockers / inherited debt:
   wrapper attempted SDK cache writes outside the workspace before reporting
   `Widget dedupe probes passed`.
 
+## 2026-07-03 — WO-015 rule triage batch 1
+
+Scope:
+
+- Read `docs/design_parity/widget_consolidation/consolidation_rules.md`.
+- Applied the rulebook's screen-scope limit to current
+  `docs/audit_registry/widget_similarity.json` clusters.
+- Added seven `codex-rule:scope-screen` escalation entries to
+  `docs/design_parity/widget_consolidation/decisions.json`.
+- Added matching Escalations lines to
+  `docs/design_parity/widget_consolidation/codex_worklog.md`.
+- No production code changed in this ledger-only batch.
+
+Escalated screen clusters:
+
+- `c011-event-success-report-metrics-skeleton`
+- `c016-loading-screen`
+- `c039-filters-section`
+- `c043-calendar-stats-header`
+- `c048-companion-primary-action-skeleton`
+- `c049-sliver-body`
+- `c051-footer`
+
+Commands:
+
+- `node tool/agent/context_pack.mjs --task widget-consolidation-wo-015 --paths docs/design_parity/widget_consolidation/consolidation_rules.md,docs/design_parity/widget_consolidation/decisions.json,docs/audit_registry/widget_similarity.json,docs/design_parity/widget_consolidation/codex_worklog.md,docs/audit_registry/widget_consolidation_receipts.md`
+- `node -e "JSON.parse(require('fs').readFileSync('docs/design_parity/widget_consolidation/decisions.json','utf8')); console.log('decisions json ok');"`
+- unresolved-candidate recount script against `widget_similarity.json` and
+  `decisions.json`
+
+Headline numbers:
+
+| metric | before | after |
+|---|---:|---:|
+| screen-scope escalations recorded by Codex | 0 | 7 |
+| unresolved clusters | 29 | 22 |
+| unresolved ranked pairs | 179 | 172 |
+
 ## 2026-07-03 WO-008 Empty-state wrapper inlines
 
 Scope:

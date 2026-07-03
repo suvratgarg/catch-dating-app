@@ -972,6 +972,13 @@ in `docs/audit_registry/widget_similarity.json` that has NO entry in
 - [ ] rule-authorized executions in batches
 - [ ] receipts with per-rule counts
 
+Progress by Codex: applied the rulebook's screen-scope limit to the current
+similarity registry and ledgered seven screen clusters as escalations in
+`decisions.json`: `c011-event-success-report-metrics-skeleton`,
+`c016-loading-screen`, `c039-filters-section`, `c043-calendar-stats-header`,
+`c048-companion-primary-action-skeleton`, `c049-sliver-body`, and
+`c051-footer`. No code was changed in this ledger-only batch.
+
 ---
 
 ## Escalations
@@ -980,6 +987,36 @@ in `docs/audit_registry/widget_similarity.json` that has NO entry in
   `CatchOpacity.eventSuccessSubtleBorder` for its bottom-edge alpha to stay
   pixel-faithful, but the token name is event-success-specific and should be
   renamed or aliased by the owner in a token pass.
+- WO-015: `c011-event-success-report-metrics-skeleton` members
+  `EventSuccessReportMetricsSkeleton`, `EventSuccessSetupControlsSkeleton`,
+  `PaymentConfirmationLoadingScreen`, `ReviewHistoryItemSkeleton` — nearest
+  rule: screen-scope limit, blocked because screen clusters embed route/provider
+  or whole-state composition and require review.
+- WO-015: `c016-loading-screen` members
+  `EventSuccessEventPreviewLoadingScreen`, `HostLoadingScreen` — nearest rule:
+  screen-scope limit, blocked because screen clusters embed route/provider or
+  whole-state composition and require review.
+- WO-015: `c039-filters-section` members `FiltersSection`,
+  `ReadOnlyHostedEventScheduleCard` — nearest rule: screen-scope limit, blocked
+  because screen clusters embed route/provider or whole-state composition and
+  require review.
+- WO-015: `c043-calendar-stats-header` members `CalendarStatsHeader`,
+  `CalendarStatsHeaderSkeleton` — nearest rule: screen-scope limit, blocked
+  because screen clusters embed route/provider or whole-state composition and
+  require review.
+- WO-015: `c048-companion-primary-action-skeleton` members
+  `CompanionPrimaryActionSkeleton`, `CompanionStageSkeleton`,
+  `DashboardFocusLoadingCard` — nearest rule: screen-scope limit, blocked
+  because screen clusters embed route/provider or whole-state composition and
+  require review.
+- WO-015: `c049-sliver-body` members `PreviewTabSkeletonSliverBody`,
+  `PreviewTabSliverBody` — nearest rule: screen-scope limit, blocked because
+  screen clusters embed route/provider or whole-state composition and require
+  review.
+- WO-015: `c051-footer` members `EditHostedEventFooter`,
+  `HostClubEditFooter` — nearest rule: screen-scope limit, blocked because
+  screen clusters embed route/provider or whole-state composition and require
+  review.
 
 ## Completed
 
