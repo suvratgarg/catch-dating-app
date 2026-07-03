@@ -292,6 +292,58 @@
       "status": "work-order WO-010"
     },
     {
+      "clusterId": "c014-tab-rail",
+      "decision": "merge-new-primitive",
+      "canonicalSymbol": "CatchTabRail<T>",
+      "members": [
+        {"name": "HostClubTabRail", "action": "absorb"},
+        {"name": "HostSettingsTabRail", "action": "absorb"}
+      ],
+      "rationale": "Identical PreferredSizeWidget shells (48-height padded CatchOptionGroup) differing only in option enum. Generic core primitive; tokenizes the raw 48 as CatchLayout.tabRailHeight.",
+      "decidedBy": "claude",
+      "date": "2026-07-03",
+      "status": "work-order WO-011"
+    },
+    {
+      "clusterId": "c019-host-empty-state",
+      "decision": "merge-new-primitive",
+      "canonicalSymbol": "HostEmptyActionCard (feature-level)",
+      "members": [
+        {"name": "HostEmptyState", "action": "absorb"},
+        {"name": "HostProfileMissingState", "action": "absorb", "note": "keeps its ListView wrapper at call site"},
+        {"name": "HostTodayEmptyEvents", "action": "absorb"}
+      ],
+      "rationale": "Same 'surface + sectionTitle + supporting body + CTA actions' empty card three times in hosts. Feature-level for now; promote to core if WO-008 recon shows the pattern is cross-feature.",
+      "decidedBy": "claude",
+      "date": "2026-07-03",
+      "status": "work-order WO-012"
+    },
+    {
+      "clusterId": "c061-companion-error",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "CompanionError", "action": "keep"},
+        {"name": "CompanionMessage", "action": "keep"}
+      ],
+      "rationale": "Six-line shared shell around CatchInlineErrorState with clear intent-carrying names; merge value below churn threshold.",
+      "decidedBy": "claude",
+      "date": "2026-07-03",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "c021-tab-skeleton",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "EventSuccessLiveTabSkeleton", "action": "keep"},
+        {"name": "EventSuccessSetupTabSkeleton", "action": "keep"},
+        {"name": "EventSuccessReportTabSkeleton", "action": "keep"}
+      ],
+      "rationale": "Per-tab skeleton compositions; parameterizing would move the same jitter to call sites. Real finding: raw title-width literals (148/190/170/150) instead of CatchLayout.skeletonText* tokens — drift fix in WO-013.",
+      "decidedBy": "claude",
+      "date": "2026-07-03",
+      "status": "work-order WO-013 (token fix only)"
+    },
+    {
       "clusterId": "small-widget: AttendedLeading/BookedLeading/UnsavedChangesPill",
       "decision": "merge-new-primitive",
       "canonicalSymbol": "EventCtaStatusLeading (feature-level)",

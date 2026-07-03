@@ -555,6 +555,146 @@ force it: record the diff under Escalations. Both classes stay public.
 
 - [ ] inspect + delegate (or escalate) + regen + receipts
 
+## WO-011 — CatchTabRail<T>
+
+New `lib/core/widgets/catch_tab_rail.dart`:
+
+```dart
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:flutter/material.dart';
+
+/// Segmented tab rail for app-bar bottoms: a [CatchOptionGroup] in the
+/// standard rail shell.
+class CatchTabRail<T> extends StatelessWidget implements PreferredSizeWidget {
+  const CatchTabRail({
+    super.key,
+    required this.selected,
+    required this.onChanged,
+    required this.options,
+    this.groupKey,
+  });
+
+  final T selected;
+  final ValueChanged<T> onChanged;
+  final List<CatchOption<T>> options;
+  final Key? groupKey;
+
+  @override
+  Size get preferredSize => const Size.fromHeight(CatchLayout.tabRailHeight);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: preferredSize.height,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          CatchSpacing.s5, 0, CatchSpacing.s5, CatchSpacing.s2),
+        child: CatchOptionGroup<T>(
+          key: groupKey,
+          selected: selected,
+          onChanged: onChanged,
+          options: options,
+        ),
+      ),
+    );
+  }
+}
+```
+
+1. Add `CatchLayout.tabRailHeight = 48` token (both old rails hardcode
+   `Size.fromHeight(48)`); follow the CatchLayout file's grouping/doc style.
+   Fix imports so CatchLayout/CatchOption resolve (mirror the old rails).
+2. Migrate: `HostClubTabRail(selected:, onChanged:)` →
+   `CatchTabRail<HostClubTab>(groupKey: _hostClubTabRailKey, selected:,
+   onChanged:, options: const [...verbatim four CatchOptions...])` (in
+   `lib/hosts/presentation/host_operations_screen.dart`; the private key
+   stays in that file). Same for `HostSettingsTabRail` →
+   `CatchTabRail<HostSettingsMode>` (two options, no key) in
+   `host_account_screen.dart`. Delete both classes.
+3. Widgetbook: repoint/delete old-typed use-cases (gotcha 2); add a
+   CatchTabRail use-case under primitives.
+4. regen + registries + receipts.
+
+- [ ] token + primitive + migrations + widgetbook + regen + receipts
+
+## WO-012 — HostEmptyActionCard
+
+New `lib/hosts/presentation/widgets/host_empty_action_card.dart`:
+
+```dart
+/// Empty-state card with CTA actions for host surfaces.
+class HostEmptyActionCard extends StatelessWidget {
+  const HostEmptyActionCard({
+    super.key,
+    required this.title,
+    required this.body,
+    this.actions = const <Widget>[],
+  });
+
+  final String title;
+  final String body;
+  final List<Widget> actions;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return CatchSurface(
+      borderColor: t.line,
+      padding: CatchInsets.content,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: CatchTextStyles.sectionTitle(context)),
+          gapH8,
+          Text(body, style: CatchTextStyles.supporting(context, color: t.ink2)),
+          if (actions.isNotEmpty) ...[
+            gapH18,
+            if (actions.length == 1)
+              actions.single
+            else
+              Row(
+                children: [
+                  for (final indexed in actions.indexed) ...[
+                    if (indexed.$1 > 0) gapW8,
+                    Expanded(child: indexed.$2),
+                  ],
+                ],
+              ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+```
+
+Migrate (all three in `lib/hosts/presentation/host_operations_screen.dart`;
+read each full body first — HostProfileMissingState keeps its outer ListView
+at the call site, HostTodayEmptyEvents passes its two buttons as `actions`,
+title/body strings move to call sites verbatim including the
+`${club.name}` interpolation). Delete the three classes; widgetbook per
+gotcha 2; regen + registries + receipts. If any body has structure beyond
+title/body/actions (e.g. the `creating` flag maps to the button's isLoading
+at the call site), keep that logic at the call site — escalate only if it
+does not fit the actions-slot shape.
+
+- [ ] widget + 3 migrations + widgetbook + regen + receipts
+
+## WO-013 — Skeleton title-width token drift
+
+`EventSuccessLiveTabSkeleton` / `EventSuccessSetupTabSkeleton` /
+`EventSuccessReportTabSkeleton` (in
+`lib/event_success/presentation/event_success_host_screen.dart`) pass raw
+title widths (148, 190, 170, 150, …) to `EventSuccessSkeletonSurface`.
+Replace each with the nearest existing `CatchLayout.skeletonText*` token
+(list them first: `rg "skeletonText" lib/core/theme/`). Exact widths are
+skeleton noise — nearest token is fine; do NOT add new tokens. Also sweep the
+rest of that file and `event_success_event_preview_loading_screen.dart` for
+other raw skeleton widths while there. The widgets themselves stay.
+
+- [ ] token sweep + regen + receipts
+
 ---
 
 ## Escalations
