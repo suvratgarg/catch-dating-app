@@ -344,6 +344,102 @@
       "status": "work-order WO-013 (token fix only)"
     },
     {
+      "clusterId": "c046-profile-tab + c043-dashboard-full + c057-home-screen",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "ProfileTab", "action": "keep"},
+        {"name": "ProfileTabContent", "action": "keep"},
+        {"name": "DashboardFull", "action": "keep"},
+        {"name": "DashboardFullSliverBody", "action": "keep"},
+        {"name": "DashboardEmptyHomeScreen", "action": "keep"},
+        {"name": "DashboardHomeScreen", "action": "keep"}
+      ],
+      "rationale": "Composition relationships, not duplication: one member instantiates the other (screen wraps its body/content via builder). Fingerprint similarity is pass-through plumbing. Rule K1.",
+      "decidedBy": "claude",
+      "date": "2026-07-03",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "c036-card (directory)",
+      "decision": "merge-new-primitive",
+      "canonicalSymbol": "DirectoryClubCard (feature-level)",
+      "members": [
+        {"name": "DirectoryIdentityCard", "action": "absorb"},
+        {"name": "DirectoryPhotoCard", "action": "absorb"}
+      ],
+      "rationale": "Same file, identical bodies except the media: argument (polaroid artwork vs photo overlay). Single widget; if call sites pick the variant from photo availability, fold that choice inside (mirroring ClubShareArtwork), else keep a media param.",
+      "decidedBy": "claude",
+      "date": "2026-07-03",
+      "status": "work-order WO-014"
+    },
+    {
+      "clusterId": "c053-paper-ticket-detail",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "PaperTicketDetail",
+      "members": [
+        {"name": "PaperTicketDetail", "action": "keep"},
+        {"name": "PaperTicketSerial", "action": "keep", "note": "rewrite build to compute strings then return PaperTicketDetail (accepts value maxLines 1->2)"}
+      ],
+      "rationale": "Serial is Detail with computed content; delegate internally, both APIs stay.",
+      "decidedBy": "claude",
+      "date": "2026-07-03",
+      "status": "work-order WO-014"
+    },
+    {
+      "clusterId": "c041-celebration-details-card",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "CelebrationDetailsCard", "action": "keep"},
+        {"name": "PaperCelebrationDetailsCard", "action": "keep"}
+      ],
+      "rationale": "Deliberate dual art direction (celebration cream overlay vs paper surface) on the known celebration-screen debt file; parameterizing four visual knobs for a 20-line loop is churn.",
+      "decidedBy": "claude",
+      "date": "2026-07-03",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "c032/c035 event policy rows",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "EventPolicyCancellationRow", "action": "keep"},
+        {"name": "EventPolicyResultRow", "action": "keep"},
+        {"name": "EventPolicyCancellationRows", "action": "keep"},
+        {"name": "EventPolicyResultRows", "action": "keep"}
+      ],
+      "rationale": "Typed domain rows in an internal policy lab screen; generics over preview-row models is complexity without user-facing value. Rule K2 (domain fork) on a lab surface.",
+      "decidedBy": "claude",
+      "date": "2026-07-03",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "c045-hero",
+      "decision": "merge-new-primitive",
+      "canonicalSymbol": "EventSuccessHeroSurface (feature-level)",
+      "members": [
+        {"name": "EventPreviewHero", "action": "keep", "note": "delegates shell"},
+        {"name": "LabHero", "action": "keep", "note": "delegates shell; keeps its outer Padding/Center/ConstrainedBox"},
+        {"name": "ManualQaHero", "action": "keep", "note": "delegates shell"}
+      ],
+      "rationale": "The accent->ink diagonal gradient hero recipe (gradient + transparent border + contentRelaxed) is copy-pasted across three event_success screens. Extract the shell as a shared feature widget; each hero keeps its content.",
+      "decidedBy": "claude",
+      "date": "2026-07-03",
+      "status": "work-order WO-014"
+    },
+    {
+      "clusterId": "c015-choice-entry-editor + c017-catch-option-group-item",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "ProfileInlineMultiChoiceEntryEditor", "action": "keep", "note": "deferred — generic classes, need type-aware read"},
+        {"name": "ProfileInlineSingleChoiceEntryEditor", "action": "keep", "note": "deferred"},
+        {"name": "CatchOptionGroupItem", "action": "keep", "note": "deferred"},
+        {"name": "ExploreRailLabel", "action": "keep", "note": "deferred — possible overlap with CatchOptionGroup item rendering"}
+      ],
+      "rationale": "Deferred, not decided: classes are generic (class X<T>) and need a proper read in the next batch.",
+      "decidedBy": "claude",
+      "date": "2026-07-03",
+      "status": "deferred"
+    },
+    {
       "clusterId": "small-widget: AttendedLeading/BookedLeading/UnsavedChangesPill",
       "decision": "merge-new-primitive",
       "canonicalSymbol": "EventCtaStatusLeading (feature-level)",

@@ -695,6 +695,89 @@ other raw skeleton widths while there. The widgets themselves stay.
 
 - [ ] token sweep + regen + receipts
 
+## WO-014 — Batch A/B merges (directory card, paper ticket, hero shell)
+
+1. **DirectoryClubCard** (rule R3): `DirectoryIdentityCard` and
+   `DirectoryPhotoCard` in
+   `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart`
+   are identical except the `media:` argument (`ClubPolaroidArtwork` vs
+   `ClubPhotoMediaOverlay`). Merge into one `DirectoryClubCard` in the same
+   file. First check the call sites: if the caller picks the variant based on
+   photo availability (like `ClubShareArtwork` does internally in
+   `club_share_card.dart`), fold that choice into the widget and drop the
+   param; otherwise keep `media` as a `Widget` param. Note which path you took
+   in the receipt.
+2. **PaperTicketSerial delegation** (rule R4): in
+   `lib/event_success/presentation/companion_parts/event_success_companion_shared.dart`,
+   rewrite `PaperTicketSerial.build` to compute its two strings and
+   `return PaperTicketDetail(label: …, value: …);`. Accepted visual delta:
+   value maxLines 1→2.
+3. **EventSuccessHeroSurface**: new shared widget in
+   `lib/event_success/presentation/event_success_hero_surface.dart` (plain
+   library, not a part file):
+
+```dart
+/// Accent→ink diagonal gradient hero shell for event_success surfaces.
+class EventSuccessHeroSurface extends StatelessWidget {
+  const EventSuccessHeroSurface({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return CatchSurface(
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [t.accent, t.ink],
+      ),
+      borderColor: t.surface.withValues(alpha: CatchOpacity.none),
+      padding: CatchInsets.contentRelaxed,
+      child: child,
+    );
+  }
+}
+```
+
+   Rewrite `EventPreviewHero`, `LabHero`, `ManualQaHero` (files per
+   decisions.json c045 entry) to return
+   `EventSuccessHeroSurface(child: <their existing Column>)`; LabHero keeps
+   its outer Padding/Center/ConstrainedBox around the shell. All three stay
+   public. Watch part-file imports (gotcha 1).
+4. widgetbook per gotcha 2 where types changed + regen + registries +
+   receipts.
+
+- [ ] DirectoryClubCard merge
+- [ ] PaperTicketSerial delegation
+- [ ] EventSuccessHeroSurface + three delegations
+- [ ] regen + registries + receipts
+
+## WO-015 — Rule-driven triage sweep (read consolidation_rules.md first)
+
+`docs/design_parity/widget_consolidation/consolidation_rules.md` now encodes
+the review session's decision patterns. Sweep every cluster and ranked pair
+in `docs/audit_registry/widget_similarity.json` that has NO entry in
+`decisions.json`:
+
+1. For each candidate, test the KEEP rules (K1–K4), then the MERGE rules
+   (R1–R4), in order. Apply the first exact match; record the outcome in
+   `decisions.json` with `"decidedBy": "codex-rule:<id>"` and a one-line
+   rationale naming the evidence (hashes equal, composition edge, etc.).
+2. No exact match, or K5 territory → add one Escalations line here:
+   `- [cluster id] members … — nearest rule …, blocked because …`.
+3. Execute the mechanical merges/inlines/delegations that rules R1–R4
+   authorize (respecting the scope limits at the top of the rulebook),
+   batch-committing per ~5 candidates with the full verification suite
+   (gotchas 6–7) per batch.
+4. Screens-scope clusters: ledger them as escalations without reading deeply.
+5. Receipt: counts of candidates triaged per rule, escalated, merged,
+   deleted.
+
+- [ ] sweep + ledger entries + escalations
+- [ ] rule-authorized executions in batches
+- [ ] receipts with per-rule counts
+
 ---
 
 ## Escalations
