@@ -6,6 +6,9 @@ import {
   ActionGroup,
   Button,
   ButtonLink,
+  ChoiceCard,
+  ChoiceChip,
+  ChoiceChipGrid,
   ContentGrid,
   ControlRow,
   EventSuccessModuleGrid,
@@ -31,6 +34,7 @@ import {
   StepRail,
   TextField,
   UiLabel,
+  VerificationMethodGrid,
   WaitlistFormShell,
   WaitlistSection,
 } from "../shared/ui/primitives";
@@ -167,6 +171,18 @@ export const StepRailStory: Story = {
     },
   },
   render: () => <StepRailDemo />,
+};
+
+export const ChoiceControlsStory: Story = {
+  name: "Choice controls",
+  parameters: {
+    catchComponent: {
+      id: "shared_choice_controls",
+      routeIds: ["host", "claim"],
+      states: ["chip-grid", "choice-card", "selected"],
+    },
+  },
+  render: () => <ChoiceControlsDemo />,
 };
 
 export const WaitlistSectionStory: Story = {
@@ -472,5 +488,56 @@ function StepRailDemo() {
       label="Storybook operational steps"
       onSelect={setActiveId}
     />
+  );
+}
+
+function ChoiceControlsDemo() {
+  const [format, setFormat] = useState("Dinner");
+  const [method, setMethod] = useState("domain");
+  const formats = ["Dinner", "Run club", "Venue mixer"];
+  const methods = [
+    {
+      id: "domain",
+      title: "Domain email",
+      body: "Verify with a business or venue email tied to the listing.",
+    },
+    {
+      id: "source",
+      title: "Source proof",
+      body: "Attach public event links and ownership context for staff review.",
+    },
+  ];
+
+  return (
+    <ContentGrid variant="claim-review">
+      <div>
+        <UiLabel>Host formats</UiLabel>
+        <ChoiceChipGrid>
+          {formats.map((item) => (
+            <ChoiceChip
+              key={item}
+              onClick={() => setFormat(item)}
+              selected={format === item}
+            >
+              {item}
+            </ChoiceChip>
+          ))}
+        </ChoiceChipGrid>
+      </div>
+      <div>
+        <UiLabel>Verification</UiLabel>
+        <VerificationMethodGrid>
+          {methods.map((item) => (
+            <ChoiceCard
+              body={item.body}
+              key={item.id}
+              onClick={() => setMethod(item.id)}
+              selected={method === item.id}
+              title={item.title}
+            />
+          ))}
+        </VerificationMethodGrid>
+      </div>
+    </ContentGrid>
   );
 }

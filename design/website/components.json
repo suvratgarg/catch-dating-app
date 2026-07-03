@@ -1,6 +1,6 @@
 {
   "$schema": "./website.components.schema.json",
-  "version": 74,
+  "version": 75,
   "updated": "2026-07-03",
   "owner": "marketing_website",
   "sourceOfTruth": {
@@ -1674,6 +1674,32 @@
         ]
       },
       "notes": "Shared website operational step rail primitive used by host application and claim flows; raw operational-step-rail shells are blocked by web:react-component-governance."
+    },
+    {
+      "id": "shared_choice_controls",
+      "kind": "supporting-component",
+      "routeIds": [
+        "host",
+        "claim"
+      ],
+      "owner": "shared/ui",
+      "source": "website/src/shared/ui/primitives.tsx",
+      "exportName": "ChoiceChip",
+      "css": [
+        "website/src/styles/flows.css",
+        "website/src/styles/responsive.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/LayoutPrimitives.stories.tsx",
+        "exportName": "ChoiceControlsStory",
+        "states": [
+          "chip-grid",
+          "choice-card",
+          "selected"
+        ]
+      },
+      "notes": "Shared website choice chip, chip-grid, and choice-card primitives used by host application and claim verification flows; raw choice-chip, choice-chip-grid, and choice-card shells are blocked by web:react-component-governance."
     },
     {
       "id": "shared_empty_state",

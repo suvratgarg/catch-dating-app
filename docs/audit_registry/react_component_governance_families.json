@@ -344,6 +344,13 @@
       "guidance": "Use StepRail instead of rendering website operational step rail shells directly."
     },
     {
+      "family": "website-choice-controls",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use ChoiceChip, ChoiceChipGrid, and ChoiceCard instead of rendering website choice-control shells directly."
+    },
+    {
       "family": "admin-summary-metrics",
       "surfaces": [
         "admin"

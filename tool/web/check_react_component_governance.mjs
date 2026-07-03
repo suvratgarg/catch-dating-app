@@ -958,6 +958,19 @@ const componentFamilies = [
     guidance: "Use StepRail instead of rendering website operational step rail shells directly.",
   },
   {
+    family: "website-choice-controls",
+    surfaces: ["website"],
+    jsxPatterns: [
+      {
+        pattern:
+          /\bclassName=\{?["'`][^"'`]*\b(?:choice-chip|choice-chip-grid|choice-card)\b[^"'`]*["'`]\}?/gu,
+        description: "raw website choice control shell class",
+      },
+    ],
+    createElementPattern: null,
+    guidance: "Use ChoiceChip, ChoiceChipGrid, and ChoiceCard instead of rendering website choice-control shells directly.",
+  },
+  {
     family: "admin-summary-metrics",
     surfaces: ["admin"],
     jsxPatterns: [
@@ -2331,6 +2344,22 @@ function runSelfTest() {
   });
   assert.equal(violations.length, 1);
   assert.equal(violations[0].family, "website-operational-step-rail");
+  assert.equal(violations[0].line, 2);
+
+  violations.length = 0;
+  overrideNotes.length = 0;
+  scanLines({
+    lines: [
+      "export function Feature() {",
+      "  return <button className=\"choice-card is-selected\" />;",
+      "}",
+    ],
+    relativePath: "website/src/features/example/Example.tsx",
+    scansJsx: true,
+    surfaceName: "website",
+  });
+  assert.equal(violations.length, 1);
+  assert.equal(violations[0].family, "website-choice-controls");
   assert.equal(violations[0].line, 2);
 
   console.log("React component governance scanner self-test passed.");
