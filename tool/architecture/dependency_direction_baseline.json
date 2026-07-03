@@ -13,10 +13,6 @@
     },
     {
       "rule": "multiRouteScreenFile",
-      "path": "lib/events/presentation/calendar/calendar_screen.dart"
-    },
-    {
-      "rule": "multiRouteScreenFile",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart"
     },
     {

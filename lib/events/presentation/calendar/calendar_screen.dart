@@ -25,6 +25,8 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+part 'calendar_loading_screen.dart';
+
 class CalendarScreen extends ConsumerStatefulWidget {
   const CalendarScreen({
     super.key,
@@ -265,27 +267,6 @@ CalendarClubNameLookupState _calendarClubNameLookupState(
   if (names != null) return CalendarClubNameLookupState.ready(names);
   if (value.hasError) return CalendarClubNameLookupState.failure(value.error!);
   return const CalendarClubNameLookupState.loading();
-}
-
-class CalendarLoadingScreen extends StatelessWidget {
-  const CalendarLoadingScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: [
-        SliverPersistentHeader(
-          pinned: true,
-          delegate: _CalendarDateHeaderDelegate(
-            height: _calendarDateHeaderHeightFor(context, expanded: false),
-            child: const CalendarDateHeaderSkeleton(),
-          ),
-        ),
-        const SliverToBoxAdapter(child: CalendarStatsHeaderSkeleton()),
-        const EventAgendaSliverSkeleton(count: 3),
-      ],
-    );
-  }
 }
 
 class CalendarAgendaSliverSection extends StatelessWidget {
