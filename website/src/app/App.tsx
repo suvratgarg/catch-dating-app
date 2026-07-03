@@ -1,5 +1,5 @@
 import {lazy, Suspense} from "react";
-import {BrowserRouter, Route, Routes, useLocation} from "react-router";
+import {BrowserRouter, Route, Routes, useLocation, useParams} from "react-router";
 import {
   getPageKey,
   pageClassFor,
@@ -14,11 +14,14 @@ import {
   useMarketingCaptures,
   useRevealAnimations,
 } from "./usePageLifecycle";
-import {isHostPreviewPath, marketingRoutePaths} from "./routeRegistry";
+import {isHostPreviewPath, isOrganizerSearchPath, marketingRoutePaths} from "./routeRegistry";
 import {MarketingConsentBanner} from "../features/marketing/MarketingConsentBanner";
+import {claimRouteStateForLocation} from "../features/claims/claimRouting";
 import {
   getHostListingRouteForPath,
 } from "../features/organizers/routing";
+import {PageShell} from "../shared/site";
+import {RouteLoadingState} from "../shared/ui/primitives";
 
 const ClaimPage = lazy(async () => ({
   default: (await import("../features/claims/ClaimPage")).ClaimPage,
@@ -34,6 +37,9 @@ const HostPage = lazy(async () => ({
 }));
 const HostPreviewPage = lazy(async () => ({
   default: (await import("../features/host/HostPreviewPage")).HostPreviewPage,
+}));
+const NotFoundPage = lazy(async () => ({
+  default: (await import("../features/notFound/NotFoundPage")).NotFoundPage,
 }));
 const OrganizerSearchPage = lazy(async () => ({
   default: (await import("../features/organizers/OrganizerSearchPage")).OrganizerSearchPage,
@@ -51,7 +57,7 @@ function MarketingRouteShell() {
   const location = useLocation();
   const listingRoute = getHostListingRouteForPath(location.pathname);
   const listing = listingRoute?.listing ?? null;
-  const fallbackPage = getPageKey(location.pathname);
+  const fallbackPage = pageKeyForCurrentRoute(location.pathname, Boolean(listing));
   const page: PageKey = listing ? "listing" : fallbackPage;
   const isHostPreview = isHostPreviewPath(location.pathname);
   const captures = useMarketingCaptures();
@@ -69,7 +75,7 @@ function MarketingRouteShell() {
   useDocumentMeta(meta);
 
   return (
-    <div className={`page-shell ${shellClassName}`}>
+    <PageShell pageClassName={shellClassName}>
       <Suspense fallback={<RouteLoadingState />}>
         <RouteLifecycleEffects
           page={page}
@@ -98,25 +104,47 @@ function MarketingRouteShell() {
             element={listing ? (
               <HostListingPage listing={listing} />
             ) : (
-              <OrganizerSearchPage />
+              <NotFoundPage />
             )}
           />
           <Route
             path={marketingRoutePaths.claim}
-            element={<ClaimPage />}
+            element={<ClaimRoute />}
           />
           <Route
             path={marketingRoutePaths.claim_lookup}
-            element={<ClaimPage />}
+            element={<ClaimRoute />}
           />
           <Route
-            path={marketingRoutePaths.fallback}
-            element={<HomePage captures={captures} />}
+            path={marketingRoutePaths.not_found}
+            element={<NotFoundPage />}
           />
         </Routes>
       </Suspense>
       <MarketingConsentBanner />
-    </div>
+    </PageShell>
+  );
+}
+
+function pageKeyForCurrentRoute(
+  pathname: string,
+  hasListing: boolean
+): Exclude<PageKey, "listing"> {
+  if (!hasListing && pathname.startsWith("/organizers/") && !isOrganizerSearchPath(pathname)) {
+    return "not_found";
+  }
+  return getPageKey(pathname);
+}
+
+function ClaimRoute() {
+  const location = useLocation();
+  const {listing} = useParams<{listing?: string}>();
+  const routeState = claimRouteStateForLocation(location, listing);
+  return (
+    <ClaimPage
+      key={`${location.pathname}${location.search}`}
+      routeState={routeState}
+    />
   );
 }
 
@@ -132,10 +160,6 @@ function RouteLifecycleEffects({
   useRevealAnimations(page, routeKey);
   useHashScroll(page, hash);
   return null;
-}
-
-function RouteLoadingState() {
-  return <div className="route-loading" aria-busy="true" />;
 }
 
 export default App;

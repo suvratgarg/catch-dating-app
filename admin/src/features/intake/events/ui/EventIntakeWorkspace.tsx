@@ -10,20 +10,36 @@ import {
 import {
   AdminButton,
   AdminCard,
+  AdminCardList,
   AdminLinkButton,
-  AdminPanel,
   AdminStateRow,
+  AdminStatGrid,
   AdminTag,
   AdminTextField,
   AdminTextareaField,
   AlertRow,
   CardHeader,
   EmptyState,
-  InlineTextField,
   PageHeader,
-  SegmentedControl,
   StatusChip,
   TagList,
+  AdminCommandRow,
+  AdminCommandStack,
+  AdminEyebrow,
+  AdminMarketingEditGrid,
+  AdminMarketingGrid,
+  AdminIntakeEventWorkspaceShell,
+  AdminMarketingPanel,
+  AdminMarketingSection,
+  AdminIntakeSection,
+  AdminIntakeSectionTitle,
+  AdminMarketingHelpText,
+  AdminMarketingStackedSections,
+  AdminMarketingTabs,
+  AdminMarketingTitleInput,
+  AdminQueryList,
+  AdminQueryRow,
+  DecisionFooter,
 } from "../../../../shared/ui/AdminPrimitives";
 import {
   eventIntakePublishabilityLabel,
@@ -31,10 +47,10 @@ import {
   type EventIntakeDecisionHandler,
 } from "../controllers/eventIntakeReviewDecisionHelpers";
 import {
+  type EventIntakeController,
   type EventIntakeTab,
   useEventIntakeController,
 } from "../controllers/useEventIntakeController";
-import {DecisionFooter} from "../../../../shared/ui/ReviewDecisionControls";
 import type {
   AdminRecordEventIntakeReviewDecisionResponse,
   EventIntakeBridge,
@@ -42,6 +58,7 @@ import type {
   EventIntakeSourceProfile,
   EventIntakeSourceResult,
 } from "../../../../shared/types/adminTypes";
+import {useAdminFeedback} from "../../../../shared/feedback/AdminFeedbackContext";
 
 const eventIntakeTabs: Array<{id: EventIntakeTab; label: string}> = [
   {id: "setup", label: "Crawl setup"},
@@ -49,12 +66,16 @@ const eventIntakeTabs: Array<{id: EventIntakeTab; label: string}> = [
   {id: "candidates", label: "Event candidates"},
 ];
 
-export function EventIntakeWorkspace({
-  onError,
-  onNotice,
+export function EventIntakeWorkspace() {
+  const {setError: onError, setNotice: onNotice} = useAdminFeedback();
+  const controller = useEventIntakeController({onError, onNotice});
+  return <EventIntakePreviewWorkspace controller={controller} />;
+}
+
+export function EventIntakePreviewWorkspace({
+  controller,
 }: {
-  onError: (message: string | null) => void;
-  onNotice: (message: string | null) => void;
+  controller: EventIntakeController;
 }) {
   const {
     activeTab,
@@ -71,12 +92,12 @@ export function EventIntakeWorkspace({
     updateCandidate,
     updateSource,
     updateSourceResult,
-  } = useEventIntakeController({onError, onNotice});
+  } = controller;
 
   if (!bridge) {
     return (
       <EmptyState
-        className="marketing-empty-state"
+        variant="marketing"
         icon={<RefreshCw size={18} strokeWidth={1.9} />}
       >
         {isLoading ? "Loading event intake..." : "Event intake is not available."}
@@ -85,7 +106,7 @@ export function EventIntakeWorkspace({
   }
 
   return (
-    <section className="marketing-ops-shell intake-event-workspace">
+    <AdminIntakeEventWorkspaceShell>
       <PageHeader
         actions={(
           <AdminButton
@@ -105,16 +126,15 @@ export function EventIntakeWorkspace({
         Events import flow publishes read-only external supply.
       </PageHeader>
 
-      <SegmentedControl<EventIntakeTab>
+      <AdminMarketingTabs<EventIntakeTab>
         ariaLabel="Event intake views"
-        className="marketing-tabs"
         options={eventIntakeTabs}
         value={activeTab}
         onChange={setActiveTab}
       />
 
       {activeTab === "setup" ? (
-        <div className="marketing-stacked-sections">
+        <AdminMarketingStackedSections>
           <EventIntakeRunPlanView
             bridge={bridge}
             inFlight={inFlight}
@@ -132,7 +152,7 @@ export function EventIntakeWorkspace({
             onNoteChange={setNote}
             onSourceChange={updateSource}
           />
-        </div>
+        </AdminMarketingStackedSections>
       ) : activeTab === "inbox" ? (
         <EventIntakeSourceResults
           bridge={bridge}
@@ -157,7 +177,7 @@ export function EventIntakeWorkspace({
           onNoteChange={setNote}
         />
       )}
-    </section>
+    </AdminIntakeEventWorkspaceShell>
   );
 }
 
@@ -179,7 +199,7 @@ function EventIntakeSources({
   onSourceChange: (sourceId: string, patch: Partial<EventIntakeSourceProfile>) => void;
 }) {
   return (
-    <div className="marketing-card-list">
+    <AdminCardList>
       {bridge.sourceProfiles.map((source) => {
         const key = `source_profile:${source.id}`;
         return (
@@ -192,10 +212,9 @@ function EventIntakeSources({
               )}
             >
               <div>
-                <div className="intake-eyebrow">{source.type} / {source.status}</div>
-                <InlineTextField
+                <AdminEyebrow>{source.type} / {source.status}</AdminEyebrow>
+                <AdminMarketingTitleInput
                   ariaLabel={`Source label for ${source.id}`}
-                  className="marketing-title-input"
                   onChange={(value) =>
                     onSourceChange(source.id, {label: value})}
                   value={source.label}
@@ -229,7 +248,7 @@ function EventIntakeSources({
           </AdminCard>
         );
       })}
-    </div>
+    </AdminCardList>
   );
 }
 
@@ -250,21 +269,21 @@ function EventIntakeRunPlanView({
 }) {
   const key = `run_plan:${bridge.runPlan.id}`;
   return (
-    <div className="marketing-grid">
-      <AdminPanel
-        className="span-2"
+    <AdminMarketingGrid>
+      <AdminMarketingPanel
+        span={2}
         icon={<Clock3 size={18} strokeWidth={1.9} />}
         title={bridge.runPlan.id}
         action={bridge.runPlan.status}
       >
-        <div className="marketing-stat-grid">
+        <AdminStatGrid>
           <AdminStateRow label="Cadence" value={bridge.runPlan.schedule.cadence} />
           <AdminStateRow label="Publish day" value={bridge.runPlan.schedule.publishDay} />
           <AdminStateRow label="Lookahead" value={`${bridge.runPlan.schedule.lookaheadDays} days`} />
           <AdminStateRow label="Max queries" value={String(bridge.runPlan.budgets.maxQueries)} />
           <AdminStateRow label="Max results" value={String(bridge.runPlan.budgets.maxSourceResults)} />
           <AdminStateRow label="Max candidates" value={String(bridge.runPlan.budgets.maxCandidatePool)} />
-        </div>
+        </AdminStatGrid>
         <TagList>
           <AdminTag tone="muted">search provider: {bridge.runPlan.automationPolicy.searchProvider}</AdminTag>
           <AdminTag tone="muted">network fetches: {String(bridge.runPlan.automationPolicy.networkFetchesEnabled)}</AdminTag>
@@ -281,34 +300,32 @@ function EventIntakeRunPlanView({
           onDecision={onDecision}
           onNoteChange={(value) => onNoteChange(key, value)}
         />
-      </AdminPanel>
-
-      <AdminPanel
+      </AdminMarketingPanel>
+      <AdminMarketingPanel
         icon={<Search size={18} strokeWidth={1.9} />}
         title="Expanded queries"
         action={`${bridge.queryTemplates.length} queries`}
       >
-        <div className="marketing-query-list">
+        <AdminQueryList>
           {bridge.queryTemplates.map((query) => (
-            <div className="marketing-query" key={`${query.id}-${query.cityLabel}`}>
+            <AdminQueryRow key={`${query.id}-${query.cityLabel}`}>
               <strong>{query.query}</strong>
               <span>{query.intent}</span>
               <span>
                 {query.id} / {query.status} / priority {query.priority}
               </span>
               <code>{query.template}</code>
-            </div>
+            </AdminQueryRow>
           ))}
-        </div>
-      </AdminPanel>
-
-      <AdminPanel
-        className="span-2"
+        </AdminQueryList>
+      </AdminMarketingPanel>
+      <AdminMarketingPanel
+        span={2}
         icon={<ListChecks size={18} strokeWidth={1.9} />}
         title="Event intake contract"
         action={bridge.bridgeSource ?? "unknown"}
       >
-        <div className="marketing-stat-grid">
+        <AdminStatGrid>
           <AdminStateRow
             label="Dashboard"
             value="eventIntakeDashboards/current"
@@ -333,7 +350,7 @@ function EventIntakeRunPlanView({
             label="Effect"
             value="decision only, no canonical event publish"
           />
-        </div>
+        </AdminStatGrid>
         <TagList>
           <AdminTag tone="muted">
             downstream: externalEvents import planning
@@ -345,24 +362,24 @@ function EventIntakeRunPlanView({
             generated bridge is private admin supply state
           </AdminTag>
         </TagList>
-        <div className="intake-section">
-          <div className="intake-section-title">Operator Commands</div>
-          <div className="command-stack">
+        <AdminIntakeSection>
+          <AdminIntakeSectionTitle>Operator Commands</AdminIntakeSectionTitle>
+          <AdminCommandStack>
             {Object.entries(bridge.commands).length === 0 ? (
-              <div className="command-row">
+              <AdminCommandRow>
                 <span>none</span>
                 <code>publish eventIntakeDashboards/current to enable commands</code>
-              </div>
+              </AdminCommandRow>
             ) : Object.entries(bridge.commands).map(([label, command]) => (
-              <div className="command-row" key={`${label}:${command}`}>
+              <AdminCommandRow key={`${label}:${command}`}>
                 <span>{label}</span>
                 <code>{command}</code>
-              </div>
+              </AdminCommandRow>
             ))}
-          </div>
-        </div>
-      </AdminPanel>
-    </div>
+          </AdminCommandStack>
+        </AdminIntakeSection>
+      </AdminMarketingPanel>
+    </AdminMarketingGrid>
   );
 }
 
@@ -386,26 +403,25 @@ function EventIntakeSourceResults({
   onResultChange: (resultId: string, patch: Partial<EventIntakeSourceResult>) => void;
 }) {
   return (
-    <div className="marketing-stacked-sections">
-      <AdminPanel
+    <AdminMarketingStackedSections>
+      <AdminMarketingPanel
         icon={<Search size={18} strokeWidth={1.9} />}
         title="Source inbox"
         action={`${results.length} raw leads`}
-        className="marketing-panel"
       >
-        <p className="marketing-help-text">
+        <AdminMarketingHelpText>
           This is the raw intake queue from search results and manual references.
           Approving something here only says the lead is worth processing. It is
           not the final event card. The deduped, editable event cards live in
           Candidates.
-        </p>
+        </AdminMarketingHelpText>
         <TagList>
           <AdminTag>week: {bridge.weekStart}</AdminTag>
           <AdminTag tone="muted">manual Instagram references are leads only</AdminTag>
           <AdminTag tone="muted">candidate count: {bridge.summary.eventCandidates}</AdminTag>
         </TagList>
-      </AdminPanel>
-      <div className="marketing-card-list">
+      </AdminMarketingPanel>
+      <AdminCardList>
       {results.map((result) => {
         const key = `source_result:${result.id}`;
         return (
@@ -423,17 +439,16 @@ function EventIntakeSourceResults({
               )}
             >
               <div>
-                <div className="intake-eyebrow">{result.sourceLabel} / {result.status}</div>
-                <InlineTextField
+                <AdminEyebrow>{result.sourceLabel} / {result.status}</AdminEyebrow>
+                <AdminMarketingTitleInput
                   ariaLabel={`Source result title for ${result.id}`}
-                  className="marketing-title-input"
                   onChange={(value) =>
                     onResultChange(result.id, {title: value})}
                   value={result.title}
                 />
               </div>
             </CardHeader>
-            <div className="marketing-stat-grid">
+            <AdminStatGrid>
               <AdminStateRow
                 label="Source profile"
                 value={result.sourceProfileId}
@@ -447,7 +462,7 @@ function EventIntakeSourceResults({
                 value={formatEventIntakeTimestamp(result.observedAt)}
               />
               <AdminStateRow label="Result type" value={result.resultType} />
-            </div>
+            </AdminStatGrid>
             <AdminTextareaField
               label="Snippet"
               rows={3}
@@ -480,8 +495,8 @@ function EventIntakeSourceResults({
           </AdminCard>
         );
       })}
-      </div>
-    </div>
+      </AdminCardList>
+    </AdminMarketingStackedSections>
   );
 }
 
@@ -515,25 +530,25 @@ function EventIntakeCandidates({
   const duplicates = bridge.dedupeGroups ?? [];
 
   return (
-    <div className="marketing-stacked-sections">
-      <AdminPanel
+    <AdminMarketingStackedSections>
+      <AdminMarketingPanel
         icon={<ListChecks size={18} strokeWidth={1.9} />}
         title="Event candidate queue"
         action={`${reviewable.length} reviewable / ${leads.length} need source`}
       >
-        <p className="marketing-help-text">
+        <AdminMarketingHelpText>
           Candidates are deduped event intake records. Items without a source URL
           are not eligible for marketing shortlists, publication review, or
           canonical import planning until an operator adds a source URL and
           verifies the event. Approval here does not create a canonical Firestore
           event.
-        </p>
+        </AdminMarketingHelpText>
         <TagList>
           <AdminTag>dedupe groups: {duplicates.length}</AdminTag>
           <AdminTag>lead cards: {candidates.length}</AdminTag>
           <AdminTag tone="muted">duplicate sources collapse into one candidate</AdminTag>
         </TagList>
-      </AdminPanel>
+      </AdminMarketingPanel>
 
       <CandidateSection
         candidates={reviewable}
@@ -561,7 +576,7 @@ function EventIntakeCandidates({
         onDecision={onDecision}
         onNoteChange={onNoteChange}
       />
-    </div>
+    </AdminMarketingStackedSections>
   );
 }
 
@@ -591,17 +606,15 @@ function CandidateSection({
   onNoteChange: (key: string, value: string) => void;
 }) {
   return (
-    <section className="marketing-section">
-      <header className="marketing-section-header">
-        <h3>{title}</h3>
-        <span>{candidates.length} items</span>
-      </header>
-      <div className="marketing-card-list">
+    <AdminMarketingSection meta={`${candidates.length} items`} title={title}>
+      <AdminCardList>
       {candidates.length === 0 ? (
-        <div className="marketing-empty-state compact">
-          <CheckCircle2 size={16} strokeWidth={1.9} />
-          <span>{emptyText}</span>
-        </div>
+        <EmptyState
+          compact variant="marketing"
+          icon={<CheckCircle2 size={16} strokeWidth={1.9} />}
+        >
+          {emptyText}
+        </EmptyState>
       ) : candidates.map((candidate) => {
         const key = `event_candidate:${candidate.id}`;
         return (
@@ -614,12 +627,11 @@ function CandidateSection({
               )}
             >
               <div>
-                <div className="intake-eyebrow">
+                <AdminEyebrow>
                   {candidate.category} / {candidate.reviewState}
-                </div>
-                <InlineTextField
+                </AdminEyebrow>
+                <AdminMarketingTitleInput
                   ariaLabel={`Event candidate title for ${candidate.id}`}
-                  className="marketing-title-input"
                   onChange={(value) =>
                     onCandidateChange(candidate.id, {title: value})}
                   value={candidate.title}
@@ -631,7 +643,7 @@ function CandidateSection({
               candidate={candidate}
               sourceResultById={sourceResultById}
             />
-            <div className="marketing-edit-grid">
+            <AdminMarketingEditGrid>
               <AdminTextField
                 label="Venue"
                 value={candidate.venue}
@@ -665,7 +677,7 @@ function CandidateSection({
                 onChange={(value) =>
                   onCandidateChange(candidate.id, {sourceUrl: value || null})}
               />
-            </div>
+            </AdminMarketingEditGrid>
             <AdminTextareaField
               label="Public description"
               rows={2}
@@ -716,8 +728,8 @@ function CandidateSection({
           </AdminCard>
         );
       })}
-      </div>
-    </section>
+      </AdminCardList>
+    </AdminMarketingSection>
   );
 }
 
@@ -741,7 +753,7 @@ function CandidateProvenance({
     sources.map((source) => formatEventIntakeTimestamp(source.observedAt))
   );
   return (
-    <div className="marketing-stat-grid">
+    <AdminStatGrid>
       <AdminStateRow
         label="Source results"
         value={candidate.sourceResultIds.length === 0 ?
@@ -762,7 +774,7 @@ function CandidateProvenance({
         label="Observed"
         value={observedAt.length === 0 ? "n/a" : observedAt.join(", ")}
       />
-    </div>
+    </AdminStatGrid>
   );
 }
 

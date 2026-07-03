@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import {fromRepo} from "../lib/repo_paths.mjs";
@@ -10,6 +11,11 @@ if (args.help) {
   process.exit(0);
 }
 
+if (args.selfTest) {
+  runSelfTest();
+  process.exit(0);
+}
+
 const routesPath = fromRepo(args.routes ?? "design/website/routes.json");
 const schemaPath = fromRepo("design/website/website.routes.schema.json");
 const pageMetaPath = fromRepo("website/src/app/pageMeta.ts");
@@ -18,6 +24,7 @@ const routingPath = fromRepo("website/src/features/organizers/routing.ts");
 const appPath = fromRepo("website/src/app/App.tsx");
 const routeRegistryPath = fromRepo("website/src/app/routeRegistry.ts");
 const hostListingsPath = fromRepo("website/src/generated/hostListings.json");
+const storiesRoot = fromRepo("website/src/stories");
 
 const errors = [];
 const warnings = [];
@@ -30,9 +37,10 @@ const routingSource = readText(routingPath);
 const appSource = readText(appPath);
 const routeRegistrySource = readText(routeRegistryPath);
 const appRoutingSource = `${appSource}\n${routeRegistrySource}`;
+const routeStoryDeclarations = collectStoryRouteDeclarations(storiesRoot);
 
 validateContractShape(contract);
-validateRoutes(contract.routes ?? []);
+validateRoutes(contract.routes ?? [], routeStoryDeclarations);
 validateGeneratedListingFamilies(contract.routes ?? [], hostListings);
 
 if (errors.length > 0) {
@@ -74,23 +82,27 @@ function validateContractShape(value) {
   }
 }
 
-function validateRoutes(routes) {
+function validateRoutes(routes, storyDeclarations) {
   const ids = new Set();
   const exactPaths = new Set();
+  const routeById = new Map();
+  const storyDeclarationsByRouteId = groupStoryRouteDeclarations(storyDeclarations);
   const requiredRouteIds = new Set([
     "home",
     "host",
     "organizer_search",
     "claim",
+    "not_found",
     "organizer_listing_canonical",
     "organizer_listing_legacy",
   ]);
 
   for (const route of routes) {
-    validateRoute(route);
+    validateRoute(route, storyDeclarationsByRouteId.get(route.id) ?? []);
     if (!route?.id) continue;
     if (ids.has(route.id)) errors.push(`${route.id}: duplicate route id.`);
     ids.add(route.id);
+    routeById.set(route.id, route);
     if (route.path) {
       const normalized = normalizeRoutePath(route.path);
       if (exactPaths.has(normalized)) {
@@ -103,9 +115,11 @@ function validateRoutes(routes) {
   for (const id of requiredRouteIds) {
     if (!ids.has(id)) errors.push(`missing required route contract ${id}.`);
   }
+
+  validateStoryRouteDeclarations(storyDeclarations, routeById);
 }
 
-function validateRoute(route) {
+function validateRoute(route, storyDeclarations) {
   if (!route || typeof route !== "object" || Array.isArray(route)) {
     errors.push("route entries must be objects.");
     return;
@@ -147,11 +161,11 @@ function validateRoute(route) {
   validatePageKey(route);
   validateMeta(route);
   validateStaticOutput(route);
-  validateReview(route);
+  validateReview(route, storyDeclarations);
 }
 
 function validatePageKey(route) {
-  const allowedPageKeys = new Set(["home", "host", "organizers", "listing", "claim"]);
+  const allowedPageKeys = new Set(["home", "host", "organizers", "listing", "claim", "not_found"]);
   if (!allowedPageKeys.has(route.pageKey)) {
     errors.push(`${route.id}: invalid pageKey ${route.pageKey}.`);
     return;
@@ -178,6 +192,20 @@ function validatePageKey(route) {
   }
   if (route.id === "host_preview" && !appRoutingSource.includes("/host/preview")) {
     errors.push("host_preview: App.tsx must detect /host/preview.");
+  }
+  if (route.pageKey === "not_found") {
+    if (route.id !== "not_found") {
+      errors.push(`${route.id}: not_found pageKey is reserved for not_found.`);
+    }
+    if (!pageMetaSource.includes('return "not_found"')) {
+      errors.push("not_found: getPageKey must return not_found for unknown paths.");
+    }
+    if (!appRoutingSource.includes("marketingRoutePaths.not_found")) {
+      errors.push("not_found: App.tsx must route unknown paths through marketingRoutePaths.not_found.");
+    }
+    if (!appRoutingSource.includes("<NotFoundPage />")) {
+      errors.push("not_found: App.tsx must render NotFoundPage for fallback routes.");
+    }
   }
 }
 
@@ -219,6 +247,9 @@ function validateStaticOutput(route) {
     if (!postbuildSource.includes(needle)) {
       errors.push(`${route.id}: postbuild.mjs does not emit ${route.path}.`);
     }
+    if (route.id === "not_found" && !postbuildSource.includes('writeStaticHtml("404.html"')) {
+      errors.push("not_found: postbuild.mjs must emit root 404.html.");
+    }
   }
   if (route.staticOutput === "generated-postbuild") {
     if (route.id === "organizer_listing_canonical" &&
@@ -239,7 +270,7 @@ function validateStaticOutput(route) {
   }
 }
 
-function validateReview(route) {
+function validateReview(route, storyDeclarations) {
   const review = route.review;
   const label = route.id ?? "<missing-id>";
   if (!review || typeof review !== "object") {
@@ -255,12 +286,54 @@ function validateReview(route) {
   if (!Array.isArray(review.states) || review.states.length === 0) {
     errors.push(`${label}: review.states must list at least one state.`);
   }
+  validateReviewStateCoverage(label, review, storyDeclarations);
   if (review.priority !== "p2") {
     for (const viewport of ["desktop", "mobile"]) {
       if (!review.viewports?.includes(viewport) && route.id !== "organizer_listing_legacy") {
         errors.push(`${label}: p0/p1 route review must include ${viewport} viewport.`);
       }
     }
+  }
+  if (review.status === "ready" && review.stateCoverage.storybook.length === 0) {
+    errors.push(`${label}: ready route review needs at least one Storybook-backed state.`);
+  }
+  if (review.status === "manual" && review.stateCoverage.manual.length === 0) {
+    errors.push(`${label}: manual route review needs at least one manual state.`);
+  }
+}
+
+function validateReviewStateCoverage(label, review, storyDeclarations) {
+  const coverage = review.stateCoverage;
+  if (!coverage || typeof coverage !== "object" || Array.isArray(coverage)) {
+    errors.push(`${label}: review.stateCoverage must declare storybook and manual states.`);
+    return;
+  }
+  if (!Array.isArray(coverage.storybook)) {
+    errors.push(`${label}: review.stateCoverage.storybook must be an array.`);
+    return;
+  }
+  if (!Array.isArray(coverage.manual)) {
+    errors.push(`${label}: review.stateCoverage.manual must be an array.`);
+    return;
+  }
+
+  const states = new Set(review.states ?? []);
+  const covered = new Set([...coverage.storybook, ...coverage.manual]);
+  for (const state of states) {
+    if (covered.has(state)) continue;
+    errors.push(`${label}: review state ${state} must be storybook-backed or manual.`);
+  }
+  for (const state of covered) {
+    if (states.has(state)) continue;
+    errors.push(`${label}: stateCoverage references unknown state ${state}.`);
+  }
+
+  const storybookStates = new Set(
+    storyDeclarations.flatMap((declaration) => declaration.stateCoverage.storybook)
+  );
+  for (const state of coverage.storybook) {
+    if (storybookStates.has(state)) continue;
+    errors.push(`${label}: Storybook coverage state ${state} is not declared by a catchRoute story.`);
   }
 }
 
@@ -306,6 +379,111 @@ function validateGeneratedListingFamilies(routes, listings) {
   }
 }
 
+function validateStoryRouteDeclarations(declarations, routeById) {
+  for (const declaration of declarations) {
+    const storyLabel = `${path.relative(fromRepo("."), declaration.storyPath)}:${declaration.exportName}`;
+    const route = routeById.get(declaration.id);
+    if (!route) {
+      errors.push(`${storyLabel}: declares unknown catchRoute.id ${declaration.id}.`);
+      continue;
+    }
+
+    if (declaration.path && route.path &&
+        normalizeRoutePath(declaration.path) !== route.path) {
+      errors.push(
+        `${storyLabel}: catchRoute.path ${declaration.path} does not match ${route.path}.`
+      );
+    }
+
+    assertSameStringSet(
+      `${storyLabel}: catchRoute.reviewStates`,
+      declaration.reviewStates,
+      route.review.states
+    );
+    assertSameStringSet(
+      `${storyLabel}: catchRoute.stateCoverage.storybook`,
+      declaration.stateCoverage.storybook,
+      route.review.stateCoverage.storybook
+    );
+    assertSameStringSet(
+      `${storyLabel}: catchRoute.stateCoverage.manual`,
+      declaration.stateCoverage.manual,
+      route.review.stateCoverage.manual
+    );
+  }
+}
+
+function assertSameStringSet(label, actual, expected) {
+  const actualSet = new Set(actual);
+  const expectedSet = new Set(expected);
+  for (const value of expectedSet) {
+    if (actualSet.has(value)) continue;
+    errors.push(`${label} is missing ${value}.`);
+  }
+  for (const value of actualSet) {
+    if (expectedSet.has(value)) continue;
+    errors.push(`${label} declares unknown ${value}.`);
+  }
+}
+
+function groupStoryRouteDeclarations(declarations) {
+  const grouped = new Map();
+  for (const declaration of declarations) {
+    const bucket = grouped.get(declaration.id) ?? [];
+    bucket.push(declaration);
+    grouped.set(declaration.id, bucket);
+  }
+  return grouped;
+}
+
+function collectStoryRouteDeclarations(root) {
+  const declarations = [];
+  for (const storyPath of walkStoryFiles(root)) {
+    const source = readText(storyPath);
+    declarations.push(...storyRouteDeclarations(source, storyPath));
+  }
+  return declarations;
+}
+
+function storyRouteDeclarations(source, storyPath) {
+  const declarations = [];
+  const constants = stringArrayConstants(source);
+  const exportPattern = /^export\s+const\s+([A-Za-z0-9_]+)\b/gmu;
+  const matches = [...source.matchAll(exportPattern)];
+
+  for (let index = 0; index < matches.length; index += 1) {
+    const match = matches[index];
+    const exportName = match[1];
+    const start = match.index ?? 0;
+    const end = matches[index + 1]?.index ?? source.length;
+    const block = source.slice(start, end);
+    if (!block.includes("catchRoute")) continue;
+
+    const catchRouteIndex = block.indexOf("catchRoute");
+    const catchComponentIndex = block.indexOf("catchComponent", catchRouteIndex);
+    const catchRouteBlock = block.slice(
+      catchRouteIndex,
+      catchComponentIndex >= 0 ? catchComponentIndex : undefined
+    );
+    const id = firstStringProperty(catchRouteBlock, "id");
+    if (!id) continue;
+
+    declarations.push({
+      exportName,
+      id,
+      path: firstStringProperty(catchRouteBlock, "path"),
+      reviewStates: stringArrayProperty(catchRouteBlock, "reviewStates", constants),
+      stateCoverage: {
+        storybook: stringArrayProperty(catchRouteBlock, "storybook", constants),
+        manual: stringArrayProperty(catchRouteBlock, "manual", constants),
+      },
+      storyPath,
+    });
+  }
+
+  return declarations;
+}
+
 function pageMetaBlock(key) {
   const match = pageMetaSource.match(new RegExp(`\\b${escapeRegExp(key)}:\\s*\\{([\\s\\S]*?)\\n\\s{2}\\},`, "u"));
   return match?.[1] ?? null;
@@ -344,15 +522,65 @@ function readText(filePath) {
   return fs.readFileSync(filePath, "utf8");
 }
 
+function walkStoryFiles(directory) {
+  const files = [];
+  if (!fs.existsSync(directory)) return files;
+  for (const entry of fs.readdirSync(directory, {withFileTypes: true})) {
+    const fullPath = path.join(directory, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...walkStoryFiles(fullPath));
+      continue;
+    }
+    if (entry.name.endsWith(".stories.tsx")) files.push(fullPath);
+  }
+  return files;
+}
+
+function stringArrayConstants(source) {
+  const constants = new Map();
+  const constPattern =
+    /const\s+([A-Za-z0-9_]+)\s*=\s*\[([\s\S]*?)\]\s*(?:as\s+const)?\s*;/gu;
+  for (const match of source.matchAll(constPattern)) {
+    constants.set(match[1], stringValues(match[2]));
+  }
+  return constants;
+}
+
+function firstStringProperty(source, propertyName) {
+  const pattern = new RegExp(`${escapeRegExp(propertyName)}:\\s*"([^"]+)"`, "u");
+  return source.match(pattern)?.[1] ?? null;
+}
+
+function stringArrayProperty(source, propertyName, constants) {
+  const inlinePattern = new RegExp(
+    `${escapeRegExp(propertyName)}:\\s*\\[([\\s\\S]*?)\\]`,
+    "u"
+  );
+  const inline = source.match(inlinePattern);
+  if (inline) return stringValues(inline[1]);
+
+  const referencePattern = new RegExp(
+    `${escapeRegExp(propertyName)}:\\s*([A-Za-z0-9_]+)`,
+    "u"
+  );
+  const reference = source.match(referencePattern)?.[1] ?? null;
+  return reference ? constants.get(reference) ?? [] : [];
+}
+
+function stringValues(source) {
+  return [...source.matchAll(/"([^"]+)"/gu)].map((match) => match[1]);
+}
+
 function escapeRegExp(value) {
   return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function parseArgs(argv) {
-  const parsed = {help: false, routes: null, summary: false};
+  const parsed = {help: false, routes: null, selfTest: false, summary: false};
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
     if (arg === "--help" || arg === "-h") parsed.help = true;
+    else if (arg === "--self-test") parsed.selfTest = true;
     else if (arg === "--summary") parsed.summary = true;
     else if (arg === "--check") {
       // Default mode; accepted for parity with other repo checkers.
@@ -369,11 +597,52 @@ function requiredValue(argv, index, flag) {
 }
 
 function printHelp() {
-  console.log(`Usage: node tool/marketing/check_website_routes.mjs [--check] [--summary]
+  console.log(`Usage: node tool/marketing/check_website_routes.mjs [--check] [--summary] [--self-test]
 
 Validates design/website/routes.json against the marketing website route,
-metadata, postbuild, and generated organizer-listing sources.
+metadata, postbuild, generated organizer-listing sources, and route Storybook
+coverage declarations.
 `);
+}
+
+function runSelfTest() {
+  const storyPath = fromRepo("website/src/stories/Example.stories.tsx");
+  const declarations = storyRouteDeclarations(`
+const searchStates = ["default", "filtered"] as const;
+
+export const OrganizerSearch = {
+  parameters: {
+    catchRoute: {
+      id: "organizer_search",
+      path: "/organizers/",
+      reviewStates: searchStates,
+      stateCoverage: {
+        storybook: ["default"],
+        manual: ["filtered"],
+      },
+    },
+    catchComponent: {
+      id: "route_organizer_search",
+      routeIds: ["organizer_search"],
+      states: searchStates,
+    },
+  },
+};
+`, storyPath);
+  assert.deepEqual(declarations, [
+    {
+      exportName: "OrganizerSearch",
+      id: "organizer_search",
+      path: "/organizers/",
+      reviewStates: ["default", "filtered"],
+      stateCoverage: {
+        storybook: ["default"],
+        manual: ["filtered"],
+      },
+      storyPath,
+    },
+  ]);
+  console.log("Website route checker self-test passed.");
 }
 
 function fail(message) {

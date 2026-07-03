@@ -1,15 +1,21 @@
-import {
-  OwnerResponsePrompt,
-  ReviewSignalLane,
-} from "../../../components/site";
+import {SectionHeader} from "../../../shared/site";
 import {
   Button,
   ButtonLink,
-  CheckboxField,
   FormStatus,
+  ListingReviewCheckbox,
+  ListingReviewEmptyState,
+  ListingReviewForm,
+  ListingReviewLanes,
+  ListingReviewSummary,
+  ListingReviewWorkspace,
+  ListingSection,
+  OwnerResponsePrompt,
+  ReviewSignalLane,
   SelectField,
   TextAreaField,
   TextField,
+  UiLabel,
 } from "../../../shared/ui/primitives";
 import {trackCtaClick} from "../../marketing/tracking";
 import {claimHrefForListing} from "../routing";
@@ -44,34 +50,29 @@ export function ListingReviewsSection({listing}: {listing: HostListing}) {
   } = summary;
 
   return (
-    <section
-      className="listing-section listing-section--reviews"
+    <ListingSection
+      variant="reviews"
       id="reviews"
       aria-labelledby="listing-reviews-title"
     >
-      <div className="section-heading" data-reveal>
-        <span className="ui-label">Reviews</span>
-        <h2 id="listing-reviews-title">Public reviews for {listing.name}.</h2>
-        <p>
-          Verified reviews come from logged-in Catch guests after attended
-          events. Reviews submitted on this public page are unverified and can
-          be anonymous.
-        </p>
-      </div>
-
-      <div className="listing-review-summary" data-reveal>
+      <SectionHeader
+        eyebrow="Reviews"
+        id="listing-reviews-title"
+        title={<>Public reviews for {listing.name}.</>}
+        body="Verified reviews come from logged-in Catch guests after attended events. Reviews submitted on this public page are unverified and can be anonymous." />
+      <ListingReviewSummary>
         <div>
-          <span className="ui-label">Rating</span>
+          <UiLabel>Rating</UiLabel>
           <strong>
             {displayReviewCount ? displayRating.toFixed(1) : "No reviews yet"}
           </strong>
         </div>
         <div>
-          <span className="ui-label">Count</span>
+          <UiLabel>Count</UiLabel>
           <strong>{displayReviewCount}</strong>
         </div>
         <div>
-          <span className="ui-label">Verified</span>
+          <UiLabel>Verified</UiLabel>
           <strong>{verifiedCount}</strong>
         </div>
         <ButtonLink
@@ -81,12 +82,11 @@ export function ListingReviewsSection({listing}: {listing: HostListing}) {
         >
           Add review
         </ButtonLink>
-      </div>
-
-      <div className="listing-review-workspace">
+      </ListingReviewSummary>
+      <ListingReviewWorkspace>
         <div>
           {reviews.length ? (
-            <div className="listing-review-lanes">
+            <ListingReviewLanes>
               <ReviewSignalLane
                 title="Verified Catch attendee reviews"
                 body="These reviews come from logged-in guests after attended Catch events and stay separate from public page feedback."
@@ -101,18 +101,18 @@ export function ListingReviewsSection({listing}: {listing: HostListing}) {
                 emptyTitle="No public web reviews yet."
                 emptyBody="Public reviews can be added here; Catch keeps them clearly labeled until they can be tied to a verified event."
               />
-            </div>
+            </ListingReviewLanes>
           ) : (
-            <div className="listing-review-empty" data-reveal>
+            <ListingReviewEmptyState reveal>
               <div>
-                <span className="ui-label">First review</span>
+                <UiLabel>First review</UiLabel>
                 <h3>No public reviews for {listing.name} yet.</h3>
                 <p>
                   Add the first public review here. If the organizer claims this
                   page, they can respond from the verified host account.
                 </p>
               </div>
-            </div>
+            </ListingReviewEmptyState>
           )}
           <OwnerResponsePrompt
             title={isAppCreated ? "Owner replies stay attached to the source." : "Claiming unlocks owner replies."}
@@ -122,17 +122,17 @@ export function ListingReviewsSection({listing}: {listing: HostListing}) {
             stats={ownerPromptStats}
             ctaHref={isAppCreated ? undefined : claimHrefForListing(listing)}
             ctaLabel={isAppCreated ? undefined : "Claim to respond"}
+            onCtaClick={(href) => trackCtaClick("owner_response_prompt", href)}
           />
         </div>
 
-        <form
-          className="listing-review-form"
-          data-reveal
+        <ListingReviewForm
           id={reviewFormId}
           onSubmit={submitReview}
+          reveal
         >
           <div>
-            <span className="ui-label">Add review</span>
+            <UiLabel>Add review</UiLabel>
             <h3>Share feedback for {listing.name}.</h3>
           </div>
           <SelectField
@@ -156,13 +156,12 @@ export function ListingReviewsSection({listing}: {listing: HostListing}) {
             onChange={(event) => setReviewerName(event.target.value)}
             placeholder={isAnonymous ? "Anonymous reviewer" : "Your name"}
           />
-          <CheckboxField
-            className="listing-review-checkbox"
+          <ListingReviewCheckbox
             checked={isAnonymous}
             onChange={(event) => setIsAnonymous(event.target.checked)}
           >
             Post anonymously
-          </CheckboxField>
+          </ListingReviewCheckbox>
           <TextAreaField
             id={`${reviewFormId}-comment`}
             label="Review"
@@ -176,8 +175,8 @@ export function ListingReviewsSection({listing}: {listing: HostListing}) {
             {isSubmitting ? "Publishing..." : "Publish review"}
           </Button>
           {status.message ? <FormStatus status={status} /> : null}
-        </form>
-      </div>
-    </section>
+        </ListingReviewForm>
+      </ListingReviewWorkspace>
+    </ListingSection>
   );
 }

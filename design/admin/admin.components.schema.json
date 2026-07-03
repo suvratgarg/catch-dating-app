@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "admin.components.schema.json",
+  "title": "Catch Admin Component Registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "version",
+    "updated",
+    "owner",
+    "sourceOfTruth",
+    "coverage",
+    "components"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "./admin.components.schema.json"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "updated": {
+      "type": "string"
+    },
+    "owner": {
+      "const": "admin_dashboard"
+    },
+    "sourceOfTruth": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "strategy",
+        "currentFocus",
+        "previewKinds"
+      ],
+      "properties": {
+        "strategy": {
+          "const": "route-workspace-plus-shared-primitives"
+        },
+        "currentFocus": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "previewKinds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "route",
+              "workspace",
+              "shared-primitive",
+              "provider"
+            ]
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "components": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "kind",
+          "owner",
+          "source",
+          "exportName",
+          "css",
+          "preview",
+          "notes"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9_]+$"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "route",
+              "workspace",
+              "shared-primitive",
+              "provider"
+            ]
+          },
+          "owner": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "exportName": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Za-z0-9_]*$"
+          },
+          "css": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "preview": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "status",
+              "states"
+            ],
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "ready",
+                  "planned",
+                  "not-required"
+                ]
+              },
+              "story": {
+                "type": "string"
+              },
+              "exportName": {
+                "type": "string"
+              },
+              "states": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1,
+                "uniqueItems": true
+              }
+            }
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

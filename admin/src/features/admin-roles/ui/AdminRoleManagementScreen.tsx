@@ -13,20 +13,38 @@ import type {
 } from "../../../shared/types/adminTypes";
 import {
   AdminButton,
+  AdminEditorGrid,
+  AdminEditorPanel,
+  AdminEditorSection,
+  AdminFieldGrid,
+  AdminMetricCard,
+  AdminMetricGrid,
+  AdminPublishingFormShell,
+  AdminRoadmapList,
+  AdminRoadmapListItem,
   AdminTag,
+  AdminToolbar,
+  AdminWorkbenchStack,
   AlertRow,
   CheckboxField,
   DataTable,
   EmptyState,
   Panel,
+  QualityList,
   SelectField,
   StateRow,
   StatusChip,
   TableActionButton,
   TextareaField,
   TextField,
+  AdminTagList,
+  AdminIntakeSection,
+  AdminIntakeSectionTitle,
+  AdminRowTitle,
+  AdminTagRow,
 } from "../../../shared/ui/AdminPrimitives";
 import {
+  type AdminRoleManagementController,
   type AdminRoleAssignmentStatusFilter,
   type AdminRoleChangeRecord,
   type AdminRoleScopeContract,
@@ -56,28 +74,35 @@ export function AdminRoleManagementScreen({
     onError,
     onNotice,
   });
+  return <AdminRoleManagementWorkspace controller={controller} />;
+}
+
+export function AdminRoleManagementWorkspace({
+  controller,
+}: {
+  controller: AdminRoleManagementController;
+}) {
   return (
-    <div className="workbench-stack">
-      <section className="metric-grid" aria-label="Admin role management state">
-        <Metric label="Loaded user" value={controller.selectedUser ? 1 : 0} />
-        <Metric label="Selected roles" value={controller.selectedRoles.length} />
-        <Metric label="Recent changes" value={controller.recentChanges.length} />
-        <Metric
+    <AdminWorkbenchStack>
+      <AdminMetricGrid ariaLabel="Admin role management state">
+        <AdminMetricCard label="Loaded user" value={controller.selectedUser ? 1 : 0} />
+        <AdminMetricCard label="Selected roles" value={controller.selectedRoles.length} />
+        <AdminMetricCard label="Recent changes" value={controller.recentChanges.length} />
+        <AdminMetricCard
           label="Save blocked"
           tone={controller.selectedUser && controller.validationIssue ?
             "attention" :
             "normal"}
           value={controller.selectedUser && controller.validationIssue ? 1 : 0}
         />
-      </section>
-
+      </AdminMetricGrid>
       <Panel
-        className="span-2"
+        span={2}
         icon={<UserCheck size={18} strokeWidth={1.9} />}
         title="Admin role lookup"
         action="adminOwner"
       >
-        <div className="workbench-toolbar">
+        <AdminToolbar>
           <TextField
             label="Firebase Auth uid"
             onChange={controller.setTargetUid}
@@ -92,11 +117,10 @@ export function AdminRoleManagementScreen({
           >
             {controller.isLoading ? "Loading" : "Load roles"}
           </AdminButton>
-        </div>
+        </AdminToolbar>
         <RoleScopeContractPanel contract={controller.scopeContract} />
       </Panel>
-
-      <section className="publishing-editor-grid">
+      <AdminEditorGrid>
         <RoleEditorPanel
           isSaving={controller.isSaving}
           note={controller.note}
@@ -108,7 +132,7 @@ export function AdminRoleManagementScreen({
           onRoleToggle={controller.toggleRole}
           onSave={() => void controller.save()}
         />
-        <div className="workbench-stack">
+        <AdminWorkbenchStack>
           <RoleDetailPanel selectedUser={controller.selectedUser} />
           <AssignmentRegisterPanel
             filter={controller.assignmentFilter}
@@ -125,18 +149,18 @@ export function AdminRoleManagementScreen({
             title="Authority boundary"
             action="audited"
           >
-            <div className="quality-list">
+            <QualityList>
               <StateRow label="Read callable" value="adminGetAdminUserRoles" />
               <StateRow label="Write callable" value="adminSetAdminUserRoles" />
               <StateRow label="Required role" value="adminOwner" />
               <StateRow label="Assignment register" value="adminRoleAssignments/{uid}" />
               <StateRow label="Protection" value="Cannot remove your own adminOwner claim" />
               <StateRow label="Directory" value="Bounded assignment register; no email/name search" />
-            </div>
+            </QualityList>
           </Panel>
-        </div>
-      </section>
-    </div>
+        </AdminWorkbenchStack>
+      </AdminEditorGrid>
+    </AdminWorkbenchStack>
   );
 }
 
@@ -146,7 +170,7 @@ function RoleScopeContractPanel({
   contract: AdminRoleScopeContract;
 }) {
   return (
-    <div className="intake-section">
+    <AdminIntakeSection>
       <AlertRow
         icon={<ShieldCheck size={16} strokeWidth={1.9} />}
         title={contract.statusLabel}
@@ -154,21 +178,21 @@ function RoleScopeContractPanel({
       >
         {contract.statusDetail}
       </AlertRow>
-      <div className="quality-list">
+      <QualityList>
         <StateRow label="Normalized uid" value={contract.normalizedUid} />
         <StateRow label="Assignment path" value={contract.assignmentPath} />
         <StateRow label="Sources" value={contract.sourceOfTruth.join(", ")} />
-      </div>
-      <div className="intake-section-title">Not Supported Here</div>
-      <div className="intake-tags">
+      </QualityList>
+      <AdminIntakeSectionTitle>Not Supported Here</AdminIntakeSectionTitle>
+      <AdminTagList>
         {contract.blockedInputs.map((input) => (
           <AdminTag key={input}>{input}</AdminTag>
         ))}
         {contract.blockedActions.map((action) => (
           <AdminTag key={action} tone="muted">{action}</AdminTag>
         ))}
-      </div>
-    </div>
+      </AdminTagList>
+    </AdminIntakeSection>
   );
 }
 
@@ -194,17 +218,16 @@ function RoleEditorPanel({
   validationIssue: string | null;
 }) {
   return (
-    <Panel
-      className="publishing-editor-panel"
+    <AdminEditorPanel
       icon={<Lock size={18} strokeWidth={1.9} />}
       title="Role assignment"
       action={selectedUser ? selectedUser.targetUid : "No user"}
     >
       {selectedUser ? (
-        <div className="publishing-form">
-          <fieldset className="editor-section">
+        <AdminPublishingFormShell>
+          <AdminEditorSection>
             <legend>Admin roles</legend>
-            <div className="form-grid two">
+            <AdminFieldGrid columns={2}>
               {roleOptions.map((role) => (
                 <CheckboxField
                   checked={selectedRoles.includes(role)}
@@ -213,9 +236,9 @@ function RoleEditorPanel({
                   onChange={(checked) => onRoleToggle(role, checked)}
                 />
               ))}
-            </div>
-          </fieldset>
-          <fieldset className="editor-section">
+            </AdminFieldGrid>
+          </AdminEditorSection>
+          <AdminEditorSection>
             <legend>Audit note</legend>
             <TextareaField
               label="Review note"
@@ -226,7 +249,7 @@ function RoleEditorPanel({
             />
             <StateRow label="Note length" value={`${note.trim().length}/1000`} />
             <StateRow label="Save check" value={validationIssue ?? "Ready"} />
-          </fieldset>
+          </AdminEditorSection>
           <AdminButton
             disabled={Boolean(validationIssue) || isSaving}
             icon={<CheckCircle2 size={15} strokeWidth={1.9} />}
@@ -235,16 +258,16 @@ function RoleEditorPanel({
           >
             {isSaving ? "Saving roles" : "Save role changes"}
           </AdminButton>
-        </div>
+        </AdminPublishingFormShell>
       ) : (
         <EmptyState
-          className="workbench-empty"
+          variant="workbench"
           icon={<Clock3 size={16} strokeWidth={1.9} />}
         >
           Load a Firebase Auth uid to inspect and edit admin roles.
         </EmptyState>
       )}
-    </Panel>
+    </AdminEditorPanel>
   );
 }
 
@@ -271,7 +294,7 @@ function AssignmentRegisterPanel({
       title="Access register"
       action={isLoading ? "Loading" : `${rows.length} ${filter}`}
     >
-      <div className="workbench-toolbar compact">
+      <AdminToolbar compact>
         <SelectField
           label="Status"
           onChange={(value) =>
@@ -286,20 +309,20 @@ function AssignmentRegisterPanel({
         >
           Refresh
         </AdminButton>
-      </div>
+      </AdminToolbar>
       <StateRow
         label="Source"
         value={`adminRoleAssignments${generatedAt ? ` / ${formatDateTime(generatedAt)}` : ""}`}
       />
       {rows.length === 0 ? (
         <EmptyState
-          className="workbench-empty"
+          variant="workbench"
           icon={<Clock3 size={16} strokeWidth={1.9} />}
         >
           No admin role assignments match this filter.
         </EmptyState>
       ) : (
-        <DataTable className="workbench-table compact">
+        <DataTable compact variant="workbench">
           <thead>
             <tr>
               <th>User</th>
@@ -312,14 +335,14 @@ function AssignmentRegisterPanel({
             {rows.map((row) => (
               <tr key={row.targetUid}>
                 <td>
-                  <div className="row-title compact">
+                  <AdminRowTitle compact>
                     <strong>{row.email ?? row.targetUid}</strong>
                     <span>
                       {row.displayName ?? row.targetUid} · {
                         formatDateTime(row.updatedAt)
                       }
                     </span>
-                  </div>
+                  </AdminRowTitle>
                 </td>
                 <td>{roleList(row.roles)}</td>
                 <td>
@@ -353,7 +376,7 @@ function RoleDetailPanel({
       action={selectedUser?.disabled ? "disabled" : "active"}
     >
       {selectedUser ? (
-        <div className="quality-list">
+        <QualityList>
           <StateRow label="UID" value={selectedUser.targetUid} />
           <StateRow label="Email" value={selectedUser.email ?? "none"} />
           <StateRow label="Display name" value={selectedUser.displayName ?? "none"} />
@@ -363,15 +386,15 @@ function RoleDetailPanel({
             label="Current roles"
             value={
               selectedUser.roles.length > 0 ? (
-                <span className="tag-row">
+                <AdminTagRow as="span">
                   {selectedUser.roles.map((role) => (
                     <StatusChip key={role}>{role}</StatusChip>
                   ))}
-                </span>
+                </AdminTagRow>
               ) : "none"
             }
           />
-        </div>
+        </QualityList>
       ) : (
         <EmptyState icon={<Clock3 size={16} strokeWidth={1.9} />}>
           No user loaded.
@@ -397,10 +420,9 @@ function RecentChangesPanel({
           No role changes in this session.
         </EmptyState>
       ) : (
-        <div className="roadmap-list">
+        <AdminRoadmapList>
           {changes.map((change) => (
-            <div
-              className="roadmap-list-item"
+            <AdminRoadmapListItem
               key={`${change.targetUid}:${change.afterRoles.join(",")}`}
             >
               <CheckCircle2 size={15} strokeWidth={1.9} />
@@ -408,28 +430,11 @@ function RecentChangesPanel({
                 <strong>{change.targetUid}</strong> ·{" "}
                 {roleList(change.beforeRoles)} to {roleList(change.afterRoles)}
               </span>
-            </div>
+            </AdminRoadmapListItem>
           ))}
-        </div>
+        </AdminRoadmapList>
       )}
     </Panel>
-  );
-}
-
-function Metric({
-  label,
-  tone = "normal",
-  value,
-}: {
-  label: string;
-  tone?: "normal" | "attention";
-  value: number;
-}) {
-  return (
-    <article className={`metric-card ${tone === "attention" ? "attention" : ""}`}>
-      <span>{label}</span>
-      <div className="metric-value">{value}</div>
-    </article>
   );
 }
 

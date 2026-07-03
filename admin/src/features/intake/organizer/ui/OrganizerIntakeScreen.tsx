@@ -13,18 +13,56 @@ import {
   UserCheck,
   Users,
 } from "lucide-react";
-import {EventIntakeWorkspace} from "../../events/ui/EventIntakeWorkspace";
 import {
   AdminButton,
+  AdminMetricCard,
+  AdminMetricGrid,
   AdminTag,
   AlertRow,
-  CheckboxField,
+  EmptyState,
   Panel,
-  SegmentedControl,
+  QualityList,
+  QualityRow,
   SelectField,
   StateRow,
+  StatusChip,
   TextareaField,
   TextField,
+  AdminCommandRow,
+  AdminCommandStack,
+  AdminEyebrow,
+  AdminGuardrailList,
+  AdminIntakeGate,
+  AdminIntakeGateList,
+  AdminIntakeDecisionActions,
+  AdminIntakeDecisionBox,
+  AdminIntakeDecisionState,
+  AdminIntakeLayout,
+  AdminIntakeSourceList,
+  AdminTagList,
+  AdminIntakeSection,
+  AdminIntakeSectionTitle,
+  AdminOrganizerCurationControlGrid,
+  AdminOrganizerCurationControlSection,
+  AdminOrganizerIntakeBadges,
+  AdminOrganizerIntakeCard,
+  AdminOrganizerIntakeCardHeader,
+  AdminOrganizerIntakeCheckboxField,
+  AdminOrganizerIntakeCurationPanel,
+  AdminOrganizerIntakeList,
+  AdminOrganizerIntakeSurfaceGrid,
+  AdminOrganizerLocationResolutionForm,
+  AdminOrganizerPolicyGapColumns,
+  AdminOrganizerSurfaceList,
+  AdminOrganizerSurfaceRow,
+  AdminSearchCandidateActions,
+  AdminSearchCandidateCard,
+  AdminSearchCandidateHeader,
+  AdminSearchCandidateList,
+  AdminSearchCandidatePanel,
+  AdminSearchCandidateSnippet,
+  AdminSurfacePreview,
+  AdminIntakeStateGrid,
 } from "../../../../shared/ui/AdminPrimitives";
 import {
   curationFormKey,
@@ -41,7 +79,10 @@ import {
   policyGapDecisionLabel,
   publicationPacketReady,
 } from "../controllers/organizerIntakeHelpers";
-import {useOrganizerIntakeController} from "../controllers/useOrganizerIntakeController";
+import {
+  type OrganizerIntakeController,
+  useOrganizerIntakeController,
+} from "../controllers/useOrganizerIntakeController";
 import type {
   AdminDecideOrganizerEventCandidateResponse,
   AdminDecideOrganizerIntakeResponse,
@@ -55,6 +96,7 @@ import type {
   OrganizerSurfaceDecision,
 } from "../../../../shared/types/adminTypes";
 import type * as Intake from "../types/organizerIntakeTypes";
+import {useAdminFeedback} from "../../../../shared/feedback/AdminFeedbackContext";
 
 const organizerCurationOperations: OrganizerCurationOperation[] = [
   "surface_decision",
@@ -71,15 +113,19 @@ const organizerSurfaceDecisions: OrganizerSurfaceDecision[] = [
   "mark_historical",
 ];
 
-export function OrganizerIntakeScreen({
-  onError,
-  onNotice,
+export function OrganizerIntakeScreen() {
+  const {setError: onError, setNotice: onNotice} = useAdminFeedback();
+  const controller = useOrganizerIntakeController({onError, onNotice});
+
+  return <OrganizerIntakeWorkspace controller={controller} />;
+}
+
+export function OrganizerIntakeWorkspace({
+  controller,
 }: {
-  onError: (message: string | null) => void;
-  onNotice: (message: string | null) => void;
+  controller: OrganizerIntakeController;
 }) {
   const {
-    activeWorkspace,
     bridge,
     curationForms,
     curationInFlight,
@@ -106,67 +152,31 @@ export function OrganizerIntakeScreen({
     policyDecisionInFlight,
     policyDecisionNotes,
     publicationPacketByEntity,
-    setActiveWorkspace,
     setCurationForms,
     setDecisionNotes,
     setEventDecisionNotes,
     setLocationResolutionForms,
     setManualReportAcknowledgements,
     setPolicyDecisionNotes,
-  } = useOrganizerIntakeController({onError, onNotice});
+  } = controller;
 
   return (
     <>
-      <section className="intake-workspace-header">
-        <div>
-          <div className="intake-eyebrow">Intake workspace</div>
-          <h2>
-            {activeWorkspace === "events" ?
-              "Event intake" :
-              "Organizer intake"}
-          </h2>
-          <p>
-            {activeWorkspace === "events" ?
-              "Search-source setup, raw lead review, candidate editing, and event-owned review decisions before external import planning or Marketing consume these records." :
-              "Organizer discovery, evidence review, curation, publication readiness, and claim handoff."}
-          </p>
-        </div>
-        <SegmentedControl
-          ariaLabel="Intake workspace"
-          className="intake-workspace-tabs"
-          options={[
-            {id: "events", label: "Event leads"},
-            {id: "organizers", label: "Organizers"},
-          ]}
-          value={activeWorkspace}
-          onChange={setActiveWorkspace}
-        />
-      </section>
-
-      <IntakePublicationBoundaryPanel activeWorkspace={activeWorkspace} />
-
-      {activeWorkspace === "events" ? (
-        <EventIntakeWorkspace
-          onError={onError}
-          onNotice={onNotice}
-        />
-      ) : (
-        <>
-          <section className="metric-grid" aria-label="Organizer intake metrics">
+      <AdminMetricGrid ariaLabel="Organizer intake metrics">
         {metrics.map((metric) => (
-          <article
-            className={`metric-tile ${metric.label === "Blocked" ? "attention" : ""}`}
+          <AdminMetricCard
             key={metric.label}
-          >
-            <div className="metric-label">{metric.label}</div>
-            <div className="metric-value">{metric.value.toLocaleString()}</div>
-          </article>
+            label={metric.label}
+            tone={metric.label === "Blocked" ? "attention" : "normal"}
+            value={metric.value.toLocaleString()}
+            variant="tile"
+          />
         ))}
-      </section>
+      </AdminMetricGrid>
 
-      <section className="main-grid intake-layout">
+      <AdminIntakeLayout>
         <Panel
-          className="span-2"
+          span={2}
           icon={<Settings2 size={18} strokeWidth={1.9} />}
           title="Workflow readiness"
           action={bridge.workflowReadiness.status.replaceAll("_", " ")}
@@ -175,7 +185,7 @@ export function OrganizerIntakeScreen({
         </Panel>
 
         <Panel
-          className="span-2"
+          span={2}
           icon={<FileWarning size={18} strokeWidth={1.9} />}
           title="Operator action queue"
           action={`${bridge.operatorActionQueue.summary.actions} actions`}
@@ -184,7 +194,7 @@ export function OrganizerIntakeScreen({
         </Panel>
 
         <Panel
-          className="span-2"
+          span={2}
           icon={<Activity size={18} strokeWidth={1.9} />}
           title="Operational health"
           action={bridge.operationalHealth.summary.healthStatus.replaceAll("_", " ")}
@@ -193,7 +203,7 @@ export function OrganizerIntakeScreen({
         </Panel>
 
         <Panel
-          className="span-2"
+          span={2}
           icon={<CheckCircle2 size={18} strokeWidth={1.9} />}
           title="Pending work coverage"
           action={bridge.pendingWorkCoverage.summary.status.replaceAll("_", " ")}
@@ -204,7 +214,7 @@ export function OrganizerIntakeScreen({
         </Panel>
 
         <Panel
-          className="span-2"
+          span={2}
           icon={<UserCheck size={18} strokeWidth={1.9} />}
           title="Pending admin/product inputs"
           action={`${bridge.pendingInputRequest.summary.requests} inputs`}
@@ -220,7 +230,7 @@ export function OrganizerIntakeScreen({
         </Panel>
 
         <Panel
-          className="span-2"
+          span={2}
           icon={<FileWarning size={18} strokeWidth={1.9} />}
           title="Reviewed answer packets"
           action={bridge.reviewedDecisionAnswerPackets.summary.status.replaceAll("_", " ")}
@@ -231,7 +241,7 @@ export function OrganizerIntakeScreen({
         </Panel>
 
         <Panel
-          className="span-2"
+          span={2}
           icon={<RefreshCw size={18} strokeWidth={1.9} />}
           title="Promotion execution"
           action={bridge.promotionExecutionPacket.summary.status.replaceAll("_", " ")}
@@ -242,7 +252,7 @@ export function OrganizerIntakeScreen({
         </Panel>
 
         <Panel
-          className="span-2"
+          span={2}
           icon={<Users size={18} strokeWidth={1.9} />}
           title="Canonical host registry"
           action={`${bridge.canonicalHostEntities.summary.entities} entities`}
@@ -253,7 +263,7 @@ export function OrganizerIntakeScreen({
         </Panel>
 
         <Panel
-          className="span-2"
+          span={2}
           icon={<Database size={18} strokeWidth={1.9} />}
           title="Canonical evidence index"
           action={`${bridge.canonicalEvidenceIndex.summary.resolvedArtifactRefs} resolved`}
@@ -264,7 +274,7 @@ export function OrganizerIntakeScreen({
         </Panel>
 
         <Panel
-          className="span-2"
+          span={2}
           icon={<CheckCircle2 size={18} strokeWidth={1.9} />}
           title="Publication review packets"
           action={`${bridge.publicationReviewPackets.summary.readyForManualPublicationReview} ready`}
@@ -275,7 +285,7 @@ export function OrganizerIntakeScreen({
         </Panel>
 
         <Panel
-          className="span-2"
+          span={2}
           icon={<LineChart size={18} strokeWidth={1.9} />}
           title="Publication impact preview"
           action={`${bridge.publicationDecisionImpactPreview.summary.wouldPublish} would publish`}
@@ -286,7 +296,7 @@ export function OrganizerIntakeScreen({
         </Panel>
 
         <Panel
-          className="span-2"
+          span={2}
           icon={<Database size={18} strokeWidth={1.9} />}
           title="Claim-target sync preview"
           action={`${bridge.claimTargetSyncPreview.summary.writesNeeded} writes`}
@@ -297,7 +307,7 @@ export function OrganizerIntakeScreen({
         </Panel>
 
         <Panel
-          className="span-2"
+          span={2}
           icon={<FileWarning size={18} strokeWidth={1.9} />}
           title="Policy gap register"
           action={`${bridge.policyGaps.summary.reviewDecisions} reviewed`}
@@ -318,7 +328,7 @@ export function OrganizerIntakeScreen({
         </Panel>
 
         <Panel
-          className="span-2"
+          span={2}
           icon={<FileWarning size={18} strokeWidth={1.9} />}
           title="Policy decision packets"
           action={`${bridge.policyDecisionPackets.summary.unansweredQuestions} inputs`}
@@ -329,7 +339,7 @@ export function OrganizerIntakeScreen({
         </Panel>
 
         <Panel
-          className="span-2"
+          span={2}
           icon={<Clock3 size={18} strokeWidth={1.9} />}
           title="Event crawl run plan"
           action={`${bridge.crawlRunPlan.summary.blocked} blocked`}
@@ -338,7 +348,7 @@ export function OrganizerIntakeScreen({
         </Panel>
 
         <Panel
-          className="span-2"
+          span={2}
           icon={<Database size={18} strokeWidth={1.9} />}
           title="Raw artifact storage"
           action={`${bridge.rawArtifactStorage.summary.remoteUploadBlocked} blocked`}
@@ -349,7 +359,7 @@ export function OrganizerIntakeScreen({
         </Panel>
 
         <Panel
-          className="span-2"
+          span={2}
           icon={<FolderSearch size={18} strokeWidth={1.9} />}
           title="Discovery search plan"
           action={`${bridge.discoverySearchPlan.summary.launchCityPlanned} launch queries`}
@@ -360,7 +370,7 @@ export function OrganizerIntakeScreen({
         </Panel>
 
         <Panel
-          className="span-2"
+          span={2}
           icon={<FileWarning size={18} strokeWidth={1.9} />}
           title="Publishing contract anchors"
           action="app + website schemas"
@@ -371,7 +381,7 @@ export function OrganizerIntakeScreen({
         </Panel>
 
         <Panel
-          className="span-2"
+          span={2}
           icon={<LineChart size={18} strokeWidth={1.9} />}
           title="Source mention resolution"
           action={`${bridge.sourceMentionResolution.resolutionClusters.summary.clusters} clusters`}
@@ -382,7 +392,7 @@ export function OrganizerIntakeScreen({
         </Panel>
 
         <Panel
-          className="span-2"
+          span={2}
           icon={<FolderSearch size={18} strokeWidth={1.9} />}
           title="Search surface candidates"
           action={`${bridge.searchCandidates.summary.candidates} surfaces`}
@@ -396,7 +406,7 @@ export function OrganizerIntakeScreen({
         </Panel>
 
         <Panel
-          className="span-2"
+          span={2}
           icon={<Activity size={18} strokeWidth={1.9} />}
           title="External event candidates"
           action={bridge.externalEventCandidates.policy.status}
@@ -417,7 +427,7 @@ export function OrganizerIntakeScreen({
         </Panel>
 
         <Panel
-          className="span-2"
+          span={2}
           icon={<FolderSearch size={18} strokeWidth={1.9} />}
           title="External event location resolution"
           action={`${bridge.externalEventLocationResolution.summary.tasks} tasks`}
@@ -437,7 +447,7 @@ export function OrganizerIntakeScreen({
         </Panel>
 
         <Panel
-          className="span-2"
+          span={2}
           icon={<Database size={18} strokeWidth={1.9} />}
           title="External event import plan"
           action={bridge.externalEventImportPlan.policy.status}
@@ -448,7 +458,7 @@ export function OrganizerIntakeScreen({
         </Panel>
 
         <Panel
-          className="span-2"
+          span={2}
           icon={<Settings2 size={18} strokeWidth={1.9} />}
           title="External event import preflight"
           action={bridge.externalEventImportExecutionPlan.policy.status}
@@ -463,39 +473,39 @@ export function OrganizerIntakeScreen({
           title="Bridge guardrails"
           action={`Schema v${bridge.schemaVersion}`}
         >
-          <div className="guardrail-list">
+          <AdminGuardrailList>
             {bridge.guardrails.map((guardrail) => (
-              <div className="quality-row warning" key={guardrail}>
-                <FileWarning size={16} strokeWidth={1.9} />
-                <div>
-                  <strong>{guardrail}</strong>
-                </div>
-              </div>
+              <QualityRow
+                key={guardrail}
+                tone="warning"
+                icon={<FileWarning size={16} strokeWidth={1.9} />}>
+                <strong>{guardrail}</strong>
+              </QualityRow>
             ))}
-          </div>
-          <div className="intake-source-list">
+          </AdminGuardrailList>
+          <AdminIntakeSourceList>
             {Object.entries(bridge.generatedFrom).map(([label, source]) => (
               <StateRow key={label} label={label} value={source} />
             ))}
-          </div>
-          <div className="intake-section curation-panel">
-            <div className="intake-section-title">Dedupe curation</div>
-            <div className="intake-state-grid">
+          </AdminIntakeSourceList>
+          <AdminOrganizerIntakeCurationPanel>
+            <AdminIntakeSectionTitle>Dedupe curation</AdminIntakeSectionTitle>
+            <AdminIntakeStateGrid>
               <StateRow label="Operations" value={String(bridge.curation.summary.operations)} />
               <StateRow label="Attached" value={String(bridge.curation.summary.attachedSurfaces ?? 0)} />
               <StateRow label="Merges" value={String(bridge.curation.summary.merges)} />
               <StateRow label="Surface decisions" value={String(bridge.curation.summary.surfaceDecisions)} />
               <StateRow label="Splits" value={String(bridge.curation.summary.splitSurfaces)} />
-            </div>
-            <div className="command-stack">
+            </AdminIntakeStateGrid>
+            <AdminCommandStack>
               {Object.entries(bridge.curation.commands).map(([label, command]) => (
-                <div className="command-row" key={label}>
+                <AdminCommandRow key={label}>
                   <span>{label}</span>
                   <code>{command}</code>
-                </div>
+                </AdminCommandRow>
               ))}
-            </div>
-          </div>
+            </AdminCommandStack>
+          </AdminOrganizerIntakeCurationPanel>
         </Panel>
 
         <Panel
@@ -503,60 +513,59 @@ export function OrganizerIntakeScreen({
           title="Event crawl readiness"
           action={bridge.crawlPlan.policy.status}
         >
-          <div className="intake-state-grid">
+          <AdminIntakeStateGrid>
             <StateRow label="Scheduler" value={bridge.crawlPlan.policy.schedulerEnabled ? "enabled" : "disabled"} />
             <StateRow label="Default policy" value={bridge.crawlPlan.policy.defaultSurfacePolicy} />
             <StateRow label="Capable" value={String(bridge.crawlPlan.summary.crawlCapableSurfaces)} />
             <StateRow label="Blocked" value={String(bridge.crawlPlan.summary.blockedSurfaces)} />
-          </div>
+          </AdminIntakeStateGrid>
 
-          <div className="intake-tags">
+          <AdminTagList>
             {Object.entries(bridge.crawlPlan.summary.platforms)
               .sort(([left], [right]) => left.localeCompare(right))
               .map(([platform, count]) => (
-                <span className="intake-tag" key={platform}>
+                <AdminTag key={platform}>
                   {platform} x{count}
-                </span>
+                </AdminTag>
               ))}
-          </div>
+          </AdminTagList>
 
-          <div className="guardrail-list">
+          <AdminGuardrailList>
             {bridge.crawlPlan.guardrails.map((guardrail) => (
-              <div className="quality-row warning" key={guardrail}>
-                <Clock3 size={16} strokeWidth={1.9} />
-                <div>
-                  <strong>{guardrail}</strong>
-                </div>
-              </div>
+              <QualityRow
+                key={guardrail}
+                tone="warning"
+                icon={<Clock3 size={16} strokeWidth={1.9} />}>
+                <strong>{guardrail}</strong>
+              </QualityRow>
             ))}
-          </div>
+          </AdminGuardrailList>
 
-          <div className="intake-section">
-            <div className="intake-section-title">Blockers</div>
-            <div className="intake-tags">
+          <AdminIntakeSection>
+            <AdminIntakeSectionTitle>Blockers</AdminIntakeSectionTitle>
+            <AdminTagList>
               {Object.entries(bridge.crawlPlan.summary.blockers)
                 .sort(([left], [right]) => left.localeCompare(right))
                 .map(([blocker, count]) => (
-                  <span className="intake-tag muted" key={blocker}>
+                  <AdminTag key={blocker} tone="muted">
                     {blocker} x{count}
-                  </span>
+                  </AdminTag>
                 ))}
-            </div>
-          </div>
+            </AdminTagList>
+          </AdminIntakeSection>
         </Panel>
 
         <Panel
-          className="span-2"
+          span={2}
           icon={<FolderSearch size={18} strokeWidth={1.9} />}
           title="Private entity queue"
           action={`${bridge.items.length} entities`}
         >
-          <div className="intake-list">
+          <AdminOrganizerIntakeList>
             {bridge.items.length === 0 ? (
-              <div className="empty-row">
-                <CheckCircle2 size={16} strokeWidth={1.9} />
-                <span>Clear</span>
-              </div>
+              <EmptyState icon={<CheckCircle2 size={16} strokeWidth={1.9} />}>
+                Clear
+              </EmptyState>
             ) : (
               bridge.items.map((item) => (
                 <OrganizerIntakeCard
@@ -605,80 +614,10 @@ export function OrganizerIntakeScreen({
                 />
               ))
             )}
-          </div>
+          </AdminOrganizerIntakeList>
         </Panel>
-      </section>
-        </>
-      )}
+      </AdminIntakeLayout>
     </>
-  );
-}
-
-function IntakePublicationBoundaryPanel({
-  activeWorkspace,
-}: {
-  activeWorkspace: "events" | "organizers";
-}) {
-  const isEvents = activeWorkspace === "events";
-  return (
-    <Panel
-      className="span-2"
-      icon={<Lock size={18} strokeWidth={1.9} />}
-      title="Intake publication boundary"
-      action={isEvents ? "event review only" : "organizer review only"}
-    >
-      <AlertRow
-        icon={<Lock size={16} strokeWidth={1.9} />}
-        title={isEvents ? "Event candidates are not app events" : "Organizer approvals are not final publication"}
-      >
-        {isEvents ?
-          "Event Intake reads eventIntakeDashboards/current and writes eventIntakeReviewDecisions. Canonical event creation, external event promotion, booking, payments, and waitlists stay outside this workspace." :
-          "Organizer Intake records review, curation, policy, and location decisions. Canonical organizer publishing, public route indexing, and claim ownership still pass through promotion tooling and the Organizers workspace."}
-      </AlertRow>
-      <div className="quality-list">
-        <StateRow
-          label="Read model"
-          value={isEvents ?
-            "eventIntakeDashboards/current plus generated sample bridge" :
-            "repo-owned organizer intake bridge JSON"}
-        />
-        <StateRow
-          label="Writes here"
-          value={isEvents ?
-            "eventIntakeReviewDecisions/{decisionId}" :
-            "organizer review, curation, policy, and location decision records"}
-        />
-        {isEvents ? (
-          <StateRow
-            label="Callable boundary"
-            value="adminGetEventIntakeDashboard + adminRecordEventIntakeReviewDecision"
-          />
-        ) : null}
-        <StateRow
-          label="Not here"
-          value={isEvents ?
-            "events/{id}, externalEvents/{id}, bookings, payments, waitlists" :
-            "unchecked canonical clubs/{id} publication, route indexing, claim ownership transfer"}
-        />
-      </div>
-      <div className="intake-tags">
-        {(isEvents ? [
-          "source evidence",
-          "dedupe",
-          "location",
-          "policy",
-          "review note",
-        ] : [
-          "evidence",
-          "surface curation",
-          "policy gaps",
-          "publication packet",
-          "claim handoff",
-        ]).map((label) => (
-          <AdminTag key={label}>{label}</AdminTag>
-        ))}
-      </div>
-    </Panel>
   );
 }
 
@@ -688,33 +627,31 @@ function OrganizerWorkflowReadinessView({
   readiness: Intake.OrganizerWorkflowReadiness;
 }) {
   return (
-    <div className="search-candidate-panel">
-      <div className="intake-state-grid">
+    <AdminSearchCandidatePanel>
+      <AdminIntakeStateGrid>
         <StateRow label="Ready" value={String(readiness.summary.ready)} />
         <StateRow label="Review" value={String(readiness.summary.reviewNeeded)} />
         <StateRow label="Waiting" value={String(readiness.summary.waiting)} />
         <StateRow label="Policy" value={String(readiness.summary.policyNeeded)} />
-      </div>
-
-      <div className="intake-tags">
-        <span className={`intake-tag ${readiness.summary.localPromotionPipelineReady ? "" : "muted"}`}>
+      </AdminIntakeStateGrid>
+      <AdminTagList>
+        <AdminTag tone={readiness.summary.localPromotionPipelineReady ? "neutral" : "muted"}>
           local pipeline {readiness.summary.localPromotionPipelineReady ? "ready" : "blocked"}
-        </span>
-        <span className={`intake-tag ${readiness.summary.publicProjectionReady ? "" : "muted"}`}>
+        </AdminTag>
+        <AdminTag tone={readiness.summary.publicProjectionReady ? "neutral" : "muted"}>
           public projection {readiness.summary.publicProjectionReady ? "ready" : "waiting"}
-        </span>
-        <span className={`intake-tag ${readiness.summary.claimSyncReady ? "" : "muted"}`}>
+        </AdminTag>
+        <AdminTag tone={readiness.summary.claimSyncReady ? "neutral" : "muted"}>
           claim sync {readiness.summary.claimSyncReady ? "ready" : "waiting"}
-        </span>
-        <span className={`intake-tag ${readiness.summary.recurringCrawlEnabled ? "" : "muted"}`}>
+        </AdminTag>
+        <AdminTag tone={readiness.summary.recurringCrawlEnabled ? "neutral" : "muted"}>
           crawl {readiness.summary.recurringCrawlEnabled ? "enabled" : "disabled"}
-        </span>
-      </div>
-
-      <div className="intake-gate-list">
+        </AdminTag>
+      </AdminTagList>
+      <AdminIntakeGateList>
         {readiness.gates.map((gate) => (
-          <div
-            className={`intake-gate ${readinessGateTone(gate.status)}`}
+          <AdminIntakeGate
+            tone={readinessGateTone(gate.status)}
             key={gate.id}
           >
             {gate.status === "ready" ? (
@@ -729,22 +666,21 @@ function OrganizerWorkflowReadinessView({
               <span>{gate.detail}</span>
               <span>{gate.nextAction}</span>
             </div>
-          </div>
+          </AdminIntakeGate>
         ))}
-      </div>
-
-      <div className="intake-section">
-        <div className="intake-section-title">Commands</div>
-        <div className="command-stack">
+      </AdminIntakeGateList>
+      <AdminIntakeSection>
+        <AdminIntakeSectionTitle>Commands</AdminIntakeSectionTitle>
+        <AdminCommandStack>
           {Object.entries(readiness.commands).map(([label, command]) => (
-            <div className="command-row" key={label}>
+            <AdminCommandRow key={label}>
               <span>{label}</span>
               <code>{command}</code>
-            </div>
+            </AdminCommandRow>
           ))}
-        </div>
-      </div>
-    </div>
+        </AdminCommandStack>
+      </AdminIntakeSection>
+    </AdminSearchCandidatePanel>
   );
 }
 
@@ -756,99 +692,90 @@ function OrganizerOperatorActionQueueView({
   const visibleActions = queue.actions.slice(0, 8);
 
   return (
-    <div className="search-candidate-panel">
-      <div className="intake-state-grid">
+    <AdminSearchCandidatePanel>
+      <AdminIntakeStateGrid>
         <StateRow label="Actions" value={String(queue.summary.actions)} />
         <StateRow label="Admin" value={String(queue.summary.adminDecisionsRequired)} />
         <StateRow label="Policy" value={String(queue.summary.policyInputsRequired)} />
         <StateRow label="Waiting" value={String(queue.summary.waitingActions)} />
-      </div>
-
-      <div className="intake-tags">
+      </AdminIntakeStateGrid>
+      <AdminTagList>
         {Object.entries(queue.summary.actionsByPriority).map(([priority, count]) => (
-          <span className="intake-tag muted" key={priority}>
+          <AdminTag key={priority} tone="muted">
             {priority} x{count}
-          </span>
+          </AdminTag>
         ))}
         {Object.entries(queue.summary.actionsByType).map(([type, count]) => (
-          <span className="intake-tag muted" key={type}>
+          <AdminTag key={type} tone="muted">
             {type.replaceAll("_", " ")} x{count}
-          </span>
+          </AdminTag>
         ))}
-      </div>
-
-      <div className="quality-row warning">
-        <Lock size={16} strokeWidth={1.9} />
-        <div>
-          <strong>{queue.guardrails[0]}</strong>
-          <span>{queue.guardrails[1]}</span>
-        </div>
-      </div>
-
-      <div className="search-candidate-list">
+      </AdminTagList>
+      <QualityRow tone="warning" icon={<Lock size={16} strokeWidth={1.9} />}>
+        <strong>{queue.guardrails[0]}</strong>
+        <span>{queue.guardrails[1]}</span>
+      </QualityRow>
+      <AdminSearchCandidateList>
         {visibleActions.map((action) => (
-          <article className="search-candidate-card" key={action.actionId}>
-            <header className="search-candidate-header">
+          <AdminSearchCandidateCard key={action.actionId}>
+            <AdminSearchCandidateHeader>
               <div>
-                <div className="intake-eyebrow">
+                <AdminEyebrow>
                   {action.actionType.replaceAll("_", " ")} / {action.priority}
-                </div>
+                </AdminEyebrow>
                 <h3>{action.subjectName}</h3>
               </div>
-              <span className={`intake-badge ${action.status === "requires_admin_decision" ? "ready" : ""}`}>
+              <StatusChip tone={action.status === "requires_admin_decision" ? "ready" : ""}>
                 {action.status.replaceAll("_", " ")}
-              </span>
-            </header>
+              </StatusChip>
+            </AdminSearchCandidateHeader>
 
-            <div className="intake-state-grid">
+            <AdminIntakeStateGrid>
               <StateRow label="Subject" value={action.subjectId} />
               <StateRow label="Task" value={action.taskType.replaceAll("_", " ")} />
               <StateRow label="Options" value={String(action.decisionOptions.length)} />
               <StateRow label="Blockers" value={String(action.blockers.length)} />
-            </div>
+            </AdminIntakeStateGrid>
 
-            <div className="quality-row">
-              <FileWarning size={16} strokeWidth={1.9} />
-              <div>
-                <strong>{action.nextAction}</strong>
-                <span>{action.detail}</span>
-              </div>
-            </div>
+            <QualityRow icon={<FileWarning size={16} strokeWidth={1.9} />}>
+              <strong>{action.nextAction}</strong>
+              <span>{action.detail}</span>
+            </QualityRow>
 
-            <div className="intake-tags">
+            <AdminTagList>
               {action.decisionOptions.map((option) => (
-                <span className="intake-tag" key={option}>
+                <AdminTag key={option}>
                   {option.replaceAll("_", " ")}
-                </span>
+                </AdminTag>
               ))}
               {action.requiredAcknowledgements?.manualReportsReviewed ? (
-                <span className="intake-tag muted">manual reports</span>
+                <AdminTag tone="muted">manual reports</AdminTag>
               ) : null}
               {(action.requiredInputs ?? []).slice(0, 6).map((input) => (
-                <span className="intake-tag muted" key={input}>
+                <AdminTag key={input} tone="muted">
                   {input.replaceAll("_", " ")}
-                </span>
+                </AdminTag>
               ))}
               {action.impact?.wouldIndex ? (
-                <span className="intake-tag">indexable</span>
+                <AdminTag>indexable</AdminTag>
               ) : null}
               {action.impact?.wouldCreateClaimTarget ? (
-                <span className="intake-tag">claim target</span>
+                <AdminTag>claim target</AdminTag>
               ) : null}
-            </div>
+            </AdminTagList>
 
-            <div className="command-stack">
+            <AdminCommandStack>
               {action.commands.slice(0, 3).map((command, index) => (
-                <div className="command-row" key={`${action.actionId}:${index}`}>
+                <AdminCommandRow key={`${action.actionId}:${index}`}>
                   <span>{index === 0 ? "command" : "then"}</span>
                   <code>{command}</code>
-                </div>
+                </AdminCommandRow>
               ))}
-            </div>
-          </article>
+            </AdminCommandStack>
+          </AdminSearchCandidateCard>
         ))}
-      </div>
-    </div>
+      </AdminSearchCandidateList>
+    </AdminSearchCandidatePanel>
   );
 }
 
@@ -860,53 +787,47 @@ function OrganizerOperationalHealthView({
   const visibleWorkstreams = health.workstreams.slice(0, 6);
 
   return (
-    <div className="search-candidate-panel">
-      <div className="intake-state-grid">
+    <AdminSearchCandidatePanel>
+      <AdminIntakeStateGrid>
         <StateRow label="Status" value={health.summary.healthStatus.replaceAll("_", " ")} />
         <StateRow label="Workstreams" value={String(health.summary.workstreams)} />
         <StateRow label="Action" value={String(health.summary.actionRequiredWorkstreams)} />
         <StateRow label="Policy" value={String(health.summary.policyBlockedWorkstreams)} />
         <StateRow label="Waiting" value={String(health.summary.waitingWorkstreams)} />
         <StateRow label="Ready" value={String(health.summary.readyWorkstreams)} />
-      </div>
-
-      <div className="intake-tags">
+      </AdminIntakeStateGrid>
+      <AdminTagList>
         {Object.entries(health.summary.workstreamsByPriority).map(([priority, count]) => (
-          <span className="intake-tag muted" key={priority}>
+          <AdminTag key={priority} tone="muted">
             {priority} x{count}
-          </span>
+          </AdminTag>
         ))}
         {Object.entries(health.summary.workstreamsByStatus).map(([status, count]) => (
-          <span className="intake-tag muted" key={status}>
+          <AdminTag key={status} tone="muted">
             {status.replaceAll("_", " ")} x{count}
-          </span>
+          </AdminTag>
         ))}
-      </div>
-
-      <div className="quality-row warning">
-        <Lock size={16} strokeWidth={1.9} />
-        <div>
-          <strong>{health.guardrails[0]}</strong>
-          <span>{health.guardrails[1]}</span>
-        </div>
-      </div>
-
-      <div className="search-candidate-list">
+      </AdminTagList>
+      <QualityRow tone="warning" icon={<Lock size={16} strokeWidth={1.9} />}>
+        <strong>{health.guardrails[0]}</strong>
+        <span>{health.guardrails[1]}</span>
+      </QualityRow>
+      <AdminSearchCandidateList>
         {visibleWorkstreams.map((stream) => (
-          <article className="search-candidate-card" key={stream.id}>
-            <header className="search-candidate-header">
+          <AdminSearchCandidateCard key={stream.id}>
+            <AdminSearchCandidateHeader>
               <div>
-                <div className="intake-eyebrow">
+                <AdminEyebrow>
                   {stream.priority} / {stream.id.replaceAll("_", " ")}
-                </div>
+                </AdminEyebrow>
                 <h3>{stream.label}</h3>
               </div>
-              <span className={`intake-badge ${healthStatusTone(stream.status)}`}>
+              <StatusChip tone={healthStatusTone(stream.status)}>
                 {stream.status.replaceAll("_", " ")}
-              </span>
-            </header>
+              </StatusChip>
+            </AdminSearchCandidateHeader>
 
-            <div className="intake-state-grid">
+            <AdminIntakeStateGrid>
               {Object.entries(stream.metrics).slice(0, 6).map(([metric, value]) => (
                 <StateRow
                   key={metric}
@@ -914,40 +835,37 @@ function OrganizerOperationalHealthView({
                   value={formatHealthMetric(value)}
                 />
               ))}
-            </div>
+            </AdminIntakeStateGrid>
 
             {stream.nextActions.length > 0 ? (
-              <div className="quality-row">
-                <FileWarning size={16} strokeWidth={1.9} />
-                <div>
-                  <strong>{stream.nextActions[0]}</strong>
-                  {stream.nextActions.slice(1, 3).map((action) => (
-                    <span key={action}>{action}</span>
-                  ))}
-                </div>
-              </div>
+              <QualityRow icon={<FileWarning size={16} strokeWidth={1.9} />}>
+                <strong>{stream.nextActions[0]}</strong>
+                {stream.nextActions.slice(1, 3).map((action) => (
+                  <span key={action}>{action}</span>
+                ))}
+              </QualityRow>
             ) : null}
 
-            <div className="intake-tags">
+            <AdminTagList>
               {stream.blockers.slice(0, 6).map((blocker) => (
-                <span className="intake-tag muted" key={blocker}>
+                <AdminTag key={blocker} tone="muted">
                   {blocker.replaceAll("_", " ")}
-                </span>
+                </AdminTag>
               ))}
-            </div>
+            </AdminTagList>
 
-            <div className="command-stack">
+            <AdminCommandStack>
               {stream.commands.slice(0, 2).map((command, index) => (
-                <div className="command-row" key={`${stream.id}:${index}`}>
+                <AdminCommandRow key={`${stream.id}:${index}`}>
                   <span>{index === 0 ? "command" : "then"}</span>
                   <code>{command}</code>
-                </div>
+                </AdminCommandRow>
               ))}
-            </div>
-          </article>
+            </AdminCommandStack>
+          </AdminSearchCandidateCard>
         ))}
-      </div>
-    </div>
+      </AdminSearchCandidateList>
+    </AdminSearchCandidatePanel>
   );
 }
 
@@ -959,8 +877,8 @@ function OrganizerPendingWorkCoverageView({
   const visibleEntries = coverage.entries.slice(0, 8);
 
   return (
-    <div className="search-candidate-panel">
-      <div className="intake-state-grid">
+    <AdminSearchCandidatePanel>
+      <AdminIntakeStateGrid>
         <StateRow
           label="Status"
           value={coverage.summary.status.replaceAll("_", " ")}
@@ -985,50 +903,44 @@ function OrganizerPendingWorkCoverageView({
           label="Untriaged"
           value={String(coverage.summary.untriagedWorkstreams)}
         />
-      </div>
-
-      <div className="intake-tags">
+      </AdminIntakeStateGrid>
+      <AdminTagList>
         {coverage.summary.highestPriority ? (
-          <span className="intake-tag">
+          <AdminTag>
             highest {coverage.summary.highestPriority}
-          </span>
+          </AdminTag>
         ) : null}
         {Object.entries(coverage.summary.coverageByStatus).map(([status, count]) => (
-          <span className="intake-tag muted" key={status}>
+          <AdminTag key={status} tone="muted">
             {status.replaceAll("_", " ")} x{count}
-          </span>
+          </AdminTag>
         ))}
         {Object.entries(coverage.summary.workstreamsByPriority).map(([priority, count]) => (
-          <span className="intake-tag muted" key={priority}>
+          <AdminTag key={priority} tone="muted">
             {priority} x{count}
-          </span>
+          </AdminTag>
         ))}
-      </div>
-
-      <div className="quality-row warning">
-        <Lock size={16} strokeWidth={1.9} />
-        <div>
-          <strong>{coverage.guardrails[0]}</strong>
-          <span>{coverage.guardrails[1]}</span>
-        </div>
-      </div>
-
-      <div className="search-candidate-list">
+      </AdminTagList>
+      <QualityRow tone="warning" icon={<Lock size={16} strokeWidth={1.9} />}>
+        <strong>{coverage.guardrails[0]}</strong>
+        <span>{coverage.guardrails[1]}</span>
+      </QualityRow>
+      <AdminSearchCandidateList>
         {visibleEntries.map((entry) => (
-          <article className="search-candidate-card" key={entry.coverageId}>
-            <header className="search-candidate-header">
+          <AdminSearchCandidateCard key={entry.coverageId}>
+            <AdminSearchCandidateHeader>
               <div>
-                <div className="intake-eyebrow">
+                <AdminEyebrow>
                   {entry.priority} / {entry.workstreamId.replaceAll("_", " ")}
-                </div>
+                </AdminEyebrow>
                 <h3>{entry.label}</h3>
               </div>
-              <span className={`intake-badge ${coverageStatusTone(entry.coverageStatus)}`}>
+              <StatusChip tone={coverageStatusTone(entry.coverageStatus)}>
                 {entry.coverageStatus.replaceAll("_", " ")}
-              </span>
-            </header>
+              </StatusChip>
+            </AdminSearchCandidateHeader>
 
-            <div className="intake-state-grid">
+            <AdminIntakeStateGrid>
               <StateRow label="Status" value={entry.status.replaceAll("_", " ")} />
               <StateRow
                 label="Blocker"
@@ -1042,50 +954,47 @@ function OrganizerPendingWorkCoverageView({
                 label="Follow-ups"
                 value={String(entry.followUpIds.length)}
               />
-            </div>
+            </AdminIntakeStateGrid>
 
             {entry.nextActions.length > 0 ? (
-              <div className="quality-row">
-                <FileWarning size={16} strokeWidth={1.9} />
-                <div>
-                  <strong>{entry.nextActions[0]}</strong>
-                  {entry.nextActions.slice(1, 3).map((action) => (
-                    <span key={action}>{action}</span>
-                  ))}
-                </div>
-              </div>
+              <QualityRow icon={<FileWarning size={16} strokeWidth={1.9} />}>
+                <strong>{entry.nextActions[0]}</strong>
+                {entry.nextActions.slice(1, 3).map((action) => (
+                  <span key={action}>{action}</span>
+                ))}
+              </QualityRow>
             ) : null}
 
-            <div className="intake-tags">
+            <AdminTagList>
               {entry.pendingRequestIds.slice(0, 6).map((requestId) => (
-                <span className="intake-tag" key={requestId}>
+                <AdminTag key={requestId}>
                   {requestId.replaceAll("_", " ")}
-                </span>
+                </AdminTag>
               ))}
               {entry.followUpIds.slice(0, 6).map((followUpId) => (
-                <span className="intake-tag muted" key={followUpId}>
+                <AdminTag key={followUpId} tone="muted">
                   {followUpId.replaceAll("_", " ")}
-                </span>
+                </AdminTag>
               ))}
               {entry.blockers.slice(0, 6).map((blocker) => (
-                <span className="intake-tag muted" key={blocker}>
+                <AdminTag key={blocker} tone="muted">
                   {blocker}
-                </span>
+                </AdminTag>
               ))}
-            </div>
+            </AdminTagList>
 
-            <div className="command-stack">
+            <AdminCommandStack>
               {entry.commands.slice(0, 3).map((command, index) => (
-                <div className="command-row" key={`${entry.coverageId}:${index}`}>
+                <AdminCommandRow key={`${entry.coverageId}:${index}`}>
                   <span>{index === 0 ? "command" : "then"}</span>
                   <code>{command}</code>
-                </div>
+                </AdminCommandRow>
               ))}
-            </div>
-          </article>
+            </AdminCommandStack>
+          </AdminSearchCandidateCard>
         ))}
-      </div>
-    </div>
+      </AdminSearchCandidateList>
+    </AdminSearchCandidatePanel>
   );
 }
 
@@ -1111,43 +1020,37 @@ function OrganizerPendingInputRequestView({
   const visibleFollowUps = request.followUps.slice(0, 6);
 
   return (
-    <div className="search-candidate-panel">
-      <div className="intake-state-grid">
+    <AdminSearchCandidatePanel>
+      <AdminIntakeStateGrid>
         <StateRow label="Inputs" value={String(request.summary.requests)} />
         <StateRow label="Admin" value={String(request.summary.adminPublicationRequests)} />
         <StateRow label="Policy" value={String(request.summary.policyDecisionRequests)} />
         <StateRow label="Questions" value={String(request.summary.requiredPolicyQuestions)} />
         <StateRow label="Manual acks" value={String(request.summary.manualPublicationAcknowledgements)} />
         <StateRow label="Follow-ups" value={String(request.summary.workflowFollowUps)} />
-      </div>
-
-      <div className="intake-tags">
+      </AdminIntakeStateGrid>
+      <AdminTagList>
         {request.summary.highestPriority ? (
-          <span className="intake-tag">
+          <AdminTag>
             highest {request.summary.highestPriority}
-          </span>
+          </AdminTag>
         ) : null}
         {Object.entries(request.summary.requestsByOwner).map(([owner, count]) => (
-          <span className="intake-tag muted" key={owner}>
+          <AdminTag key={owner} tone="muted">
             {owner.replaceAll("_", " ")} x{count}
-          </span>
+          </AdminTag>
         ))}
         {Object.entries(request.summary.requestsByType).map(([type, count]) => (
-          <span className="intake-tag muted" key={type}>
+          <AdminTag key={type} tone="muted">
             {type.replaceAll("_", " ")} x{count}
-          </span>
+          </AdminTag>
         ))}
-      </div>
-
-      <div className="quality-row warning">
-        <Lock size={16} strokeWidth={1.9} />
-        <div>
-          <strong>{request.guardrails[0]}</strong>
-          <span>{request.guardrails[1]}</span>
-        </div>
-      </div>
-
-      <div className="search-candidate-list">
+      </AdminTagList>
+      <QualityRow tone="warning" icon={<Lock size={16} strokeWidth={1.9} />}>
+        <strong>{request.guardrails[0]}</strong>
+        <span>{request.guardrails[1]}</span>
+      </QualityRow>
+      <AdminSearchCandidateList>
         {visibleRequests.map((input) => {
           const submittedDecision =
             pendingInputSubmittedDecision({
@@ -1164,226 +1067,203 @@ function OrganizerPendingInputRequestView({
           const isDeciding = Boolean(inFlightDecision);
 
           return (
-          <article className="search-candidate-card" key={input.requestId}>
-            <header className="search-candidate-header">
-              <div>
-                <div className="intake-eyebrow">
-                  {input.requestType.replaceAll("_", " ")} / {input.priority}
+            <AdminSearchCandidateCard key={input.requestId}>
+              <AdminSearchCandidateHeader>
+                <div>
+                  <AdminEyebrow>
+                    {input.requestType.replaceAll("_", " ")} / {input.priority}
+                  </AdminEyebrow>
+                  <h3>{input.subjectName}</h3>
                 </div>
-                <h3>{input.subjectName}</h3>
-              </div>
-              <span className={`intake-badge ${input.priority === "p0" ? "ready" : ""}`}>
-                {input.owner.replaceAll("_", " ")}
-              </span>
-            </header>
-
-            <div className="quality-row">
-              <FileWarning size={16} strokeWidth={1.9} />
-              <div>
+                <StatusChip tone={input.priority === "p0" ? "ready" : ""}>
+                  {input.owner.replaceAll("_", " ")}
+                </StatusChip>
+              </AdminSearchCandidateHeader>
+              <QualityRow icon={<FileWarning size={16} strokeWidth={1.9} />}>
                 <strong>{input.prompt}</strong>
                 <span>Safe default: {input.safeDefaultAction.replaceAll("_", " ")}</span>
-              </div>
-            </div>
-
-            <div className="intake-state-grid">
-              <StateRow label="Subject" value={input.subjectId} />
-              <StateRow label="Options" value={input.decisionOptions.join(", ")} />
-              <StateRow
-                label="Required inputs"
-                value={String(input.requiredInputs?.length ?? 0)}
-              />
-              <StateRow
-                label="Manual ack"
-                value={input.requiredAcknowledgements?.manualReportsReviewed ? "required" : "not required"}
-              />
-              <StateRow
-                label="Would publish"
-                value={input.impact?.wouldPublish ? "yes" : "no"}
-              />
-              <StateRow
-                label="Claim target"
-                value={input.impact?.claimTargetPath ?? "none"}
-              />
-            </div>
-
-            <div className="intake-tags">
-              {input.decisionOptions.map((option) => (
-                <span className="intake-tag" key={option}>
-                  {option.replaceAll("_", " ")}
-                </span>
-              ))}
-              {input.requiredAcknowledgements?.manualReportsReviewed ? (
-                <span className="intake-tag muted">manual reports reviewed</span>
-              ) : null}
-              {(input.requiredAcknowledgements?.publicationChecklist ?? [])
-                .slice(0, 8)
-                .map((acknowledgement) => (
-                  <span className="intake-tag muted" key={acknowledgement}>
-                    {acknowledgement.replaceAll("_", " ")}
-                  </span>
+              </QualityRow>
+              <AdminIntakeStateGrid>
+                <StateRow label="Subject" value={input.subjectId} />
+                <StateRow label="Options" value={input.decisionOptions.join(", ")} />
+                <StateRow
+                  label="Required inputs"
+                  value={String(input.requiredInputs?.length ?? 0)}
+                />
+                <StateRow
+                  label="Manual ack"
+                  value={input.requiredAcknowledgements?.manualReportsReviewed ? "required" : "not required"}
+                />
+                <StateRow
+                  label="Would publish"
+                  value={input.impact?.wouldPublish ? "yes" : "no"}
+                />
+                <StateRow
+                  label="Claim target"
+                  value={input.impact?.claimTargetPath ?? "none"}
+                />
+              </AdminIntakeStateGrid>
+              <AdminTagList>
+                {input.decisionOptions.map((option) => (
+                  <AdminTag key={option}>
+                    {option.replaceAll("_", " ")}
+                  </AdminTag>
                 ))}
-              {(input.currentState?.riskFlags as string[] | undefined)
-                ?.slice(0, 8)
-                .map((flag) => (
-                  <span className="intake-tag muted" key={flag}>
-                    {flag.replaceAll("_", " ")}
-                  </span>
-                ))}
-            </div>
-
-            {input.requiredInputs && input.requiredInputs.length > 0 ? (
-              <div className="intake-section">
-                <div className="intake-section-title">Required Policy Inputs</div>
-                <div className="command-stack">
-                  {input.requiredInputs.slice(0, 6).map((requiredInput) => (
-                    <div
-                      className="command-row"
-                      key={requiredInput.questionId ?? requiredInput.prompt}
-                    >
-                      <span>{requiredInput.input ?? "input"}</span>
-                      <code>
-                        {requiredInput.prompt} Default: {requiredInput.recommendedSafeDefault}
-                      </code>
-                    </div>
+                {input.requiredAcknowledgements?.manualReportsReviewed ? (
+                  <AdminTag tone="muted">manual reports reviewed</AdminTag>
+                ) : null}
+                {(input.requiredAcknowledgements?.publicationChecklist ?? [])
+                  .slice(0, 8)
+                  .map((acknowledgement) => (
+                    <AdminTag key={acknowledgement} tone="muted">
+                      {acknowledgement.replaceAll("_", " ")}
+                    </AdminTag>
                   ))}
-                </div>
-              </div>
-            ) : null}
-
-            {input.callableSubmission ? (
-              <div className="intake-section">
-                <div className="intake-section-title">Callable Payloads</div>
-                <div className="intake-state-grid">
-                  <StateRow
-                    label="Callable"
-                    value={input.callableSubmission.callableName}
-                  />
-                  <StateRow
-                    label="Wrapper"
-                    value={input.callableSubmission.adminApiWrapper}
-                  />
-                  <StateRow
-                    label="Payload"
-                    value={input.callableSubmission.payloadType}
-                  />
-                  <StateRow
-                    label="Collection"
-                    value={input.callableSubmission.firestoreCollection}
-                  />
-                </div>
-                <div className="command-stack">
-                  {Object.entries(input.callableSubmission.payloadsByDecision)
-                    .slice(0, 4)
-                    .map(([decision, payload]) => (
-                      <div
-                        className="command-row"
-                        key={`${input.requestId}:payload:${decision}`}
-                      >
-                        <span>{decision.replaceAll("_", " ")}</span>
-                        <code>{JSON.stringify(payload)}</code>
-                      </div>
+                {(input.currentState?.riskFlags as string[] | undefined)
+                  ?.slice(0, 8)
+                  .map((flag) => (
+                    <AdminTag key={flag} tone="muted">
+                      {flag.replaceAll("_", " ")}
+                    </AdminTag>
+                  ))}
+              </AdminTagList>
+              {input.requiredInputs && input.requiredInputs.length > 0 ? (
+                <AdminIntakeSection>
+                  <AdminIntakeSectionTitle>Required Policy Inputs</AdminIntakeSectionTitle>
+                  <AdminCommandStack>
+                    {input.requiredInputs.slice(0, 6).map((requiredInput) => (
+                      <AdminCommandRow key={requiredInput.questionId ?? requiredInput.prompt}>
+                        <span>{requiredInput.input ?? "input"}</span>
+                        <code>
+                          {requiredInput.prompt} Default: {requiredInput.recommendedSafeDefault}
+                        </code>
+                      </AdminCommandRow>
                     ))}
-                </div>
-                {submittedDecision ? (
-                  <div className="quality-row success">
-                    <CheckCircle2 size={16} strokeWidth={1.9} />
-                    <div>
+                  </AdminCommandStack>
+                </AdminIntakeSection>
+              ) : null}
+              {input.callableSubmission ? (
+                <AdminIntakeSection>
+                  <AdminIntakeSectionTitle>Callable Payloads</AdminIntakeSectionTitle>
+                  <AdminIntakeStateGrid>
+                    <StateRow
+                      label="Callable"
+                      value={input.callableSubmission.callableName}
+                    />
+                    <StateRow
+                      label="Wrapper"
+                      value={input.callableSubmission.adminApiWrapper}
+                    />
+                    <StateRow
+                      label="Payload"
+                      value={input.callableSubmission.payloadType}
+                    />
+                    <StateRow
+                      label="Collection"
+                      value={input.callableSubmission.firestoreCollection}
+                    />
+                  </AdminIntakeStateGrid>
+                  <AdminCommandStack>
+                    {Object.entries(input.callableSubmission.payloadsByDecision)
+                      .slice(0, 4)
+                      .map(([decision, payload]) => (
+                        <AdminCommandRow key={`${input.requestId}:payload:${decision}`}>
+                          <span>{decision.replaceAll("_", " ")}</span>
+                          <code>{JSON.stringify(payload)}</code>
+                        </AdminCommandRow>
+                      ))}
+                  </AdminCommandStack>
+                  {submittedDecision ? (
+                    <QualityRow tone="success" icon={<CheckCircle2 size={16} strokeWidth={1.9} />}>
                       <strong>
                         {pendingInputDecisionLabel(submittedDecision.decision)}
                       </strong>
                       <span>
                         {submittedDecision.decisionPath} / {pendingInputDecisionState(submittedDecision)}
                       </span>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="intake-decision-actions">
-                    {input.decisionOptions.map((decision) => {
-                      const payloadAvailable = Boolean(
-                        input.callableSubmission?.payloadsByDecision[decision]
-                      );
-                      return (
-                        <AdminButton
-                          disabled={isDeciding || !payloadAvailable}
-                          key={`${input.requestId}:decision:${decision}`}
-                          onClick={() => onPendingDecision(input, decision)}
-                        >
-                          {inFlightDecision === decision ?
-                            pendingInputDecisionProgressLabel(decision) :
-                            pendingInputDecisionLabel(decision)}
-                        </AdminButton>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            ) : null}
-
-            <div className="command-stack">
-              {input.commands.slice(0, 4).map((command, index) => (
-                <div className="command-row" key={`${input.requestId}:${index}`}>
-                  <span>{index === 0 ? "command" : "then"}</span>
-                  <code>{command}</code>
-                </div>
-              ))}
-            </div>
-          </article>
+                    </QualityRow>
+                  ) : (
+                    <AdminIntakeDecisionActions>
+                      {input.decisionOptions.map((decision) => {
+                        const payloadAvailable = Boolean(
+                          input.callableSubmission?.payloadsByDecision[decision]
+                        );
+                        return (
+                          <AdminButton
+                            disabled={isDeciding || !payloadAvailable}
+                            key={`${input.requestId}:decision:${decision}`}
+                            onClick={() => onPendingDecision(input, decision)}
+                          >
+                            {inFlightDecision === decision ?
+                              pendingInputDecisionProgressLabel(decision) :
+                              pendingInputDecisionLabel(decision)}
+                          </AdminButton>
+                        );
+                      })}
+                    </AdminIntakeDecisionActions>
+                  )}
+                </AdminIntakeSection>
+              ) : null}
+              <AdminCommandStack>
+                {input.commands.slice(0, 4).map((command, index) => (
+                  <AdminCommandRow key={`${input.requestId}:${index}`}>
+                    <span>{index === 0 ? "command" : "then"}</span>
+                    <code>{command}</code>
+                  </AdminCommandRow>
+                ))}
+              </AdminCommandStack>
+            </AdminSearchCandidateCard>
           );
         })}
-      </div>
-
-      <div className="intake-section">
-        <div className="intake-section-title">Workflow Follow-ups</div>
-        <div className="search-candidate-list">
+      </AdminSearchCandidateList>
+      <AdminIntakeSection>
+        <AdminIntakeSectionTitle>Workflow Follow-ups</AdminIntakeSectionTitle>
+        <AdminSearchCandidateList>
           {visibleFollowUps.length === 0 ? (
-            <div className="empty-row">
-              <CheckCircle2 size={16} strokeWidth={1.9} />
-              <span>No follow-ups are pending.</span>
-            </div>
+            <EmptyState icon={<CheckCircle2 size={16} strokeWidth={1.9} />}>
+              No follow-ups are pending.
+            </EmptyState>
           ) : (
             visibleFollowUps.map((followUp) => (
-              <article className="search-candidate-card" key={followUp.followUpId}>
-                <header className="search-candidate-header">
+              <AdminSearchCandidateCard key={followUp.followUpId}>
+                <AdminSearchCandidateHeader>
                   <div>
-                    <div className="intake-eyebrow">
+                    <AdminEyebrow>
                       {followUp.priority} / {followUp.workstreamId.replaceAll("_", " ")}
-                    </div>
+                    </AdminEyebrow>
                     <h3>{followUp.label}</h3>
                   </div>
-                  <span className={`intake-badge ${healthStatusTone(followUp.status)}`}>
+                  <StatusChip tone={healthStatusTone(followUp.status)}>
                     {followUp.status.replaceAll("_", " ")}
-                  </span>
-                </header>
-                <div className="quality-row">
-                  <FileWarning size={16} strokeWidth={1.9} />
-                  <div>
-                    <strong>{followUp.nextActions[0] ?? "Review workflow state."}</strong>
-                    {followUp.nextActions.slice(1, 3).map((action) => (
-                      <span key={action}>{action}</span>
-                    ))}
-                  </div>
-                </div>
-                <div className="intake-tags">
-                  {followUp.blockers.slice(0, 8).map((blocker) => (
-                    <span className="intake-tag muted" key={blocker}>
-                      {blocker.replaceAll("_", " ")}
-                    </span>
+                  </StatusChip>
+                </AdminSearchCandidateHeader>
+                <QualityRow icon={<FileWarning size={16} strokeWidth={1.9} />}>
+                  <strong>{followUp.nextActions[0] ?? "Review workflow state."}</strong>
+                  {followUp.nextActions.slice(1, 3).map((action) => (
+                    <span key={action}>{action}</span>
                   ))}
-                </div>
-                <div className="command-stack">
+                </QualityRow>
+                <AdminTagList>
+                  {followUp.blockers.slice(0, 8).map((blocker) => (
+                    <AdminTag key={blocker} tone="muted">
+                      {blocker.replaceAll("_", " ")}
+                    </AdminTag>
+                  ))}
+                </AdminTagList>
+                <AdminCommandStack>
                   {followUp.commands.slice(0, 2).map((command, index) => (
-                    <div className="command-row" key={`${followUp.followUpId}:${index}`}>
+                    <AdminCommandRow key={`${followUp.followUpId}:${index}`}>
                       <span>{index === 0 ? "command" : "then"}</span>
                       <code>{command}</code>
-                    </div>
+                    </AdminCommandRow>
                   ))}
-                </div>
-              </article>
+                </AdminCommandStack>
+              </AdminSearchCandidateCard>
             ))
           )}
-        </div>
-      </div>
-    </div>
+        </AdminSearchCandidateList>
+      </AdminIntakeSection>
+    </AdminSearchCandidatePanel>
   );
 }
 
@@ -1395,8 +1275,8 @@ function OrganizerReviewedDecisionAnswerPacketsView({
   const visibleEntries = register.entries.slice(0, 8);
 
   return (
-    <div className="search-candidate-panel">
-      <div className="intake-state-grid">
+    <AdminSearchCandidatePanel>
+      <AdminIntakeStateGrid>
         <StateRow
           label="Status"
           value={register.summary.status.replaceAll("_", " ")}
@@ -1409,52 +1289,43 @@ function OrganizerReviewedDecisionAnswerPacketsView({
         />
         <StateRow label="Stale" value={String(register.summary.stale)} />
         <StateRow label="Invalid" value={String(register.summary.invalid)} />
-      </div>
-
-      <div className="intake-tags">
-        <span className="intake-tag muted">
+      </AdminIntakeStateGrid>
+      <AdminTagList>
+        <AdminTag tone="muted">
           root {register.generatedFrom.answerPacketsRoot}
-        </span>
-        <span className="intake-tag muted">
+        </AdminTag>
+        <AdminTag tone="muted">
           source {register.generatedFrom.generatedAnswerPacket}
-        </span>
-        <span className="intake-tag">
+        </AdminTag>
+        <AdminTag>
           fresh x{register.summary.sourceFresh}
-        </span>
-      </div>
-
-      <div className="quality-row warning">
-        <Lock size={16} strokeWidth={1.9} />
-        <div>
-          <strong>{register.guardrails[0]}</strong>
-          <span>{register.guardrails[1]}</span>
-        </div>
-      </div>
-
-      <div className="search-candidate-list">
+        </AdminTag>
+      </AdminTagList>
+      <QualityRow tone="warning" icon={<Lock size={16} strokeWidth={1.9} />}>
+        <strong>{register.guardrails[0]}</strong>
+        <span>{register.guardrails[1]}</span>
+      </QualityRow>
+      <AdminSearchCandidateList>
         {visibleEntries.length === 0 ? (
-          <div className="empty-row">
-            <Clock3 size={16} strokeWidth={1.9} />
-            <span>No reviewed answer packets exist yet.</span>
-          </div>
+          <EmptyState icon={<Clock3 size={16} strokeWidth={1.9} />}>
+            No reviewed answer packets exist yet.
+          </EmptyState>
         ) : (
           visibleEntries.map((entry) => (
-            <article className="search-candidate-card" key={entry.path}>
-              <header className="search-candidate-header">
+            <AdminSearchCandidateCard key={entry.path}>
+              <AdminSearchCandidateHeader>
                 <div>
-                  <div className="intake-eyebrow">
+                  <AdminEyebrow>
                     {entry.sourceFreshness.replaceAll("_", " ")}
-                  </div>
+                  </AdminEyebrow>
                   <h3>{entry.path}</h3>
                 </div>
-                <span
-                  className={`intake-badge ${entry.readyToApply ? "ready" : ""}`}
-                >
+                <StatusChip tone={entry.readyToApply ? "ready" : ""}>
                   {entry.status.replaceAll("_", " ")}
-                </span>
-              </header>
+                </StatusChip>
+              </AdminSearchCandidateHeader>
 
-              <div className="intake-state-grid">
+              <AdminIntakeStateGrid>
                 <StateRow label="Reviewer" value={entry.reviewer ?? "unknown"} />
                 <StateRow label="Date" value={entry.decidedAt ?? "unknown"} />
                 <StateRow label="Slots" value={String(entry.answerSlots)} />
@@ -1470,43 +1341,40 @@ function OrganizerReviewedDecisionAnswerPacketsView({
                   label="Source"
                   value={entry.sourceFresh ? "fresh" : entry.sourceFreshness}
                 />
-              </div>
+              </AdminIntakeStateGrid>
 
               {(entry.errors.length > 0 || entry.warnings.length > 0) ? (
-                <div className="quality-row warning">
-                  <FileWarning size={16} strokeWidth={1.9} />
-                  <div>
-                    <strong>
-                      {entry.errors[0] ?? entry.warnings[0]}
-                    </strong>
-                    {[...entry.errors.slice(1, 3), ...entry.warnings.slice(1, 3)]
-                      .slice(0, 3)
-                      .map((message) => (
-                        <span key={message}>{message}</span>
-                      ))}
-                  </div>
-                </div>
+                <QualityRow tone="warning" icon={<FileWarning size={16} strokeWidth={1.9} />}>
+                  <strong>
+                    {entry.errors[0] ?? entry.warnings[0]}
+                  </strong>
+                  {[...entry.errors.slice(1, 3), ...entry.warnings.slice(1, 3)]
+                    .slice(0, 3)
+                    .map((message) => (
+                      <span key={message}>{message}</span>
+                    ))}
+                </QualityRow>
               ) : null}
 
-              <div className="intake-tags">
+              <AdminTagList>
                 {entry.readyToApply ? (
-                  <span className="intake-tag">ready to apply</span>
+                  <AdminTag>ready to apply</AdminTag>
                 ) : null}
                 {entry.awaitingAnswers ? (
-                  <span className="intake-tag muted">awaiting answers</span>
+                  <AdminTag tone="muted">awaiting answers</AdminTag>
                 ) : null}
                 {entry.stale ? (
-                  <span className="intake-tag muted">stale source</span>
+                  <AdminTag tone="muted">stale source</AdminTag>
                 ) : null}
                 {entry.invalid ? (
-                  <span className="intake-tag muted">invalid packet</span>
+                  <AdminTag tone="muted">invalid packet</AdminTag>
                 ) : null}
-              </div>
-            </article>
+              </AdminTagList>
+            </AdminSearchCandidateCard>
           ))
         )}
-      </div>
-    </div>
+      </AdminSearchCandidateList>
+    </AdminSearchCandidatePanel>
   );
 }
 
@@ -1518,8 +1386,8 @@ function OrganizerPromotionExecutionView({
   const visiblePhases = packet.phases.slice(0, 8);
 
   return (
-    <div className="search-candidate-panel">
-      <div className="intake-state-grid">
+    <AdminSearchCandidatePanel>
+      <AdminIntakeStateGrid>
         <StateRow
           label="Status"
           value={packet.summary.status.replaceAll("_", " ")}
@@ -1545,115 +1413,103 @@ function OrganizerPromotionExecutionView({
           label="Answer packets"
           value={packet.summary.reviewedAnswerPacketStatus.replaceAll("_", " ")}
         />
-      </div>
-
-      <div className="intake-tags">
-        <span className="intake-tag">
+      </AdminIntakeStateGrid>
+      <AdminTagList>
+        <AdminTag>
           admin pending x{packet.summary.pendingAdminDecisions}
-        </span>
-        <span className="intake-tag muted">
+        </AdminTag>
+        <AdminTag tone="muted">
           policy pending x{packet.summary.pendingPolicyDecisions}
-        </span>
-        <span className="intake-tag muted">
+        </AdminTag>
+        <AdminTag tone="muted">
           answer slots x{packet.summary.pendingAnswerSlots}
-        </span>
-        <span className={packet.summary.reviewedAnswerPacketsReady > 0 ? "intake-tag" : "intake-tag muted"}>
+        </AdminTag>
+        <AdminTag tone={packet.summary.reviewedAnswerPacketsReady > 0 ? "neutral" : "muted"}>
           ready packets x{packet.summary.reviewedAnswerPacketsReady}
-        </span>
-        <span className="intake-tag muted">
+        </AdminTag>
+        <AdminTag tone="muted">
           reviewed packets x{packet.summary.reviewedAnswerPackets}
-        </span>
+        </AdminTag>
         {packet.summary.reviewedAnswerPacketsStale > 0 ? (
-          <span className="intake-tag muted">
+          <AdminTag tone="muted">
             stale packets x{packet.summary.reviewedAnswerPacketsStale}
-          </span>
+          </AdminTag>
         ) : null}
         {packet.summary.reviewedAnswerPacketsInvalid > 0 ? (
-          <span className="intake-tag muted">
+          <AdminTag tone="muted">
             invalid packets x{packet.summary.reviewedAnswerPacketsInvalid}
-          </span>
+          </AdminTag>
         ) : null}
-        <span className="intake-tag muted">
+        <AdminTag tone="muted">
           guarded reads x{packet.summary.guardedRemoteReadPhases}
-        </span>
-        <span className="intake-tag muted">
+        </AdminTag>
+        <AdminTag tone="muted">
           guarded writes x{packet.summary.guardedRemoteWritePhases}
-        </span>
+        </AdminTag>
         {Object.entries(packet.summary.phasesByStatus).map(([status, count]) => (
-          <span className="intake-tag muted" key={status}>
+          <AdminTag key={status} tone="muted">
             {status.replaceAll("_", " ")} x{count}
-          </span>
+          </AdminTag>
         ))}
-      </div>
-
-      <div className="quality-row warning">
-        <Lock size={16} strokeWidth={1.9} />
-        <div>
-          <strong>{packet.guardrails[0]}</strong>
-          <span>{packet.guardrails[1]}</span>
-        </div>
-      </div>
-
-      <div className="search-candidate-list">
+      </AdminTagList>
+      <QualityRow tone="warning" icon={<Lock size={16} strokeWidth={1.9} />}>
+        <strong>{packet.guardrails[0]}</strong>
+        <span>{packet.guardrails[1]}</span>
+      </QualityRow>
+      <AdminSearchCandidateList>
         {visiblePhases.map((phase) => (
-          <article className="search-candidate-card" key={phase.phaseId}>
-            <header className="search-candidate-header">
+          <AdminSearchCandidateCard key={phase.phaseId}>
+            <AdminSearchCandidateHeader>
               <div>
-                <div className="intake-eyebrow">
+                <AdminEyebrow>
                   {phase.executionMode.replaceAll("_", " ")}
-                </div>
+                </AdminEyebrow>
                 <h3>{phase.label}</h3>
               </div>
-              <span className={`intake-badge ${promotionPhaseTone(phase.status)}`}>
+              <StatusChip tone={promotionPhaseTone(phase.status)}>
                 {phase.status.replaceAll("_", " ")}
-              </span>
-            </header>
+              </StatusChip>
+            </AdminSearchCandidateHeader>
 
-            <div className="intake-state-grid">
+            <AdminIntakeStateGrid>
               <StateRow label="Mode" value={phase.executionMode.replaceAll("_", " ")} />
               <StateRow label="Blockers" value={String(phase.blockers.length)} />
               <StateRow label="Outputs" value={String(phase.outputs.length)} />
               <StateRow label="Phase" value={phase.phaseId.replaceAll("_", " ")} />
-            </div>
+            </AdminIntakeStateGrid>
 
             {phase.blockers.length > 0 ? (
-              <div className="quality-row warning">
-                <FileWarning size={16} strokeWidth={1.9} />
-                <div>
-                  <strong>{phase.blockers[0]}</strong>
-                  {phase.blockers.slice(1, 4).map((blocker) => (
-                    <span key={blocker}>{blocker}</span>
-                  ))}
-                </div>
-              </div>
+              <QualityRow tone="warning" icon={<FileWarning size={16} strokeWidth={1.9} />}>
+                <strong>{phase.blockers[0]}</strong>
+                {phase.blockers.slice(1, 4).map((blocker) => (
+                  <span key={blocker}>{blocker}</span>
+                ))}
+              </QualityRow>
             ) : (
-              <div className="quality-row success">
-                <CheckCircle2 size={16} strokeWidth={1.9} />
-                <div>
-                  <strong>Phase ready</strong>
-                  <span>Run only in the documented order.</span>
-                </div>
-              </div>
+              <QualityRow tone="success" icon={<CheckCircle2 size={16} strokeWidth={1.9} />}>
+                <strong>Phase ready</strong>
+                <span>Run only in the documented order.</span>
+              </QualityRow>
             )}
 
-            <div className="intake-tags">
+            <AdminTagList>
               {phase.outputs.slice(0, 8).map((output) => (
-                <span className="intake-tag muted" key={output}>
+                <AdminTag key={output} tone="muted">
                   {output}
-                </span>
+                </AdminTag>
               ))}
-            </div>
+            </AdminTagList>
 
-            <div className="command-stack">
-              <div className="command-row">
+            <AdminCommandStack>
+              <AdminCommandRow>
                 <span>command</span>
                 <code>{phase.command}</code>
-              </div>
-            </div>
-          </article>
+              </AdminCommandRow>
+            </AdminCommandStack>
+          </AdminSearchCandidateCard>
         ))}
-      </div>
-    </div>
+      </AdminSearchCandidateList>
+    </AdminSearchCandidatePanel>
   );
 }
 
@@ -1678,8 +1534,8 @@ function OrganizerPolicyGapRegisterView({
   const visibleGaps = register.gaps.slice(0, 8);
 
   return (
-    <div className="search-candidate-panel">
-      <div className="intake-state-grid">
+    <AdminSearchCandidatePanel>
+      <AdminIntakeStateGrid>
         <StateRow label="Gaps" value={String(register.summary.gaps)} />
         <StateRow label="Operational blockers" value={String(register.summary.decisionRequired)} />
         <StateRow label="Reviewed" value={String(register.summary.reviewDecisions)} />
@@ -1689,40 +1545,37 @@ function OrganizerPolicyGapRegisterView({
         <StateRow label="Invalid" value={String(register.summary.reviewInvalid)} />
         <StateRow label="Ready" value={String(register.summary.ready)} />
         <StateRow label="Disabled" value={String(register.summary.blockedByPolicy)} />
-      </div>
-
-      <div className="intake-tags">
+      </AdminIntakeStateGrid>
+      <AdminTagList>
         {Object.entries(register.summary.gapsByArea).map(([area, count]) => (
-          <span className="intake-tag muted" key={area}>
+          <AdminTag key={area} tone="muted">
             {area} x{count}
-          </span>
+          </AdminTag>
         ))}
         {Object.entries(register.summary.gapsByDecisionStatus).map(([status, count]) => (
-          <span className="intake-tag muted" key={status}>
+          <AdminTag key={status} tone="muted">
             {status.replaceAll("_", " ")} x{count}
-          </span>
+          </AdminTag>
         ))}
         {register.guardrails.map((guardrail) => (
-          <span className="intake-tag muted" key={guardrail}>
+          <AdminTag key={guardrail} tone="muted">
             {guardrail}
-          </span>
+          </AdminTag>
         ))}
-      </div>
-
+      </AdminTagList>
       {register.errors && register.errors.length > 0 ? (
-        <div className="guardrail-list">
+        <AdminGuardrailList>
           {register.errors.map((error) => (
-            <div className="quality-row warning" key={error}>
-              <FileWarning size={16} strokeWidth={1.9} />
-              <div>
-                <strong>{error}</strong>
-              </div>
-            </div>
+            <QualityRow
+              key={error}
+              tone="warning"
+              icon={<FileWarning size={16} strokeWidth={1.9} />}>
+              <strong>{error}</strong>
+            </QualityRow>
           ))}
-        </div>
+        </AdminGuardrailList>
       ) : null}
-
-      <div className="search-candidate-list">
+      <AdminSearchCandidateList>
         {visibleGaps.map((gap) => {
           const localDecision = localDecisions[gap.gapId];
           const submittedDecision = localDecision?.decision ??
@@ -1730,29 +1583,27 @@ function OrganizerPolicyGapRegisterView({
           const isDeciding = Boolean(inFlightDecisions[gap.gapId]);
 
           return (
-            <article className="search-candidate-card" key={gap.gapId}>
-              <header className="search-candidate-header">
+            <AdminSearchCandidateCard key={gap.gapId}>
+              <AdminSearchCandidateHeader>
                 <div>
-                  <div className="intake-eyebrow">
+                  <AdminEyebrow>
                     {gap.area} / {gap.decisionOwner}
-                  </div>
+                  </AdminEyebrow>
                   <h3>{gap.gapId.replaceAll("_", " ")}</h3>
                 </div>
-                <span className={`intake-badge ${gap.status === "ready" ? "ready" : ""}`}>
+                <StatusChip tone={gap.status === "ready" ? "ready" : ""}>
                   {gap.severity}
-                </span>
-              </header>
-
-              <div className="intake-state-grid">
+                </StatusChip>
+              </AdminSearchCandidateHeader>
+              <AdminIntakeStateGrid>
                 <StateRow label="Status" value={gap.status.replaceAll("_", " ")} />
                 <StateRow label="Decision" value={gap.decisionStatus.replaceAll("_", " ")} />
                 <StateRow label="Default" value={gap.defaultPosition.replaceAll("_", " ")} />
                 <StateRow label="State" value={gap.currentState} />
                 <StateRow label="Next" value={gap.nextAction} />
-              </div>
-
+              </AdminIntakeStateGrid>
               {submittedDecision ? (
-                <div className="intake-decision-state">
+                <AdminIntakeDecisionState>
                   <CheckCircle2 size={16} strokeWidth={1.9} />
                   <div>
                     <strong>{policyGapDecisionLabel(submittedDecision)}</strong>
@@ -1762,16 +1613,16 @@ function OrganizerPolicyGapRegisterView({
                         `Decision present in ${gap.reviewDecision?.policyGapDecisionBatchId}`}
                     </span>
                   </div>
-                </div>
+                </AdminIntakeDecisionState>
               ) : (
-                <div className="intake-decision-box">
+                <AdminIntakeDecisionBox>
                   <TextareaField
                     label="Policy review note"
                     onChange={(note) => onNoteChange(gap.gapId, note)}
                     rows={3}
                     value={notes[gap.gapId] ?? ""}
                   />
-                  <div className="intake-decision-actions">
+                  <AdminIntakeDecisionActions>
                     <AdminButton
                       disabled={isDeciding}
                       onClick={() => onDecision(gap, "accept")}
@@ -1797,14 +1648,13 @@ function OrganizerPolicyGapRegisterView({
                         "Rejecting" :
                         "Reject"}
                     </AdminButton>
-                  </div>
-                </div>
+                  </AdminIntakeDecisionActions>
+                </AdminIntakeDecisionBox>
               )}
-
               {gap.reviewDecision ? (
-                <div className="intake-section">
-                  <div className="intake-section-title">Reviewed Decision</div>
-                  <div className="intake-state-grid">
+                <AdminIntakeSection>
+                  <AdminIntakeSectionTitle>Reviewed Decision</AdminIntakeSectionTitle>
+                  <AdminIntakeStateGrid>
                     <StateRow label="Decision" value={gap.reviewDecision.decision} />
                     <StateRow label="Reviewer" value={gap.reviewDecision.reviewer} />
                     <StateRow label="Date" value={gap.reviewDecision.decidedAt} />
@@ -1817,46 +1667,44 @@ function OrganizerPolicyGapRegisterView({
                       label="Batch"
                       value={gap.reviewDecision.policyGapDecisionBatchId}
                     />
-                  </div>
-                </div>
+                  </AdminIntakeStateGrid>
+                </AdminIntakeSection>
               ) : null}
-
-              <div className="policy-gap-columns">
+              <AdminOrganizerPolicyGapColumns>
                 <div>
-                  <div className="intake-section-title">Required Inputs</div>
-                  <div className="intake-tags">
+                  <AdminIntakeSectionTitle>Required Inputs</AdminIntakeSectionTitle>
+                  <AdminTagList>
                     {gap.requiredInputs.map((input) => (
-                      <span className="intake-tag" key={input}>
+                      <AdminTag key={input}>
                         {input}
-                      </span>
+                      </AdminTag>
                     ))}
-                  </div>
+                  </AdminTagList>
                 </div>
                 <div>
-                  <div className="intake-section-title">Unblock Criteria</div>
-                  <div className="intake-tags">
+                  <AdminIntakeSectionTitle>Unblock Criteria</AdminIntakeSectionTitle>
+                  <AdminTagList>
                     {gap.unblockCriteria.map((criterion) => (
-                      <span className="intake-tag muted" key={criterion}>
+                      <AdminTag key={criterion} tone="muted">
                         {criterion}
-                      </span>
+                      </AdminTag>
                     ))}
-                  </div>
+                  </AdminTagList>
                 </div>
-              </div>
-
-              <div className="command-stack">
+              </AdminOrganizerPolicyGapColumns>
+              <AdminCommandStack>
                 {gap.blockedArtifacts.map((artifact) => (
-                  <div className="command-row" key={artifact}>
+                  <AdminCommandRow key={artifact}>
                     <span>artifact</span>
                     <code>{artifact}</code>
-                  </div>
+                  </AdminCommandRow>
                 ))}
-              </div>
-            </article>
+              </AdminCommandStack>
+            </AdminSearchCandidateCard>
           );
         })}
-      </div>
-    </div>
+      </AdminSearchCandidateList>
+    </AdminSearchCandidatePanel>
   );
 }
 
@@ -1868,90 +1716,85 @@ function OrganizerPolicyDecisionPacketsView({
   const visiblePackets = packets.packets.slice(0, 8);
 
   return (
-    <div className="search-candidate-panel">
-      <div className="intake-state-grid">
+    <AdminSearchCandidatePanel>
+      <AdminIntakeStateGrid>
         <StateRow label="Packets" value={String(packets.summary.packets)} />
         <StateRow label="Need decision" value={String(packets.summary.decisionRequired)} />
         <StateRow label="Questions" value={String(packets.summary.questions)} />
         <StateRow label="Unanswered" value={String(packets.summary.unansweredQuestions)} />
         <StateRow label="Accepted" value={String(packets.summary.accepted)} />
         <StateRow label="Held" value={String(packets.summary.held)} />
-      </div>
-
-      <div className="intake-tags">
+      </AdminIntakeStateGrid>
+      <AdminTagList>
         {Object.entries(packets.summary.questionsByArea).map(([area, count]) => (
-          <span className="intake-tag muted" key={area}>
+          <AdminTag key={area} tone="muted">
             {area} x{count}
-          </span>
+          </AdminTag>
         ))}
         {Object.entries(packets.summary.questionsByAnswerState).map(([state, count]) => (
-          <span className="intake-tag muted" key={state}>
+          <AdminTag key={state} tone="muted">
             {state.replaceAll("_", " ")} x{count}
-          </span>
+          </AdminTag>
         ))}
         {packets.guardrails.map((guardrail) => (
-          <span className="intake-tag muted" key={guardrail}>
+          <AdminTag key={guardrail} tone="muted">
             {guardrail}
-          </span>
+          </AdminTag>
         ))}
-      </div>
-
-      <div className="search-candidate-list">
+      </AdminTagList>
+      <AdminSearchCandidateList>
         {visiblePackets.map((packet) => (
-          <article className="search-candidate-card" key={packet.packetId}>
-            <header className="search-candidate-header">
+          <AdminSearchCandidateCard key={packet.packetId}>
+            <AdminSearchCandidateHeader>
               <div>
-                <div className="intake-eyebrow">
+                <AdminEyebrow>
                   {packet.area} / {packet.decisionOwner}
-                </div>
+                </AdminEyebrow>
                 <h3>{packet.decisionPrompt}</h3>
               </div>
-              <span className={`intake-badge ${packet.status === "ready" ? "ready" : ""}`}>
+              <StatusChip tone={packet.status === "ready" ? "ready" : ""}>
                 {packet.severity}
-              </span>
-            </header>
+              </StatusChip>
+            </AdminSearchCandidateHeader>
 
-            <div className="intake-state-grid">
+            <AdminIntakeStateGrid>
               <StateRow label="Gap" value={packet.gapId} />
               <StateRow label="Decision" value={packet.decisionStatus.replaceAll("_", " ")} />
               <StateRow label="Safe default" value={packet.safeDefaultAction.replaceAll("_", " ")} />
               <StateRow label="Gate" value={packet.implementationGate} />
-            </div>
+            </AdminIntakeStateGrid>
 
-            <div className="quality-row warning">
-              <Lock size={16} strokeWidth={1.9} />
-              <div>
-                <strong>{packet.currentState}</strong>
-                <span>{packet.nextAction}</span>
-              </div>
-            </div>
+            <QualityRow tone="warning" icon={<Lock size={16} strokeWidth={1.9} />}>
+              <strong>{packet.currentState}</strong>
+              <span>{packet.nextAction}</span>
+            </QualityRow>
 
-            <div className="intake-section">
-              <div className="intake-section-title">Required Inputs</div>
-              <div className="intake-tags">
+            <AdminIntakeSection>
+              <AdminIntakeSectionTitle>Required Inputs</AdminIntakeSectionTitle>
+              <AdminTagList>
                 {packet.questions.map((question) => (
-                  <span
-                    className={`intake-tag ${question.answerState === "reviewed" ? "" : "muted"}`}
+                  <AdminTag
                     key={question.questionId}
+                    tone={question.answerState === "reviewed" ? "neutral" : "muted"}
                   >
                     {question.input}
-                  </span>
+                  </AdminTag>
                 ))}
-              </div>
-            </div>
+              </AdminTagList>
+            </AdminIntakeSection>
 
-            <div className="command-stack">
+            <AdminCommandStack>
               {packet.blockedArtifacts.map((artifact) => (
-                <div className="command-row" key={artifact}>
+                <AdminCommandRow key={artifact}>
                   <span>blocked</span>
                   <code>{artifact}</code>
-                </div>
+                </AdminCommandRow>
               ))}
-            </div>
-          </article>
+            </AdminCommandStack>
+          </AdminSearchCandidateCard>
         ))}
-      </div>
-    </div>
+      </AdminSearchCandidateList>
+    </AdminSearchCandidatePanel>
   );
 }
 
@@ -1963,100 +1806,94 @@ function OrganizerCanonicalHostRegistryView({
   const visibleEntries = registry.entries.slice(0, 8);
 
   return (
-    <div className="search-candidate-panel">
-      <div className="intake-state-grid">
+    <AdminSearchCandidatePanel>
+      <AdminIntakeStateGrid>
         <StateRow label="Entities" value={String(registry.summary.entities)} />
         <StateRow label="Public" value={String(registry.summary.publicPublished)} />
         <StateRow label="Indexed" value={String(registry.summary.indexed)} />
         <StateRow label="Claim targets" value={String(registry.summary.claimTargets)} />
         <StateRow label="Surfaces" value={String(registry.summary.surfaces)} />
         <StateRow label="Crawl-capable" value={String(registry.summary.crawlCapableSurfaces)} />
-      </div>
-
-      <div className="intake-tags">
-        <span className="intake-tag">{registry.naming.publicEntityLabel}</span>
-        <span className="intake-tag muted">
+      </AdminIntakeStateGrid>
+      <AdminTagList>
+        <AdminTag>{registry.naming.publicEntityLabel}</AdminTag>
+        <AdminTag tone="muted">
           {registry.naming.canonicalDataModel}
-        </span>
-        <span className="intake-tag muted">
+        </AdminTag>
+        <AdminTag tone="muted">
           {registry.naming.legacyCompatibilityModel}
-        </span>
+        </AdminTag>
         {Object.entries(registry.summary.byEntityKind).map(([kind, count]) => (
-          <span className="intake-tag muted" key={kind}>
+          <AdminTag key={kind} tone="muted">
             {kind} x{count}
-          </span>
+          </AdminTag>
         ))}
         {Object.entries(registry.summary.byScopeKind).map(([scope, count]) => (
-          <span className="intake-tag muted" key={scope}>
+          <AdminTag key={scope} tone="muted">
             {scope} x{count}
-          </span>
+          </AdminTag>
         ))}
-      </div>
-
-      <div className="quality-row warning">
-        <Lock size={16} strokeWidth={1.9} />
-        <div>
-          <strong>{registry.naming.note}</strong>
-          <span>{registry.guardrails[0]}</span>
-        </div>
-      </div>
-
-      <div className="search-candidate-list">
+      </AdminTagList>
+      <QualityRow tone="warning" icon={<Lock size={16} strokeWidth={1.9} />}>
+        <strong>{registry.naming.note}</strong>
+        <span>{registry.guardrails[0]}</span>
+      </QualityRow>
+      <AdminSearchCandidateList>
         {visibleEntries.map((entry) => (
-          <article className="search-candidate-card" key={entry.canonicalHostId}>
-            <header className="search-candidate-header">
+          <AdminSearchCandidateCard key={entry.canonicalHostId}>
+            <AdminSearchCandidateHeader>
               <div>
-                <div className="intake-eyebrow">
+                <AdminEyebrow>
                   {entry.entityKind} / {entry.geography.scopeKind ?? "unknown"}
-                </div>
+                </AdminEyebrow>
                 <h3>{entry.displayName}</h3>
               </div>
-              <span className={`intake-badge ${entry.publicPresence.publishStatus === "published" ? "ready" : ""}`}>
+              <StatusChip tone={entry.publicPresence.publishStatus === "published" ? "ready" : ""}>
                 {entry.publicPresence.publishStatus}
-              </span>
-            </header>
+              </StatusChip>
+            </AdminSearchCandidateHeader>
 
-            <div className="intake-state-grid">
+            <AdminIntakeStateGrid>
               <StateRow label="Host id" value={entry.canonicalHostId} />
               <StateRow label="Path" value={entry.publicPresence.canonicalPath ?? "none"} />
               <StateRow label="Index" value={entry.publicPresence.indexStatus} />
               <StateRow label="App" value={entry.publicPresence.appVisibility} />
               <StateRow label="Claim" value={entry.claim.claimState} />
               <StateRow label="Club doc" value={entry.legacyClubCompatibility.documentId} />
-            </div>
+            </AdminIntakeStateGrid>
 
-            <div className="intake-tags">
+            <AdminTagList>
               {entry.geography.markets.map((market) => (
-                <span className="intake-tag" key={market.marketSlug}>
+                <AdminTag key={market.marketSlug}>
                   {market.displayName}
-                </span>
+                </AdminTag>
               ))}
-              <span className="intake-tag muted">
+              <AdminTag tone="muted">
                 {entry.surfaceInventory.active} active
-              </span>
-              <span className="intake-tag muted">
+              </AdminTag>
+              <AdminTag tone="muted">
                 {entry.surfaceInventory.ambiguous} ambiguous
-              </span>
-              <span className="intake-tag muted">
+              </AdminTag>
+              <AdminTag tone="muted">
                 {entry.surfaceInventory.rejected} rejected
-              </span>
-              <span className="intake-tag muted">
+              </AdminTag>
+              <AdminTag tone="muted">
                 {entry.dedupe.strongKeys} strong keys
-              </span>
-            </div>
+              </AdminTag>
+            </AdminTagList>
 
-            <div className="command-stack">
+            <AdminCommandStack>
               {entry.nextActions.map((action) => (
-                <div className="command-row" key={action}>
+                <AdminCommandRow key={action}>
                   <span>next</span>
                   <code>{action}</code>
-                </div>
+                </AdminCommandRow>
               ))}
-            </div>
-          </article>
+            </AdminCommandStack>
+          </AdminSearchCandidateCard>
         ))}
-      </div>
-    </div>
+      </AdminSearchCandidateList>
+    </AdminSearchCandidatePanel>
   );
 }
 
@@ -2068,53 +1905,47 @@ function OrganizerCanonicalEvidenceIndexView({
   const visibleRecords = index.records.slice(0, 8);
 
   return (
-    <div className="search-candidate-panel">
-      <div className="intake-state-grid">
+    <AdminSearchCandidatePanel>
+      <AdminIntakeStateGrid>
         <StateRow label="Records" value={String(index.summary.records)} />
         <StateRow label="Resolved" value={String(index.summary.resolvedArtifactRefs)} />
         <StateRow label="Missing" value={String(index.summary.surfacesWithoutEvidence)} />
         <StateRow label="Manual" value={String(index.summary.manualReportsWithoutArtifacts)} />
         <StateRow label="Raw payloads" value={String(index.summary.rawProviderArtifacts)} />
         <StateRow label="Raw bytes" value={index.summary.rawPayloadBytes.toLocaleString()} />
-      </div>
-
-      <div className="intake-tags">
+      </AdminIntakeStateGrid>
+      <AdminTagList>
         {Object.entries(index.summary.evidenceByStatus).map(([status, count]) => (
-          <span className="intake-tag muted" key={status}>
+          <AdminTag key={status} tone="muted">
             {status.replaceAll("_", " ")} x{count}
-          </span>
+          </AdminTag>
         ))}
         {Object.entries(index.summary.evidenceByType).map(([type, count]) => (
-          <span className="intake-tag muted" key={type}>
+          <AdminTag key={type} tone="muted">
             {type} x{count}
-          </span>
+          </AdminTag>
         ))}
-      </div>
-
-      <div className="quality-row warning">
-        <Lock size={16} strokeWidth={1.9} />
-        <div>
-          <strong>{index.guardrails[0]}</strong>
-          <span>{index.guardrails[1]}</span>
-        </div>
-      </div>
-
-      <div className="search-candidate-list">
+      </AdminTagList>
+      <QualityRow tone="warning" icon={<Lock size={16} strokeWidth={1.9} />}>
+        <strong>{index.guardrails[0]}</strong>
+        <span>{index.guardrails[1]}</span>
+      </QualityRow>
+      <AdminSearchCandidateList>
         {visibleRecords.map((record) => (
-          <article className="search-candidate-card" key={record.evidenceId}>
-            <header className="search-candidate-header">
+          <AdminSearchCandidateCard key={record.evidenceId}>
+            <AdminSearchCandidateHeader>
               <div>
-                <div className="intake-eyebrow">
+                <AdminEyebrow>
                   {record.surface.platform} / {record.surface.status}
-                </div>
+                </AdminEyebrow>
                 <h3>{record.displayName}</h3>
               </div>
-              <span className={`intake-badge ${record.evidence.status === "resolved_artifact" ? "ready" : ""}`}>
+              <StatusChip tone={record.evidence.status === "resolved_artifact" ? "ready" : ""}>
                 {record.evidence.status.replaceAll("_", " ")}
-              </span>
-            </header>
+              </StatusChip>
+            </AdminSearchCandidateHeader>
 
-            <div className="intake-state-grid">
+            <AdminIntakeStateGrid>
               <StateRow label="Surface" value={record.surface.surfaceId} />
               <StateRow label="Type" value={record.evidence.type} />
               <StateRow label="Publish" value={record.reviewState.publishStatus ?? "unknown"} />
@@ -2127,34 +1958,34 @@ function OrganizerCanonicalEvidenceIndexView({
                 label="SHA"
                 value={record.artifact ? record.artifact.sha256.slice(0, 12) : "none"}
               />
-            </div>
+            </AdminIntakeStateGrid>
 
-            <div className="intake-tags">
+            <AdminTagList>
               {record.riskFlags.length === 0 ? (
-                <span className="intake-tag">no flags</span>
+                <AdminTag>no flags</AdminTag>
               ) : (
                 record.riskFlags.map((flag) => (
-                  <span className="intake-tag muted" key={flag}>
+                  <AdminTag key={flag} tone="muted">
                     {flag.replaceAll("_", " ")}
-                  </span>
+                  </AdminTag>
                 ))
               )}
-            </div>
+            </AdminTagList>
 
-            <div className="command-stack">
-              <div className="command-row">
+            <AdminCommandStack>
+              <AdminCommandRow>
                 <span>ref</span>
                 <code>{record.evidence.ref ?? "none"}</code>
-              </div>
-              <div className="command-row">
+              </AdminCommandRow>
+              <AdminCommandRow>
                 <span>next</span>
                 <code>{record.nextAction}</code>
-              </div>
-            </div>
-          </article>
+              </AdminCommandRow>
+            </AdminCommandStack>
+          </AdminSearchCandidateCard>
         ))}
-      </div>
-    </div>
+      </AdminSearchCandidateList>
+    </AdminSearchCandidatePanel>
   );
 }
 
@@ -2166,137 +1997,128 @@ function OrganizerPublicationReviewPacketsView({
   const visiblePackets = packets.packets.slice(0, 8);
 
   return (
-    <div className="search-candidate-panel">
-      <div className="intake-state-grid">
+    <AdminSearchCandidatePanel>
+      <AdminIntakeStateGrid>
         <StateRow label="Packets" value={String(packets.summary.packets)} />
         <StateRow label="Ready" value={String(packets.summary.readyForManualPublicationReview)} />
         <StateRow label="Blocked" value={String(packets.summary.blockedByData)} />
         <StateRow label="Published" value={String(packets.summary.published)} />
         <StateRow label="Evidence" value={String(packets.summary.evidenceRecords)} />
         <StateRow label="Manual refs" value={String(packets.summary.manualReportsWithoutArtifacts)} />
-      </div>
-
-      <div className="intake-tags">
+      </AdminIntakeStateGrid>
+      <AdminTagList>
         {Object.entries(packets.summary.packetsByStatus).map(([status, count]) => (
-          <span className="intake-tag muted" key={status}>
+          <AdminTag key={status} tone="muted">
             {status.replaceAll("_", " ")} x{count}
-          </span>
+          </AdminTag>
         ))}
         {Object.entries(packets.summary.packetsByTaskType).map(([type, count]) => (
-          <span className="intake-tag muted" key={type}>
+          <AdminTag key={type} tone="muted">
             {type.replaceAll("_", " ")} x{count}
-          </span>
+          </AdminTag>
         ))}
-      </div>
-
-      <div className="quality-row warning">
-        <Lock size={16} strokeWidth={1.9} />
-        <div>
-          <strong>{packets.guardrails[0]}</strong>
-          <span>{packets.guardrails[1]}</span>
-        </div>
-      </div>
-
-      <div className="search-candidate-list">
+      </AdminTagList>
+      <QualityRow tone="warning" icon={<Lock size={16} strokeWidth={1.9} />}>
+        <strong>{packets.guardrails[0]}</strong>
+        <span>{packets.guardrails[1]}</span>
+      </QualityRow>
+      <AdminSearchCandidateList>
         {visiblePackets.map((packet) => (
-          <article className="search-candidate-card" key={packet.packetId}>
-            <header className="search-candidate-header">
+          <AdminSearchCandidateCard key={packet.packetId}>
+            <AdminSearchCandidateHeader>
               <div>
-                <div className="intake-eyebrow">
+                <AdminEyebrow>
                   {packet.taskType.replaceAll("_", " ")} / {packet.priority}
-                </div>
+                </AdminEyebrow>
                 <h3>{packet.displayName}</h3>
               </div>
-              <span className={`intake-badge ${packet.status === "ready_for_manual_publication_review" ? "ready" : ""}`}>
+              <StatusChip tone={packet.status === "ready_for_manual_publication_review" ? "ready" : ""}>
                 {packet.status.replaceAll("_", " ")}
-              </span>
-            </header>
+              </StatusChip>
+            </AdminSearchCandidateHeader>
 
-            <div className="intake-state-grid">
+            <AdminIntakeStateGrid>
               <StateRow label="Path" value={packet.publicPresence.canonicalPath ?? "none"} />
               <StateRow label="Index" value={packet.publicPresence.indexStatus} />
               <StateRow label="App" value={packet.publicPresence.appVisibility} />
               <StateRow label="Evidence" value={String(packet.evidenceSummary.records)} />
               <StateRow label="Data blockers" value={String(packet.dataBlockers.length)} />
               <StateRow label="Evidence blockers" value={String(packet.evidenceBlockers.length)} />
-            </div>
+            </AdminIntakeStateGrid>
 
-            <div className="quality-row">
-              <CheckCircle2 size={16} strokeWidth={1.9} />
-              <div>
-                <strong>{packet.recommendedAction}</strong>
-                <span>{packet.publicDraft.headline ?? packet.entityId}</span>
-              </div>
-            </div>
+            <QualityRow icon={<CheckCircle2 size={16} strokeWidth={1.9} />}>
+              <strong>{packet.recommendedAction}</strong>
+              <span>{packet.publicDraft.headline ?? packet.entityId}</span>
+            </QualityRow>
 
-            <div className="intake-section">
-              <div className="intake-section-title">Evidence review</div>
-              <div className="intake-state-grid">
+            <AdminIntakeSection>
+              <AdminIntakeSectionTitle>Evidence review</AdminIntakeSectionTitle>
+              <AdminIntakeStateGrid>
                 <StateRow label="Shown" value={`${packet.evidenceReview.shownRecords}/${packet.evidenceReview.totalRecords}`} />
                 <StateRow label="Artifacts" value={String(packet.evidenceReview.artifactBackedRecords)} />
                 <StateRow label="Manual" value={String(packet.evidenceReview.manualReportsWithoutArtifacts)} />
                 <StateRow label="Unresolved" value={String(packet.evidenceReview.unresolvedLocalRefs)} />
-              </div>
-              <div className="command-stack">
+              </AdminIntakeStateGrid>
+              <AdminCommandStack>
                 {packet.evidenceReview.records.slice(0, 6).map((record) => (
-                  <div className="command-row" key={record.evidenceId}>
+                  <AdminCommandRow key={record.evidenceId}>
                     <span>
                       {record.surface.platform} / {record.evidence.status.replaceAll("_", " ")}
                     </span>
                     <code>{publicationEvidenceReviewLine(record)}</code>
-                    <div className="intake-tags">
-                      <span className={record.reviewerUse.artifactAvailable ? "intake-tag" : "intake-tag muted"}>
+                    <AdminTagList>
+                      <AdminTag tone={record.reviewerUse.artifactAvailable ? "neutral" : "muted"}>
                         {record.reviewerUse.artifactAvailable ? "artifact" : "no artifact"}
-                      </span>
-                      <span className="intake-tag muted">
+                      </AdminTag>
+                      <AdminTag tone="muted">
                         {record.surface.status.replaceAll("_", " ")}
-                      </span>
+                      </AdminTag>
                       {record.riskFlags.slice(0, 4).map((flag) => (
-                        <span className="intake-tag muted" key={flag}>
+                        <AdminTag key={flag} tone="muted">
                           {flag.replaceAll("_", " ")}
-                        </span>
+                        </AdminTag>
                       ))}
-                    </div>
-                  </div>
+                    </AdminTagList>
+                  </AdminCommandRow>
                 ))}
                 {packet.evidenceReview.truncated ? (
-                  <div className="command-row">
+                  <AdminCommandRow>
                     <span>more</span>
                     <code>{packet.evidenceReview.totalRecords - packet.evidenceReview.shownRecords} additional evidence records</code>
-                  </div>
+                  </AdminCommandRow>
                 ) : null}
-              </div>
-            </div>
+              </AdminCommandStack>
+            </AdminIntakeSection>
 
-            <div className="intake-tags">
+            <AdminTagList>
               {packet.publicDraft.formats.map((format) => (
-                <span className="intake-tag" key={format}>
+                <AdminTag key={format}>
                   {format}
-                </span>
+                </AdminTag>
               ))}
               {packet.evidenceSummary.riskFlags.map((flag) => (
-                <span className="intake-tag muted" key={flag}>
+                <AdminTag key={flag} tone="muted">
                   {flag.replaceAll("_", " ")}
-                </span>
+                </AdminTag>
               ))}
-            </div>
+            </AdminTagList>
 
-            <div className="command-stack">
-              <div className="command-row">
+            <AdminCommandStack>
+              <AdminCommandRow>
                 <span>decision</span>
                 <code>{packet.adminDecision.command}</code>
-              </div>
+              </AdminCommandRow>
               {packet.nextActions.map((action) => (
-                <div className="command-row" key={action}>
+                <AdminCommandRow key={action}>
                   <span>next</span>
                   <code>{action}</code>
-                </div>
+                </AdminCommandRow>
               ))}
-            </div>
-          </article>
+            </AdminCommandStack>
+          </AdminSearchCandidateCard>
         ))}
-      </div>
-    </div>
+      </AdminSearchCandidateList>
+    </AdminSearchCandidatePanel>
   );
 }
 
@@ -2326,88 +2148,82 @@ function OrganizerPublicationImpactPreviewView({
   const visibleEntries = preview.entries.slice(0, 8);
 
   return (
-    <div className="search-candidate-panel">
-      <div className="intake-state-grid">
+    <AdminSearchCandidatePanel>
+      <AdminIntakeStateGrid>
         <StateRow label="Impacts" value={String(preview.summary.impacts)} />
         <StateRow label="Would publish" value={String(preview.summary.wouldPublish)} />
         <StateRow label="Would index" value={String(preview.summary.wouldIndex)} />
         <StateRow label="Claim targets" value={String(preview.summary.wouldCreateClaimTargets)} />
         <StateRow label="App visible" value={String(preview.summary.wouldBeAppDiscoverable)} />
         <StateRow label="Manual acks" value={String(preview.summary.reviewerAcknowledgementsRequired)} />
-      </div>
-
-      <div className="intake-tags">
+      </AdminIntakeStateGrid>
+      <AdminTagList>
         {Object.entries(preview.summary.byStatus).map(([status, count]) => (
-          <span className="intake-tag muted" key={status}>
+          <AdminTag key={status} tone="muted">
             {status.replaceAll("_", " ")} x{count}
-          </span>
+          </AdminTag>
         ))}
-      </div>
-
-      <div className="quality-row warning">
-        <Lock size={16} strokeWidth={1.9} />
-        <div>
-          <strong>{preview.guardrails[0]}</strong>
-          <span>{preview.guardrails[1]}</span>
-        </div>
-      </div>
-
-      <div className="search-candidate-list">
+      </AdminTagList>
+      <QualityRow tone="warning" icon={<Lock size={16} strokeWidth={1.9} />}>
+        <strong>{preview.guardrails[0]}</strong>
+        <span>{preview.guardrails[1]}</span>
+      </QualityRow>
+      <AdminSearchCandidateList>
         {visibleEntries.map((entry) => (
-          <article className="search-candidate-card" key={entry.impactId}>
-            <header className="search-candidate-header">
+          <AdminSearchCandidateCard key={entry.impactId}>
+            <AdminSearchCandidateHeader>
               <div>
-                <div className="intake-eyebrow">
+                <AdminEyebrow>
                   {entry.entityId} / {entry.decisionRequired.decision}
-                </div>
+                </AdminEyebrow>
                 <h3>{entry.displayName}</h3>
               </div>
-              <span className={`intake-badge ${entry.status.includes("would_publish") ? "ready" : ""}`}>
+              <StatusChip tone={entry.status.includes("would_publish") ? "ready" : ""}>
                 {entry.status.replaceAll("_", " ")}
-              </span>
-            </header>
+              </StatusChip>
+            </AdminSearchCandidateHeader>
 
-            <div className="intake-state-grid">
+            <AdminIntakeStateGrid>
               <StateRow label="Path" value={entry.publicProjection.canonicalPath ?? "none"} />
               <StateRow label="Publish" value={entry.publicProjection.publishStatus} />
               <StateRow label="Index" value={entry.publicProjection.indexing} />
               <StateRow label="Claim" value={entry.claimTarget.path ?? "none"} />
               <StateRow label="App" value={entry.app.appVisibility} />
               <StateRow label="Sitemap" value={entry.remoteEffects.sitemapEligible ? "eligible" : "excluded"} />
-            </div>
+            </AdminIntakeStateGrid>
 
-            <div className="intake-tags">
+            <AdminTagList>
               {entry.preconditions.reviewerAcknowledgementRequired ? (
-                <span className="intake-tag muted">
+                <AdminTag tone="muted">
                   manual reports require acknowledgement
-                </span>
+                </AdminTag>
               ) : (
-                <span className="intake-tag">packet ready</span>
+                <AdminTag>packet ready</AdminTag>
               )}
               {entry.publicProjection.legacyPaths.map((legacyPath) => (
-                <span className="intake-tag muted" key={legacyPath}>
+                <AdminTag key={legacyPath} tone="muted">
                   legacy {legacyPath}
-                </span>
+                </AdminTag>
               ))}
               {entry.preconditions.blockers?.map((blocker) => (
-                <span className="intake-tag muted" key={blocker}>
+                <AdminTag key={blocker} tone="muted">
                   {blocker.replaceAll("_", " ")}
-                </span>
+                </AdminTag>
               ))}
-            </div>
+            </AdminTagList>
 
-            <div className="command-stack">
+            <AdminCommandStack>
               {entry.commands.map((command) => (
-                <div className="command-row" key={command}>
+                <AdminCommandRow key={command}>
                   <span>next</span>
                   <code>{command}</code>
-                </div>
+                </AdminCommandRow>
               ))}
-            </div>
-          </article>
+            </AdminCommandStack>
+          </AdminSearchCandidateCard>
         ))}
-      </div>
-    </div>
+      </AdminSearchCandidateList>
+    </AdminSearchCandidatePanel>
   );
 }
 
@@ -2471,81 +2287,73 @@ function OrganizerClaimTargetSyncPreviewView({
   const visibleActions = preview.actions.slice(0, 8);
 
   return (
-    <div className="search-candidate-panel">
-      <div className="intake-state-grid">
+    <AdminSearchCandidatePanel>
+      <AdminIntakeStateGrid>
         <StateRow label="Targets" value={String(preview.summary.targets)} />
         <StateRow label="Creates" value={String(preview.summary.creates)} />
         <StateRow label="Refreshes" value={String(preview.summary.refreshes)} />
         <StateRow label="Owner-bound" value={String(preview.summary.skippedOwnerBound)} />
         <StateRow label="Writes" value={String(preview.summary.writesNeeded)} />
         <StateRow label="Remote writes" value={String(preview.mode.remoteWrites)} />
-      </div>
-
-      <div className="quality-row warning">
-        <Lock size={16} strokeWidth={1.9} />
-        <div>
-          <strong>{preview.guardrails[0]}</strong>
-          <span>{preview.guardrails[1]}</span>
-        </div>
-      </div>
-
-      <div className="intake-tags">
-        <span className="intake-tag muted">
+      </AdminIntakeStateGrid>
+      <QualityRow tone="warning" icon={<Lock size={16} strokeWidth={1.9} />}>
+        <strong>{preview.guardrails[0]}</strong>
+        <span>{preview.guardrails[1]}</span>
+      </QualityRow>
+      <AdminTagList>
+        <AdminTag tone="muted">
           source {preview.mode.existingDocsSource}
-        </span>
+        </AdminTag>
         {preview.mode.assumesMissingWhenNotInFixture ? (
-          <span className="intake-tag muted">missing docs assumed absent</span>
+          <AdminTag tone="muted">missing docs assumed absent</AdminTag>
         ) : null}
-      </div>
-
-      <div className="search-candidate-list">
+      </AdminTagList>
+      <AdminSearchCandidateList>
         {visibleActions.length === 0 ? (
-          <div className="empty-row">
-            <CheckCircle2 size={16} strokeWidth={1.9} />
-            <span>No claim-target sync actions until a public approval exists.</span>
-          </div>
+          <EmptyState icon={<CheckCircle2 size={16} strokeWidth={1.9} />}>
+            No claim-target sync actions until a public approval exists.
+          </EmptyState>
         ) : (
           visibleActions.map((action) => (
-            <article className="search-candidate-card" key={`${action.path}-${action.status}`}>
-              <header className="search-candidate-header">
+            <AdminSearchCandidateCard key={`${action.path}-${action.status}`}>
+              <AdminSearchCandidateHeader>
                 <div>
-                  <div className="intake-eyebrow">
+                  <AdminEyebrow>
                     {action.entityId} / {action.reason.replaceAll("_", " ")}
-                  </div>
+                  </AdminEyebrow>
                   <h3>{action.path}</h3>
                 </div>
-                <span className={`intake-badge ${action.writesRemoteData ? "ready" : ""}`}>
+                <StatusChip tone={action.writesRemoteData ? "ready" : ""}>
                   {action.status.replaceAll("_", " ")}
-                </span>
-              </header>
+                </StatusChip>
+              </AdminSearchCandidateHeader>
 
-              <div className="intake-state-grid">
+              <AdminIntakeStateGrid>
                 <StateRow label="Merge" value={action.merge ? "merge" : "set"} />
                 <StateRow label="Fields" value={String(action.writeFieldCount)} />
                 <StateRow label="Dry run" value={action.requiresFirestoreDryRun ? "required" : "not required"} />
-              </div>
+              </AdminIntakeStateGrid>
 
-              <div className="intake-tags">
+              <AdminTagList>
                 {action.writeFields.slice(0, 12).map((field) => (
-                  <span className="intake-tag muted" key={field}>
+                  <AdminTag key={field} tone="muted">
                     {field}
-                  </span>
+                  </AdminTag>
                 ))}
-              </div>
-            </article>
+              </AdminTagList>
+            </AdminSearchCandidateCard>
           ))
         )}
-      </div>
-
-      <div className="command-stack">
+      </AdminSearchCandidateList>
+      <AdminCommandStack>
         {Object.entries(preview.commands).map(([label, command]) => (
-          <div className="command-row" key={label}>
+          <AdminCommandRow key={label}>
             <span>{label}</span>
             <code>{command}</code>
-          </div>
+          </AdminCommandRow>
         ))}
-      </div>
-    </div>
+      </AdminCommandStack>
+    </AdminSearchCandidatePanel>
   );
 }
 
@@ -2557,79 +2365,76 @@ function OrganizerCrawlRunPlanView({
   const visibleIntents = plan.runIntents.slice(0, 8);
 
   return (
-    <div className="search-candidate-panel">
-      <div className="intake-state-grid">
+    <AdminSearchCandidatePanel>
+      <AdminIntakeStateGrid>
         <StateRow label="Scheduler" value={plan.policy.schedulerEnabled ? "enabled" : "disabled"} />
         <StateRow label="Network" value={plan.policy.networkEnabled ? "enabled" : "disabled"} />
         <StateRow label="Request cap" value={String(plan.policy.maxRequestsPerRun)} />
         <StateRow label="Would fetch" value={String(plan.summary.wouldFetch)} />
         <StateRow label="Blocked" value={String(plan.summary.blocked)} />
         <StateRow label="Writes" value={String(plan.summary.firestoreWrites)} />
-      </div>
-
-      <div className="intake-tags">
+      </AdminIntakeStateGrid>
+      <AdminTagList>
         {plan.policy.platformAllowlist.length === 0 ? (
-          <span className="intake-tag muted">No platform allowlist</span>
+          <AdminTag tone="muted">No platform allowlist</AdminTag>
         ) : (
           plan.policy.platformAllowlist.map((platform) => (
-            <span className="intake-tag" key={platform}>{platform}</span>
+            <AdminTag key={platform}>{platform}</AdminTag>
           ))
         )}
         {plan.guardrails.map((guardrail) => (
-          <span className="intake-tag muted" key={guardrail}>
+          <AdminTag key={guardrail} tone="muted">
             {guardrail}
-          </span>
+          </AdminTag>
         ))}
-      </div>
-
-      <div className="intake-section">
-        <div className="intake-section-title">Run blockers</div>
-        <div className="intake-tags">
+      </AdminTagList>
+      <AdminIntakeSection>
+        <AdminIntakeSectionTitle>Run blockers</AdminIntakeSectionTitle>
+        <AdminTagList>
           {Object.entries(plan.summary.blockers)
             .sort(([left], [right]) => left.localeCompare(right))
             .map(([blocker, count]) => (
-              <span className="intake-tag muted" key={blocker}>
+              <AdminTag key={blocker} tone="muted">
                 {blocker} x{count}
-              </span>
+              </AdminTag>
             ))}
-        </div>
-      </div>
-
-      <div className="search-candidate-list">
+        </AdminTagList>
+      </AdminIntakeSection>
+      <AdminSearchCandidateList>
         {visibleIntents.map((intent) => (
-          <article className="search-candidate-card" key={intent.crawlRunId}>
-            <header className="search-candidate-header">
+          <AdminSearchCandidateCard key={intent.crawlRunId}>
+            <AdminSearchCandidateHeader>
               <div>
-                <div className="intake-eyebrow">
+                <AdminEyebrow>
                   {intent.platform} / {intent.surfaceKind}
-                </div>
+                </AdminEyebrow>
                 <h3>{intent.displayName}</h3>
               </div>
-              <span className={`intake-badge ${intent.action === "would_fetch" ? "ready" : ""}`}>
+              <StatusChip tone={intent.action === "would_fetch" ? "ready" : ""}>
                 {intent.action.replaceAll("_", " ")}
-              </span>
-            </header>
-            <div className="intake-state-grid">
+              </StatusChip>
+            </AdminSearchCandidateHeader>
+            <AdminIntakeStateGrid>
               <StateRow label="Run" value={intent.crawlRunId} />
               <StateRow label="Surface" value={intent.surfaceId} />
               <StateRow label="Next" value={intent.nextGate.replaceAll("_", " ")} />
               <StateRow label="Output" value={intent.expectedOutput} />
-            </div>
-            <div className="intake-tags">
+            </AdminIntakeStateGrid>
+            <AdminTagList>
               {intent.blockedBy.length === 0 ? (
-                <span className="intake-tag">ready for reviewed capture</span>
+                <AdminTag>ready for reviewed capture</AdminTag>
               ) : (
                 intent.blockedBy.map((blocker) => (
-                  <span className="intake-tag muted" key={blocker}>
+                  <AdminTag key={blocker} tone="muted">
                     {blocker}
-                  </span>
+                  </AdminTag>
                 ))
               )}
-            </div>
-          </article>
+            </AdminTagList>
+          </AdminSearchCandidateCard>
         ))}
-      </div>
-    </div>
+      </AdminSearchCandidateList>
+    </AdminSearchCandidatePanel>
   );
 }
 
@@ -2641,83 +2446,80 @@ function OrganizerRawArtifactStorageView({
   const visibleArtifacts = manifest.artifacts.slice(0, 8);
 
   return (
-    <div className="search-candidate-panel">
-      <div className="intake-state-grid">
+    <AdminSearchCandidatePanel>
+      <AdminIntakeStateGrid>
         <StateRow label="Policy" value={manifest.policy.status.replaceAll("_", " ")} />
         <StateRow label="Object storage" value={manifest.policy.remoteObjectStorageEnabled ? "enabled" : "disabled"} />
         <StateRow label="Firestore raw" value={manifest.summary.firestoreRawStorageAllowed ? "allowed" : "forbidden"} />
         <StateRow label="Raw payloads" value={String(manifest.summary.rawProviderPayloads)} />
         <StateRow label="Upload blocked" value={String(manifest.summary.remoteUploadBlocked)} />
         <StateRow label="Bytes" value={manifest.summary.totalBytes.toLocaleString()} />
-      </div>
-
-      <div className="intake-tags">
-        <span className="intake-tag muted">provider: {manifest.policy.provider}</span>
-        <span className="intake-tag muted">
+      </AdminIntakeStateGrid>
+      <AdminTagList>
+        <AdminTag tone="muted">provider: {manifest.policy.provider}</AdminTag>
+        <AdminTag tone="muted">
           bucket: {manifest.policy.bucket ?? "not configured"}
-        </span>
-        <span className="intake-tag muted">
+        </AdminTag>
+        <AdminTag tone="muted">
           retention: {manifest.policy.rawPayloadRetentionDays ?? "not configured"}
-        </span>
+        </AdminTag>
         {manifest.guardrails.map((guardrail) => (
-          <span className="intake-tag muted" key={guardrail}>
+          <AdminTag key={guardrail} tone="muted">
             {guardrail}
-          </span>
+          </AdminTag>
         ))}
-      </div>
-
-      <div className="intake-section">
-        <div className="intake-section-title">Storage blockers</div>
-        <div className="intake-tags">
+      </AdminTagList>
+      <AdminIntakeSection>
+        <AdminIntakeSectionTitle>Storage blockers</AdminIntakeSectionTitle>
+        <AdminTagList>
           {Object.entries(manifest.summary.blockers).length === 0 ? (
-            <span className="intake-tag">No upload blockers</span>
+            <AdminTag>No upload blockers</AdminTag>
           ) : (
             Object.entries(manifest.summary.blockers)
               .sort(([left], [right]) => left.localeCompare(right))
               .map(([blocker, count]) => (
-                <span className="intake-tag muted" key={blocker}>
+                <AdminTag key={blocker} tone="muted">
                   {blocker} x{count}
-                </span>
+                </AdminTag>
               ))
           )}
-        </div>
-      </div>
-
-      <div className="search-candidate-list">
+        </AdminTagList>
+      </AdminIntakeSection>
+      <AdminSearchCandidateList>
         {visibleArtifacts.map((artifact) => (
-          <article className="search-candidate-card" key={artifact.artifactId}>
-            <header className="search-candidate-header">
+          <AdminSearchCandidateCard key={artifact.artifactId}>
+            <AdminSearchCandidateHeader>
               <div>
-                <div className="intake-eyebrow">
+                <AdminEyebrow>
                   {artifact.storageClass} / {artifact.artifactKind}
-                </div>
+                </AdminEyebrow>
                 <h3>{artifact.path}</h3>
               </div>
-              <span className={`intake-badge ${artifact.storagePlan.action === "would_upload" ? "ready" : ""}`}>
+              <StatusChip tone={artifact.storagePlan.action === "would_upload" ? "ready" : ""}>
                 {artifact.storagePlan.action.replaceAll("_", " ")}
-              </span>
-            </header>
-            <div className="intake-state-grid">
+              </StatusChip>
+            </AdminSearchCandidateHeader>
+            <AdminIntakeStateGrid>
               <StateRow label="Firestore" value={artifact.firestoreMode.replaceAll("_", " ")} />
               <StateRow label="Retention" value={artifact.retention.status.replaceAll("_", " ")} />
               <StateRow label="Bytes" value={artifact.sizeBytes.toLocaleString()} />
               <StateRow label="Object key" value={artifact.storagePlan.remoteObjectKey} />
-            </div>
-            <div className="intake-tags">
+            </AdminIntakeStateGrid>
+            <AdminTagList>
               {artifact.storagePlan.blockedBy.length === 0 ? (
-                <span className="intake-tag">storage policy satisfied</span>
+                <AdminTag>storage policy satisfied</AdminTag>
               ) : (
                 artifact.storagePlan.blockedBy.map((blocker) => (
-                  <span className="intake-tag muted" key={blocker}>
+                  <AdminTag key={blocker} tone="muted">
                     {blocker}
-                  </span>
+                  </AdminTag>
                 ))
               )}
-            </div>
-          </article>
+            </AdminTagList>
+          </AdminSearchCandidateCard>
         ))}
-      </div>
-    </div>
+      </AdminSearchCandidateList>
+    </AdminSearchCandidatePanel>
   );
 }
 
@@ -2737,48 +2539,44 @@ function OrganizerSearchCandidateQueueView({
   const visibleCandidates = queue.candidates.slice(0, 12);
 
   return (
-    <div className="search-candidate-panel">
-      <div className="intake-state-grid">
+    <AdminSearchCandidatePanel>
+      <AdminIntakeStateGrid>
         <StateRow label="Batches" value={String(queue.summary.batches)} />
         <StateRow label="Results" value={String(queue.summary.results)} />
         <StateRow label="Matched" value={String(queue.summary.matchedExistingEntities)} />
         <StateRow label="Duplicate keys" value={String(queue.summary.duplicateNormalizedKeys)} />
-      </div>
-
-      <div className="intake-tags">
+      </AdminIntakeStateGrid>
+      <AdminTagList>
         {platformEntries.length === 0 ? (
-          <span className="intake-tag muted">No captured surfaces</span>
+          <AdminTag tone="muted">No captured surfaces</AdminTag>
         ) : (
           platformEntries.map(([platform, count]) => (
-            <span className="intake-tag" key={platform}>
+            <AdminTag key={platform}>
               {platform} x{count}
-            </span>
+            </AdminTag>
           ))
         )}
-      </div>
-
+      </AdminTagList>
       {queue.errors.length > 0 || queue.warnings.length > 0 ? (
-        <div className="intake-section">
-          <div className="intake-section-title">Queue Diagnostics</div>
-          <div className="intake-gate-list">
+        <AdminIntakeSection>
+          <AdminIntakeSectionTitle>Queue Diagnostics</AdminIntakeSectionTitle>
+          <AdminIntakeGateList>
             {[...queue.errors, ...queue.warnings].map((message) => (
-              <div className="intake-gate blocked" key={message}>
+              <AdminIntakeGate tone="blocked" key={message}>
                 <FileWarning size={15} strokeWidth={1.9} />
                 <div>
                   <strong>{message}</strong>
                 </div>
-              </div>
+              </AdminIntakeGate>
             ))}
-          </div>
-        </div>
+          </AdminIntakeGateList>
+        </AdminIntakeSection>
       ) : null}
-
-      <div className="search-candidate-list">
+      <AdminSearchCandidateList>
         {visibleCandidates.length === 0 ? (
-          <div className="empty-row">
-            <CheckCircle2 size={16} strokeWidth={1.9} />
-            <span>No captured search surfaces</span>
-          </div>
+          <EmptyState icon={<CheckCircle2 size={16} strokeWidth={1.9} />}>
+            No captured search surfaces
+          </EmptyState>
         ) : (
           visibleCandidates.map((candidate) => (
             <OrganizerSearchCandidateCard
@@ -2791,20 +2589,19 @@ function OrganizerSearchCandidateQueueView({
             />
           ))
         )}
-      </div>
-
-      <div className="intake-section">
-        <div className="intake-section-title">Queue Commands</div>
-        <div className="command-stack">
+      </AdminSearchCandidateList>
+      <AdminIntakeSection>
+        <AdminIntakeSectionTitle>Queue Commands</AdminIntakeSectionTitle>
+        <AdminCommandStack>
           {Object.entries(queue.commands).map(([label, command]) => (
-            <div className="command-row" key={label}>
+            <AdminCommandRow key={label}>
               <span>{label}</span>
               <code>{command}</code>
-            </div>
+            </AdminCommandRow>
           ))}
-        </div>
-      </div>
-    </div>
+        </AdminCommandStack>
+      </AdminIntakeSection>
+    </AdminSearchCandidatePanel>
   );
 }
 
@@ -2845,82 +2642,73 @@ function OrganizerDiscoverySearchPlanView({
   ] as const;
 
   return (
-    <div className="search-candidate-panel">
-      <div className="intake-state-grid">
+    <AdminSearchCandidatePanel>
+      <AdminIntakeStateGrid>
         <StateRow label="Launch cities" value={plan.summary.launchCities.join(", ")} />
         <StateRow label="Planned launch queries" value={String(plan.summary.launchCityPlanned)} />
         <StateRow label="Fresh skipped" value={String(plan.summary.launchCitySkippedFresh)} />
         <StateRow label="Fresh for" value={plan.freshForDays ? `${plan.freshForDays} days` : "not configured"} />
         <StateRow label="As of" value={plan.asOf ?? "unknown"} />
         <StateRow label="Plan source" value={plan.generatedFrom.searchPlan} />
-      </div>
-
-      <div className="intake-tags">
+      </AdminIntakeStateGrid>
+      <AdminTagList>
         {plan.launchCities.map((city) => (
-          <span
-            className={`intake-tag ${city.missingCategoryIds.length > 0 ? "muted" : ""}`}
+          <AdminTag
             key={city.citySlug}
+            tone={city.missingCategoryIds.length > 0 ? "muted" : "neutral"}
           >
             {city.city}: {city.categoryIds.length} categories
-          </span>
+          </AdminTag>
         ))}
-      </div>
-
-      <div className="quality-row warning">
-        <Lock size={16} strokeWidth={1.9} />
-        <div>
-          <strong>Repo-owned search configuration</strong>
-          <span>{plan.commands.configure}</span>
-          <span>Change the files below, regenerate the plan, then capture and ingest provider results.</span>
-        </div>
-      </div>
-
-      <div className="intake-section">
-        <div className="intake-section-title">Configuration Sources</div>
-        <div className="intake-state-grid">
+      </AdminTagList>
+      <QualityRow tone="warning" icon={<Lock size={16} strokeWidth={1.9} />}>
+        <strong>Repo-owned search configuration</strong>
+        <span>{plan.commands.configure}</span>
+        <span>Change the files below, regenerate the plan, then capture and ingest provider results.</span>
+      </QualityRow>
+      <AdminIntakeSection>
+        <AdminIntakeSectionTitle>Configuration Sources</AdminIntakeSectionTitle>
+        <AdminIntakeStateGrid>
           {sourceRows.map(([label, value]) => (
             <StateRow key={label} label={label} value={value} />
           ))}
-        </div>
-      </div>
-
-      <div className="intake-section">
-        <div className="intake-section-title">Launch Search Terms</div>
-        <div className="intake-tags">
+        </AdminIntakeStateGrid>
+      </AdminIntakeSection>
+      <AdminIntakeSection>
+        <AdminIntakeSectionTitle>Launch Search Terms</AdminIntakeSectionTitle>
+        <AdminTagList>
           {launchQueryTemplates.length === 0 ? (
-            <span className="intake-tag muted">No launch search terms planned.</span>
+            <AdminTag tone="muted">No launch search terms planned.</AdminTag>
           ) : (
             launchQueryTemplates.map((entry) => (
-              <span
-                className="intake-tag muted"
+              <AdminTag
                 key={`${entry.queryTemplateId}-${entry.queryTemplate}`}
+                tone="muted"
               >
                 {entry.queryTemplateId}: {entry.queryTemplate}
-              </span>
+              </AdminTag>
             ))
           )}
-        </div>
-      </div>
-
-      <div className="intake-section">
-        <div className="intake-section-title">Operator Commands</div>
-        <div className="command-stack">
+        </AdminTagList>
+      </AdminIntakeSection>
+      <AdminIntakeSection>
+        <AdminIntakeSectionTitle>Operator Commands</AdminIntakeSectionTitle>
+        <AdminCommandStack>
           {Object.entries(plan.commands).map(([label, command]) => (
-            <div className="command-row" key={label}>
+            <AdminCommandRow key={label}>
               <span>{label}</span>
               <code>{command}</code>
-            </div>
+            </AdminCommandRow>
           ))}
-        </div>
-      </div>
-
+        </AdminCommandStack>
+      </AdminIntakeSection>
       {plan.summary.missingLaunchCityCategories.length > 0 ? (
-        <div className="intake-section">
-          <div className="intake-section-title">Missing launch categories</div>
-          <div className="intake-gate-list">
+        <AdminIntakeSection>
+          <AdminIntakeSectionTitle>Missing launch categories</AdminIntakeSectionTitle>
+          <AdminIntakeGateList>
             {plan.summary.missingLaunchCityCategories.map((missing) => (
-              <div
-                className="intake-gate blocked"
+              <AdminIntakeGate
+                tone="blocked"
                 key={`${missing.citySlug}-${missing.categoryId}`}
               >
                 <FileWarning size={15} strokeWidth={1.9} />
@@ -2928,27 +2716,26 @@ function OrganizerDiscoverySearchPlanView({
                   <strong>{missing.city}</strong>
                   <span>{missing.categoryId}</span>
                 </div>
-              </div>
+              </AdminIntakeGate>
             ))}
-          </div>
-        </div>
+          </AdminIntakeGateList>
+        </AdminIntakeSection>
       ) : null}
-
-      <div className="search-candidate-list">
+      <AdminSearchCandidateList>
         {launchEntries.map((entry) => (
-          <article className="search-candidate-card" key={entry.runKey}>
-            <header className="search-candidate-header">
+          <AdminSearchCandidateCard key={entry.runKey}>
+            <AdminSearchCandidateHeader>
               <div>
-                <div className="intake-eyebrow">
+                <AdminEyebrow>
                   {entry.city} / {entry.categoryId.replaceAll("_", " ")}
-                </div>
+                </AdminEyebrow>
                 <h3>{entry.renderedQuery}</h3>
               </div>
-              <span className="intake-badge">
+              <StatusChip>
                 {entry.planKind.replaceAll("_", " ")}
-              </span>
-            </header>
-            <div className="intake-state-grid">
+              </StatusChip>
+            </AdminSearchCandidateHeader>
+            <AdminIntakeStateGrid>
               <StateRow label="Template" value={entry.queryTemplateId} />
               <StateRow label="Template text" value={entry.queryTemplate} />
               <StateRow label="Source" value={entry.source} />
@@ -2957,44 +2744,42 @@ function OrganizerDiscoverySearchPlanView({
               <StateRow label="Searched" value={entry.searchedAt ?? "not captured"} />
               <StateRow label="Existing run" value={entry.existingRunFile ?? "none"} />
               <StateRow label="Fingerprint" value={entry.resultFingerprint ?? "none"} />
-            </div>
-          </article>
+            </AdminIntakeStateGrid>
+          </AdminSearchCandidateCard>
         ))}
         {launchEntries.length === 0 ? (
-          <div className="empty-row">
-            <FileWarning size={16} strokeWidth={1.9} />
-            <span>No planned launch-city discovery queries</span>
-          </div>
+          <EmptyState icon={<FileWarning size={16} strokeWidth={1.9} />}>
+            No planned launch-city discovery queries
+          </EmptyState>
         ) : null}
-      </div>
-
+      </AdminSearchCandidateList>
       {skippedEntries.length > 0 ? (
-        <div className="intake-section">
-          <div className="intake-section-title">Fresh skipped queries</div>
-          <div className="search-candidate-list">
+        <AdminIntakeSection>
+          <AdminIntakeSectionTitle>Fresh skipped queries</AdminIntakeSectionTitle>
+          <AdminSearchCandidateList>
             {skippedEntries.map((entry) => (
-              <article className="search-candidate-card" key={entry.runKey}>
-                <header className="search-candidate-header">
+              <AdminSearchCandidateCard key={entry.runKey}>
+                <AdminSearchCandidateHeader>
                   <div>
-                    <div className="intake-eyebrow">
+                    <AdminEyebrow>
                       {entry.city} / {entry.categoryId.replaceAll("_", " ")}
-                    </div>
+                    </AdminEyebrow>
                     <h3>{entry.renderedQuery}</h3>
                   </div>
-                  <span className="intake-badge">fresh</span>
-                </header>
-                <div className="intake-state-grid">
+                  <StatusChip>fresh</StatusChip>
+                </AdminSearchCandidateHeader>
+                <AdminIntakeStateGrid>
                   <StateRow label="Run key" value={entry.runKey} />
                   <StateRow label="Searched" value={entry.searchedAt ?? "unknown"} />
                   <StateRow label="Existing run" value={entry.existingRunFile ?? "none"} />
                   <StateRow label="Fingerprint" value={entry.resultFingerprint ?? "none"} />
-                </div>
-              </article>
+                </AdminIntakeStateGrid>
+              </AdminSearchCandidateCard>
             ))}
-          </div>
-        </div>
+          </AdminSearchCandidateList>
+        </AdminIntakeSection>
       ) : null}
-    </div>
+    </AdminSearchCandidatePanel>
   );
 }
 
@@ -3004,35 +2789,35 @@ function OrganizerPublishingContractsView({
   contracts: Intake.OrganizerPublishingContracts;
 }) {
   return (
-    <div className="search-candidate-panel">
-      <div className="search-candidate-list">
+    <AdminSearchCandidatePanel>
+      <AdminSearchCandidateList>
         {Object.entries(contracts).map(([key, contract]) => (
-          <article className="search-candidate-card" key={key}>
-            <header className="search-candidate-header">
+          <AdminSearchCandidateCard key={key}>
+            <AdminSearchCandidateHeader>
               <div>
-                <div className="intake-eyebrow">
+                <AdminEyebrow>
                   {contract.intakeTarget} / {contract.writeCallable}
-                </div>
+                </AdminEyebrow>
                 <h3>{contract.callablePayloadSchema}</h3>
               </div>
-              <span className="intake-badge ready">schema source</span>
-            </header>
-            <div className="intake-state-grid">
+              <StatusChip tone="ready">schema source</StatusChip>
+            </AdminSearchCandidateHeader>
+            <AdminIntakeStateGrid>
               <StateRow label="Firestore" value={contract.firestoreSchema} />
               <StateRow label="Generated payload" value={contract.generatedCallablePayload} />
               <StateRow label="Callable" value={contract.writeCallable} />
-            </div>
-            <div className="intake-tags">
+            </AdminIntakeStateGrid>
+            <AdminTagList>
               {contract.projectionNotes.map((note: string) => (
-                <span className="intake-tag muted" key={note}>
+                <AdminTag key={note} tone="muted">
                   {note}
-                </span>
+                </AdminTag>
               ))}
-            </div>
-          </article>
+            </AdminTagList>
+          </AdminSearchCandidateCard>
         ))}
-      </div>
-    </div>
+      </AdminSearchCandidateList>
+    </AdminSearchCandidatePanel>
   );
 }
 
@@ -3051,8 +2836,8 @@ function OrganizerSourceMentionResolutionView({
   const thresholds = Object.entries(resolution.policy.thresholds);
 
   return (
-    <div className="search-candidate-panel">
-      <div className="intake-state-grid">
+    <AdminSearchCandidatePanel>
+      <AdminIntakeStateGrid>
         <StateRow
           label="Source artifacts"
           value={String(resolution.sourceArtifacts.summary.artifacts)}
@@ -3078,59 +2863,49 @@ function OrganizerSourceMentionResolutionView({
           label="Prompt payloads"
           value={String(resolution.llmPromptQueue.summary.requests)}
         />
-      </div>
-
-      <div className="quality-row warning">
-        <Lock size={16} strokeWidth={1.9} />
-        <div>
-          <strong>Canonical write boundary</strong>
-          <span>{resolution.policy.canonicalBoundary.generatedCandidates}</span>
-          <span>{resolution.policy.canonicalBoundary.platformVerifiedMeaning}</span>
-        </div>
-      </div>
-
-      <div className="intake-section">
-        <div className="intake-section-title">Editable Resolution Policy</div>
-        <div className="intake-tags">
+      </AdminIntakeStateGrid>
+      <QualityRow tone="warning" icon={<Lock size={16} strokeWidth={1.9} />}>
+        <strong>Canonical write boundary</strong>
+        <span>{resolution.policy.canonicalBoundary.generatedCandidates}</span>
+        <span>{resolution.policy.canonicalBoundary.platformVerifiedMeaning}</span>
+      </QualityRow>
+      <AdminIntakeSection>
+        <AdminIntakeSectionTitle>Editable Resolution Policy</AdminIntakeSectionTitle>
+        <AdminTagList>
           {thresholds.map(([key, value]) => (
-            <span className="intake-tag muted" key={key}>
+            <AdminTag key={key} tone="muted">
               {key}: {value}
-            </span>
+            </AdminTag>
           ))}
           {blockingKeys.map((key) => (
-            <span className="intake-tag muted" key={key.id}>
+            <AdminTag key={key.id} tone="muted">
               {key.id} / {key.strength}
-            </span>
+            </AdminTag>
           ))}
           {stableProviderPlatforms.length > 0 ? (
-            <span className="intake-tag muted">
+            <AdminTag tone="muted">
               provider hard keys: {stableProviderPlatforms.join(", ")}
-            </span>
+            </AdminTag>
           ) : null}
-        </div>
-      </div>
-
-      <div className="intake-section">
-        <div className="intake-section-title">Resolution review packets</div>
-        <div className="search-candidate-list">
+        </AdminTagList>
+      </AdminIntakeSection>
+      <AdminIntakeSection>
+        <AdminIntakeSectionTitle>Resolution review packets</AdminIntakeSectionTitle>
+        <AdminSearchCandidateList>
           {reviewPackets.map((packet) => (
-            <article className="search-candidate-card" key={packet.packetId}>
-              <header className="search-candidate-header">
+            <AdminSearchCandidateCard key={packet.packetId}>
+              <AdminSearchCandidateHeader>
                 <div>
-                  <div className="intake-eyebrow">
+                  <AdminEyebrow>
                     {packet.entityType} / {packet.recommendedAction.replaceAll("_", " ")}
-                  </div>
+                  </AdminEyebrow>
                   <h3>{packet.packetId}</h3>
                 </div>
-                <span
-                  className={`intake-badge ${
-                    packet.humanReviewRequired ? "blocked" : "ready"
-                  }`}
-                >
+                <StatusChip tone={packet.humanReviewRequired ? "blocked" : "ready"}>
                   {packet.resolutionState.replaceAll("_", " ")}
-                </span>
-              </header>
-              <div className="intake-state-grid">
+                </StatusChip>
+              </AdminSearchCandidateHeader>
+              <AdminIntakeStateGrid>
                 <StateRow label="Score" value={String(packet.score)} />
                 <StateRow label="Candidates" value={String(packet.candidateIds.length)} />
                 <StateRow label="Mentions" value={String(packet.mentionIds.length)} />
@@ -3138,126 +2913,115 @@ function OrganizerSourceMentionResolutionView({
                   label="LLM"
                   value={packet.llmReview.status.replaceAll("_", " ")}
                 />
-              </div>
-              <div className="intake-tags">
+              </AdminIntakeStateGrid>
+              <AdminTagList>
                 {Object.entries(packet.checklist).map(([key, value]) => (
-                  <span className="intake-tag muted" key={key}>
+                  <AdminTag key={key} tone="muted">
                     {key}: {String(value)}
-                  </span>
+                  </AdminTag>
                 ))}
                 {packet.topSignals.slice(0, 5).map((signal) => (
-                  <span className="intake-tag" key={signal}>
+                  <AdminTag key={signal}>
                     {signal.replaceAll("_", " ")}
-                  </span>
+                  </AdminTag>
                 ))}
                 {packet.conflicts.map((conflict) => (
-                  <span className="intake-tag muted" key={conflict}>
+                  <AdminTag key={conflict} tone="muted">
                     conflict: {conflict.replaceAll("_", " ")}
-                  </span>
+                  </AdminTag>
                 ))}
-              </div>
-            </article>
+              </AdminTagList>
+            </AdminSearchCandidateCard>
           ))}
           {reviewPackets.length === 0 ? (
-            <div className="empty-row">
-              <FileWarning size={16} strokeWidth={1.9} />
-              <span>No source resolution review packets have been generated yet.</span>
-            </div>
+            <EmptyState icon={<FileWarning size={16} strokeWidth={1.9} />}>
+              No source resolution review packets have been generated yet.
+            </EmptyState>
           ) : null}
-        </div>
-      </div>
-
-      <div className="search-candidate-list">
+        </AdminSearchCandidateList>
+      </AdminIntakeSection>
+      <AdminSearchCandidateList>
         {clusters.map((cluster) => (
-          <article className="search-candidate-card" key={cluster.clusterId}>
-            <header className="search-candidate-header">
+          <AdminSearchCandidateCard key={cluster.clusterId}>
+            <AdminSearchCandidateHeader>
               <div>
-                <div className="intake-eyebrow">
+                <AdminEyebrow>
                   {cluster.entityType} / {cluster.scoreBand.replaceAll("_", " ")}
-                </div>
+                </AdminEyebrow>
                 <h3>{cluster.displayNames.slice(0, 3).join(" / ") || cluster.clusterId}</h3>
               </div>
-              <span className={`intake-badge ${sourceResolutionTone(cluster.resolutionState)}`}>
+              <StatusChip tone={sourceResolutionTone(cluster.resolutionState)}>
                 {cluster.resolutionState.replaceAll("_", " ")}
-              </span>
-            </header>
-            <div className="intake-state-grid">
+              </StatusChip>
+            </AdminSearchCandidateHeader>
+            <AdminIntakeStateGrid>
               <StateRow label="Score" value={String(cluster.score)} />
               <StateRow label="Mentions" value={String(cluster.mentionIds.length)} />
               <StateRow label="Cities" value={cluster.cities.join(", ") || "unknown"} />
               <StateRow label="Dates" value={cluster.dates.join(", ") || "unknown"} />
               <StateRow label="LLM" value={cluster.llmReview.status.replaceAll("_", " ")} />
-            </div>
-            <div className="intake-tags">
+            </AdminIntakeStateGrid>
+            <AdminTagList>
               {cluster.hardSignals.map((signal) => (
-                <span className="intake-tag" key={signal}>
+                <AdminTag key={signal}>
                   {signal}
-                </span>
+                </AdminTag>
               ))}
               {cluster.matchingSignals.slice(0, 6).map((signal) => (
-                <span className="intake-tag muted" key={signal}>
+                <AdminTag key={signal} tone="muted">
                   {signal.replaceAll("_", " ")}
-                </span>
+                </AdminTag>
               ))}
               {cluster.conflictingSignals.map((signal) => (
-                <span className="intake-tag muted" key={signal}>
+                <AdminTag key={signal} tone="muted">
                   conflict: {signal.replaceAll("_", " ")}
-                </span>
+                </AdminTag>
               ))}
-            </div>
+            </AdminTagList>
             {cluster.publishBoundary ? (
-              <div className="quality-row">
-                <FileWarning size={16} strokeWidth={1.9} />
-                <div>
-                  <strong>Projection boundary</strong>
-                  <span>{cluster.publishBoundary}</span>
-                </div>
-              </div>
+              <QualityRow icon={<FileWarning size={16} strokeWidth={1.9} />}>
+                <strong>Projection boundary</strong>
+                <span>{cluster.publishBoundary}</span>
+              </QualityRow>
             ) : null}
-          </article>
+          </AdminSearchCandidateCard>
         ))}
         {clusters.length === 0 ? (
-          <div className="empty-row">
-            <FileWarning size={16} strokeWidth={1.9} />
-            <span>No source mentions have been captured for resolution yet.</span>
-          </div>
+          <EmptyState icon={<FileWarning size={16} strokeWidth={1.9} />}>
+            No source mentions have been captured for resolution yet.
+          </EmptyState>
         ) : null}
-      </div>
-
+      </AdminSearchCandidateList>
       {llmQueue.length > 0 ? (
-        <div className="intake-section">
-          <div className="intake-section-title">LLM Review Queue</div>
-          <div className="intake-tags">
+        <AdminIntakeSection>
+          <AdminIntakeSectionTitle>LLM Review Queue</AdminIntakeSectionTitle>
+          <AdminTagList>
             {llmQueue.map((request) => (
-              <span className="intake-tag muted" key={request.clusterId}>
+              <AdminTag key={request.clusterId} tone="muted">
                 {request.clusterId}: {request.status} / {request.promptVersion}
-              </span>
+              </AdminTag>
             ))}
-          </div>
-        </div>
+          </AdminTagList>
+        </AdminIntakeSection>
       ) : null}
-
-      <div className="intake-section">
-        <div className="intake-section-title">LLM Prompt Queue</div>
-        <div className="quality-row warning">
-          <Lock size={16} strokeWidth={1.9} />
-          <div>
-            <strong>{resolution.llmPromptQueue.policy.status.replaceAll("_", " ")}</strong>
-            <span>{resolution.llmPromptQueue.policy.note}</span>
-          </div>
-        </div>
-        <div className="intake-tags">
+      <AdminIntakeSection>
+        <AdminIntakeSectionTitle>LLM Prompt Queue</AdminIntakeSectionTitle>
+        <QualityRow tone="warning" icon={<Lock size={16} strokeWidth={1.9} />}>
+          <strong>{resolution.llmPromptQueue.policy.status.replaceAll("_", " ")}</strong>
+          <span>{resolution.llmPromptQueue.policy.note}</span>
+        </QualityRow>
+        <AdminTagList>
           {promptQueue.map((request) => (
-            <span className="intake-tag muted" key={request.requestId}>
+            <AdminTag key={request.requestId} tone="muted">
               {request.clusterId}: {request.status} / {request.promptVersion}
-            </span>
+            </AdminTag>
           ))}
           {promptQueue.length === 0 ? (
-            <span className="intake-tag muted">No prompt payloads queued.</span>
+            <AdminTag tone="muted">No prompt payloads queued.</AdminTag>
           ) : null}
-        </div>
-      </div>
-    </div>
+        </AdminTagList>
+      </AdminIntakeSection>
+    </AdminSearchCandidatePanel>
   );
 }
 
@@ -3285,61 +3049,57 @@ function OrganizerSearchCandidateCard({
     !localCuration;
 
   return (
-    <article className="search-candidate-card">
-      <header className="search-candidate-header">
+    <AdminSearchCandidateCard>
+      <AdminSearchCandidateHeader>
         <div>
-          <div className="intake-eyebrow">
+          <AdminEyebrow>
             #{candidate.rank} / {candidate.platform} / {candidate.surfaceKind}
-          </div>
+          </AdminEyebrow>
           <h3>{candidate.title}</h3>
         </div>
-        <span className={`intake-badge ${candidate.reviewAction.includes("attach") ? "ready" : ""}`}>
+        <StatusChip tone={candidate.reviewAction.includes("attach") ? "ready" : ""}>
           {candidate.reviewAction.replaceAll("_", " ")}
-        </span>
-      </header>
-
-      <div className="intake-state-grid">
+        </StatusChip>
+      </AdminSearchCandidateHeader>
+      <AdminIntakeStateGrid>
         <StateRow label="Candidate" value={candidate.candidateId} />
         <StateRow label="Observed" value={candidate.observedAt} />
         <StateRow label="Normalized" value={candidate.normalizedKey ?? "none"} />
         <StateRow label="Canonical URL" value={candidate.canonicalUrl} />
-      </div>
-
+      </AdminIntakeStateGrid>
       {candidate.snippet ? (
-        <p className="search-candidate-snippet">{candidate.snippet}</p>
+        <AdminSearchCandidateSnippet>{candidate.snippet}</AdminSearchCandidateSnippet>
       ) : null}
-
-      <div className="intake-tags">
+      <AdminTagList>
         {matchedEntityIds.length > 0 ? (
           matchedEntityIds.map((entityId) => (
-            <span className="intake-tag" key={entityId}>
+            <AdminTag key={entityId}>
               matches {entityId}
-            </span>
+            </AdminTag>
           ))
         ) : (
-          <span className="intake-tag muted">no surface match</span>
+          <AdminTag tone="muted">no surface match</AdminTag>
         )}
         {candidate.queryIntent.marketSlug ? (
-          <span className="intake-tag muted">{candidate.queryIntent.marketSlug}</span>
+          <AdminTag tone="muted">{candidate.queryIntent.marketSlug}</AdminTag>
         ) : null}
         {candidate.queryIntent.entityHint ? (
-          <span className="intake-tag muted">{candidate.queryIntent.entityHint}</span>
+          <AdminTag tone="muted">{candidate.queryIntent.entityHint}</AdminTag>
         ) : null}
         {candidate.diagnostics.map((diagnostic) => (
-          <span className="intake-tag muted" key={diagnostic}>{diagnostic}</span>
+          <AdminTag key={diagnostic} tone="muted">{diagnostic}</AdminTag>
         ))}
-      </div>
-
+      </AdminTagList>
       {candidate.reviewAction !== "supporting_evidence_only" ? (
-        <div className="search-candidate-actions">
+        <AdminSearchCandidateActions>
           {localCuration ? (
-            <div className="intake-decision-state">
+            <AdminIntakeDecisionState>
               <CheckCircle2 size={16} strokeWidth={1.9} />
               <div>
                 <strong>Attach recorded</strong>
                 <span>{localCuration.decisionPath}</span>
               </div>
-            </div>
+            </AdminIntakeDecisionState>
           ) : (
             <AdminButton
               disabled={!canAttach || inFlight}
@@ -3348,13 +3108,13 @@ function OrganizerSearchCandidateCard({
               {inFlight ? "Recording" : "Attach surface"}
             </AdminButton>
           )}
-          <div className="command-row">
+          <AdminCommandRow>
             <span>attach</span>
             <code>{attachCommand}</code>
-          </div>
-        </div>
+          </AdminCommandRow>
+        </AdminSearchCandidateActions>
       ) : null}
-    </article>
+    </AdminSearchCandidateCard>
   );
 }
 
@@ -3378,8 +3138,8 @@ function OrganizerExternalEventCandidateQueueView({
 }) {
   const visibleCandidates = queue.candidates.slice(0, 8);
   return (
-    <div className="search-candidate-panel">
-      <div className="intake-state-grid">
+    <AdminSearchCandidatePanel>
+      <AdminIntakeStateGrid>
         <StateRow label="Batches" value={String(queue.summary.batches)} />
         <StateRow label="Events" value={String(queue.summary.events)} />
         <StateRow label="Candidates" value={String(queue.summary.candidates)} />
@@ -3391,52 +3151,44 @@ function OrganizerExternalEventCandidateQueueView({
         />
         <StateRow label="Held" value={String(queue.summary.held ?? 0)} />
         <StateRow label="Rejected" value={String(queue.summary.rejected ?? 0)} />
-      </div>
-
-      <div className="quality-row warning">
-        <Clock3 size={16} strokeWidth={1.9} />
-        <div>
-          <strong>{queue.policy.importWritesEnabled ? "Import writes enabled" : "Import writes disabled"}</strong>
-          <span>{queue.policy.reason}</span>
-        </div>
-      </div>
-
-      <div className="intake-tags">
+      </AdminIntakeStateGrid>
+      <QualityRow tone="warning" icon={<Clock3 size={16} strokeWidth={1.9} />}>
+        <strong>{queue.policy.importWritesEnabled ? "Import writes enabled" : "Import writes disabled"}</strong>
+        <span>{queue.policy.reason}</span>
+      </QualityRow>
+      <AdminTagList>
         {Object.entries(queue.summary.platforms).length === 0 ? (
-          <span className="intake-tag muted">no provider batches</span>
+          <AdminTag tone="muted">no provider batches</AdminTag>
         ) : (
           Object.entries(queue.summary.platforms)
             .sort(([left], [right]) => left.localeCompare(right))
             .map(([platform, count]) => (
-              <span className="intake-tag" key={platform}>
+              <AdminTag key={platform}>
                 {platform} x{count}
-              </span>
+              </AdminTag>
             ))
         )}
-      </div>
-
+      </AdminTagList>
       {queue.errors.length > 0 || queue.warnings.length > 0 ? (
-        <div className="intake-section">
-          <div className="intake-section-title">Event Diagnostics</div>
-          <div className="intake-gate-list">
+        <AdminIntakeSection>
+          <AdminIntakeSectionTitle>Event Diagnostics</AdminIntakeSectionTitle>
+          <AdminIntakeGateList>
             {[...queue.errors, ...queue.warnings].map((message) => (
-              <div className="intake-gate blocked" key={message}>
+              <AdminIntakeGate tone="blocked" key={message}>
                 <FileWarning size={15} strokeWidth={1.9} />
                 <div>
                   <strong>{message}</strong>
                 </div>
-              </div>
+              </AdminIntakeGate>
             ))}
-          </div>
-        </div>
+          </AdminIntakeGateList>
+        </AdminIntakeSection>
       ) : null}
-
-      <div className="search-candidate-list">
+      <AdminSearchCandidateList>
         {visibleCandidates.length === 0 ? (
-          <div className="empty-row">
-            <CheckCircle2 size={16} strokeWidth={1.9} />
-            <span>No external event candidates</span>
-          </div>
+          <EmptyState icon={<CheckCircle2 size={16} strokeWidth={1.9} />}>
+            No external event candidates
+          </EmptyState>
         ) : (
           visibleCandidates.map((candidate) => (
             <OrganizerExternalEventCandidateCard
@@ -3450,20 +3202,19 @@ function OrganizerExternalEventCandidateQueueView({
             />
           ))
         )}
-      </div>
-
-      <div className="intake-section">
-        <div className="intake-section-title">Event Commands</div>
-        <div className="command-stack">
+      </AdminSearchCandidateList>
+      <AdminIntakeSection>
+        <AdminIntakeSectionTitle>Event Commands</AdminIntakeSectionTitle>
+        <AdminCommandStack>
           {Object.entries(queue.commands).map(([label, command]) => (
-            <div className="command-row" key={label}>
+            <AdminCommandRow key={label}>
               <span>{label}</span>
               <code>{command}</code>
-            </div>
+            </AdminCommandRow>
           ))}
-        </div>
-      </div>
-    </div>
+        </AdminCommandStack>
+      </AdminIntakeSection>
+    </AdminSearchCandidatePanel>
   );
 }
 
@@ -3475,8 +3226,8 @@ function OrganizerExternalEventImportPlanView({
   const visibleActions = plan.actions.slice(0, 8);
 
   return (
-    <div className="search-candidate-panel">
-      <div className="intake-state-grid">
+    <AdminSearchCandidatePanel>
+      <AdminIntakeStateGrid>
         <StateRow label="Candidates" value={String(plan.summary.candidates)} />
         <StateRow
           label="Read-only events"
@@ -3487,46 +3238,39 @@ function OrganizerExternalEventImportPlanView({
         <StateRow label="Blocked" value={String(plan.summary.blocked)} />
         <StateRow label="Waiting" value={String(plan.summary.waitingReview)} />
         <StateRow label="Rejected" value={String(plan.summary.rejected)} />
-      </div>
-
-      <div className="quality-row warning">
-        <Lock size={16} strokeWidth={1.9} />
-        <div>
-          <strong>{plan.policy.writeEnabled ? "Writes enabled" : "Writes disabled"}</strong>
-          <span>{plan.policy.reason}</span>
-        </div>
-      </div>
-
-      <div className="intake-tags">
+      </AdminIntakeStateGrid>
+      <QualityRow tone="warning" icon={<Lock size={16} strokeWidth={1.9} />}>
+        <strong>{plan.policy.writeEnabled ? "Writes enabled" : "Writes disabled"}</strong>
+        <span>{plan.policy.reason}</span>
+      </QualityRow>
+      <AdminTagList>
         {plan.guardrails.map((guardrail) => (
-          <span className="intake-tag muted" key={guardrail}>
+          <AdminTag key={guardrail} tone="muted">
             {guardrail}
-          </span>
+          </AdminTag>
         ))}
-      </div>
-
-      <div className="search-candidate-list">
+      </AdminTagList>
+      <AdminSearchCandidateList>
         {visibleActions.length === 0 ? (
-          <div className="empty-row">
-            <CheckCircle2 size={16} strokeWidth={1.9} />
-            <span>No event import actions</span>
-          </div>
+          <EmptyState icon={<CheckCircle2 size={16} strokeWidth={1.9} />}>
+            No event import actions
+          </EmptyState>
         ) : (
           visibleActions.map((action) => (
-            <article className="search-candidate-card" key={action.actionId}>
-              <header className="search-candidate-header">
+            <AdminSearchCandidateCard key={action.actionId}>
+              <AdminSearchCandidateHeader>
                 <div>
-                  <div className="intake-eyebrow">
+                  <AdminEyebrow>
                     {action.platform} / {action.status}
-                  </div>
+                  </AdminEyebrow>
                   <h3>{action.proposedReadOnlyEventDraft.eventId}</h3>
                 </div>
-                <span className={`intake-badge ${action.status === "write_ready" ? "ready" : ""}`}>
+                <StatusChip tone={action.status === "write_ready" ? "ready" : ""}>
                   {action.action.replaceAll("_", " ")}
-                </span>
-              </header>
+                </StatusChip>
+              </AdminSearchCandidateHeader>
 
-              <div className="intake-state-grid">
+              <AdminIntakeStateGrid>
                 <StateRow label="Candidate" value={action.candidateId} />
                 <StateRow label="Target" value={action.targetPath} />
                 <StateRow
@@ -3544,42 +3288,41 @@ function OrganizerExternalEventImportPlanView({
                   label="Catch booking"
                   value={action.proposedReadOnlyEventDraft.booking.catchBookingEnabled ? "enabled" : "disabled"}
                 />
-              </div>
+              </AdminIntakeStateGrid>
 
-              <div className="intake-tags">
+              <AdminTagList>
                 {action.proposedReadOnlyEventDraft.booking.externalLinks.map((link) => (
-                  <span className="intake-tag ready" key={`${link.platform}-${link.url}`}>
+                  <AdminTag key={`${link.platform}-${link.url}`} tone="ready">
                     {link.platform} outbound
-                  </span>
+                  </AdminTag>
                 ))}
                 {action.blockers.map((blocker) => (
-                  <span className="intake-tag muted" key={blocker}>
+                  <AdminTag key={blocker} tone="muted">
                     {blocker}
-                  </span>
+                  </AdminTag>
                 ))}
                 {action.duplicateCandidateIds.map((candidateId) => (
-                  <span className="intake-tag muted" key={candidateId}>
+                  <AdminTag key={candidateId} tone="muted">
                     duplicate {candidateId}
-                  </span>
+                  </AdminTag>
                 ))}
-              </div>
-            </article>
+              </AdminTagList>
+            </AdminSearchCandidateCard>
           ))
         )}
-      </div>
-
-      <div className="intake-section">
-        <div className="intake-section-title">Import Commands</div>
-        <div className="command-stack">
+      </AdminSearchCandidateList>
+      <AdminIntakeSection>
+        <AdminIntakeSectionTitle>Import Commands</AdminIntakeSectionTitle>
+        <AdminCommandStack>
           {Object.entries(plan.commands).map(([label, command]) => (
-            <div className="command-row" key={label}>
+            <AdminCommandRow key={label}>
               <span>{label}</span>
               <code>{command}</code>
-            </div>
+            </AdminCommandRow>
           ))}
-        </div>
-      </div>
-    </div>
+        </AdminCommandStack>
+      </AdminIntakeSection>
+    </AdminSearchCandidatePanel>
   );
 }
 
@@ -3604,161 +3347,149 @@ function OrganizerExternalEventLocationResolutionView({
   const visibleTasks = queue.tasks.slice(0, 8);
 
   return (
-    <div className="search-candidate-panel">
-      <div className="intake-state-grid">
+    <AdminSearchCandidatePanel>
+      <AdminIntakeStateGrid>
         <StateRow label="Candidates" value={String(queue.summary.candidates)} />
         <StateRow label="Tasks" value={String(queue.summary.tasks)} />
         <StateRow label="Missing coords" value={String(queue.summary.missingExactCoordinates)} />
         <StateRow label="Missing text" value={String(queue.summary.missingLocationText)} />
         <StateRow label="Provider disabled" value={String(queue.summary.providerDisabled)} />
         <StateRow label="Provider" value={queue.policy.provider} />
-      </div>
-
-      <div className="quality-row warning">
-        <Lock size={16} strokeWidth={1.9} />
-        <div>
-          <strong>
-            {queue.policy.providerLookupEnabled ? "Provider lookup enabled" : "Provider lookup disabled"}
-          </strong>
-          <span>{queue.policy.reason}</span>
-        </div>
-      </div>
-
-      <div className="intake-tags">
+      </AdminIntakeStateGrid>
+      <QualityRow tone="warning" icon={<Lock size={16} strokeWidth={1.9} />}>
+        <strong>
+          {queue.policy.providerLookupEnabled ? "Provider lookup enabled" : "Provider lookup disabled"}
+        </strong>
+        <span>{queue.policy.reason}</span>
+      </QualityRow>
+      <AdminTagList>
         {queue.guardrails.map((guardrail) => (
-          <span className="intake-tag muted" key={guardrail}>
+          <AdminTag key={guardrail} tone="muted">
             {guardrail}
-          </span>
+          </AdminTag>
         ))}
-      </div>
-
-      <div className="search-candidate-list">
+      </AdminTagList>
+      <AdminSearchCandidateList>
         {visibleTasks.length === 0 ? (
-          <div className="empty-row">
-            <CheckCircle2 size={16} strokeWidth={1.9} />
-            <span>No event location resolution tasks</span>
-          </div>
+          <EmptyState icon={<CheckCircle2 size={16} strokeWidth={1.9} />}>
+            No event location resolution tasks
+          </EmptyState>
         ) : (
           visibleTasks.map((task) => {
             const form = forms[task.taskId] ??
               locationResolutionFormFromTask(task);
             const localResolution = localResolutions[task.candidateId];
             return (
-              <article className="search-candidate-card" key={task.taskId}>
-              <header className="search-candidate-header">
-                <div>
-                  <div className="intake-eyebrow">
-                    {task.platform} / {task.resolutionState}
+              <AdminSearchCandidateCard key={task.taskId}>
+                <AdminSearchCandidateHeader>
+                  <div>
+                    <AdminEyebrow>
+                      {task.platform} / {task.resolutionState}
+                    </AdminEyebrow>
+                    <h3>{task.title}</h3>
                   </div>
-                  <h3>{task.title}</h3>
-                </div>
-                <span className="intake-badge">
-                  {task.countryCode}
-                </span>
-              </header>
-
-              <div className="intake-state-grid">
-                <StateRow label="Candidate" value={task.candidateId} />
-                <StateRow label="Entity" value={task.entityId} />
-                <StateRow label="Starts" value={task.startAt} />
-                <StateRow label="Query" value={task.resolutionQuery || "missing"} />
-                <StateRow label="Name" value={task.sourceLocation.name ?? "missing"} />
-                <StateRow label="Address" value={task.sourceLocation.address ?? "missing"} />
-                <StateRow
-                  label="Local decision"
-                  value={localResolution?.resolutionStatus ?? "not recorded"}
-                />
-              </div>
-
-              <div className="intake-tags">
-                {task.blockers.map((blocker) => (
-                  <span className="intake-tag muted" key={blocker}>
-                    {blocker}
-                  </span>
-                ))}
-              </div>
-
-              <div className="location-resolution-form">
-                <TextField
-                  label="Name"
-                  onChange={(name) =>
-                    onFormChange(task.taskId, {...form, name})}
-                  value={form.name}
-                />
-                <TextField
-                  label="Address"
-                  onChange={(address) =>
-                    onFormChange(task.taskId, {...form, address})}
-                  value={form.address}
-                />
-                <TextField
-                  label="Place ID"
-                  onChange={(placeId) =>
-                    onFormChange(task.taskId, {...form, placeId})}
-                  value={form.placeId}
-                />
-                <TextField
-                  inputMode="decimal"
-                  label="Latitude"
-                  onChange={(latitude) =>
-                    onFormChange(task.taskId, {...form, latitude})}
-                  value={form.latitude}
-                />
-                <TextField
-                  inputMode="decimal"
-                  label="Longitude"
-                  onChange={(longitude) =>
-                    onFormChange(task.taskId, {...form, longitude})}
-                  value={form.longitude}
-                />
-                <TextField
-                  className="field-control span-2"
-                  label="Resolution notes"
-                  onChange={(notes) =>
-                    onFormChange(task.taskId, {...form, notes})}
-                  value={form.notes}
-                />
-                <TextareaField
-                  className="field-control span-2"
-                  label="Review note"
-                  onChange={(note) =>
-                    onFormChange(task.taskId, {...form, note})}
-                  rows={2}
-                  value={form.note}
-                />
-              </div>
-
-              <div className="search-candidate-actions">
-                <AdminButton
-                  disabled={
-                    inFlight[task.taskId] === true ||
-                    localResolution?.resolutionStatus === "resolved"
-                  }
-                  onClick={() => onResolve(task)}
-                >
-                  {localResolution?.resolutionStatus === "resolved" ?
-                    "Resolved" :
-                    inFlight[task.taskId] ? "Saving..." : "Resolve location"}
-                </AdminButton>
-              </div>
-            </article>
+                  <StatusChip>
+                    {task.countryCode}
+                  </StatusChip>
+                </AdminSearchCandidateHeader>
+                <AdminIntakeStateGrid>
+                  <StateRow label="Candidate" value={task.candidateId} />
+                  <StateRow label="Entity" value={task.entityId} />
+                  <StateRow label="Starts" value={task.startAt} />
+                  <StateRow label="Query" value={task.resolutionQuery || "missing"} />
+                  <StateRow label="Name" value={task.sourceLocation.name ?? "missing"} />
+                  <StateRow label="Address" value={task.sourceLocation.address ?? "missing"} />
+                  <StateRow
+                    label="Local decision"
+                    value={localResolution?.resolutionStatus ?? "not recorded"}
+                  />
+                </AdminIntakeStateGrid>
+                <AdminTagList>
+                  {task.blockers.map((blocker) => (
+                    <AdminTag key={blocker} tone="muted">
+                      {blocker}
+                    </AdminTag>
+                  ))}
+                </AdminTagList>
+                <AdminOrganizerLocationResolutionForm>
+                  <TextField
+                    label="Name"
+                    onChange={(name) =>
+                      onFormChange(task.taskId, {...form, name})}
+                    value={form.name}
+                  />
+                  <TextField
+                    label="Address"
+                    onChange={(address) =>
+                      onFormChange(task.taskId, {...form, address})}
+                    value={form.address}
+                  />
+                  <TextField
+                    label="Place ID"
+                    onChange={(placeId) =>
+                      onFormChange(task.taskId, {...form, placeId})}
+                    value={form.placeId}
+                  />
+                  <TextField
+                    inputMode="decimal"
+                    label="Latitude"
+                    onChange={(latitude) =>
+                      onFormChange(task.taskId, {...form, latitude})}
+                    value={form.latitude}
+                  />
+                  <TextField
+                    inputMode="decimal"
+                    label="Longitude"
+                    onChange={(longitude) =>
+                      onFormChange(task.taskId, {...form, longitude})}
+                    value={form.longitude}
+                  />
+                  <TextField
+                    span={2}
+                    label="Resolution notes"
+                    onChange={(notes) =>
+                      onFormChange(task.taskId, {...form, notes})}
+                    value={form.notes}
+                  />
+                  <TextareaField
+                    span={2}
+                    label="Review note"
+                    onChange={(note) =>
+                      onFormChange(task.taskId, {...form, note})}
+                    rows={2}
+                    value={form.note}
+                  />
+                </AdminOrganizerLocationResolutionForm>
+                <AdminSearchCandidateActions>
+                  <AdminButton
+                    disabled={
+                      inFlight[task.taskId] === true ||
+                      localResolution?.resolutionStatus === "resolved"
+                    }
+                    onClick={() => onResolve(task)}
+                  >
+                    {localResolution?.resolutionStatus === "resolved" ?
+                      "Resolved" :
+                      inFlight[task.taskId] ? "Saving..." : "Resolve location"}
+                  </AdminButton>
+                </AdminSearchCandidateActions>
+              </AdminSearchCandidateCard>
             );
           })
         )}
-      </div>
-
-      <div className="intake-section">
-        <div className="intake-section-title">Location Commands</div>
-        <div className="command-stack">
+      </AdminSearchCandidateList>
+      <AdminIntakeSection>
+        <AdminIntakeSectionTitle>Location Commands</AdminIntakeSectionTitle>
+        <AdminCommandStack>
           {Object.entries(queue.commands).map(([label, command]) => (
-            <div className="command-row" key={label}>
+            <AdminCommandRow key={label}>
               <span>{label}</span>
               <code>{command}</code>
-            </div>
+            </AdminCommandRow>
           ))}
-        </div>
-      </div>
-    </div>
+        </AdminCommandStack>
+      </AdminIntakeSection>
+    </AdminSearchCandidatePanel>
   );
 }
 
@@ -3770,8 +3501,8 @@ function OrganizerExternalEventImportExecutionPlanView({
   const visibleActions = plan.actions.slice(0, 8);
 
   return (
-    <div className="search-candidate-panel">
-      <div className="intake-state-grid">
+    <AdminSearchCandidatePanel>
+      <AdminIntakeStateGrid>
         <StateRow label="Import actions" value={String(plan.summary.importActions)} />
         <StateRow
           label="Read-only actions"
@@ -3790,50 +3521,43 @@ function OrganizerExternalEventImportExecutionPlanView({
           label="Projection errors"
           value={String(plan.summary.projectionInvalidCount ?? plan.summary.payloadInvalid)}
         />
-      </div>
-
-      <div className="quality-row warning">
-        <Lock size={16} strokeWidth={1.9} />
-        <div>
-          <strong>
-            {plan.policy.writeEnabled ? "Execution writes enabled" : "Execution writes disabled"}
-          </strong>
-          <span>
-            {plan.policy.authorityModel} / {plan.policy.reason}
-          </span>
-        </div>
-      </div>
-
-      <div className="intake-tags">
+      </AdminIntakeStateGrid>
+      <QualityRow tone="warning" icon={<Lock size={16} strokeWidth={1.9} />}>
+        <strong>
+          {plan.policy.writeEnabled ? "Execution writes enabled" : "Execution writes disabled"}
+        </strong>
+        <span>
+          {plan.policy.authorityModel} / {plan.policy.reason}
+        </span>
+      </QualityRow>
+      <AdminTagList>
         {plan.guardrails.map((guardrail) => (
-          <span className="intake-tag muted" key={guardrail}>
+          <AdminTag key={guardrail} tone="muted">
             {guardrail}
-          </span>
+          </AdminTag>
         ))}
-      </div>
-
-      <div className="search-candidate-list">
+      </AdminTagList>
+      <AdminSearchCandidateList>
         {visibleActions.length === 0 ? (
-          <div className="empty-row">
-            <CheckCircle2 size={16} strokeWidth={1.9} />
-            <span>No event import execution actions</span>
-          </div>
+          <EmptyState icon={<CheckCircle2 size={16} strokeWidth={1.9} />}>
+            No event import execution actions
+          </EmptyState>
         ) : (
           visibleActions.map((action) => (
-            <article className="search-candidate-card" key={action.actionId}>
-              <header className="search-candidate-header">
+            <AdminSearchCandidateCard key={action.actionId}>
+              <AdminSearchCandidateHeader>
                 <div>
-                  <div className="intake-eyebrow">
+                  <AdminEyebrow>
                     {(action.targetWriter ?? action.targetCallable ?? "read-only projection")} / {action.status}
-                  </div>
+                  </AdminEyebrow>
                   <h3>{action.readOnlyEventProjection?.eventId ?? action.createEventPayload?.eventId ?? action.sourceActionId}</h3>
                 </div>
-                <span className={`intake-badge ${action.status === "would_publish_read_only" ? "ready" : ""}`}>
+                <StatusChip tone={action.status === "would_publish_read_only" ? "ready" : ""}>
                   {action.sourceAction.replaceAll("_", " ")}
-                </span>
-              </header>
+                </StatusChip>
+              </AdminSearchCandidateHeader>
 
-              <div className="intake-state-grid">
+              <AdminIntakeStateGrid>
                 <StateRow label="Candidate" value={action.candidateId} />
                 <StateRow label="Target" value={action.targetPath} />
                 <StateRow
@@ -3852,52 +3576,48 @@ function OrganizerExternalEventImportExecutionPlanView({
                   label="Projection"
                   value={(action.projectionValidation ?? action.payloadValidation).valid ? "valid" : "invalid"}
                 />
-              </div>
+              </AdminIntakeStateGrid>
 
-              <div className="intake-tags">
+              <AdminTagList>
                 {action.blockers.map((blocker) => (
-                  <span className="intake-tag muted" key={blocker}>
+                  <AdminTag key={blocker} tone="muted">
                     {blocker}
-                  </span>
+                  </AdminTag>
                 ))}
-              </div>
+              </AdminTagList>
 
               {(action.projectionValidation?.errors ?? action.payloadValidation.errors).length > 0 ? (
-                <div className="intake-section">
-                  <div className="intake-section-title">Projection errors</div>
-                  <div className="guardrail-list">
+                <AdminIntakeSection>
+                  <AdminIntakeSectionTitle>Projection errors</AdminIntakeSectionTitle>
+                  <AdminGuardrailList>
                     {(action.projectionValidation?.errors ?? action.payloadValidation.errors).map((error, index) => (
-                      <div
-                        className="quality-row warning"
+                      <QualityRow
                         key={`${error.path}-${error.keyword}-${index}`}
-                      >
-                        <FileWarning size={16} strokeWidth={1.9} />
-                        <div>
-                          <strong>{error.path}</strong>
-                          <span>{error.message}</span>
-                        </div>
-                      </div>
+                        tone="warning"
+                        icon={<FileWarning size={16} strokeWidth={1.9} />}>
+                        <strong>{error.path}</strong>
+                        <span>{error.message}</span>
+                      </QualityRow>
                     ))}
-                  </div>
-                </div>
+                  </AdminGuardrailList>
+                </AdminIntakeSection>
               ) : null}
-            </article>
+            </AdminSearchCandidateCard>
           ))
         )}
-      </div>
-
-      <div className="intake-section">
-        <div className="intake-section-title">Preflight Commands</div>
-        <div className="command-stack">
+      </AdminSearchCandidateList>
+      <AdminIntakeSection>
+        <AdminIntakeSectionTitle>Preflight Commands</AdminIntakeSectionTitle>
+        <AdminCommandStack>
           {Object.entries(plan.commands).map(([label, command]) => (
-            <div className="command-row" key={label}>
+            <AdminCommandRow key={label}>
               <span>{label}</span>
               <code>{command}</code>
-            </div>
+            </AdminCommandRow>
           ))}
-        </div>
-      </div>
-    </div>
+        </AdminCommandStack>
+      </AdminIntakeSection>
+    </AdminSearchCandidatePanel>
   );
 }
 
@@ -3921,39 +3641,36 @@ function OrganizerExternalEventCandidateCard({
   const isDeciding = Boolean(inFlightDecision);
 
   return (
-    <article className="search-candidate-card">
-      <header className="search-candidate-header">
+    <AdminSearchCandidateCard>
+      <AdminSearchCandidateHeader>
         <div>
-          <div className="intake-eyebrow">
+          <AdminEyebrow>
             {candidate.platform} / {candidate.reviewStatus}
-          </div>
+          </AdminEyebrow>
           <h3>{candidate.title}</h3>
         </div>
-        <span className={`intake-badge ${candidate.reviewStatus === "approved_for_import" ? "ready" : ""}`}>
+        <StatusChip tone={candidate.reviewStatus === "approved_for_import" ? "ready" : ""}>
           {candidate.entityId}
-        </span>
-      </header>
-
-      <div className="intake-state-grid">
+        </StatusChip>
+      </AdminSearchCandidateHeader>
+      <AdminIntakeStateGrid>
         <StateRow label="Candidate" value={candidate.candidateId} />
         <StateRow label="Surface" value={candidate.surfaceId} />
         <StateRow label="Starts" value={candidate.startAt} />
         <StateRow label="Ends" value={candidate.endAt ?? "unknown"} />
         <StateRow label="Location" value={eventCandidateLocation(candidate)} />
         <StateRow label="Import" value={`${candidate.importReadiness} / ${candidate.importState}`} />
-      </div>
-
-      <div className="intake-tags">
+      </AdminIntakeStateGrid>
+      <AdminTagList>
         {candidate.blockers.map((blocker) => (
-          <span className="intake-tag muted" key={blocker}>{blocker}</span>
+          <AdminTag key={blocker} tone="muted">{blocker}</AdminTag>
         ))}
         {candidate.diagnostics.map((diagnostic) => (
-          <span className="intake-tag muted" key={diagnostic}>{diagnostic}</span>
+          <AdminTag key={diagnostic} tone="muted">{diagnostic}</AdminTag>
         ))}
-      </div>
-
+      </AdminTagList>
       {submittedDecision ? (
-        <div className="intake-decision-state">
+        <AdminIntakeDecisionState>
           <CheckCircle2 size={16} strokeWidth={1.9} />
           <div>
             <strong>{eventDecisionLabel(submittedDecision)}</strong>
@@ -3963,16 +3680,16 @@ function OrganizerExternalEventCandidateCard({
                 `Decision present in ${candidate.reviewDecision?.eventReviewBatchId}`}
             </span>
           </div>
-        </div>
+        </AdminIntakeDecisionState>
       ) : (
-        <div className="intake-decision-box">
+        <AdminIntakeDecisionBox>
           <TextareaField
             label="Event review note"
             onChange={onNoteChange}
             rows={3}
             value={note}
           />
-          <div className="intake-decision-actions">
+          <AdminIntakeDecisionActions>
             <AdminButton
               disabled={isDeciding}
               onClick={() => onDecision("approve_for_import")}
@@ -3994,10 +3711,10 @@ function OrganizerExternalEventCandidateCard({
             >
               {inFlightDecision === "reject" ? "Rejecting" : "Reject"}
             </AdminButton>
-          </div>
-        </div>
+          </AdminIntakeDecisionActions>
+        </AdminIntakeDecisionBox>
       )}
-    </article>
+    </AdminSearchCandidateCard>
   );
 }
 
@@ -4054,99 +3771,95 @@ function OrganizerIntakeCard({
   const isDeciding = Boolean(inFlightDecision);
 
   return (
-    <article className="intake-card">
-      <header className="intake-card-header">
+    <AdminOrganizerIntakeCard>
+      <AdminOrganizerIntakeCardHeader>
         <div>
-          <div className="intake-eyebrow">
+          <AdminEyebrow>
             {item.priority} / {item.taskType.replaceAll("_", " ")}
-          </div>
+          </AdminEyebrow>
           <h3>{item.displayName}</h3>
         </div>
-        <div className="intake-badges">
-          <span className={`intake-badge ${item.projectionStatus}`}>
+        <AdminOrganizerIntakeBadges>
+          <StatusChip tone={item.projectionStatus}>
             {item.projectionStatus}
-          </span>
-          <span className="intake-badge">{item.relationshipToCatch}</span>
-        </div>
-      </header>
-
-      <div className="intake-state-grid">
+          </StatusChip>
+          <StatusChip>{item.relationshipToCatch}</StatusChip>
+        </AdminOrganizerIntakeBadges>
+      </AdminOrganizerIntakeCardHeader>
+      <AdminIntakeStateGrid>
         <StateRow label="Entity ID" value={item.entityId} />
         <StateRow label="Canonical" value={item.canonicalPath} />
         <StateRow label="Website" value={`${item.publishStatus} / ${item.indexStatus}`} />
         <StateRow label="App" value={item.appVisibility} />
-      </div>
-
+      </AdminIntakeStateGrid>
       {item.curation ? (
-        <div className="intake-section curation-panel">
-          <div className="intake-section-title">Curation</div>
-          <div className="intake-tags">
+        <AdminOrganizerIntakeCurationPanel>
+          <AdminIntakeSectionTitle>Curation</AdminIntakeSectionTitle>
+          <AdminTagList>
             {item.curation.attachedSurfaces.map((surface) => (
-              <span className="intake-tag" key={`attached-${surface.surfaceId}`}>
+              <AdminTag key={`attached-${surface.surfaceId}`}>
                 attached {surface.surfaceId}
-              </span>
+              </AdminTag>
             ))}
             {item.curation.mergedFrom.map((entityId) => (
-              <span className="intake-tag" key={`merged-${entityId}`}>
+              <AdminTag key={`merged-${entityId}`}>
                 merged {entityId}
-              </span>
+              </AdminTag>
             ))}
             {item.curation.mergedInto ? (
-              <span className="intake-tag muted">
+              <AdminTag tone="muted">
                 merged into {item.curation.mergedInto}
-              </span>
+              </AdminTag>
             ) : null}
             {item.curation.suppressed ? (
-              <span className="intake-tag muted">
+              <AdminTag tone="muted">
                 suppressed
-              </span>
+              </AdminTag>
             ) : null}
             {item.curation.surfaceDecisions.map((decision) => (
-              <span className="intake-tag" key={`${decision.surfaceId}-${decision.decision}`}>
+              <AdminTag key={`${decision.surfaceId}-${decision.decision}`}>
                 {decision.surfaceId}: {decision.decision}
-              </span>
+              </AdminTag>
             ))}
             {item.curation.splitSurfaces.map((split) => (
-              <span className="intake-tag muted" key={`${split.surfaceId}-${split.newEntityId}`}>
+              <AdminTag key={`${split.surfaceId}-${split.newEntityId}`} tone="muted">
                 split {split.surfaceId} to {split.newEntityId}
-              </span>
+              </AdminTag>
             ))}
-          </div>
-        </div>
+          </AdminTagList>
+        </AdminOrganizerIntakeCurationPanel>
       ) : null}
-
-      <div className="intake-section">
-        <div className="intake-section-title">Markets</div>
-        <div className="intake-tags">
+      <AdminIntakeSection>
+        <AdminIntakeSectionTitle>Markets</AdminIntakeSectionTitle>
+        <AdminTagList>
           {item.markets.map((market) => (
-            <span className="intake-tag" key={market.marketSlug}>
+            <AdminTag key={market.marketSlug}>
               {market.displayName} / {market.eventFilter.citySlug}
-            </span>
+            </AdminTag>
           ))}
           {item.legacyPaths.map((path) => (
-            <span className="intake-tag muted" key={path}>{path}</span>
+            <AdminTag key={path} tone="muted">{path}</AdminTag>
           ))}
-        </div>
-      </div>
-
-      <div className="intake-section">
-        <div className="intake-section-title">Surface Inventory</div>
-        <div className="intake-surface-grid">
+        </AdminTagList>
+      </AdminIntakeSection>
+      <AdminIntakeSection>
+        <AdminIntakeSectionTitle>Surface Inventory</AdminIntakeSectionTitle>
+        <AdminOrganizerIntakeSurfaceGrid>
           <StateRow label="Active" value={String(item.surfaceSummary.active)} />
           <StateRow label="Candidate" value={String(item.surfaceSummary.candidate)} />
           <StateRow label="Ambiguous" value={String(item.surfaceSummary.ambiguous)} />
           <StateRow label="Rejected" value={String(item.surfaceSummary.rejected)} />
-        </div>
-        <div className="intake-tags">
+        </AdminOrganizerIntakeSurfaceGrid>
+        <AdminTagList>
           {platformEntries.map(([platform, count]) => (
-            <span className="intake-tag" key={platform}>
+            <AdminTag key={platform}>
               {platform} x{count}
-            </span>
+            </AdminTag>
           ))}
-        </div>
-        <div className="surface-list">
+        </AdminTagList>
+        <AdminOrganizerSurfaceList>
           {item.surfaces.map((surface) => (
-            <div className="surface-row" key={surface.surfaceId}>
+            <AdminOrganizerSurfaceRow key={surface.surfaceId}>
               <div>
                 <strong>{surface.surfaceId}</strong>
                 <span>
@@ -4154,17 +3867,16 @@ function OrganizerIntakeCard({
                 </span>
               </div>
               <span>{surface.role}</span>
-            </div>
+            </AdminOrganizerSurfaceRow>
           ))}
-        </div>
-      </div>
-
-      <div className="intake-section">
-        <div className="intake-section-title">Review Gates</div>
-        <div className="intake-gate-list">
+        </AdminOrganizerSurfaceList>
+      </AdminIntakeSection>
+      <AdminIntakeSection>
+        <AdminIntakeSectionTitle>Review Gates</AdminIntakeSectionTitle>
+        <AdminIntakeGateList>
           {item.gates.map((gate) => (
-            <div
-              className={`intake-gate ${gate.passed ? "passed" : "blocked"}`}
+            <AdminIntakeGate
+              tone={gate.passed ? "passed" : "blocked"}
               key={gate.id}
             >
               {gate.passed ? (
@@ -4176,11 +3888,10 @@ function OrganizerIntakeCard({
                 <strong>{gate.id}</strong>
                 <span>{gate.description}</span>
               </div>
-            </div>
+            </AdminIntakeGate>
           ))}
-        </div>
-      </div>
-
+        </AdminIntakeGateList>
+      </AdminIntakeSection>
       <OrganizerCurationControl
         form={curationForm}
         inFlight={curationInFlight}
@@ -4190,38 +3901,31 @@ function OrganizerIntakeCard({
         onSubmit={onCurationSubmit}
         targetOptions={entityOptions}
       />
-
-      <div className="intake-section">
-        <div className="intake-section-title">Admin Decision</div>
+      <AdminIntakeSection>
+        <AdminIntakeSectionTitle>Admin Decision</AdminIntakeSectionTitle>
         {publicationPacket ? (
-          <div className={
-            `quality-row ${publicationPacketReady(publicationPacket) ? "" : "warning"}`
-          }>
-            {publicationPacketReady(publicationPacket) ? (
+          <QualityRow
+            tone={publicationPacketReady(publicationPacket) ? "" : "warning"}
+            icon={publicationPacketReady(publicationPacket) ? (
               <CheckCircle2 size={16} strokeWidth={1.9} />
             ) : (
               <FileWarning size={16} strokeWidth={1.9} />
-            )}
-            <div>
-              <strong>{publicationPacket.status.replaceAll("_", " ")}</strong>
-              <span>
-                {manualReportCount > 0 ?
-                  `${manualReportCount} manual report(s) require reviewer acknowledgement.` :
-                  publicationPacket.recommendedAction}
-              </span>
-            </div>
-          </div>
+            )}>
+            <strong>{publicationPacket.status.replaceAll("_", " ")}</strong>
+            <span>
+              {manualReportCount > 0 ?
+                `${manualReportCount} manual report(s) require reviewer acknowledgement.` :
+                publicationPacket.recommendedAction}
+            </span>
+          </QualityRow>
         ) : (
-          <div className="quality-row warning">
-            <FileWarning size={16} strokeWidth={1.9} />
-            <div>
-              <strong>Publication packet missing</strong>
-              <span>Regenerate organizer intake before public approval.</span>
-            </div>
-          </div>
+          <QualityRow tone="warning" icon={<FileWarning size={16} strokeWidth={1.9} />}>
+            <strong>Publication packet missing</strong>
+            <span>Regenerate organizer intake before public approval.</span>
+          </QualityRow>
         )}
         {submittedDecision ? (
-          <div className="intake-decision-state">
+          <AdminIntakeDecisionState>
             <CheckCircle2 size={16} strokeWidth={1.9} />
             <div>
               <strong>{decisionLabel(submittedDecision)}</strong>
@@ -4231,9 +3935,9 @@ function OrganizerIntakeCard({
                   "Decision present in generated review state"}
               </span>
             </div>
-          </div>
+          </AdminIntakeDecisionState>
         ) : (
-          <div className="intake-decision-box">
+          <AdminIntakeDecisionBox>
             <TextareaField
               label="Review note"
               onChange={onNoteChange}
@@ -4241,15 +3945,14 @@ function OrganizerIntakeCard({
               value={note}
             />
             {manualReportCount > 0 ? (
-              <CheckboxField
+              <AdminOrganizerIntakeCheckboxField
                 checked={manualReportsAcknowledged}
-                className="intake-checkbox-row"
                 disabled={isDeciding}
                 label="Manual reports reviewed as prompts, not identity proof."
                 onChange={onManualReportsAcknowledgedChange}
               />
             ) : null}
-            <div className="intake-decision-actions">
+            <AdminIntakeDecisionActions>
               <AdminButton
                 disabled={
                   !approvalReady ||
@@ -4275,23 +3978,22 @@ function OrganizerIntakeCard({
               >
                 {inFlightDecision === "suppress" ? "Suppressing" : "Suppress"}
               </AdminButton>
-            </div>
-          </div>
+            </AdminIntakeDecisionActions>
+          </AdminIntakeDecisionBox>
         )}
-      </div>
-
-      <div className="intake-section">
-        <div className="intake-section-title">Decision Commands</div>
-        <div className="command-stack">
+      </AdminIntakeSection>
+      <AdminIntakeSection>
+        <AdminIntakeSectionTitle>Decision Commands</AdminIntakeSectionTitle>
+        <AdminCommandStack>
           {commandEntries.map(([label, command]) => (
-            <div className="command-row" key={label}>
+            <AdminCommandRow key={label}>
               <span>{label}</span>
               <code>{command}</code>
-            </div>
+            </AdminCommandRow>
           ))}
-        </div>
-      </div>
-    </article>
+        </AdminCommandStack>
+      </AdminIntakeSection>
+    </AdminOrganizerIntakeCard>
   );
 }
 
@@ -4331,9 +4033,9 @@ function OrganizerCurationControl({
     form.operationType === "split_surface";
 
   return (
-    <div className="intake-section curation-control">
-      <div className="intake-section-title">Curation Operation</div>
-      <div className="curation-control-grid">
+    <AdminOrganizerCurationControlSection>
+      <AdminIntakeSectionTitle>Curation Operation</AdminIntakeSectionTitle>
+      <AdminOrganizerCurationControlGrid>
         <SelectField
           label="Operation"
           onChange={(value) => update(
@@ -4379,36 +4081,32 @@ function OrganizerCurationControl({
             label="New entity id"
             onChange={(value) => update("newEntityId", value)}
             value={form.newEntityId}
-          />
-        ) : null}
-      </div>
-
+            />
+          ) : null}
+      </AdminOrganizerCurationControlGrid>
       {usesSurface && selectedSurface ? (
-        <div className="surface-preview">
+        <AdminSurfacePreview>
           <strong>{selectedSurface.platform} / {selectedSurface.surfaceKind}</strong>
           <span>{selectedSurface.url ?? "no URL captured"}</span>
           <span>{selectedSurface.notes}</span>
-        </div>
+        </AdminSurfacePreview>
       ) : null}
-
       <TextareaField
         label="Curation reason"
         onChange={(value) => update("reason", value)}
         rows={2}
         value={form.reason}
       />
-
       {localCuration ? (
-        <div className="intake-decision-state">
+        <AdminIntakeDecisionState>
           <CheckCircle2 size={16} strokeWidth={1.9} />
           <div>
             <strong>{localCuration.operationType.replaceAll("_", " ")}</strong>
             <span>{localCuration.decisionPath}</span>
           </div>
-        </div>
+        </AdminIntakeDecisionState>
       ) : null}
-
-      <div className="intake-decision-actions">
+      <AdminIntakeDecisionActions>
         <AdminButton
           disabled={inFlight}
           onClick={() => onSubmit(form)}
@@ -4416,8 +4114,8 @@ function OrganizerCurationControl({
         >
           {inFlight ? "Recording" : "Record curation"}
         </AdminButton>
-      </div>
-    </div>
+      </AdminIntakeDecisionActions>
+    </AdminOrganizerCurationControlSection>
   );
 }
 

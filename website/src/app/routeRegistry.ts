@@ -6,7 +6,7 @@ export type MarketingRouteId =
   | "organizer_listing"
   | "claim"
   | "claim_lookup"
-  | "fallback";
+  | "not_found";
 
 export interface MarketingRouteDefinition {
   id: MarketingRouteId;
@@ -21,7 +21,7 @@ export const marketingRouteDefinitions = [
   {id: "organizer_listing", path: "/organizers/*"},
   {id: "claim", path: "/claim"},
   {id: "claim_lookup", path: "/claim/:listing"},
-  {id: "fallback", path: "*"},
+  {id: "not_found", path: "*"},
 ] as const satisfies readonly MarketingRouteDefinition[];
 
 export const marketingRoutePaths = marketingRouteDefinitions.reduce(
@@ -35,4 +35,8 @@ export const marketingRoutePaths = marketingRouteDefinitions.reduce(
 export function isHostPreviewPath(pathname: string) {
   return pathname === "/host/preview" ||
     pathname.startsWith("/host/preview/");
+}
+
+export function isOrganizerSearchPath(pathname: string) {
+  return pathname === "/organizers" || pathname === "/organizers/";
 }

@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated": "2026-07-01",
+  "updated": "2026-07-02",
   "owner": "agent_operating_model",
   "entries": [
     {
@@ -107,7 +107,7 @@
       "symptom": "Explore or event cards assume organizer host fields are non-null even though unclaimed organizer data allows null host ownership.",
       "guard": {
         "type": "command",
-        "command": "flutter test test/explore/explore_view_model_test.dart"
+        "command": "flutter test test/explore/explore_view_model_test.dart --plain-name 'unclaimed organizer'"
       },
       "owner_docs": [
         "docs/data_contracts.md",
@@ -164,6 +164,30 @@
         "docs/audit_registry/README.md"
       ],
       "notes": "Use disposable worktrees, disjoint write scopes, parent-owned integration, and record delegation outcomes with tool/agent/record_delegation_outcome.mjs."
+    },
+    {
+      "id": "REG-AGENT-008",
+      "title": "Enforcement assets drift from the rules they claim to prove",
+      "status": "active",
+      "applies_to": [
+        "docs/audit_registry/rules.json",
+        "tool/tools_manifest.json",
+        "tool/**",
+        ".github/workflows/**",
+        "docs/agent_operating_model.md",
+        "docs/app_architecture.md"
+      ],
+      "symptom": "A scanner, lint wrapper, manifest check, or CI step stays green while no active rule points to it, the rule has no doc anchor, the tool is only syntax/count checked, or the known-bad probe no longer proves the diagnostic fires.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/check_enforcement_integrity.mjs"
+      },
+      "owner_docs": [
+        "docs/agent_operating_model.md",
+        "docs/audit_registry/README.md",
+        "tool/README.md"
+      ],
+      "notes": "Update rule enforcement entries, manifest role/rules/vacuityProof metadata, doc anchors, and baseline receipts in the same pass as enforcement changes."
     },
     {
       "id": "REG-WEB-001",

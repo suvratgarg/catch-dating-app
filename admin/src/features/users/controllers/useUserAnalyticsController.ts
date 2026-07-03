@@ -1,3 +1,4 @@
+import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {useCallback, useEffect, useMemo, useState} from "react";
 import type {
   UserAnalyticsGranularity,
@@ -5,6 +6,7 @@ import type {
   UserAnalyticsRangePreset,
   UserAnalyticsResponse,
 } from "../../../shared/types/adminTypes";
+import {adminQueryKeys} from "../../../shared/query/queryKeys";
 import {
   isUserAnalyticsSampleMode,
   loadUserAnalyticsReport,
@@ -29,6 +31,24 @@ export interface UserLookupContract {
   blockedActions: string[];
 }
 
+export interface UserAnalyticsController {
+  endDate: string;
+  granularity: UserAnalyticsGranularity;
+  isLoading: boolean;
+  lookupContract: UserLookupContract;
+  payload: UserAnalyticsQueryPayload;
+  rangePreset: UserAnalyticsRangePreset;
+  report: UserAnalyticsResponse | null;
+  startDate: string;
+  userId: string;
+  load: (nextUserId?: string) => Promise<boolean>;
+  setEndDate: (value: string) => void;
+  setGranularity: (value: UserAnalyticsGranularity) => void;
+  setRangePreset: (value: UserAnalyticsRangePreset) => void;
+  setStartDate: (value: string) => void;
+  setUserId: (value: string) => void;
+}
+
 export function useUserAnalyticsController({
   handoffRequestId,
   handoffUserId,
@@ -39,7 +59,8 @@ export function useUserAnalyticsController({
   handoffUserId?: string | null;
   onError: (message: string | null) => void;
   onNotice: (message: string | null) => void;
-}) {
+}): UserAnalyticsController {
+  const queryClient = useQueryClient();
   const initialUserId = handoffUserId ??
     (isUserAnalyticsSampleMode() ? "user-1" : "");
   const [userId, setUserId] = useState(
@@ -51,8 +72,8 @@ export function useUserAnalyticsController({
     useState<UserAnalyticsGranularity>("day");
   const [startDate, setStartDate] = useState(defaultDate(29));
   const [endDate, setEndDate] = useState(defaultDate(0));
-  const [report, setReport] = useState<UserAnalyticsResponse | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [submittedPayload, setSubmittedPayload] =
+    useState<UserAnalyticsQueryPayload | null>(null);
   const [lastHandoffRequestId, setLastHandoffRequestId] =
     useState<number | null>(null);
 
@@ -70,6 +91,21 @@ export function useUserAnalyticsController({
     () => buildUserLookupContract(userId),
     [userId]
   );
+  const submittedPayloadKey = useMemo(
+    () => submittedPayload ? userAnalyticsPayloadKey(submittedPayload) : "__none__",
+    [submittedPayload]
+  );
+  const reportQuery = useQuery({
+    enabled: Boolean(submittedPayload?.userId),
+    queryKey: adminQueryKeys.users.analytics(submittedPayloadKey),
+    queryFn: () => {
+      if (!submittedPayload?.userId) {
+        throw new Error("Cannot load user analytics without a normalized uid.");
+      }
+      return loadUserAnalyticsReport(submittedPayload);
+    },
+    placeholderData: (previousData) => previousData,
+  });
 
   const load = useCallback(async (nextUserId?: string) => {
     const contract = buildUserLookupContract(nextUserId ?? userId);
@@ -90,18 +126,22 @@ export function useUserAnalyticsController({
       onError("Choose both start and end dates for a custom analytics range.");
       return false;
     }
-    setIsLoading(true);
+    const queryKey = adminQueryKeys.users.analytics(
+      userAnalyticsPayloadKey(nextPayload)
+    );
+    setSubmittedPayload(nextPayload);
     try {
-      const nextReport = await loadUserAnalyticsReport(nextPayload);
-      setReport(nextReport);
+      const nextReport = await queryClient.fetchQuery({
+        queryKey,
+        queryFn: () => loadUserAnalyticsReport(nextPayload),
+        staleTime: 0,
+      });
       onError(null);
       onNotice(`Loaded analytics for ${nextReport.scope.userId}.`);
       return true;
     } catch (error) {
       onError(messageFromError(error, "Unable to load user analytics."));
       return false;
-    } finally {
-      setIsLoading(false);
     }
   }, [
     endDate,
@@ -109,16 +149,26 @@ export function useUserAnalyticsController({
     onError,
     onNotice,
     payload,
+    queryClient,
     rangePreset,
     startDate,
+    userId,
   ]);
+
+  useEffect(() => {
+    if (!reportQuery.isError) return;
+    onError(messageFromError(
+      reportQuery.error,
+      "Unable to load user analytics."
+    ));
+  }, [onError, reportQuery.error, reportQuery.isError]);
 
   useEffect(() => {
     if (!handoffUserId || !handoffRequestId) return;
     if (handoffRequestId === lastHandoffRequestId) return;
     setLastHandoffRequestId(handoffRequestId);
     setUserId(handoffUserId);
-    setReport(null);
+    setSubmittedPayload(null);
     void load(handoffUserId);
   }, [
     handoffRequestId,
@@ -135,11 +185,12 @@ export function useUserAnalyticsController({
   return {
     endDate,
     granularity,
-    isLoading,
+    isLoading: Boolean(submittedPayload?.userId) &&
+      (reportQuery.isPending || reportQuery.isFetching),
     lookupContract,
     payload,
     rangePreset,
-    report,
+    report: reportQuery.data ?? null,
     startDate,
     userId,
     load,
@@ -149,6 +200,16 @@ export function useUserAnalyticsController({
     setStartDate,
     setUserId,
   };
+}
+
+function userAnalyticsPayloadKey(payload: UserAnalyticsQueryPayload): string {
+  return JSON.stringify({
+    userId: payload.userId ?? "",
+    rangePreset: payload.rangePreset ?? "30d",
+    startDate: payload.startDate ?? null,
+    endDate: payload.endDate ?? null,
+    granularity: payload.granularity ?? "day",
+  });
 }
 
 export function buildUserLookupContract(input: string): UserLookupContract {

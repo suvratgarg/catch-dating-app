@@ -1,3 +1,5 @@
+import {SectionHeader} from "../../../shared/site";
+import {ListingFactGrid, ListingSection} from "../../../shared/ui/primitives";
 import type {HostListing} from "../types";
 
 export function ListingFactsSection({
@@ -7,27 +9,22 @@ export function ListingFactsSection({
   isAppCreated: boolean;
   listing: HostListing;
 }) {
+  const factItems = listing.facts.map((fact) => ({
+    key: fact.label,
+    label: fact.label,
+    value: fact.value,
+  }));
+
   return (
-    <section className="listing-section" aria-labelledby="listing-facts-title">
-      <div className="section-heading" data-reveal>
-        <span className="ui-label">
-          {isAppCreated ? "Club profile" : "Known profile"}
-        </span>
-        <h2 id="listing-facts-title">
-          {isAppCreated ?
-            "A Catch-created club with real product context." :
-            "A source-conservative seed listing."}
-        </h2>
-        <p>{listing.sourceSummary}</p>
-      </div>
-      <div className="listing-grid">
-        {listing.facts.map((fact) => (
-          <article className="listing-card" data-reveal key={fact.label}>
-            <span>{fact.label}</span>
-            <strong>{fact.value}</strong>
-          </article>
-        ))}
-      </div>
-    </section>
+    <ListingSection aria-labelledby="listing-facts-title">
+      <SectionHeader
+        eyebrow={isAppCreated ? "Club profile" : "Known profile"}
+        id="listing-facts-title"
+        title={isAppCreated ?
+          "A Catch-created club with real product context." :
+          "A source-conservative seed listing."}
+        body={listing.sourceSummary} />
+      <ListingFactGrid items={factItems} />
+    </ListingSection>
   );
 }

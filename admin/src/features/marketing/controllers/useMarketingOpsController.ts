@@ -1,3 +1,4 @@
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useCallback, useEffect, useMemo, useState} from "react";
 import {
   createMarketingContentDraft,
@@ -11,6 +12,7 @@ import {
 } from "../../../shared/controllers/marketingReviewDecisionHelpers";
 import type {
   AdminCreateMarketingContentDraftPayload,
+  AdminGetMarketingOpsDashboardResponse,
   AdminRecordMarketingReviewDecisionPayload,
   AdminRecordMarketingReviewDecisionResponse,
   MarketingContentDraft,
@@ -21,6 +23,8 @@ import type {
   MarketingOpsTargetType,
   MarketingRecommendationItem,
 } from "../../../shared/types/adminTypes";
+import {adminQueryKeys} from "../../../shared/query/queryKeys";
+import {usePendingMutationRecord} from "../../../shared/query/usePendingMutationRecord";
 
 export type MarketingStudioTab =
   | "posts"
@@ -42,38 +46,87 @@ export function useMarketingOpsController({
   onError: (message: string | null) => void;
   onNotice: (message: string | null) => void;
 }) {
-  const [bridge, setBridge] = useState<MarketingOpsBridge | null>(null);
+  const queryClient = useQueryClient();
+  const bridgeQueryKey = adminQueryKeys.marketing.opsBridge();
+  const bridgeQuery = useQuery({
+    queryKey: bridgeQueryKey,
+    queryFn: loadMarketingOpsBridge,
+  });
+  const decisionMutationKey = adminQueryKeys.marketing.decision();
+  const decisionMutation = useMutation({
+    mutationKey: decisionMutationKey,
+    mutationFn: recordMarketingReviewDecision,
+  });
+  const createDraftMutationKey = adminQueryKeys.marketing.createDraft();
+  const createDraftMutation = useMutation({
+    mutationKey: createDraftMutationKey,
+    mutationFn: createMarketingContentDraft,
+  });
+  const bridge = bridgeQuery.data?.bridge ?? null;
   const [activeTab, setActiveTab] = useState<MarketingStudioTab>("posts");
   const [typeFilter, setTypeFilter] =
     useState<MarketingTypeFilter>("all");
   const [selectedDraftId, setSelectedDraftId] = useState<string | null>(null);
   const [composerStep, setComposerStep] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
-  const [inFlight, setInFlight] = useState<Record<string, boolean>>({});
   const [localDecisions, setLocalDecisions] =
     useState<Record<string, AdminRecordMarketingReviewDecisionResponse>>({});
   const [notes, setNotes] = useState<Record<string, string>>({});
+  const decisionInFlight = usePendingMutationRecord<
+    AdminRecordMarketingReviewDecisionPayload,
+    boolean
+  >(decisionMutationKey, (payload) => ({
+    key: `${payload.targetType}:${payload.targetId}`,
+    value: true,
+  }));
+  const createDraftInFlight = usePendingMutationRecord<
+    AdminCreateMarketingContentDraftPayload,
+    boolean
+  >(createDraftMutationKey, (payload) => ({
+    key: `create:${payload.draftType}`,
+    value: true,
+  }));
+  const inFlight = useMemo(
+    () => ({...decisionInFlight, ...createDraftInFlight}),
+    [createDraftInFlight, decisionInFlight]
+  );
+
+  const setBridge = useCallback((
+    update: (current: MarketingOpsBridge | null) => MarketingOpsBridge | null
+  ) => {
+    queryClient.setQueryData<AdminGetMarketingOpsDashboardResponse>(
+      bridgeQueryKey,
+      (current) => {
+        const nextBridge = update(current?.bridge ?? null);
+        return nextBridge ? {bridge: nextBridge} : current;
+      }
+    );
+  }, [bridgeQueryKey, queryClient]);
 
   const loadBridge = useCallback(async () => {
-    setIsLoading(true);
     onError(null);
-    try {
-      const result = await loadMarketingOpsBridge();
-      setBridge(result.bridge);
-    } catch (error) {
+    const result = await bridgeQuery.refetch();
+    if (result.error) {
       onError(
-        error instanceof Error ?
-          error.message :
+        result.error instanceof Error ?
+          result.error.message :
           "Unable to load marketing ops dashboard."
       );
-    } finally {
-      setIsLoading(false);
+      return false;
     }
-  }, [onError]);
+    return true;
+  }, [bridgeQuery, onError]);
 
   useEffect(() => {
-    void loadBridge();
-  }, [loadBridge]);
+    if (bridgeQuery.isError) {
+      onError(
+        bridgeQuery.error instanceof Error ?
+          bridgeQuery.error.message :
+          "Unable to load marketing ops dashboard."
+      );
+      return;
+    }
+    if (bridgeQuery.isSuccess) onError(null);
+  }, [bridgeQuery.error, bridgeQuery.isError, bridgeQuery.isSuccess, onError]);
 
   const targetDecision = useCallback<DecisionHandler>(async ({
     targetType,
@@ -100,11 +153,10 @@ export function useMarketingOpsController({
       edits,
       checklist: checklistForDecision(targetType, decision),
     };
-    setInFlight((current) => ({...current, [key]: true}));
     onError(null);
     onNotice(null);
     try {
-      const response = await recordMarketingReviewDecision(payload);
+      const response = await decisionMutation.mutateAsync(payload);
       setLocalDecisions((current) => ({...current, [key]: response}));
       setBridge((current) =>
         current ? applyLocalDecision(current, response, note) : current
@@ -118,14 +170,8 @@ export function useMarketingOpsController({
           error.message :
           "Unable to record marketing review decision."
       );
-    } finally {
-      setInFlight((current) => {
-        const next = {...current};
-        delete next[key];
-        return next;
-      });
     }
-  }, [bridge, notes, onError, onNotice]);
+  }, [bridge, decisionMutation, notes, onError, onNotice, setBridge]);
 
   const updateRecommendationItem = useCallback((
     setId: string,
@@ -183,7 +229,6 @@ export function useMarketingOpsController({
     draftType: MarketingContentDraftType
   ) => {
     if (!bridge) return;
-    const key = `create:${draftType}`;
     const recommendationSet = bridge.recommendationSets.find((set) =>
       set.items.length > 0
     ) ?? bridge.recommendationSets[0] ?? null;
@@ -194,12 +239,14 @@ export function useMarketingOpsController({
       sourceRecommendationSetId:
         draftType === "event_highlights" ? recommendationSet?.id ?? null : null,
     };
-    setInFlight((current) => ({...current, [key]: true}));
     onError(null);
     onNotice(null);
     try {
-      const response = await createMarketingContentDraft(payload);
-      setBridge(response.bridge);
+      const response = await createDraftMutation.mutateAsync(payload);
+      queryClient.setQueryData<AdminGetMarketingOpsDashboardResponse>(
+        bridgeQueryKey,
+        {bridge: response.bridge}
+      );
       setSelectedDraftId(response.draft.id);
       setComposerStep(0);
       setActiveTab("composer");
@@ -212,14 +259,15 @@ export function useMarketingOpsController({
           error.message :
           "Unable to create marketing draft."
       );
-    } finally {
-      setInFlight((current) => {
-        const next = {...current};
-        delete next[key];
-        return next;
-      });
     }
-  }, [bridge, onError, onNotice]);
+  }, [
+    bridge,
+    bridgeQueryKey,
+    createDraftMutation,
+    onError,
+    onNotice,
+    queryClient,
+  ]);
 
   const selectedDraft = useMemo(() => {
     if (!selectedDraftId) return null;
@@ -234,7 +282,7 @@ export function useMarketingOpsController({
     composerStep,
     createDraft,
     inFlight,
-    isLoading,
+    isLoading: bridgeQuery.isPending || bridgeQuery.isFetching,
     loadBridge,
     localDecisions,
     notes,
@@ -258,3 +306,6 @@ function draftTypeLabel(draftType: MarketingContentDraftType): string {
     "Feature explainer" :
     "Event highlights";
 }
+
+export type MarketingOpsController =
+  ReturnType<typeof useMarketingOpsController>;

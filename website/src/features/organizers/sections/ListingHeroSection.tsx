@@ -7,7 +7,24 @@ import {
 import {activityForListing} from "../publicDiscovery";
 import {isVerifiedListing, listingProfileStrength} from "../selectors";
 import type {HostListing} from "../types";
-import {Button, ButtonLink} from "../../../shared/ui/primitives";
+import {
+  ActionGroup,
+  BadgeRow,
+  Button,
+  ButtonLink,
+  ListingDiagnosticList,
+  ListingDiagnostics,
+  ListingDiagnosticsHead,
+  ListingFormatRow,
+  ListingHeroCopy,
+  ListingHeroEyebrow,
+  ListingHeroInner,
+  ListingHeroMetrics,
+  ListingHeroShareStatus,
+  ListingHeroShell,
+  PanelShell,
+  UiLabel,
+} from "../../../shared/ui/primitives";
 import {trackOrganizerAnalytics} from "../analytics";
 import {trackCtaClick} from "../../marketing/tracking";
 
@@ -31,25 +48,26 @@ export function ListingHeroSection({
   const activity = activityForListing(listing);
 
   return (
-    <section className="listing-hero">
-      <div className="listing-hero__inner">
-        <div
-          className="listing-hero__copy"
-          data-reveal
+    <ListingHeroShell>
+      <ListingHeroInner>
+        <ListingHeroCopy
           style={{"--activity": activity.token} as CSSProperties}
         >
-          <div className="listing-hero__eyebrow">
+          <ListingHeroEyebrow>
             <StatusBadge listing={listing} />
-            <span className="ui-label">{listing.category}</span>
-          </div>
+            <UiLabel>{listing.category}</UiLabel>
+          </ListingHeroEyebrow>
           <h1>{listing.headline}</h1>
           <p>{listing.description}</p>
-          <div className="listing-badge-row" aria-label="Listing status">
-            <span>{listing.status}</span>
-            <span>{listing.sourceConfidence.replaceAll("_", " ")}</span>
-            <span>Updated {listing.lastVerifiedAt}</span>
-          </div>
-          <div className="hero__actions">
+          <BadgeRow
+            aria-label="Listing status"
+            items={[
+              {label: listing.status},
+              {label: listing.sourceConfidence.replaceAll("_", " ")},
+              {label: `Updated ${listing.lastVerifiedAt}`},
+            ]}
+          />
+          <ActionGroup variant="hero">
             <ButtonLink
               href={claimHref}
               onClick={() => {
@@ -84,44 +102,44 @@ export function ListingHeroSection({
             >
               {isSaved ? "Saved" : "Save"}
             </Button>
-          </div>
-          <p className="listing-share-status" role="status" aria-live="polite">
+          </ActionGroup>
+          <ListingHeroShareStatus>
             {shareStatus}
-          </p>
-        </div>
+          </ListingHeroShareStatus>
+        </ListingHeroCopy>
 
-        <aside
-          className="listing-panel"
+        <PanelShell
+          variant="listing"
+          as="aside"
           aria-label={`${listing.name} profile`}
-          data-reveal
+          reveal
           style={{"--activity": activity.token} as CSSProperties}
         >
           <ActivityMark listing={listing} size="lg" />
           <div>
-            <span className="ui-label">
+            <UiLabel>
               {isAppCreated ? "Catch organizer" : "Unclaimed profile"}
-            </span>
+            </UiLabel>
             <h2>{listing.name}</h2>
             <p>
               {listing.host ? `Hosted by ${listing.host.name}` : `${listing.city}, ${listing.region}`}
             </p>
           </div>
           {listing.metrics ? (
-            <div className="listing-panel__metrics" aria-label="Organizer metrics">
-              <span><strong>{listing.metrics.memberCount ?? 0}</strong> members</span>
-              <span><strong>{listing.metrics.rating?.toFixed(1) ?? "0.0"}</strong> rating</span>
-              <span><strong>{listing.metrics.reviewCount ?? 0}</strong> reviews</span>
-            </div>
+            <ListingHeroMetrics
+              aria-label="Organizer metrics"
+              items={[
+                {label: " members", value: listing.metrics.memberCount ?? 0},
+                {label: " rating", value: listing.metrics.rating?.toFixed(1) ?? "0.0"},
+                {label: " reviews", value: listing.metrics.reviewCount ?? 0},
+              ]}
+            />
           ) : null}
-          <div className="listing-format-row">
-            {listing.formats.map((format) => (
-              <span key={format}>{format}</span>
-            ))}
-          </div>
+          <ListingFormatRow items={listing.formats} />
           <ListingDiagnosticsPanel listing={listing} />
-        </aside>
-      </div>
-    </section>
+        </PanelShell>
+      </ListingHeroInner>
+    </ListingHeroShell>
   );
 }
 
@@ -143,20 +161,10 @@ function ListingDiagnosticsPanel({listing}: {listing: HostListing}) {
       ];
 
   return (
-    <div className="listing-diagnostics">
-      <div className="listing-diagnostics__head">
-        <span className="ui-label">Profile strength</span>
-        <strong>{strength}%</strong>
-      </div>
+    <ListingDiagnostics>
+      <ListingDiagnosticsHead label="Profile strength" value={`${strength}%`} />
       <ProfileStrength value={strength} />
-      <ul>
-        {diagnostics.map((item) => (
-          <li className={item.ok ? "is-ok" : "is-missing"} key={item.label}>
-            <span aria-hidden="true">{item.ok ? "✓" : "!"}</span>
-            {item.label}
-          </li>
-        ))}
-      </ul>
-    </div>
+      <ListingDiagnosticList items={diagnostics} />
+    </ListingDiagnostics>
   );
 }

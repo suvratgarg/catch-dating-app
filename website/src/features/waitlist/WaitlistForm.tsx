@@ -6,6 +6,7 @@ import {
   HoneypotField,
   SelectField,
   TextField,
+  WaitlistFormShell,
 } from "../../shared/ui/primitives";
 import {useWaitlistFormController} from "./useWaitlistFormController";
 
@@ -22,7 +23,7 @@ export function WaitlistForm({variant}: {variant: FormVariant}) {
   } = useWaitlistFormController(variant);
 
   return (
-    <form className="waitlist-form" onFocus={handleFormStart} onSubmit={handleSubmit}>
+    <WaitlistFormShell onFocus={handleFormStart} onSubmit={handleSubmit}>
       <TextField id={`${variant}-waitlist-full-name`} label="Full name" name="fullName" autoComplete="name" required />
       <TextField id={`${variant}-waitlist-email`} label="Email" name="email" type="email" autoComplete="email" required />
       <SelectField
@@ -74,6 +75,6 @@ export function WaitlistForm({variant}: {variant: FormVariant}) {
         {isSubmitting ? (variant === "host" ? "Applying..." : "Joining...") : variant === "host" ? "Apply as host" : "Join the list"}
       </Button>
       <FormStatus status={status} />
-    </form>
+    </WaitlistFormShell>
   );
 }

@@ -1,11 +1,30 @@
-import {type CSSProperties, useEffect} from "react";
+import {SectionHeader} from "../../../shared/site";
+import {useEffect} from "react";
 import {
+  BadgeRow,
   Button,
+  DirectoryClaimPressureCopy,
+  DirectoryClaimPressureCta,
+  DirectoryClaimPressureList,
+  DirectoryClaimPressureStats,
+  EmptyState,
+  FilterRail,
+  ListingFormatRow,
+  OrganizerEventHighlights,
+  OrganizerResultSummary,
+  OrganizerResultCardBody,
+  OrganizerResultCardFooter,
+  OrganizerResultCardShell,
+  OrganizerResultCardTopline,
+  OrganizerSearchSection,
+  OrganizerSearchStats,
   PlainLink,
+  SearchFormShell,
   SelectField,
   TextActionButton,
   TextField,
   ToggleChipButton,
+  UiLabel,
 } from "../../../shared/ui/primitives";
 import {trackOrganizerSearchAppearance} from "../analytics";
 import {ActivityMark, ProfileStrength, StatusBadge} from "../OrganizerIdentity";
@@ -50,22 +69,24 @@ export function OrganizerSearchHeroSection({
   } = controller;
 
   return (
-    <section className="organizer-search-hero" aria-labelledby="organizer-search-title">
-      <div className="section-heading section-heading--wide" data-reveal>
-        <span className="ui-label">Organizer search</span>
-        <h1 id="organizer-search-title">Every club, host, and venue running real events.</h1>
-        <p>
-          Search source-backed seed listings and Catch-created clubs by name,
-          city, format, reviews, upcoming events, and claim state.
-        </p>
-      </div>
-      <div className="organizer-search-stats" data-reveal>
-        <span><strong>{summary.profileCount}</strong> profiles tracked</span>
-        <span><strong>{summary.verifiedCount}</strong> verified on Catch</span>
-        <span><strong>{summary.unclaimedCount}</strong> claimable seed pages</span>
-        <span><strong>{summary.eventBackedCount}</strong> event-backed pages</span>
-      </div>
-      <form className="organizer-search-form" onSubmit={handleSearch} data-reveal>
+    <OrganizerSearchSection variant="hero" aria-labelledby="organizer-search-title">
+      <SectionHeader
+        eyebrow="Organizer search"
+        headingLevel="h1"
+        id="organizer-search-title"
+        title="Every club, host, and venue running real events."
+        body="Search source-backed seed listings and Catch-created clubs by name, city, format, reviews, upcoming events, and claim state."
+        wide />
+      <OrganizerSearchStats
+        reveal
+        items={[
+          {label: " profiles tracked", value: summary.profileCount},
+          {label: " verified on Catch", value: summary.verifiedCount},
+          {label: " claimable seed pages", value: summary.unclaimedCount},
+          {label: " event-backed pages", value: summary.eventBackedCount},
+        ]}
+      />
+      <SearchFormShell variant="organizer" onSubmit={handleSearch} reveal>
         <TextField
           id="organizer-search-query"
           label="Search organizers"
@@ -75,8 +96,8 @@ export function OrganizerSearchHeroSection({
           placeholder="Try Sunday Table, Indore, run club, dinner"
         />
         <Button type="submit">Search</Button>
-      </form>
-      <div className="organizer-filter-rail" data-reveal>
+      </SearchFormShell>
+      <FilterRail reveal>
         <SelectField
           id="organizer-status-filter"
           label="Status"
@@ -139,8 +160,8 @@ export function OrganizerSearchHeroSection({
           <option value="upcoming">Upcoming first</option>
           <option value="confidence">Source confidence</option>
         </SelectField>
-      </div>
-      <div className="organizer-result-summary" data-reveal>
+      </FilterRail>
+      <OrganizerResultSummary>
         <p>
           {results.length} {results.length === 1 ? "profile" : "profiles"}
           {normalizedQuery ? ` for "${query.trim()}"` : ""}
@@ -148,8 +169,8 @@ export function OrganizerSearchHeroSection({
         <TextActionButton onClick={clearFilters}>
           Clear filters
         </TextActionButton>
-      </div>
-    </section>
+      </OrganizerResultSummary>
+    </OrganizerSearchSection>
   );
 }
 
@@ -163,21 +184,23 @@ export function DirectoryClaimPressureStrip({
   unclaimedCount: number;
 }) {
   return (
-    <section className="directory-claim-pressure" aria-labelledby="directory-claim-title">
-      <div className="directory-claim-pressure__copy" data-reveal>
-        <span className="ui-label">Claim pressure</span>
+    <OrganizerSearchSection variant="claim-pressure" aria-labelledby="directory-claim-title">
+      <DirectoryClaimPressureCopy>
+        <UiLabel>Claim pressure</UiLabel>
         <h2 id="directory-claim-title">Public pages work harder when the owner steps in.</h2>
         <p>
           Seed pages expose source evidence and proof gaps. Claimed pages can add
           official details, publish Catch events, separate verified attendee
           reviews, and respond as the host.
         </p>
-        <div className="directory-claim-pressure__stats">
-          <span><strong>{unclaimedCount}</strong> claimable pages</span>
-          <span><strong>{eventBackedCount}</strong> event-backed pages</span>
-        </div>
-      </div>
-      <div className="directory-claim-pressure__list" data-reveal>
+        <DirectoryClaimPressureStats
+          items={[
+            {label: " claimable pages", value: unclaimedCount},
+            {label: " event-backed pages", value: eventBackedCount},
+          ]}
+        />
+      </DirectoryClaimPressureCopy>
+      <DirectoryClaimPressureList>
         {claimableListings.map((listing) => (
           <PlainLink href={claimHrefForListing(listing)} key={listing.id}>
             <ActivityMark listing={listing} size="sm" />
@@ -188,11 +211,11 @@ export function DirectoryClaimPressureStrip({
             <StatusBadge listing={listing} compact />
           </PlainLink>
         ))}
-        <PlainLink className="directory-claim-pressure__cta" href="/claim/">
+        <DirectoryClaimPressureCta href="/claim/">
           Open claim flow
-        </PlainLink>
-      </div>
-    </section>
+        </DirectoryClaimPressureCta>
+      </DirectoryClaimPressureList>
+    </OrganizerSearchSection>
   );
 }
 
@@ -208,7 +231,7 @@ export function OrganizerResultsSection({
   results: HostListing[];
 }) {
   return (
-    <section className="organizer-results" aria-label="Organizer results">
+    <OrganizerSearchSection variant="results" aria-label="Organizer results">
       {results.length ? (
         results.map((listing) => (
           <OrganizerResultCard
@@ -219,15 +242,15 @@ export function OrganizerResultsSection({
           />
         ))
       ) : (
-        <div className="empty-results" data-reveal>
+        <EmptyState variant="organizer-results" reveal>
           <h2>No organizer profiles match those filters.</h2>
           <p>Try a wider city, format, or status filter.</p>
           <Button variant="ghost" type="button" onClick={clearFilters}>
             Reset directory
           </Button>
-        </div>
+        </EmptyState>
       )}
-    </section>
+    </OrganizerSearchSection>
   );
 }
 
@@ -252,51 +275,42 @@ function OrganizerResultCard({
   }, [appearanceContext, listing]);
 
   return (
-    <article
-      className="organizer-result-card"
-      style={{"--activity": activity.token} as CSSProperties}
-    >
+    <OrganizerResultCardShell activityToken={activity.token}>
       <PlainLink href={listing.path}>
         <ActivityMark listing={listing} size="lg" />
-        <div className="organizer-result-card__body">
-          <div className="organizer-card-topline">
+        <OrganizerResultCardBody>
+          <OrganizerResultCardTopline>
             <StatusBadge listing={listing} compact />
             <span>{listing.city}</span>
             <span>{activity.label}</span>
-          </div>
+          </OrganizerResultCardTopline>
           <h2>{listing.name}</h2>
           <p>{listing.description}</p>
-          <div className="listing-badge-row">
-            <span>{listing.category}</span>
-            {rating ? <span>{rating.toFixed(1)} rating</span> : null}
-            {reviewCount ? <span>{reviewCount} reviews</span> : null}
-            {nextEvent ? (
-              <span>{nextEvent.title}</span>
-            ) : (
-              <span>{isAppCreated ? "No future event" : "Cadence unverified"}</span>
-            )}
-          </div>
+          <BadgeRow
+            items={[
+              {label: listing.category},
+              ...(rating ? [{label: `${rating.toFixed(1)} rating`}] : []),
+              ...(reviewCount ? [{label: `${reviewCount} reviews`}] : []),
+              {
+                label: nextEvent ?
+                  nextEvent.title :
+                  isAppCreated ? "No future event" : "Cadence unverified",
+              },
+            ]}
+          />
           {eventHighlights.length ? (
-            <div className="organizer-event-highlights" aria-label={`${listing.name} event evidence`}>
-              {eventHighlights.map((event) => (
-                <span key={event.id} style={{"--activity": event.activityToken} as CSSProperties}>
-                  <strong>{event.title}</strong>
-                  <small>{event.kind} · {event.detail}</small>
-                </span>
-              ))}
-            </div>
+            <OrganizerEventHighlights
+              ariaLabel={`${listing.name} event evidence`}
+              items={eventHighlights}
+            />
           ) : null}
-          <div className="listing-format-row">
-            {listing.formats.slice(0, 4).map((format) => (
-              <span key={format}>{format}</span>
-            ))}
-          </div>
-          <div className="organizer-result-card__footer">
+          <ListingFormatRow items={listing.formats.slice(0, 4)} />
+          <OrganizerResultCardFooter>
             <ProfileStrength value={listingProfileStrength(listing)} />
             <span>{isAppCreated ? "Owner-managed profile" : `${listing.missingEvidence.length} proof gaps`}</span>
-          </div>
-        </div>
+          </OrganizerResultCardFooter>
+        </OrganizerResultCardBody>
       </PlainLink>
-    </article>
+    </OrganizerResultCardShell>
   );
 }

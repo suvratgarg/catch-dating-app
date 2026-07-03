@@ -1,4 +1,4 @@
-import type {CaptureRecord} from "../../app/usePageLifecycle";
+import type {CaptureRecord} from "../../shared/ui/primitives";
 
 export const captures: Record<string, CaptureRecord> = {
   "host-event-setup": capture(

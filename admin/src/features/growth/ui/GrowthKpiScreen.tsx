@@ -10,16 +10,28 @@ import {
 import type {HostAnalyticsTrendPoint} from "../../../shared/types/adminTypes";
 import {
   AdminButton,
+  AdminEditorGrid,
+  AdminEditorPanel,
+  AdminMetricCard,
+  AdminMetricGrid,
+  AdminRoadmapList,
+  AdminRoadmapListItem,
+  AdminTableRow,
+  AdminToolbar,
+  AdminWorkbenchStack,
   DataTable,
   EmptyState,
   Panel,
+  QualityList,
   RiskBadge,
   SearchField,
   SelectField,
   StateRow,
   TableActionButton,
+  AdminRowTitle,
 } from "../../../shared/ui/AdminPrimitives";
 import {
+  type GrowthKpiController,
   type GrowthRangePreset,
   type GrowthSignalRow,
   type GrowthStage,
@@ -47,26 +59,33 @@ export function GrowthKpiScreen({
   onError: (message: string | null) => void;
 }) {
   const controller = useGrowthKpiController({onError});
+  return <GrowthKpiWorkspace controller={controller} />;
+}
+
+export function GrowthKpiWorkspace({
+  controller,
+}: {
+  controller: GrowthKpiController;
+}) {
   return (
-    <div className="workbench-stack">
-      <section className="metric-grid" aria-label="Growth KPI state">
-        <Metric label="Signals" value={controller.metrics.signals} />
-        <Metric
+    <AdminWorkbenchStack>
+      <AdminMetricGrid ariaLabel="Growth KPI state">
+        <AdminMetricCard label="Signals" value={controller.metrics.signals} />
+        <AdminMetricCard
           label="Watch"
           tone={controller.metrics.watch > 0 ? "attention" : "normal"}
           value={controller.metrics.watch}
         />
-        <Metric label="Signups week" value={controller.metrics.signupsThisWeek} />
-        <Metric label="Bookings" value={controller.metrics.bookings} />
-      </section>
-
+        <AdminMetricCard label="Signups week" value={controller.metrics.signupsThisWeek} />
+        <AdminMetricCard label="Bookings" value={controller.metrics.bookings} />
+      </AdminMetricGrid>
       <Panel
-        className="span-2"
+        span={2}
         icon={<LineChart size={18} strokeWidth={1.9} />}
         title="Launch funnel"
         action={controller.isLoading ? "Loading" : `${controller.filteredRows.length} shown`}
       >
-        <div className="workbench-toolbar">
+        <AdminToolbar>
           <SearchField
             ariaLabel="Search growth signals"
             icon={<Search size={16} strokeWidth={1.8} />}
@@ -95,24 +114,22 @@ export function GrowthKpiScreen({
           >
             Refresh
           </AdminButton>
-        </div>
+        </AdminToolbar>
         <GrowthSignalTable
           onSelect={controller.select}
           rows={controller.filteredRows}
           selectedId={controller.selected?.id ?? null}
         />
       </Panel>
-
-      <section className="publishing-editor-grid">
-        <Panel
-          className="publishing-editor-panel"
+      <AdminEditorGrid>
+        <AdminEditorPanel
           icon={<Activity size={18} strokeWidth={1.9} />}
           title="Signal detail"
           action={controller.selected?.status ?? "No signal"}
         >
           <GrowthSignalDetail selected={controller.selected} />
-        </Panel>
-        <div className="workbench-stack">
+        </AdminEditorPanel>
+        <AdminWorkbenchStack>
           <Panel
             icon={<BarChart3 size={18} strokeWidth={1.9} />}
             title="Booking trend"
@@ -125,27 +142,27 @@ export function GrowthKpiScreen({
             title="Operations boundary"
             action="read-only"
           >
-            <div className="quality-list">
+            <QualityList>
               <StateRow label="Sources" value="adminGetOverview, adminGetHostAnalytics" />
               <StateRow label="Mutations" value="None from this tab" />
               <StateRow label="Needed next" value="channel, cohort, referral, and campaign attribution contracts" />
               <StateRow label="Signals loaded" value={formatDateTime(controller.loadedAt)} />
-            </div>
+            </QualityList>
           </Panel>
           <Panel
             icon={<Activity size={18} strokeWidth={1.9} />}
             title="Action model"
             action="manual"
           >
-            <div className="roadmap-list">
+            <AdminRoadmapList>
               <ActionRow text="Use Marketing for content operations." />
               <ActionRow text="Use Organizers and Events for canonical supply cleanup." />
               <ActionRow text="Do not infer paid acquisition ROI until attribution exists." />
-            </div>
+            </AdminRoadmapList>
           </Panel>
-        </div>
-      </section>
-    </div>
+        </AdminWorkbenchStack>
+      </AdminEditorGrid>
+    </AdminWorkbenchStack>
   );
 }
 
@@ -161,7 +178,7 @@ function GrowthSignalTable({
   if (rows.length === 0) {
     return (
       <EmptyState
-        className="workbench-empty"
+        variant="workbench"
         icon={<Clock3 size={16} strokeWidth={1.9} />}
       >
         No growth signals match this filter.
@@ -169,7 +186,7 @@ function GrowthSignalTable({
     );
   }
   return (
-    <DataTable className="workbench-table">
+    <DataTable variant="workbench">
       <thead>
         <tr>
           <th>Metric</th>
@@ -182,15 +199,12 @@ function GrowthSignalTable({
       </thead>
       <tbody>
         {rows.map((row) => (
-          <tr
-            className={selectedId === row.id ? "selected-row" : ""}
-            key={row.id}
-          >
+          <AdminTableRow key={row.id} selected={selectedId === row.id}>
             <td>
-              <div className="row-title">
+              <AdminRowTitle>
                 <strong>{row.label}</strong>
                 <span>{row.detail}</span>
-              </div>
+              </AdminRowTitle>
             </td>
             <td>{row.stage}</td>
             <td>{formatValue(row.value, row.unit)}</td>
@@ -205,7 +219,7 @@ function GrowthSignalTable({
                 Review
               </TableActionButton>
             </td>
-          </tr>
+          </AdminTableRow>
         ))}
       </tbody>
     </DataTable>
@@ -220,7 +234,7 @@ function GrowthSignalDetail({
   if (!selected) {
     return (
       <EmptyState
-        className="workbench-empty"
+        variant="workbench"
         icon={<Clock3 size={16} strokeWidth={1.9} />}
       >
         Select a growth signal to inspect.
@@ -228,7 +242,7 @@ function GrowthSignalDetail({
     );
   }
   return (
-    <div className="quality-list">
+    <QualityList>
       <StateRow label="Metric" value={selected.label} />
       <StateRow label="Stage" value={selected.stage} />
       <StateRow label="Value" value={formatValue(selected.value, selected.unit)} />
@@ -242,7 +256,7 @@ function GrowthSignalDetail({
       />
       <StateRow label="Source" value={selected.source} />
       <StateRow label="Detail" value={selected.detail} />
-    </div>
+    </QualityList>
   );
 }
 
@@ -250,7 +264,7 @@ function TrendTable({points}: {points: HostAnalyticsTrendPoint[]}) {
   if (points.length === 0) {
     return (
       <EmptyState
-        className="workbench-empty"
+        variant="workbench"
         icon={<Clock3 size={16} strokeWidth={1.9} />}
       >
         No trend buckets are available for this range.
@@ -258,7 +272,7 @@ function TrendTable({points}: {points: HostAnalyticsTrendPoint[]}) {
     );
   }
   return (
-    <DataTable className="workbench-table">
+    <DataTable variant="workbench">
       <thead>
         <tr>
           <th>Period</th>
@@ -273,10 +287,10 @@ function TrendTable({points}: {points: HostAnalyticsTrendPoint[]}) {
         {points.map((point) => (
           <tr key={point.periodStart}>
             <td>
-              <div className="row-title compact">
+              <AdminRowTitle compact>
                 <strong>{formatDate(point.periodStart)}</strong>
                 <span>{formatDate(point.periodEnd)}</span>
-              </div>
+              </AdminRowTitle>
             </td>
             <td>{numberValue(point.metrics.bookings)}</td>
             <td>{numberValue(point.metrics.demand)}</td>
@@ -292,27 +306,10 @@ function TrendTable({points}: {points: HostAnalyticsTrendPoint[]}) {
 
 function ActionRow({text}: {text: string}) {
   return (
-    <div className="roadmap-list-item">
+    <AdminRoadmapListItem>
       <ShieldCheck size={15} strokeWidth={1.9} />
       <span>{text}</span>
-    </div>
-  );
-}
-
-function Metric({
-  label,
-  tone = "normal",
-  value,
-}: {
-  label: string;
-  tone?: "normal" | "attention";
-  value: number;
-}) {
-  return (
-    <article className={`metric-card ${tone === "attention" ? "attention" : ""}`}>
-      <span>{label}</span>
-      <div className="metric-value">{value}</div>
-    </article>
+    </AdminRoadmapListItem>
   );
 }
 

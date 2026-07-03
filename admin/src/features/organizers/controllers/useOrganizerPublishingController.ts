@@ -1,3 +1,4 @@
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useCallback, useEffect, useMemo, useState} from "react";
 import type {
   AdminClubDetails,
@@ -28,6 +29,7 @@ import {
   isLaunchMarketId,
   launchMarketIds,
 } from "../../../shared/config/launchMarkets";
+import {adminQueryKeys} from "../../../shared/query/queryKeys";
 
 export type OrganizerPublishingFilter =
   | "launchCities"
@@ -41,51 +43,78 @@ export type OrganizerPublishingFilter =
 export type OrganizerPublishingView = "list" | "detail";
 
 export function useOrganizerPublishingController({
+  selectedClubId,
+  onBackToList,
   onError,
   onNotice,
+  onSelectClubId,
 }: {
+  selectedClubId?: string | null;
+  onBackToList?: () => void;
   onError: (message: string | null) => void;
   onNotice: (message: string | null) => void;
+  onSelectClubId?: (clubId: string) => void;
 }) {
-  const [rows, setRows] = useState<AdminClubListRow[]>([]);
-  const [listGeneratedAt, setListGeneratedAt] = useState<string | null>(null);
+  const queryClient = useQueryClient();
   const [query, setQuery] = useState("");
+  const debouncedQuery = useDebouncedValue(query, query.trim() ? 250 : 0);
   const [filter, setFilter] =
     useState<OrganizerPublishingFilter>("launchCities");
-  const [view, setView] = useState<OrganizerPublishingView>("list");
   const [clubId, setClubId] = useState("");
   const [club, setClub] = useState<AdminClubDetails | null>(null);
   const [form, setForm] = useState<OrganizerPublishingFormState | null>(null);
   const [checklist, setChecklist] =
     useState<PublishChecklistState>(emptyPublishChecklist);
-  const [isListLoading, setIsListLoading] = useState(false);
-  const [isDetailLoading, setIsDetailLoading] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [isPublishing, setIsPublishing] = useState(false);
   const listPayload = useMemo(
-    () => buildOrganizerListPayload(filter, query),
-    [filter, query]
+    () => buildOrganizerListPayload(filter, debouncedQuery),
+    [debouncedQuery, filter]
   );
+  const listQueryKey = adminQueryKeys.organizers.list(JSON.stringify(listPayload));
+  const detailClubId = selectedClubId?.trim() ?? "";
+  const view: OrganizerPublishingView = detailClubId ? "detail" : "list";
+  const detailQueryKey = detailClubId ?
+    adminQueryKeys.organizers.detail(detailClubId) :
+    adminQueryKeys.organizers.detail("__none__");
+  const listQuery = useQuery({
+    queryKey: listQueryKey,
+    queryFn: () => listOrganizerProfiles(listPayload),
+  });
+  const detailQuery = useQuery({
+    enabled: Boolean(detailClubId),
+    queryKey: detailQueryKey,
+    queryFn: () => loadOrganizerProfile({clubId: detailClubId}),
+  });
+  const saveMutation = useMutation({
+    mutationFn: saveOrganizerProfile,
+  });
+  const publishMutation = useMutation({
+    mutationFn: publishOrganizerProfile,
+  });
+  const rows = listQuery.data?.rows ?? [];
+  const listGeneratedAt = listQuery.data?.generatedAt ?? null;
 
   const refreshList = useCallback(async () => {
-    setIsListLoading(true);
-    try {
-      const response = await listOrganizerProfiles(listPayload);
-      setRows(response.rows);
-      setListGeneratedAt(response.generatedAt);
-    } catch (error) {
-      onError(messageFromError(error, "Unable to load organizer profiles."));
-    } finally {
-      setIsListLoading(false);
-    }
-  }, [listPayload, onError]);
+    await listQuery.refetch();
+  }, [listQuery]);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      void refreshList();
-    }, query.trim() ? 250 : 0);
-    return () => window.clearTimeout(timer);
-  }, [query, refreshList]);
+    if (!listQuery.error) return;
+    onError(messageFromError(listQuery.error, "Unable to load organizer profiles."));
+  }, [listQuery.error, onError]);
+
+  useEffect(() => {
+    if (!detailQuery.error) return;
+    onError(messageFromError(detailQuery.error, "Unable to load organizer profile."));
+  }, [detailQuery.error, onError]);
+
+  useEffect(() => {
+    if (!detailQuery.data) return;
+    setClub(detailQuery.data.club);
+    setForm(formFromOrganizerProfile(detailQuery.data.club));
+    setClubId(detailQuery.data.club.clubId);
+    setChecklist(emptyPublishChecklist);
+    onError(null);
+  }, [detailQuery.data, onError]);
 
   const loadClub = useCallback(async (nextClubId = clubId) => {
     const normalizedClubId = nextClubId.trim();
@@ -93,9 +122,17 @@ export function useOrganizerPublishingController({
       onError("Enter a clubs/{id} document id before loading.");
       return;
     }
-    setIsDetailLoading(true);
+    if (onSelectClubId && normalizedClubId !== detailClubId) {
+      onSelectClubId(normalizedClubId);
+      onError(null);
+      return;
+    }
     try {
-      const response = await loadOrganizerProfile({clubId: normalizedClubId});
+      const response = await queryClient.fetchQuery({
+        queryKey: adminQueryKeys.organizers.detail(normalizedClubId),
+        queryFn: () => loadOrganizerProfile({clubId: normalizedClubId}),
+        staleTime: 0,
+      });
       setClub(response.club);
       setForm(formFromOrganizerProfile(response.club));
       setClubId(response.club.clubId);
@@ -103,21 +140,38 @@ export function useOrganizerPublishingController({
       onError(null);
     } catch (error) {
       onError(messageFromError(error, "Unable to load organizer profile."));
-    } finally {
-      setIsDetailLoading(false);
     }
-  }, [clubId, onError]);
+  }, [clubId, detailClubId, onError, onSelectClubId, queryClient]);
+
+  useEffect(() => {
+    const routeClubId = selectedClubId?.trim() ?? "";
+    if (!routeClubId) {
+      setClubId("");
+      setClub(null);
+      setForm(null);
+      setChecklist(emptyPublishChecklist);
+      return;
+    }
+    setClubId(routeClubId);
+  }, [selectedClubId]);
 
   const selectOrganizer = useCallback((nextClubId: string) => {
     setClubId(nextClubId);
-    setView("detail");
+    if (onSelectClubId) {
+      onSelectClubId(nextClubId);
+      return;
+    }
     void loadClub(nextClubId);
-  }, [loadClub]);
+  }, [loadClub, onSelectClubId]);
 
   const backToList = useCallback(() => {
-    setView("list");
+    setClub(null);
+    setForm(null);
+    setClubId("");
+    setChecklist(emptyPublishChecklist);
     onError(null);
-  }, [onError]);
+    onBackToList?.();
+  }, [onBackToList, onError]);
 
   const diffRows = useMemo(
     () => diffOrganizerProfile(club, form),
@@ -156,10 +210,13 @@ export function useOrganizerPublishingController({
         "Resolve organizer validation issues before saving.");
       return false;
     }
-    setIsSaving(true);
     try {
-      const result = await saveOrganizerProfile(payload);
-      const refreshed = await loadOrganizerProfile({clubId: result.clubId});
+      const result = await saveMutation.mutateAsync(payload);
+      const refreshed = await queryClient.fetchQuery({
+        queryKey: adminQueryKeys.organizers.detail(result.clubId),
+        queryFn: () => loadOrganizerProfile({clubId: result.clubId}),
+        staleTime: 0,
+      });
       setClub(refreshed.club);
       setForm(formFromOrganizerProfile(refreshed.club));
       await refreshList();
@@ -169,10 +226,8 @@ export function useOrganizerPublishingController({
     } catch (error) {
       onError(messageFromError(error, "Unable to save organizer profile."));
       return false;
-    } finally {
-      setIsSaving(false);
     }
-  }, [club, form, onError, onNotice, refreshList]);
+  }, [club, form, onError, onNotice, queryClient, refreshList, saveMutation]);
 
   const saveAndPublish = useCallback(async () => {
     if (!club || !form) {
@@ -192,14 +247,17 @@ export function useOrganizerPublishingController({
       onError("Complete the publish checklist before indexing this profile.");
       return;
     }
-    setIsPublishing(true);
     try {
       const saved = await save();
       if (!saved) return;
-      const result = await publishOrganizerProfile(
+      const result = await publishMutation.mutateAsync(
         buildOrganizerPublishPayload(form, checklist)
       );
-      const refreshed = await loadOrganizerProfile({clubId: result.clubId});
+      const refreshed = await queryClient.fetchQuery({
+        queryKey: adminQueryKeys.organizers.detail(result.clubId),
+        queryFn: () => loadOrganizerProfile({clubId: result.clubId}),
+        staleTime: 0,
+      });
       setClub(refreshed.club);
       setForm(formFromOrganizerProfile(refreshed.club));
       setChecklist(emptyPublishChecklist);
@@ -211,10 +269,18 @@ export function useOrganizerPublishingController({
       );
     } catch (error) {
       onError(messageFromError(error, "Unable to publish organizer profile."));
-    } finally {
-      setIsPublishing(false);
     }
-  }, [checklist, club, form, onError, onNotice, refreshList, save]);
+  }, [
+    checklist,
+    club,
+    form,
+    onError,
+    onNotice,
+    publishMutation,
+    queryClient,
+    refreshList,
+    save,
+  ]);
 
   return {
     backToList,
@@ -224,10 +290,10 @@ export function useOrganizerPublishingController({
     diffRows,
     filter,
     form,
-    isDetailLoading,
-    isListLoading,
-    isPublishing,
-    isSaving,
+    isDetailLoading: detailQuery.isFetching,
+    isListLoading: listQuery.isFetching,
+    isPublishing: publishMutation.isPending,
+    isSaving: saveMutation.isPending,
     listGeneratedAt,
     publishingIssues,
     query,
@@ -246,6 +312,15 @@ export function useOrganizerPublishingController({
     setForm,
     setQuery,
   };
+}
+
+function useDebouncedValue(value: string, delayMs: number) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+  useEffect(() => {
+    const timer = window.setTimeout(() => setDebouncedValue(value), delayMs);
+    return () => window.clearTimeout(timer);
+  }, [delayMs, value]);
+  return debouncedValue;
 }
 
 export function filterOrganizerRows(
@@ -319,3 +394,6 @@ export function buildOrganizerListPayload(
 function messageFromError(error: unknown, fallback: string): string {
   return error instanceof Error ? error.message : fallback;
 }
+
+export type OrganizerPublishingController =
+  ReturnType<typeof useOrganizerPublishingController>;

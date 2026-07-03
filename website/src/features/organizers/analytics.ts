@@ -1,5 +1,4 @@
 import {getMarketingConsent, trackMarketingEvent} from "../../analytics";
-import {recordOrganizerAnalyticsEvent} from "../../firebase";
 import {isPublicApiEnabled} from "./selectors";
 import type {HostListing} from "./types";
 
@@ -38,15 +37,19 @@ export function trackOrganizerAnalytics(
 ) {
   if (!isPublicApiEnabled(listing)) return;
   if (!hasOrganizerAnalyticsConsent()) return;
-  void recordOrganizerAnalyticsEvent({
-    clubId: listing.id,
-    eventId: eventId ?? null,
-    eventName,
-    pagePath: `${window.location.pathname}${window.location.search}`,
-    source: source ?? null,
-    sessionId: hostAnalyticsSessionId(),
-    platform: "web",
-  }).catch(() => undefined);
+  void import("../../firebase")
+    .then(({recordOrganizerAnalyticsEvent}) =>
+      recordOrganizerAnalyticsEvent({
+        clubId: listing.id,
+        eventId: eventId ?? null,
+        eventName,
+        pagePath: `${window.location.pathname}${window.location.search}`,
+        source: source ?? null,
+        sessionId: hostAnalyticsSessionId(),
+        platform: "web",
+      })
+    )
+    .catch(() => undefined);
   trackMarketingEvent(`organizer_${eventName}`, {
     club_id: listing.id,
     event_id: eventId ?? null,

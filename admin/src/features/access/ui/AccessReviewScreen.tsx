@@ -14,19 +14,36 @@ import type {
 } from "../../../shared/types/adminTypes";
 import {
   AdminButton,
+  AdminEditorGrid,
+  AdminEditorPanel,
+  AdminEditorSection,
+  AdminFieldGrid,
+  AdminForm,
+  AdminMetricCard,
+  AdminMetricGrid,
+  AdminMutedCell,
+  AdminRoadmapList,
+  AdminRoadmapListItem,
+  AdminTableRow,
   AdminTag,
+  AdminToolbar,
+  AdminWorkbenchStack,
   DataTable,
   EmptyState,
   Panel,
+  QualityList,
   SearchField,
   StateRow,
   TableActionButton,
   TextareaField,
   TextField,
+  AdminRowTitle,
+  AdminTagRow,
 } from "../../../shared/ui/AdminPrimitives";
 import {
   applicationUidFromTargetPath,
   type AccessReviewFormState,
+  type AccessReviewController,
   type AccessRecentDecision,
   useAccessReviewController,
 } from "../controllers/useAccessReviewController";
@@ -39,28 +56,35 @@ export function AccessReviewScreen({
   onNotice: (message: string | null) => void;
 }) {
   const controller = useAccessReviewController({onError, onNotice});
+  return <AccessReviewWorkspace controller={controller} />;
+}
+
+export function AccessReviewWorkspace({
+  controller,
+}: {
+  controller: AccessReviewController;
+}) {
   return (
-    <div className="workbench-stack">
-      <section className="metric-grid" aria-label="Access review state">
-        <Metric label="Pending" value={controller.rows.length} />
-        <Metric label="Shown" value={controller.filteredRows.length} />
-        <Metric label="Recent decisions" value={controller.recentDecisions.length} />
-        <Metric
+    <AdminWorkbenchStack>
+      <AdminMetricGrid ariaLabel="Access review state">
+        <AdminMetricCard label="Pending" value={controller.rows.length} />
+        <AdminMetricCard label="Shown" value={controller.filteredRows.length} />
+        <AdminMetricCard label="Recent decisions" value={controller.recentDecisions.length} />
+        <AdminMetricCard
           label="Needs note"
           tone={controller.selected && controller.validationIssue ?
             "attention" :
             "normal"}
           value={controller.selected && controller.validationIssue ? 1 : 0}
         />
-      </section>
-
+      </AdminMetricGrid>
       <Panel
-        className="span-2"
+        span={2}
         icon={<UserCheck size={18} strokeWidth={1.9} />}
         title="Access applications"
         action={controller.isLoading ? "Loading" : `${controller.filteredRows.length} shown`}
       >
-        <div className="workbench-toolbar">
+        <AdminToolbar>
           <SearchField
             ariaLabel="Search access applications"
             icon={<Search size={16} strokeWidth={1.8} />}
@@ -75,15 +99,14 @@ export function AccessReviewScreen({
           >
             Refresh
           </AdminButton>
-        </div>
+        </AdminToolbar>
         <AccessTable
           rows={controller.filteredRows}
           selectedTargetPath={controller.selected?.targetPath ?? null}
           onSelect={controller.select}
         />
       </Panel>
-
-      <section className="publishing-editor-grid">
+      <AdminEditorGrid>
         <AccessDecisionPanel
           decisionInFlight={controller.decisionInFlight}
           form={controller.form}
@@ -92,7 +115,7 @@ export function AccessReviewScreen({
           onDecide={(decision) => void controller.decide(decision)}
           onFormChange={controller.setForm}
         />
-        <div className="workbench-stack">
+        <AdminWorkbenchStack>
           <AccessApplicantDetailPanel
             details={controller.selectedDetails}
             isLoading={controller.isDetailLoading}
@@ -104,17 +127,17 @@ export function AccessReviewScreen({
             title="Mutation boundary"
             action="audited"
           >
-            <div className="quality-list">
+            <QualityList>
               <StateRow label="Callable" value="adminDecideAccessApplication" />
               <StateRow label="Collection" value="accessApplications/{uid}" />
               <StateRow label="Audit log" value="adminAuditLogs/{id}" />
               <StateRow label="Required role" value="admin, adminOwner, support" />
               <StateRow label="Not here" value="profile lookup, safety, payments" />
-            </div>
+            </QualityList>
           </Panel>
-        </div>
-      </section>
-    </div>
+        </AdminWorkbenchStack>
+      </AdminEditorGrid>
+    </AdminWorkbenchStack>
   );
 }
 
@@ -130,7 +153,7 @@ function AccessTable({
   if (rows.length === 0) {
     return (
       <EmptyState
-        className="workbench-empty"
+        variant="workbench"
         icon={<CheckCircle2 size={16} strokeWidth={1.9} />}
       >
         No pending access applications match this filter.
@@ -138,7 +161,7 @@ function AccessTable({
     );
   }
   return (
-    <DataTable className="workbench-table">
+    <DataTable variant="workbench">
       <thead>
         <tr>
           <th>Applicant</th>
@@ -150,15 +173,12 @@ function AccessTable({
       </thead>
       <tbody>
         {rows.map((row) => (
-          <tr
-            className={selectedTargetPath === row.targetPath ? "selected-row" : ""}
-            key={row.id}
-          >
+          <AdminTableRow key={row.id} selected={selectedTargetPath === row.targetPath}>
             <td>
-              <div className="row-title">
+              <AdminRowTitle>
                 <strong>{row.title}</strong>
                 <span>{applicationUidFromTargetPath(row.targetPath) ?? row.id}</span>
-              </div>
+              </AdminRowTitle>
             </td>
             <td>{row.detail}</td>
             <td><AdminTag tone="muted">{row.status}</AdminTag></td>
@@ -168,7 +188,7 @@ function AccessTable({
                 Review
               </TableActionButton>
             </td>
-          </tr>
+          </AdminTableRow>
         ))}
       </tbody>
     </DataTable>
@@ -191,7 +211,7 @@ function AccessApplicantDetailPanel({
       action={isLoading ? "Loading" : details?.status ?? "No application"}
     >
       {details ? (
-        <div className="quality-list">
+        <QualityList>
           <StateRow label="Application" value={details.targetPath} />
           <StateRow label="City" value={details.city} />
           <StateRow label="Role" value={details.role} />
@@ -214,10 +234,10 @@ function AccessApplicantDetailPanel({
           />
           <StateRow label="Why Catch" value={details.whyCatch} />
           <DuplicateSignals signals={details.duplicateSignals} />
-        </div>
+        </QualityList>
       ) : (
         <EmptyState
-          className="workbench-empty"
+          variant="workbench"
           icon={<Clock3 size={16} strokeWidth={1.9} />}
         >
           {selected ?
@@ -232,11 +252,11 @@ function AccessApplicantDetailPanel({
 function TagList({values}: {values: string[]}) {
   if (values.length === 0) return "none";
   return (
-    <span className="tag-row">
+    <AdminTagRow as="span">
       {values.map((value) => (
         <AdminTag key={value} tone="muted">{formatLabel(value)}</AdminTag>
       ))}
-    </span>
+    </AdminTagRow>
   );
 }
 
@@ -247,29 +267,29 @@ function DuplicateSignals({
 }) {
   if (signals.length === 0) {
     return (
-      <div className="roadmap-list-item">
+      <AdminRoadmapListItem>
         <CheckCircle2 size={15} strokeWidth={1.9} />
         <span>No deterministic overlap signals found.</span>
-      </div>
+      </AdminRoadmapListItem>
     );
   }
   return (
-    <div className="roadmap-list">
+    <AdminRoadmapList>
       {signals.map((signal) => (
-        <div className="roadmap-list-item" key={signal.id}>
+        <AdminRoadmapListItem key={signal.id}>
           <FileWarning size={15} strokeWidth={1.9} />
           <span>
             <strong>{signal.label}</strong> · {signal.count} overlaps ·{" "}
             {signal.value}
             {signal.sampleTargetPaths.length > 0 ? (
-              <span className="muted-cell">
+              <AdminMutedCell>
                 {" "}({signal.sampleTargetPaths.join(", ")})
-              </span>
+              </AdminMutedCell>
             ) : null}
           </span>
-        </div>
+        </AdminRoadmapListItem>
       ))}
-    </div>
+    </AdminRoadmapList>
   );
 }
 
@@ -291,19 +311,18 @@ function AccessDecisionPanel({
   const isDeciding = decisionInFlight !== null;
   const isDecisionDisabled = isDeciding || Boolean(validationIssue);
   return (
-    <Panel
-      className="publishing-editor-panel"
+    <AdminEditorPanel
       icon={<ShieldCheck size={18} strokeWidth={1.9} />}
       title="Review decision"
       action={selected?.status ?? "No application"}
     >
       {selected ? (
-        <form className="publishing-form" onSubmit={(event) => {
+        <AdminForm variant="publishing" onSubmit={(event) => {
           event.preventDefault();
         }}>
-          <fieldset className="editor-section">
+          <AdminEditorSection>
             <legend>Applicant context</legend>
-            <div className="quality-list">
+            <QualityList>
               <StateRow label="Applicant" value={selected.title} />
               <StateRow
                 label="Application uid"
@@ -311,11 +330,11 @@ function AccessDecisionPanel({
               />
               <StateRow label="Detail" value={selected.detail} />
               <StateRow label="Created" value={formatDateTime(selected.createdAt)} />
-            </div>
-          </fieldset>
-          <fieldset className="editor-section">
+            </QualityList>
+          </AdminEditorSection>
+          <AdminEditorSection>
             <legend>Decision inputs</legend>
-            <div className="form-grid two">
+            <AdminFieldGrid columns={2}>
               <TextField
                 label="Cohort id"
                 onChange={(cohortId) => onFormChange({...form, cohortId})}
@@ -326,7 +345,7 @@ function AccessDecisionPanel({
                 label="Review note"
                 value={`${form.note.trim().length}/1000`}
               />
-            </div>
+            </AdminFieldGrid>
             <TextareaField
               label="Review note"
               onChange={(note) => onFormChange({...form, note})}
@@ -334,13 +353,13 @@ function AccessDecisionPanel({
               value={form.note}
             />
             {validationIssue ? (
-              <div className="roadmap-list-item">
+              <AdminRoadmapListItem>
                 <FileWarning size={15} strokeWidth={1.9} />
                 <span>{validationIssue}</span>
-              </div>
+              </AdminRoadmapListItem>
             ) : null}
-          </fieldset>
-          <div className="tag-row">
+          </AdminEditorSection>
+          <AdminTagRow>
             <AdminButton
               disabled={isDecisionDisabled}
               icon={<CheckCircle2 size={15} strokeWidth={1.9} />}
@@ -356,17 +375,17 @@ function AccessDecisionPanel({
             >
               {decisionInFlight === "deny" ? "Denying" : "Deny"}
             </AdminButton>
-          </div>
-        </form>
+          </AdminTagRow>
+        </AdminForm>
       ) : (
         <EmptyState
-          className="workbench-empty"
+          variant="workbench"
           icon={<Clock3 size={16} strokeWidth={1.9} />}
         >
           Select an access application to review.
         </EmptyState>
       )}
-    </Panel>
+    </AdminEditorPanel>
   );
 }
 
@@ -386,10 +405,9 @@ function RecentDecisionsPanel({
           No decisions in this session.
         </EmptyState>
       ) : (
-        <div className="roadmap-list">
+        <AdminRoadmapList>
           {decisions.map((decision) => (
-            <div
-              className="roadmap-list-item"
+            <AdminRoadmapListItem
               key={`${decision.applicationUid}-${decision.status}`}
             >
               <CheckCircle2 size={15} strokeWidth={1.9} />
@@ -397,9 +415,9 @@ function RecentDecisionsPanel({
                 <strong>{decision.title}</strong> · {decision.decision} ·{" "}
                 {decision.status}
               </span>
-            </div>
+            </AdminRoadmapListItem>
           ))}
-        </div>
+        </AdminRoadmapList>
       )}
     </Panel>
   );
@@ -412,29 +430,7 @@ function ReadonlyState({
   label: string;
   value: string;
 }) {
-  return (
-    <div className="state-row">
-      <span>{label}</span>
-      <strong>{value}</strong>
-    </div>
-  );
-}
-
-function Metric({
-  label,
-  tone = "normal",
-  value,
-}: {
-  label: string;
-  tone?: "normal" | "attention";
-  value: number;
-}) {
-  return (
-    <article className={`metric-card ${tone === "attention" ? "attention" : ""}`}>
-      <span>{label}</span>
-      <div className="metric-value">{value}</div>
-    </article>
-  );
+  return <StateRow label={label} value={value} />;
 }
 
 function relativeTime(value: string | null): string {

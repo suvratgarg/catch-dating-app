@@ -1,24 +1,13 @@
-import {type FormEvent, useEffect, useMemo, useState} from "react";
+import {type FormEvent, useCallback, useMemo, useState} from "react";
 import {trackMarketingEvent} from "../../analytics";
-import {
-  claimFirebaseConfigured,
-  requestClubClaim,
-  signInForClaim,
-  signOutClaimUser,
-  type User,
-  watchClaimAuthState,
-} from "../../firebase";
+import {claimFirebaseConfigured} from "../../firebaseConfig";
 import {hostListings} from "../organizers/data";
-import {
-  claimStateForLocation,
-  getClaimListingFromLocation,
-  getClaimListingLookupFromLocation,
-  getClaimRequestIdFromLocation,
-} from "../organizers/routing";
 import {isPublicApiEnabled, isUnclaimedListing} from "../organizers/selectors";
 import type {HostListing} from "../organizers/types";
 import type {FormStatus} from "../../shared/forms/types";
+import {emptyClaimRouteState, type ClaimRouteState} from "./claimRouting";
 import {
+  claimContactValidationMessage,
   claimFlowSteps,
   claimVerificationMethods,
   parseProofUrls,
@@ -27,12 +16,16 @@ import {
   type ClaimRole,
   type ClaimVerificationMethodId,
 } from "./claimModel";
+import {
+  useClaimAuthController,
+  useClaimRequestMutation,
+} from "./useClaimRequestMutation";
 
-export function useClaimFlowController() {
-  const claimLookup = getClaimListingLookupFromLocation();
-  const preselectedListing = getClaimListingFromLocation();
-  const claimUrlState = claimStateForLocation(claimLookup, preselectedListing);
-  const urlRequestId = getClaimRequestIdFromLocation();
+export function useClaimFlowController(routeState: ClaimRouteState = emptyClaimRouteState) {
+  const claimLookup = routeState.lookup;
+  const preselectedListing = routeState.listing;
+  const claimUrlState = routeState.urlState;
+  const urlRequestId = routeState.requestId;
   const [step, setStep] = useState<ClaimFlowStep>(
     claimUrlState ? "listing" : preselectedListing ? "role" : "listing"
   );
@@ -47,20 +40,27 @@ export function useClaimFlowController() {
   const [verificationMethod, setVerificationMethod] =
     useState<ClaimVerificationMethodId>("publicProof");
   const [requestId, setRequestId] = useState<string | null>(null);
-  const [user, setUser] = useState<User | null>(null);
-  const [authReady, setAuthReady] = useState(false);
-  const [isSigningIn, setIsSigningIn] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<FormStatus>({message: "", tone: ""});
 
-  useEffect(() => {
-    return watchClaimAuthState((nextUser) => {
-      setUser(nextUser);
-      setAuthReady(true);
-      setRequesterName((current) => current || nextUser?.displayName || "");
-      setBusinessEmail((current) => current || nextUser?.email || "");
-    });
+  const claimRequestMutation = useClaimRequestMutation(listing?.id ?? null);
+  const handleAuthUser = useCallback((nextUser: ReturnType<
+    typeof useClaimAuthController
+  >["user"]) => {
+    setRequesterName((current) => current || nextUser?.displayName || "");
+    setBusinessEmail((current) => current || nextUser?.email || "");
   }, []);
+  const {
+    authReady,
+    handleSignIn,
+    handleSignOut,
+    isSigningIn,
+    user,
+  } = useClaimAuthController({
+    eventPrefix: "claim_flow",
+    listingId: listing?.id ?? null,
+    onAuthUser: handleAuthUser,
+    setStatus,
+  });
 
   const searchResults = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -96,31 +96,6 @@ export function useClaimFlowController() {
     setQuery(nextListing.name);
   }
 
-  async function handleSignIn() {
-    setIsSigningIn(true);
-    setStatus({message: "", tone: ""});
-    trackMarketingEvent("claim_flow_sign_in_started", {
-      listing_id: listing?.id ?? null,
-    });
-    try {
-      await signInForClaim();
-      trackMarketingEvent("claim_flow_signed_in", {
-        listing_id: listing?.id ?? null,
-      });
-    } catch (error) {
-      setStatus({message: readableError(error), tone: "is-error"});
-      trackMarketingEvent("claim_flow_sign_in_error", {
-        listing_id: listing?.id ?? null,
-      });
-    } finally {
-      setIsSigningIn(false);
-    }
-  }
-
-  async function handleSignOut() {
-    await signOutClaimUser();
-  }
-
   async function handleClaimSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!listing) {
@@ -137,16 +112,15 @@ export function useClaimFlowController() {
     }
 
     const parsedProofUrls = parseProofUrls(proofUrls);
-    if (!requesterName.trim() || !requesterRole) {
-      setStatus({message: "Add your name and role before submitting.", tone: "is-error"});
-      setStep("role");
-      return;
-    }
-    if (!businessEmail.trim() && !businessPhone.trim() && parsedProofUrls.length === 0) {
-      setStatus({
-        message: "Add a business email, phone, or proof link.",
-        tone: "is-error",
-      });
+    const validationMessage = claimContactValidationMessage({
+      businessEmail: businessEmail.trim() || null,
+      businessPhone: businessPhone.trim() || null,
+      parsedProofUrls,
+      requesterName,
+      requesterRole,
+    });
+    if (validationMessage) {
+      setStatus({message: validationMessage, tone: "is-error"});
       setStep("role");
       return;
     }
@@ -168,7 +142,6 @@ export function useClaimFlowController() {
       message.trim(),
     ].filter(Boolean).join("\n\n");
 
-    setIsSubmitting(true);
     setStatus({message: "", tone: ""});
     trackMarketingEvent("claim_flow_submit_attempt", {
       listing_id: listing.id,
@@ -178,7 +151,7 @@ export function useClaimFlowController() {
     });
 
     try {
-      const response = await requestClubClaim({
+      const response = await claimRequestMutation.mutateAsync({
         clubId: listing.id,
         requesterName: requesterName.trim(),
         requesterRole,
@@ -204,8 +177,6 @@ export function useClaimFlowController() {
       trackMarketingEvent("claim_flow_submit_error", {
         listing_id: listing.id,
       });
-    } finally {
-      setIsSubmitting(false);
     }
   }
 
@@ -222,7 +193,7 @@ export function useClaimFlowController() {
     handleSignIn,
     handleSignOut,
     isSigningIn,
-    isSubmitting,
+    isSubmitting: claimRequestMutation.isPending,
     listing,
     message,
     proofUrls,
@@ -248,3 +219,5 @@ export function useClaimFlowController() {
     verificationMethod,
   };
 }
+
+export type ClaimFlowController = ReturnType<typeof useClaimFlowController>;

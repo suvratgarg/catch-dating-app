@@ -1,4 +1,4 @@
-import {SiteFooter, SiteHeader} from "../../shared/site";
+import {SiteFooter, SiteHeader, WebsitePageMain} from "../../shared/site";
 import {
   DirectoryClaimPressureStrip,
   OrganizerResultsSection,
@@ -32,7 +32,7 @@ export function OrganizerSearchPage() {
         ctaLabel="Apply as host"
       />
 
-      <main id="top">
+      <WebsitePageMain id="top">
         <OrganizerSearchHeroSection controller={controller} />
 
         <DirectoryClaimPressureStrip
@@ -47,7 +47,7 @@ export function OrganizerSearchPage() {
           queryTerms={queryTerms}
           results={results}
         />
-      </main>
+      </WebsitePageMain>
 
       <SiteFooter
         brandHref="/"

@@ -1,7 +1,7 @@
 ---
 doc_id: agent_operating_model
-version: 1.2.0
-updated: 2026-07-01
+version: 1.2.2
+updated: 2026-07-02
 owner: agent_operating_model
 status: active
 ---
@@ -26,6 +26,27 @@ Instructions that matter must be one of:
 - explicitly manual: a named human review point with a stable checklist.
 
 If a rule is only a paragraph in a long doc, expect it to drift.
+
+## Enforcement Integrity
+
+Rules, tools, CI wiring, and doc anchors must not drift independently. Active
+rules in `docs/audit_registry/rules.json` declare their `enforcement` entries;
+manifest tools that enforce rules declare `role`, `rules`, and, for gates or
+ratchets, a `vacuityProof`. Manual enforcement is explicit with
+`stage: manual`, not implied by a missing scanner.
+
+`node tool/check_enforcement_integrity.mjs` is the meta-gate for this layer. It
+validates active-rule coverage, reverse rule/tool mappings, doc anchors,
+non-count runtime checks for gates and ratchets, known-bad proof declarations,
+runtime-checked tool role declarations, architecture-scanner ownership, and
+ratchet baseline receipts for both `maxCounts` and `allowedFindings` baselines.
+It is registered in `tool/tools_manifest.json` under category `meta`, so
+`node tool/run.mjs check --category meta` is the local and CI entrypoint.
+
+When adding or changing an enforcement asset, update the rule entry, manifest
+entry, doc anchor, vacuity proof, and ratchet baseline or metric receipt in the
+same pass. If a rule is not yet machine-checkable, keep it as a manual
+enforcement entry with a stable owner doc rather than leaving it absent.
 
 ## Execution Modes
 

@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.7.1
-updated: 2026-07-01
+version: 0.7.132
+updated: 2026-07-03
 owner: web_platform
 status: active
 ---
@@ -33,6 +33,12 @@ React + TypeScript stack where practical.
 - `website/src/app/App.tsx` uses React Router for the client route shell and
   `website/src/app/routeRegistry.ts` for runtime route patterns; the route
   contract and postbuild output remain the public SEO source of truth.
+- `website/src/shared/ui/**`, `website/src/shared/site/**`, and
+  `admin/src/shared/ui/**` are the React shared primitive owners. Feature,
+  app, and story code must compose these primitives rather than hand-rolling
+  native interactive controls.
+- `tool/web/check_react_ui_primitives.mjs` enforces the first React primitive
+  guard for `website/` and `admin/`.
 - `website/public/` contains Vite public assets, including `.well-known/`, fonts,
   app-sourced marketing screenshots, and the favicon.
 - `website/dist/` is the deployable marketing build.
@@ -45,6 +51,48 @@ React + TypeScript stack where practical.
 Design-token CSS and web font copies are generated into
 `packages/web-config/generated/` by `dart run tool/design_tokens.dart`, then
 bundled by Vite through `packages/web-config/styles/catch-web.css`.
+
+## React Surface Governance
+
+Treat the marketing website and admin console as sibling React products, not as
+isolated one-off apps. Cross-surface React architecture work should route
+through `docs/agent_skills/catch-react-surface-refactor.md`.
+
+- Use React Router for URL routing and URL-owned state. Route shells should own
+  routing, path/search-param extraction, guards, metadata, lifecycle, and
+  providers; feature pages should own composition; controllers may consume
+  explicit route-state objects, but should not parse `window.location` or call
+  router hooks directly.
+- Use TanStack Query for true remote reads and mutations. Generated/static data
+  stays as typed imports until there is a real remote boundary.
+- Keep shared UI primitives centralized. Feature, app, and Storybook code must
+  not render raw `<button>`, `<a>`, `<input>`, `<select>`, or `<textarea>`
+  controls. Add missing neutral controls to the owning shared primitive module
+  instead of styling them per screen.
+- Keep governed component families centralized. Feature, app, and Storybook code
+  must not pass `className` directly outside shared primitive owner files. Run
+  `node tool/run.mjs check web:react-classname-boundaries` before handoff. The
+  scanner-owned family registry is `tool/web/check_react_component_governance.mjs`;
+  the generated reader snapshot is
+  `docs/audit_registry/react_component_governance_families.json`. Run
+  `node tool/run.mjs check web:react-component-governance` before handoff. This
+  scanner is a known-family blocklist, so reviewers must add new repeated shell
+  families to the scanner when drift repeats instead of relying on prose.
+  Marketing website feature components exported from `website/src/features/**/*.tsx`
+  must also be declared in `design/website/components.json` or made private; run
+  `node tool/run.mjs check marketing:website-components` when touching website
+  route, section, flow, or supporting-component exports.
+  Admin feature UI may export route/workspace entry components, but reusable
+  panels, cards, lists, badges, and sections must live in `admin/src/shared/ui`
+  or stay private. Run `node tool/run.mjs check web:admin-feature-exports`
+  when touching admin feature UI exports. Admin route/workspace entries, shared
+  admin primitives, and admin feedback providers must also be declared in
+  `design/admin/components.json`; run
+  `node tool/run.mjs check web:admin-components` when touching those exports.
+  Admin registry entries marked `preview.status: "ready"` must point at
+  Storybook exports under `admin/src/stories`; run
+  `node tool/run.mjs check web:admin-storybook` whenever admin preview coverage
+  changes.
 
 ## Marketing Route Contract
 
@@ -326,14 +374,14 @@ remediation table above.
 
 9. The website has repeated hand-rolled primitives.
 
-   `website/src/components/site.tsx` contains useful canonical website
-   components, but `App.tsx` wraps some of them again and still hand-rolls step
-   rails, fields, form status, choice chips, auth rows, cards, panels, and
-   repeated button variants. The local `SiteHeader` adapter ignores caller
-   props and always renders canonical nav/actions, which makes page-level header
-   props misleading.
+   This finding is being closed through the React component-governance loop. The
+   legacy `website/src/components/site.tsx` barrel has been retired: neutral site
+   chrome belongs in `website/src/shared/site/**`, governed visual primitives
+   belong in `website/src/shared/ui/primitives.tsx`, and organizer/claim/host
+   domain adapters belong in their feature folders. The component-governance
+   scanner now blocks recreating or importing the retired barrel.
 
-   Target shared primitives:
+   Shared primitive families now include:
 
    - `Button`
    - `Field`
@@ -347,6 +395,7 @@ remediation table above.
    - `StatusBadge`
    - `SectionHeader`
    - `PageShell`
+   - `WebsitePageMain`
    - `AuthStatusRow`
 
 10. Controller seams are missing for complex flows.
@@ -458,10 +507,17 @@ routing, and image-slot editing utilities must not be imported.
 Current canonical component layer under `website/src/components/` includes:
 
 - site shell: `SiteHeader`, `SiteFooter`;
-- shared display primitives: `ActivityMark`, `StatusBadge`, `ProfileStrength`,
-  `CaptureCard`, `SectionHeader`;
+- shared display primitives: `StatusBadge`, `SectionHeader`;
+- shared identity display primitives: `ActivityMark` and `ProfileStrength`
+  under `website/src/shared/ui/primitives.tsx`;
+- shared process status panel primitive: `ProcessStatusPanel` under
+  `website/src/shared/ui/primitives.tsx`;
+- shared app-capture primitive: `CaptureCard` under
+  `website/src/shared/ui/primitives.tsx`;
 - public discovery primitives: `PublicSearchBar`, `PublicEventCard`;
-- host/product blocks and listing/claim/review primitives owned by the website
+- host/product blocks including `ProductModuleGrid`, listing event blocks
+  including `EventActionCard`, and listing/claim/review
+  primitives owned by the website
   feature folders.
 
 Implemented website behavior:

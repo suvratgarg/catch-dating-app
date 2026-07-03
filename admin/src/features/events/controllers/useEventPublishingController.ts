@@ -1,3 +1,4 @@
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useCallback, useEffect, useMemo, useState} from "react";
 import type {
   AdminEventDetails,
@@ -14,7 +15,6 @@ import {
   loadEventProfile,
   publishExternalEventProfile,
   saveEventProfile,
-  type EventSupplyReadiness,
 } from "../api/eventPublishingRepository";
 import {
   buildExternalEventImportReview,
@@ -34,6 +34,7 @@ import {
   launchMarketIds,
   launchMarketSlugs,
 } from "../../../shared/config/launchMarkets";
+import {adminQueryKeys} from "../../../shared/query/queryKeys";
 
 export type EventPublishingFilter =
   | "launchCities"
@@ -69,117 +70,158 @@ export function useEventPublishingController({
   onError: (message: string | null) => void;
   onNotice: (message: string | null) => void;
 }) {
-  const [rows, setRows] = useState<AdminEventListRow[]>([]);
-  const [externalRows, setExternalRows] =
-    useState<AdminExternalEventListRow[]>([]);
+  const queryClient = useQueryClient();
   const [selectedExternalEventId, setSelectedExternalEventId] =
     useState<string | null>(null);
-  const [listGeneratedAt, setListGeneratedAt] = useState<string | null>(null);
-  const [externalListGeneratedAt, setExternalListGeneratedAt] =
-    useState<string | null>(null);
-  const [supplyReadiness, setSupplyReadiness] =
-    useState<EventSupplyReadiness | null>(null);
   const [query, setQuery] = useState("");
   const [externalQuery, setExternalQuery] = useState("");
+  const debouncedQuery = useDebouncedValue(query, query.trim() ? 250 : 0);
+  const debouncedExternalQuery = useDebouncedValue(
+    externalQuery,
+    externalQuery.trim() ? 250 : 0
+  );
   const [filter, setFilter] =
     useState<EventPublishingFilter>("launchCities");
   const [externalFilter, setExternalFilter] =
     useState<ExternalEventSupplyFilter>("reviewOpen");
   const [view, setView] = useState<EventPublishingView>("list");
   const [eventId, setEventId] = useState("");
+  const [loadedEventId, setLoadedEventId] = useState<string | null>(null);
   const [event, setEvent] = useState<AdminEventDetails | null>(null);
   const [form, setForm] = useState<EventPublishingFormState | null>(null);
-  const [isListLoading, setIsListLoading] = useState(false);
-  const [isExternalListLoading, setIsExternalListLoading] = useState(false);
-  const [isSupplyReadinessLoading, setIsSupplyReadinessLoading] =
-    useState(false);
-  const [isDetailLoading, setIsDetailLoading] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [publishingExternalActionId, setPublishingExternalActionId] =
-    useState<string | null>(null);
   const listPayload = useMemo(
-    () => buildEventListPayload(filter, query),
-    [filter, query]
+    () => buildEventListPayload(filter, debouncedQuery),
+    [debouncedQuery, filter]
   );
   const externalListPayload = useMemo(
-    () => buildExternalEventListPayload(externalFilter, externalQuery),
-    [externalFilter, externalQuery]
+    () => buildExternalEventListPayload(externalFilter, debouncedExternalQuery),
+    [debouncedExternalQuery, externalFilter]
   );
+  const listQuery = useQuery({
+    queryKey: adminQueryKeys.events.list(JSON.stringify(listPayload)),
+    queryFn: () => listEventProfiles(listPayload),
+    placeholderData: (previousData) => previousData,
+  });
+  const externalListQuery = useQuery({
+    queryKey: adminQueryKeys.events.externalList(
+      JSON.stringify(externalListPayload)
+    ),
+    queryFn: () => listExternalEventProfiles(externalListPayload),
+    placeholderData: (previousData) => previousData,
+  });
+  const supplyReadinessQuery = useQuery({
+    queryKey: adminQueryKeys.events.supplyReadiness(),
+    queryFn: loadEventSupplyReadiness,
+    placeholderData: (previousData) => previousData,
+  });
+  const detailEventId = loadedEventId ?? "__none__";
+  const detailQuery = useQuery({
+    enabled: Boolean(loadedEventId),
+    queryKey: adminQueryKeys.events.detail(detailEventId),
+    queryFn: () => loadEventProfile({eventId: detailEventId}),
+  });
+  const saveMutation = useMutation({
+    mutationFn: saveEventProfile,
+  });
+  const publishExternalMutation = useMutation({
+    mutationFn: publishExternalEventProfile,
+  });
+  const rows = listQuery.data?.rows ?? [];
+  const externalRows = externalListQuery.data?.rows ?? [];
+  const listGeneratedAt = listQuery.data?.generatedAt ?? null;
+  const externalListGeneratedAt = externalListQuery.data?.generatedAt ?? null;
+  const supplyReadiness = supplyReadinessQuery.data ?? null;
 
   const refreshList = useCallback(async () => {
-    setIsListLoading(true);
-    try {
-      const response = await listEventProfiles(listPayload);
-      setRows(response.rows);
-      setListGeneratedAt(response.generatedAt);
-    } catch (error) {
-      onError(messageFromError(error, "Unable to load event profiles."));
-    } finally {
-      setIsListLoading(false);
+    const result = await listQuery.refetch();
+    if (result.error) {
+      onError(messageFromError(result.error, "Unable to load event profiles."));
+      return false;
     }
-  }, [listPayload, onError]);
+    return true;
+  }, [listQuery, onError]);
 
   const refreshExternalList = useCallback(async () => {
-    setIsExternalListLoading(true);
-    try {
-      const response = await listExternalEventProfiles(externalListPayload);
-      setExternalRows(response.rows);
-      setExternalListGeneratedAt(response.generatedAt);
-    } catch (error) {
-      onError(messageFromError(error, "Unable to load external event supply."));
-    } finally {
-      setIsExternalListLoading(false);
+    const result = await externalListQuery.refetch();
+    if (result.error) {
+      onError(messageFromError(
+        result.error,
+        "Unable to load external event supply."
+      ));
+      return false;
     }
-  }, [externalListPayload, onError]);
+    return true;
+  }, [externalListQuery, onError]);
 
   const refreshSupplyReadiness = useCallback(async () => {
-    setIsSupplyReadinessLoading(true);
-    try {
-      setSupplyReadiness(await loadEventSupplyReadiness());
-    } catch (error) {
-      onError(messageFromError(error, "Unable to load event import readiness."));
-    } finally {
-      setIsSupplyReadinessLoading(false);
+    const result = await supplyReadinessQuery.refetch();
+    if (result.error) {
+      onError(messageFromError(
+        result.error,
+        "Unable to load event import readiness."
+      ));
+      return false;
     }
-  }, [onError]);
+    return true;
+  }, [onError, supplyReadinessQuery]);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      void refreshList();
-    }, query.trim() ? 250 : 0);
-    return () => window.clearTimeout(timer);
-  }, [query, refreshList]);
+    if (!listQuery.error) return;
+    onError(messageFromError(listQuery.error, "Unable to load event profiles."));
+  }, [listQuery.error, onError]);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      void refreshExternalList();
-    }, externalQuery.trim() ? 250 : 0);
-    return () => window.clearTimeout(timer);
-  }, [externalQuery, refreshExternalList]);
+    if (!externalListQuery.error) return;
+    onError(messageFromError(
+      externalListQuery.error,
+      "Unable to load external event supply."
+    ));
+  }, [externalListQuery.error, onError]);
 
   useEffect(() => {
-    void refreshSupplyReadiness();
-  }, [refreshSupplyReadiness]);
+    if (!supplyReadinessQuery.error) return;
+    onError(messageFromError(
+      supplyReadinessQuery.error,
+      "Unable to load event import readiness."
+    ));
+  }, [onError, supplyReadinessQuery.error]);
+
+  useEffect(() => {
+    if (!detailQuery.error) return;
+    onError(messageFromError(detailQuery.error, "Unable to load event profile."));
+  }, [detailQuery.error, onError]);
+
+  useEffect(() => {
+    if (!detailQuery.data) return;
+    setEvent(detailQuery.data.event);
+    setForm(formFromEventProfile(detailQuery.data.event));
+    setEventId(detailQuery.data.event.eventId);
+    onError(null);
+  }, [detailQuery.data, onError]);
 
   const loadEvent = useCallback(async (nextEventId = eventId) => {
     const normalizedEventId = nextEventId.trim();
     if (!normalizedEventId) {
       onError("Enter an events/{id} document id before loading.");
-      return;
+      return false;
     }
-    setIsDetailLoading(true);
+    setLoadedEventId(normalizedEventId);
     try {
-      const response = await loadEventProfile({eventId: normalizedEventId});
+      const response = await queryClient.fetchQuery({
+        queryKey: adminQueryKeys.events.detail(normalizedEventId),
+        queryFn: () => loadEventProfile({eventId: normalizedEventId}),
+        staleTime: 0,
+      });
       setEvent(response.event);
       setForm(formFromEventProfile(response.event));
       setEventId(response.event.eventId);
       onError(null);
+      return true;
     } catch (error) {
       onError(messageFromError(error, "Unable to load event profile."));
-    } finally {
-      setIsDetailLoading(false);
+      return false;
     }
-  }, [eventId, onError]);
+  }, [eventId, onError, queryClient]);
 
   const selectEvent = useCallback((nextEventId: string) => {
     setEventId(nextEventId);
@@ -252,12 +294,17 @@ export function useEventPublishingController({
         "Resolve event validation issues before saving.");
       return false;
     }
-    setIsSaving(true);
     try {
-      const result = await saveEventProfile(payload);
-      const refreshed = await loadEventProfile({eventId: result.eventId});
+      const result = await saveMutation.mutateAsync(payload);
+      const refreshed = await queryClient.fetchQuery({
+        queryKey: adminQueryKeys.events.detail(result.eventId),
+        queryFn: () => loadEventProfile({eventId: result.eventId}),
+        staleTime: 0,
+      });
       setEvent(refreshed.event);
       setForm(formFromEventProfile(refreshed.event));
+      setEventId(refreshed.event.eventId);
+      setLoadedEventId(refreshed.event.eventId);
       await refreshList();
       onError(null);
       onNotice(`Saved ${result.updatedFieldCount} event field updates.`);
@@ -265,10 +312,16 @@ export function useEventPublishingController({
     } catch (error) {
       onError(messageFromError(error, "Unable to save event profile."));
       return false;
-    } finally {
-      setIsSaving(false);
     }
-  }, [event, form, onError, onNotice, refreshList]);
+  }, [
+    event,
+    form,
+    onError,
+    onNotice,
+    queryClient,
+    refreshList,
+    saveMutation,
+  ]);
 
   const publishExternalEvent = useCallback(async (
     publishRequest: ExternalEventPublishRequest
@@ -277,9 +330,8 @@ export function useEventPublishingController({
       onError("Add a review note before publishing external supply.");
       return false;
     }
-    setPublishingExternalActionId(publishRequest.sourceActionId);
     try {
-      const result = await publishExternalEventProfile({
+      const result = await publishExternalMutation.mutateAsync({
         sourceActionId: publishRequest.sourceActionId,
         targetPath: publishRequest.targetPath,
         reviewNote: publishRequest.reviewNote.trim(),
@@ -295,10 +347,14 @@ export function useEventPublishingController({
     } catch (error) {
       onError(messageFromError(error, "Unable to publish external event."));
       return false;
-    } finally {
-      setPublishingExternalActionId(null);
     }
-  }, [onError, onNotice, refreshExternalList, refreshSupplyReadiness]);
+  }, [
+    onError,
+    onNotice,
+    publishExternalMutation,
+    refreshExternalList,
+    refreshSupplyReadiness,
+  ]);
 
   return {
     backToList,
@@ -313,13 +369,17 @@ export function useEventPublishingController({
     filteredExternalRows,
     filteredRows,
     form,
-    isDetailLoading,
-    isExternalListLoading,
-    isListLoading,
-    isSaving,
-    isSupplyReadinessLoading,
+    isDetailLoading: detailQuery.isPending || detailQuery.isFetching,
+    isExternalListLoading: externalListQuery.isPending ||
+      externalListQuery.isFetching,
+    isListLoading: listQuery.isPending || listQuery.isFetching,
+    isSaving: saveMutation.isPending,
+    isSupplyReadinessLoading: supplyReadinessQuery.isPending ||
+      supplyReadinessQuery.isFetching,
     listGeneratedAt,
-    publishingExternalActionId,
+    publishingExternalActionId: publishExternalMutation.isPending ?
+      publishExternalMutation.variables?.sourceActionId ?? null :
+      null,
     query,
     rows,
     selectedExternalEvent,
@@ -343,6 +403,18 @@ export function useEventPublishingController({
     setForm,
     setQuery,
   };
+}
+
+export type EventPublishingController =
+  ReturnType<typeof useEventPublishingController>;
+
+function useDebouncedValue(value: string, delayMs: number) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+  useEffect(() => {
+    const timer = window.setTimeout(() => setDebouncedValue(value), delayMs);
+    return () => window.clearTimeout(timer);
+  }, [delayMs, value]);
+  return debouncedValue;
 }
 
 export function filterEventRows(

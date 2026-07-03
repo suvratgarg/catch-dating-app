@@ -7,8 +7,16 @@
     "dev": "vite --host 127.0.0.1",
     "build": "npm run check:boundaries && npm run typecheck && vite build",
     "check:boundaries": "node ../tool/admin/check_import_boundaries.mjs",
+    "check:query-state": "node ../tool/web/check_react_query_state.mjs --check --surface admin",
+    "check:class-names": "node ../tool/web/check_react_classname_boundaries.mjs --check --surface admin",
+    "check:ui-components": "node ../tool/web/check_react_component_governance.mjs --check --surface admin",
+    "check:component-registry": "node ../tool/web/check_admin_components.mjs --check",
+    "check:ui-primitives": "node ../tool/web/check_react_ui_primitives.mjs --check --surface admin",
     "preview": "vite preview --host 127.0.0.1",
-    "typecheck": "tsc -p tsconfig.json --noEmit --pretty false && tsc -p tsconfig.node.json --noEmit --pretty false"
+    "storybook": "HOME=/tmp/catch-admin-storybook-home STORYBOOK_DISABLE_TELEMETRY=1 storybook dev -p 6007 --host 127.0.0.1 --disable-telemetry",
+    "build:storybook": "HOME=/tmp/catch-admin-storybook-home STORYBOOK_DISABLE_TELEMETRY=1 storybook build --disable-telemetry",
+    "typecheck": "npm run check:ui-primitives && npm run check:class-names && npm run check:ui-components && npm run check:feature-exports && npm run check:component-registry && npm run check:query-state && tsc -p tsconfig.json --noEmit --pretty false && tsc -p tsconfig.node.json --noEmit --pretty false",
+    "check:feature-exports": "node ../tool/web/check_admin_feature_exports.mjs --check"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.101.2",
@@ -19,9 +27,12 @@
     "react-router": "^8.1.0"
   },
   "devDependencies": {
+    "@storybook/addon-a11y": "^10.4.6",
+    "@storybook/react-vite": "^10.4.6",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.2",
+    "storybook": "^10.4.6",
     "typescript": "^6.0.3",
     "vite": "^8.0.16"
   }

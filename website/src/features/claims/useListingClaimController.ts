@@ -1,70 +1,39 @@
-import {type FormEvent, useEffect, useState} from "react";
+import {type FormEvent, useState} from "react";
 import {trackMarketingEvent} from "../../analytics";
-import {
-  claimFirebaseConfigured,
-  requestClubClaim,
-  signInForClaim,
-  signOutClaimUser,
-  type User,
-  watchClaimAuthState,
-} from "../../firebase";
+import {claimFirebaseConfigured} from "../../firebaseConfig";
 import type {FormStatus} from "../../shared/forms/types";
 import {isPublicApiEnabled} from "../organizers/selectors";
 import type {HostListing} from "../organizers/types";
 import {
+  claimContactValidationMessage,
   nullableString,
   parseProofUrls,
   type ClaimRole,
 } from "./claimModel";
+import {
+  useClaimAuthController,
+  useClaimRequestMutation,
+} from "./useClaimRequestMutation";
 
 export function useListingClaimController(listing: HostListing) {
   const publicApiEnabled = isPublicApiEnabled(listing);
-  const [user, setUser] = useState<User | null>(null);
-  const [authReady, setAuthReady] = useState(false);
-  const [isSigningIn, setIsSigningIn] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<FormStatus>({
     message: "",
     tone: "",
   });
 
-  useEffect(() => {
-    return watchClaimAuthState((nextUser) => {
-      setUser(nextUser);
-      setAuthReady(true);
-    });
-  }, []);
-
-  async function handleSignIn() {
-    setIsSigningIn(true);
-    setStatus({message: "", tone: ""});
-    trackMarketingEvent("listing_claim_sign_in_started", {
-      listing_id: listing.id,
-    });
-    try {
-      await signInForClaim();
-      trackMarketingEvent("listing_claim_signed_in", {
-        listing_id: listing.id,
-      });
-    } catch (error) {
-      setStatus({
-        message:
-          error instanceof Error ?
-            error.message :
-            "Sign-in did not complete. Please try again.",
-        tone: "is-error",
-      });
-      trackMarketingEvent("listing_claim_sign_in_error", {
-        listing_id: listing.id,
-      });
-    } finally {
-      setIsSigningIn(false);
-    }
-  }
-
-  async function handleSignOut() {
-    await signOutClaimUser();
-  }
+  const claimRequestMutation = useClaimRequestMutation(listing.id);
+  const {
+    authReady,
+    handleSignIn,
+    handleSignOut,
+    isSigningIn,
+    user,
+  } = useClaimAuthController({
+    eventPrefix: "listing_claim",
+    listingId: listing.id,
+    setStatus,
+  });
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -93,23 +62,18 @@ export function useListingClaimController(listing: HostListing) {
     const proofUrls = parseProofUrls(formData.get("proofUrls"));
     const message = nullableString(formData.get("message"));
 
-    if (!requesterName || !requesterRole) {
-      setStatus({
-        message: "Add your name and role before requesting the claim.",
-        tone: "is-error",
-      });
+    const validationMessage = claimContactValidationMessage({
+      businessEmail,
+      businessPhone,
+      parsedProofUrls: proofUrls,
+      requesterName,
+      requesterRole,
+    });
+    if (validationMessage) {
+      setStatus({message: validationMessage, tone: "is-error"});
       return;
     }
 
-    if (!businessEmail && !businessPhone && proofUrls.length === 0) {
-      setStatus({
-        message: "Add a business contact or at least one public proof link.",
-        tone: "is-error",
-      });
-      return;
-    }
-
-    setIsSubmitting(true);
     setStatus({message: "", tone: ""});
     trackMarketingEvent("listing_claim_submit_attempt", {
       listing_id: listing.id,
@@ -118,7 +82,7 @@ export function useListingClaimController(listing: HostListing) {
     });
 
     try {
-      await requestClubClaim({
+      await claimRequestMutation.mutateAsync({
         clubId: listing.id,
         requesterName,
         requesterRole,
@@ -148,8 +112,6 @@ export function useListingClaimController(listing: HostListing) {
       trackMarketingEvent("listing_claim_submit_error", {
         listing_id: listing.id,
       });
-    } finally {
-      setIsSubmitting(false);
     }
   }
 
@@ -164,8 +126,10 @@ export function useListingClaimController(listing: HostListing) {
       listing.publicApi.reason,
     publicApiEnabled,
     isSigningIn,
-    isSubmitting,
+    isSubmitting: claimRequestMutation.isPending,
     status,
     user,
   };
 }
+
+export type ListingClaimController = ReturnType<typeof useListingClaimController>;

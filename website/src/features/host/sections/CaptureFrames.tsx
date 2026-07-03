@@ -1,7 +1,8 @@
-import type {CaptureRecord} from "../../../app/usePageLifecycle";
 import {
   CaptureCard as CanonicalCaptureCard,
-} from "../../../components/site";
+  type CaptureRecord,
+  PhoneCaptureShell,
+} from "../../../shared/ui/primitives";
 
 export type HostCaptureMap = Record<string, CaptureRecord>;
 
@@ -30,18 +31,15 @@ export function PhoneCaptureFrame({
   const imagePath = capture?.webPath ?? `/assets/app-screenshots/placeholders/${id}.svg`;
 
   return (
-    <figure className="phone-capture" data-capture-slot={id}>
-      <div className="phone-capture__device">
-        <span className="phone-capture__notch" aria-hidden="true" />
-        <div className="phone-capture__screen">
-          <img
-            src={imagePath}
-            alt={capture?.alt ?? `${fallbackStep} app screenshot`}
-            loading="lazy"
-          />
-        </div>
-      </div>
-      <figcaption>{capture?.caption ?? `${fallbackStep} in the Catch app`}</figcaption>
-    </figure>
+    <PhoneCaptureShell
+      caption={capture?.caption ?? `${fallbackStep} in the Catch app`}
+      captureSlotId={id}
+    >
+      <img
+        src={imagePath}
+        alt={capture?.alt ?? `${fallbackStep} app screenshot`}
+        loading="lazy"
+      />
+    </PhoneCaptureShell>
   );
 }

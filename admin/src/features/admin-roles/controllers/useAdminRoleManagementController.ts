@@ -1,3 +1,9 @@
+import {
+  useIsFetching,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import {useCallback, useEffect, useMemo, useState} from "react";
 import {
   AdminRoleAssignmentRow,
@@ -7,6 +13,7 @@ import {
   type AdminSetAdminUserRolesResponse,
   type AdminUserRoleRecord,
 } from "../../../shared/types/adminTypes";
+import {adminQueryKeys} from "../../../shared/query/queryKeys";
 import {
   loadAdminRoleAssignments,
   loadAdminUserRoles,
@@ -34,6 +41,31 @@ export interface AdminRoleScopeContract {
   blockedActions: string[];
 }
 
+export interface AdminRoleManagementController {
+  assignmentFilter: AdminRoleAssignmentStatusFilter;
+  assignmentGeneratedAt: string | null;
+  assignmentRows: AdminRoleAssignmentRow[];
+  isAssignmentListLoading: boolean;
+  isLoading: boolean;
+  isSaving: boolean;
+  note: string;
+  recentChanges: AdminRoleChangeRecord[];
+  roleOptions: readonly AdminRoleClaim[];
+  selectedRoles: AdminRoleClaim[];
+  selectedUser: AdminUserRoleRecord | null;
+  scopeContract: AdminRoleScopeContract;
+  targetUid: string;
+  validationIssue: string | null;
+  load: (nextTargetUid?: string) => Promise<boolean>;
+  refreshAssignments: () => Promise<void>;
+  save: () => Promise<boolean>;
+  selectAssignment: (row: AdminRoleAssignmentRow) => void;
+  setAssignmentFilter: (value: AdminRoleAssignmentStatusFilter) => void;
+  setNote: (value: string) => void;
+  setTargetUid: (value: string) => void;
+  toggleRole: (role: AdminRoleClaim, checked: boolean) => void;
+}
+
 export function useAdminRoleManagementController({
   currentUserUid,
   onError,
@@ -42,26 +74,30 @@ export function useAdminRoleManagementController({
   currentUserUid: string | null;
   onError: (message: string | null) => void;
   onNotice: (message: string | null) => void;
-}) {
+}): AdminRoleManagementController {
+  const queryClient = useQueryClient();
   const [targetUid, setTargetUid] = useState(currentUserUid ?? "admin-owner");
   const [selectedUser, setSelectedUser] =
     useState<AdminUserRoleRecord | null>(null);
   const [selectedRoles, setSelectedRoles] = useState<AdminRoleClaim[]>([]);
   const [note, setNote] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
   const [recentChanges, setRecentChanges] = useState<AdminRoleChangeRecord[]>(
-    []
-  );
-  const [assignmentRows, setAssignmentRows] = useState<AdminRoleAssignmentRow[]>(
     []
   );
   const [assignmentFilter, setAssignmentFilter] =
     useState<AdminRoleAssignmentStatusFilter>("active");
-  const [assignmentGeneratedAt, setAssignmentGeneratedAt] =
-    useState<string | null>(null);
-  const [isAssignmentListLoading, setIsAssignmentListLoading] =
-    useState(false);
+  const assignmentQuery = useQuery({
+    queryKey: adminQueryKeys.adminRoles.assignments(assignmentFilter),
+    queryFn: () => loadAdminRoleAssignments({
+      status: assignmentFilter,
+      limit: 50,
+    }),
+  });
+  const saveMutation = useMutation({
+    mutationFn: saveAdminUserRoles,
+  });
+  const assignmentRows = assignmentQuery.data?.rows ?? [];
+  const assignmentGeneratedAt = assignmentQuery.data?.generatedAt ?? null;
 
   const validationIssue = useMemo(
     () => validateRoleChange({
@@ -76,17 +112,24 @@ export function useAdminRoleManagementController({
     () => buildAdminRoleScopeContract(targetUid, currentUserUid),
     [currentUserUid, targetUid]
   );
+  const isUserLoading = useIsFetching({
+    queryKey: adminQueryKeys.adminRoles.user(
+      scopeContract.normalizedUid ?? "__none__"
+    ),
+  }) > 0;
 
   const load = useCallback(async (nextTargetUid = targetUid) => {
     const contract = buildAdminRoleScopeContract(nextTargetUid, currentUserUid);
-    if (!contract.normalizedUid) {
+    const normalizedUid = contract.normalizedUid;
+    if (!normalizedUid) {
       onError(contract.statusDetail);
       return false;
     }
-    setIsLoading(true);
     try {
-      const response = await loadAdminUserRoles({
-        targetUid: contract.normalizedUid,
+      const response = await queryClient.fetchQuery({
+        queryKey: adminQueryKeys.adminRoles.user(normalizedUid),
+        queryFn: () => loadAdminUserRoles({targetUid: normalizedUid}),
+        staleTime: 0,
       });
       setSelectedUser(response.user);
       setSelectedRoles(response.user.roles);
@@ -98,34 +141,30 @@ export function useAdminRoleManagementController({
     } catch (error) {
       onError(messageFromError(error, "Unable to load admin user roles."));
       return false;
-    } finally {
-      setIsLoading(false);
     }
-  }, [currentUserUid, onError, onNotice, targetUid]);
+  }, [currentUserUid, onError, onNotice, queryClient, targetUid]);
 
   const refreshAssignments = useCallback(async () => {
-    setIsAssignmentListLoading(true);
-    try {
-      const response = await loadAdminRoleAssignments({
-        status: assignmentFilter,
-        limit: 50,
-      });
-      setAssignmentRows(response.rows);
-      setAssignmentGeneratedAt(response.generatedAt);
-      onError(null);
-    } catch (error) {
-      onError(messageFromError(
-        error,
-        "Unable to load admin role assignment register."
-      ));
-    } finally {
-      setIsAssignmentListLoading(false);
-    }
-  }, [assignmentFilter, onError]);
+    await assignmentQuery.refetch();
+  }, [assignmentQuery]);
 
   useEffect(() => {
-    void refreshAssignments();
-  }, [refreshAssignments]);
+    if (assignmentQuery.isError) {
+      onError(messageFromError(
+        assignmentQuery.error,
+        "Unable to load admin role assignment register."
+      ));
+      return;
+    }
+    if (assignmentQuery.isSuccess) {
+      onError(null);
+    }
+  }, [
+    assignmentQuery.error,
+    assignmentQuery.isError,
+    assignmentQuery.isSuccess,
+    onError,
+  ]);
 
   const save = useCallback(async () => {
     if (!selectedUser) {
@@ -137,14 +176,17 @@ export function useAdminRoleManagementController({
       onError(issue);
       return false;
     }
-    setIsSaving(true);
     try {
       const response: AdminSetAdminUserRolesResponse =
-        await saveAdminUserRoles({
+        await saveMutation.mutateAsync({
           targetUid: selectedUser.targetUid,
           roles: selectedRoles,
           note: note.trim(),
         });
+      queryClient.setQueryData(
+        adminQueryKeys.adminRoles.user(response.user.targetUid),
+        response
+      );
       setSelectedUser(response.user);
       setSelectedRoles(response.afterRoles);
       setRecentChanges((current) => [{
@@ -152,7 +194,9 @@ export function useAdminRoleManagementController({
         beforeRoles: response.beforeRoles,
         afterRoles: response.afterRoles,
       }, ...current].slice(0, 6));
-      await refreshAssignments();
+      await queryClient.invalidateQueries({
+        queryKey: adminQueryKeys.adminRoles.assignments(assignmentFilter),
+      });
       setNote("");
       onError(null);
       onNotice(`Saved admin roles for ${response.user.targetUid}.`);
@@ -160,14 +204,14 @@ export function useAdminRoleManagementController({
     } catch (error) {
       onError(messageFromError(error, "Unable to save admin role changes."));
       return false;
-    } finally {
-      setIsSaving(false);
     }
   }, [
+    assignmentFilter,
     note,
     onError,
     onNotice,
-    refreshAssignments,
+    queryClient,
+    saveMutation,
     selectedRoles,
     selectedUser,
     validationIssue,
@@ -191,9 +235,10 @@ export function useAdminRoleManagementController({
     assignmentFilter,
     assignmentGeneratedAt,
     assignmentRows,
-    isLoading,
-    isAssignmentListLoading,
-    isSaving,
+    isLoading: isUserLoading,
+    isAssignmentListLoading: assignmentQuery.isPending ||
+      assignmentQuery.isFetching,
+    isSaving: saveMutation.isPending,
     note,
     recentChanges,
     refreshAssignments,

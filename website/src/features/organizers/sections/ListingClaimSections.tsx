@@ -2,51 +2,60 @@ import {
   AuthStatusRow,
   Button,
   ButtonLink,
+  ClaimBandGrid,
+  ClaimBandRail,
+  ClaimBandSection,
+  ClaimMissingEvidenceList,
+  ClaimRequestForm,
+  ClaimRequestPanel,
+  ClaimRequestPanelHeading,
   FormStatus,
+  ListingSectionIntro,
+  PanelShell,
   SelectField,
   TextAreaField,
   TextField,
+  UiLabel,
 } from "../../../shared/ui/primitives";
 import {claimRoleOptions} from "../../claims/claimModel";
-import {useListingClaimController} from "../../claims/useListingClaimController";
+import type {ListingClaimController} from "../../claims/useListingClaimController";
 import {claimUnlocks} from "../../marketing/content";
 import {trackCtaClick} from "../../marketing/tracking";
 import {trackOrganizerAnalytics} from "../analytics";
 import {claimHrefForListing} from "../routing";
 import type {HostListing} from "../types";
 
-export function ListingMissingEvidenceSection({listing}: {listing: HostListing}) {
+export function ListingMissingEvidenceSection({
+  claimController,
+  listing,
+}: {
+  claimController: ListingClaimController;
+  listing: HostListing;
+}) {
   return (
-    <section className="claim-band" aria-labelledby="listing-missing-title">
-      <div data-reveal>
-        <span className="ui-label">Before public indexing</span>
-        <h2 id="listing-missing-title">Missing evidence</h2>
-        <p>
-          This is the pressure mechanic from the prototype: visitors can
-          see what is known, what is missing, and why a verified Catch
-          profile earns stronger placement.
-        </p>
-      </div>
-      <div className="claim-band__grid">
-        <ul className="missing-list" data-reveal>
-          {listing.missingEvidence.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
-        <div className="claim-band__rail">
+    <ClaimBandSection aria-labelledby="listing-missing-title">
+      <ListingSectionIntro
+        eyebrow="Before public indexing"
+        title="Missing evidence"
+        titleId="listing-missing-title"
+        body="This is the pressure mechanic from the prototype: visitors can see what is known, what is missing, and why a verified Catch profile earns stronger placement."
+      />
+      <ClaimBandGrid>
+        <ClaimMissingEvidenceList items={listing.missingEvidence} />
+        <ClaimBandRail>
           <ClaimUnlocksCard listing={listing} />
-          <ClaimListingPanel listing={listing} />
-        </div>
-      </div>
-    </section>
+          <ClaimListingPanel controller={claimController} listing={listing} />
+        </ClaimBandRail>
+      </ClaimBandGrid>
+    </ClaimBandSection>
   );
 }
 
 function ClaimUnlocksCard({listing}: {listing: HostListing}) {
   const claimHref = claimHrefForListing(listing);
   return (
-    <aside className="claim-unlocks" data-reveal>
-      <span className="ui-label">Claiming unlocks</span>
+    <PanelShell variant="claim-unlocks" as="aside" reveal>
+      <UiLabel>Claiming unlocks</UiLabel>
       <h3>What {listing.name} cannot show yet.</h3>
       <ul>
         {claimUnlocks.map((item) => (
@@ -62,11 +71,17 @@ function ClaimUnlocksCard({listing}: {listing: HostListing}) {
       >
         Claim this listing
       </ButtonLink>
-    </aside>
+    </PanelShell>
   );
 }
 
-function ClaimListingPanel({listing}: {listing: HostListing}) {
+function ClaimListingPanel({
+  controller,
+  listing,
+}: {
+  controller: ListingClaimController;
+  listing: HostListing;
+}) {
   const {
     authReady,
     handleSignIn,
@@ -78,13 +93,13 @@ function ClaimListingPanel({listing}: {listing: HostListing}) {
     notConfiguredReason,
     status,
     user,
-  } = useListingClaimController(listing);
+  } = controller;
 
   if (!isConfigured) {
     return (
-      <div className="claim-request-panel" id="claim" data-reveal>
+      <ClaimRequestPanel id="claim" reveal>
         <div>
-          <span className="ui-label">Claim this listing</span>
+          <UiLabel>Claim this listing</UiLabel>
           <h3>Owner review is not enabled for this listing.</h3>
           <p>
             {notConfiguredReason} Use the host application while this public
@@ -97,20 +112,20 @@ function ClaimListingPanel({listing}: {listing: HostListing}) {
         >
           Apply as host
         </ButtonLink>
-      </div>
+      </ClaimRequestPanel>
     );
   }
 
   return (
-    <div className="claim-request-panel" id="claim" data-reveal>
-      <div className="claim-request-panel__heading">
-        <span className="ui-label">Claim this listing</span>
+    <ClaimRequestPanel id="claim" reveal>
+      <ClaimRequestPanelHeading>
+        <UiLabel>Claim this listing</UiLabel>
         <h3>Request ownership for {listing.name}</h3>
         <p>
           Approved claims attach this profile to a Catch host account before
           owner tools or responses are unlocked.
         </p>
-      </div>
+      </ClaimRequestPanelHeading>
 
       <AuthStatusRow
         action={
@@ -140,7 +155,7 @@ function ClaimListingPanel({listing}: {listing: HostListing}) {
             "Checking sign-in status."}
       </AuthStatusRow>
 
-      <form className="claim-request-form" onSubmit={handleSubmit}>
+      <ClaimRequestForm onSubmit={handleSubmit}>
         <TextField
           id={`claim-${listing.id}-requester-name`}
           label="Your name"
@@ -198,7 +213,7 @@ function ClaimListingPanel({listing}: {listing: HostListing}) {
           {isSubmitting ? "Submitting..." : "Request claim"}
         </Button>
         <FormStatus status={status} />
-      </form>
-    </div>
+      </ClaimRequestForm>
+    </ClaimRequestPanel>
   );
 }

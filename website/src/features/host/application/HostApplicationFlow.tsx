@@ -1,12 +1,22 @@
-import {ProfileStrength} from "../../../components/site";
 import {cities} from "../../../shared/lib/cities";
 import {
   Button,
+  ActionGroup,
   ButtonLink,
   ChoiceChip,
   ChoiceChipGrid,
   Field,
+  FieldGrid,
   FormStatus,
+  HostApplicationCompletenessSummary,
+  HostApplicationPanel,
+  HostApplicationReviewCard,
+  HostApplicationReviewGrid,
+  HostApplicationShell,
+  HostApplicationStage,
+  HostApplicationSubmitted,
+  OperationalNote,
+  ProfileStrength,
   SelectField,
   StepRail,
   TextAreaField,
@@ -40,8 +50,7 @@ export function HostApplicationFlow() {
   } = useHostApplicationController();
 
   return (
-    <form
-      className="host-application"
+    <HostApplicationShell
       onFocus={handleFormStart}
       onSubmit={handleSubmit}
     >
@@ -52,24 +61,18 @@ export function HostApplicationFlow() {
         onSelect={goToStep}
       />
 
-      <div className="host-application__panel">
+      <HostApplicationPanel>
         {submitted ? (
-          <div className="host-application__submitted">
-            <span className="submitted-panel__mark">✓</span>
-            <div>
-              <span className="ui-label">Host application received</span>
-              <h3>Catch has the operating packet for {draft.organizationName || "your host profile"}.</h3>
-              <p>
-                Approval still has to happen before the website can create clubs,
-                events, payouts, or owner dashboards on your behalf.
-              </p>
-            </div>
-          </div>
+          <HostApplicationSubmitted
+            label="Host application received"
+            title={`Catch has the operating packet for ${draft.organizationName || "your host profile"}.`}
+            body="Approval still has to happen before the website can create clubs, events, payouts, or owner dashboards on your behalf."
+          />
         ) : null}
 
         {!submitted && step === "profile" ? (
-          <div className="host-application__stage">
-            <div className="flow-field-grid">
+          <HostApplicationStage>
+            <FieldGrid>
               <TextField
                 id="host-full-name"
                 label="Full name"
@@ -137,12 +140,12 @@ export function HostApplicationFlow() {
                 span
                 required
               />
-            </div>
-          </div>
+            </FieldGrid>
+          </HostApplicationStage>
         ) : null}
 
         {!submitted && step === "event" ? (
-          <div className="host-application__stage">
+          <HostApplicationStage>
             <Field span label={<span>Formats you want to run</span>}>
               <ChoiceChipGrid>
                 {hostFormatOptions.map((format) => (
@@ -156,7 +159,7 @@ export function HostApplicationFlow() {
                 ))}
               </ChoiceChipGrid>
             </Field>
-            <div className="flow-field-grid">
+            <FieldGrid>
               <SelectField
                 id="host-event-cadence"
                 label="Cadence"
@@ -191,13 +194,13 @@ export function HostApplicationFlow() {
                 onChange={(event) => updateDraft("eventLocation", event.currentTarget.value)}
                 required
               />
-            </div>
-          </div>
+            </FieldGrid>
+          </HostApplicationStage>
         ) : null}
 
         {!submitted && step === "policy" ? (
-          <div className="host-application__stage">
-            <div className="flow-field-grid">
+          <HostApplicationStage>
+            <FieldGrid>
               <TextField
                 id="host-capacity"
                 label="Expected capacity"
@@ -247,12 +250,12 @@ export function HostApplicationFlow() {
                 <option>Free events first</option>
                 <option>Sponsor or venue-funded</option>
               </SelectField>
-            </div>
-          </div>
+            </FieldGrid>
+          </HostApplicationStage>
         ) : null}
 
         {!submitted && step === "success" ? (
-          <div className="host-application__stage">
+          <HostApplicationStage>
             <Field span label={<span>Event Success modules to start with</span>}>
               <ChoiceChipGrid>
                 {hostSuccessModuleOptions.map((module) => (
@@ -266,7 +269,7 @@ export function HostApplicationFlow() {
                 ))}
               </ChoiceChipGrid>
             </Field>
-            <div className="flow-field-grid">
+            <FieldGrid>
               <TextAreaField
                 id="host-goals"
                 label="What should Catch help you improve?"
@@ -286,63 +289,51 @@ export function HostApplicationFlow() {
                 onChange={(event) => updateDraft("operatingNotes", event.currentTarget.value)}
                 span
               />
-            </div>
-          </div>
+            </FieldGrid>
+          </HostApplicationStage>
         ) : null}
 
         {!submitted && step === "review" ? (
-          <div className="host-application__stage">
-            <div className="host-application__review">
-              <HostApplicationSummary title="Profile" rows={[
+          <HostApplicationStage>
+            <HostApplicationReviewGrid>
+              <HostApplicationReviewCard title="Profile" rows={[
                 ["Host", draft.fullName],
                 ["Organization", draft.organizationName],
                 ["City", resolvedCity],
                 ["Link", draft.communityLink],
               ]} />
-              <HostApplicationSummary title="First event" rows={[
+              <HostApplicationReviewCard title="First event" rows={[
                 ["Formats", draft.formats.join(", ")],
                 ["Event", draft.nextEventName],
                 ["Location", draft.eventLocation],
                 ["Cadence", draft.eventCadence],
               ]} />
-              <HostApplicationSummary title="Operations" rows={[
+              <HostApplicationReviewCard title="Operations" rows={[
                 ["Capacity", draft.expectedCapacity],
                 ["Admission", draft.admissionModel],
                 ["Waitlist", draft.waitlistPlan],
                 ["Payment", draft.paymentReadiness],
               ]} />
-              <HostApplicationSummary title="Event Success" rows={[
+              <HostApplicationReviewCard title="Event Success" rows={[
                 ["Modules", draft.eventSuccessModules.join(", ")],
                 ["Goal", draft.hostGoals],
               ]} />
-            </div>
-            <div className="operational-note">
-              <strong>What this does now</strong>
-              <p>
-                This submits a real host lead packet for review. Creating clubs,
-                events, payout accounts, and owner dashboards still requires
-                approval because those backend callables are host-authenticated.
-              </p>
-            </div>
-          </div>
+            </HostApplicationReviewGrid>
+            <OperationalNote
+              title="What this does now"
+              body="This submits a real host lead packet for review. Creating clubs, events, payout accounts, and owner dashboards still requires approval because those backend callables are host-authenticated."
+            />
+          </HostApplicationStage>
         ) : null}
 
-        <div className="host-application__summary">
-          <div>
-            <span className="ui-label">Application completeness</span>
-            <ProfileStrength value={hostApplicationCompleteness(draft)} />
-          </div>
-          <ul>
-            {hostApplicationChecklist(draft).map((item) => (
-              <li className={item.done ? "is-done" : ""} key={item.label}>
-                <span>{item.done ? "✓" : "·"}</span>{item.label}
-              </li>
-            ))}
-          </ul>
-        </div>
+        <HostApplicationCompletenessSummary
+          label="Application completeness"
+          meter={<ProfileStrength value={hostApplicationCompleteness(draft)} />}
+          items={hostApplicationChecklist(draft)}
+        />
 
         {!submitted ? (
-          <div className="flow-actions">
+          <ActionGroup>
             <Button
               disabled={currentStepIndex === 0}
               onClick={goBack}
@@ -360,42 +351,20 @@ export function HostApplicationFlow() {
                 Continue
               </Button>
             )}
-          </div>
+          </ActionGroup>
         ) : (
-          <div className="flow-actions">
+          <ActionGroup>
             <ButtonLink href="/organizers/" variant="ghost">
               Browse organizer pages
             </ButtonLink>
             <ButtonLink href="/claim/">
               Claim an existing listing
             </ButtonLink>
-          </div>
+          </ActionGroup>
         )}
 
         <FormStatus status={status} />
-      </div>
-    </form>
-  );
-}
-
-function HostApplicationSummary({
-  title,
-  rows,
-}: {
-  title: string;
-  rows: Array<[string, string]>;
-}) {
-  return (
-    <article>
-      <span className="ui-label">{title}</span>
-      <dl>
-        {rows.map(([label, value]) => (
-          <div key={label}>
-            <dt>{label}</dt>
-            <dd>{value || "Not provided"}</dd>
-          </div>
-        ))}
-      </dl>
-    </article>
+      </HostApplicationPanel>
+    </HostApplicationShell>
   );
 }

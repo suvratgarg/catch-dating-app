@@ -1,10 +1,13 @@
+import {useMutation} from "@tanstack/react-query";
 import {type FormEvent, useState} from "react";
 import {
   createMarketingEventId,
   trackMarketingEvent,
+  type WaitlistAnalyticsPayload,
   waitlistAnalyticsPayload,
 } from "../../../analytics";
 import type {FormStatus} from "../../../shared/forms/types";
+import {websiteQueryKeys} from "../../../shared/query/queryKeys";
 import {
   hostApplicationIsComplete,
   hostApplicationStepError,
@@ -15,13 +18,49 @@ import {
   type HostApplicationStep,
 } from "./applicationModel";
 
+type HostApplicationSubmitBody = WaitlistAnalyticsPayload & {
+  fullName: string;
+  email: string;
+  city: string;
+  role: "host";
+  instagram: string;
+  website: string;
+  hostApplication: {
+    organizationName: string;
+    organizationType: string;
+    operatingCity: string;
+    communityLink: string;
+    formats: string[];
+    eventCadence: string;
+    nextEventName: string;
+    nextEventDate: string;
+    eventLocation: string;
+    expectedCapacity: string;
+    priceRange: string;
+    admissionModel: string;
+    waitlistPlan: string;
+    paymentReadiness: string;
+    eventSuccessModules: string[];
+    hostGoals: string;
+    operatingNotes: string;
+  };
+};
+
+type HostApplicationSubmitResponse = {
+  alreadyJoined?: boolean;
+  error?: string;
+};
+
 export function useHostApplicationController() {
   const [draft, setDraft] = useState<HostApplicationDraft>(initialHostApplicationDraft);
   const [step, setStep] = useState<HostApplicationStep>("profile");
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [status, setStatus] = useState<FormStatus>({message: "", tone: ""});
+  const submitMutation = useMutation({
+    mutationKey: websiteQueryKeys.hostApplications.submit(),
+    mutationFn: submitHostApplication,
+  });
 
   const currentStepIndex = hostApplicationSteps.findIndex((item) => item.id === step);
   const resolvedCity = draft.city === "Other" ? draft.customCity.trim() : draft.city;
@@ -92,7 +131,7 @@ export function useHostApplicationController() {
       fullName: draft.fullName.trim(),
       email: draft.email.trim(),
       city: resolvedCity,
-      role: "host",
+      role: "host" as const,
       instagram: draft.communityLink.trim(),
       website: "",
       hostApplication: {
@@ -117,7 +156,6 @@ export function useHostApplicationController() {
       ...conversionPayload,
     };
 
-    setIsSubmitting(true);
     setStatus({message: "", tone: ""});
     trackMarketingEvent("host_operating_application_submit_attempt", {
       city: body.city,
@@ -127,24 +165,7 @@ export function useHostApplicationController() {
     });
 
     try {
-      const response = await fetch("/api/join-waitlist", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(body),
-      });
-      const data = (await response.json().catch(() => ({}))) as {
-        alreadyJoined?: boolean;
-        error?: string;
-      };
-
-      if (!response.ok) {
-        throw new Error(
-          typeof data.error === "string"
-            ? data.error
-            : "We couldn't submit the host application. Please try again."
-        );
-      }
-
+      const data = await submitMutation.mutateAsync(body);
       setSubmitted(true);
       setStatus({
         message: data.alreadyJoined
@@ -176,8 +197,6 @@ export function useHostApplicationController() {
       trackMarketingEvent("host_operating_application_submit_error", {
         event_id: eventId,
       });
-    } finally {
-      setIsSubmitting(false);
     }
   }
 
@@ -190,7 +209,7 @@ export function useHostApplicationController() {
     goToStep,
     handleFormStart,
     handleSubmit,
-    isSubmitting,
+    isSubmitting: submitMutation.isPending,
     resolvedCity,
     status,
     step,
@@ -198,4 +217,26 @@ export function useHostApplicationController() {
     toggleDraftList,
     updateDraft,
   };
+}
+
+async function submitHostApplication(
+  body: HostApplicationSubmitBody
+): Promise<HostApplicationSubmitResponse> {
+  const response = await fetch("/api/join-waitlist", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(body),
+  });
+  const data = (await response.json().catch(() => ({}))) as
+    HostApplicationSubmitResponse;
+
+  if (!response.ok) {
+    throw new Error(
+      typeof data.error === "string"
+        ? data.error
+        : "We couldn't submit the host application. Please try again."
+    );
+  }
+
+  return data;
 }

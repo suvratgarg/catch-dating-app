@@ -1,7 +1,7 @@
 {
   "$schema": "./website.routes.schema.json",
-  "version": 2,
-  "updated": "2026-07-01",
+  "version": 3,
+  "updated": "2026-07-03",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/web_surface_architecture.md",
@@ -27,9 +27,13 @@
       "notes": "Primary member and public discovery entrypoint.",
       "review": {
         "priority": "p0",
-        "status": "planned",
+        "status": "ready",
         "viewports": ["desktop", "mobile"],
-        "states": ["default", "app-download-pending", "waitlist-form"]
+        "states": ["default", "app-download-pending", "waitlist-form"],
+        "stateCoverage": {
+          "storybook": ["default"],
+          "manual": ["app-download-pending", "waitlist-form"]
+        }
       }
     },
     {
@@ -45,9 +49,13 @@
       "notes": "Public host acquisition page.",
       "review": {
         "priority": "p0",
-        "status": "planned",
+        "status": "ready",
         "viewports": ["desktop", "mobile"],
-        "states": ["default", "host-application", "capture-placeholders"]
+        "states": ["default", "host-application", "capture-placeholders"],
+        "stateCoverage": {
+          "storybook": ["default"],
+          "manual": ["host-application", "capture-placeholders"]
+        }
       }
     },
     {
@@ -63,9 +71,13 @@
       "notes": "Client-only founding-host preview under the host page shell; not emitted as separate static HTML yet.",
       "review": {
         "priority": "p1",
-        "status": "planned",
+        "status": "ready",
         "viewports": ["desktop", "mobile"],
-        "states": ["default", "founding-host-offer", "create-flow"]
+        "states": ["default", "founding-host-offer", "create-flow"],
+        "stateCoverage": {
+          "storybook": ["default"],
+          "manual": ["founding-host-offer", "create-flow"]
+        }
       }
     },
     {
@@ -81,9 +93,13 @@
       "notes": "Search surface for generated organizer profiles; deliberately noindex until public inventory quality is stronger.",
       "review": {
         "priority": "p0",
-        "status": "planned",
+        "status": "ready",
         "viewports": ["desktop", "mobile"],
-        "states": ["default", "filtered", "empty-results", "saved-organizers"]
+        "states": ["default", "filtered", "empty-results", "saved-organizers"],
+        "stateCoverage": {
+          "storybook": ["default"],
+          "manual": ["filtered", "empty-results", "saved-organizers"]
+        }
       }
     },
     {
@@ -99,9 +115,13 @@
       "notes": "Claim landing route with static noindex output.",
       "review": {
         "priority": "p0",
-        "status": "planned",
+        "status": "ready",
         "viewports": ["desktop", "mobile"],
-        "states": ["default", "not-found", "pending-claim", "already-claimed"]
+        "states": ["default", "not-found", "pending-claim", "already-claimed"],
+        "stateCoverage": {
+          "storybook": ["default"],
+          "manual": ["not-found", "pending-claim", "already-claimed"]
+        }
       }
     },
     {
@@ -117,9 +137,35 @@
       "notes": "Client lookup variant parsed by getClaimListingLookupFromLocation; static output is not generated per listing.",
       "review": {
         "priority": "p1",
-        "status": "planned",
+        "status": "manual",
         "viewports": ["desktop", "mobile"],
-        "states": ["known-listing", "not-found", "pending-claim"]
+        "states": ["known-listing", "not-found", "pending-claim"],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": ["known-listing", "not-found", "pending-claim"]
+        }
+      }
+    },
+    {
+      "id": "not_found",
+      "kind": "static",
+      "path": "/404/",
+      "pageKey": "not_found",
+      "source": "website/src/features/notFound/NotFoundPage.tsx",
+      "metaKey": "not_found",
+      "staticOutput": "postbuild",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "Unknown client routes and unresolved generated organizer paths render a noindex not-found page; postbuild also emits /404.html for static hosting fallbacks.",
+      "review": {
+        "priority": "p1",
+        "status": "ready",
+        "viewports": ["desktop", "mobile"],
+        "states": ["unknown-route", "missing-organizer-listing"],
+        "stateCoverage": {
+          "storybook": ["unknown-route"],
+          "manual": ["missing-organizer-listing"]
+        }
       }
     },
     {
@@ -135,9 +181,13 @@
       "notes": "Generated canonical organizer profile routes from website/src/generated/hostListings.json. Current inventory contains legacy one-segment canonical paths plus city-scoped canonical paths.",
       "review": {
         "priority": "p0",
-        "status": "planned",
+        "status": "ready",
         "viewports": ["desktop", "mobile"],
-        "states": ["indexable", "noindex", "public-api-disabled", "external-events", "claim-cta"]
+        "states": ["indexable", "noindex", "public-api-disabled", "external-events", "claim-cta"],
+        "stateCoverage": {
+          "storybook": ["claim-cta"],
+          "manual": ["indexable", "noindex", "public-api-disabled", "external-events"]
+        }
       }
     },
     {
@@ -153,9 +203,13 @@
       "notes": "Generated legacy organizer routes must preserve canonical URL and noindex after hydration.",
       "review": {
         "priority": "p0",
-        "status": "planned",
+        "status": "manual",
         "viewports": ["desktop"],
-        "states": ["legacy-noindex", "canonical-preserved"]
+        "states": ["legacy-noindex", "canonical-preserved"],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": ["legacy-noindex", "canonical-preserved"]
+        }
       }
     }
   ]

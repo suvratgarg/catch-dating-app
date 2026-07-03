@@ -50,6 +50,15 @@ const routeMetas = {
     twitterDescription: "Claim an organizer profile and unlock Catch host tools.",
     robots: "noindex, follow",
   },
+  "/404/": {
+    title: "Page not found | Catch",
+    description:
+      "This Catch page does not exist. Search organizer profiles, browse the member site, or explore host tools.",
+    canonical: `${baseUrl}/404/`,
+    twitterDescription:
+      "Search organizer profiles, browse the member site, or explore Catch host tools.",
+    robots: "noindex, follow",
+  },
 };
 
 const rootHtmlPath = path.join(distRoot, "index.html");
@@ -60,6 +69,8 @@ writeRoute("/", routeMetas["/"]);
 writeRoute("/host/", routeMetas["/host/"]);
 writeRoute("/organizers/", routeMetas["/organizers/"]);
 writeRoute("/claim/", routeMetas["/claim/"]);
+writeRoute("/404/", routeMetas["/404/"]);
+writeStaticHtml("404.html", routeMetas["/404/"]);
 
 for (const listing of hostListings) {
   const listingMeta = {
@@ -93,6 +104,10 @@ function writeRoute(routePath, meta) {
   fs.mkdirSync(routeDir, {recursive: true});
   fs.writeFileSync(path.join(routeDir, "index.html"), applyMeta(rootHtml, meta));
   addSitemapEntry(meta);
+}
+
+function writeStaticHtml(fileName, meta) {
+  fs.writeFileSync(path.join(distRoot, fileName), applyMeta(rootHtml, meta));
 }
 
 function applyMeta(html, meta) {

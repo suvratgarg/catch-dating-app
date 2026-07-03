@@ -7,16 +7,26 @@ import {
 } from "lucide-react";
 import {
   AdminButton,
+  AdminEditorGrid,
+  AdminEditorPanel,
+  AdminMetricCard,
+  AdminMetricGrid,
+  AdminTableRow,
+  AdminToolbar,
+  AdminWorkbenchStack,
   DataTable,
   EmptyState,
   Panel,
+  QualityList,
   RiskBadge,
   SearchField,
   SelectField,
   StateRow,
   TableActionButton,
+  AdminRowTitle,
 } from "../../../shared/ui/AdminPrimitives";
 import {
+  type DataQualityController,
   type DataQualityRow,
   type DataQualityState,
   type DataQualityStateFilter,
@@ -38,26 +48,33 @@ export function DataQualityScreen({
   onError: (message: string | null) => void;
 }) {
   const controller = useDataQualityController({onError});
+  return <DataQualityWorkspace controller={controller} />;
+}
+
+export function DataQualityWorkspace({
+  controller,
+}: {
+  controller: DataQualityController;
+}) {
   return (
-    <div className="workbench-stack">
-      <section className="metric-grid" aria-label="Data quality state">
-        <Metric label="Signals" value={controller.metrics.total} />
-        <Metric
+    <AdminWorkbenchStack>
+      <AdminMetricGrid ariaLabel="Data quality state">
+        <AdminMetricCard label="Signals" value={controller.metrics.total} />
+        <AdminMetricCard
           label="Blocking"
           tone={controller.metrics.blocking > 0 ? "attention" : "normal"}
           value={controller.metrics.blocking}
         />
-        <Metric label="Watch" value={controller.metrics.watch} />
-        <Metric label="Sources" value={controller.metrics.sources} />
-      </section>
-
+        <AdminMetricCard label="Watch" value={controller.metrics.watch} />
+        <AdminMetricCard label="Sources" value={controller.metrics.sources} />
+      </AdminMetricGrid>
       <Panel
-        className="span-2"
+        span={2}
         icon={<Database size={18} strokeWidth={1.9} />}
         title="Quality signals"
         action={controller.isLoading ? "Loading" : `${controller.filteredRows.length} shown`}
       >
-        <div className="workbench-toolbar">
+        <AdminToolbar>
           <SearchField
             ariaLabel="Search data quality signals"
             icon={<Search size={16} strokeWidth={1.8} />}
@@ -80,44 +97,43 @@ export function DataQualityScreen({
           >
             Refresh
           </AdminButton>
-        </div>
+        </AdminToolbar>
         <QualityTable
           onSelect={controller.select}
           rows={controller.filteredRows}
           selectedId={controller.selected?.id ?? null}
         />
       </Panel>
-
-      <section className="publishing-editor-grid">
+      <AdminEditorGrid>
         <QualityDetailPanel selected={controller.selected} />
-        <div className="workbench-stack">
+        <AdminWorkbenchStack>
           <Panel
             icon={<ShieldCheck size={18} strokeWidth={1.9} />}
             title="Operations boundary"
             action="read-only"
           >
-            <div className="quality-list">
+            <QualityList>
               <StateRow label="Sources" value="adminGetOverview, adminGetHostAnalytics, adminGetMarketingOpsDashboard, adminGetEventIntakeDashboard, adminGetEventSupplyReadiness" />
               <StateRow label="Mutations" value="None from this tab" />
               <StateRow label="Metadata" value="Owner/runbook/action fields come from source payloads" />
               <StateRow label="Not here" value="finance reconciliation, safety actions, crawler edits" />
-            </div>
+            </QualityList>
           </Panel>
           <Panel
             icon={<CheckCircle2 size={18} strokeWidth={1.9} />}
             title="Current read"
             action={formatDateTime(controller.generatedAt)}
           >
-            <div className="quality-list">
+            <QualityList>
               <StateRow label="OK" value={controller.metrics.ok} />
               <StateRow label="Needs watch" value={controller.metrics.watch} />
               <StateRow label="Blocking/missing" value={controller.metrics.blocking} />
               <StateRow label="Visible rows" value={controller.filteredRows.length} />
-            </div>
+            </QualityList>
           </Panel>
-        </div>
-      </section>
-    </div>
+        </AdminWorkbenchStack>
+      </AdminEditorGrid>
+    </AdminWorkbenchStack>
   );
 }
 
@@ -133,7 +149,7 @@ function QualityTable({
   if (rows.length === 0) {
     return (
       <EmptyState
-        className="workbench-empty"
+        variant="workbench"
         icon={<CheckCircle2 size={16} strokeWidth={1.9} />}
       >
         No data-quality signals match this filter.
@@ -141,7 +157,7 @@ function QualityTable({
     );
   }
   return (
-    <DataTable className="workbench-table">
+    <DataTable variant="workbench">
       <thead>
         <tr>
           <th>Signal</th>
@@ -154,15 +170,12 @@ function QualityTable({
       </thead>
       <tbody>
         {rows.map((row) => (
-          <tr
-            className={selectedId === row.id ? "selected-row" : ""}
-            key={row.id}
-          >
+          <AdminTableRow key={row.id} selected={selectedId === row.id}>
             <td>
-              <div className="row-title">
+              <AdminRowTitle>
                 <strong>{row.label}</strong>
                 <span>{row.source} · {row.detail}</span>
-              </div>
+              </AdminRowTitle>
             </td>
             <td>
               <RiskBadge tone={riskTone(row.state)}>
@@ -177,7 +190,7 @@ function QualityTable({
                 Review
               </TableActionButton>
             </td>
-          </tr>
+          </AdminTableRow>
         ))}
       </tbody>
     </DataTable>
@@ -190,14 +203,13 @@ function QualityDetailPanel({
   selected: DataQualityRow | null;
 }) {
   return (
-    <Panel
-      className="publishing-editor-panel"
+    <AdminEditorPanel
       icon={<Database size={18} strokeWidth={1.9} />}
       title="Signal detail"
       action={selected ? stateLabel(selected.state) : "No signal"}
     >
       {selected ? (
-        <div className="quality-list">
+        <QualityList>
           <StateRow label="Source" value={selected.source} />
           <StateRow label="Signal" value={selected.label} />
           <StateRow
@@ -213,33 +225,16 @@ function QualityDetailPanel({
           <StateRow label="Updated" value={formatDateTime(selected.updatedAt)} />
           <StateRow label="Detail" value={selected.detail} />
           <StateRow label="Next action" value={selected.nextAction} />
-        </div>
+        </QualityList>
       ) : (
         <EmptyState
-          className="workbench-empty"
+          variant="workbench"
           icon={<CheckCircle2 size={16} strokeWidth={1.9} />}
         >
           Select a data-quality signal to inspect.
         </EmptyState>
       )}
-    </Panel>
-  );
-}
-
-function Metric({
-  label,
-  tone = "normal",
-  value,
-}: {
-  label: string;
-  tone?: "normal" | "attention";
-  value: number;
-}) {
-  return (
-    <article className={`metric-card ${tone === "attention" ? "attention" : ""}`}>
-      <span>{label}</span>
-      <div className="metric-value">{value}</div>
-    </article>
+    </AdminEditorPanel>
   );
 }
 

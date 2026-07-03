@@ -1,10 +1,13 @@
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useCallback, useEffect, useMemo, useState} from "react";
 import type {
+  AdminGetSafetyTriageDetailsResponse,
+  AdminOverviewResponse,
   AdminSafetyTriageAssignment,
   AdminSafetyTriageDecision,
   AdminQueueItem,
-  AdminSafetyTriageDetails,
 } from "../../../shared/types/adminTypes";
+import {adminQueryKeys} from "../../../shared/query/queryKeys";
 import {
   assignSafetyTriageItemOwner,
   decideSafetyTriageItemStatus,
@@ -61,96 +64,97 @@ export function useSafetyTriageController({
   onError: (message: string | null) => void;
   onNotice: (message: string | null) => void;
 }) {
-  const [rows, setRows] = useState<SafetyTriageRow[]>([]);
-  const [metrics, setMetrics] = useState<SafetyTriageMetrics>({
-    reports: 0,
-    moderation: 0,
-    eventReports: 0,
-    highPriority: 0,
-  });
+  const queryClient = useQueryClient();
   const [selectedTargetPath, setSelectedTargetPath] = useState<string | null>(
     null
   );
   const [queueFilter, setQueueFilter] = useState<SafetyQueueKind>("all");
   const [query, setQuery] = useState("");
-  const [generatedAt, setGeneratedAt] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [detailsByPath, setDetailsByPath] =
-    useState<Record<string, AdminSafetyTriageDetails>>({});
-  const [detailTargetPathLoading, setDetailTargetPathLoading] =
-    useState<string | null>(null);
   const [decisionForm, setDecisionForm] =
     useState<SafetyDecisionFormState>({note: ""});
   const [assignmentForm, setAssignmentForm] =
     useState<SafetyAssignmentFormState>({assigneeUid: "", note: ""});
-  const [decisionInFlight, setDecisionInFlight] =
-    useState<AdminSafetyTriageDecision | null>(null);
-  const [assignmentInFlight, setAssignmentInFlight] = useState(false);
   const [recentDecisions, setRecentDecisions] =
     useState<SafetyDecisionRecord[]>([]);
   const [recentAssignments, setRecentAssignments] =
     useState<SafetyAssignmentRecord[]>([]);
 
+  const queueQueryKey = adminQueryKeys.safety.queue();
+  const queueQuery = useQuery({
+    queryKey: queueQueryKey,
+    queryFn: loadSafetyTriageSnapshot,
+    placeholderData: (previousData) => previousData,
+  });
+  const rows = useMemo(
+    () => queueQuery.data ? buildSafetyRows(queueQuery.data) : [],
+    [queueQuery.data]
+  );
+  const metrics = useMemo(() => safetyMetrics(rows), [rows]);
+  const generatedAt = queueQuery.data?.generatedAt ?? null;
+  const selected = useMemo(
+    () => rows.find((row) => row.targetPath === selectedTargetPath) ?? null,
+    [rows, selectedTargetPath]
+  );
+  const detailQuery = useQuery({
+    enabled: Boolean(selectedTargetPath),
+    queryKey: adminQueryKeys.safety.detail(selectedTargetPath ?? "__none__"),
+    queryFn: () => {
+      if (!selectedTargetPath) {
+        throw new Error("Cannot load safety detail without a target path.");
+      }
+      return loadSafetyTriageItem(selectedTargetPath);
+    },
+  });
+  const selectedDetail = selected ? detailQuery.data?.item ?? null : null;
+  const assignmentMutation = useMutation({
+    mutationFn: assignSafetyTriageItemOwner,
+  });
+  const decisionMutation = useMutation({
+    mutationFn: decideSafetyTriageItemStatus,
+  });
+
   const refresh = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const snapshot = await loadSafetyTriageSnapshot();
-      const nextRows = buildSafetyRows(snapshot);
-      setRows(nextRows);
-      setMetrics(safetyMetrics(nextRows));
-      setGeneratedAt(snapshot.generatedAt);
-      setSelectedTargetPath((current) => {
-        if (current && nextRows.some((row) => row.targetPath === current)) {
-          return current;
-        }
-        return null;
-      });
-      onError(null);
-    } catch (error) {
-      onError(messageFromError(error, "Unable to load safety queues."));
-    } finally {
-      setIsLoading(false);
+    const result = await queueQuery.refetch();
+    if (result.error) {
+      onError(messageFromError(result.error, "Unable to load safety queues."));
+      return false;
     }
-  }, [onError]);
+    onError(null);
+    return true;
+  }, [onError, queueQuery]);
 
   useEffect(() => {
-    void refresh();
-  }, [refresh]);
+    if (queueQuery.isError) {
+      onError(messageFromError(
+        queueQuery.error,
+        "Unable to load safety queues."
+      ));
+      return;
+    }
+    if (queueQuery.isSuccess) onError(null);
+  }, [onError, queueQuery.error, queueQuery.isError, queueQuery.isSuccess]);
+
+  useEffect(() => {
+    if (!detailQuery.isError) return;
+    onError(messageFromError(
+      detailQuery.error,
+      "Unable to load safety detail."
+    ));
+  }, [detailQuery.error, detailQuery.isError, onError]);
+
+  useEffect(() => {
+    setSelectedTargetPath((current) => {
+      if (current && rows.some((row) => row.targetPath === current)) {
+        return current;
+      }
+      return null;
+    });
+  }, [rows]);
 
   const filteredRows = useMemo(
     () => filterSafetyRows(rows, queueFilter, query),
     [query, queueFilter, rows]
   );
-  const selected = useMemo(
-    () => rows.find((row) => row.targetPath === selectedTargetPath) ?? null,
-    [rows, selectedTargetPath]
-  );
-  const selectedDetail = selected ?
-    detailsByPath[selected.targetPath] ?? null :
-    null;
-
-  const loadDetail = useCallback(async (targetPath: string) => {
-    setDetailTargetPathLoading(targetPath);
-    try {
-      const response = await loadSafetyTriageItem(targetPath);
-      setDetailsByPath((current) => ({
-        ...current,
-        [targetPath]: response.item,
-      }));
-      onError(null);
-    } catch (error) {
-      onError(messageFromError(error, "Unable to load safety detail."));
-    } finally {
-      setDetailTargetPathLoading((current) =>
-        current === targetPath ? null : current
-      );
-    }
-  }, [onError]);
-
-  useEffect(() => {
-    if (!selected || selectedDetail) return;
-    void loadDetail(selected.targetPath);
-  }, [loadDetail, selected, selectedDetail]);
 
   useEffect(() => {
     if (!selectedDetail) return;
@@ -207,26 +211,24 @@ export function useSafetyTriageController({
     }
     const note = assignmentForm.note.trim();
     const assigneeUid = nullableText(assignmentForm.assigneeUid);
-    setAssignmentInFlight(true);
     onError(null);
     onNotice(null);
     try {
-      const response = await assignSafetyTriageItemOwner({
+      const response = await assignmentMutation.mutateAsync({
         targetPath: selected.targetPath,
         assigneeUid,
         note,
       });
-      setDetailsByPath((current) => {
-        const existing = current[selected.targetPath];
-        if (!existing) return current;
-        return {
+      queryClient.setQueryData<AdminGetSafetyTriageDetailsResponse>(
+        adminQueryKeys.safety.detail(selected.targetPath),
+        (current) => current ? {
           ...current,
-          [selected.targetPath]: {
-            ...existing,
+          item: {
+            ...current.item,
             assignment: response.assignment,
           },
-        };
-      });
+        } : current
+      );
       setAssignmentForm({
         assigneeUid: response.assignment.assigneeUid ?? "",
         note: "",
@@ -245,15 +247,15 @@ export function useSafetyTriageController({
     } catch (error) {
       onError(messageFromError(error, "Unable to assign safety item."));
       return false;
-    } finally {
-      setAssignmentInFlight(false);
     }
   }, [
     assignmentForm.assigneeUid,
     assignmentForm.note,
+    assignmentMutation,
     assignmentValidationIssue,
     onError,
     onNotice,
+    queryClient,
     selected,
   ]);
 
@@ -271,24 +273,22 @@ export function useSafetyTriageController({
       onError("Review note must be 1000 characters or fewer.");
       return false;
     }
-    setDecisionInFlight(decision);
     onError(null);
     onNotice(null);
     try {
-      const response = await decideSafetyTriageItemStatus({
+      const response = await decisionMutation.mutateAsync({
         targetPath: selected.targetPath,
         decision,
         note,
       });
-      const nextRows = rows.filter((row) =>
-        row.targetPath !== selected.targetPath
+      queryClient.setQueryData<AdminOverviewResponse>(
+        queueQueryKey,
+        (current) => current ?
+          removeSafetyQueueItem(current, selected.targetPath) :
+          current
       );
-      setRows(nextRows);
-      setMetrics(safetyMetrics(nextRows));
-      setDetailsByPath((current) => {
-        const next = {...current};
-        delete next[selected.targetPath];
-        return next;
+      queryClient.removeQueries({
+        queryKey: adminQueryKeys.safety.detail(selected.targetPath),
       });
       setSelectedTargetPath(null);
       setDecisionForm({note: ""});
@@ -305,24 +305,32 @@ export function useSafetyTriageController({
     } catch (error) {
       onError(messageFromError(error, "Unable to decide safety item."));
       return false;
-    } finally {
-      setDecisionInFlight(null);
     }
-  }, [decisionForm.note, onError, onNotice, rows, selected]);
+  }, [
+    decisionForm.note,
+    decisionMutation,
+    onError,
+    onNotice,
+    queryClient,
+    queueQueryKey,
+    selected,
+  ]);
 
   return {
     assignmentForm,
-    assignmentInFlight,
+    assignmentInFlight: assignmentMutation.isPending,
     assignmentValidationIssue,
     decisionForm,
-    decisionInFlight,
+    decisionInFlight: decisionMutation.isPending ?
+      decisionMutation.variables?.decision ?? null :
+      null,
     decisionValidationIssue,
     filteredRows,
     generatedAt,
     isDetailLoading: selected ?
-      detailTargetPathLoading === selected.targetPath :
+      detailQuery.isPending || detailQuery.isFetching :
       false,
-    isLoading,
+    isLoading: queueQuery.isPending || queueQuery.isFetching,
     metrics,
     query,
     queueFilter,
@@ -339,6 +347,30 @@ export function useSafetyTriageController({
     setAssignmentForm,
     setQuery,
     setQueueFilter,
+  };
+}
+
+export type SafetyTriageController =
+  ReturnType<typeof useSafetyTriageController>;
+
+function removeSafetyQueueItem(
+  snapshot: AdminOverviewResponse,
+  targetPath: string
+): AdminOverviewResponse {
+  return {
+    ...snapshot,
+    queues: {
+      ...snapshot.queues,
+      safetyReports: snapshot.queues.safetyReports.filter((row) =>
+        row.targetPath !== targetPath
+      ),
+      moderationFlags: snapshot.queues.moderationFlags.filter((row) =>
+        row.targetPath !== targetPath
+      ),
+      eventSafetyReports: snapshot.queues.eventSafetyReports.filter((row) =>
+        row.targetPath !== targetPath
+      ),
+    },
   };
 }
 

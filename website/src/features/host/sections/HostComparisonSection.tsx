@@ -1,9 +1,34 @@
+import {SectionHeader} from "../../../shared/site";
 import {useEffect, useRef, useState} from "react";
-import {TextActionButton} from "../../../shared/ui/primitives";
+import {
+  HostComparisonSummaryCards,
+  HostComparisonTable,
+  HostComparisonTableHeading,
+  HostFeatureSection,
+  TextActionButton,
+  UiLabel,
+} from "../../../shared/ui/primitives";
 import {
   hostComparisonColumns,
   hostComparisonRows,
 } from "../../marketing/content";
+
+const hostComparisonSummaryCards = [
+  {
+    key: "tools",
+    label: "Luma · Eventbrite · District · BookMyShow · Instagram · WhatsApp · Forms",
+    title: "They help you publish, sell, or get discovered.",
+    body:
+      "Useful reach, event pages, and payments. Then social hosts still assemble admissions, ratios, door proof, follow-up, and reputation signals across scattered tools.",
+  },
+  {
+    key: "catch",
+    label: "Catch",
+    title: "Catch fills it, runs it, and proves it.",
+    body:
+      "Admission rules, waitlists, check-in, live console, attendance proof, post-event matching, verified reviews, and host reports stay in one loop.",
+  },
+];
 
 export function HostComparisonSection() {
   const [open, setOpen] = useState(false);
@@ -20,30 +45,12 @@ export function HostComparisonSection() {
   }, [open]);
 
   return (
-    <section className="host-comparison" aria-labelledby="host-comparison-title">
-      <div className="section-heading" data-reveal>
-        <span className="ui-label">The honest comparison</span>
-        <h2 id="host-comparison-title">Announcing an event is solved. Running one is not.</h2>
-      </div>
-      <div className="host-comparison__split">
-        <article data-reveal>
-          <span className="ui-label">Luma · Eventbrite · District · BookMyShow · Instagram · WhatsApp · Forms</span>
-          <h3>They help you publish, sell, or get discovered.</h3>
-          <p>
-            Useful reach, event pages, and payments. Then social hosts still
-            assemble admissions, ratios, door proof, follow-up, and reputation
-            signals across scattered tools.
-          </p>
-        </article>
-        <article data-reveal>
-          <span className="ui-label">Catch</span>
-          <h3>Catch fills it, runs it, and proves it.</h3>
-          <p>
-            Admission rules, waitlists, check-in, live console, attendance proof,
-            post-event matching, verified reviews, and host reports stay in one loop.
-          </p>
-        </article>
-      </div>
+    <HostFeatureSection variant="comparison" aria-labelledby="host-comparison-title">
+      <SectionHeader
+        eyebrow="The honest comparison"
+        id="host-comparison-title"
+        title="Announcing an event is solved. Running one is not." />
+      <HostComparisonSummaryCards items={hostComparisonSummaryCards} />
       <TextActionButton
         aria-expanded={open}
         aria-controls="host-comparison-table"
@@ -53,22 +60,19 @@ export function HostComparisonSection() {
       </TextActionButton>
       {open ? (
         <>
-          <div
-            className="comparison-table-heading"
+          <HostComparisonTableHeading
             id="host-comparison-table"
             ref={comparisonTableRef}
-            data-reveal
             tabIndex={-1}
           >
-            <span className="ui-label">Full table</span>
+            <UiLabel>Full table</UiLabel>
             <p>
               District and BookMyShow are strong Indian discovery and ticketing
               surfaces. Catch is positioned around the host operating loop after the
               listing goes live.
             </p>
-          </div>
-          <div className="comparison-table-wrap" data-reveal>
-            <table className="comparison-table" aria-label="Host platform comparison">
+          </HostComparisonTableHeading>
+          <HostComparisonTable>
               <thead>
                 <tr>
                   <th>Capability</th>
@@ -89,10 +93,9 @@ export function HostComparisonSection() {
                   </tr>
                 ))}
               </tbody>
-            </table>
-          </div>
+          </HostComparisonTable>
         </>
       ) : null}
-    </section>
+    </HostFeatureSection>
   );
 }

@@ -34,11 +34,26 @@ export interface DataQualityMetrics {
   sources: number;
 }
 
+export interface DataQualityController {
+  filteredRows: DataQualityRow[];
+  generatedAt: string | null;
+  isLoading: boolean;
+  metrics: DataQualityMetrics;
+  query: string;
+  rows: DataQualityRow[];
+  selected: DataQualityRow | null;
+  stateFilter: DataQualityStateFilter;
+  refresh: () => Promise<void>;
+  select: (row: DataQualityRow) => void;
+  setQuery: (value: string) => void;
+  setStateFilter: (value: DataQualityStateFilter) => void;
+}
+
 export function useDataQualityController({
   onError,
 }: {
   onError: (message: string | null) => void;
-}) {
+}): DataQualityController {
   const [query, setQuery] = useState("");
   const [stateFilter, setStateFilter] =
     useState<DataQualityStateFilter>("all");

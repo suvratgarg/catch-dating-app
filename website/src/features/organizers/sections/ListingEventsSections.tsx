@@ -1,5 +1,17 @@
-import {EventActionCard} from "../../../components/site";
-import {AppDownloadCtas} from "../../marketing/AppDownloadCtas";
+import {trackMarketingEvent} from "../../../analytics";
+import {SectionHeader} from "../../../shared/site";
+import {
+  AppDownloadCtaGroup,
+  ContentGrid,
+  EventActionCard,
+  type EventActionCardAction,
+  type EventActionCardModel,
+  ListingEventDownloadPanel,
+  ListingEventEvidenceList,
+  ListingSuccessMetricGrid,
+  ListingSection,
+} from "../../../shared/ui/primitives";
+import {useAppDownloadCtas} from "../../marketing/useAppDownloadCtas";
 import {trackOrganizerAnalytics} from "../analytics";
 import {
   eventActionCardForListing,
@@ -9,41 +21,45 @@ import type {HostListing, HostListingEventSuccessSummary} from "../types";
 
 export function ListingCatchEventsSection({listing}: {listing: HostListing}) {
   const events = listing.catchEvents ?? [];
-  const eventCards = events.map((event) => eventActionCardForListing(listing, event));
+  const eventCards = events.map((event) =>
+    withCatchEventActionTracking(
+      listing,
+      event.id,
+      eventActionCardForListing(listing, event)
+    )
+  );
+  const appDownloadCtas = useAppDownloadCtas({
+    placement: `listing-events-${listing.slug}`,
+  });
+
   return (
-    <section
-      className="listing-section listing-section--events"
+    <ListingSection
+      variant="events"
       id="events"
       aria-labelledby="listing-catch-events-title"
     >
-      <div className="section-heading" data-reveal>
-        <span className="ui-label">Catch events</span>
-        <h2 id="listing-catch-events-title">Events created inside Catch.</h2>
-        <p>
-          App-created clubs should show the actual event pipeline: what is
-          coming up, what filled, and what happened after people showed up.
-        </p>
-      </div>
-      <div className="listing-catch-event-grid">
+      <SectionHeader
+        eyebrow="Catch events"
+        id="listing-catch-events-title"
+        title="Events created inside Catch."
+        body="App-created clubs should show the actual event pipeline: what is coming up, what filled, and what happened after people showed up." />
+      <ContentGrid variant="listing-event">
         {eventCards.map((event) => (
-          <EventActionCard event={event} key={event.id} />
+          <EventActionCard
+            event={event}
+            key={event.id}
+            onActionClick={trackListingEventActionClick}
+          />
         ))}
-      </div>
-      <div className="listing-event-download" data-reveal>
-        <div>
-          <span className="ui-label">Member app</span>
-          <h3>Book, check in, and review from Catch.</h3>
-          <p>
-            Public pages expose the event record. The app handles booking,
-            waitlist movement, attendance, catches, and verified reviews.
-          </p>
-        </div>
-        <AppDownloadCtas
-          placement={`listing-events-${listing.slug}`}
-          className="app-download-ctas--compact"
-        />
-      </div>
-    </section>
+      </ContentGrid>
+      <ListingEventDownloadPanel
+        kicker="Member app"
+        heading="Book, check in, and review from Catch."
+        body="Public pages expose the event record. The app handles booking, waitlist movement, attendance, catches, and verified reviews."
+      >
+        <AppDownloadCtaGroup {...appDownloadCtas} variant="compact" />
+      </ListingEventDownloadPanel>
+    </ListingSection>
   );
 }
 
@@ -56,82 +72,128 @@ export function ListingExternalEventsSection({
 }) {
   const events = listing.externalEvents ?? [];
   const eventCards = events.map((event) =>
-    externalEventActionCardForListing(listing, event)
+    withExternalEventActionTracking(
+      listing,
+      event.id,
+      externalEventActionCardForListing(listing, event)
+    )
   );
   return (
-    <section
-      className="listing-section listing-section--events"
+    <ListingSection
+      variant="events"
       id={anchorId}
       aria-labelledby="listing-external-events-title"
     >
-      <div className="section-heading" data-reveal>
-        <span className="ui-label">External events</span>
-        <h2 id="listing-external-events-title">Source-attributed events from public listings.</h2>
-        <p>
-          These events come from approved intake sources and remain read-only:
-          Catch does not run booking, payment, reservations, waitlists, or
-          attendance for them.
-        </p>
-      </div>
-      <div className="listing-catch-event-grid">
+      <SectionHeader
+        eyebrow="External events"
+        id="listing-external-events-title"
+        title="Source-attributed events from public listings."
+        body="These events come from approved intake sources and remain read-only: Catch does not run booking, payment, reservations, waitlists, or attendance for them." />
+      <ContentGrid variant="listing-event">
         {eventCards.map((event) => (
-          <EventActionCard event={event} key={event.id} />
+          <EventActionCard
+            event={event}
+            key={event.id}
+            onActionClick={trackListingEventActionClick}
+          />
         ))}
-      </div>
-    </section>
+      </ContentGrid>
+    </ListingSection>
   );
+}
+
+function trackListingEventActionClick(action: EventActionCardAction) {
+  trackMarketingEvent("cta_click", {
+    cta_href: action.href,
+    cta_label: action.trackingLabel ?? "event_action",
+    page_path: `${window.location.pathname}${window.location.search}`,
+  });
+}
+
+function withCatchEventActionTracking(
+  listing: HostListing,
+  eventId: string,
+  card: EventActionCardModel
+): EventActionCardModel {
+  return {
+    ...card,
+    actions: card.actions.map((action) => {
+      if (action.trackingLabel === "listing_event_success") {
+        return {
+          ...action,
+          onClick: () => trackOrganizerAnalytics(
+            listing,
+            "eventView",
+            "event_success_panel",
+            eventId
+          ),
+        };
+      }
+      if (action.trackingLabel?.startsWith("listing_event_open_")) {
+        return {
+          ...action,
+          onClick: () => trackOrganizerAnalytics(
+            listing,
+            "eventView",
+            "catch_event_card",
+            eventId
+          ),
+        };
+      }
+      return action;
+    }),
+  };
+}
+
+function withExternalEventActionTracking(
+  listing: HostListing,
+  eventId: string,
+  card: EventActionCardModel
+): EventActionCardModel {
+  return {
+    ...card,
+    actions: card.actions.map((action) => {
+      if (action.trackingLabel !== "external_event_source") return action;
+      return {
+        ...action,
+        onClick: () => trackOrganizerAnalytics(
+          listing,
+          "outboundClick",
+          "external_event_card",
+          eventId
+        ),
+      };
+    }),
+  };
 }
 
 export function ListingEventEvidenceSection({listing}: {listing: HostListing}) {
   const events = listing.eventEvidence ?? [];
   if (!events.length) return null;
+  const eventItems = events.map((event) => ({
+    date: event.date,
+    facts: event.facts,
+    key: event.title,
+    location: event.location,
+    onSourceClick: () => trackOrganizerAnalytics(
+      listing,
+      "outboundClick",
+      "event_evidence"
+    ),
+    sourceHref: event.sourceHref,
+    sourceLabel: event.sourceLabel,
+    summary: event.summary,
+    title: event.title,
+  }));
 
   return (
-    <section className="listing-section listing-section--events" aria-labelledby="listing-events-title">
-      <div className="section-heading" data-reveal>
-        <span className="ui-label">Event evidence</span>
-        <h2 id="listing-events-title">Public events tied to this host.</h2>
-      </div>
-      <div className="listing-event-stack">
-        {events.map((event) => (
-          <article className="listing-event-card" data-reveal key={event.title}>
-            <div>
-              <span className="ui-label">{event.date}</span>
-              <h3>{event.title}</h3>
-              <p>{event.summary}</p>
-            </div>
-            <dl className="listing-event-meta">
-              <div>
-                <dt>Location</dt>
-                <dd>{event.location}</dd>
-              </div>
-              <div>
-                <dt>Source</dt>
-                <dd>
-                  <a
-                    href={event.sourceHref}
-                    target="_blank"
-                    rel="noreferrer"
-                    onClick={() => trackOrganizerAnalytics(
-                      listing,
-                      "outboundClick",
-                      "event_evidence"
-                    )}
-                  >
-                    {event.sourceLabel}
-                  </a>
-                </dd>
-              </div>
-            </dl>
-            <ul className="listing-event-facts">
-              {event.facts.map((fact) => (
-                <li key={fact}>{fact}</li>
-              ))}
-            </ul>
-          </article>
-        ))}
-      </div>
-    </section>
+    <ListingSection variant="events" aria-labelledby="listing-events-title">
+      <SectionHeader
+        eyebrow="Event evidence"
+        id="listing-events-title"
+        title="Public events tied to this host." />
+      <ListingEventEvidenceList items={eventItems} />
+    </ListingSection>
   );
 }
 
@@ -149,28 +211,17 @@ export function ListingEventSuccessSection({
     {label: "Safety reports", value: summary.safetyIncidentCount},
   ];
   return (
-    <section
-      className="listing-section listing-section--success"
+    <ListingSection
+      variant="success"
       id="event-success"
       aria-labelledby="event-success-title"
     >
-      <div className="section-heading" data-reveal>
-        <span className="ui-label">Event Success</span>
-        <h2 id="event-success-title">The claimed profile can show what Catch actually operated.</h2>
-        <p>
-          These are aggregate, host-safe outcomes from a completed Catch event.
-          This is the kind of proof an app-created club can show that a scraped
-          unclaimed listing cannot.
-        </p>
-      </div>
-      <div className="listing-success-grid" data-reveal>
-        {metrics.map((metric) => (
-          <div key={metric.label}>
-            <strong>{metric.value}</strong>
-            <span>{metric.label}</span>
-          </div>
-        ))}
-      </div>
-    </section>
+      <SectionHeader
+        eyebrow="Event Success"
+        id="event-success-title"
+        title="The claimed profile can show what Catch actually operated."
+        body="These are aggregate, host-safe outcomes from a completed Catch event. This is the kind of proof an app-created club can show that a scraped unclaimed listing cannot." />
+      <ListingSuccessMetricGrid items={metrics} />
+    </ListingSection>
   );
 }

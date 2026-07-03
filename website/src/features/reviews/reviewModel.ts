@@ -1,4 +1,4 @@
-import type {PublicReviewCardModel} from "../../components/site";
+import type {PublicReviewCardModel} from "../../shared/ui/primitives";
 import type {HostListing, HostListingReview} from "../organizers/types";
 
 export interface ListingReviewSummary {

@@ -1,3 +1,5 @@
+import {SectionHeader} from "../../../shared/site";
+import {ListingNoteGrid, ListingSection} from "../../../shared/ui/primitives";
 import type {HostListing} from "../types";
 
 export function ListingFitSection({
@@ -7,23 +9,20 @@ export function ListingFitSection({
   isAppCreated: boolean;
   listing: HostListing;
 }) {
+  const noteItems = listing.fitNotes.map((note) => ({
+    body: note,
+    key: note,
+  }));
+
   return (
-    <section className="listing-section" id="fit" aria-labelledby="listing-fit-title">
-      <div className="section-heading" data-reveal>
-        <span className="ui-label">{isAppCreated ? "Page format" : "Catch fit"}</span>
-        <h2 id="listing-fit-title">
-          {isAppCreated ?
-            "What the app-created profile needs to emphasize." :
-            "Why this category belongs in the first test."}
-        </h2>
-      </div>
-      <div className="listing-grid listing-grid--fit">
-        {listing.fitNotes.map((note) => (
-          <article className="listing-card" data-reveal key={note}>
-            <p>{note}</p>
-          </article>
-        ))}
-      </div>
-    </section>
+    <ListingSection id="fit" aria-labelledby="listing-fit-title">
+      <SectionHeader
+        eyebrow={isAppCreated ? "Page format" : "Catch fit"}
+        id="listing-fit-title"
+        title={isAppCreated ?
+          "What the app-created profile needs to emphasize." :
+          "Why this category belongs in the first test."} />
+      <ListingNoteGrid items={noteItems} />
+    </ListingSection>
   );
 }

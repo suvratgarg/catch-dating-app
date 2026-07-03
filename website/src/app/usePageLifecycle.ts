@@ -4,14 +4,7 @@ import {
   trackPageView,
 } from "../analytics";
 import type {PageKey, PageMeta} from "./pageMeta";
-
-export interface CaptureRecord {
-  id: string;
-  webPath: string;
-  alt: string;
-  caption: string;
-  walkthroughStep: string;
-}
+import type {CaptureRecord} from "../shared/ui/primitives";
 
 interface CaptureManifest {
   captures?: CaptureRecord[];

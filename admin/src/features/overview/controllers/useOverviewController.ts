@@ -1,10 +1,11 @@
+import {useQuery} from "@tanstack/react-query";
 import {useCallback, useEffect, useMemo, useState} from "react";
 import type {
-  AdminOverviewResponse,
   DataMode,
   HostAnalyticsQueryPayload,
   HostAnalyticsResponse,
 } from "../../../shared/types/adminTypes";
+import {adminQueryKeys} from "../../../shared/query/queryKeys";
 import {
   initialOverviewHostAnalytics,
   initialOverviewSnapshot,
@@ -47,11 +48,6 @@ export function useOverviewController({
     useState(defaultAnalyticsDate(0));
   const [analyticsClubId, setAnalyticsClubId] = useState("");
   const [analyticsEventId, setAnalyticsEventId] = useState("");
-  const [overview, setOverview] =
-    useState<AdminOverviewResponse>(initialOverviewSnapshot);
-  const [hostAnalytics, setHostAnalytics] =
-    useState<HostAnalyticsResponse>(initialOverviewHostAnalytics);
-  const [isLoading, setIsLoading] = useState(false);
 
   const analyticsPayload = useMemo(
     () => buildHostAnalyticsPayload({
@@ -73,36 +69,80 @@ export function useOverviewController({
   );
   const canLoadAnalytics = mode === "sample" ||
     hasAnyAdminRole(adminRoles, hostAnalyticsRoles);
+  const analyticsPayloadKey = useMemo(
+    () => hostAnalyticsPayloadKey(analyticsPayload),
+    [analyticsPayload]
+  );
+  const analyticsAccess = canLoadAnalytics ? "allowed" : "role-restricted";
+
+  const overviewQuery = useQuery({
+    enabled: isSessionReady,
+    queryKey: adminQueryKeys.overview.snapshot(mode),
+    queryFn: loadOverviewSnapshot,
+    placeholderData: (previousData) => previousData,
+  });
+  const hostAnalyticsQuery = useQuery({
+    enabled: isSessionReady,
+    queryKey: adminQueryKeys.overview.analytics(
+      analyticsPayloadKey,
+      mode,
+      analyticsAccess
+    ),
+    queryFn: async () => canLoadAnalytics ?
+      loadOverviewHostAnalytics(analyticsPayload) :
+      restrictedHostAnalyticsResponse(analyticsPayload),
+    placeholderData: (previousData) => previousData,
+  });
+  const overview = overviewQuery.data ?? initialOverviewSnapshot();
+  const hostAnalytics =
+    hostAnalyticsQuery.data ?? initialOverviewHostAnalytics();
+  const isLoading = isSessionReady && (
+    overviewQuery.isPending ||
+    overviewQuery.isFetching ||
+    hostAnalyticsQuery.isPending ||
+    hostAnalyticsQuery.isFetching
+  );
 
   const refresh = useCallback(async () => {
-    setIsLoading(true);
+    if (!isSessionReady) return false;
     onError(null);
-    try {
-      const overviewPromise = loadOverviewSnapshot();
-      const hostAnalyticsPromise = canLoadAnalytics ?
-        loadOverviewHostAnalytics(analyticsPayload) :
-        Promise.resolve(restrictedHostAnalyticsResponse(analyticsPayload));
-      const [nextOverview, nextHostAnalytics] = await Promise.all([
-        overviewPromise,
-        hostAnalyticsPromise,
-      ]);
-      setOverview(nextOverview);
-      setHostAnalytics(nextHostAnalytics);
-    } catch (loadError) {
-      onError(
-        loadError instanceof Error ?
-          loadError.message :
-          "Unable to load admin overview."
-      );
-    } finally {
-      setIsLoading(false);
+    const [overviewResult, analyticsResult] = await Promise.all([
+      overviewQuery.refetch(),
+      hostAnalyticsQuery.refetch(),
+    ]);
+    const loadError = overviewResult.error ?? analyticsResult.error;
+    if (loadError) {
+      onError(messageFromError(loadError, "Unable to load admin overview."));
+      return false;
     }
-  }, [analyticsPayload, canLoadAnalytics, onError]);
+    onError(null);
+    return true;
+  }, [hostAnalyticsQuery, isSessionReady, onError, overviewQuery]);
 
   useEffect(() => {
     if (!isSessionReady) return;
-    void refresh();
-  }, [isSessionReady, refresh]);
+    const loadError = overviewQuery.isError ?
+      overviewQuery.error :
+      hostAnalyticsQuery.isError ?
+        hostAnalyticsQuery.error :
+        null;
+    if (loadError) {
+      onError(messageFromError(loadError, "Unable to load admin overview."));
+      return;
+    }
+    if (overviewQuery.isSuccess && hostAnalyticsQuery.isSuccess) {
+      onError(null);
+    }
+  }, [
+    hostAnalyticsQuery.error,
+    hostAnalyticsQuery.isError,
+    hostAnalyticsQuery.isSuccess,
+    isSessionReady,
+    onError,
+    overviewQuery.error,
+    overviewQuery.isError,
+    overviewQuery.isSuccess,
+  ]);
 
   const clearAnalyticsScope = useCallback(() => {
     setAnalyticsClubId("");
@@ -163,6 +203,17 @@ function hasAnyAdminRole(
   return allowedRoles.some((role) => roles.includes(role));
 }
 
+function hostAnalyticsPayloadKey(payload: HostAnalyticsQueryPayload): string {
+  return JSON.stringify({
+    clubId: payload.clubId ?? "",
+    eventId: payload.eventId ?? "",
+    rangePreset: payload.rangePreset ?? "30d",
+    startDate: payload.startDate ?? null,
+    endDate: payload.endDate ?? null,
+    granularity: payload.granularity ?? "day",
+  });
+}
+
 function restrictedHostAnalyticsResponse(
   payload: HostAnalyticsQueryPayload
 ): HostAnalyticsResponse {
@@ -220,4 +271,12 @@ function defaultAnalyticsDate(daysAgo: number): string {
   const date = new Date();
   date.setUTCDate(date.getUTCDate() - daysAgo);
   return date.toISOString().slice(0, 10);
+}
+
+function messageFromError(error: unknown, fallback: string): string {
+  if (error && typeof error === "object" && "message" in error) {
+    const message = (error as {message?: unknown}).message;
+    if (typeof message === "string" && message.trim()) return message;
+  }
+  return fallback;
 }

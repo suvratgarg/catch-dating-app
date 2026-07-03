@@ -1,16 +1,36 @@
+import {useMutation} from "@tanstack/react-query";
 import {type FormEvent, useMemo, useState} from "react";
 import {
   createMarketingEventId,
   trackMarketingEvent,
+  type WaitlistAnalyticsPayload,
   waitlistAnalyticsPayload,
 } from "../../analytics";
 import type {FormStatus, FormVariant} from "../../shared/forms/types";
+import {websiteQueryKeys} from "../../shared/query/queryKeys";
+
+type JoinWaitlistBody = WaitlistAnalyticsPayload & {
+  fullName: string;
+  email: string;
+  city: string;
+  role: string;
+  instagram: string;
+  website: string;
+};
+
+type JoinWaitlistResponse = {
+  alreadyJoined?: boolean;
+  error?: string;
+};
 
 export function useWaitlistFormController(variant: FormVariant) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<FormStatus>({message: "", tone: ""});
   const [showCustomCity, setShowCustomCity] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
+  const submitMutation = useMutation({
+    mutationKey: websiteQueryKeys.waitlist.submit(variant),
+    mutationFn: submitJoinWaitlist,
+  });
 
   const roleOptions = useMemo(
     () =>
@@ -85,7 +105,6 @@ export function useWaitlistFormController(variant: FormVariant) {
       return;
     }
 
-    setIsSubmitting(true);
     setStatus({message: "", tone: ""});
     trackMarketingEvent(
       variant === "host" ? "host_lead_submit_attempt" : "waitlist_submit_attempt",
@@ -93,24 +112,7 @@ export function useWaitlistFormController(variant: FormVariant) {
     );
 
     try {
-      const response = await fetch("/api/join-waitlist", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(body),
-      });
-      const data = (await response.json().catch(() => ({}))) as {
-        alreadyJoined?: boolean;
-        error?: string;
-      };
-
-      if (!response.ok) {
-        throw new Error(
-          typeof data.error === "string"
-            ? data.error
-            : "We couldn't save your spot. Please try again."
-        );
-      }
-
+      const data = await submitMutation.mutateAsync(body);
       form.reset();
       setShowCustomCity(false);
       setHasStarted(false);
@@ -148,8 +150,6 @@ export function useWaitlistFormController(variant: FormVariant) {
         event_id: eventId,
         form_variant: variant,
       });
-    } finally {
-      setIsSubmitting(false);
     }
   }
 
@@ -158,9 +158,28 @@ export function useWaitlistFormController(variant: FormVariant) {
     handleFormStart,
     handleRoleChange,
     handleSubmit,
-    isSubmitting,
+    isSubmitting: submitMutation.isPending,
     roleOptions,
     showCustomCity,
     status,
   };
+}
+
+async function submitJoinWaitlist(body: JoinWaitlistBody): Promise<JoinWaitlistResponse> {
+  const response = await fetch("/api/join-waitlist", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(body),
+  });
+  const data = (await response.json().catch(() => ({}))) as JoinWaitlistResponse;
+
+  if (!response.ok) {
+    throw new Error(
+      typeof data.error === "string"
+        ? data.error
+        : "We couldn't save your spot. Please try again."
+    );
+  }
+
+  return data;
 }

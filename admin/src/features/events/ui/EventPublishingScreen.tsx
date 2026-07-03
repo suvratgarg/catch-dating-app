@@ -30,24 +30,66 @@ import type {
 } from "../../../shared/types/adminTypes";
 import {
   AdminButton,
+  AdminDiffList,
+  AdminDiffRow,
+  AdminDetailScreenStack,
+  AdminDirectoryScreenStack,
+  AdminEditorGrid,
+  AdminEditorPanel,
+  AdminFieldGrid,
+  AdminForm,
+  AdminEventSupplyDetail,
+  AdminEventSupplyDetailStack,
+  AdminEventSupplyEmptyState,
+  AdminEventSupplyLinks,
+  AdminEventSupplyReviewGrid,
   AdminLinkButton,
+  AdminMetricCard,
+  AdminMetricGrid,
+  AdminRoadmapList,
+  AdminRoadmapListItem,
+  AdminStatusGrid,
+  AdminTableRow,
   AdminTag,
+  AdminToolbar,
+  AdminWorkbenchStack,
   CheckboxField,
   DataTable,
   EmptyState,
   PageHeader,
   Panel,
+  QualityList,
+  QualityRow,
   SearchField,
   SegmentedControl,
   SelectField,
   StateRow,
+  StatusChip,
   TableActionButton,
   TextareaField,
   TextField,
+  AdminCommandRow,
+  AdminCommandStack,
+  AdminEyebrow,
+  AdminEditorSection,
+  AdminTagList,
+  AdminIntakeSection,
+  AdminIntakeSectionTitle,
+  AdminIntakeSourceList,
+  AdminSearchCandidateHeader,
+  AdminSearchCandidatePanel,
+  AdminIntakeStateGrid,
+  AdminMutedCell,
+  AdminPanelActions,
+  AdminPublishingLoadbar,
+  AdminRowTitle,
+  AdminSurfacePreview,
+  AdminTagRow,
 } from "../../../shared/ui/AdminPrimitives";
 import {
   type ExternalEventPublishRequest,
   type ExternalEventSupplyFilter,
+  type EventPublishingController,
   type EventPublishingFilter,
   useEventPublishingController,
 } from "../controllers/useEventPublishingController";
@@ -67,8 +109,7 @@ import {
   type EventValidationIssue,
 } from "../controllers/eventPublishingHelpers";
 import {isLaunchMarketId} from "../../../shared/config/launchMarkets";
-
-type EventPublishingController = ReturnType<typeof useEventPublishingController>;
+import {useAdminFeedback} from "../../../shared/feedback/AdminFeedbackContext";
 
 type EventImportReadinessFilter =
   | "needsAction"
@@ -97,14 +138,17 @@ interface EventImportReadinessRow {
   publishReady: boolean;
 }
 
-export function EventPublishingScreen({
-  onError,
-  onNotice,
-}: {
-  onError: (message: string | null) => void;
-  onNotice: (message: string | null) => void;
-}) {
+export function EventPublishingScreen() {
+  const {setError: onError, setNotice: onNotice} = useAdminFeedback();
   const controller = useEventPublishingController({onError, onNotice});
+  return <EventPublishingWorkspace controller={controller} />;
+}
+
+export function EventPublishingWorkspace({
+  controller,
+}: {
+  controller: EventPublishingController;
+}) {
   const activeCount = controller.rows.filter((row) =>
     row.status === "active"
   ).length;
@@ -165,7 +209,7 @@ function EventDirectoryView({
   searchIssueCount: number;
 }) {
   return (
-    <div className="workbench-stack admin-directory-screen">
+    <AdminDirectoryScreenStack>
       <PageHeader
         actions={
           <AdminButton
@@ -178,33 +222,33 @@ function EventDirectoryView({
         eyebrow="Events"
         title="Canonical Event Directory"
       />
-      <section className="metric-grid" aria-label="Event publishing state">
-        <Metric label="Canonical events" value={controller.rows.length} />
-        <Metric label="External supply" value={controller.externalRows.length} />
-        <Metric label="Launch city events" value={launchCityCount} />
-        <Metric label="Active" value={activeCount} />
-        <Metric
+      <AdminMetricGrid ariaLabel="Event publishing state">
+        <AdminMetricCard label="Canonical events" value={controller.rows.length} />
+        <AdminMetricCard label="External supply" value={controller.externalRows.length} />
+        <AdminMetricCard label="Launch city events" value={launchCityCount} />
+        <AdminMetricCard label="Active" value={activeCount} />
+        <AdminMetricCard
           label="Full / waitlist"
           tone={fullCount > 0 ? "attention" : "normal"}
           value={fullCount}
         />
-        <Metric
+        <AdminMetricCard
           label="Search issues"
           tone={searchIssueCount > 0 ? "attention" : "normal"}
           value={searchIssueCount}
         />
-        <Metric
+        <AdminMetricCard
           label="External review"
           tone={externalReviewCount > 0 ? "attention" : "normal"}
           value={externalReviewCount}
         />
-        <Metric label="Read-only drafts" value={readOnlyImportCount} />
-        <Metric
+        <AdminMetricCard label="Read-only drafts" value={readOnlyImportCount} />
+        <AdminMetricCard
           label="Import blockers"
           tone={importBlockedCount > 0 ? "attention" : "normal"}
           value={importBlockedCount}
         />
-      </section>
+      </AdminMetricGrid>
 
       <EventDirectoryPanel controller={controller} />
       <EventExternalSupplySummaryPanel
@@ -213,7 +257,7 @@ function EventDirectoryView({
         importBlockedCount={importBlockedCount}
         readOnlyImportCount={readOnlyImportCount}
       />
-    </div>
+    </AdminDirectoryScreenStack>
   );
 }
 
@@ -224,7 +268,7 @@ function EventDetailView({
 }) {
   const title = controller.event?.title || controller.eventId || "Event";
   return (
-    <div className="workbench-stack admin-detail-screen">
+    <AdminDetailScreenStack>
       <PageHeader
         actions={
           <AdminButton
@@ -255,7 +299,7 @@ function EventDetailView({
         externalListGeneratedAt={controller.externalListGeneratedAt}
         listGeneratedAt={controller.listGeneratedAt}
       />
-    </div>
+    </AdminDetailScreenStack>
   );
 }
 
@@ -265,7 +309,7 @@ function ExternalEventSupplyView({
   controller: EventPublishingController;
 }) {
   return (
-    <div className="workbench-stack admin-detail-screen">
+    <AdminDetailScreenStack>
       <PageHeader
         actions={
           <AdminButton
@@ -288,7 +332,7 @@ function ExternalEventSupplyView({
         publishingExternalActionId={controller.publishingExternalActionId}
         source={controller.supplyReadiness?.source ?? null}
       />
-    </div>
+    </AdminDetailScreenStack>
   );
 }
 
@@ -299,7 +343,7 @@ function EventDirectoryPanel({
 }) {
   return (
     <Panel
-      className="span-2"
+      span={2}
       icon={<CalendarDays size={18} strokeWidth={1.9} />}
       title="Canonical event directory"
       action={
@@ -308,7 +352,7 @@ function EventDirectoryPanel({
           `${controller.filteredRows.length} shown`
       }
     >
-      <div className="workbench-toolbar">
+      <AdminToolbar>
         <SegmentedControl<EventPublishingFilter>
           ariaLabel="Event filters"
           options={[
@@ -341,7 +385,7 @@ function EventDirectoryPanel({
         >
           Refresh
         </AdminButton>
-      </div>
+      </AdminToolbar>
       <EventDirectoryTable
         rows={controller.filteredRows}
         selectedEventId={controller.event?.eventId ?? controller.eventId}
@@ -368,7 +412,7 @@ function EventExternalSupplySummaryPanel({
       title="External supply"
       action={`${controller.filteredExternalRows.length} shown`}
     >
-      <div className="admin-status-grid compact">
+      <AdminStatusGrid compact>
         <StateRow label="Total" value={String(controller.externalRows.length)} />
         <StateRow label="Review open" value={String(externalReviewCount)} />
         <StateRow label="Read-only drafts" value={String(readOnlyImportCount)} />
@@ -377,15 +421,15 @@ function EventExternalSupplySummaryPanel({
           label="Snapshot"
           value={formatDateTime(controller.externalListGeneratedAt)}
         />
-      </div>
-      <div className="admin-panel-actions">
+      </AdminStatusGrid>
+      <AdminPanelActions>
         <AdminButton
           icon={<ExternalLink size={15} strokeWidth={1.9} />}
           onClick={controller.openExternalSupply}
         >
           Review supply
         </AdminButton>
-      </div>
+      </AdminPanelActions>
     </Panel>
   );
 }
@@ -398,12 +442,12 @@ function EventDetailSummary({
   const event = controller.event;
   return (
     <Panel
-      className="span-2"
+      span={2}
       icon={<CalendarDays size={18} strokeWidth={1.9} />}
       title="Event status"
       action={event?.status ?? "Not loaded"}
     >
-      <div className="admin-status-grid">
+      <AdminStatusGrid>
         <StateRow label="Document" value={event?.eventId ?? controller.eventId} />
         <StateRow label="Organizer" value={event?.organizerName} />
         <StateRow label="City" value={event?.discovery.citySlug} />
@@ -418,7 +462,7 @@ function EventDetailSummary({
           label="Changes"
           value={`${controller.diffRows.length} pending`}
         />
-      </div>
+      </AdminStatusGrid>
     </Panel>
   );
 }
@@ -430,7 +474,7 @@ function ExternalEventSupplyPanel({
 }) {
   return (
     <Panel
-      className="span-2"
+      span={2}
       icon={<ExternalLink size={18} strokeWidth={1.9} />}
       title="Read-only external event supply"
       action={
@@ -439,7 +483,7 @@ function ExternalEventSupplyPanel({
           `${controller.filteredExternalRows.length} shown`
       }
     >
-      <div className="workbench-toolbar">
+      <AdminToolbar>
         <SegmentedControl<ExternalEventSupplyFilter>
           ariaLabel="External event supply filters"
           options={[
@@ -461,20 +505,20 @@ function ExternalEventSupplyPanel({
           placeholder="Search source, organizer, candidate, venue"
           value={controller.externalQuery}
         />
-      </div>
-      <div className="event-supply-review-grid">
+      </AdminToolbar>
+      <AdminEventSupplyReviewGrid>
         <ExternalEventSupplyTable
           onSelect={controller.selectExternalEvent}
           rows={controller.filteredExternalRows}
           selectedEventId={controller.selectedExternalEventId}
         />
-        <div className="event-supply-detail-stack">
+        <AdminEventSupplyDetailStack>
           <ExternalEventSupplyDetail event={controller.selectedExternalEvent} />
           <ExternalEventImportReviewPanel
             review={controller.selectedExternalImportReview}
           />
-        </div>
-      </div>
+        </AdminEventSupplyDetailStack>
+      </AdminEventSupplyReviewGrid>
     </Panel>
   );
 }
@@ -492,7 +536,7 @@ function EventContractPanel({
       title="Event contract"
       action="events"
     >
-      <div className="quality-list">
+      <QualityList>
         <StateRow label="Source of truth" value="Cloud Firestore events/{id}" />
         <StateRow
           label="Search/list"
@@ -538,7 +582,7 @@ function EventContractPanel({
           label="External publish"
           value="One preflight-ready row at a time through adminPublishExternalEvent"
         />
-      </div>
+      </QualityList>
     </Panel>
   );
 }
@@ -555,7 +599,7 @@ function EventDirectoryTable({
   if (rows.length === 0) {
     return (
       <EmptyState
-        className="workbench-empty"
+        variant="workbench"
         icon={<FolderSearch size={16} strokeWidth={1.9} />}
       >
         No canonical events match this filter.
@@ -563,7 +607,7 @@ function EventDirectoryTable({
     );
   }
   return (
-    <DataTable className="workbench-table">
+    <DataTable variant="workbench">
       <thead>
         <tr>
           <th>Event</th>
@@ -577,51 +621,48 @@ function EventDirectoryTable({
       </thead>
       <tbody>
         {rows.map((row) => (
-          <tr
-            className={selectedEventId === row.eventId ? "selected-row" : ""}
-            key={row.eventId}
-          >
+          <AdminTableRow key={row.eventId} selected={selectedEventId === row.eventId}>
             <td>
-              <div className="row-title">
+              <AdminRowTitle>
                 <strong>{row.title}</strong>
                 <span>{row.eventId}</span>
-              </div>
+              </AdminRowTitle>
             </td>
             <td>
-              <div className="row-title compact">
+              <AdminRowTitle compact>
                 <span>{row.organizerName ?? "Unknown organizer"}</span>
                 <span>{row.clubId}</span>
-              </div>
+              </AdminRowTitle>
             </td>
             <td>
-              <div className="row-title compact">
+              <AdminRowTitle compact>
                 <span>{row.citySlug ?? "No city"}</span>
                 <span>{row.meetingPoint || "No meeting point"}</span>
-              </div>
+              </AdminRowTitle>
             </td>
             <td>{formatDateTime(row.startTime)}</td>
             <td>
-              <div className="row-title compact">
+              <AdminRowTitle compact>
                 <span>{row.status} / {row.availability ?? "no availability"}</span>
                 <span>
                   {row.bookedCount}/{row.capacityLimit} · {formatMoney(row)}
                 </span>
-              </div>
+              </AdminRowTitle>
             </td>
             <td>
-              <div className="tag-row">
+              <AdminTagRow>
                 <AdminTag tone={row.searchIndexStatus === "indexed" ? "muted" : "neutral"}>
                   {row.searchIndexStatus}
                 </AdminTag>
                 {eventIsFull(row) ? <AdminTag>full</AdminTag> : null}
-              </div>
+              </AdminTagRow>
             </td>
             <td>
               <TableActionButton onClick={() => onSelect(row.eventId)}>
                 Open
               </TableActionButton>
             </td>
-          </tr>
+          </AdminTableRow>
         ))}
       </tbody>
     </DataTable>
@@ -640,7 +681,7 @@ function ExternalEventSupplyTable({
   if (rows.length === 0) {
     return (
       <EmptyState
-        className="workbench-empty"
+        variant="workbench"
         icon={<FolderSearch size={16} strokeWidth={1.9} />}
       >
         No read-only external events match this filter.
@@ -648,7 +689,7 @@ function ExternalEventSupplyTable({
     );
   }
   return (
-    <DataTable className="workbench-table">
+    <DataTable variant="workbench">
       <thead>
         <tr>
           <th>External event</th>
@@ -663,31 +704,28 @@ function ExternalEventSupplyTable({
       </thead>
       <tbody>
         {rows.map((row) => (
-          <tr
-            className={selectedEventId === row.eventId ? "selected-row" : ""}
-            key={row.eventId}
-          >
+          <AdminTableRow key={row.eventId} selected={selectedEventId === row.eventId}>
             <td>
-              <div className="row-title">
+              <AdminRowTitle>
                 <strong>{row.title}</strong>
                 <span>{row.targetPath}</span>
-              </div>
+              </AdminRowTitle>
             </td>
             <td>
-              <div className="row-title compact">
+              <AdminRowTitle compact>
                 <span>{row.canonicalHostId}</span>
                 <span>compat: {row.compatibilityClubId}</span>
-              </div>
+              </AdminRowTitle>
             </td>
             <td>
-              <div className="row-title compact">
+              <AdminRowTitle compact>
                 <span>{row.citySlug ?? "No city"}</span>
                 <span>{row.platform} / {row.sourceEventKey}</span>
-              </div>
+              </AdminRowTitle>
             </td>
             <td>{formatDateTime(row.startTime)}</td>
             <td>
-              <div className="tag-row">
+              <AdminTagRow>
                 <AdminTag
                   tone={row.publicationStatus === "public" ? "muted" : "neutral"}
                 >
@@ -695,10 +733,10 @@ function ExternalEventSupplyTable({
                 </AdminTag>
                 <AdminTag tone="muted">{row.status}</AdminTag>
                 <AdminTag tone="muted">{row.availability}</AdminTag>
-              </div>
+              </AdminTagRow>
             </td>
             <td>
-              <div className="tag-row">
+              <AdminTagRow>
                 <AdminTag
                   tone={row.importPolicyAcknowledged ? "muted" : "neutral"}
                 >
@@ -712,7 +750,7 @@ function ExternalEventSupplyTable({
                     {row.duplicateCandidateCount} duplicate
                   </AdminTag>
                 ) : null}
-              </div>
+              </AdminTagRow>
             </td>
             <td>
               {row.primaryExternalUrl ? (
@@ -725,7 +763,7 @@ function ExternalEventSupplyTable({
                   variant="icon"
                 />
               ) : (
-                <span className="muted-cell">none</span>
+                <AdminMutedCell>none</AdminMutedCell>
               )}
             </td>
             <td>
@@ -733,7 +771,7 @@ function ExternalEventSupplyTable({
                 Inspect
               </TableActionButton>
             </td>
-          </tr>
+          </AdminTableRow>
         ))}
       </tbody>
     </DataTable>
@@ -747,33 +785,26 @@ function ExternalEventSupplyDetail({
 }) {
   if (!event) {
     return (
-      <EmptyState
-        className="event-supply-detail workbench-empty"
-        icon={<Clock3 size={16} strokeWidth={1.9} />}
-      >
+      <AdminEventSupplyEmptyState icon={<Clock3 size={16} strokeWidth={1.9} />}>
         Select an external event to inspect source attribution.
-      </EmptyState>
+      </AdminEventSupplyEmptyState>
     );
   }
 
   return (
-    <aside
+    <AdminEventSupplyDetail
       aria-label={`External event supply detail for ${event.title}`}
-      className="event-supply-detail"
     >
-      <header className="search-candidate-header">
+      <AdminSearchCandidateHeader>
         <div>
-          <div className="intake-eyebrow">{event.targetPath}</div>
+          <AdminEyebrow>{event.targetPath}</AdminEyebrow>
           <h3>{event.title}</h3>
         </div>
-        <span className={`intake-badge ${
-          externalEventNeedsReview(event) ? "" : "ready"
-        }`}>
+        <StatusChip tone={externalEventNeedsReview(event) ? "" : "ready"}>
           {externalEventNeedsReview(event) ? "review open" : "reviewed"}
-        </span>
-      </header>
-
-      <div className="quality-list">
+        </StatusChip>
+      </AdminSearchCandidateHeader>
+      <QualityList>
         <StateRow label="Canonical organizer" value={event.canonicalHostId} />
         <StateRow label="Compatibility club" value={event.compatibilityClubId} />
         <StateRow label="City" value={event.citySlug} />
@@ -790,9 +821,8 @@ function ExternalEventSupplyDetail({
           value={event.priceDisplayText ?? formatExternalMoney(event)}
         />
         <StateRow label="Publication" value={event.publicationStatus} />
-      </div>
-
-      <div className="tag-row">
+      </QualityList>
+      <AdminTagRow>
         <AdminTag tone={event.importPolicyAcknowledged ? "muted" : "neutral"}>
           import policy {event.importPolicyAcknowledged ? "ok" : "open"}
         </AdminTag>
@@ -803,9 +833,8 @@ function ExternalEventSupplyDetail({
           {event.duplicateCandidateCount} duplicate candidates
         </AdminTag>
         <AdminTag tone="muted">{event.availability}</AdminTag>
-      </div>
-
-      <div className="intake-source-list">
+      </AdminTagRow>
+      <AdminIntakeSourceList>
         <StateRow label="Platform" value={event.platform} />
         <StateRow label="Source key" value={event.sourceEventKey} />
         <StateRow label="Candidate" value={event.candidateId} />
@@ -814,9 +843,8 @@ function ExternalEventSupplyDetail({
         <StateRow label="Review batch" value={event.reviewBatchId} />
         <StateRow label="Reviewer" value={event.reviewer} />
         <StateRow label="Decided" value={event.decidedAt} />
-      </div>
-
-      <div className="event-supply-links">
+      </AdminIntakeSourceList>
+      <AdminEventSupplyLinks>
         {event.eventUrl ? (
           <AdminLinkButton
             href={event.eventUrl}
@@ -852,8 +880,8 @@ function ExternalEventSupplyDetail({
               Primary outbound
             </AdminLinkButton>
           ) : null}
-      </div>
-    </aside>
+      </AdminEventSupplyLinks>
+    </AdminEventSupplyDetail>
   );
 }
 
@@ -864,50 +892,42 @@ function ExternalEventImportReviewPanel({
 }) {
   if (!review) {
     return (
-      <EmptyState
-        className="event-supply-detail workbench-empty"
-        icon={<Clock3 size={16} strokeWidth={1.9} />}
-      >
+      <AdminEventSupplyEmptyState icon={<Clock3 size={16} strokeWidth={1.9} />}>
         Select an external event to inspect import eligibility.
-      </EmptyState>
+      </AdminEventSupplyEmptyState>
     );
   }
 
   return (
-    <aside
+    <AdminEventSupplyDetail
       aria-label="External event import eligibility"
-      className="event-supply-detail"
     >
-      <div className={`quality-row ${importReviewToneClass(review.status)}`}>
-        <Lock size={16} strokeWidth={1.9} />
-        <div>
-          <strong>{review.label}</strong>
-          <span>{review.detail}</span>
-        </div>
-      </div>
-
-      <div className="quality-list">
+      <QualityRow
+        tone={importReviewToneClass(review.status)}
+        icon={<Lock size={16} strokeWidth={1.9} />}>
+        <strong>{review.label}</strong>
+        <span>{review.detail}</span>
+      </QualityRow>
+      <QualityList>
         <StateRow label="Target" value={review.targetPath} />
         <StateRow label="Import action" value={review.importActionId} />
         <StateRow label="Preflight action" value={review.executionActionId} />
         <StateRow label="Next command" value={review.nextCommand} />
-      </div>
-
+      </QualityList>
       {review.blockers.length > 0 ? (
-        <div className="intake-tags">
+        <AdminTagList>
           {review.blockers.map((blocker) => (
-            <span className="intake-tag muted" key={blocker}>
+            <AdminTag key={blocker} tone="muted">
               {blocker.replaceAll("_", " ")}
-            </span>
+            </AdminTag>
           ))}
-        </div>
+        </AdminTagList>
       ) : (
-        <div className="empty-row">
-          <CheckCircle2 size={16} strokeWidth={1.9} />
-          <span>No deterministic blockers in the current snapshot.</span>
-        </div>
+        <EmptyState icon={<CheckCircle2 size={16} strokeWidth={1.9} />}>
+          No deterministic blockers in the current snapshot.
+        </EmptyState>
       )}
-    </aside>
+    </AdminEventSupplyDetail>
   );
 }
 
@@ -968,14 +988,14 @@ function EventSupplyReadinessPanel({
 
   return (
     <Panel
-      className="span-2"
+      span={2}
       icon={<Settings2 size={18} strokeWidth={1.9} />}
       title="External import readiness"
       action={actionLabel}
     >
       {importPlan && executionPlan ? (
-        <div className="search-candidate-panel">
-          <div className="intake-state-grid">
+        <AdminSearchCandidatePanel>
+          <AdminIntakeStateGrid>
             <StateRow label="Candidates" value={String(importPlan.summary.candidates)} />
             <StateRow label="Source" value={source ?? "unknown"} />
             <StateRow label="Generated" value={formatDateTime(generatedAt)} />
@@ -1007,35 +1027,32 @@ function EventSupplyReadinessPanel({
                   executionPlan.summary.payloadInvalid
               )}
             />
-          </div>
+          </AdminIntakeStateGrid>
 
-          <div className="quality-row warning">
-            <Lock size={16} strokeWidth={1.9} />
-            <div>
-              <strong>
-                {importPlan.policy.writeEnabled ?
-                  "Import writes enabled" :
-                  "Import writes disabled"}
-              </strong>
-              <span>{importPlan.policy.reason}</span>
-              <span>
-                Preflight: {executionPlan.policy.authorityModel} /{" "}
-                {executionPlan.policy.reason}
-              </span>
-            </div>
-          </div>
+          <QualityRow tone="warning" icon={<Lock size={16} strokeWidth={1.9} />}>
+            <strong>
+              {importPlan.policy.writeEnabled ?
+                "Import writes enabled" :
+                "Import writes disabled"}
+            </strong>
+            <span>{importPlan.policy.reason}</span>
+            <span>
+              Preflight: {executionPlan.policy.authorityModel} /{" "}
+              {executionPlan.policy.reason}
+            </span>
+          </QualityRow>
 
-          <div className="intake-tags">
+          <AdminTagList>
             {importPlan.guardrails.slice(0, 10).map((guardrail) => (
-              <span className="intake-tag muted" key={guardrail}>
+              <AdminTag key={guardrail} tone="muted">
                 {guardrail.replaceAll("_", " ")}
-              </span>
+              </AdminTag>
             ))}
-          </div>
+          </AdminTagList>
 
-          <div className="intake-section">
-            <div className="intake-section-title">Import Action Directory</div>
-            <div className="workbench-toolbar">
+          <AdminIntakeSection>
+            <AdminIntakeSectionTitle>Import Action Directory</AdminIntakeSectionTitle>
+            <AdminToolbar>
               <SegmentedControl<EventImportReadinessFilter>
                 ariaLabel="External import action filters"
                 options={[
@@ -1056,13 +1073,13 @@ function EventSupplyReadinessPanel({
                 placeholder="Search title, target, candidate, source"
                 value={actionQuery}
               />
-            </div>
+            </AdminToolbar>
             <StateRow
               label="Visible rows"
               value={`${visibleActionRows.length} of ${filteredActionRows.length}`}
             />
-            <div className="intake-section">
-              <div className="intake-section-title">Publish Gates</div>
+            <AdminIntakeSection>
+              <AdminIntakeSectionTitle>Publish Gates</AdminIntakeSectionTitle>
               <TextareaField
                 label="External publish review note"
                 onChange={setPublishReviewNote}
@@ -1070,7 +1087,7 @@ function EventSupplyReadinessPanel({
                 rows={3}
                 value={publishReviewNote}
               />
-              <div className="quality-list">
+              <QualityList>
                 <CheckboxField
                   checked={publishChecklist.preflightActionReviewed}
                   label="Selected action matches the latest preflight snapshot"
@@ -1103,8 +1120,8 @@ function EventSupplyReadinessPanel({
                     ownerSafeCopyReviewed: checked,
                   }))}
                 />
-              </div>
-            </div>
+              </QualityList>
+            </AdminIntakeSection>
             <EventImportReadinessTable
               publishDisabledReason={publishDisabledReason}
               publishingExternalActionId={publishingExternalActionId}
@@ -1122,24 +1139,24 @@ function EventSupplyReadinessPanel({
                 }
               }}
             />
-          </div>
+          </AdminIntakeSection>
 
-          <div className="intake-section">
-            <div className="intake-section-title">Operator Commands</div>
-            <div className="command-stack">
+          <AdminIntakeSection>
+            <AdminIntakeSectionTitle>Operator Commands</AdminIntakeSectionTitle>
+            <AdminCommandStack>
               {Object.entries({
                 ...importPlan.commands,
                 preflight: executionPlan.commands.preflight,
               }).map(([label, command]) => (
-                <div className="command-row" key={`${label}:${command}`}>
+                <AdminCommandRow key={`${label}:${command}`}>
                   <span>{label}</span>
                   <code>{command}</code>
-                </div>
+                </AdminCommandRow>
               ))}
-            </div>
-          </div>
+            </AdminCommandStack>
+          </AdminIntakeSection>
 
-          <div className="intake-source-list">
+          <AdminIntakeSourceList>
             <StateRow
               label="Candidate queue"
               value={importPlan.generatedFrom.externalEventCandidateQueue}
@@ -1148,11 +1165,11 @@ function EventSupplyReadinessPanel({
               label="Import plan"
               value={executionPlan.generatedFrom.externalEventImportPlan}
             />
-          </div>
-        </div>
+          </AdminIntakeSourceList>
+        </AdminSearchCandidatePanel>
       ) : (
         <EmptyState
-          className="workbench-empty"
+          variant="workbench"
           icon={<FolderSearch size={16} strokeWidth={1.9} />}
         >
           No external import readiness snapshot is available.
@@ -1176,7 +1193,7 @@ function EventImportReadinessTable({
   if (rows.length === 0) {
     return (
       <EmptyState
-        className="workbench-empty"
+        variant="workbench"
         icon={<CheckCircle2 size={16} strokeWidth={1.9} />}
       >
         No import actions match this readiness filter.
@@ -1185,7 +1202,7 @@ function EventImportReadinessTable({
   }
 
   return (
-    <DataTable className="workbench-table">
+    <DataTable variant="workbench">
       <thead>
         <tr>
           <th>Candidate</th>
@@ -1208,36 +1225,36 @@ function EventImportReadinessTable({
           return (
             <tr key={row.key}>
               <td>
-                <div className="row-title">
+                <AdminRowTitle>
                   <strong>{row.title}</strong>
                   <span>{row.targetPath}</span>
-                </div>
+                </AdminRowTitle>
               </td>
               <td>
-                <div className="row-title compact">
+                <AdminRowTitle compact>
                   <span>{row.canonicalHostId}</span>
                   <span>{formatDateTime(row.startTime)}</span>
-                </div>
+                </AdminRowTitle>
               </td>
               <td>
-                <div className="tag-row">
+                <AdminTagRow>
                   <AdminTag tone={row.status === "write_ready" ? "muted" : "neutral"}>
                     {row.status.replaceAll("_", " ")}
                   </AdminTag>
                   <AdminTag tone="muted">{row.platform}</AdminTag>
-                </div>
+                </AdminTagRow>
               </td>
               <td>
-                <div className="row-title compact">
+                <AdminRowTitle compact>
                   <span>{row.executionStatus?.replaceAll("_", " ") ?? "not preflighted"}</span>
                   <span>
                     {row.validationErrorCount} validation error
                     {row.validationErrorCount === 1 ? "" : "s"}
                   </span>
-                </div>
+                </AdminRowTitle>
               </td>
               <td>
-                <div className="row-title compact">
+                <AdminRowTitle compact>
                   <span>{row.candidateId}</span>
                   <span>
                     {row.blockers.length} blocker
@@ -1245,7 +1262,7 @@ function EventImportReadinessTable({
                     {row.outboundLinkCount} link
                     {row.outboundLinkCount === 1 ? "" : "s"}
                   </span>
-                </div>
+                </AdminRowTitle>
               </td>
               <td>
                 {row.primaryExternalUrl ? (
@@ -1258,7 +1275,7 @@ function EventImportReadinessTable({
                     variant="icon"
                   />
                 ) : (
-                  <span className="muted-cell">none</span>
+                  <AdminMutedCell>none</AdminMutedCell>
                 )}
               </td>
               <td>
@@ -1492,14 +1509,13 @@ function EventEditor({
   const canSave = !saveDisabledReason;
 
   return (
-    <section className="publishing-editor-grid">
-      <Panel
-        className="publishing-editor-panel"
+    <AdminEditorGrid>
+      <AdminEditorPanel
         icon={<Save size={18} strokeWidth={1.9} />}
         title="Event editor"
         action={event?.status ?? "No event"}
       >
-        <div className="publishing-loadbar">
+        <AdminPublishingLoadbar>
           <TextField
             label="events/{id}"
             onChange={onEventIdChange}
@@ -1521,14 +1537,14 @@ function EventEditor({
           >
             Save
           </AdminButton>
-        </div>
+        </AdminPublishingLoadbar>
 
         {form ? (
-          <form className="publishing-form" onSubmit={(submitEvent) => {
+          <AdminForm variant="publishing" onSubmit={(submitEvent) => {
             submitEvent.preventDefault();
             if (canSave) onSave();
           }}>
-            <fieldset className="editor-section">
+            <AdminEditorSection>
               <legend>App-Facing Copy</legend>
               <TextareaField
                 label="Description"
@@ -1541,11 +1557,11 @@ function EventEditor({
                 onChange={(value) => update("photoUrl", value)}
                 value={form.photoUrl}
               />
-            </fieldset>
+            </AdminEditorSection>
 
-            <fieldset className="editor-section">
+            <AdminEditorSection>
               <legend>Format</legend>
-              <div className="form-grid three">
+              <AdminFieldGrid columns={3}>
                 <SelectField
                   label="Activity kind"
                   onChange={(value) =>
@@ -1592,12 +1608,12 @@ function EventEditor({
                   onChange={(value) => update("reviewNote", value)}
                   value={form.reviewNote}
                 />
-              </div>
-            </fieldset>
+              </AdminFieldGrid>
+            </AdminEditorSection>
 
-            <fieldset className="editor-section">
+            <AdminEditorSection>
               <legend>Read-Only Lifecycle</legend>
-              <div className="form-grid three">
+              <AdminFieldGrid columns={3}>
                 <ReadonlyState label="Start" value={formatDateTime(event?.startTime)} />
                 <ReadonlyState label="End" value={formatDateTime(event?.endTime)} />
                 <ReadonlyState label="Status" value={event?.status ?? null} />
@@ -1613,18 +1629,18 @@ function EventEditor({
                   label="Price"
                   value={event ? formatMoney(event) : null}
                 />
-              </div>
-            </fieldset>
-          </form>
+              </AdminFieldGrid>
+            </AdminEditorSection>
+          </AdminForm>
         ) : (
           <EmptyState
-            className="empty-editor"
+            variant="editor"
             icon={<Clock3 size={16} strokeWidth={1.9} />}
           >
             Load an event document to review canonical fields.
           </EmptyState>
         )}
-      </Panel>
+      </AdminEditorPanel>
 
       <EventSidePanel
         diffRows={diffRows}
@@ -1632,7 +1648,7 @@ function EventEditor({
         form={form}
         validationIssues={validationIssues}
       />
-    </section>
+    </AdminEditorGrid>
   );
 }
 
@@ -1648,7 +1664,7 @@ function EventSidePanel({
   validationIssues: EventValidationIssue[];
 }) {
   return (
-    <div className="workbench-stack">
+    <AdminWorkbenchStack>
       <Panel
         icon={<FileWarning size={18} strokeWidth={1.9} />}
         title="Save checks"
@@ -1656,7 +1672,6 @@ function EventSidePanel({
       >
         <IssueList issues={validationIssues} />
       </Panel>
-
       <Panel
         icon={<Database size={18} strokeWidth={1.9} />}
         title="Before / after diff"
@@ -1664,7 +1679,6 @@ function EventSidePanel({
       >
         <DiffList rows={diffRows} />
       </Panel>
-
       <Panel
         icon={<Smartphone size={18} strokeWidth={1.9} />}
         title="App event preview"
@@ -1678,14 +1692,13 @@ function EventSidePanel({
           </EmptyState>
         )}
       </Panel>
-
       <Panel
         icon={<MapPin size={18} strokeWidth={1.9} />}
         title="Discovery projection"
         action={event?.discovery.availability ?? "No discovery"}
       >
         {event ? (
-          <div className="quality-list">
+          <QualityList>
             <StateRow label="City" value={event.discovery.citySlug} />
             <StateRow label="Activity" value={event.discovery.activityKind} />
             <StateRow label="Availability" value={event.discovery.availability} />
@@ -1708,28 +1721,27 @@ function EventSidePanel({
               value={`${event.discovery.minAge ?? "?"}-${event.discovery.maxAge ?? "?"}`}
             />
             <StateRow label="Search index" value={event.searchIndexStatus} />
-          </div>
+          </QualityList>
         ) : (
           <EmptyState icon={<Clock3 size={16} strokeWidth={1.9} />}>
             No event loaded
           </EmptyState>
         )}
       </Panel>
-
       <Panel
         icon={<CheckCircle2 size={18} strokeWidth={1.9} />}
         title="Mutation boundary"
         action="safe fields"
       >
-        <div className="quality-list">
+        <QualityList>
           <StateRow label="Callable" value="adminUpdateEventDetails" />
           <StateRow label="Audit log" value="adminAuditLogs/{id}" />
           <StateRow label="Search rebuild" value="adminSearch projection" />
           <StateRow label="Discovery rebuild" value="eventDiscoveryProjection" />
           <StateRow label="Excluded" value="schedule, policy, cancellation" />
-        </div>
+        </QualityList>
       </Panel>
-    </div>
+    </AdminWorkbenchStack>
   );
 }
 
@@ -1742,12 +1754,12 @@ function AppEventPreview({
 }) {
   const label = form.customActivityLabel || formatEventLabel(form.activityKind);
   return (
-    <div className="quality-list">
+    <QualityList>
       <StateRow label="Collection" value={`events/${event.eventId}`} />
       <StateRow label="Organizer" value={event.organizerName} />
       <StateRow label="Time" value={formatDateTime(event.startTime)} />
       <StateRow label="Venue" value={event.meetingPoint} />
-      <div className="surface-preview">
+      <AdminSurfacePreview>
         <strong>{label}</strong>
         <span>
           {[event.organizerName, event.discovery.citySlug, formatDateTime(event.startTime)]
@@ -1755,59 +1767,60 @@ function AppEventPreview({
             .join(" · ")}
         </span>
         <span>{form.description || "No description"}</span>
-        <div className="tag-row">
+        <AdminTagRow>
           <AdminTag tone="muted">{formatEventLabel(form.interactionModel)}</AdminTag>
           <AdminTag tone="muted">{form.distanceKm} km</AdminTag>
           <AdminTag tone="muted">{formatEventLabel(form.pace)}</AdminTag>
-        </div>
-      </div>
-    </div>
+        </AdminTagRow>
+      </AdminSurfacePreview>
+    </QualityList>
   );
 }
 
 function IssueList({issues}: {issues: EventValidationIssue[]}) {
   if (issues.length === 0) {
     return (
-      <div className="quality-list">
+      <QualityList>
         <StateRow label="Ready" value="No validation blockers" />
-      </div>
+      </QualityList>
     );
   }
   return (
-    <div className="roadmap-list">
+    <AdminRoadmapList>
       {issues.map((issue) => (
-        <div className="roadmap-list-item" key={issue.id}>
+        <AdminRoadmapListItem key={issue.id}>
           <FileWarning size={15} strokeWidth={1.9} />
           <span>
             <strong>{issue.label}:</strong> {issue.detail}
           </span>
-        </div>
+        </AdminRoadmapListItem>
       ))}
-    </div>
+    </AdminRoadmapList>
   );
 }
 
 function DiffList({rows}: {rows: EventDiffRow[]}) {
   if (rows.length === 0) {
     return (
-      <div className="quality-list">
+      <QualityList>
         <StateRow label="Changes" value="No unsaved changes" />
-      </div>
+      </QualityList>
     );
   }
   return (
-    <div className="diff-list">
+    <AdminDiffList>
       {rows.slice(0, 12).map((row) => (
-        <div className="diff-row" key={row.field}>
-          <strong>{row.field}</strong>
-          <span>{row.before}</span>
-          <span>{row.after}</span>
-        </div>
+        <AdminDiffRow
+          key={row.field}
+          field={row.field}
+          before={row.before}
+          after={row.after}
+        />
       ))}
       {rows.length > 12 && (
-        <span className="muted-cell">{rows.length - 12} more changes</span>
+        <AdminMutedCell>{rows.length - 12} more changes</AdminMutedCell>
       )}
-    </div>
+    </AdminDiffList>
   );
 }
 
@@ -1818,29 +1831,7 @@ function ReadonlyState({
   label: string;
   value: string | null;
 }) {
-  return (
-    <div className="state-row">
-      <span>{label}</span>
-      <strong>{value ?? "none"}</strong>
-    </div>
-  );
-}
-
-function Metric({
-  label,
-  tone = "normal",
-  value,
-}: {
-  label: string;
-  tone?: "normal" | "attention";
-  value: number;
-}) {
-  return (
-    <article className={`metric-card ${tone === "attention" ? "attention" : ""}`}>
-      <span>{label}</span>
-      <div className="metric-value">{value}</div>
-    </article>
-  );
+  return <StateRow label={label} value={value} />;
 }
 
 function formatDateTime(value: string | null | undefined): string {
