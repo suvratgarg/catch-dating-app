@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'dashboard_stride_actions_controller.g.dart';
 
 class DashboardStrideActions {
   const DashboardStrideActions(this._repository, this._refreshWeeklyActivity);
@@ -20,9 +22,10 @@ class DashboardStrideActions {
   }
 }
 
-final dashboardStrideActionsProvider = Provider<DashboardStrideActions>((ref) {
+@riverpod
+DashboardStrideActions dashboardStrideActions(Ref ref) {
   return DashboardStrideActions(
     ref.watch(healthActivityRepositoryProvider),
     () => ref.invalidate(weeklyActivityProvider),
   );
-});
+}

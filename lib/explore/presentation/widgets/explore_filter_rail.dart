@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -14,16 +13,38 @@ import 'package:catch_dating_app/explore/presentation/explore_filter_logic.dart'
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Explore scope + filter rail.
 ///
 /// Mirrors the handoff `OptionGroup`: the primary time scope stays visible as
 /// underline tabs while secondary filters move behind a right-aligned glyph.
-class ExploreFilterRail extends ConsumerWidget {
-  const ExploreFilterRail({super.key, this.backgroundColor});
+class ExploreFilterRail extends StatelessWidget {
+  const ExploreFilterRail({
+    super.key,
+    this.filters = const ExploreFilterSelection(),
+    this.state,
+    this.sheetState,
+    this.onTimeFilterSelected,
+    this.onDistanceFilterSelected,
+    this.onToggleJoinedOnly,
+    this.onToggleHighRatedOnly,
+    this.onToggleActivityTag,
+    this.onToggleArea,
+    this.onClearFilters,
+    this.backgroundColor,
+  });
 
   final Color? backgroundColor;
+  final ExploreFilterSelection filters;
+  final ExploreFilterRailState? state;
+  final ExploreFilterSheetState? sheetState;
+  final ValueChanged<ExploreTimeFilter>? onTimeFilterSelected;
+  final ValueChanged<ExploreDistanceFilter>? onDistanceFilterSelected;
+  final VoidCallback? onToggleJoinedOnly;
+  final VoidCallback? onToggleHighRatedOnly;
+  final ValueChanged<String>? onToggleActivityTag;
+  final ValueChanged<String>? onToggleArea;
+  final VoidCallback? onClearFilters;
 
   static const double _optionGap = CatchSpacing.s3;
 
@@ -35,11 +56,9 @@ class ExploreFilterRail extends ConsumerWidget {
   ];
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final filters = ref.watch(exploreFiltersProvider);
-    final filterController = ref.read(exploreFiltersProvider.notifier);
-    final state = ExploreFilterRailState.from(filters);
+    final railState = state ?? ExploreFilterRailState.from(filters);
 
     return ColoredBox(
       color: backgroundColor ?? t.bg,
@@ -63,8 +82,7 @@ class ExploreFilterRail extends ConsumerWidget {
                         ExploreRailLabel(
                           label: option.label,
                           selected: option.value == filters.timeFilter,
-                          onTap: () =>
-                              filterController.setTimeFilter(option.value),
+                          onTap: () => onTimeFilterSelected?.call(option.value),
                         ),
                       ],
                     ],
@@ -74,13 +92,32 @@ class ExploreFilterRail extends ConsumerWidget {
               gapW12,
               ExploreFilterGlyphButton(
                 key: const ValueKey('explore-filter-button'),
-                activeCount: state.activeCount,
-                semanticLabel: state.filterButtonSemanticLabel,
+                activeCount: railState.activeCount,
+                semanticLabel: railState.filterButtonSemanticLabel,
                 onTap: () => _showExploreFilterSheet(context),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Future<void> _showExploreFilterSheet(BuildContext context) {
+    return showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => ExploreFilterSheet(
+        filters: filters,
+        state: sheetState,
+        onDistanceFilterSelected: onDistanceFilterSelected,
+        onToggleJoinedOnly: onToggleJoinedOnly,
+        onToggleHighRatedOnly: onToggleHighRatedOnly,
+        onToggleActivityTag: onToggleActivityTag,
+        onToggleArea: onToggleArea,
+        onClearFilters: onClearFilters,
       ),
     );
   }
@@ -180,32 +217,46 @@ class ExploreFilterGlyphButton extends StatelessWidget {
   }
 }
 
-class ExploreFilterSheet extends ConsumerWidget {
-  const ExploreFilterSheet({super.key});
+class ExploreFilterSheet extends StatelessWidget {
+  const ExploreFilterSheet({
+    super.key,
+    this.filters = const ExploreFilterSelection(),
+    this.state,
+    this.onDistanceFilterSelected,
+    this.onToggleJoinedOnly,
+    this.onToggleHighRatedOnly,
+    this.onToggleActivityTag,
+    this.onToggleArea,
+    this.onClearFilters,
+  });
+
+  final ExploreFilterSelection filters;
+  final ExploreFilterSheetState? state;
+  final ValueChanged<ExploreDistanceFilter>? onDistanceFilterSelected;
+  final VoidCallback? onToggleJoinedOnly;
+  final VoidCallback? onToggleHighRatedOnly;
+  final ValueChanged<String>? onToggleActivityTag;
+  final ValueChanged<String>? onToggleArea;
+  final VoidCallback? onClearFilters;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final filters = ref.watch(exploreFiltersProvider);
-    final controller = ref.read(exploreFiltersProvider.notifier);
-    final sourceClubs =
-        ref.watch(exploreSourceClubsProvider).asData?.value ?? const <Club>[];
-    final state = ExploreFilterSheetState.from(
-      filters: filters,
-      sourceClubs: sourceClubs,
-    );
+    final sheetState =
+        state ??
+        ExploreFilterSheetState.from(filters: filters, sourceClubs: const []);
 
     return CatchBottomSheetScaffold(
       title: 'Explore filters',
       subtitle: 'Narrow the map and feed without changing your time scope.',
       action: Row(
         children: [
-          if (state.activeCount > 0) ...[
+          if (sheetState.activeCount > 0) ...[
             Expanded(
               child: CatchButton(
                 label: 'Clear',
                 variant: CatchButtonVariant.secondary,
-                onPressed: controller.clear,
+                onPressed: onClearFilters,
               ),
             ),
             gapW8,
@@ -235,11 +286,11 @@ class ExploreFilterSheet extends ConsumerWidget {
                 spacing: CatchSpacing.s2,
                 runSpacing: CatchSpacing.s2,
                 children: [
-                  for (final option in state.distanceOptions)
+                  for (final option in sheetState.distanceOptions)
                     CatchSelectChip(
                       label: option.label,
                       active: filters.distanceFilter == option.value,
-                      onTap: () => controller.setDistanceFilter(option.value),
+                      onTap: () => onDistanceFilterSelected?.call(option.value),
                     ),
                 ],
               ),
@@ -256,12 +307,12 @@ class ExploreFilterSheet extends ConsumerWidget {
                   CatchSelectChip(
                     label: 'Joined clubs',
                     active: filters.joinedOnly,
-                    onTap: controller.toggleJoinedOnly,
+                    onTap: onToggleJoinedOnly,
                   ),
                   CatchSelectChip(
                     label: 'Rated 4.5+',
                     active: filters.highRatedOnly,
-                    onTap: controller.toggleHighRatedOnly,
+                    onTap: onToggleHighRatedOnly,
                   ),
                 ],
               ),
@@ -279,11 +330,11 @@ class ExploreFilterSheet extends ConsumerWidget {
                     CatchSelectChip(
                       label: kind.label,
                       active: _activityFilterActive(filters.activityTag, kind),
-                      onTap: () => controller.toggleActivityTag(kind.name),
+                      onTap: () => onToggleActivityTag?.call(kind.name),
                     ),
                 ],
               ),
-              if (state.areaOptions.isNotEmpty) ...[
+              if (sheetState.areaOptions.isNotEmpty) ...[
                 gapH20,
                 Text(
                   'AREA',
@@ -294,11 +345,11 @@ class ExploreFilterSheet extends ConsumerWidget {
                   spacing: CatchSpacing.s2,
                   runSpacing: CatchSpacing.s2,
                   children: [
-                    for (final area in state.areaOptions)
+                    for (final area in sheetState.areaOptions)
                       CatchSelectChip(
                         label: area,
                         active: exploreFilterValuesMatch(filters.area, area),
-                        onTap: () => controller.toggleArea(area),
+                        onTap: () => onToggleArea?.call(area),
                       ),
                   ],
                 ),
@@ -309,16 +360,6 @@ class ExploreFilterSheet extends ConsumerWidget {
       ),
     );
   }
-}
-
-Future<void> _showExploreFilterSheet(BuildContext context) {
-  return showModalBottomSheet<void>(
-    context: context,
-    isScrollControlled: true,
-    useSafeArea: true,
-    backgroundColor: Colors.transparent,
-    builder: (_) => const ExploreFilterSheet(),
-  );
 }
 
 bool _activityFilterActive(String? selected, ActivityKind kind) {

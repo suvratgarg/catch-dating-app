@@ -1,11 +1,12 @@
-import 'package:catch_dating_app/core/data/city_repository.dart';
-import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/data/city_repository.dart';
+import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
+import 'package:catch_dating_app/explore/presentation/explore_city_controller.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -35,8 +36,7 @@ class _ExploreCityPickerState extends ConsumerState<ExploreCityPicker> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _tryAutoSelectFromProfile();
-      _tryAutoSelectFromGps();
+      _autoSelectCity();
     });
   }
 
@@ -46,10 +46,10 @@ class _ExploreCityPickerState extends ConsumerState<ExploreCityPicker> {
     final citiesAsync = ref.watch(cityListProvider);
 
     ref.listen(deviceLocationProvider, (_, next) {
-      next.whenData((_) => _tryAutoSelectFromGps());
+      next.whenData((_) => _autoSelectCity());
     });
     ref.listen(watchUserProfileProvider, (_, next) {
-      next.whenData((_) => _tryAutoSelectFromProfile());
+      next.whenData((_) => _autoSelectCity());
     });
 
     return citiesAsync.when(
@@ -97,22 +97,8 @@ class _ExploreCityPickerState extends ConsumerState<ExploreCityPicker> {
     setState(() => _isSheetOpen = false);
   }
 
-  void _tryAutoSelectFromProfile() {
-    final cityName = ref.read(watchUserProfileProvider).asData?.value?.city;
-    ref
-        .read(selectedExploreCityProvider.notifier)
-        .autoSelectCityByName(cityName);
-  }
-
-  Future<void> _tryAutoSelectFromGps() async {
-    final location = ref.read(deviceLocationProvider).asData?.value;
-    if (location == null) return;
-    final nearest = await ref
-        .read(cityRepositoryProvider)
-        .nearestCity(location.latitude, location.longitude);
-    if (nearest != null) {
-      ref.read(selectedExploreCityProvider.notifier).autoSelectCity(nearest);
-    }
+  void _autoSelectCity() {
+    ref.read(exploreCityControllerProvider.notifier).autoSelectCity();
   }
 }
 

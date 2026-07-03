@@ -4,7 +4,9 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart' show DateUtils;
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'host_analytics_repository.g.dart';
 
 enum HostAnalyticsRangePreset {
   sevenDays('7d', '7 days'),
@@ -371,14 +373,15 @@ class HostAnalyticsRepository {
       );
 }
 
-final hostAnalyticsRepositoryProvider = Provider<HostAnalyticsRepository>(
-  (ref) => HostAnalyticsRepository(ref.watch(firebaseFunctionsProvider)),
-);
+@riverpod
+HostAnalyticsRepository hostAnalyticsRepository(Ref ref) {
+  return HostAnalyticsRepository(ref.watch(firebaseFunctionsProvider));
+}
 
-final hostAnalyticsProvider = FutureProvider.autoDispose
-    .family<HostAnalyticsReport, HostAnalyticsQuery>((ref, query) {
-      return ref.watch(hostAnalyticsRepositoryProvider).getHostAnalytics(query);
-    });
+@riverpod
+Future<HostAnalyticsReport> hostAnalytics(Ref ref, HostAnalyticsQuery query) {
+  return ref.watch(hostAnalyticsRepositoryProvider).getHostAnalytics(query);
+}
 
 Map<Object?, Object?> _map(Object? value) =>
     value is Map<Object?, Object?> ? value : const {};

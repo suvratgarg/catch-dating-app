@@ -1,97 +1,12 @@
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/chats/data/conversation_repository.dart';
-import 'package:catch_dating_app/chats/data/suvbot_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/domain/suvbot_action_item.dart';
-import 'package:catch_dating_app/chats/presentation/chat_controller.dart';
 import 'package:catch_dating_app/chats/presentation/chat_thread_lookup_state.dart';
 import 'package:catch_dating_app/chats/presentation/host_chat_screen_state.dart';
-import 'package:catch_dating_app/chats/presentation/suvbot_controller.dart';
-import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/external_share.dart';
-import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
-import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-final chatRouteStateProvider =
-    Provider.family<ChatRouteState, ChatRouteStateArgs>((ref, args) {
-      final uidAsync = ref.watch(uidProvider);
-      final uid = uidAsync.asData?.value;
-      final messagesAsync = ref.watch(
-        watchConversationMessagesProvider(args.matchId),
-      );
-      final matchAsync = ref.watch(matchStreamProvider(args.matchId));
-      final match = matchAsync.asData?.value;
-
-      final initialLookupState = ChatThreadLookupState.resolve(
-        matchId: args.matchId,
-        uid: uid,
-        match: match,
-        routeProfile: args.initialProfile,
-      );
-      final hostInquiryClub = initialLookupState.hostInquiryClubId == null
-          ? null
-          : ref
-                .watch(watchClubProvider(initialLookupState.hostInquiryClubId!))
-                .asData
-                ?.value;
-      final lookupState = ChatThreadLookupState.resolve(
-        matchId: args.matchId,
-        uid: uid,
-        match: match,
-        routeProfile: args.initialProfile,
-        hostInquiryClub: hostInquiryClub,
-      );
-
-      final eventAsync = lookupState.latestEventId == null
-          ? const AsyncData<Event?>(null)
-          : ref.watch(watchEventProvider(lookupState.latestEventId!));
-      final otherProfileAsync = lookupState.publicProfileUid == null
-          ? const AsyncData<PublicProfile?>(null)
-          : ref.watch(
-              watchPublicProfileProvider(lookupState.publicProfileUid!),
-            );
-      final suvbotActionsAsync = lookupState.isSuvbot
-          ? ref.watch(suvbotActionsProvider)
-          : const AsyncData(<SuvbotActionItem>[]);
-
-      final profile =
-          otherProfileAsync.asData?.value ?? lookupState.initialProfile;
-      final chatState = HostChatScreenState.resolve(
-        matchId: args.matchId,
-        uid: uid,
-        matchAsync: matchAsync,
-        messagesAsync: messagesAsync,
-        suvbotActionsAsync: suvbotActionsAsync,
-        profile: profile,
-        hostProfile: lookupState.hostProfile,
-        reportUserPending: ref
-            .watch(ChatController.reportUserMutation)
-            .isPending,
-        blockUserPending: ref.watch(ChatController.blockUserMutation).isPending,
-      );
-
-      return ChatRouteState(
-        uidAsync: uidAsync,
-        uid: uid,
-        matchAsync: matchAsync,
-        messagesAsync: messagesAsync,
-        lookupState: lookupState,
-        chatState: chatState,
-        eventAsync: eventAsync,
-        suvbotActionsAsync: suvbotActionsAsync,
-        share: ref.watch(externalShareControllerProvider),
-        suvbotPending: ref.watch(SuvbotController.requestMutation).isPending,
-        sendMessagePending: ref
-            .watch(ChatController.sendMessageMutation)
-            .isPending,
-        sendImagePending: ref.watch(ChatController.sendImageMutation).isPending,
-      );
-    });
 
 class ChatRouteStateArgs {
   const ChatRouteStateArgs({
@@ -130,32 +45,41 @@ class ChatRouteState {
     required this.sendImagePending,
   });
 
-  final AsyncValue<String?> uidAsync;
+  final CatchAsyncState<String?> uidAsync;
   final String? uid;
-  final AsyncValue<Match?> matchAsync;
-  final AsyncValue<List<ChatMessage>> messagesAsync;
+  final CatchAsyncState<Match?> matchAsync;
+  final CatchAsyncState<List<ChatMessage>> messagesAsync;
   final ChatThreadLookupState lookupState;
   final HostChatScreenState chatState;
-  final AsyncValue<Event?> eventAsync;
-  final AsyncValue<List<SuvbotActionItem>> suvbotActionsAsync;
+  final CatchAsyncState<Event?> eventAsync;
+  final CatchAsyncState<List<SuvbotActionItem>> suvbotActionsAsync;
   final ExternalShareController share;
   final bool suvbotPending;
   final bool sendMessagePending;
   final bool sendImagePending;
 
-  List<ChatMessage>? get initialMessages => messagesAsync.asData?.value;
+  List<ChatMessage>? get initialMessages =>
+      messagesAsync.status == CatchAsyncStatus.data
+      ? messagesAsync.value
+      : null;
   List<ChatMessage> get messages => initialMessages ?? const [];
-  Event? get event => eventAsync.asData?.value;
+  Event? get event =>
+      eventAsync.status == CatchAsyncStatus.data ? eventAsync.value : null;
   bool get isSuvbot => lookupState.isSuvbot;
   bool get isAuthLoading => uidAsync.isLoading;
   Object? get authError => uidAsync.hasError ? uidAsync.error : null;
   bool get _blocksThreadUi => isAuthLoading || authError != null;
-  AsyncValue<List<ChatMessage>> get displayMessagesAsync =>
-      isAuthLoading ? const AsyncValue.loading() : messagesAsync;
+  CatchAsyncState<List<ChatMessage>> get displayMessagesAsync =>
+      isAuthLoading ? const CatchAsyncState.loading() : messagesAsync;
   HostChatRouteError? get routeError => chatState.routeError;
   bool get showEventContextHeader =>
       !_blocksThreadUi && !isSuvbot && routeError == null;
   bool get showSuvbotActionBar =>
       !_blocksThreadUi && isSuvbot && routeError == null;
   bool get showComposer => !_blocksThreadUi && !isSuvbot && routeError == null;
+}
+
+extension ChatRouteCatchAsyncStateX<T> on CatchAsyncState<T> {
+  bool get isLoading => status == CatchAsyncStatus.loading;
+  bool get hasError => status == CatchAsyncStatus.error;
 }

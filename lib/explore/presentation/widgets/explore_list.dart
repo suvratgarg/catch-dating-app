@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
+import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_body.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_empty_state.dart';
@@ -27,10 +28,11 @@ class ExploreList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final viewModelAsync = ref.watch(exploreViewModelProvider);
+    final viewModelAsync = ref.watch(exploreClubsViewModelProvider);
     final city = ref.watch(selectedExploreCityProvider);
     final query = ref.watch(exploreSearchQueryProvider).trim();
     final filters = ref.watch(exploreFiltersProvider);
+    final feedAsync = ref.watch(exploreFeedViewModelProvider);
 
     return switch (viewModelAsync) {
       AsyncLoading() => const SliverToBoxAdapter(
@@ -43,7 +45,7 @@ class ExploreList extends ConsumerWidget {
         error,
         context: AppErrorContext.explore,
         onRetry: () {
-          ref.invalidate(exploreViewModelProvider);
+          ref.invalidate(exploreClubsViewModelProvider);
           ref.invalidate(exploreSourceClubsProvider);
         },
       ),
@@ -59,7 +61,28 @@ class ExploreList extends ConsumerWidget {
             : CatchMutationErrorListener(
                 mutation: ClubMembershipController.joinMutation,
                 child: ExploreBody(
-                  viewModel: value,
+                  feedAsync: feedAsync,
+                  clubsViewModel: value,
+                  filters: filters,
+                  searchQuery: query,
+                  onRetryFeed: () =>
+                      ref.invalidate(exploreFeedViewModelProvider),
+                  onRetryClubs: () {
+                    ref.invalidate(exploreClubsViewModelProvider);
+                    ref.invalidate(exploreSourceClubsProvider);
+                  },
+                  onClearSearch: () =>
+                      ref.read(exploreSearchQueryProvider.notifier).clear(),
+                  onClearFilters: () =>
+                      ref.read(exploreFiltersProvider.notifier).clear(),
+                  onSetTimeFilter: (filter) => ref
+                      .read(exploreFiltersProvider.notifier)
+                      .setTimeFilter(filter),
+                  onActivitySelected: (activityKind) => ref
+                      .read(exploreFiltersProvider.notifier)
+                      .toggleActivityTag(activityKind.name),
+                  onEventSelected: (_, _) {},
+                  onExternalEventOpened: (_) {},
                   includeJoinedClubsRail: includeJoinedClubsRail,
                   includeClubDirectory: includeClubDirectory,
                 ),

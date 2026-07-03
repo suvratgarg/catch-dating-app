@@ -38,6 +38,18 @@ class ExploreMapScreen extends ConsumerWidget {
       filters.distanceFilter,
     );
     final mapViewModel = feedAsync.whenData(exploreMapViewModelFromFeed);
+    void cycleDistanceFilter() {
+      catchSelectionHaptic();
+      final controller = ref.read(exploreFiltersProvider.notifier);
+      final current = ref.read(exploreFiltersProvider).distanceFilter;
+      controller.setDistanceFilter(switch (current) {
+        ExploreDistanceFilter.any => ExploreDistanceFilter.oneKm,
+        ExploreDistanceFilter.oneKm => ExploreDistanceFilter.threeKm,
+        ExploreDistanceFilter.threeKm => ExploreDistanceFilter.fiveKm,
+        ExploreDistanceFilter.fiveKm => ExploreDistanceFilter.tenKm,
+        ExploreDistanceFilter.tenKm => ExploreDistanceFilter.any,
+      });
+    }
 
     return Scaffold(
       backgroundColor: t.bg,
@@ -51,7 +63,7 @@ class ExploreMapScreen extends ConsumerWidget {
               initialSelectedEventId: initialSelectedEventId,
               onRetry: () => ref.invalidate(exploreFeedViewModelProvider),
               onEventSelected: (event) => _openEvent(context, event),
-              onDistanceRingTapped: () => _cycleDistanceFilter(ref),
+              onDistanceRingTapped: cycleDistanceFilter,
             ),
           ),
           Positioned(
@@ -84,19 +96,6 @@ class ExploreMapScreen extends ConsumerWidget {
       pathParameters: {'clubId': event.clubId, 'eventId': event.id},
       extra: EventDetailRouteExtra(initialEvent: event),
     );
-  }
-
-  void _cycleDistanceFilter(WidgetRef ref) {
-    catchSelectionHaptic();
-    final controller = ref.read(exploreFiltersProvider.notifier);
-    final current = ref.read(exploreFiltersProvider).distanceFilter;
-    controller.setDistanceFilter(switch (current) {
-      ExploreDistanceFilter.any => ExploreDistanceFilter.oneKm,
-      ExploreDistanceFilter.oneKm => ExploreDistanceFilter.threeKm,
-      ExploreDistanceFilter.threeKm => ExploreDistanceFilter.fiveKm,
-      ExploreDistanceFilter.fiveKm => ExploreDistanceFilter.tenKm,
-      ExploreDistanceFilter.tenKm => ExploreDistanceFilter.any,
-    });
   }
 }
 

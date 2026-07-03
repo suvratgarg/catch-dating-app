@@ -94,4 +94,4 @@ final class WatchBlockedUsersProvider
   }
 }
 
-String _$watchBlockedUsersHash() => r'1c0a39ef43fc52aa5ba39568e3b8418caf326711';
+String _$watchBlockedUsersHash() => r'6a6a4ba7f6f7b2bbc722e2a4cfefc7c76806f07a';

@@ -152,19 +152,6 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
   }
 }
 
-EventSuccessRevealAssignmentKind? _revealKindForAttendeeMoment(
-  EventSuccessAttendeeMoment moment,
-) {
-  if (moment.assignmentModuleId ==
-      EventSuccessModuleCatalog.guidedRotations.id) {
-    return EventSuccessRevealAssignmentKind.rotations;
-  }
-  if (moment.assignmentModuleId == EventSuccessModuleCatalog.microPods.id) {
-    return EventSuccessRevealAssignmentKind.microPods;
-  }
-  return null;
-}
-
 bool _sameAnswers(List<String>? a, List<String>? b) {
   final normalizedA =
       EventSuccessCompatibilityQuestionnaire.normalizedAnswerIds(a ?? const []);

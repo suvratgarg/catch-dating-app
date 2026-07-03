@@ -15,12 +15,12 @@ import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart' show Provider;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'dashboard_full_view_model.g.dart';
 
-final dashboardNowProvider = Provider<DateTime>((ref) => DateTime.now());
+@riverpod
+DateTime dashboardNow(Ref ref) => DateTime.now();
 
 enum DashboardSectionStatus { loading, error, data }
 

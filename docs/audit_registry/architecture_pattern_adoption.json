@@ -1,6 +1,6 @@
 {
-  "version": "1.5.24",
-  "updated": "2026-07-02",
+  "version": "1.5.26",
+  "updated": "2026-07-03",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Tracks architecture reference exhibits, prototype files, adopter files, candidate status, and back-propagation obligations so migrations stay aligned with the latest pattern.",
   "patterns": [
@@ -149,6 +149,73 @@
           "lastReviewedPass": "2026-07-01-saved-events-screen-boundary"
         },
         {
+          "path": "lib/explore/presentation/explore_screen.dart",
+          "role": "adopter route screen: route-owned Explore feed/clubs/city/search/filter/source provider wave, body-state branch precedence, map launcher, mutation listener, empty-state callbacks, event/external navigation side effects, and provider-free chrome/body composition",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-explore-screen-boundary"
+        },
+        {
+          "path": "lib/explore/presentation/explore_map_screen.dart",
+          "role": "adopter route screen: route-owned Explore map feed/filter provider wave, map view-model construction, retry invalidation, distance-filter cycling, and event-detail navigation side effects",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-explore-screen-boundary"
+        },
+        {
+          "path": "lib/explore/presentation/widgets/explore_body.dart",
+          "role": "provider-free Explore body/sliver composer for feed async states, partial club-section failure, optional legacy club rails, activity browse callbacks, and event/external row callbacks",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-explore-screen-boundary"
+        },
+        {
+          "path": "lib/explore/presentation/widgets/explore_events_section.dart",
+          "role": "provider-free Explore events section shell for feed loading/error/data branch selection, empty clear/broaden callbacks, mixed-card sliver assembly, and route-owned event/external/club selection callbacks",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-explore-screen-boundary"
+        },
+        {
+          "path": "lib/explore/presentation/widgets/explore_event_rows.dart",
+          "role": "provider-free Explore event row widgets and this-week recommendation section receiving explicit row state and route-owned event/external callbacks",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-explore-screen-boundary"
+        },
+        {
+          "path": "lib/explore/presentation/widgets/explore_club_cards.dart",
+          "role": "provider-free Explore club card and compact club row widgets receiving explicit club data and route-owned club-selection callback",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-explore-screen-boundary"
+        },
+        {
+          "path": "lib/explore/presentation/widgets/explore_events_status_slivers.dart",
+          "role": "provider-free Explore event loading and empty slivers receiving explicit empty-state actions and retry/clear callbacks",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-explore-screen-boundary"
+        },
+        {
+          "path": "lib/explore/presentation/widgets/explore_filter_rail.dart",
+          "role": "provider-free Explore filter rail and sheet receiving explicit filter state, sheet state, and route-owned filter mutation callbacks",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-explore-screen-boundary"
+        },
+        {
+          "path": "lib/explore/presentation/widgets/explore_header.dart",
+          "role": "provider-free Explore browse header and discovery cover header receiving explicit search text, featured item, and route-owned search/event callbacks",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-explore-screen-boundary"
+        },
+        {
+          "path": "test/explore/explore_widgets_test.dart",
+          "role": "Explore route/body/chrome provider-boundary coverage including provider-free body, events, filter, header fixtures plus route-level provider override tests",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-explore-screen-boundary"
+        },
+        {
           "path": "lib/hosts/presentation/host_event_manage_screen.dart",
           "role": "defined host workspace variant: canonical route aliases, uid/club/event provider wave, access gate, loaded Setup/Guests/Live/Report workspace, roster/private-access/Event Success/report/action section composition",
           "status": "variant_needed",
@@ -164,16 +231,81 @@
             "lib/hosts/presentation/host_event_manage_screen.dart",
             "lib/hosts/presentation/host_event_manage_controller.dart",
             "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
-            "lib/event_success/presentation/event_success_host_screen.dart",
             "test/hosts/host_create_event_screen_test.dart",
             "test/hosts/host_event_manage_controller_test.dart",
             "test/ui_captures/catalog/screen_capture_catalog.dart",
             "widgetbook/lib/hosts/host_operations_use_cases.dart"
           ],
-          "exitCriteria": "Promote Host Event Manage from defined variant to aligned adopter only when HostEventManageScreenState, or split route/workspace adapters, makes the loaded workspace provider-free for selected section, roster, private access, invite links, Event Success, report, host action display data, mutation display state, retry intents, navigation, and typed callbacks while HostEventManageRouteScreen keeps canonical route aliases plus route loading, missing-resource, error, and access gates."
+          "exitCriteria": "Promote Host Event Manage from defined variant to aligned adopter only when the loaded workspace is provider-free for selected section, roster, private access, invite links, Event Success, report, host action display data, mutation display state, retry intents, navigation, and typed callbacks while HostEventManageRouteScreen keeps canonical route aliases plus route loading, missing-resource, error, and access gates. As of 2026-07-03 HostEventManageScreenState is provider-free, but HostEventManageScreen still owns loaded-workspace provider watches and HostEventAttendancePanel still has WidgetRef-parameter debt, so the variant remains open."
+        },
+        {
+          "id": "ARCH-SCREEN-001D",
+          "name": "Explore provider-island compatibility variants",
+          "status": "defined",
+          "paths": [
+            "lib/explore/presentation/widgets/explore_list.dart",
+            "lib/explore/presentation/widgets/explore_city_picker.dart",
+            "lib/explore/presentation/widgets/explore_peek_rail.dart"
+          ],
+          "exitCriteria": "Delete ExploreList if it remains only a legacy fixture/compatibility sliver, or migrate it to the route-owned ExploreBody contract. Promote ExploreCityPicker only when the route/chrome owns city-list/profile/location listeners and passes display state plus typed city callbacks. Promote ExplorePeekRail only when the map sheet lead is either deleted as non-production compatibility code or receives feed async state, retry, analytics, and event navigation callbacks from a route/screen boundary."
+        },
+        {
+          "id": "ARCH-SCREEN-001E",
+          "name": "Event Success staged screen boundary",
+          "status": "needs_update",
+          "paths": [
+            "lib/event_success/presentation/event_success_companion_screen.dart",
+            "lib/event_success/presentation/event_success_companion_screen_state.dart",
+            "lib/event_success/presentation/event_success_host_screen.dart",
+            "lib/event_success/presentation/event_success_host_screen_state.dart",
+            "lib/event_success/presentation/event_success_live_reveal_card.dart",
+            "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+            "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
+            "lib/event_success/presentation/host_parts/event_success_host_live.dart",
+            "lib/event_success/presentation/host_parts/event_success_host_overrides.dart",
+            "lib/event_success/presentation/host_parts/event_success_host_shared.dart",
+            "test/event_success/event_success_companion_screen_state_test.dart"
+          ],
+          "exitCriteria": "Promote Event Success only after companion and host route screens are thin provider edges, display-state derivation lives in registered *_screen_state.dart adapters, provider-free part widgets remain render-only, and tests cover the host and companion screen-state adapters. The companion screen-state adapter, host screen-state adapter, and live reveal action-state adapter are aligned as of 2026-07-03; route-level ref density and route splitting remain open."
         }
       ],
-      "candidateQueue": [],
+      "candidateQueue": [
+        {
+          "id": "ARCH-SCREEN-001-CHATS-INBOX-BOUNDARY",
+          "path": "lib/chats/presentation/inbox/widgets/chats_list.dart",
+          "reason": "ChatsList still re-watches route providers for celebration and display-state construction. Keep this as explicit screen-boundary migration debt; do not mark the Chats inbox route aligned until the route owns those reads and passes display state/callbacks down.",
+          "detectedBy": "docs/plans/explore_findings_remediation_spec.md#phase-48-chats-register-the-pattern-adoption",
+          "addedPass": "2026-07-03-profile-chats-state-governance"
+        },
+        {
+          "id": "ARCH-SCREEN-001-EVENT-SUCCESS-COMPANION-ROUTE-BOUNDARY",
+          "path": "lib/event_success/presentation/event_success_companion_screen.dart",
+          "reason": "Event Success companion now has a registered provider-free screen-state adapter, but the route screen still contains the provider wave, multiple route/render classes, and callback construction. Keep as screen-boundary debt until the route is a thin provider edge and the render surface receives explicit state/callbacks.",
+          "detectedBy": "event-success-hosts-audit-2026-07-03#ES1",
+          "addedPass": "2026-07-03-event-success-hosts-audit-remediation"
+        },
+        {
+          "id": "ARCH-SCREEN-001-EVENT-SUCCESS-HOST-ROUTE-BOUNDARY",
+          "path": "lib/event_success/presentation/event_success_host_screen.dart",
+          "reason": "Event Success host now has provider-free host section/action state, but the route still owns a broad provider wave, mutation callback construction, and multiple route/render surfaces. Split the route/workspace boundary before marking the host surface aligned.",
+          "detectedBy": "event-success-hosts-audit-2026-07-03#ES1",
+          "addedPass": "2026-07-03-event-success-hosts-audit-remediation"
+        },
+        {
+          "id": "ARCH-SCREEN-001-HOST-OPERATIONS-SPLIT",
+          "path": "lib/hosts/presentation/host_operations_screen.dart",
+          "reason": "Host Operations is a 5k+ line multi-route file with multiple Consumer screens and a broad provider/ref surface. HostClubsScreenState and HostClubInsightsState are now extracted, but the file still needs route/workspace splits before applying screen-boundary adoption claims.",
+          "detectedBy": "event-success-hosts-audit-2026-07-03#H1",
+          "addedPass": "2026-07-03-event-success-hosts-audit-remediation"
+        },
+        {
+          "id": "ARCH-SCREEN-001-HOST-ATTENDANCE-PANEL-REFS",
+          "path": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
+          "reason": "HostEventAttendancePanel remains a large widget with WidgetRef parameter debt and should receive route-owned attendance display state, mutation intents, and callbacks before the Host Event Manage workspace can be promoted.",
+          "detectedBy": "event-success-hosts-audit-2026-07-03#H3",
+          "addedPass": "2026-07-03-event-success-hosts-audit-remediation"
+        }
+      ],
       "requiredBackPropagation": "When this exhibit changes, inspect each aligned adopter and every variant path above; update EventDetailScreen/EventDetailBody first, then EventLocationMapRouteScreen/EventLocationMapState/EventLocationMapScreen, CalendarScreen/CalendarHomeState, SavedEventsScreen/SavedEventsListState, and HostEventManageRouteScreen/ARCH-SCREEN-001C before migrating any later screen from this pattern.",
       "requiredChecks": [
         "flutter test test/events/event_detail_screen_state_test.dart",
@@ -192,7 +324,7 @@
         "node tool/architecture/check_adopted_architecture_boundaries.mjs",
         "node tool/agent/check_agent_readiness.mjs"
       ],
-      "notes": "This pattern defines the feature-screen boundary. EventDetailBody and EventLocationMapScreen no longer expose direct Scaffold compatibility; route chrome, bottom navigation, mutation listeners, provider reads, save/share/calendar/back side effects, companion/host/booking display state, and navigation side effects belong to their route screens. EventDetailScreen now delegates host, companion, and booking dock display-state derivation to EventDetailScreenState while EventDetailCta remains the mutation/router edge for booking actions. EventLocationMapRouteScreen, CalendarScreen, and SavedEventsScreen are aligned adopters outside Event Detail and use provider-free state adapters for their loaded body data. tool/architecture/check_adopted_architecture_boundaries.mjs enforces provider/routing/data/repository-free imports for aligned lib adopters with providerFree set to true. HostEventManageRouteScreen is intentionally tracked as ARCH-SCREEN-001C because its loaded surface is a host workspace with canonical route aliases and lifecycle sections; do not force it through the Event Detail body shape before the host workspace adapter exists."
+      "notes": "This pattern defines the feature-screen boundary. EventDetailBody and EventLocationMapScreen no longer expose direct Scaffold compatibility; route chrome, bottom navigation, mutation listeners, provider reads, save/share/calendar/back side effects, companion/host/booking display state, and navigation side effects belong to their route screens. EventDetailScreen now delegates host, companion, and booking dock display-state derivation to EventDetailScreenState while EventDetailCta remains the mutation/router edge for booking actions. EventLocationMapRouteScreen, CalendarScreen, SavedEventsScreen, ExploreScreen, and ExploreMapScreen are aligned adopters outside Event Detail and use provider-free state adapters or provider-free body/chrome widgets for their loaded body data. tool/architecture/check_adopted_architecture_boundaries.mjs enforces provider/routing/data/repository-free imports for aligned lib adopters with providerFree set to true. HostEventManageRouteScreen is intentionally tracked as ARCH-SCREEN-001C because its loaded surface is a host workspace with canonical route aliases and lifecycle sections; do not force it through the Event Detail body shape before the host workspace adapter exists. ExploreList, ExploreCityPicker, and ExplorePeekRail remain explicitly tracked under ARCH-SCREEN-001D until they are deleted or migrated to route-owned state/callback seams."
     },
     {
       "id": "ARCH-UI-STATE-001",
@@ -330,16 +462,30 @@
         },
         {
           "path": "lib/hosts/presentation/host_event_edit_screen_state.dart",
-          "role": "provider-free HostEventEditScreenState, EditHostedEventFooterState, and HostEventEditSaveOutcomeState adapters for loaded editability, schedule/policy locks, save footer enabled/loading state, save error exposure, feedback copy, and pop-on-success policy",
-          "providerFree": true,
-          "status": "aligned",
-          "lastReviewedPass": "2026-07-02-host-event-edit-screen-state-adapter"
+          "role": "needs-update Host event edit state adapters for loaded editability, schedule/policy locks, save footer enabled/loading state, save error exposure, feedback copy, pop-on-success policy, and private-access AsyncValue handling that still imports Riverpod",
+          "providerFree": false,
+          "status": "needs_update",
+          "debtId": "ARCH-UI-STATE-HOST-EDIT-ASYNCVALUE",
+          "lastReviewedPass": "2026-07-03-explore-screen-boundary"
         },
         {
           "path": "test/hosts/edit_hosted_event_screen_test.dart",
           "role": "HostEventEditScreenState save display, editability, lock, error, and success policy behavior coverage",
           "status": "aligned",
           "lastReviewedPass": "2026-07-02-host-event-edit-screen-state-adapter"
+        },
+        {
+          "path": "lib/event_success/presentation/event_success_companion_screen_state.dart",
+          "role": "provider-free Event Success companion display-state adapter for attendee moment selection, paper-shell policy, reveal kind, wingman candidate filtering, effect keys, and moment presentation copy/icon/effect metadata",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-event-success-hosts-audit-remediation"
+        },
+        {
+          "path": "test/event_success/event_success_companion_screen_state_test.dart",
+          "role": "EventSuccessCompanionScreenState behavior coverage for pre-arrival, First Hello, wingman filtering, and companion action-state display flags",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-event-success-hosts-audit-remediation"
         },
         {
           "path": "lib/event_success/presentation/event_success_live_reveal_card_state.dart",
@@ -366,6 +512,19 @@
           "role": "Event Success host screen-state and live behavior coverage for host section async status, retry intents, reveal action state, generation, overrides, and ceremony effects",
           "status": "aligned",
           "lastReviewedPass": "2026-07-03-event-success-host-screen-state"
+        },
+        {
+          "path": "lib/hosts/presentation/host_event_manage_screen_state.dart",
+          "role": "provider-free Host Event Manage display-state adapter for section selection, destructive action policy, private-link display data, participants mutation state, report summary, invite-link rows, roster rows, capacity display, and setup/live/report row policy; route-owned URL construction keeps routing out of the adapter",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-event-success-hosts-audit-remediation"
+        },
+        {
+          "path": "test/hosts/host_event_manage_screen_state_test.dart",
+          "role": "HostEventManageScreenState and related Host Event Manage display-state behavior coverage for actions, private links, invite rows, roster rows, report summary, and mutation state",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-event-success-hosts-audit-remediation"
         },
         {
           "path": "lib/hosts/presentation/host_operations_screen_state.dart",
@@ -405,10 +564,231 @@
           "role": "HostClubCreateState, draft request, submit request, validation, media display, and submit outcome behavior coverage",
           "status": "aligned",
           "lastReviewedPass": "2026-07-03-create-club-screen-state"
+        },
+        {
+          "path": "lib/user_profile/presentation/self_profile_screen_state.dart",
+          "role": "provider-free Self Profile route state adapter for profile loading/data/error/unavailable branches and upload/save mutation display modes via CatchAsyncState",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-profile-chats-state-governance"
+        },
+        {
+          "path": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+          "role": "provider-free Self Profile edit tab state adapter for photo-grid display, prompt slots, inline field descriptors, section rows, and patch intent metadata",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-profile-chats-state-governance"
+        },
+        {
+          "path": "test/profile/self_profile_screen_state_test.dart",
+          "role": "SelfProfileScreenState loading, error, unavailable, ready profile, and mutation-mode behavior coverage",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-profile-chats-state-governance"
+        },
+        {
+          "path": "test/profile/self_profile_edit_tab_state_test.dart",
+          "role": "SelfProfileEditTabState photo-grid, prompt-slot, field descriptor, and photo intent-factory behavior coverage",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-profile-chats-state-governance"
+        },
+        {
+          "path": "lib/chats/presentation/inbox/chats_list_screen_state.dart",
+          "role": "provider-free Chats inbox display-state adapter for auth/view-model loading, error, content, empty, search-empty, host-empty, and unread-filter branches",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-profile-chats-state-governance"
+        },
+        {
+          "path": "lib/chats/presentation/host_chat_screen_state.dart",
+          "role": "provider-free host/consumer chat display-state adapter for route errors, identity, safety/share action availability, composer disablement, and retry intents via CatchAsyncState",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-profile-chats-state-governance"
+        },
+        {
+          "path": "lib/chats/presentation/chat_thread_lookup_state.dart",
+          "role": "provider-free chat thread lookup adapter for participant identity, host inquiry club/profile precedence, public-profile lookup keys, event lookup keys, and Suvbot suppression",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-profile-chats-state-governance"
+        },
+        {
+          "path": "lib/chats/presentation/chat_read_marker_state.dart",
+          "role": "provider-free chat read-marker decision adapter for once-per-uid marking, incoming latest-message detection, and dispose-time last-known uid exposure",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-profile-chats-state-governance"
+        },
+        {
+          "path": "lib/chats/presentation/chat_route_state.dart",
+          "role": "provider-free ChatRouteState snapshot adapter for uid, match, messages, event, Suvbot actions, route error, visibility gates, and widget-edge async projections",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-profile-chats-state-governance"
+        },
+        {
+          "path": "test/chats/chat_inbox_screen_test.dart",
+          "role": "ChatsListScreenState, inbox empty/search/unread branches, batched roster lookup, host inbox filtering, and navigation behavior coverage",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-profile-chats-state-governance"
+        },
+        {
+          "path": "test/chats/chat_screen_test.dart",
+          "role": "ChatRouteState, HostChatScreenState, ChatThreadLookupState, ChatReadMarkerState, route retry, safety action, Suvbot, and host-inquiry behavior coverage",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-profile-chats-state-governance"
         }
       ],
       "variantPatterns": [],
-      "candidateQueue": [],
+      "candidateQueue": [
+        {
+          "id": "ARCH-UI-STATE-HOST-EDIT-ASYNCVALUE",
+          "path": "lib/hosts/presentation/host_event_edit_screen_state.dart",
+          "reason": "HostEventEditPrivateAccessState still stores Riverpod AsyncValue<EventPrivateAccess?> in a state adapter. Replace it with CatchAsyncState or split the provider-owned private-access wrapper before marking this file providerFree again.",
+          "detectedBy": "node tool/architecture/check_adopted_architecture_boundaries.mjs",
+          "addedPass": "2026-07-03-explore-screen-boundary"
+        },
+        {
+          "id": "ARCH-UI-STATE-001-CHATS-PRESENTATION-INBOX-WIDGETS-CHATS-EMPTY-STATE",
+          "path": "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
+          "reason": "File name matches *_state.dart but lives under widgets; register it for explicit review, then either confirm provider-free display-state ownership or rename if it is only a render widget.",
+          "detectedBy": "tool/architecture/check_dependency_direction.mjs#untrackedStateAdapter",
+          "addedPass": "2026-07-03-audit-generalization-scanners"
+        },
+        {
+          "id": "ARCH-UI-STATE-001-DASHBOARD-PRESENTATION-NOTIFICATIONS-LIST-STATE",
+          "path": "lib/dashboard/presentation/notifications_list_state.dart",
+          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass.",
+          "detectedBy": "tool/architecture/check_dependency_direction.mjs#untrackedStateAdapter",
+          "addedPass": "2026-07-03-audit-generalization-scanners"
+        },
+        {
+          "id": "ARCH-UI-STATE-001-EXPLORE-PRESENTATION-WIDGETS-EXPLORE-EMPTY-STATE",
+          "path": "lib/explore/presentation/widgets/explore_empty_state.dart",
+          "reason": "File name matches *_state.dart but lives under widgets; register it for explicit review, then either confirm provider-free display-state ownership or rename if it is only a render widget.",
+          "detectedBy": "tool/architecture/check_dependency_direction.mjs#untrackedStateAdapter",
+          "addedPass": "2026-07-03-audit-generalization-scanners"
+        },
+        {
+          "id": "ARCH-UI-STATE-001-HOSTS-PRESENTATION-EVENT-MANAGEMENT-CREATE-CREATE-EVENT-DRAFT-RESTORE-STATE",
+          "path": "lib/hosts/presentation/event_management/create/create_event_draft_restore_state.dart",
+          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass.",
+          "detectedBy": "tool/architecture/check_dependency_direction.mjs#untrackedStateAdapter",
+          "addedPass": "2026-07-03-audit-generalization-scanners"
+        },
+        {
+          "id": "ARCH-UI-STATE-001-HOSTS-PRESENTATION-EVENT-MANAGEMENT-CREATE-CREATE-EVENT-LOCATION-STATE",
+          "path": "lib/hosts/presentation/event_management/create/create_event_location_state.dart",
+          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass.",
+          "detectedBy": "tool/architecture/check_dependency_direction.mjs#untrackedStateAdapter",
+          "addedPass": "2026-07-03-audit-generalization-scanners"
+        },
+        {
+          "id": "ARCH-UI-STATE-001-HOSTS-PRESENTATION-EVENT-MANAGEMENT-CREATE-CREATE-EVENT-PHOTO-DRAFT-STATE",
+          "path": "lib/hosts/presentation/event_management/create/create_event_photo_draft_state.dart",
+          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass.",
+          "detectedBy": "tool/architecture/check_dependency_direction.mjs#untrackedStateAdapter",
+          "addedPass": "2026-07-03-audit-generalization-scanners"
+        },
+        {
+          "id": "ARCH-UI-STATE-001-HOSTS-PRESENTATION-EVENT-MANAGEMENT-CREATE-CREATE-EVENT-POLICY-STATE",
+          "path": "lib/hosts/presentation/event_management/create/create_event_policy_state.dart",
+          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass.",
+          "detectedBy": "tool/architecture/check_dependency_direction.mjs#untrackedStateAdapter",
+          "addedPass": "2026-07-03-audit-generalization-scanners"
+        },
+        {
+          "id": "ARCH-UI-STATE-001-HOSTS-PRESENTATION-EVENT-MANAGEMENT-CREATE-CREATE-EVENT-SCHEDULE-STATE",
+          "path": "lib/hosts/presentation/event_management/create/create_event_schedule_state.dart",
+          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass.",
+          "detectedBy": "tool/architecture/check_dependency_direction.mjs#untrackedStateAdapter",
+          "addedPass": "2026-07-03-audit-generalization-scanners"
+        },
+        {
+          "id": "ARCH-UI-STATE-001-HOSTS-PRESENTATION-EVENT-MANAGEMENT-CREATE-CREATE-EVENT-WIZARD-STATE",
+          "path": "lib/hosts/presentation/event_management/create/create_event_wizard_state.dart",
+          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass.",
+          "detectedBy": "tool/architecture/check_dependency_direction.mjs#untrackedStateAdapter",
+          "addedPass": "2026-07-03-audit-generalization-scanners"
+        },
+        {
+          "id": "ARCH-UI-STATE-001-HOSTS-PRESENTATION-EVENT-MANAGEMENT-HOST-CREATE-EVENT-ROUTE-STATE",
+          "path": "lib/hosts/presentation/event_management/host_create_event_route_state.dart",
+          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass.",
+          "detectedBy": "tool/architecture/check_dependency_direction.mjs#untrackedStateAdapter",
+          "addedPass": "2026-07-03-audit-generalization-scanners"
+        },
+        {
+          "id": "ARCH-UI-STATE-001-HOSTS-PRESENTATION-HOST-HOME-SCREEN-STATE",
+          "path": "lib/hosts/presentation/host_home_screen_state.dart",
+          "reason": "HostHomeRouteState still imports Riverpod AsyncValue, so it is not provider-free despite earlier audit wording. Split route async snapshots into CatchAsyncState or keep it explicitly non-provider-free until the host home route boundary is migrated.",
+          "detectedBy": "tool/architecture/check_dependency_direction.mjs#untrackedStateAdapter",
+          "addedPass": "2026-07-03-audit-generalization-scanners"
+        },
+        {
+          "id": "ARCH-UI-STATE-001-HOSTS-PRESENTATION-HOST-SETTINGS-STATE",
+          "path": "lib/hosts/presentation/host_settings_state.dart",
+          "reason": "HostSettingsState still imports Riverpod AsyncValue, so it is not provider-free despite earlier audit wording. Replace AsyncValue-facing factories with route-owned snapshots before marking this adapter aligned.",
+          "detectedBy": "tool/architecture/check_dependency_direction.mjs#untrackedStateAdapter",
+          "addedPass": "2026-07-03-audit-generalization-scanners"
+        },
+        {
+          "id": "ARCH-UI-STATE-001-PAYMENTS-PRESENTATION-PAYMENT-HISTORY-STATE",
+          "path": "lib/payments/presentation/payment_history_state.dart",
+          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass.",
+          "detectedBy": "tool/architecture/check_dependency_direction.mjs#untrackedStateAdapter",
+          "addedPass": "2026-07-03-audit-generalization-scanners"
+        },
+        {
+          "id": "ARCH-UI-STATE-001-PUBLIC-PROFILE-PRESENTATION-PUBLIC-PROFILE-SCREEN-STATE",
+          "path": "lib/public_profile/presentation/public_profile_screen_state.dart",
+          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass.",
+          "detectedBy": "tool/architecture/check_dependency_direction.mjs#untrackedStateAdapter",
+          "addedPass": "2026-07-03-audit-generalization-scanners"
+        },
+        {
+          "id": "ARCH-UI-STATE-001-REVIEWS-PRESENTATION-REVIEWS-HISTORY-STATE",
+          "path": "lib/reviews/presentation/reviews_history_state.dart",
+          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass.",
+          "detectedBy": "tool/architecture/check_dependency_direction.mjs#untrackedStateAdapter",
+          "addedPass": "2026-07-03-audit-generalization-scanners"
+        },
+        {
+          "id": "ARCH-UI-STATE-001-SAFETY-PRESENTATION-SETTINGS-ACCOUNT-STATE",
+          "path": "lib/safety/presentation/settings_account_state.dart",
+          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass.",
+          "detectedBy": "tool/architecture/check_dependency_direction.mjs#untrackedStateAdapter",
+          "addedPass": "2026-07-03-audit-generalization-scanners"
+        },
+        {
+          "id": "ARCH-UI-STATE-001-SWIPES-PRESENTATION-CATCHES-HUB-SCREEN-STATE",
+          "path": "lib/swipes/presentation/catches_hub_screen_state.dart",
+          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass.",
+          "detectedBy": "tool/architecture/check_dependency_direction.mjs#untrackedStateAdapter",
+          "addedPass": "2026-07-03-audit-generalization-scanners"
+        },
+        {
+          "id": "ARCH-UI-STATE-001-SWIPES-PRESENTATION-EVENT-RECAP-SCREEN-STATE",
+          "path": "lib/swipes/presentation/event_recap_screen_state.dart",
+          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass.",
+          "detectedBy": "tool/architecture/check_dependency_direction.mjs#untrackedStateAdapter",
+          "addedPass": "2026-07-03-audit-generalization-scanners"
+        },
+        {
+          "id": "ARCH-UI-STATE-001-SWIPES-PRESENTATION-FILTERS-SCREEN-STATE",
+          "path": "lib/swipes/presentation/filters_screen_state.dart",
+          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass.",
+          "detectedBy": "tool/architecture/check_dependency_direction.mjs#untrackedStateAdapter",
+          "addedPass": "2026-07-03-audit-generalization-scanners"
+        },
+        {
+          "id": "ARCH-UI-STATE-001-SWIPES-PRESENTATION-WIDGETS-SWIPE-EMPTY-STATE",
+          "path": "lib/swipes/presentation/widgets/swipe_empty_state.dart",
+          "reason": "File name matches *_state.dart but lives under widgets; register it for explicit review, then either confirm provider-free display-state ownership or rename if it is only a render widget.",
+          "detectedBy": "tool/architecture/check_dependency_direction.mjs#untrackedStateAdapter",
+          "addedPass": "2026-07-03-audit-generalization-scanners"
+        }
+      ],
       "requiredBackPropagation": "When this exhibit changes, inspect every adopter above and either update it in the same pass or mark it variant_needed/exception with a stable debt id.",
       "requiredChecks": [
         "flutter test test/calendar/calendar_screen_state_test.dart",
@@ -419,11 +799,14 @@
         "flutter test test/explore/explore_widgets_test.dart --plain-name 'ClubDetailBody'",
         "flutter test test/calendar/calendar_screen_test.dart",
         "flutter test test/explore/explore_view_model_test.dart test/explore/explore_widgets_test.dart",
+        "flutter test test/profile/self_profile_screen_state_test.dart test/profile/self_profile_edit_tab_state_test.dart",
+        "flutter test test/profile/profile_widgets_test.dart --plain-name 'text edit failure keeps the inline editor open with an error'",
+        "flutter test test/chats/chat_screen_test.dart test/chats/chat_inbox_screen_test.dart",
         "flutter analyze --no-fatal-infos",
         "node tool/architecture/check_adopted_architecture_boundaries.mjs",
         "node tool/agent/check_agent_readiness.mjs"
       ],
-      "notes": "This is a narrow display-state reference. CalendarHomeState remains the reference. CatchAsyncState is the provider-free async branch primitive for route-edge translations. EventDetailHostState, EventDetailCompanionState, and EventDetailBookingDockState are aligned small adapters for host-card, companion entry, and booking dock display data; EventDetailCta keeps provider mutations and router side effects at the edge. CatchesEventScreenState is aligned for queue provider-wave mapping, empty/access copy, and active deck display data; SwipeScreen now owns CatchesProfileReviewActionState for write-pending/failure display while the remaining Catches Event work is capture/reference coverage. HostClubDetailScreenState and ClubDetailBodyState are aligned for Club Detail route async branch mapping, live data, initial route fallback, host public-preview mode, next-event selection, contact actions, host-message eligibility, event-route target, review visibility, membership dock state, and retry typing; capture work remains open under the Club Detail screen contract. ExploreFeedSectionState, ExploreCoverStoryState, ExploreChromeState, ExploreEventRowState, ExploreExternalEventRowState, ExploreClubCardState, ExploreMapLauncherState, ExploreCityTriggerState, ExploreFilterRailState, ExploreFilterSheetState, ExploreCollapsedMapSummaryState, ExplorePeekRailState, ExploreMapEventTicketState, ExploreScreenBodyState, ExploreDiscoveryEmptyState, and ExploreEventsEmptyState are aligned small adopters for mixed-feed planning, cover-story/search-open/event-row/external-row/club-card/map-sheet/filter/chrome display data, route/body branch, map launcher, and empty-state actions only; the full Explore route/feed body still needs a separate screen-boundary migration before it can be marked aligned under ARCH-SCREEN-001."
+      "notes": "This is a narrow display-state reference. CalendarHomeState remains the reference. CatchAsyncState is the provider-free async branch primitive for route-edge translations. EventDetailHostState, EventDetailCompanionState, and EventDetailBookingDockState are aligned small adapters for host-card, companion entry, and booking dock display data; EventDetailCta keeps provider mutations and router side effects at the edge. CatchesEventScreenState is aligned for queue provider-wave mapping, empty/access copy, and active deck display data; SwipeScreen now owns CatchesProfileReviewActionState for write-pending/failure display while the remaining Catches Event work is capture/reference coverage. HostClubDetailScreenState and ClubDetailBodyState are aligned for Club Detail route async branch mapping, live data, initial route fallback, host public-preview mode, next-event selection, contact actions, host-message eligibility, event-route target, review visibility, membership dock state, and retry typing; capture work remains open under the Club Detail screen contract. ExploreFeedSectionState, ExploreCoverStoryState, ExploreChromeState, ExploreEventRowState, ExploreExternalEventRowState, ExploreClubCardState, ExploreMapLauncherState, ExploreCityTriggerState, ExploreFilterRailState, ExploreFilterSheetState, ExploreCollapsedMapSummaryState, ExplorePeekRailState, ExploreMapEventTicketState, ExploreScreenBodyState, ExploreDiscoveryEmptyState, and ExploreEventsEmptyState are aligned adopters for mixed-feed planning, cover-story/search-open/event-row/external-row/club-card/map-sheet/filter/chrome display data, route/body branch, map launcher, and empty-state actions. EventSuccessRevealActionState is aligned as a provider-free live reveal action-state adapter after the host route now translates mutation state into plain pending/error snapshots. SelfProfileScreenState and SelfProfileEditTabState are aligned provider-free Profile adopters after the route provider split and photo intent-factory rename. ChatsListScreenState, HostChatScreenState, ChatThreadLookupState, ChatReadMarkerState, and ChatRouteState are aligned provider-free Chats adopters after the route view-model split and batched inbox roster lookups. The main Explore route/feed body migration is tracked under ARCH-SCREEN-001; only the explicitly recorded ARCH-SCREEN-001D provider islands remain. The Chats inbox widget-level route reads are recorded as ARCH-SCREEN-001-CHATS-INBOX-BOUNDARY candidate debt, not as aligned screen-boundary adoption."
     }
   ]
 }

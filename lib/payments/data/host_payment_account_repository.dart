@@ -6,22 +6,24 @@ import 'package:catch_dating_app/payments/data/payment_callable_responses.dart';
 import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-final hostPaymentAccountRepositoryProvider =
-    Provider<HostPaymentAccountRepository>(
-      (ref) => HostPaymentAccountRepository(
-        db: ref.watch(firebaseFirestoreProvider),
-        functions: ref.watch(firebaseFunctionsProvider),
-      ),
-    );
+part 'host_payment_account_repository.g.dart';
 
-final watchHostPaymentAccountProvider = StreamProvider.autoDispose
-    .family<HostPaymentAccount?, String>((ref, uid) {
-      return ref
-          .watch(hostPaymentAccountRepositoryProvider)
-          .watchHostPaymentAccount(uid);
-    });
+@riverpod
+HostPaymentAccountRepository hostPaymentAccountRepository(Ref ref) {
+  return HostPaymentAccountRepository(
+    db: ref.watch(firebaseFirestoreProvider),
+    functions: ref.watch(firebaseFunctionsProvider),
+  );
+}
+
+@riverpod
+Stream<HostPaymentAccount?> watchHostPaymentAccount(Ref ref, String uid) {
+  return ref
+      .watch(hostPaymentAccountRepositoryProvider)
+      .watchHostPaymentAccount(uid);
+}
 
 class HostPaymentAccountRepository {
   const HostPaymentAccountRepository({

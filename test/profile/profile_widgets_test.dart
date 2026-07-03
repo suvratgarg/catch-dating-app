@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart' show CatchMotion;
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
@@ -1218,6 +1219,7 @@ void main() {
       containsPair('answer', 'Updated bio'),
     ]);
     expect(_inlinePromptEditableText(), findsOneWidget);
+    expect(find.byType(CatchErrorBanner), findsOneWidget);
     expect(find.textContaining('Save failed'), findsOneWidget);
   });
 

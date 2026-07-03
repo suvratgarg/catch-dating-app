@@ -506,6 +506,27 @@ void main() {
       expect(state.hasExternalLink, true);
     });
 
+    test(
+      'unclaimed organizer external event without link renders No link row state',
+      () {
+        final event = _externalEvent(
+          id: 'external-unclaimed-organizer',
+          title: 'Unclaimed Organizer Social',
+          citySlug: 'mumbai',
+          startTime: DateTime(2026, 7, 2, 18),
+          externalLinks: const [],
+        ).copyWith(canonicalHostId: '', compatibilityClubId: '');
+        final state = ExploreExternalEventRowState.from(
+          ExploreExternalEventItem(event: event),
+        );
+
+        expect(state.actionLabel, 'No link');
+        expect(state.actionSemanticsLabel, 'External event link unavailable');
+        expect(state.hasExternalLink, false);
+        expect(state.supportingLabel, contains('Bandra Amphitheatre'));
+      },
+    );
+
     test('ExploreClubCardState derives shared club card labels', () {
       final club = buildClub(
         id: 'club-card',
@@ -565,6 +586,19 @@ void main() {
       final viewModelError = body(viewModelError: StateError('clubs failed'));
       expect(viewModelError.kind, ExploreScreenBodyKind.error);
       expect(viewModelError.retryTarget, ExploreScreenRetryTarget.explore);
+
+      final viewModelErrorWithFeed = body(
+        viewModelError: StateError('clubs failed'),
+        eventFeedHasContent: true,
+      );
+      expect(
+        viewModelErrorWithFeed.kind,
+        ExploreScreenBodyKind.contentWithoutClubs,
+      );
+      expect(
+        viewModelErrorWithFeed.retryTarget,
+        ExploreScreenRetryTarget.explore,
+      );
 
       final populatedClubs = body(viewModel: populatedViewModel);
       expect(populatedClubs.kind, ExploreScreenBodyKind.content);
@@ -954,7 +988,7 @@ void main() {
     );
 
     test(
-      'exploreViewModelProvider partitions joined and discover clubs',
+      'exploreClubsViewModelProvider partitions joined and discover clubs',
       () async {
         final memberClub = buildClub(id: 'member-club');
         final followedClub = buildClub(
@@ -989,7 +1023,7 @@ void main() {
         addTearDown(container.dispose);
 
         final subscription = container.listen(
-          exploreViewModelProvider,
+          exploreClubsViewModelProvider,
           (_, _) {},
           fireImmediately: true,
         );
@@ -1019,7 +1053,7 @@ void main() {
     );
 
     test(
-      'exploreViewModelProvider shows empty city without waiting for auth',
+      'exploreClubsViewModelProvider shows empty city without waiting for auth',
       () async {
         final container = ProviderContainer(
           overrides: [
@@ -1032,7 +1066,7 @@ void main() {
         addTearDown(container.dispose);
 
         final subscription = container.listen(
-          exploreViewModelProvider,
+          exploreClubsViewModelProvider,
           (_, _) {},
           fireImmediately: true,
         );
@@ -1382,7 +1416,7 @@ void main() {
       },
     );
 
-    test('exploreViewModelProvider surfaces auth uid errors', () async {
+    test('exploreClubsViewModelProvider surfaces auth uid errors', () async {
       final container = ProviderContainer(
         overrides: [
           uidProvider.overrideWith(
@@ -1396,7 +1430,7 @@ void main() {
       addTearDown(container.dispose);
 
       final subscription = container.listen(
-        exploreViewModelProvider,
+        exploreClubsViewModelProvider,
         (_, _) {},
         fireImmediately: true,
       );
@@ -1407,28 +1441,31 @@ void main() {
       expect(subscription.read().error, isA<StateError>());
     });
 
-    test('exploreViewModelProvider surfaces filtered list errors', () async {
-      final container = ProviderContainer(
-        overrides: [
-          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-          filteredExploreClubsProvider.overrideWithValue(
-            AsyncError(StateError('filter failed'), StackTrace.empty),
-          ),
-        ],
-      );
-      addTearDown(container.dispose);
+    test(
+      'exploreClubsViewModelProvider surfaces filtered list errors',
+      () async {
+        final container = ProviderContainer(
+          overrides: [
+            uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+            filteredExploreClubsProvider.overrideWithValue(
+              AsyncError(StateError('filter failed'), StackTrace.empty),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
 
-      final subscription = container.listen(
-        exploreViewModelProvider,
-        (_, _) {},
-        fireImmediately: true,
-      );
-      addTearDown(subscription.close);
-      await container.pump();
+        final subscription = container.listen(
+          exploreClubsViewModelProvider,
+          (_, _) {},
+          fireImmediately: true,
+        );
+        addTearDown(subscription.close);
+        await container.pump();
 
-      expect(subscription.read().hasError, isTrue);
-      expect(subscription.read().error, isA<StateError>());
-    });
+        expect(subscription.read().hasError, isTrue);
+        expect(subscription.read().error, isA<StateError>());
+      },
+    );
   });
 }
 
@@ -1472,6 +1509,16 @@ ExternalEvent _externalEvent({
   required String title,
   required String citySlug,
   required DateTime startTime,
+  List<ExternalEventLink> externalLinks = const [
+    ExternalEventLink(
+      platform: 'luma',
+      url: 'https://luma.com/e',
+      linkType: 'booking_or_event_page',
+      sourceEventKey: 'external-source-key',
+      candidateId: 'candidate-external',
+      primary: true,
+    ),
+  ],
 }) {
   return ExternalEvent(
     id: id,
@@ -1487,16 +1534,7 @@ ExternalEvent _externalEvent({
     status: 'active',
     publicationStatus: 'public',
     citySlug: citySlug,
-    externalLinks: const [
-      ExternalEventLink(
-        platform: 'luma',
-        url: 'https://luma.com/e',
-        linkType: 'booking_or_event_page',
-        sourceEventKey: 'external-source-key',
-        candidateId: 'candidate-external',
-        primary: true,
-      ),
-    ],
+    externalLinks: externalLinks,
   );
 }
 

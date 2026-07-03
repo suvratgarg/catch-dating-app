@@ -182,17 +182,3 @@ String? _profileNameForUid(List<PublicProfile> profiles, String uid) {
   }
   return null;
 }
-
-List<PublicProfile> _wingmanCandidatesForViewer({
-  required UserProfile viewer,
-  required List<PublicProfile> candidates,
-}) {
-  final interestedIn = viewer.interestedInGenders.toSet();
-  if (interestedIn.isEmpty) return const [];
-  return [
-    for (final candidate in candidates)
-      if (candidate.uid != viewer.uid &&
-          interestedIn.contains(candidate.gender))
-        candidate,
-  ];
-}

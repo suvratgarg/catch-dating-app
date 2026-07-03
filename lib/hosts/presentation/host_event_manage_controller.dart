@@ -15,11 +15,13 @@ import 'package:catch_dating_app/hosts/presentation/host_event_booking_controlle
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-final hostEventManageActionsProvider = Provider<HostEventManageActions>(
-  (ref) => HostEventManageController(ref),
-);
+part 'host_event_manage_controller.g.dart';
+
+@riverpod
+HostEventManageActions hostEventManageActions(Ref ref) =>
+    HostEventManageController(ref);
 
 abstract interface class HostEventManageActions {
   Future<String> createInviteLink({

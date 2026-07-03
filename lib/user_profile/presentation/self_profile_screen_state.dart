@@ -1,25 +1,7 @@
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
-import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
-import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
-import 'package:catch_dating_app/user_profile/presentation/profile_edit_controller.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-final selfProfileScreenStateProvider = Provider<SelfProfileScreenState>((ref) {
-  final profileAsync = ref.watch(watchUserProfileProvider);
-  final uploadState = ref.watch(photoUploadControllerProvider);
-  final uploadMutation = ref.watch(PhotoUploadController.uploadPhotoMutation);
-  final saveMutation = ref.watch(ProfileEditController.saveFieldsMutation);
-
-  return SelfProfileScreenState.fromAsync(
-    profileAsync: profileAsync,
-    today: DateTime.now(),
-    uploadState: uploadState,
-    uploadMutationPending: uploadMutation.isPending,
-    saveMutationPending: saveMutation.isPending,
-  );
-});
 
 enum SelfProfileRouteStatus { loading, error, unavailable, ready }
 
@@ -44,7 +26,7 @@ class SelfProfileScreenState {
   });
 
   factory SelfProfileScreenState.fromAsync({
-    required AsyncValue<UserProfile?> profileAsync,
+    required CatchAsyncState<UserProfile?> profileState,
     required DateTime today,
     required PhotoUploadState uploadState,
     required bool uploadMutationPending,
@@ -56,21 +38,24 @@ class SelfProfileScreenState {
       savePending: saveMutationPending,
     );
 
-    return switch (profileAsync) {
-      AsyncLoading() => SelfProfileScreenState(
-        status: SelfProfileRouteStatus.loading,
-        uploadState: uploadState,
-        mutationMode: mutationMode,
-      ),
-      AsyncError(:final error) => SelfProfileScreenState(
-        status: SelfProfileRouteStatus.error,
-        error: error,
-        uploadState: uploadState,
-        mutationMode: mutationMode,
-        retryIntent: SelfProfileRetryIntent.reloadProfile,
-      ),
-      AsyncData(:final value) =>
-        value == null
+    switch (profileState.status) {
+      case CatchAsyncStatus.loading:
+        return SelfProfileScreenState(
+          status: SelfProfileRouteStatus.loading,
+          uploadState: uploadState,
+          mutationMode: mutationMode,
+        );
+      case CatchAsyncStatus.error:
+        return SelfProfileScreenState(
+          status: SelfProfileRouteStatus.error,
+          error: profileState.error,
+          uploadState: uploadState,
+          mutationMode: mutationMode,
+          retryIntent: SelfProfileRetryIntent.reloadProfile,
+        );
+      case CatchAsyncStatus.data:
+        final value = profileState.value;
+        return value == null
             ? SelfProfileScreenState(
                 status: SelfProfileRouteStatus.unavailable,
                 uploadState: uploadState,
@@ -85,8 +70,8 @@ class SelfProfileScreenState {
                 ),
                 uploadState: uploadState,
                 mutationMode: mutationMode,
-              ),
-    };
+              );
+    }
   }
 
   final SelfProfileRouteStatus status;

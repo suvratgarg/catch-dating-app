@@ -746,11 +746,13 @@ class ProcessPaymentCall {
 class FakePublicProfileRepository extends Fake
     implements PublicProfileRepository {
   List<String>? lastRequestedUids;
+  final List<List<String>> fetchPublicProfilesCalls = [];
   List<PublicProfile> profiles = const [];
 
   @override
   Future<List<PublicProfile>> fetchPublicProfiles(List<String> uids) async {
     lastRequestedUids = uids;
+    fetchPublicProfilesCalls.add(List.unmodifiable(uids));
     return profiles;
   }
 }

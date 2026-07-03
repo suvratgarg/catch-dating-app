@@ -13,6 +13,8 @@ part of 'explore_view_model.dart';
 /// Holds the currently selected city for club browsing. Uses an
 /// internal `_userSelected` flag so GPS auto-detection never overrides a
 /// manual user pick. [keepAlive] is true so the city survives tab switches.
+// keepalive: selected city is user browse-session state shared by Explore list,
+// map, and city controllers across tab switches.
 
 @ProviderFor(SelectedExploreCity)
 final selectedExploreCityProvider = SelectedExploreCityProvider._();
@@ -22,6 +24,8 @@ final selectedExploreCityProvider = SelectedExploreCityProvider._();
 /// Holds the currently selected city for club browsing. Uses an
 /// internal `_userSelected` flag so GPS auto-detection never overrides a
 /// manual user pick. [keepAlive] is true so the city survives tab switches.
+// keepalive: selected city is user browse-session state shared by Explore list,
+// map, and city controllers across tab switches.
 final class SelectedExploreCityProvider
     extends $NotifierProvider<SelectedExploreCity, CityData> {
   /// **KeepAlive notifier with internal flag**
@@ -29,6 +33,8 @@ final class SelectedExploreCityProvider
   /// Holds the currently selected city for club browsing. Uses an
   /// internal `_userSelected` flag so GPS auto-detection never overrides a
   /// manual user pick. [keepAlive] is true so the city survives tab switches.
+  // keepalive: selected city is user browse-session state shared by Explore list,
+  // map, and city controllers across tab switches.
   SelectedExploreCityProvider._()
     : super(
         from: null,
@@ -64,6 +70,8 @@ String _$selectedExploreCityHash() =>
 /// Holds the currently selected city for club browsing. Uses an
 /// internal `_userSelected` flag so GPS auto-detection never overrides a
 /// manual user pick. [keepAlive] is true so the city survives tab switches.
+// keepalive: selected city is user browse-session state shared by Explore list,
+// map, and city controllers across tab switches.
 
 abstract class _$SelectedExploreCity extends $Notifier<CityData> {
   CityData build();
@@ -143,6 +151,8 @@ abstract class _$SelectedExploreCityWasUserSelected extends $Notifier<bool> {
 ///
 /// Holds the current search query text. [keepAlive] ensures the query
 /// survives tab switches so the user's search isn't lost while browsing.
+// keepalive: query text is browse-session state and should survive Explore
+// route/chrome rebuilds.
 
 @ProviderFor(ExploreSearchQuery)
 final exploreSearchQueryProvider = ExploreSearchQueryProvider._();
@@ -151,12 +161,16 @@ final exploreSearchQueryProvider = ExploreSearchQueryProvider._();
 ///
 /// Holds the current search query text. [keepAlive] ensures the query
 /// survives tab switches so the user's search isn't lost while browsing.
+// keepalive: query text is browse-session state and should survive Explore
+// route/chrome rebuilds.
 final class ExploreSearchQueryProvider
     extends $NotifierProvider<ExploreSearchQuery, String> {
   /// **KeepAlive notifier — simple string state**
   ///
   /// Holds the current search query text. [keepAlive] ensures the query
   /// survives tab switches so the user's search isn't lost while browsing.
+  // keepalive: query text is browse-session state and should survive Explore
+  // route/chrome rebuilds.
   ExploreSearchQueryProvider._()
     : super(
         from: null,
@@ -191,6 +205,8 @@ String _$exploreSearchQueryHash() =>
 ///
 /// Holds the current search query text. [keepAlive] ensures the query
 /// survives tab switches so the user's search isn't lost while browsing.
+// keepalive: query text is browse-session state and should survive Explore
+// route/chrome rebuilds.
 
 abstract class _$ExploreSearchQuery extends $Notifier<String> {
   String build();
@@ -456,8 +472,8 @@ String _$filteredExploreClubsHash() =>
 /// [ExploreViewModel] that partitions clubs into joined and discover
 /// lists for the UI.
 
-@ProviderFor(exploreViewModel)
-final exploreViewModelProvider = ExploreViewModelProvider._();
+@ProviderFor(exploreClubsViewModel)
+final exploreClubsViewModelProvider = ExploreClubsViewModelProvider._();
 
 /// **Pattern D: View-model provider**
 ///
@@ -466,7 +482,7 @@ final exploreViewModelProvider = ExploreViewModelProvider._();
 /// [ExploreViewModel] that partitions clubs into joined and discover
 /// lists for the UI.
 
-final class ExploreViewModelProvider
+final class ExploreClubsViewModelProvider
     extends
         $FunctionalProvider<
           AsyncValue<ExploreViewModel>,
@@ -480,19 +496,19 @@ final class ExploreViewModelProvider
   /// a
   /// [ExploreViewModel] that partitions clubs into joined and discover
   /// lists for the UI.
-  ExploreViewModelProvider._()
+  ExploreClubsViewModelProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'exploreViewModelProvider',
+        name: r'exploreClubsViewModelProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$exploreViewModelHash();
+  String debugGetCreateSourceHash() => _$exploreClubsViewModelHash();
 
   @$internal
   @override
@@ -502,7 +518,7 @@ final class ExploreViewModelProvider
 
   @override
   AsyncValue<ExploreViewModel> create(Ref ref) {
-    return exploreViewModel(ref);
+    return exploreClubsViewModel(ref);
   }
 
   /// {@macro riverpod.override_with_value}
@@ -514,4 +530,5 @@ final class ExploreViewModelProvider
   }
 }
 
-String _$exploreViewModelHash() => r'9980a2e3114dfeeffaca1b5b2c9ca2e16ce4aa10';
+String _$exploreClubsViewModelHash() =>
+    r'770d70dbc0a70bde55bacd4a34c21841a1bf059b';

@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
@@ -16,7 +17,6 @@ import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_schedule
 import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_list_tile.dart';
 import 'package:catch_dating_app/clubs/shared/catch_polaroid.dart';
 import 'package:catch_dating_app/clubs/shared/club_transition_tags.dart';
-import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/data/city_repository.dart';
 import 'package:catch_dating_app/core/device_location.dart';
@@ -27,6 +27,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
@@ -44,6 +45,7 @@ import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
+import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/catch_cover_story.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_body.dart';
@@ -97,23 +99,6 @@ class _NoDeviceLocation extends DeviceLocation {
   Future<LocationCoordinate?> build() async => null;
 }
 
-final class _NoOpAnalyticsReporter implements AnalyticsReporter {
-  @override
-  Future<void> logEvent(String name, {Map<String, Object>? parameters}) async {}
-
-  @override
-  Future<void> logScreenView({
-    required String screenName,
-    String? screenClass,
-  }) async {}
-
-  @override
-  Future<void> setCollectionEnabled(bool enabled) async {}
-
-  @override
-  Future<void> setUserId(String? userId) async {}
-}
-
 Future<void> _pumpClubsSlivers(
   WidgetTester tester,
   List<Widget> slivers,
@@ -136,6 +121,128 @@ Future<void> _pumpClubsSlivers(
 Future<void> _pumpClubUi(WidgetTester tester) async {
   await pumpFeatureUi(tester);
 }
+
+ExploreBody _exploreBody({
+  required ExploreViewModel clubsViewModel,
+  AsyncValue<ExploreFeedViewModel> feedAsync = const AsyncData(
+    ExploreFeedViewModel(items: []),
+  ),
+  ExploreFilterSelection filters = const ExploreFilterSelection(),
+  String searchQuery = '',
+  Object? clubSectionError,
+  VoidCallback onRetryFeed = _noop,
+  VoidCallback onRetryClubs = _noop,
+  VoidCallback onClearSearch = _noop,
+  VoidCallback onClearFilters = _noop,
+  ValueChanged<ExploreTimeFilter> onSetTimeFilter = _noopTimeFilter,
+  ValueChanged<ActivityKind> onActivitySelected = _noopActivityKind,
+  ExploreEventSelected onEventSelected = _noopExploreEventSelected,
+  ValueChanged<ExploreExternalEventItem> onExternalEventOpened =
+      _noopExternalEventOpened,
+  bool includeJoinedClubsRail = true,
+  bool includeClubDirectory = true,
+}) {
+  return ExploreBody(
+    feedAsync: feedAsync,
+    clubsViewModel: clubsViewModel,
+    filters: filters,
+    searchQuery: searchQuery,
+    clubSectionError: clubSectionError,
+    onRetryFeed: onRetryFeed,
+    onRetryClubs: onRetryClubs,
+    onClearSearch: onClearSearch,
+    onClearFilters: onClearFilters,
+    onSetTimeFilter: onSetTimeFilter,
+    onActivitySelected: onActivitySelected,
+    onEventSelected: onEventSelected,
+    onExternalEventOpened: onExternalEventOpened,
+    includeJoinedClubsRail: includeJoinedClubsRail,
+    includeClubDirectory: includeClubDirectory,
+  );
+}
+
+ExploreEventsSection _exploreEventsSection({
+  AsyncValue<ExploreFeedViewModel> feedAsync = const AsyncData(
+    ExploreFeedViewModel(items: []),
+  ),
+  ExploreFilterSelection filters = const ExploreFilterSelection(),
+  String searchQuery = '',
+  VoidCallback onRetry = _noop,
+  VoidCallback onClearSearch = _noop,
+  VoidCallback onClearFilters = _noop,
+  ValueChanged<ExploreTimeFilter> onSetTimeFilter = _noopTimeFilter,
+  ExploreEventSelected onEventSelected = _noopExploreEventSelected,
+  ValueChanged<ExploreExternalEventItem> onExternalEventOpened =
+      _noopExternalEventOpened,
+}) {
+  return ExploreEventsSection(
+    feedAsync: feedAsync,
+    filters: filters,
+    searchQuery: searchQuery,
+    onRetry: onRetry,
+    onClearSearch: onClearSearch,
+    onClearFilters: onClearFilters,
+    onSetTimeFilter: onSetTimeFilter,
+    onEventSelected: onEventSelected,
+    onExternalEventOpened: onExternalEventOpened,
+  );
+}
+
+List<Widget> _exploreEventsSlivers({
+  AsyncValue<ExploreFeedViewModel> feedAsync = const AsyncData(
+    ExploreFeedViewModel(items: []),
+  ),
+  ExploreFilterSelection filters = const ExploreFilterSelection(),
+  String searchQuery = '',
+  VoidCallback onRetry = _noop,
+  VoidCallback onClearSearch = _noop,
+  VoidCallback onClearFilters = _noop,
+  ValueChanged<ExploreTimeFilter> onSetTimeFilter = _noopTimeFilter,
+  ExploreEventSelected onEventSelected = _noopExploreEventSelected,
+  ValueChanged<ExploreExternalEventItem> onExternalEventOpened =
+      _noopExternalEventOpened,
+  bool pinnedDayHeaders = true,
+  List<Club> candidateClubs = const [],
+  Set<String> joinedClubIds = const {},
+}) {
+  return buildExploreEventsSlivers(
+    feedAsync,
+    filters: filters,
+    searchQuery: searchQuery,
+    onRetry: onRetry,
+    onClearSearch: onClearSearch,
+    onClearFilters: onClearFilters,
+    onSetTimeFilter: onSetTimeFilter,
+    onEventSelected: onEventSelected,
+    onExternalEventOpened: onExternalEventOpened,
+    pinnedDayHeaders: pinnedDayHeaders,
+    candidateClubs: candidateClubs,
+    joinedClubIds: joinedClubIds,
+  );
+}
+
+ExploreDiscoveryCoverHeader _exploreCoverHeader({
+  String query = '',
+  ExploreEventItem? featuredItem,
+  ValueChanged<String> onQueryChanged = _noopString,
+  ValueChanged<ExploreEventItem> onFeaturedEventSelected =
+      _noopFeaturedEventSelected,
+}) {
+  return ExploreDiscoveryCoverHeader(
+    query: query,
+    featuredItem: featuredItem,
+    onQueryChanged: onQueryChanged,
+    onFeaturedEventSelected: onFeaturedEventSelected,
+  );
+}
+
+void _noop() {}
+void _noopString(String _) {}
+void _noopTimeFilter(ExploreTimeFilter _) {}
+void _noopActivityKind(ActivityKind _) {}
+void _noopExploreEventSelected(ExploreEventItem item, String source) {}
+void _noopFeaturedEventSelected(ExploreEventItem _) {}
+void _noopExternalEventOpened(ExploreExternalEventItem _) {}
 
 /// Returns the network URL backing an [Image] widget, unwrapping the
 /// [ResizeImage] that [CatchNetworkImage] applies for decode-sizing.
@@ -191,7 +298,7 @@ void main() {
             watchClubsByLocationProvider(
               'mumbai',
             ).overrideWith((ref) => Stream.value(const [])),
-            exploreViewModelProvider.overrideWithValue(
+            exploreClubsViewModelProvider.overrideWithValue(
               const AsyncData(ExploreViewModel(joinedClubs: [], allClubs: [])),
             ),
             _emptyExploreFeedOverride,
@@ -224,7 +331,7 @@ void main() {
           watchClubsByLocationProvider(
             'mumbai',
           ).overrideWith((ref) => Stream.value([sourceClub])),
-          exploreViewModelProvider.overrideWithValue(
+          exploreClubsViewModelProvider.overrideWithValue(
             const AsyncData(ExploreViewModel(joinedClubs: [], allClubs: [])),
           ),
           _emptyExploreFeedOverride,
@@ -268,7 +375,7 @@ void main() {
           watchClubsByLocationProvider(
             'mumbai',
           ).overrideWith((ref) => Stream.value([sourceClub])),
-          exploreViewModelProvider.overrideWithValue(
+          exploreClubsViewModelProvider.overrideWithValue(
             const AsyncData(ExploreViewModel(joinedClubs: [], allClubs: [])),
           ),
           _emptyExploreFeedOverride,
@@ -309,9 +416,9 @@ void main() {
       'ClubsContent renders personal rail and mixed discovery cards',
       (tester) async {
         await _pumpClubsSlivers(tester, [
-          ExploreBody(
+          _exploreBody(
             includeClubDirectory: false,
-            viewModel: ExploreViewModel(
+            clubsViewModel: ExploreViewModel(
               joinedClubs: [
                 buildClub(id: 'joined-1', nextEventLabel: 'Sat 6:30 AM'),
               ],
@@ -359,41 +466,40 @@ void main() {
       );
 
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            exploreFeedViewModelProvider.overrideWithValue(
-              AsyncData(
-                ExploreFeedViewModel(
-                  items: [
-                    ExploreEventItem(
-                      event: featuredEvent,
-                      club: club,
-                      availability: resolveViewerEventAvailability(
-                        event: featuredEvent,
-                        userProfile: null,
-                        now: DateTime.now(),
-                      ),
-                      status: EventTileStatus.open,
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: CustomScrollView(
+              slivers: [
+                _exploreEventsSection(
+                  feedAsync: AsyncData(
+                    ExploreFeedViewModel(
+                      items: [
+                        ExploreEventItem(
+                          event: featuredEvent,
+                          club: club,
+                          availability: resolveViewerEventAvailability(
+                            event: featuredEvent,
+                            userProfile: null,
+                            now: DateTime.now(),
+                          ),
+                          status: EventTileStatus.open,
+                        ),
+                        ExploreEventItem(
+                          event: bodyEvent,
+                          club: club,
+                          availability: resolveViewerEventAvailability(
+                            event: bodyEvent,
+                            userProfile: null,
+                            now: DateTime.now(),
+                          ),
+                          status: EventTileStatus.open,
+                        ),
+                      ],
                     ),
-                    ExploreEventItem(
-                      event: bodyEvent,
-                      club: club,
-                      availability: resolveViewerEventAvailability(
-                        event: bodyEvent,
-                        userProfile: null,
-                        now: DateTime.now(),
-                      ),
-                      status: EventTileStatus.open,
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          ],
-          child: MaterialApp(
-            theme: AppTheme.light,
-            home: const Scaffold(
-              body: CustomScrollView(slivers: [ExploreEventsSection()]),
+              ],
             ),
           ),
         ),
@@ -411,7 +517,64 @@ void main() {
       expect(find.text('8 going · 4 spots left'), findsOneWidget);
     });
 
-    testWidgets('ExploreDiscoveryCoverHeader CTA opens spotlight-dark', (
+    testWidgets('ExploreBody keeps feed visible when club section fails', (
+      tester,
+    ) async {
+      final club = buildClub(id: 'club-feed-only', name: 'Pace Social');
+      final featuredEvent = event_test.buildEvent(
+        id: 'event-feed-featured',
+        clubId: club.id,
+        meetingPoint: 'People Plaza',
+        bookedCount: 8,
+        capacityLimit: 12,
+      );
+      final bodyEvent = event_test.buildEvent(
+        id: 'event-feed-only',
+        clubId: club.id,
+        startTime: DateTime.now().add(const Duration(hours: 4)),
+        meetingPoint: 'People Plaza',
+        bookedCount: 8,
+        capacityLimit: 12,
+      );
+
+      await _pumpClubsSlivers(tester, [
+        _exploreBody(
+          clubsViewModel: const ExploreViewModel(joinedClubs: [], allClubs: []),
+          feedAsync: AsyncData(
+            ExploreFeedViewModel(
+              items: [
+                ExploreEventItem(
+                  event: featuredEvent,
+                  club: club,
+                  availability: resolveViewerEventAvailability(
+                    event: featuredEvent,
+                    userProfile: null,
+                    now: DateTime.now(),
+                  ),
+                  status: EventTileStatus.open,
+                ),
+                ExploreEventItem(
+                  event: bodyEvent,
+                  club: club,
+                  availability: resolveViewerEventAvailability(
+                    event: bodyEvent,
+                    userProfile: null,
+                    now: DateTime.now(),
+                  ),
+                  status: EventTileStatus.open,
+                ),
+              ],
+            ),
+          ),
+          clubSectionError: StateError('clubs failed'),
+        ),
+      ]);
+
+      expect(find.textContaining(bodyEvent.title), findsWidgets);
+      expect(find.byType(CatchInlineErrorState), findsOneWidget);
+    });
+
+    testWidgets('ExploreDiscoveryCoverHeader CTA delegates featured item', (
       tester,
     ) async {
       final club = buildClub(id: 'club-cover', name: 'Pace Social');
@@ -421,57 +584,26 @@ void main() {
         bookedCount: 8,
         capacityLimit: 12,
       );
-      final router = GoRouter(
-        initialLocation: '/',
-        routes: [
-          GoRoute(
-            path: '/',
-            builder: (_, _) =>
-                const Scaffold(body: ExploreDiscoveryCoverHeader()),
-          ),
-          GoRoute(
-            path: '/events/:clubId/:eventId',
-            name: Routes.eventDetailScreen.name,
-            builder: (_, state) => Text(
-              'Detail ${state.pathParameters['eventId']} '
-              '${(state.extra! as EventDetailRouteExtra).presentationMode.name}',
-              textDirection: TextDirection.ltr,
-            ),
-          ),
-        ],
+      final item = ExploreEventItem(
+        event: event,
+        club: club,
+        availability: resolveViewerEventAvailability(
+          event: event,
+          userProfile: null,
+          now: DateTime.now(),
+        ),
+        status: EventTileStatus.open,
       );
+      ExploreEventItem? selectedItem;
 
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            exploreFeedViewModelProvider.overrideWithValue(
-              AsyncData(
-                ExploreFeedViewModel(
-                  items: [
-                    ExploreEventItem(
-                      event: event,
-                      club: club,
-                      availability: resolveViewerEventAvailability(
-                        event: event,
-                        userProfile: null,
-                        now: DateTime.now(),
-                      ),
-                      status: EventTileStatus.open,
-                    ),
-                  ],
-                ),
-              ),
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: _exploreCoverHeader(
+              featuredItem: item,
+              onFeaturedEventSelected: (item) => selectedItem = item,
             ),
-            appAnalyticsProvider.overrideWithValue(
-              AppAnalytics(
-                reporter: _NoOpAnalyticsReporter(),
-                shouldCollect: false,
-              ),
-            ),
-          ],
-          child: MaterialApp.router(
-            theme: AppTheme.light,
-            routerConfig: router,
           ),
         ),
       );
@@ -481,9 +613,8 @@ void main() {
 
       await tester.tap(find.text('Claim a seat'));
       await tester.pump();
-      await tester.pump(CatchMotion.base);
 
-      expect(find.text('Detail event-cover spotlightDark'), findsOneWidget);
+      expect(selectedItem?.event.id, 'event-cover');
     });
 
     testWidgets('ExploreDiscoveryCoverHeader paints through the top inset', (
@@ -568,6 +699,16 @@ void main() {
         id: 'event-cover-search',
         clubId: club.id,
       );
+      final item = ExploreEventItem(
+        event: event,
+        club: club,
+        availability: resolveViewerEventAvailability(
+          event: event,
+          userProfile: null,
+          now: DateTime.now(),
+        ),
+        status: EventTileStatus.open,
+      );
 
       await tester.pumpWidget(
         ProviderScope(
@@ -575,28 +716,10 @@ void main() {
             cityListProvider.overrideWith((ref) async => _testCities),
             deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
             watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
-            exploreFeedViewModelProvider.overrideWithValue(
-              AsyncData(
-                ExploreFeedViewModel(
-                  items: [
-                    ExploreEventItem(
-                      event: event,
-                      club: club,
-                      availability: resolveViewerEventAvailability(
-                        event: event,
-                        userProfile: null,
-                        now: DateTime.now(),
-                      ),
-                      status: EventTileStatus.open,
-                    ),
-                  ],
-                ),
-              ),
-            ),
           ],
           child: MaterialApp(
             theme: AppTheme.light,
-            home: const Scaffold(body: ExploreDiscoveryCoverHeader()),
+            home: Scaffold(body: _exploreCoverHeader(featuredItem: item)),
           ),
         ),
       );
@@ -700,23 +823,13 @@ void main() {
       );
 
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            exploreFeedViewModelProvider.overrideWithValue(
-              const AsyncData(ExploreFeedViewModel(items: [])),
-            ),
-          ],
-          child: Consumer(
-            builder: (context, ref, _) => MaterialApp(
-              theme: AppTheme.light,
-              home: Scaffold(
-                body: CustomScrollView(
-                  slivers: buildExploreEventsSlivers(
-                    ref,
-                    pinnedDayHeaders: false,
-                    candidateClubs: [club],
-                  ),
-                ),
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: CustomScrollView(
+              slivers: _exploreEventsSlivers(
+                pinnedDayHeaders: false,
+                candidateClubs: [club],
               ),
             ),
           ),
@@ -815,39 +928,38 @@ void main() {
         );
 
         await tester.pumpWidget(
-          ProviderScope(
-            overrides: [
-              exploreFeedViewModelProvider.overrideWithValue(
-                AsyncData(
-                  ExploreFeedViewModel(
-                    items: [
-                      for (final event in [
-                        dinner,
-                        run,
-                        art,
-                        brunch,
-                        pickleball,
-                        quiz,
-                      ])
-                        ExploreEventItem(
-                          event: event,
-                          club: club,
-                          availability: resolveViewerEventAvailability(
-                            event: event,
-                            userProfile: null,
-                            now: DateTime.now(),
-                          ),
-                          status: EventTileStatus.open,
-                        ),
-                    ],
+          MaterialApp(
+            theme: AppTheme.light,
+            home: Scaffold(
+              body: CustomScrollView(
+                slivers: [
+                  _exploreEventsSection(
+                    feedAsync: AsyncData(
+                      ExploreFeedViewModel(
+                        items: [
+                          for (final event in [
+                            dinner,
+                            run,
+                            art,
+                            brunch,
+                            pickleball,
+                            quiz,
+                          ])
+                            ExploreEventItem(
+                              event: event,
+                              club: club,
+                              availability: resolveViewerEventAvailability(
+                                event: event,
+                                userProfile: null,
+                                now: DateTime.now(),
+                              ),
+                              status: EventTileStatus.open,
+                            ),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ],
-            child: MaterialApp(
-              theme: AppTheme.light,
-              home: const Scaffold(
-                body: CustomScrollView(slivers: [ExploreEventsSection()]),
+                ],
               ),
             ),
           ),
@@ -899,41 +1011,40 @@ void main() {
       );
 
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            exploreFeedViewModelProvider.overrideWithValue(
-              AsyncData(
-                ExploreFeedViewModel(
-                  items: [
-                    ExploreEventItem(
-                      event: featuredEvent,
-                      club: club,
-                      availability: resolveViewerEventAvailability(
-                        event: featuredEvent,
-                        userProfile: null,
-                        now: DateTime.now(),
-                      ),
-                      status: EventTileStatus.open,
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: CustomScrollView(
+              slivers: [
+                _exploreEventsSection(
+                  feedAsync: AsyncData(
+                    ExploreFeedViewModel(
+                      items: [
+                        ExploreEventItem(
+                          event: featuredEvent,
+                          club: club,
+                          availability: resolveViewerEventAvailability(
+                            event: featuredEvent,
+                            userProfile: null,
+                            now: DateTime.now(),
+                          ),
+                          status: EventTileStatus.open,
+                        ),
+                        ExploreEventItem(
+                          event: event,
+                          club: club,
+                          availability: resolveViewerEventAvailability(
+                            event: event,
+                            userProfile: null,
+                            now: DateTime.now(),
+                          ),
+                          status: EventTileStatus.full,
+                        ),
+                      ],
                     ),
-                    ExploreEventItem(
-                      event: event,
-                      club: club,
-                      availability: resolveViewerEventAvailability(
-                        event: event,
-                        userProfile: null,
-                        now: DateTime.now(),
-                      ),
-                      status: EventTileStatus.full,
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          ],
-          child: MaterialApp(
-            theme: AppTheme.light,
-            home: const Scaffold(
-              body: CustomScrollView(slivers: [ExploreEventsSection()]),
+              ],
             ),
           ),
         ),
@@ -966,39 +1077,34 @@ void main() {
         ActivityKind.socialRun,
         ActivityKind.socialRun,
       ];
-      final container = ProviderContainer(
-        overrides: [
-          exploreFeedViewModelProvider.overrideWithValue(
-            AsyncData(
-              ExploreFeedViewModel(
-                items: [
-                  for (var index = 0; index < activityKinds.length; index += 1)
-                    ExploreEventItem(
-                      event: event_test.buildEvent(
-                        id: 'event-type-$index',
-                        clubId: club.id,
-                        eventFormat: EventFormatSnapshot.fromActivityKind(
-                          activityKinds[index],
-                        ),
-                      ),
-                      club: club,
-                      status: EventTileStatus.open,
-                    ),
-                ],
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+      final items = [
+        for (var index = 0; index < activityKinds.length; index += 1)
+          ExploreEventItem(
+            event: event_test.buildEvent(
+              id: 'event-type-$index',
+              clubId: club.id,
+              eventFormat: EventFormatSnapshot.fromActivityKind(
+                activityKinds[index],
               ),
             ),
+            club: club,
+            status: EventTileStatus.open,
           ),
-        ],
-      );
-      addTearDown(container.dispose);
+      ];
 
       await tester.pumpWidget(
-        UncontrolledProviderScope(
-          container: container,
-          child: MaterialApp(
-            theme: AppTheme.light,
-            home: const Scaffold(
-              body: SingleChildScrollView(child: ExploreEventTypeBrowseGrid()),
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: SingleChildScrollView(
+              child: ExploreEventTypeBrowseGrid(
+                items: items,
+                onCategoryTap: (kind) => container
+                    .read(exploreFiltersProvider.notifier)
+                    .toggleActivityTag(kind.name),
+              ),
             ),
           ),
         ),
@@ -1050,26 +1156,19 @@ void main() {
       );
 
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            exploreFeedViewModelProvider.overrideWithValue(
-              AsyncData(
-                ExploreFeedViewModel(
-                  items: [
-                    ExploreEventItem(
-                      event: event,
-                      club: club,
-                      status: EventTileStatus.open,
-                    ),
-                  ],
-                ),
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: SingleChildScrollView(
+              child: ExploreEventTypeBrowseGrid(
+                items: [
+                  ExploreEventItem(
+                    event: event,
+                    club: club,
+                    status: EventTileStatus.open,
+                  ),
+                ],
               ),
-            ),
-          ],
-          child: MaterialApp(
-            theme: AppTheme.light,
-            home: const Scaffold(
-              body: SingleChildScrollView(child: ExploreEventTypeBrowseGrid()),
             ),
           ),
         ),
@@ -1084,25 +1183,23 @@ void main() {
     testWidgets('ExploreEventsSection empty state can broaden time filter', (
       tester,
     ) async {
-      WidgetRef? capturedRef;
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
 
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            exploreFeedViewModelProvider.overrideWithValue(
-              const AsyncData(ExploreFeedViewModel(items: [])),
-            ),
-          ],
-          child: Consumer(
-            builder: (context, ref, _) {
-              capturedRef = ref;
-              return MaterialApp(
-                theme: AppTheme.light,
-                home: const Scaffold(
-                  body: CustomScrollView(slivers: [ExploreEventsSection()]),
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: CustomScrollView(
+              slivers: [
+                _exploreEventsSection(
+                  filters: container.read(exploreFiltersProvider),
+                  onSetTimeFilter: (filter) => container
+                      .read(exploreFiltersProvider.notifier)
+                      .setTimeFilter(filter),
                 ),
-              );
-            },
+              ],
+            ),
           ),
         ),
       );
@@ -1113,7 +1210,7 @@ void main() {
       await tester.pump();
 
       expect(
-        capturedRef!.read(exploreFiltersProvider).timeFilter,
+        container.read(exploreFiltersProvider).timeFilter,
         ExploreTimeFilter.anytime,
       );
     });
@@ -1133,12 +1230,21 @@ void main() {
         container.read(exploreFiltersProvider.notifier).toggleHighRatedOnly();
 
         await tester.pumpWidget(
-          UncontrolledProviderScope(
-            container: container,
-            child: MaterialApp(
-              theme: AppTheme.light,
-              home: const Scaffold(
-                body: CustomScrollView(slivers: [ExploreEventsSection()]),
+          MaterialApp(
+            theme: AppTheme.light,
+            home: Scaffold(
+              body: CustomScrollView(
+                slivers: [
+                  _exploreEventsSection(
+                    filters: container.read(exploreFiltersProvider),
+                    searchQuery: container.read(exploreSearchQueryProvider),
+                    onClearSearch: () => container
+                        .read(exploreSearchQueryProvider.notifier)
+                        .clear(),
+                    onClearFilters: () =>
+                        container.read(exploreFiltersProvider.notifier).clear(),
+                  ),
+                ],
               ),
             ),
           ),
@@ -1176,7 +1282,12 @@ void main() {
               body: Builder(
                 builder: (context) => CustomScrollView(
                   slivers: [
-                    ...ExploreSliverHeader().buildSlivers(context),
+                    ...ExploreSliverHeader(
+                      query: container.read(exploreSearchQueryProvider),
+                      onQueryChanged: (value) => container
+                          .read(exploreSearchQueryProvider.notifier)
+                          .setQuery(value),
+                    ).buildSlivers(context),
                     const SliverToBoxAdapter(child: SizedBox(height: 700)),
                   ],
                 ),
@@ -2476,7 +2587,9 @@ void main() {
             watchClubsByLocationProvider(
               'mumbai',
             ).overrideWith((ref) => Stream.value(const [])),
-            exploreViewModelProvider.overrideWithValue(const AsyncLoading()),
+            exploreClubsViewModelProvider.overrideWithValue(
+              const AsyncLoading(),
+            ),
             _emptyExploreFeedOverride,
           ],
           child: MaterialApp(
@@ -2507,7 +2620,7 @@ void main() {
               watchClubsByLocationProvider(
                 'mumbai',
               ).overrideWith((ref) => Stream.value(const [])),
-              exploreViewModelProvider.overrideWithValue(
+              exploreClubsViewModelProvider.overrideWithValue(
                 const AsyncData(
                   ExploreViewModel(joinedClubs: [], allClubs: []),
                 ),
@@ -2564,7 +2677,7 @@ void main() {
           cityListProvider.overrideWith((ref) async => _testCities),
           deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
           exploreSourceClubsProvider.overrideWithValue(AsyncData([sourceClub])),
-          exploreViewModelProvider.overrideWithValue(
+          exploreClubsViewModelProvider.overrideWithValue(
             const AsyncData(ExploreViewModel(joinedClubs: [], allClubs: [])),
           ),
           _emptyExploreFeedOverride,
@@ -2608,7 +2721,7 @@ void main() {
             exploreSourceClubsProvider.overrideWithValue(
               const AsyncData(<Club>[]),
             ),
-            exploreViewModelProvider.overrideWithValue(
+            exploreClubsViewModelProvider.overrideWithValue(
               const AsyncData(ExploreViewModel(joinedClubs: [], allClubs: [])),
             ),
             exploreFeedViewModelProvider.overrideWithValue(
@@ -2662,7 +2775,7 @@ void main() {
             exploreSourceClubsProvider.overrideWithValue(
               const AsyncData(<Club>[]),
             ),
-            exploreViewModelProvider.overrideWithValue(
+            exploreClubsViewModelProvider.overrideWithValue(
               const AsyncData(ExploreViewModel(joinedClubs: [], allClubs: [])),
             ),
             exploreFeedViewModelProvider.overrideWithValue(
@@ -2781,21 +2894,42 @@ void main() {
         name: 'Tempo Queens',
         area: 'Juhu',
       );
-      final container = ProviderContainer(
-        overrides: [
-          exploreSourceClubsProvider.overrideWithValue(
-            AsyncData([bandraClub, juhuClub]),
-          ),
-        ],
-      );
-      addTearDown(container.dispose);
+      var filters = const ExploreFilterSelection();
 
       await tester.pumpWidget(
-        UncontrolledProviderScope(
-          container: container,
-          child: MaterialApp(
-            theme: AppTheme.light,
-            home: const Scaffold(body: ExploreFilterSheet()),
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: StatefulBuilder(
+              builder: (context, setState) => ExploreFilterSheet(
+                filters: filters,
+                state: ExploreFilterSheetState.from(
+                  filters: filters,
+                  sourceClubs: [bandraClub, juhuClub],
+                ),
+                onToggleHighRatedOnly: () {
+                  setState(() {
+                    filters = filters.copyWith(
+                      highRatedOnly: !filters.highRatedOnly,
+                    );
+                  });
+                },
+                onToggleActivityTag: (tag) {
+                  setState(() {
+                    filters = filters.copyWith(
+                      activityTag: filters.activityTag == tag ? null : tag,
+                    );
+                  });
+                },
+                onToggleArea: (area) {
+                  setState(() {
+                    filters = filters.copyWith(
+                      area: filters.area == area ? null : area,
+                    );
+                  });
+                },
+              ),
+            ),
           ),
         ),
       );
@@ -2804,24 +2938,21 @@ void main() {
       expect(_selectChip('Rated 4.5+', active: false), findsOneWidget);
       await tester.tap(_selectChip('Rated 4.5+'));
       await tester.pump();
-      expect(container.read(exploreFiltersProvider).highRatedOnly, isTrue);
+      expect(filters.highRatedOnly, isTrue);
       expect(_selectChip('Rated 4.5+', active: true), findsOneWidget);
 
       await tester.ensureVisible(_selectChip('Dinner'));
       await tester.pump();
       await tester.tap(_selectChip('Dinner'));
       await tester.pump();
-      expect(
-        container.read(exploreFiltersProvider).activityTag,
-        ActivityKind.dinner.name,
-      );
+      expect(filters.activityTag, ActivityKind.dinner.name);
       expect(_selectChip('Dinner', active: true), findsOneWidget);
 
       await tester.ensureVisible(_selectChip('Juhu'));
       await tester.pump();
       await tester.tap(_selectChip('Juhu'));
       await tester.pump();
-      expect(container.read(exploreFiltersProvider).area, 'Juhu');
+      expect(filters.area, 'Juhu');
       expect(_selectChip('Juhu', active: true), findsOneWidget);
     });
 
@@ -2833,16 +2964,16 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
 
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
-      container.read(exploreFiltersProvider.notifier).toggleHighRatedOnly();
+      const filters = ExploreFilterSelection(highRatedOnly: true);
 
       await tester.pumpWidget(
-        UncontrolledProviderScope(
-          container: container,
-          child: MaterialApp(
-            theme: AppTheme.light,
-            home: const Scaffold(body: ExploreFilterRail()),
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: ExploreFilterRail(
+              filters: filters,
+              state: ExploreFilterRailState.from(filters),
+            ),
           ),
         ),
       );
@@ -3236,7 +3367,7 @@ void main() {
             watchClubsByLocationProvider(
               'mumbai',
             ).overrideWith((ref) => Stream.value(const [])),
-            exploreViewModelProvider.overrideWithValue(
+            exploreClubsViewModelProvider.overrideWithValue(
               const AsyncError(
                 BackendOperationException(
                   code: 'failed-precondition',
@@ -3287,7 +3418,7 @@ void main() {
           watchClubsByLocationProvider(
             'mumbai',
           ).overrideWith((ref) => Stream.value([buildClub(id: 'club-err')])),
-          exploreViewModelProvider.overrideWithValue(
+          exploreClubsViewModelProvider.overrideWithValue(
             AsyncData(
               ExploreViewModel(
                 joinedClubs: const [],
@@ -3345,6 +3476,10 @@ void main() {
               watchUserProfileProvider.overrideWith(
                 (ref) => Stream.value(buildUser(uid: 'runner-1')),
               ),
+              watchClubMembershipProvider(
+                club.id,
+                'runner-1',
+              ).overrideWith((ref) => Stream.value(null)),
             ],
             child: MaterialApp(
               theme: AppTheme.light,
@@ -3365,6 +3500,8 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
+            uidProvider.overrideWith((ref) => Stream.value(null)),
+            watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
             clubDetailViewModelProvider('club-err').overrideWithValue(
               AsyncError(StateError('detail failed'), StackTrace.empty),
             ),
@@ -3384,6 +3521,8 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
+            uidProvider.overrideWith((ref) => Stream.value(null)),
+            watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
             clubDetailViewModelProvider(
               'club-missing',
             ).overrideWithValue(const AsyncData(null)),
@@ -3405,6 +3544,14 @@ void main() {
     ) async {
       final container = ProviderContainer(
         overrides: [
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+          watchUserProfileProvider.overrideWith(
+            (ref) => Stream.value(buildUser(uid: 'runner-1')),
+          ),
+          watchClubMembershipProvider(
+            'club-1',
+            'runner-1',
+          ).overrideWith((ref) => Stream.value(null)),
           clubDetailViewModelProvider('club-1').overrideWithValue(
             AsyncData(
               ClubDetailViewModel(
@@ -3452,6 +3599,14 @@ void main() {
     ) async {
       final container = ProviderContainer(
         overrides: [
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+          watchUserProfileProvider.overrideWith(
+            (ref) => Stream.value(buildUser(uid: 'runner-1')),
+          ),
+          watchClubMembershipProvider(
+            'club-1',
+            'runner-1',
+          ).overrideWith((ref) => Stream.value(null)),
           clubDetailViewModelProvider('club-1').overrideWithValue(
             AsyncData(
               ClubDetailViewModel(
@@ -3571,14 +3726,27 @@ void main() {
     ) async {
       SharedPreferences.setMockInitialValues({});
       final club = buildClub(
+        ownerUserId: 'host-1',
         name: 'Morning Miles',
         area: 'Palasia',
         location: 'in-mp-indore',
         description: 'Indore morning loops.',
       );
+      final container = ProviderContainer(
+        overrides: [uidProvider.overrideWith((ref) => Stream.value('host-1'))],
+      );
+      addTearDown(container.dispose);
+      final uidSubscription = container.listen(
+        uidProvider,
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(uidSubscription.close);
+      await container.pump();
 
       await tester.pumpWidget(
-        ProviderScope(
+        UncontrolledProviderScope(
+          container: container,
           child: MaterialApp(
             theme: AppTheme.light,
             home: CreateClubScreen(initialClub: club),

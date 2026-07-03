@@ -191,6 +191,7 @@ class FakeClubsRepository implements ClubsRepository {
 
   final Map<String, Club> clubsById = {};
   final Map<String, List<Club>> clubsByLocation = {};
+  final List<List<String>> watchClubsByIdsCalls = [];
 
   @override
   String generateId() => generatedId;
@@ -291,11 +292,13 @@ class FakeClubsRepository implements ClubsRepository {
   );
 
   @override
-  Stream<List<Club>> watchClubsByIds({required List<String> clubIds}) =>
-      Stream.value([
-        for (final id in clubIds)
-          if (clubsById[id] != null) clubsById[id]!,
-      ]);
+  Stream<List<Club>> watchClubsByIds({required List<String> clubIds}) {
+    watchClubsByIdsCalls.add(List.unmodifiable(clubIds));
+    return Stream.value([
+      for (final id in clubIds)
+        if (clubsById[id] != null) clubsById[id]!,
+    ]);
+  }
 
   @override
   Future<void> addClubHost({

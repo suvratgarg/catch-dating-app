@@ -40,6 +40,7 @@ import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
+import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -135,12 +136,17 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       cancelEventPending: cancelMutation.isPending,
       deleteEventPending: deleteMutation.isPending,
     );
+    final privateAccessState = _nullableCatchAsyncState(accessAsync);
+    final inviteLinksState = _nullableCatchAsyncState(inviteLinksAsync);
     final privateLinkActionState = isInviteOnly
         ? HostPrivateLinkActionState.resolve(
-            club: club,
-            event: event,
-            accessState: _nullableCatchAsyncState(accessAsync),
-            inviteLinksState: _nullableCatchAsyncState(inviteLinksAsync),
+            accessState: privateAccessState,
+            inviteLinksState: inviteLinksState,
+            inviteLink: _hostEventInviteUrl(
+              clubId: club.id,
+              eventId: event.id,
+              inviteCode: privateAccessState?.value?.inviteCode,
+            ),
             sharePending: shareMutation.isPending,
           )
         : null;
@@ -744,10 +750,13 @@ class HostPrivateAccessCard extends StatelessWidget {
       ),
       builder: (context, access) {
         final privateAccessState = HostPrivateAccessDisplayState.resolve(
-          club: club,
-          event: event,
           access: access,
           inviteLinksState: _catchAsyncState(inviteLinksAsync),
+          inviteLink: _hostEventInviteUrl(
+            clubId: club.id,
+            eventId: event.id,
+            inviteCode: access?.inviteCode,
+          ),
           sharePending: shareMutation.isPending,
         );
         return HostPrivateAccessBody(
@@ -778,6 +787,24 @@ CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
 
 CatchAsyncState<T>? _nullableCatchAsyncState<T>(AsyncValue<T>? value) {
   return value == null ? null : _catchAsyncState(value);
+}
+
+String? _hostEventInviteUrl({
+  required String clubId,
+  required String eventId,
+  required String? inviteCode,
+  String? inviteLinkId,
+}) {
+  final normalizedInviteCode = inviteCode?.trim();
+  if (normalizedInviteCode == null || normalizedInviteCode.isEmpty) {
+    return null;
+  }
+  return AppDeepLinks.event(
+    clubId: clubId,
+    eventId: eventId,
+    inviteCode: normalizedInviteCode,
+    inviteLinkId: inviteLinkId,
+  ).toString();
 }
 
 class HostPrivateAccessShell extends StatelessWidget {
@@ -1057,9 +1084,13 @@ class HostInviteLinkRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final rowState = HostInviteLinkRowDisplayState.resolve(
-      event: event,
-      inviteCode: inviteCode,
       link: link,
+      url: _hostEventInviteUrl(
+        clubId: event.clubId,
+        eventId: event.id,
+        inviteCode: inviteCode,
+        inviteLinkId: link.id,
+      )!,
       actionsDisabled: actionsDisabled,
     );
     return Padding(

@@ -24,7 +24,13 @@ enum ExploreDiscoveryEmptyAction {
   clearSearchAndFilters,
 }
 
-enum ExploreScreenBodyKind { loading, error, content, empty }
+enum ExploreScreenBodyKind {
+  loading,
+  error,
+  content,
+  contentWithoutClubs,
+  empty,
+}
 
 enum ExploreScreenRetryTarget { explore, eventFeed }
 
@@ -892,6 +898,13 @@ class ExploreScreenBodyState {
       );
     }
     if (viewModelError != null) {
+      if (eventFeedHasContent) {
+        return ExploreScreenBodyState._(
+          kind: ExploreScreenBodyKind.contentWithoutClubs,
+          error: viewModelError,
+          retryTarget: ExploreScreenRetryTarget.explore,
+        );
+      }
       return ExploreScreenBodyState._(
         kind: ExploreScreenBodyKind.error,
         error: viewModelError,

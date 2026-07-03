@@ -177,7 +177,7 @@ import 'package:catch_dating_app/swipes/presentation/filters_controller.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_hub_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
-import 'package:catch_dating_app/swipes/presentation/swipe_queue_notifier.dart';
+import 'package:catch_dating_app/swipes/presentation/swipe_queue_controller.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_screen.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/catch_profile_view.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_reaction_controls.dart';
@@ -807,7 +807,7 @@ List<Object> _exploreProviderOverrides({
       (ref) => Stream.value(uid == null ? null : _captureViewer),
     ),
     exploreSourceClubsProvider.overrideWithValue(effectiveSourceClubs),
-    exploreViewModelProvider.overrideWithValue(effectiveViewModel),
+    exploreClubsViewModelProvider.overrideWithValue(effectiveViewModel),
     exploreFeedViewModelProvider.overrideWithValue(effectiveFeed),
   ];
 }
@@ -825,7 +825,7 @@ NetworkException _exploreOfflineException({required String action}) {
 Widget _exploreCapture({
   String? searchQuery,
   _ExploreCaptureFilterSeed seedFilters = const _ExploreCaptureFilterSeed(),
-  Widget child = const ExploreScreen(enableEventMapNetworkTiles: false),
+  Widget child = const ExploreScreen(),
 }) {
   return _ExploreCaptureStateSeed(
     searchQuery: searchQuery,
@@ -9921,7 +9921,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       exploreSourceClubsProvider.overrideWithValue(
         AsyncData(_memberDiscoveryClubs),
       ),
-      exploreViewModelProvider.overrideWithValue(
+      exploreClubsViewModelProvider.overrideWithValue(
         AsyncData(
           ExploreViewModel.partition(
             clubs: _memberDiscoveryClubs,
@@ -9933,8 +9933,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         AsyncData(ExploreFeedViewModel(items: _memberDiscoveryItems)),
       ),
     ],
-    builder: (context) =>
-        const ExploreScreen(enableEventMapNetworkTiles: false),
+    builder: (context) => const ExploreScreen(),
   ),
   ScreenCaptureEntry(
     id: 'explore_joined_clubs',

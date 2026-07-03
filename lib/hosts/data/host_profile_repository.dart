@@ -4,7 +4,9 @@ import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/domain/host_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'host_profile_repository.g.dart';
 
 class HostProfileRepository {
   const HostProfileRepository(this._db);
@@ -106,11 +108,12 @@ HostProfileStatus _status(Object? value) {
   };
 }
 
-final hostProfileRepositoryProvider = Provider<HostProfileRepository>((ref) {
+@riverpod
+HostProfileRepository hostProfileRepository(Ref ref) {
   return HostProfileRepository(ref.watch(firebaseFirestoreProvider));
-});
+}
 
-final watchHostProfileProvider = StreamProvider.autoDispose
-    .family<HostProfile?, String>((ref, uid) {
-      return ref.watch(hostProfileRepositoryProvider).watchHostProfile(uid);
-    });
+@riverpod
+Stream<HostProfile?> watchHostProfile(Ref ref, String uid) {
+  return ref.watch(hostProfileRepositoryProvider).watchHostProfile(uid);
+}

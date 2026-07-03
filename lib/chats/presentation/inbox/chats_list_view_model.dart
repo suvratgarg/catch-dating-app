@@ -4,7 +4,7 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
-import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
+import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -96,8 +96,57 @@ AsyncValue<ChatsListViewModel> chatsListViewModel(Ref ref) {
       roleMatches.toList(growable: false),
       currentUid,
     );
+    final hostInquiryClubIds = {
+      for (final match in matchesByPerson)
+        if (match.isClubHostInquiry && match.clubId != null) match.clubId!,
+    };
+    final clubsById = hostInquiryClubIds.isEmpty
+        ? const <String, Club>{}
+        : {
+            for (final club
+                in ref
+                        .watch(
+                          watchClubsByIdsProvider(
+                            ClubsByIdQuery(hostInquiryClubIds),
+                          ),
+                        )
+                        .asData
+                        ?.value ??
+                    const <Club>[])
+              club.id: club,
+          };
+    final publicProfileUids = <String>{};
+    for (final match in matchesByPerson) {
+      final otherUid = match.otherId(currentUid);
+      final club = match.isClubHostInquiry && match.clubId != null
+          ? clubsById[match.clubId!]
+          : null;
+      final hostProfile = _hostProfileFor(club, otherUid);
+      final otherParticipantIsHost = hostProfile != null;
+      final shouldReadPublicProfile =
+          !match.isClubHostInquiry || (club != null && !otherParticipantIsHost);
+      if (shouldReadPublicProfile) publicProfileUids.add(otherUid);
+    }
+    final profilesByUid = publicProfileUids.isEmpty
+        ? const <String, PublicProfile>{}
+        : ref
+                  .watch(
+                    publicProfilesByIdsProvider(
+                      PublicProfilesQuery(publicProfileUids),
+                    ),
+                  )
+                  .asData
+                  ?.value ??
+              const <String, PublicProfile>{};
     final previews = matchesByPerson
-        .map((match) => _previewForMatch(ref, match, currentUid))
+        .map(
+          (match) => _previewForMatch(
+            match,
+            currentUid,
+            clubsById: clubsById,
+            profilesByUid: profilesByUid,
+          ),
+        )
         .toList();
 
     final newMatches = <ChatThreadPreview>[];
@@ -134,18 +183,21 @@ AsyncValue<ChatsListViewModel> chatsListViewModel(Ref ref) {
   });
 }
 
-ChatThreadPreview _previewForMatch(Ref ref, Match match, String uid) {
+ChatThreadPreview _previewForMatch(
+  Match match,
+  String uid, {
+  required Map<String, Club> clubsById,
+  required Map<String, PublicProfile> profilesByUid,
+}) {
   final otherUid = match.otherId(uid);
   final club = match.isClubHostInquiry && match.clubId != null
-      ? ref.watch(watchClubProvider(match.clubId!)).asData?.value
+      ? clubsById[match.clubId!]
       : null;
   final hostProfile = _hostProfileFor(club, otherUid);
   final otherParticipantIsHost = hostProfile != null;
   final shouldReadPublicProfile =
       !match.isClubHostInquiry || (club != null && !otherParticipantIsHost);
-  final profile = shouldReadPublicProfile
-      ? ref.watch(watchPublicProfileProvider(otherUid)).asData?.value
-      : null;
+  final profile = shouldReadPublicProfile ? profilesByUid[otherUid] : null;
   final displayName =
       hostProfile?.displayName ??
       profile?.name ??

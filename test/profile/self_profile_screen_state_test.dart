@@ -1,6 +1,6 @@
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_screen_state.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';
@@ -14,7 +14,7 @@ final _today = DateTime(2026, 6, 24);
 void main() {
   test('SelfProfileScreenState maps loading profile state', () {
     final state = SelfProfileScreenState.fromAsync(
-      profileAsync: const AsyncLoading(),
+      profileState: const CatchAsyncState.loading(),
       today: _today,
       uploadState: _idleUploadState,
       uploadMutationPending: false,
@@ -32,7 +32,7 @@ void main() {
     final error = StateError('profile failed');
 
     final state = SelfProfileScreenState.fromAsync(
-      profileAsync: AsyncError(error, StackTrace.empty),
+      profileState: CatchAsyncState.error(error),
       today: _today,
       uploadState: _idleUploadState,
       uploadMutationPending: false,
@@ -48,7 +48,7 @@ void main() {
     'SelfProfileScreenState maps null profile to unavailable route state',
     () {
       final state = SelfProfileScreenState.fromAsync(
-        profileAsync: const AsyncData(null),
+        profileState: const CatchAsyncState.data(null),
         today: _today,
         uploadState: _idleUploadState,
         uploadMutationPending: false,
@@ -70,7 +70,7 @@ void main() {
     final uploadState = (loadingIndices: {1}, uploadError: uploadError);
 
     final state = SelfProfileScreenState.fromAsync(
-      profileAsync: AsyncData(user),
+      profileState: CatchAsyncState.data(user),
       today: _today,
       uploadState: uploadState,
       uploadMutationPending: true,

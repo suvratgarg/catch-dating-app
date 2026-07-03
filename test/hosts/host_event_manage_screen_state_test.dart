@@ -149,31 +149,29 @@ void main() {
     );
 
     final ready = HostPrivateLinkActionState.resolve(
-      club: club,
-      event: event,
       accessState: CatchAsyncState.data(access),
       inviteLinksState: CatchAsyncState.data([inviteLink]),
+      inviteLink:
+          'https://catchdates.com/clubs/${club.id}/events/${event.id}?invite=CATCH-DELHI',
       sharePending: false,
     );
     final loading = HostPrivateLinkActionState.resolve(
-      club: club,
-      event: event,
       accessState: const CatchAsyncState.loading(),
       inviteLinksState: null,
+      inviteLink: null,
       sharePending: false,
     );
     final errored = HostPrivateLinkActionState.resolve(
-      club: club,
-      event: event,
       accessState: CatchAsyncState.error(StateError('missing')),
       inviteLinksState: null,
+      inviteLink: null,
       sharePending: false,
     );
     final pending = HostPrivateLinkActionState.resolve(
-      club: club,
-      event: event,
       accessState: CatchAsyncState.data(access),
       inviteLinksState: CatchAsyncState.data([inviteLink]),
+      inviteLink:
+          'https://catchdates.com/clubs/${club.id}/events/${event.id}?invite=CATCH-DELHI',
       sharePending: true,
     );
 
@@ -204,17 +202,15 @@ void main() {
     );
 
     final ready = HostPrivateAccessDisplayState.resolve(
-      club: club,
-      event: event,
       access: access,
       inviteLinksState: const CatchAsyncState.data([]),
+      inviteLink: 'https://catch.test/events/event-1?invite=CATCH-DELHI',
       sharePending: false,
     );
     final missing = HostPrivateAccessDisplayState.resolve(
-      club: club,
-      event: event,
       access: null,
       inviteLinksState: const CatchAsyncState.data([]),
+      inviteLink: null,
       sharePending: false,
     );
 
@@ -469,15 +465,15 @@ void main() {
     final disabled = active.copyWith(disabledAt: DateTime(2026, 7, 2));
 
     final activeState = HostInviteLinkRowDisplayState.resolve(
-      event: event,
-      inviteCode: 'CATCH-DELHI',
       link: active,
+      url:
+          'https://catchdates.com/clubs/${event.clubId}/events/${event.id}?invite=CATCH-DELHI&il=link-1',
       actionsDisabled: false,
     );
     final disabledState = HostInviteLinkRowDisplayState.resolve(
-      event: event,
-      inviteCode: 'CATCH-DELHI',
       link: disabled,
+      url:
+          'https://catchdates.com/clubs/${event.clubId}/events/${event.id}?invite=CATCH-DELHI&il=link-1',
       actionsDisabled: true,
     );
 

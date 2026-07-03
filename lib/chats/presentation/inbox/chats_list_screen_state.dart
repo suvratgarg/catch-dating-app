@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/host_inbox_filter.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 
 class HostInboxScreenState {
   const HostInboxScreenState({
@@ -11,26 +11,30 @@ class HostInboxScreenState {
   });
 
   factory HostInboxScreenState.fromAsync({
-    required AsyncValue<ChatsListViewModel> viewModel,
-    required AsyncValue<String?> uid,
+    required CatchAsyncState<ChatsListViewModel> viewModel,
+    required CatchAsyncState<String?> uid,
     required String query,
     required HostInboxFilter selectedFilter,
     required bool isHostApp,
   }) {
     final String? uidValue;
-    final AsyncValue<ChatsListViewModel> effectiveViewModel;
-    switch (uid) {
-      case AsyncData(:final value):
-        uidValue = value;
+    final CatchAsyncState<ChatsListViewModel> effectiveViewModel;
+    switch (uid.status) {
+      case CatchAsyncStatus.data:
+        uidValue = uid.value;
         effectiveViewModel = viewModel;
-      case AsyncError(:final error, :final stackTrace):
+      case CatchAsyncStatus.error:
         uidValue = null;
-        effectiveViewModel = AsyncError<ChatsListViewModel>(error, stackTrace);
-      default:
+        effectiveViewModel = CatchAsyncState<ChatsListViewModel>.error(
+          uid.error!,
+        );
+      case CatchAsyncStatus.loading:
         uidValue = null;
-        effectiveViewModel = const AsyncLoading<ChatsListViewModel>();
+        effectiveViewModel = const CatchAsyncState.loading();
     }
-    final source = effectiveViewModel.asData?.value;
+    final source = effectiveViewModel.status == CatchAsyncStatus.data
+        ? effectiveViewModel.value
+        : null;
     final normalizedQuery = query.trim();
     final hostFilter = isHostApp ? selectedFilter : null;
 
@@ -75,16 +79,16 @@ sealed class ChatsListDisplayState {
   const ChatsListDisplayState();
 
   factory ChatsListDisplayState.fromAsync({
-    required AsyncValue<ChatsListViewModel> viewModel,
+    required CatchAsyncState<ChatsListViewModel> viewModel,
     required String? uid,
     required String query,
     required HostInboxFilter? hostFilter,
   }) {
-    return switch (viewModel) {
-      AsyncLoading() => const ChatsListLoading(),
-      AsyncError(:final error) => ChatsListError(error: error),
-      AsyncData(:final value) => ChatsListDisplayState.fromValue(
-        source: value,
+    return switch (viewModel.status) {
+      CatchAsyncStatus.loading => const ChatsListLoading(),
+      CatchAsyncStatus.error => ChatsListError(error: viewModel.error!),
+      CatchAsyncStatus.data => ChatsListDisplayState.fromValue(
+        source: viewModel.value!,
         uid: uid,
         query: query,
         hostFilter: hostFilter,

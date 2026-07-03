@@ -139,7 +139,10 @@ class _CatchNoticeHostState extends ConsumerState<CatchNoticeHost> {
     final eventNotice = ref.watch(
       catchNoticeControllerProvider.select((queue) => queue.current),
     );
-    final notices = <CatchNoticeData>[...widget.persistentNotices, ?eventNotice];
+    final notices = <CatchNoticeData>[
+      ...widget.persistentNotices,
+      ?eventNotice,
+    ];
 
     return Stack(
       children: [

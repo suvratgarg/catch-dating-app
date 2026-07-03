@@ -7,7 +7,6 @@ import 'package:catch_dating_app/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
-import 'package:catch_dating_app/routing/app_deep_links.dart';
 
 enum HostEventManageSection { setup, guests, live, report }
 
@@ -156,20 +155,12 @@ class HostPrivateLinkActionState {
   });
 
   factory HostPrivateLinkActionState.resolve({
-    required Club club,
-    required Event event,
     required CatchAsyncState<EventPrivateAccess?>? accessState,
     required CatchAsyncState<List<EventInviteLink>>? inviteLinksState,
+    required String? inviteLink,
     required bool sharePending,
   }) {
     final inviteCode = accessState?.value?.inviteCode.trim();
-    final inviteLink = inviteCode == null || inviteCode.isEmpty
-        ? null
-        : AppDeepLinks.event(
-            clubId: club.id,
-            eventId: event.id,
-            inviteCode: inviteCode,
-          ).toString();
     return HostPrivateLinkActionState(
       inviteCode: inviteCode,
       inviteLink: inviteLink,
@@ -197,17 +188,15 @@ class HostPrivateAccessDisplayState {
   });
 
   factory HostPrivateAccessDisplayState.resolve({
-    required Club club,
-    required Event event,
     required EventPrivateAccess? access,
     required CatchAsyncState<List<EventInviteLink>>? inviteLinksState,
+    required String? inviteLink,
     required bool sharePending,
   }) {
     final linkAction = HostPrivateLinkActionState.resolve(
-      club: club,
-      event: event,
       accessState: CatchAsyncState<EventPrivateAccess?>.data(access),
       inviteLinksState: inviteLinksState,
+      inviteLink: inviteLink,
       sharePending: sharePending,
     );
     return HostPrivateAccessDisplayState(
@@ -451,20 +440,14 @@ class HostInviteLinkRowDisplayState {
   });
 
   factory HostInviteLinkRowDisplayState.resolve({
-    required Event event,
-    required String inviteCode,
     required EventInviteLink link,
+    required String url,
     required bool actionsDisabled,
   }) {
     return HostInviteLinkRowDisplayState(
       label: link.label,
       source: link.source,
-      url: AppDeepLinks.event(
-        clubId: event.clubId,
-        eventId: event.id,
-        inviteCode: inviteCode,
-        inviteLinkId: link.id,
-      ).toString(),
+      url: url,
       stats: hostInviteLinkStats(link),
       actionsDisabled: actionsDisabled,
       showDisabledBadge: link.isDisabled,

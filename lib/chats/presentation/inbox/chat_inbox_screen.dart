@@ -5,6 +5,7 @@ import 'package:catch_dating_app/chats/presentation/inbox/host_inbox_filter.dart
 import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_list.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_sliver_header.dart';
 import 'package:catch_dating_app/core/app_config.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -34,8 +35,8 @@ class _ChatsListScreenState extends ConsumerState<ChatsListScreen> {
     final searchValue = ref.watch(chatSearchQueryProvider);
     final query = searchValue.trim();
     final screenState = HostInboxScreenState.fromAsync(
-      viewModel: viewModelAsync,
-      uid: uidAsync,
+      viewModel: _catchAsyncState(viewModelAsync),
+      uid: _catchAsyncState(uidAsync),
       query: query,
       selectedFilter: _hostInboxFilter,
       isHostApp: isHostApp,
@@ -90,6 +91,14 @@ class _ChatsListScreenState extends ConsumerState<ChatsListScreen> {
       builder: (context) => const HostBroadcastComposerSheet(),
     );
   }
+}
+
+CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
+  return value.when(
+    data: CatchAsyncState<T>.data,
+    loading: () => const CatchAsyncState.loading(),
+    error: (error, stackTrace) => CatchAsyncState<T>.error(error),
+  );
 }
 
 class HostBroadcastComposerSheet extends StatelessWidget {
