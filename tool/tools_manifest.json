@@ -820,6 +820,32 @@
       }
     },
     {
+      "id": "contracts:migration-contracts",
+      "category": "contracts",
+      "path": "tool/contracts/check_migration_contracts.mjs",
+      "command": "node tool/contracts/check_migration_contracts.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates staged migration contract phase metadata and live-apply evidence.",
+      "checks": [
+        "node --check tool/contracts/check_migration_contracts.mjs",
+        "node --test tool/contracts/check_migration_contracts.test.mjs",
+        "node tool/contracts/check_migration_contracts.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "MIGRATION-CONTRACT-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/contracts/check_migration_contracts.test.mjs",
+        "contains": [
+          "migration contract check validates the current migration inventory",
+          "migration contract check rejects incomplete complete-state evidence"
+        ]
+      }
+    },
+    {
       "id": "contracts:firestore-contract",
       "category": "contracts",
       "path": "tool/contracts/check_firestore_contract.mjs",
@@ -841,6 +867,9 @@
       "description": "Checks Storage contract metadata against storage rules and tests.",
       "checks": [
         "node --check tool/contracts/check_storage_contract.mjs"
+      ],
+      "rules": [
+        "STORAGE-CONTRACT-001"
       ]
     },
     {

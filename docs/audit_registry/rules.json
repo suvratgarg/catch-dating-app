@@ -151,6 +151,70 @@
         }
       ]
     },
+    "MIGRATION-CONTRACT-001": {
+      "title": "Migration contracts keep phase evidence machine-checkable",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "audit_registry",
+        "version": "2.6.2"
+      },
+      "applies_to": [
+        "contracts/migrations/*.json",
+        "tool/contracts/check_migration_contracts.mjs"
+      ],
+      "instruction": "Every migration contract must declare schemaVersion, logicalName, currentPhase, reason, unique phases with known statuses, operational evidence such as guards or known consumers, and liveApply evidence when any phase is complete_remote.",
+      "sunset_when": [
+        "Migration metadata is generated from a stronger typed migration registry"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "contracts:migration-contracts",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
+      ]
+    },
+    "STORAGE-CONTRACT-001": {
+      "title": "Storage path contracts stay tied to rules and rules tests",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "audit_registry",
+        "version": "2.6.2"
+      },
+      "applies_to": [
+        "contracts/storage/*.schema.json",
+        "storage.rules",
+        "functions/test/storage.rules.test.cjs",
+        "tool/contracts/check_storage_contract.mjs"
+      ],
+      "instruction": "Every storage path schema must declare x-storage-rules-match, x-storage-read, x-storage-write, x-storage-rules-test-file, and matching storage.rules coverage. Review passes for storage contracts should run the static storage checker and, when feasible, the firestore/storage emulator rules suite.",
+      "sunset_when": [
+        "Storage path contracts and storage.rules are generated from one typed registry"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "contracts:storage-contract",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/audit_registry/rules.json"
+        },
+        {
+          "stage": "manual",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
+      ]
+    },
     "FIRESTORE-RULES-TEST-001": {
       "title": "Run Firebase rules tests under the required emulators",
       "status": "active",
