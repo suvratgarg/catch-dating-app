@@ -25,7 +25,8 @@ void main() {
   test('HostClubEditState maps owner and co-host edit modes', () {
     final ownerState = HostClubEditState.resolve(
       club: club,
-      uid: const AsyncData<String?>('owner-1'),
+      uidLoading: false,
+      uid: 'owner-1',
     );
     expect(ownerState.mode, HostClubEditMode.ownerFull);
     expect(ownerState.canEdit, isTrue);
@@ -33,7 +34,8 @@ void main() {
 
     final cohostState = HostClubEditState.resolve(
       club: club,
-      uid: const AsyncData<String?>('cohost-1'),
+      uidLoading: false,
+      uid: 'cohost-1',
     );
     expect(cohostState.mode, HostClubEditMode.cohostMediaOnly);
     expect(cohostState.canEdit, isTrue);
@@ -42,25 +44,20 @@ void main() {
 
   test('HostClubEditState blocks missing and non-host identity', () {
     expect(
-      HostClubEditState.resolve(
-        club: club,
-        uid: const AsyncLoading<String?>(),
-      ).mode,
+      HostClubEditState.resolve(club: club, uidLoading: true, uid: null).mode,
       HostClubEditMode.loadingIdentity,
     );
 
     expect(
-      HostClubEditState.resolve(
-        club: club,
-        uid: const AsyncData<String?>(null),
-      ).mode,
+      HostClubEditState.resolve(club: club, uidLoading: false, uid: null).mode,
       HostClubEditMode.forbidden,
     );
 
     expect(
       HostClubEditState.resolve(
         club: club,
-        uid: const AsyncData<String?>('guest-1'),
+        uidLoading: false,
+        uid: 'guest-1',
       ).mode,
       HostClubEditMode.forbidden,
     );

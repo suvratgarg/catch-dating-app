@@ -6,8 +6,11 @@ import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/club_management/host_create_club_screen_state.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+export 'package:catch_dating_app/hosts/presentation/club_management/host_create_club_screen_state.dart';
 
 class HostCreateClubScreen extends StatelessWidget {
   const HostCreateClubScreen({super.key});
@@ -58,9 +61,11 @@ class HostClubEditorStateView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final uid = ref.watch(uidProvider);
     final state = HostClubEditState.resolve(
       club: club,
-      uid: ref.watch(uidProvider),
+      uidLoading: uid.isLoading,
+      uid: uid.asData?.value,
     );
 
     return switch (state.mode) {
@@ -72,60 +77,5 @@ class HostClubEditorStateView extends ConsumerWidget {
       HostClubEditMode.ownerFull || HostClubEditMode.cohostMediaOnly =>
         CreateClubScreen(initialClub: state.club),
     };
-  }
-}
-
-enum HostClubEditMode { loadingIdentity, ownerFull, cohostMediaOnly, forbidden }
-
-@immutable
-class HostClubEditState {
-  const HostClubEditState({
-    required this.mode,
-    required this.club,
-    required this.uid,
-  });
-
-  final HostClubEditMode mode;
-  final Club club;
-  final String? uid;
-
-  bool get canEdit =>
-      mode == HostClubEditMode.ownerFull ||
-      mode == HostClubEditMode.cohostMediaOnly;
-
-  bool get mediaOnly => mode == HostClubEditMode.cohostMediaOnly;
-
-  factory HostClubEditState.resolve({
-    required Club club,
-    required AsyncValue<String?> uid,
-  }) {
-    if (uid.isLoading) {
-      return HostClubEditState(
-        mode: HostClubEditMode.loadingIdentity,
-        club: club,
-        uid: null,
-      );
-    }
-
-    final value = uid.asData?.value;
-    if (value != null && club.isOwnedBy(value)) {
-      return HostClubEditState(
-        mode: HostClubEditMode.ownerFull,
-        club: club,
-        uid: value,
-      );
-    }
-    if (value != null && club.isHostedBy(value)) {
-      return HostClubEditState(
-        mode: HostClubEditMode.cohostMediaOnly,
-        club: club,
-        uid: value,
-      );
-    }
-    return HostClubEditState(
-      mode: HostClubEditMode.forbidden,
-      club: club,
-      uid: value,
-    );
   }
 }

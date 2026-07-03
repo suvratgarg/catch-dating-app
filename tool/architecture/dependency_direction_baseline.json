@@ -13,10 +13,6 @@
     },
     {
       "rule": "misplacedStateClass",
-      "path": "lib/hosts/presentation/club_management/host_create_club_screen.dart"
-    },
-    {
-      "rule": "misplacedStateClass",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart"
     },
     {

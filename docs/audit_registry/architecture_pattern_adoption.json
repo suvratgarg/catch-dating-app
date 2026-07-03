@@ -365,6 +365,19 @@
           "role": "Host Operations clubs and insights state behavior coverage for selected club, tab, owner role, analytics query, custom range, and event scope",
           "status": "aligned",
           "lastReviewedPass": "2026-07-03-host-operations-screen-state"
+        },
+        {
+          "path": "lib/hosts/presentation/club_management/host_create_club_screen_state.dart",
+          "role": "provider-free Host Create/Edit Club route access-state adapter for uid loading, owner/co-host edit mode, media-only access, and forbidden route branches",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-host-create-club-screen-state"
+        },
+        {
+          "path": "test/hosts/host_club_edit_state_test.dart",
+          "role": "HostClubEditState owner, co-host, loading identity, missing identity, and forbidden identity behavior coverage",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-host-create-club-screen-state"
         }
       ],
       "variantPatterns": [],
