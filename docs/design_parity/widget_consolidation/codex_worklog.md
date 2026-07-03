@@ -66,12 +66,12 @@ Slice 1 (stats→CatchStatColumn, headers→CatchSectionHeader+subtitle, icon
 actions→CatchTopBarIconAction, meta rows→new CatchMetaRow) is already executed
 and analyzer-clean in `lib/`. Remaining mechanical debris:
 
-- [ ] **Ugly renamed identifiers**: the bulk rename produced identifiers like
+- [x] **Ugly renamed identifiers**: the bulk rename produced identifiers like
   `profileCatchStatColumnes` (was `profileRunningStat…`). Find them:
   `rg -n "CatchStatColumne|StatColumns|statColumn" widgetbook/lib/catches/catches_use_cases.dart widgetbook/lib/user_analytics/user_analytics_use_cases.dart`.
   Rename functions/locals to sensible names (e.g. `profileStatColumnStates`);
   grammar: lowerCamel, no mangled plurals. Then regen widgetbook (gotcha 3).
-- [ ] **Orphaned `themeMode` param** at
+- [x] **Orphaned `themeMode` param** at
   `widgetbook/lib/hosts/host_operations_use_cases.dart:7115`
   (`unused_element_parameter`): slice 1 deleted the only use-case(s) passing
   `themeMode:` to that scope class. Confirm via
@@ -79,13 +79,28 @@ and analyzer-clean in `lib/`. Remaining mechanical debris:
   branch; if confirmed, remove the constructor parameter and hardcode the
   previous default (`ThemeMode.light`) where the field was read. If other
   callers pass it, leave and note here.
-- [ ] **Widgetbook knob coverage for new API**: add a `subtitle` example to
+- [x] **Widgetbook knob coverage for new API**: add a `subtitle` example to
   the existing CatchSectionHeader use-case (search
   `widgetbook/lib/primitives/` for it) and confirm a CatchMetaRow state
   appears under the repointed club use-case (already typed
   `type: CatchMetaRow` in `widgetbook/lib/clubs/club_detail_use_cases.dart`).
-- [ ] Registries + checks + receipts (gotchas 6–8).
-- [ ] `dart format` pass over all files changed on the branch; commit.
+- [x] Registries + checks + receipts (gotchas 6–8).
+- [x] `dart format` pass over all files changed on the branch; commit.
+
+Receipt: 2026-07-03 Codex WO-001 cleanup renamed `profileRunningStates`,
+removed the unused `_HostManageRouteScope.themeMode` private API, added
+`CatchSectionHeader.subtitle` catalog coverage, regenerated Widgetbook
+directories, widget classification, and widget similarity, and appended the
+full command receipt in
+`docs/audit_registry/widget_consolidation_receipts.md`. Clean checks:
+`flutter analyze --no-fatal-infos lib` (192 existing infos, 0
+warnings/errors), widget classification check (1174 entries, 44 review items,
+0 private widget classes flagged), widget similarity check (1066 widgets, 62
+clusters, 10 absorb candidates), widget dedupe probes, widget cleanup scan,
+manifest-only, agent readiness, and `git diff --check`. Existing blockers
+recorded in the receipt: Widgetbook analyzer still has 66 inherited issues
+after the removed `themeMode` warning, and Widgetbook coverage still has a 142
+item catalog-or-replace decision queue with 0 stale decisions.
 
 ## WO-002 — CatchScrim primitive (decision c004, decisions.json)
 

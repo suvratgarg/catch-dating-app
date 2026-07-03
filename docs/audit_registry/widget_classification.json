@@ -10,32 +10,32 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1183,
-    "widgetClasses": 1075,
+    "total": 1174,
+    "widgetClasses": 1066,
     "stateClasses": 108,
-    "publicClasses": 1075,
+    "publicClasses": 1066,
     "privateClasses": 108,
     "byRole": {
       "atom": 56,
-      "composition": 316,
-      "feature-adapter": 337,
+      "composition": 314,
+      "feature-adapter": 332,
       "pattern": 16,
-      "screen": 350,
+      "screen": 348,
       "widget-state": 108
     },
     "byDecision": {
       "keep-canonical-contract": 171,
-      "keep-public-cataloged": 881,
+      "keep-public-cataloged": 851,
       "keep-widget-state": 108,
-      "review-catalog-coverage": 20,
-      "review-promote-or-consolidate": 3
+      "review-catalog-coverage": 40,
+      "review-promote-or-consolidate": 4
     },
     "byCatalogStatus": {
-      "cataloged": 813,
+      "cataloged": 753,
       "contracted": 171,
       "not-applicable": 108,
-      "route-covered": 71,
-      "uncataloged": 20
+      "route-covered": 102,
+      "uncataloged": 40
     }
   },
   "widgets": [
@@ -1534,29 +1534,6 @@
       "visibility": "public",
       "role": "composition",
       "canonicalFamily": "catch.club_share_card",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "ClubShareMetaRow",
-      "file": "lib/clubs/presentation/detail/widgets/club_share_card.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.club_share_meta_row",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,
@@ -4273,6 +4250,33 @@
         "mergeIntoCanonical"
       ],
       "flags": []
+    },
+    {
+      "name": "CatchMetaRow",
+      "file": "lib/core/widgets/catch_meta_row.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.meta_row",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract"
+      ]
     },
     {
       "name": "CatchMetricStrip",
@@ -7927,29 +7931,6 @@
       "visibility": "public",
       "role": "feature-adapter",
       "canonicalFamily": "feature.event_success.event_success_feedback_form",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "FeedbackIconAction",
-      "file": "lib/event_success/presentation/companion_parts/event_success_companion_feedback.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.event_success.feedback_icon_action",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,
@@ -11853,29 +11834,6 @@
       "flags": []
     },
     {
-      "name": "LiveSectionHeader",
-      "file": "lib/event_success/presentation/host_parts/event_success_host_live.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.live_section_header",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
       "name": "LiveStepNavigation",
       "file": "lib/event_success/presentation/host_parts/event_success_host_live.dart",
       "classKind": "widget",
@@ -12067,29 +12025,6 @@
       "visibility": "public",
       "role": "feature-adapter",
       "canonicalFamily": "feature.event_success.group_override_unit_editor",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "HostOverrideIconAction",
-      "file": "lib/event_success/presentation/host_parts/event_success_host_overrides.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.event_success.host_override_icon_action",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,
@@ -12366,29 +12301,6 @@
       "visibility": "public",
       "role": "feature-adapter",
       "canonicalFamily": "feature.event_success.readiness_issues",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "SetupSectionTitle",
-      "file": "lib/event_success/presentation/host_parts/event_success_host_setup.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.event_success.setup_section_title",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,
@@ -15905,29 +15817,6 @@
       "flags": []
     },
     {
-      "name": "EventShareMetaRow",
-      "file": "lib/events/shared/event_share_card.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.event_share_meta_row",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
       "name": "EventSharePill",
       "file": "lib/events/shared/event_share_card.dart",
       "classKind": "widget",
@@ -18993,7 +18882,7 @@
       "role": "screen",
       "canonicalFamily": "screen.host_profile_editor_sheet",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "route-covered",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
@@ -19016,7 +18905,7 @@
       "role": "screen",
       "canonicalFamily": "screen.host_settings_club_rows",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "route-covered",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
@@ -19039,7 +18928,7 @@
       "role": "screen",
       "canonicalFamily": "screen.host_settings_clubs_empty_state",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "route-covered",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
@@ -19085,7 +18974,7 @@
       "role": "screen",
       "canonicalFamily": "screen.host_settings_profile_rows",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "route-covered",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
@@ -19491,29 +19380,6 @@
       "flags": []
     },
     {
-      "name": "HostManageMetaItem",
-      "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.host_manage_meta_item",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
       "name": "HostManageMetaRow",
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
       "classKind": "widget",
@@ -19522,7 +19388,7 @@
       "role": "screen",
       "canonicalFamily": "screen.host_manage_meta_row",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "route-covered",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
@@ -19545,7 +19411,7 @@
       "role": "screen",
       "canonicalFamily": "screen.host_manage_section_picker",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "route-covered",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
@@ -19568,7 +19434,7 @@
       "role": "screen",
       "canonicalFamily": "screen.host_private_access_body",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "route-covered",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
@@ -19591,7 +19457,7 @@
       "role": "screen",
       "canonicalFamily": "screen.host_private_access_card",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "route-covered",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
@@ -19614,7 +19480,7 @@
       "role": "screen",
       "canonicalFamily": "screen.host_private_access_shell",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "route-covered",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
@@ -19660,7 +19526,7 @@
       "role": "screen",
       "canonicalFamily": "screen.host_operations_home_screen",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "route-covered",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
@@ -20580,7 +20446,7 @@
       "role": "screen",
       "canonicalFamily": "screen.host_organizer_header",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "route-covered",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
@@ -20603,7 +20469,7 @@
       "role": "screen",
       "canonicalFamily": "screen.host_organizer_metric_grid",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "route-covered",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
@@ -20626,7 +20492,7 @@
       "role": "screen",
       "canonicalFamily": "screen.host_organizer_metric_row",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "route-covered",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
@@ -20649,7 +20515,7 @@
       "role": "screen",
       "canonicalFamily": "screen.host_organizer_metric_tile",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "route-covered",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
@@ -20672,7 +20538,7 @@
       "role": "screen",
       "canonicalFamily": "screen.host_organizer_section_header",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "route-covered",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
@@ -20695,7 +20561,7 @@
       "role": "screen",
       "canonicalFamily": "screen.host_organizer_team_card",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "route-covered",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
@@ -20718,7 +20584,7 @@
       "role": "screen",
       "canonicalFamily": "screen.host_organizer_team_row",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "route-covered",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
@@ -20741,7 +20607,7 @@
       "role": "screen",
       "canonicalFamily": "screen.host_organizer_trend_strip",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "route-covered",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
@@ -20856,7 +20722,7 @@
       "role": "screen",
       "canonicalFamily": "screen.host_section_label",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "route-covered",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
@@ -20879,7 +20745,7 @@
       "role": "screen",
       "canonicalFamily": "screen.host_today_avatar_dot",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "route-covered",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
@@ -20902,7 +20768,7 @@
       "role": "screen",
       "canonicalFamily": "screen.host_today_avatar_stack",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "route-covered",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
@@ -20925,7 +20791,7 @@
       "role": "screen",
       "canonicalFamily": "screen.host_today_club_pill",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "route-covered",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
@@ -20948,7 +20814,7 @@
       "role": "screen",
       "canonicalFamily": "screen.host_today_countdown_pill",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "route-covered",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
@@ -20971,7 +20837,7 @@
       "role": "screen",
       "canonicalFamily": "screen.host_today_dashboard_card",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "route-covered",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
@@ -20994,7 +20860,7 @@
       "role": "screen",
       "canonicalFamily": "screen.host_today_dashboard_section",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "route-covered",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
@@ -21017,7 +20883,7 @@
       "role": "screen",
       "canonicalFamily": "screen.host_today_empty_events",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "route-covered",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
@@ -21040,7 +20906,7 @@
       "role": "screen",
       "canonicalFamily": "screen.host_today_event_hero",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "route-covered",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
@@ -21063,7 +20929,7 @@
       "role": "screen",
       "canonicalFamily": "screen.host_today_header",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "route-covered",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
@@ -21086,7 +20952,7 @@
       "role": "screen",
       "canonicalFamily": "screen.host_today_hero_metric",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "route-covered",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
@@ -21109,7 +20975,7 @@
       "role": "screen",
       "canonicalFamily": "screen.host_today_loading_body",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "route-covered",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
@@ -21132,30 +20998,7 @@
       "role": "screen",
       "canonicalFamily": "screen.host_today_task_card",
       "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "HostTrendKpi",
-      "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.host_trend_kpi",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "route-covered",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
@@ -21178,19 +21021,23 @@
       "role": "composition",
       "canonicalFamily": "catch.host_payment_account_card",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "uncataloged",
       "contractId": null,
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
+      "decision": "review-catalog-coverage",
       "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
       ],
-      "flags": []
+      "flags": [
+        "public-widget-missing-widgetbook"
+      ]
     },
     {
       "name": "HostPaymentAccountContentCard",
@@ -21201,19 +21048,23 @@
       "role": "composition",
       "canonicalFamily": "catch.host_payment_account_content_card",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "uncataloged",
       "contractId": null,
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
+      "decision": "review-catalog-coverage",
       "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
       ],
-      "flags": []
+      "flags": [
+        "public-widget-missing-widgetbook"
+      ]
     },
     {
       "name": "HostPaymentAccountErrorCard",
@@ -21224,19 +21075,23 @@
       "role": "composition",
       "canonicalFamily": "catch.host_payment_account_error_card",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "uncataloged",
       "contractId": null,
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
+      "decision": "review-catalog-coverage",
       "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
       ],
-      "flags": []
+      "flags": [
+        "public-widget-missing-widgetbook"
+      ]
     },
     {
       "name": "HostPaymentAccountLoadingCard",
@@ -21247,19 +21102,23 @@
       "role": "composition",
       "canonicalFamily": "catch.host_payment_account_loading_card",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "uncataloged",
       "contractId": null,
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
+      "decision": "review-catalog-coverage",
       "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
       ],
-      "flags": []
+      "flags": [
+        "public-widget-missing-widgetbook"
+      ]
     },
     {
       "name": "HostPaymentAccountControllerCard",
@@ -21270,21 +21129,24 @@
       "role": "composition",
       "canonicalFamily": "catch.host_payment_account_controller_card",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "uncataloged",
       "contractId": null,
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
+      "decision": "review-catalog-coverage",
       "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
       ],
       "flags": [
         "primitive-imports-data-layer",
-        "primitive-imports-provider-layer"
+        "primitive-imports-provider-layer",
+        "public-widget-missing-widgetbook"
       ]
     },
     {
@@ -21296,19 +21158,23 @@
       "role": "feature-adapter",
       "canonicalFamily": "feature.hosts.catch_roster_action_cell",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "uncataloged",
       "contractId": null,
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
+      "decision": "review-catalog-coverage",
       "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
       ],
-      "flags": []
+      "flags": [
+        "public-widget-missing-widgetbook"
+      ]
     },
     {
       "name": "CatchRosterDecideTarget",
@@ -21457,19 +21323,23 @@
       "role": "feature-adapter",
       "canonicalFamily": "feature.hosts.host_stat_chip",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "uncataloged",
       "contractId": null,
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
+      "decision": "review-catalog-coverage",
       "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
       ],
-      "flags": []
+      "flags": [
+        "public-widget-missing-widgetbook"
+      ]
     },
     {
       "name": "_HostEventParticipantsListState",
@@ -21630,19 +21500,23 @@
       "role": "feature-adapter",
       "canonicalFamily": "feature.hosts.host_participation_lifecycle_board",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "uncataloged",
       "contractId": null,
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
+      "decision": "review-catalog-coverage",
       "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
       ],
-      "flags": []
+      "flags": [
+        "public-widget-missing-widgetbook"
+      ]
     },
     {
       "name": "HostRosterFilterHeader",
@@ -21653,22 +21527,25 @@
       "role": "composition",
       "canonicalFamily": "catch.host_roster_filter_header",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "uncataloged",
       "contractId": null,
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
+      "decision": "review-catalog-coverage",
       "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
       ],
       "flags": [
         "primitive-imports-data-layer",
         "primitive-imports-provider-layer",
-        "primitive-imports-routing-layer"
+        "primitive-imports-routing-layer",
+        "public-widget-missing-widgetbook"
       ]
     },
     {
@@ -21680,19 +21557,23 @@
       "role": "feature-adapter",
       "canonicalFamily": "feature.hosts.host_roster_search_bar",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "uncataloged",
       "contractId": null,
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
+      "decision": "review-catalog-coverage",
       "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
       ],
-      "flags": []
+      "flags": [
+        "public-widget-missing-widgetbook"
+      ]
     },
     {
       "name": "HostWaitlistBulkOfferAction",
@@ -21703,19 +21584,23 @@
       "role": "feature-adapter",
       "canonicalFamily": "feature.hosts.host_waitlist_bulk_offer_action",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "uncataloged",
       "contractId": null,
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
+      "decision": "review-catalog-coverage",
       "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
       ],
-      "flags": []
+      "flags": [
+        "public-widget-missing-widgetbook"
+      ]
     },
     {
       "name": "_HostEventToolsCarouselState",
@@ -21933,19 +21818,23 @@
       "role": "feature-adapter",
       "canonicalFamily": "feature.hosts.host_roster_skeleton",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "uncataloged",
       "contractId": null,
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
+      "decision": "review-catalog-coverage",
       "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
       ],
-      "flags": []
+      "flags": [
+        "public-widget-missing-widgetbook"
+      ]
     },
     {
       "name": "HostRouteLoadingBody",
@@ -21979,19 +21868,23 @@
       "role": "feature-adapter",
       "canonicalFamily": "feature.hosts.host_settings_rows_skeleton",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "uncataloged",
       "contractId": null,
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
+      "decision": "review-catalog-coverage",
       "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
       ],
-      "flags": []
+      "flags": [
+        "public-widget-missing-widgetbook"
+      ]
     },
     {
       "name": "HostSummarySkeleton",
@@ -22002,19 +21895,23 @@
       "role": "feature-adapter",
       "canonicalFamily": "feature.hosts.host_summary_skeleton",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "uncataloged",
       "contractId": null,
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
+      "decision": "review-catalog-coverage",
       "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
       ],
-      "flags": []
+      "flags": [
+        "public-widget-missing-widgetbook"
+      ]
     },
     {
       "name": "HostTabRailSkeleton",
@@ -22025,19 +21922,23 @@
       "role": "feature-adapter",
       "canonicalFamily": "feature.hosts.host_tab_rail_skeleton",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "uncataloged",
       "contractId": null,
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
+      "decision": "review-catalog-coverage",
       "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
       ],
-      "flags": []
+      "flags": [
+        "public-widget-missing-widgetbook"
+      ]
     },
     {
       "name": "HostOrganizerPayoutPromptController",
@@ -22048,19 +21949,23 @@
       "role": "feature-adapter",
       "canonicalFamily": "feature.hosts.host_organizer_payout_prompt_controller",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "uncataloged",
       "contractId": null,
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
+      "decision": "review-catalog-coverage",
       "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
       ],
-      "flags": []
+      "flags": [
+        "public-widget-missing-widgetbook"
+      ]
     },
     {
       "name": "HostOrganizerPayoutPrompt",
@@ -22071,19 +21976,23 @@
       "role": "feature-adapter",
       "canonicalFamily": "feature.hosts.host_organizer_payout_prompt",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "uncataloged",
       "contractId": null,
       "allowedDependencyLevel": "feature-display-models",
       "stateOwnership": "feature-display-state",
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
+      "decision": "review-catalog-coverage",
       "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
       ],
-      "flags": []
+      "flags": [
+        "public-widget-missing-widgetbook"
+      ]
     },
     {
       "name": "_HostTeamAddHostSheetState",
@@ -22117,20 +22026,23 @@
       "role": "composition",
       "canonicalFamily": "catch.host_team_add_host_sheet",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "uncataloged",
       "contractId": null,
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
+      "decision": "review-catalog-coverage",
       "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
       ],
       "flags": [
-        "primitive-imports-provider-layer"
+        "primitive-imports-provider-layer",
+        "public-widget-missing-widgetbook"
       ]
     },
     {
@@ -22167,20 +22079,23 @@
       "role": "composition",
       "canonicalFamily": "catch.host_team_management_section",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "uncataloged",
       "contractId": null,
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
+      "decision": "review-catalog-coverage",
       "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
       ],
       "flags": [
-        "primitive-imports-provider-layer"
+        "primitive-imports-provider-layer",
+        "public-widget-missing-widgetbook"
       ]
     },
     {
@@ -22192,20 +22107,23 @@
       "role": "composition",
       "canonicalFamily": "catch.host_team_owner_host_row",
       "publicApi": true,
-      "catalogStatus": "cataloged",
+      "catalogStatus": "uncataloged",
       "contractId": null,
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
+      "decision": "review-catalog-coverage",
       "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
       ],
       "flags": [
-        "primitive-imports-provider-layer"
+        "primitive-imports-provider-layer",
+        "public-widget-missing-widgetbook"
       ]
     },
     {
@@ -25728,29 +25646,6 @@
       "flags": []
     },
     {
-      "name": "RunningStat",
-      "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.swipes.running_stat",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
       "name": "ProfileInfoChip",
       "file": "lib/swipes/shared/profile_surface/profile_info_chip.dart",
       "classKind": "widget",
@@ -26155,29 +26050,6 @@
       "visibility": "public",
       "role": "feature-adapter",
       "canonicalFamily": "feature.user_analytics.user_analytics_empty_state",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "UserAnalyticsInlineStat",
-      "file": "lib/user_analytics/shared/user_analytics_panel.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.user_analytics.user_analytics_inline_stat",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,

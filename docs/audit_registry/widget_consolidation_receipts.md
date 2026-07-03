@@ -166,6 +166,73 @@ Ground-truth recall:
 | `CountdownBeatPill` / `CountdownCuePill` | name family | name, ranked-pair | pass | `CountdownPill` family |
 | `Dashboard*LoadingCard` / `ClubDirectorySkeletonCard` | name family + ranked pairs | name, ranked-pair | pass | `LoadingCard` family, ranked pair 144 |
 
+## 2026-07-03 Slice 1 WO-001 Cleanup
+
+Scope:
+
+- Mechanical cleanup for the committed slice-1 consolidation branch.
+- Widgetbook use-case identifier repair, orphaned host preview parameter
+  cleanup, `CatchSectionHeader.subtitle` catalog coverage, generated
+  Widgetbook directory refresh, and widget registry refresh.
+
+Commands run:
+
+- `node tool/agent/context_pack.mjs --task widget-consolidation-wo-001 --paths docs/design_parity/widget_consolidation/codex_worklog.md,docs/design_parity/widget_consolidation/decisions.json,widgetbook/lib/catches/catches_use_cases.dart,widgetbook/lib/user_analytics/user_analytics_use_cases.dart,widgetbook/lib/hosts/host_operations_use_cases.dart,widgetbook/lib/primitives,widgetbook/lib/clubs/club_detail_use_cases.dart,lib/core/widgets,docs/widget_catalog.md,docs/audit_registry/widget_consolidation_receipts.md`
+- `dart tool/audit_registry.dart refresh`
+- `dart format widgetbook/lib/catches/catches_use_cases.dart widgetbook/lib/hosts/host_operations_use_cases.dart widgetbook/lib/primitives/core_catalog_use_cases.dart`
+- `(cd widgetbook && flutter pub get)`
+- `(cd widgetbook && dart run build_runner build --delete-conflicting-outputs)`
+- `node tool/design/generate_widget_classification.mjs`
+- `node tool/design/check_widget_classification.mjs`
+- `dart run tool/widget_dedupe/bin/extract_fingerprints.dart`
+- `node tool/design/build_widget_similarity.mjs`
+- `node tool/design/build_widget_similarity.mjs --check`
+- `node tool/design/check_widgetbook_coverage.mjs --check`
+- `env DART=/Users/suvratgarg/Development/flutter/bin/dart node tool/design/check_widget_dedupe_probes.mjs`
+- `flutter analyze --no-fatal-infos lib`
+- `(cd widgetbook && flutter analyze)`
+- `bash tool/widget_cleanup_scan.sh --summary`
+- `git diff --check`
+- `node tool/run.mjs check --manifest-only`
+- `node tool/agent/check_agent_readiness.mjs`
+
+Headline numbers:
+
+| metric | value |
+|---|---:|
+| widget classification entries | 1,174 |
+| classification review items | 44 |
+| private widget classes flagged | 0 |
+| widget fingerprints | 1,066 |
+| fingerprint failures | 0 |
+| similarity clusters | 62 |
+| ranked pairs | 200 |
+| name families | 234 |
+| absorb candidates | 10 |
+| root lib analyzer infos | 192 |
+| widget cleanup scan categories with findings | 0 |
+| agent readiness score | 100/100 |
+
+Spot checks:
+
+- `rg -n "CatchStatColumne|profileCatchStatColumnes|StatColumns|statColumn" widgetbook/lib/catches/catches_use_cases.dart widgetbook/lib/user_analytics/user_analytics_use_cases.dart widgetbook/lib/main.directories.g.dart` returned no matches.
+- `widgetbook/lib/main.directories.g.dart` now points the Catches running use
+  case at `profileRunningStates`.
+- `_HostManageRouteScope` no longer exposes `themeMode`; it keeps the prior
+  default behavior by passing `ThemeMode.light` to `_ThemedHostPreview`.
+- `CatchSectionHeader` catalog states now include a subtitle example.
+- The repointed club share meta preview remains typed to `CatchMetaRow`.
+
+Known blockers / inherited debt:
+
+- `node tool/design/check_widgetbook_coverage.mjs --check` still fails on the
+  existing catalog-or-replace decision queue: 142 public widgets need
+  decisions, with 0 stale decisions.
+- `(cd widgetbook && flutter analyze)` still fails on 66 existing Widgetbook
+  issues, mostly in `lib/hosts/host_operations_use_cases.dart`. The WO-001
+  `unused_element_parameter` warning for `_HostManageRouteScope.themeMode` is
+  gone.
+
 Calibration note:
 
 The v0.1.0 SimHash threshold of 18 is void. The v0.2.0 registry recalibrates

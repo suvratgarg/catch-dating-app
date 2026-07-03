@@ -2766,6 +2766,11 @@ Widget catchSectionHeaderCatalogStates(BuildContext context) {
               trailing: CatchTextButton(label: 'See all', onPressed: _noop),
             ),
             const CatchSectionHeader(
+              title: 'Host checklist',
+              subtitle:
+                  'Keep setup copy visible without creating a local header.',
+            ),
+            const CatchSectionHeader(
               title: 'metadata group',
               uppercase: true,
               heavy: true,

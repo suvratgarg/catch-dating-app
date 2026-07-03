@@ -1817,7 +1817,6 @@ String _hostComponentSlug(String name) {
   type: HostOrganizerTrendStrip,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
-
 @widgetbook.UseCase(
   name: 'Add host sheet states',
   type: HostTeamAddHostSheet,
@@ -4408,7 +4407,6 @@ Widget readOnlyHostedEventScheduleCardCatalogStates(BuildContext context) {
   type: HostManageMetaRow,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
-
 // Exact host coverage entries. These point narrow promoted classes at the
 // catalog route/component state that renders the owning workflow.
 @widgetbook.UseCase(
@@ -7112,7 +7110,6 @@ class _HostManageRouteScope extends StatelessWidget {
     this.participations,
     this.initialSection = HostEventManageSection.setup,
     this.initialParticipantSearchQuery = '',
-    this.themeMode = ThemeMode.light,
   });
 
   final Widget? child;
@@ -7137,7 +7134,6 @@ class _HostManageRouteScope extends StatelessWidget {
   final List<EventParticipation>? participations;
   final HostEventManageSection initialSection;
   final String initialParticipantSearchQuery;
-  final ThemeMode themeMode;
 
   @override
   Widget build(BuildContext context) {
@@ -7259,7 +7255,7 @@ class _HostManageRouteScope extends StatelessWidget {
             ).overrideWith((ref) async => wingmanProfiles),
         ],
         child: _ThemedHostPreview(
-          themeMode: themeMode,
+          themeMode: ThemeMode.light,
           child:
               child ??
               HostEventManageRouteScreen(

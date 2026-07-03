@@ -4772,7 +4772,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Running states',
                     builder: _widgetbook_workspace_catches_catches_use_cases
-                        .profileCatchStatColumnes,
+                        .profileRunningStates,
                   ),
                 ],
               ),

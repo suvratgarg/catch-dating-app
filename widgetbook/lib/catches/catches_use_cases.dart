@@ -937,7 +937,7 @@ Widget profilePromptStates(BuildContext context) {
   type: ProfileRunning,
   path: '[P1 product surfaces]/Catches/Sections',
 )
-Widget profileCatchStatColumnes(BuildContext context) {
+Widget profileRunningStates(BuildContext context) {
   return _CatchesCatalog(
     title: 'ProfileRunning',
     contractId: 'screen.catches.profile.running',
