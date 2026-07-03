@@ -781,10 +781,10 @@
           "note": "deferred \u2014 possible overlap with CatchOptionGroup item rendering"
         }
       ],
-      "rationale": "Deferred, not decided: classes are generic (class X<T>) and need a proper read in the next batch.",
+      "rationale": "Deferred, not decided: classes are generic (class X<T>) and need a proper read in the next batch. REVIEW (claude, 2026-07-04): type-aware read done \u2014 editors stay distinct (see c010); the ExploreRailLabel/CatchOptionGroupItem overlap is real and resolved as an absorb (see c014, WO-021).",
       "decidedBy": "claude",
-      "date": "2026-07-03",
-      "status": "deferred"
+      "date": "2026-07-04",
+      "status": "recorded"
     },
     {
       "clusterId": "small-widget: AttendedLeading/BookedLeading/UnsavedChangesPill",
@@ -932,21 +932,21 @@
     },
     {
       "clusterId": "c051-footer",
-      "decision": "escalate",
+      "decision": "delete",
       "members": [
         {
           "name": "EditHostedEventFooter",
-          "action": "escalate"
+          "action": "delete"
         },
         {
           "name": "HostClubEditFooter",
-          "action": "escalate"
+          "action": "delete"
         }
       ],
-      "rationale": "Rulebook scope limit: current cluster is scope: screen, so it needs review instead of mechanical merge. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 needs read.",
-      "decidedBy": "codex-rule:scope-screen",
-      "date": "2026-07-03",
-      "status": "deferred-next-review-batch"
+      "rationale": "Rulebook scope limit: current cluster is scope: screen, so it needs review instead of mechanical merge. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 needs read. REVIEW (claude, 2026-07-04): not screen composition after read \u2014 each is an R2-shape thin wrapper (CatchBottomDock(CatchButton(save))) over a typed footer state with exactly one call site. Inline the expression at each call site verbatim (keep the key and padding args) and delete both classes; the footer-state types stay.",
+      "decidedBy": "codex-rule:scope-screen -> claude",
+      "date": "2026-07-04",
+      "status": "work-order WO-021"
     },
     {
       "clusterId": "c003-catch-meta-row",
@@ -1356,21 +1356,21 @@
     },
     {
       "clusterId": "c010-choice-entry-editor",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "ProfileInlineMultiChoiceEntryEditor",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "ProfileInlineSingleChoiceEntryEditor",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "No exact K/R match: both are profile inline choice editors, but single-choice owns nullable selected state and optional empty-selection behavior while multi-choice owns Set<T> state, optional/non-optional removal rules, and patchForLatestProfile handling. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 generic classes; needs type-aware read.",
-      "decidedBy": "codex-rule:no-exact",
-      "date": "2026-07-03",
-      "status": "deferred-next-review-batch"
+      "rationale": "No exact K/R match: both are profile inline choice editors, but single-choice owns nullable selected state and optional empty-selection behavior while multi-choice owns Set<T> state, optional/non-optional removal rules, and patchForLatestProfile handling. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 generic classes; needs type-aware read. REVIEW (claude, 2026-07-04): type-aware read done. The editors already share every rendered layer (CatchField.actions shell, ProfileChipOptions/ProfileChipPlaceholder/ProfileChipValue, InlineSaveState mixin); the residue is genuinely forked selection logic (T? vs Set<T>, allowEmptySelection vs isOptional min-1 removal, different no-op equality checks, multi-only patchForLatestProfile). K3 plus genuine K2 \u2014 a merge would be a mode switch over two state machines.",
+      "decidedBy": "codex-rule:no-exact -> claude",
+      "date": "2026-07-04",
+      "status": "recorded"
     },
     {
       "clusterId": "c012-pill",
@@ -1392,21 +1392,21 @@
     },
     {
       "clusterId": "c014-catch-option-group-item",
-      "decision": "escalate",
+      "decision": "absorb-into-existing",
       "members": [
         {
           "name": "CatchOptionGroupItem",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "ExploreRailLabel",
-          "action": "escalate"
+          "action": "absorb"
         }
       ],
-      "rationale": "No exact K/R match: ExploreRailLabel is structurally close to core CatchOptionGroupItem, but absorbing it requires a core option-item API decision around selectedRule, variant, option typing, and whether explore filter rails are option groups. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 generic classes; needs type-aware read.",
-      "decidedBy": "codex-rule:no-exact",
-      "date": "2026-07-03",
-      "status": "deferred-next-review-batch"
+      "rationale": "No exact K/R match: ExploreRailLabel is structurally close to core CatchOptionGroupItem, but absorbing it requires a core option-item API decision around selectedRule, variant, option typing, and whether explore filter rails are option groups. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 generic classes; needs type-aware read. REVIEW (claude, 2026-07-04): ExploreRailLabel is a near-byte clone of CatchOptionGroupItem's label variant (same Semantics/InkWell/AnimatedContainer underline, micro10/s3 padding flip, micro3 rule, labelL ink/ink3) \u2014 the explore time rail IS an option-group row that only needed a scrollable layout the group shell doesn't provide. Core API loosened: selectedRule becomes optional (defaults to t.ink), variant defaults to label; explore constructs items directly in its scroll row. Accepted standardization: rail labels gain ellipsis overflow (visual noop at these lengths).",
+      "decidedBy": "codex-rule:no-exact -> claude",
+      "date": "2026-07-04",
+      "status": "work-order WO-021"
     },
     {
       "clusterId": "c018-icon",
@@ -1778,29 +1778,29 @@
     },
     {
       "clusterId": "c031-activity-attribute-goal-chips",
-      "decision": "escalate",
+      "decision": "merge-new-primitive",
       "members": [
         {
           "name": "ActivityAttributeGoalChips",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "QuestionnaireBlock",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "RevealCountdownChips",
-          "action": "escalate"
+          "action": "delete"
         },
         {
           "name": "RotationCadenceChips",
-          "action": "escalate"
+          "action": "delete"
         }
       ],
-      "rationale": "No exact K/R match: the shared CatchSelectChip/Wrap shape hides different multi-select, questionnaire, reveal countdown, and rotation-cadence APIs that need a feature-level chip-group design decision. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 chips-row family; needs read against CatchSelectChip/option-group vocabulary.",
-      "decidedBy": "codex-rule:no-exact",
-      "date": "2026-07-03",
-      "status": "deferred-next-review-batch"
+      "rationale": "No exact K/R match: the shared CatchSelectChip/Wrap shape hides different multi-select, questionnaire, reveal countdown, and rotation-cadence APIs that need a feature-level chip-group design decision. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 chips-row family; needs read against CatchSelectChip/option-group vocabulary. REVIEW (claude, 2026-07-04): the titled chip-wrap is a layout convention, not one concept \u2014 typography intentionally differs by level (labelM setup control, labelL block title, supporting sub-field). Merge only the same-file twins RotationCadenceChips + RevealCountdownChips (identical labelM + gapH6 + Wrap bodies over const single-select option lists) into one feature-local generic SetupChoiceChips<T> taking List<CatchOption<T>>; option lists and label formatting move to call sites as data. QuestionnaireBlock keeps (3-state mode derivation + nested config editor); ActivityAttributeGoalChips keeps (multi-select contains-semantics, sub-field typography). No core primitive \u2014 a Catch* chip row would need a typography knob per concept (K5).",
+      "decidedBy": "codex-rule:no-exact -> claude",
+      "date": "2026-07-04",
+      "status": "work-order WO-021"
     },
     {
       "clusterId": "c039-people-token-row",
@@ -2838,21 +2838,21 @@
     },
     {
       "clusterId": "ranked-pair: ProfileMultiEnumEntry/ProfileSingleEnumEntry",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "ProfileMultiEnumEntry",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "ProfileSingleEnumEntry",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "No exact K/R match: both wrap profile inline enum editors, but single-choice owns nullable value/add affordance while multi-choice owns list selection, empty affordance rules, and latest-profile patching. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 generic classes; needs type-aware read.",
-      "decidedBy": "codex-rule:no-exact",
-      "date": "2026-07-03",
-      "status": "deferred-next-review-batch"
+      "rationale": "No exact K/R match: both wrap profile inline enum editors, but single-choice owns nullable value/add affordance while multi-choice owns list selection, empty affordance rules, and latest-profile patching. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 generic classes; needs type-aware read. REVIEW (claude, 2026-07-04): both are 1:1 typed adapters (display-value + add-affordance derivation) over the inline editors, which stay forked (c010); each adapter is K1 composition over its editor.",
+      "decidedBy": "codex-rule:no-exact -> claude",
+      "date": "2026-07-04",
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: ProfileSurfaceFactsSkeleton/ProfileSurfaceRunningSkeleton",
@@ -2874,21 +2874,21 @@
     },
     {
       "clusterId": "ranked-pair: HostActivitySummary/HostFunnelSummary",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "HostActivitySummary",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "HostFunnelSummary",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: HostActivitySummary describes setup draft activity configuration while HostFunnelSummary explains post-event funnel metrics and conversion pills. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 needs read.",
-      "decidedBy": "codex-rule:K5",
-      "date": "2026-07-03",
-      "status": "deferred-next-review-batch"
+      "rationale": "K5 concept mismatch: HostActivitySummary describes setup draft activity configuration while HostFunnelSummary explains post-event funnel metrics and conversion pills. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 needs read. REVIEW (claude, 2026-07-04): confirmed distinct concepts \u2014 primarySoft setup summary (badge wrap + blurb) vs line-bordered post-event funnel report (icon/title header + metric pills + count badges); the shared vocabulary is already primitives.",
+      "decidedBy": "codex-rule:K5 -> claude",
+      "date": "2026-07-04",
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: ClubDetailsStep/EventDetailsStep",
@@ -3343,21 +3343,21 @@
     },
     {
       "clusterId": "ranked-pair: HostAnalyticsDataQualityPanel/UserAnalyticsDataQualityPanel",
-      "decision": "keep-distinct",
+      "decision": "merge-new-primitive",
       "members": [
         {
           "name": "HostAnalyticsDataQualityPanel",
-          "action": "keep"
+          "action": "delete"
         },
         {
           "name": "UserAnalyticsDataQualityPanel",
-          "action": "keep"
+          "action": "delete"
         }
       ],
-      "rationale": "K2 domain fork: host and user analytics quality panels use parallel role-specific row models, section shells, warning states, and copy contracts. AUDIT (claude, 2026-07-03): K2 misapplied \u2014 bodies are structurally parallel presentation over parallel view-model types (same surfaces, tokens, layout; only typed field access/metric keys differ). Re-opened for the host/user analytics-kit unification review. REVIEW (claude, 2026-07-03): same concept, genuinely different treatments (per-row warning surfaces vs single divided surface); kit v2 candidate (CatchAnalyticsDataQualityList) after v1 lands.",
+      "rationale": "K2 domain fork: host and user analytics quality panels use parallel role-specific row models, section shells, warning states, and copy contracts. AUDIT (claude, 2026-07-03): K2 misapplied \u2014 bodies are structurally parallel presentation over parallel view-model types (same surfaces, tokens, layout; only typed field access/metric keys differ). Re-opened for the host/user analytics-kit unification review. REVIEW (claude, 2026-07-03): same concept, genuinely different treatments (per-row warning surfaces vs single divided surface); kit v2 candidate (CatchAnalyticsDataQualityList) after v1 lands. REVIEW (claude, 2026-07-04): kit v2 lands \u2014 new core CatchAnalyticsDataQualityList (display-ready rows reusing CatchMetricStatus). Canonical treatment = host per-row status surfaces; accepted standardization: user side moves from one divided surface with sm neutral icons to per-row contentDense surfaces with md status-colored icons (partial/missing take the warning treatment). Both panels inline into their report views and die, along with UserAnalyticsDataQualityRow.",
       "decidedBy": "codex-rule:K2 -> claude",
-      "date": "2026-07-03",
-      "status": "recorded"
+      "date": "2026-07-04",
+      "status": "work-order WO-021"
     },
     {
       "clusterId": "ranked-pair: EventActionCardHeader/EventPolicyLabHeader",
@@ -3991,21 +3991,21 @@
     },
     {
       "clusterId": "ranked-pair: PaperProgressRail/QuestionProgressRail",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "PaperProgressRail",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "QuestionProgressRail",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: paper progress rails show passive companion-step progress while questionnaire rails are interactive progress controls. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 needs read.",
-      "decidedBy": "codex-rule:K5",
-      "date": "2026-07-03",
-      "status": "deferred-next-review-batch"
+      "rationale": "K5 concept mismatch: paper progress rails show passive companion-step progress while questionnaire rails are interactive progress controls. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 needs read. REVIEW (claude, 2026-07-04): confirmed different behavior contracts \u2014 passive segment fill vs interactive numbered-dot navigation with a progress bar. D1 in passing: QuestionProgressRail raw minHeight: 8 (WO-021).",
+      "decidedBy": "codex-rule:K5 -> claude",
+      "date": "2026-07-04",
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: ExploreBrowseHeaderContent/ExplorePeekRailContent",
@@ -4351,21 +4351,21 @@
     },
     {
       "clusterId": "ranked-pair: HostAnalyticsReportView/UserAnalyticsReportView",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "HostAnalyticsReportView",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "UserAnalyticsReportView",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K2 discriminator audit: host and user analytics report views are structurally parallel presentation kits over role-specific analytics view models; reopen for host/user analytics-kit unification review. REVIEW (claude, 2026-07-03): stays escalated \u2014 analytics-kit v2 scope after WO-018 lands (report views compose the kit pieces; re-fingerprint then).",
-      "decidedBy": "codex-rule:K2-discriminator",
-      "date": "2026-07-03",
-      "status": "deferred-analytics-kit-v2"
+      "rationale": "K2 discriminator audit: host and user analytics report views are structurally parallel presentation kits over role-specific analytics view models; reopen for host/user analytics-kit unification review. REVIEW (claude, 2026-07-03): stays escalated \u2014 analytics-kit v2 scope after WO-018 lands (report views compose the kit pieces; re-fingerprint then). REVIEW (claude, 2026-07-04): post-WO-018 re-read. The report views are now thin feature compositions of kit pieces with divergent panel sets (host: interactive event list + review/discovery panel + selection callbacks; user: tips panel + empty-state gate). Composition, not duplication. Residual kit gaps split into their own WO-021 decisions: data-quality panels (CatchAnalyticsDataQualityList) and HostAnalyticsInlineStat -> CatchStatColumn. Closes deferred-analytics-kit-v2.",
+      "decidedBy": "codex-rule:K2-discriminator -> claude",
+      "date": "2026-07-04",
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: EventActionCardHeader/ShareCardHeader",
@@ -4547,6 +4547,24 @@
       "decidedBy": "claude",
       "date": "2026-07-03",
       "status": "implemented-WO-018"
+    },
+    {
+      "clusterId": "review-pair: HostAnalyticsInlineStat/CatchStatColumn",
+      "decision": "absorb-into-existing",
+      "members": [
+        {
+          "name": "HostAnalyticsInlineStat",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchStatColumn",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Same slot, drifted twins: host analytics panels hand-roll a stat column (numericMeta value + labelS label) where the user trend panel already uses CatchStatColumn. Absorb the 6 host_operations_screen call sites. Accepted standardization: value numericMeta (mono 12) -> sectionTitle, label labelS -> supporting, aligning with the user analytics side and the WO-020 HostOrganizerMetricTile absorb.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "work-order WO-021"
     }
   ]
 }

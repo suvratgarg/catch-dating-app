@@ -1387,6 +1387,147 @@ exact 64px tokens are semantically unrelated chat/club tokens. The Explore
 empty-state pair stayed distinct after review because one is provider-aware and
 the other is route-state driven.
 
+## WO-021 — Review-batch resolutions: analytics kit v2 close-out + deferred pairs
+
+All ledger entries for this order are already written (2026-07-04 review):
+items 1–6 below carry status `work-order WO-021`; flip each to
+`executed-WO-021` as it lands. The rest of the deferred queue closed as
+keep-distinct — no code work for those.
+
+1. **CatchAnalyticsDataQualityList (kit v2)** in
+   `lib/core/widgets/catch_analytics_kit.dart`:
+
+```dart
+/// Display-ready payload for one analytics data-quality row.
+class CatchDataQualityRowData {
+  const CatchDataQualityRowData({required this.status, required this.detail});
+
+  final CatchMetricStatus status; // ready == ok
+  final String detail;
+}
+
+/// Stacked per-row status surfaces for analytics data-quality rows.
+class CatchAnalyticsDataQualityList extends StatelessWidget {
+  const CatchAnalyticsDataQualityList({super.key, required this.rows});
+
+  final List<CatchDataQualityRowData> rows;
+  // build: verbatim HostAnalyticsDataQualityPanel row treatment, generalized
+  // to three states — Column of rows with gapH8 between; each row =
+  // CatchSurface(padding: CatchInsets.contentDense, borderColor: t.line,
+  //   backgroundColor: ready ? t.surface
+  //       : t.warning.withValues(alpha: CatchOpacity.warningFill),
+  //   child: Row(crossAxisAlignment: start, [
+  //     Icon(ready -> CatchIcons.checkCircleOutlineRounded, color: t.success;
+  //          partial -> CatchIcons.warningAmberRounded, color: t.warning;
+  //          missing -> CatchIcons.errorOutlineRounded, color: t.warning;
+  //          size: CatchIcon.md),
+  //     SizedBox(width: CatchSpacing.s3),
+  //     Expanded(Text(detail, supporting(t.ink2)))]))
+}
+```
+
+   Mappers next to the existing kit mappers: host
+   `CatchDataQualityRowData _hostDataQualityRowData(HostAnalyticsDataQuality r)`
+   — map enum cases by name (ok -> ready; partial -> partial if the case
+   exists; everything else -> missing); user `_userDataQualityRowData`
+   (ok/partial/missing map 1:1). Replace each panel's call site in the two
+   report views with `CatchAnalyticsSection(label: <old section label>, child:
+   CatchAnalyticsDataQualityList(rows: [for ... mapper(...)]))`, then delete
+   `HostAnalyticsDataQualityPanel`, `UserAnalyticsDataQualityPanel`,
+   `UserAnalyticsDataQualityRow`, and the user `_qualityIcon` helper.
+   ACCEPTED VISUAL CHANGE (review-approved): the user side moves from one
+   divided surface with sm neutral icons to per-row contentDense surfaces
+   with md status-colored icons. Update the data-quality block of
+   `UserAnalyticsReportSkeleton` to mirror the new shape (two contentDense
+   surfaces, each icon box + text line, gapH8 between); check the host
+   skeleton for a data-quality mimic and align it too if one exists.
+
+2. **HostAnalyticsInlineStat → CatchStatColumn**: replace the 6 call sites in
+   host_operations_screen.dart (`HostAnalyticsInlineStat(label: L, value: V)`
+   → `CatchStatColumn(label: L, value: V)`), delete the class and its
+   widgetbook block. Accepted standardization: value numericMeta →
+   sectionTitle, label labelS → supporting (matches the user analytics side
+   and WO-020's HostOrganizerMetricTile absorb).
+
+3. **ExploreRailLabel → CatchOptionGroupItem** (decision c014): in
+   catch_option_group.dart make `CatchOptionGroupItem.selectedRule` a
+   `Color?` (build resolves `selectedRule ?? t.ink`) and give `variant` a
+   default of `CatchOptionGroupVariant.label`; `CatchOptionGroup`'s own
+   construction keeps passing both explicitly. Then in
+   explore_filter_rail.dart replace the `ExploreRailLabel(...)` construction
+   with `CatchOptionGroupItem<ExploreTimeFilter>(option: option, selected:
+   option.value == filters.timeFilter, onTap: () =>
+   onTimeFilterSelected?.call(option.value))`, delete the class, and repoint
+   its widgetbook use-case (hand-edit, gotcha 2). Accepted: rail labels gain
+   ellipsis overflow (visual noop at these lengths).
+
+4. **SetupChoiceChips<T> merge** (decision c031) in
+   event_success_setup_body.dart — one generic replaces both
+   RotationCadenceChips and RevealCountdownChips (QuestionnaireBlock and
+   ActivityAttributeGoalChips stay untouched):
+
+```dart
+/// Labeled single-select chip row for setup controls rendered beneath a
+/// During-stage toggle (rotation cadence, reveal countdown).
+class SetupChoiceChips<T> extends StatelessWidget {
+  const SetupChoiceChips({
+    required this.label,
+    required this.options,
+    required this.value,
+    required this.enabled,
+    required this.onChanged,
+  });
+
+  final String label;
+  final List<CatchOption<T>> options; // reuse core catch_option_group.dart
+  final T value;
+  final bool enabled;
+  final ValueChanged<T> onChanged;
+  // build: verbatim twin body — Padding(_setupNestedControlPadding,
+  //   Column(start, [Text(label, CatchTextStyles.labelM(context)), gapH6,
+  //     Wrap(spacing/runSpacing s2, [for (final option in options)
+  //       CatchSelectChip(label: option.label, active: value == option.value,
+  //         enabled: enabled,
+  //         onTap: enabled ? () => onChanged(option.value) : null)])]))
+}
+```
+
+   Call sites: rotation → `SetupChoiceChips<int?>(label: 'Rotation cadence',
+   options: const [CatchOption(value: null, label: 'No timed rotation'),
+   CatchOption(value: 10, label: '10 min'), CatchOption(value: 15, label:
+   '15 min'), CatchOption(value: 20, label: '20 min'), CatchOption(value: 30,
+   label: '30 min')], value:, enabled:, onChanged:)`; reveal →
+   `SetupChoiceChips<int>(label: <existing label arg>, options: const
+   [CatchOption(value: 0, label: 'Off'), CatchOption(value: 5, label: '5s'),
+   CatchOption(value: 10, label: '10s'), CatchOption(value: 15, label:
+   '15s')], ...)`. Widgetbook: replace the two old use-cases with one
+   SetupChoiceChips case.
+
+5. **Footer inlines** (decision c051): inline
+   `EditHostedEventFooter(state:, onSave:)` at its single call site as
+   `CatchBottomDock(child: CatchButton(key: EditHostedEventKeys.saveButton,
+   label: state.label, onPressed: state.isEnabled ? onSave : null, isLoading:
+   state.isLoading, fullWidth: true, icon: Icon(CatchIcons.saveOutlined)))` —
+   substituting the call site's actual expressions for `state`/`onSave` — and
+   `HostClubEditFooter` likewise, keeping its `padding:
+   CatchInsets.formActionDock`. Delete both classes + widgetbook blocks; the
+   footer-state VM types stay.
+
+6. **D1**: QuestionProgressRail (event_success_companion_questionnaire.dart)
+   `minHeight: 8` → the CatchSpacing token whose value is exactly 8 (verify;
+   expected s2); if none matches exactly, escalate per D1.
+
+7. Widgetbook for all changed/new types (gotcha 2) + build_runner regen +
+   registries + receipts; flip the WO-021 ledger entries to
+   `executed-WO-021`.
+
+- [ ] CatchAnalyticsDataQualityList + panel deletions + skeleton alignment
+- [ ] HostAnalyticsInlineStat absorb
+- [ ] ExploreRailLabel absorb + core param loosening
+- [ ] SetupChoiceChips merge
+- [ ] footer inlines
+- [ ] D1 + widgetbook + regen + receipts
+
 ## Audit note (2026-07-03, claude): WO-015 sweep quality
 
 Code-level audit of sampled sweep decisions: 3 of 4 sampled keeps verified
@@ -1407,6 +1548,17 @@ must not attempt it.
 > escalation is decided keep-distinct (ledgered). Screen-scope escalations
 > below are acknowledged and queued for the next review batch — no further
 > action from Codex.
+>
+> Review answers (2026-07-04): the deferred-next-review-batch queue and the
+> analytics-kit-v2 deferral are fully resolved; outcomes live in the ledger.
+> Keep-distinct closures: c010 choice-entry editors, c015+c017,
+> ProfileMulti/SingleEnumEntry, HostActivitySummary/HostFunnelSummary,
+> PaperProgressRail/QuestionProgressRail, and the
+> Host/UserAnalyticsReportView pair (analytics kit v2 closes with no shared
+> report view). Code work queued as WO-021: CatchAnalyticsDataQualityList,
+> HostAnalyticsInlineStat absorb, ExploreRailLabel absorb (c014),
+> SetupChoiceChips merge (c031), footer inlines (c051), one D1 fix. The
+> escalation queue is now empty.
 
 - WO-002: resolved by WO-016 — `CatchScrim.photoFrame` now uses
   `CatchOpacity.photoFrameEdge`; `CatchOpacity.eventSuccessSubtleBorder` remains
