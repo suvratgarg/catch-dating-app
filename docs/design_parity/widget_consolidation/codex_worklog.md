@@ -14,12 +14,15 @@ under **Escalations**, and continue with the next order.
   `tool/flutter_with_env.sh`).
 - Never edit `packages/catch_ui_lints/` (local plugin recompile crashes
   `dart analyze`).
-- `lib/` analyzer baseline: **192 info-level issues, 0 warnings/errors**
-  (verified 2026-07-03 on `claude/widget-consolidation-slice-1`). Any new
-  warning/error is regression from your change.
-- Widgetbook workspace analyzer baseline: 67 issues including 1 warning
-  (`unused_element_parameter` at `widgetbook/lib/hosts/host_operations_use_cases.dart:7115`)
-  — that warning is pre-slice-1 fallout addressed in WO-001.
+- `lib/` analyzer baseline: **188 info-level issues, 0 warnings/errors**
+  (re-verified 2026-07-03 post-WO-014 review). Any new warning/error is
+  regression from your change; the info count may only go down.
+- Widgetbook workspace analyzer baseline: **65 issues, 0 warnings** (post
+  WO-014 review).
+- `check_widgetbook_coverage.mjs --check` fails on an INHERITED
+  catalog-or-replace decision queue (134 items at review time, owned by the
+  review session — do not work it). Record the count in each receipt; treat
+  the check as regression only if the count GROWS from your change.
 
 ## Hard-won gotchas (read before every order)
 
@@ -57,6 +60,15 @@ under **Escalations**, and continue with the next order.
 8. Append a receipts section per completed order to
    `docs/audit_registry/widget_consolidation_receipts.md` (commands, counts,
    spot-checks).
+9. **Escalations live in THIS file's Escalations section.** A skip justified
+   only in the receipts doc is invisible to the review queue (the WO-006
+   divider-skeleton skip was nearly missed this way). Receipts may repeat it;
+   the worklog entry is mandatory.
+10. **Cluster IDs are unstable**: `widget_similarity.json` renumbers clusters
+    on every regeneration. Ledger entries must always carry member names;
+    when triaging, match candidates against `decisions.json` by MEMBER SET,
+    never by cluster id. The `*-reconciled` ledger-entry pattern is the
+    blessed way to record an id remap without re-deciding.
 
 ---
 
@@ -972,6 +984,25 @@ in `docs/audit_registry/widget_similarity.json` that has NO entry in
 - [ ] rule-authorized executions in batches
 - [ ] receipts with per-rule counts
 
+**Operating amendments (2026-07-03 review of WO-001..014 — read before
+continuing the sweep):**
+
+1. Scope for the overnight run is clusters + ranked pairs ONLY. Do NOT start
+   the 236 name families or the 134-item widgetbook coverage queue — both are
+   review-session work.
+2. Screen-scope clusters: ledger them as `codex-rule:scope-screen` with
+   member names; do NOT also add an Escalations line for each (the existing
+   screen escalation lines are acknowledged — future ones would be noise; the
+   review session reads them from the ledger).
+3. Gotchas 9 and 10 above are new (worklog-escalations mandate; member-set
+   matching / unstable cluster ids) — they came from this review.
+4. Use the updated analyzer baselines from Standing environment facts (188 /
+   65); after each batch the numbers may only improve.
+5. When a merge rule authorizes execution but the FULL body reveals structure
+   the target primitive does not model (the WO-006 divider case), the outcome
+   is: keep, ledger with the reason, AND an Escalations line here — never
+   extend a core primitive's API yourself.
+
 Progress by Codex: applied the rulebook's screen-scope limit to the current
 similarity registry and ledgered seven screen clusters as escalations in
 `decisions.json`: `c011-event-success-report-metrics-skeleton`,
@@ -1001,9 +1032,42 @@ decisions: `c026-slot-row`, `c034-celebration-details-card`,
 `c036-dashboard-full`, `c037-card`, `c038-profile-tab`, and `c042-editor`. No
 code was changed in this ledger-only batch.
 
+## WO-016 — Review answers from the WO-001..014 audit
+
+1. **`CatchSkeletonRows.divided` flag** (answers the WO-006 skip): add
+   `this.divided = false` to `CatchSkeletonRows`
+   (`lib/core/widgets/catch_skeleton_layouts.dart`); when true, separate rows
+   with the divider treatment used by `HostEventRowsSkeleton` /
+   `HostSettingsRowsSkeleton` in
+   `lib/hosts/presentation/widgets/host_loading_skeletons.dart` — read their
+   full bodies and mirror the divider's exact color/height/insets. Then
+   absorb both: `HostEventRowsSkeleton(count: n)` →
+   `CatchSkeletonRows(leading: CatchSkeletonRowLeading.mediaTile, count: n,
+   divided: true)`; `HostSettingsRowsSkeleton(rowCount: n)` →
+   `CatchSkeletonRows(leading: CatchSkeletonRowLeading.icon, count: n,
+   divided: true)` (verify titled-ness per body before migrating). Delete the
+   classes (~17 refs incl. widgetbook), gotchas 1/2/5/6.
+2. **`CatchOpacity.photoFrameEdge` token** (answers the WO-002 escalation):
+   add a token with the same value as `CatchOpacity.eventSuccessSubtleBorder`
+   (follow the token file's ordering/doc style; doc comment: bottom-edge
+   alpha for photo-frame scrims) and switch `CatchScrim.photoFrame` to it.
+   Leave `eventSuccessSubtleBorder` in place for its event_success usages.
+3. regen + registries + receipts; ledger both under the existing decision
+   entries (update status), member-set matching per gotcha 10.
+
+- [ ] divided flag + two absorptions
+- [ ] photoFrameEdge token swap
+- [ ] regen + registries + receipts
+
 ---
 
 ## Escalations
+
+> Review answers (2026-07-03): the WO-002 token escalation and the WO-006
+> divider-skeleton skip are resolved by WO-016 below. The `c044-row` K5
+> escalation is decided keep-distinct (ledgered). Screen-scope escalations
+> below are acknowledged and queued for the next review batch — no further
+> action from Codex.
 
 - WO-002: `CatchScrim.photoFrame` keeps using
   `CatchOpacity.eventSuccessSubtleBorder` for its bottom-edge alpha to stay
