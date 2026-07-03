@@ -1877,21 +1877,21 @@
     },
     {
       "clusterId": "ranked-pair: HostAnalyticsMetricTile/UserAnalyticsMetricTile",
-      "decision": "keep-distinct",
+      "decision": "escalate",
       "members": [
         {
           "name": "HostAnalyticsMetricTile",
-          "action": "keep"
+          "action": "escalate"
         },
         {
           "name": "UserAnalyticsMetricTile",
-          "action": "keep"
+          "action": "escalate"
         }
       ],
-      "rationale": "K2 domain fork: the tiles share the same card skeleton, but they render parallel HostAnalyticsMetricCard/UserAnalyticsMetricCard data, status enums, status-copy rules, and user analytics copy helpers.",
-      "decidedBy": "codex-rule:K2",
+      "rationale": "K2 domain fork: the tiles share the same card skeleton, but they render parallel HostAnalyticsMetricCard/UserAnalyticsMetricCard data, status enums, status-copy rules, and user analytics copy helpers. AUDIT (claude, 2026-07-03): K2 misapplied \u2014 bodies are structurally parallel presentation over parallel view-model types (same surfaces, tokens, layout; only typed field access/metric keys differ). Re-opened for the host/user analytics-kit unification review.",
+      "decidedBy": "codex-rule:K2 -> claude-audit",
       "date": "2026-07-03",
-      "status": "recorded-WO-015-ranked-pair"
+      "status": "escalated-analytics-kit"
     },
     {
       "clusterId": "ranked-pair: EditHostedEventPickerTile/WhenStepPickerTile",
@@ -1913,39 +1913,39 @@
     },
     {
       "clusterId": "ranked-pair: HostAnalyticsTrendPanel/UserAnalyticsTrendPanel",
-      "decision": "keep-distinct",
+      "decision": "escalate",
       "members": [
         {
           "name": "HostAnalyticsTrendPanel",
-          "action": "keep"
+          "action": "escalate"
         },
         {
           "name": "UserAnalyticsTrendPanel",
-          "action": "keep"
+          "action": "escalate"
         }
       ],
-      "rationale": "K2 domain fork: the trend panels share chart chrome and CatchAnalyticsBar, but they read parallel HostAnalyticsTrendPoint/UserAnalyticsTrendPoint metrics with different metric keys, section shells, and summary stat copy.",
-      "decidedBy": "codex-rule:K2",
+      "rationale": "K2 domain fork: the trend panels share chart chrome and CatchAnalyticsBar, but they read parallel HostAnalyticsTrendPoint/UserAnalyticsTrendPoint metrics with different metric keys, section shells, and summary stat copy. AUDIT (claude, 2026-07-03): K2 misapplied \u2014 bodies are structurally parallel presentation over parallel view-model types (same surfaces, tokens, layout; only typed field access/metric keys differ). Re-opened for the host/user analytics-kit unification review.",
+      "decidedBy": "codex-rule:K2 -> claude-audit",
       "date": "2026-07-03",
-      "status": "recorded-WO-015-ranked-pair"
+      "status": "escalated-analytics-kit"
     },
     {
       "clusterId": "ranked-pair: HostAnalyticsMetricGrid/UserAnalyticsMetricGrid",
-      "decision": "keep-distinct",
+      "decision": "escalate",
       "members": [
         {
           "name": "HostAnalyticsMetricGrid",
-          "action": "keep"
+          "action": "escalate"
         },
         {
           "name": "UserAnalyticsMetricGrid",
-          "action": "keep"
+          "action": "escalate"
         }
       ],
-      "rationale": "K2 domain fork: the grid skeleton is shared, but the members render parallel metric-card domains and tile types; the user grid also caps at six cards while the host grid renders the supplied host summary cards.",
-      "decidedBy": "codex-rule:K2",
+      "rationale": "K2 domain fork: the grid skeleton is shared, but the members render parallel metric-card domains and tile types; the user grid also caps at six cards while the host grid renders the supplied host summary cards. AUDIT (claude, 2026-07-03): K2 misapplied \u2014 bodies are structurally parallel presentation over parallel view-model types (same surfaces, tokens, layout; only typed field access/metric keys differ). Re-opened for the host/user analytics-kit unification review.",
+      "decidedBy": "codex-rule:K2 -> claude-audit",
       "date": "2026-07-03",
-      "status": "recorded-WO-015-ranked-pair"
+      "status": "escalated-analytics-kit"
     },
     {
       "clusterId": "ranked-pair: DarkPill/EventSuccessDarkPill",
@@ -3335,21 +3335,21 @@
     },
     {
       "clusterId": "ranked-pair: HostAnalyticsDataQualityPanel/UserAnalyticsDataQualityPanel",
-      "decision": "keep-distinct",
+      "decision": "escalate",
       "members": [
         {
           "name": "HostAnalyticsDataQualityPanel",
-          "action": "keep"
+          "action": "escalate"
         },
         {
           "name": "UserAnalyticsDataQualityPanel",
-          "action": "keep"
+          "action": "escalate"
         }
       ],
-      "rationale": "K2 domain fork: host and user analytics quality panels use parallel role-specific row models, section shells, warning states, and copy contracts.",
-      "decidedBy": "codex-rule:K2",
+      "rationale": "K2 domain fork: host and user analytics quality panels use parallel role-specific row models, section shells, warning states, and copy contracts. AUDIT (claude, 2026-07-03): K2 misapplied \u2014 bodies are structurally parallel presentation over parallel view-model types (same surfaces, tokens, layout; only typed field access/metric keys differ). Re-opened for the host/user analytics-kit unification review.",
+      "decidedBy": "codex-rule:K2 -> claude-audit",
       "date": "2026-07-03",
-      "status": "recorded-WO-015-ranked-pair"
+      "status": "escalated-analytics-kit"
     },
     {
       "clusterId": "ranked-pair: EventActionCardHeader/EventPolicyLabHeader",
@@ -3659,21 +3659,21 @@
     },
     {
       "clusterId": "ranked-pair: AttendedEventTile/HostAnalyticsEventTile",
-      "decision": "keep-distinct",
+      "decision": "escalate",
       "members": [
         {
           "name": "AttendedEventTile",
-          "action": "keep"
+          "action": "escalate"
         },
         {
           "name": "HostAnalyticsEventTile",
-          "action": "keep"
+          "action": "escalate"
         }
       ],
-      "rationale": "K2 domain fork: attended-event catch tiles and host analytics event tiles consume different row models, actions, metrics, and role-specific copy.",
-      "decidedBy": "codex-rule:K2",
+      "rationale": "K2 domain fork: attended-event catch tiles and host analytics event tiles consume different row models, actions, metrics, and role-specific copy. AUDIT (claude, 2026-07-03): K2 misapplied \u2014 bodies are structurally parallel presentation over parallel view-model types (same surfaces, tokens, layout; only typed field access/metric keys differ). Re-opened for the host/user analytics-kit unification review.",
+      "decidedBy": "codex-rule:K2 -> claude-audit",
       "date": "2026-07-03",
-      "status": "recorded-WO-015-ranked-pair"
+      "status": "escalated-analytics-kit"
     },
     {
       "clusterId": "ranked-pair: EventSuccessPromptCard/StagePromptCard",

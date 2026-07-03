@@ -22,7 +22,7 @@
   },
   "widget_consolidation_rules": {
     "path": "docs/design_parity/widget_consolidation/consolidation_rules.md",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "updated": "2026-07-03",
     "status": "active",
     "read_policy": "Read before triaging widget_similarity.json clusters or executing consolidation work orders: KEEP stop-losses (K1-K5), MERGE rules (R1-R4), drift rule (D1), scope limits, and the split between rule-triage (agent) and review-session judgment (naming, new-primitive API design, concept identity, visual trade-offs)."

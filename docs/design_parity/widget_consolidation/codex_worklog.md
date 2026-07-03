@@ -1142,7 +1142,31 @@ at the inherited info-only baseline; full Widgetbook analyzer, coverage, and
 contract-reference gates remain blocked by the existing HostOperations queue
 listed in the receipt.
 
+## WO-017 — Shared count-label formatter (for when work resumes)
+
+The `count > 99 ? '99+' : '$count'` clamp exists in `CatchCountBadge`
+(`lib/core/widgets/catch_count_badge.dart`) and
+`CatchPersonUnreadCountPill` (`lib/core/widgets/catch_person_row.dart`).
+Add a top-level `String catchCountLabel(int count)` in
+`catch_count_badge.dart`, use it in both, and sweep `lib/` for other
+`'99+'` clamps. No visual change.
+
+- [ ] formatter + two call sites + sweep + regen + receipts
+
 ---
+
+## Audit note (2026-07-03, claude): WO-015 sweep quality
+
+Code-level audit of sampled sweep decisions: 3 of 4 sampled keeps verified
+correct against source (dashboard loading cards, count pills, row skeletons —
+K4 applied honestly). One systematic misapplication found and corrected:
+**K2 was applied to the Host/User analytics kit** (MetricTile, TrendPanel,
+MetricGrid, DataQualityPanel, EventTile pairs), whose bodies are
+near-identical presentation over parallel view-model types. Those five
+ledger entries are re-opened as `escalated-analytics-kit`; the rulebook
+gained a K2 discriminator (v0.2.0). The **analytics-kit unification is a
+review-session item** (needs a shared presentation-model API design) — Codex
+must not attempt it.
 
 ## Escalations
 

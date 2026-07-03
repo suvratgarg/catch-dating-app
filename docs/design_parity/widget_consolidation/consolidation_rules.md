@@ -1,6 +1,6 @@
 ---
 doc_id: widget_consolidation_rules
-version: 0.1.0
+version: 0.2.0
 updated: 2026-07-03
 owner: widget_consolidation
 status: active
@@ -42,6 +42,20 @@ families (e.g. `…GroupOverrideRound` vs `…RotationOverrideRound`; two
 `…PreviewRow` types), keep-distinct and note the family. Unifying trades
 duplication for generics + conditional business logic.
 *Evidence: the 14-widget Group/Rotation family; EventPolicy row pairs.*
+
+**K2 discriminator (v0.2.0 — added after the 2026-07-03 audit found K2
+over-applied):** parallel param TYPES alone do not make a domain fork. K2
+requires the build bodies to contain **diverging business logic** —
+different conditionals, different computed semantics, different
+interactions. If the bodies are structurally parallel and differ only in
+typed field access, metric keys, labels, or parallel view-model plumbing,
+that is a **presentation kit duplicated across features** — the highest-value
+merge class. Do not keep it; ESCALATE it as a kit-unification candidate
+(the shared API needs review-session design).
+*Counter-evidence that motivated this: Host/User analytics
+MetricTile/TrendPanel/MetricGrid/DataQualityPanel pairs — near-identical
+surfaces, tokens, and layout over parallel `*MetricCard`/`*TrendPoint`
+types; wrongly kept as K2, re-opened by the audit.*
 
 **K3 — Already sharing internals.**
 If both builds delegate to the same shared body/spec symbol (grep both bodies
