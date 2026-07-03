@@ -806,20 +806,6 @@ Widget eventSuccessStrictEventSuccessDefaultsPanel(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "EventPreviewCompanionSkeleton",
-  type: EventPreviewCompanionSkeleton,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Event preview folded states",
-)
-Widget eventSuccessStrictEventPreviewCompanionSkeleton(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.eventPreview,
-    componentName: "EventPreviewCompanionSkeleton",
-  );
-}
-
-@widgetbook.UseCase(
   name: "EventPreviewHero",
   type: EventPreviewHero,
   path:
@@ -844,62 +830,6 @@ Widget eventSuccessStrictEventPreviewHeroSkeleton(BuildContext context) {
     context,
     surface: _EventSuccessStrictSurface.eventPreview,
     componentName: "EventPreviewHeroSkeleton",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "EventPreviewLiveSkeleton",
-  type: EventPreviewLiveSkeleton,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Event preview folded states",
-)
-Widget eventSuccessStrictEventPreviewLiveSkeleton(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.eventPreview,
-    componentName: "EventPreviewLiveSkeleton",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "EventPreviewNotesSkeleton",
-  type: EventPreviewNotesSkeleton,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Event preview folded states",
-)
-Widget eventSuccessStrictEventPreviewNotesSkeleton(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.eventPreview,
-    componentName: "EventPreviewNotesSkeleton",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "EventPreviewReportSkeleton",
-  type: EventPreviewReportSkeleton,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Event preview folded states",
-)
-Widget eventSuccessStrictEventPreviewReportSkeleton(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.eventPreview,
-    componentName: "EventPreviewReportSkeleton",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "EventPreviewSetupSkeleton",
-  type: EventPreviewSetupSkeleton,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Event preview folded states",
-)
-Widget eventSuccessStrictEventPreviewSetupSkeleton(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.eventPreview,
-    componentName: "EventPreviewSetupSkeleton",
   );
 }
 

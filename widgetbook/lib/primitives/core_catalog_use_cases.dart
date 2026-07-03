@@ -1888,32 +1888,6 @@ Widget eventTicketSurfaceCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: EventHeroSurface,
-  path: '[Core catalog]/Event cards',
-)
-Widget eventHeroSurfaceCatalogStates(BuildContext context) {
-  return _CatalogScreen(
-    title: 'EventHeroSurface',
-    catalogId: 'events.widgets.event_hero_surface',
-    children: [
-      _StateCard(
-        label: 'shared hero wrapper',
-        child: EventHeroSurface(
-          tag: 'widgetbook-event-hero-surface',
-          child: CatchSurface.card(
-            child: Text(
-              'Event cards use this wrapper for the shared ticket Hero flight.',
-              style: CatchTextStyles.bodyM(context),
-            ),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Catalog states',
   type: EventDetailHeroAppBar,
   path: '[Core catalog]/Event detail',
 )

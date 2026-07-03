@@ -657,44 +657,6 @@ Widget hostHomeMetaRowStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Event row states',
-  type: HostEventRow,
-  path: '[P1 product surfaces]/Host operations/Sections',
-)
-Widget hostHomeEventRowStates(BuildContext context) {
-  return _HostCatalog(
-    title: 'HostEventRow',
-    contractId: 'section.host.home_event_row',
-    children: [
-      _StateCard(
-        label: 'first upcoming event',
-        child: _HostHomeSectionFrame(
-          child: HostEventRow(
-            row: HostHomeEventRowData(
-              event: HostOperationsFixtures.upcomingEvent,
-              divider: false,
-            ),
-            onTap: () {},
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'divided private event',
-        child: _HostHomeSectionFrame(
-          child: HostEventRow(
-            row: HostHomeEventRowData(
-              event: HostOperationsFixtures.privateEvent,
-              divider: true,
-            ),
-            onTap: () {},
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
   name: 'Covered by host event section states',
   type: HostEventsClubSection,
   path: '[P1 product surfaces]/Host operations/Composed sections',
@@ -1794,7 +1756,7 @@ Widget _hostSettingsPreviewFor(String focus) {
     'HostSettingsClubRows' => const _DeviceFrame(
       child: _HostSettingsClubsFrame(),
     ),
-    'HostSettingsClubsEmptyState' => const _DeviceFrame(
+    'HostSettingsClubsEmpty' => const _DeviceFrame(
       child: _HostSettingsClubsFrame(clubs: []),
     ),
     'HostSettingsProfileRows' => _DeviceFrame(
@@ -1989,11 +1951,6 @@ Widget hostTeamHostActionDialogStates(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Covered by host settings route states',
   type: HostSettingsProfileRows,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host settings route states',
-  type: HostSettingsClubsEmptyState,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 @widgetbook.UseCase(

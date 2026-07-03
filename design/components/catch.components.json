@@ -8437,15 +8437,6 @@
             ]
           },
           {
-            "id": "catch.event_card.hero_surface",
-            "symbol": "EventHeroSurface",
-            "file": "lib/core/widgets/event_ticket_surface.dart",
-            "summary": "Named full-card Hero wrapper for ticket-card to event-detail transitions.",
-            "states": [
-              "wrapper"
-            ]
-          },
-          {
             "id": "catch.event_card.perforated_divider",
             "symbol": "EventTicketPerforatedDivider",
             "file": "lib/core/widgets/event_ticket_surface.dart",

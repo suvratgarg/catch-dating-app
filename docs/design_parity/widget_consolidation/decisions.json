@@ -4718,7 +4718,7 @@
       "rationale": "Name-family review: CatchesHubEmptyState is a full screen-state body (header + empty state + explainer surface) \u2014 keep. SwipeEmptyState has 6 content-driven call sites, above the R2 bar \u2014 keep. HostSettingsClubsEmptyState is a single supporting Text with one call site \u2014 inline it (WO-022). EmptyRoster (event_recap_screen) is an R2 thin CatchEmptyState wrapper with one call site \u2014 inline it (WO-022).",
       "decidedBy": "claude",
       "date": "2026-07-04",
-      "status": "work-order WO-022"
+      "status": "executed-WO-022"
     },
     {
       "clusterId": "n003-host-card",
@@ -4890,7 +4890,7 @@
       "rationale": "Name-family review: the five EventPreview{Notes,Setup,Live,Companion,Report}Skeleton widgets are 10-line const R2 wrappers over EventSuccessSkeletonSurface(titleWidth/textLines/trailingCount) with single call sites \u2014 inline them (WO-022). The rest are per-screen skeleton compositions; parameterizing moves the same jitter to call sites (c010/c011 precedent).",
       "decidedBy": "claude",
       "date": "2026-07-04",
-      "status": "work-order WO-022"
+      "status": "executed-WO-022"
     },
     {
       "clusterId": "n020-event-pill",
@@ -4934,7 +4934,7 @@
       "rationale": "Name-family review: EventHeroSurface is a 3-line widget alias for the catchHeroSurface() transition helper with one call site \u2014 inline and delete (WO-022). EventDetailTicketHeroSurface is K1 composition (conditional hero wrapper over the ticket surface). EventSuccessHeroSurface is an unrelated gradient shell. LEXICON: 'hero' means transition wrapper in events but prominent gradient shell in event_success \u2014 disambiguate at ratification.",
       "decidedBy": "claude",
       "date": "2026-07-04",
-      "status": "work-order WO-022"
+      "status": "executed-WO-022"
     },
     {
       "clusterId": "n007-event-body",
@@ -5016,7 +5016,7 @@
       "rationale": "Name-family review: HostEventRow is an R2 thin wrapper over CatchField.nav (<=3 call sites) \u2014 inline and delete (WO-022). HostInviteLinkRow (stateful display resolution), HostMetaRow (badge/chip wrap with domain formatting; LEXICON: name collides with core CatchMetaRow's icon/text concept), HostOrganizerMetricRow (K1 over CatchStatColumn), and HostOrganizerTeamRow (person row) stay. TOKEN FIX (WO-022): HostOrganizerTeamRow sizes a REAL avatar with CatchLayout.skeletonAvatarCompactExtent \u2014 add semantic CatchLayout.avatarRowExtent; and add CatchLayout.avatarIdentityExtent = 64.0 to close the WO-020 HostOrganizerHeader raw-64 escalation.",
       "decidedBy": "claude",
       "date": "2026-07-04",
-      "status": "work-order WO-022"
+      "status": "executed-WO-022"
     },
     {
       "clusterId": "n011-loading-screen",

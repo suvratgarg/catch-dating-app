@@ -350,6 +350,7 @@ class HostSettingsClubsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
     return HostSettingsSection(
       label: 'Clubs you host',
       children: [
@@ -364,7 +365,10 @@ class HostSettingsClubsSection extends StatelessWidget {
             context: AppErrorContext.club,
             onRetry: onRetry,
           ),
-          HostSettingsClubsEmpty() => const HostSettingsClubsEmptyState(),
+          HostSettingsClubsEmpty() => Text(
+            'No host clubs yet.',
+            style: CatchTextStyles.supporting(context, color: t.ink2),
+          ),
           HostSettingsClubsContent(:final clubs) => HostSettingsClubRows(
             actions: actions,
             clubs: clubs,
@@ -372,19 +376,6 @@ class HostSettingsClubsSection extends StatelessWidget {
           ),
         },
       ],
-    );
-  }
-}
-
-class HostSettingsClubsEmptyState extends StatelessWidget {
-  const HostSettingsClubsEmptyState({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Text(
-      'No host clubs yet.',
-      style: CatchTextStyles.supporting(context, color: t.ink2),
     );
   }
 }

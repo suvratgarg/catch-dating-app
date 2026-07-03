@@ -166,7 +166,12 @@ class EventRecapReadyBody extends StatelessWidget {
                 ),
                 gapH14,
                 if (!state.hasAttendees)
-                  const EmptyRoster()
+                  CatchEmptyState(
+                    icon: CatchIcons.groupOffRounded,
+                    title: 'No attendees to tag',
+                    message:
+                        'No other checked-in attendees are attached to this event yet.',
+                  )
                 else
                   VibeGrid(
                     rows: state.attendeeRows,
@@ -540,18 +545,5 @@ class RecapProfilePhoto extends StatelessWidget {
       );
     }
     return CatchNetworkImage(photoUrl);
-  }
-}
-
-class EmptyRoster extends StatelessWidget {
-  const EmptyRoster({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchEmptyState(
-      icon: CatchIcons.groupOffRounded,
-      title: 'No attendees to tag',
-      message: 'No other checked-in attendees are attached to this event yet.',
-    );
   }
 }

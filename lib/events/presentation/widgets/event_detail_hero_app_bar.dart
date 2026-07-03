@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/motion/catch_transitions.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -234,7 +235,7 @@ class EventDetailTicketHeroSurface extends StatelessWidget {
     );
     final tag = heroTag;
     if (tag == null) return surface;
-    return EventHeroSurface(tag: tag, child: surface);
+    return catchHeroSurface(tag: tag, child: surface);
   }
 }
 

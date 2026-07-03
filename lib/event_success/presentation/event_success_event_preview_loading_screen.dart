@@ -41,15 +41,35 @@ class EventSuccessEventPreviewLoadingBody extends StatelessWidget {
                   children: [
                     EventPreviewHeroSkeleton(),
                     gapH16,
-                    EventPreviewNotesSkeleton(),
+                    EventSuccessSkeletonSurface(
+                      titleWidth: CatchLayout.skeletonTextFeatureWidth,
+                      textLines: 3,
+                      trailingCount: 0,
+                    ),
                     gapH16,
-                    EventPreviewSetupSkeleton(),
+                    EventSuccessSkeletonSurface(
+                      titleWidth: CatchLayout.skeletonTextWideWidth,
+                      textLines: 3,
+                      trailingCount: 3,
+                    ),
                     gapH16,
-                    EventPreviewLiveSkeleton(),
+                    EventSuccessSkeletonSurface(
+                      titleWidth: CatchLayout.skeletonTextTitleWidth,
+                      textLines: 2,
+                      trailingCount: 2,
+                    ),
                     gapH16,
-                    EventPreviewCompanionSkeleton(),
+                    EventSuccessSkeletonSurface(
+                      titleWidth: CatchLayout.skeletonTextActionLabelWidth,
+                      textLines: 3,
+                      trailingCount: 1,
+                    ),
                     gapH16,
-                    EventPreviewReportSkeleton(),
+                    EventSuccessSkeletonSurface(
+                      titleWidth: CatchLayout.skeletonTextBodyLongWidth,
+                      textLines: 2,
+                      trailingCount: 3,
+                    ),
                   ],
                 ),
               ),
@@ -116,71 +136,6 @@ class EventPreviewHeroSkeleton extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class EventPreviewNotesSkeleton extends StatelessWidget {
-  const EventPreviewNotesSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const EventSuccessSkeletonSurface(
-      titleWidth: CatchLayout.skeletonTextFeatureWidth,
-      textLines: 3,
-      trailingCount: 0,
-    );
-  }
-}
-
-class EventPreviewSetupSkeleton extends StatelessWidget {
-  const EventPreviewSetupSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const EventSuccessSkeletonSurface(
-      titleWidth: CatchLayout.skeletonTextWideWidth,
-      textLines: 3,
-      trailingCount: 3,
-    );
-  }
-}
-
-class EventPreviewLiveSkeleton extends StatelessWidget {
-  const EventPreviewLiveSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const EventSuccessSkeletonSurface(
-      titleWidth: CatchLayout.skeletonTextTitleWidth,
-      textLines: 2,
-      trailingCount: 2,
-    );
-  }
-}
-
-class EventPreviewCompanionSkeleton extends StatelessWidget {
-  const EventPreviewCompanionSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const EventSuccessSkeletonSurface(
-      titleWidth: CatchLayout.skeletonTextActionLabelWidth,
-      textLines: 3,
-      trailingCount: 1,
-    );
-  }
-}
-
-class EventPreviewReportSkeleton extends StatelessWidget {
-  const EventPreviewReportSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const EventSuccessSkeletonSurface(
-      titleWidth: CatchLayout.skeletonTextBodyLongWidth,
-      textLines: 2,
-      trailingCount: 3,
     );
   }
 }

@@ -237,7 +237,7 @@ class HostEventToolCard extends StatelessWidget {
 
     return EventActionCard(
       event: event,
-      radius: 22,
+      radius: CatchRadius.heroCard,
       backgroundColor: palette.background,
       borderColor: palette.border,
       gradientColors: palette.gradientColors,

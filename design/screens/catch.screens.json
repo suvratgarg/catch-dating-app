@@ -8287,7 +8287,7 @@
           "id": "upcoming_events",
           "kind": "populated",
           "status": "captured",
-          "source": "HostHomeEventRowsState sorts non-cancelled club events, limits visible rows, and provides provider-free HostEventRow display data.",
+          "source": "HostHomeEventRowsState sorts non-cancelled club events, limits visible rows, and feeds HostEventRows with provider-free event data.",
           "tests": [
             "test/hosts/host_operations_screen_test.dart"
           ],
@@ -8330,7 +8330,7 @@
           "id": "manage_event_navigation",
           "kind": "populated",
           "status": "tested",
-          "source": "_HostEventsScaffold owns the typed manage-event callback and pushes hostAppEventManageScreen with clubId, eventId, and event extra; HostEventRow delegates taps instead of reading GoRouter.",
+          "source": "_HostEventsScaffold owns the typed manage-event callback and pushes hostAppEventManageScreen with clubId, eventId, and event extra; HostEventRows passes row taps through to the scaffold instead of reading GoRouter.",
           "tests": [
             "test/hosts/host_operations_screen_test.dart"
           ],
@@ -8533,15 +8533,15 @@
             "status": "implemented_local",
             "layer": "compound",
             "claudeComponents": [
-              "HostEventRow",
+              "HostEventRows",
               "ManageEventRow"
             ],
             "flutter": {
               "file": "lib/hosts/presentation/host_operations_screen.dart",
-              "symbol": "HostEventRow"
+              "symbol": "HostEventRows"
             },
-            "currentOwner": "HostEventRow",
-            "targetOwner": "shared host event row compound if reused by Host Manage/Host Clubs",
+            "currentOwner": "HostEventRows",
+            "targetOwner": "local Host Events row rendering unless reused by Host Manage/Host Clubs",
             "dependencies": [
               "catch.surface"
             ],
@@ -8552,10 +8552,10 @@
               "long_title",
               "divider"
             ],
-            "migration": "HostEventRow receives provider-free HostHomeEventRowData plus a typed tap callback. Keep it shared only if Host Manage and Host Club Detail confirm the same row treatment.",
+            "migration": "HostEventRows receives provider-free HostHomeEventRowData plus typed tap callbacks. Keep it local unless Host Manage and Host Club Detail confirm the same row treatment.",
             "previewIds": [
               "HostOperationsHomeScreen/Route states",
-              "HostEventRow/Event row states"
+              "HostEventRows/Exact catalog"
             ]
           },
           {

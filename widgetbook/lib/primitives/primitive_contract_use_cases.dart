@@ -63,7 +63,6 @@ import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
-import 'package:catch_dating_app/core/widgets/event_ticket_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
 import 'package:catch_dating_app/dashboard/shared/quick_actions.dart';
@@ -5481,33 +5480,6 @@ Widget eventActivityStampContractStates(BuildContext context) {
               ),
             ),
           ],
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: EventHeroSurface,
-  path: '[Core primitives]/Product composites',
-)
-Widget eventHeroSurfaceContractStates(BuildContext context) {
-  return _ContractScreen(
-    title: 'EventHeroSurface',
-    contractId: 'catch.event_card.hero_surface',
-    states: const ['wrapper'],
-    children: [
-      _StateCard(
-        label: 'wrapper',
-        child: EventHeroSurface(
-          tag: 'contract-event-hero-surface',
-          child: CatchSurface.card(
-            child: Text(
-              'Shared ticket Hero wrapper',
-              style: CatchTextStyles.bodyM(context),
-            ),
-          ),
         ),
       ),
     ],

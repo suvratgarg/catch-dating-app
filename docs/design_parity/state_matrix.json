@@ -4664,7 +4664,7 @@
               "previewIds": [
                 "HostOperationsHomeScreen/Route states",
                 "hostHomeEventSectionStates",
-                "HostEventRow/Event row states"
+                "HostEventRows/Exact catalog"
               ],
               "captureIds": [
                 "host_home_dashboard",
@@ -4704,10 +4704,10 @@
               "tests": [
                 "test/hosts/host_operations_screen_test.dart"
               ],
-              "notes": "_HostEventsScaffold owns the typed manage-event callback and pushes hostAppEventManageScreen with clubId, eventId, and event extra. HostEventRow now renders provider/router-free row data and delegates taps to its parent.",
+              "notes": "_HostEventsScaffold owns the typed manage-event callback and pushes hostAppEventManageScreen with clubId, eventId, and event extra. HostEventRows now renders provider/router-free row data and delegates taps to its parent.",
               "previewIds": [
                 "HostOperationsHomeScreen/Route states",
-                "HostEventRow/Event row states"
+                "HostEventRows/Exact catalog"
               ]
             },
             {

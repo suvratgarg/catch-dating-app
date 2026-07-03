@@ -1,16 +1,16 @@
 {
-  "generatedAt": "2026-07-03T20:00:39.281Z",
+  "generatedAt": "2026-07-03T20:20:53.469Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
-    "useCases": 881,
-    "components": 855,
-    "stateCards": 1753,
+    "useCases": 873,
+    "components": 848,
+    "stateCards": 1749,
     "reviewCandidates": 36,
     "oversizedUseCases": 43,
-    "multiUseCaseComponents": 25
+    "multiUseCaseComponents": 24
   },
   "reviewCandidates": [
     {
@@ -15407,53 +15407,6 @@
       ]
     },
     {
-      "component": "EventHeroSurface",
-      "useCaseCount": 2,
-      "stateCardCount": 2,
-      "paths": [
-        "[Core catalog]/Event cards",
-        "[Core primitives]/Product composites"
-      ],
-      "labels": [
-        "shared hero wrapper",
-        "wrapper"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Catalog states",
-          "functionName": "eventHeroSurfaceCatalogStates",
-          "file": "widgetbook/lib/primitives/core_catalog_use_cases.dart",
-          "path": "[Core catalog]/Event cards",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "shared hero wrapper",
-              "normalizedLabel": "shared hero wrapper"
-            }
-          ]
-        },
-        {
-          "name": "Contract states",
-          "functionName": "eventHeroSurfaceContractStates",
-          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
-          "path": "[Core primitives]/Product composites",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "wrapper",
-              "normalizedLabel": "wrapper"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "ActivitySectionSkeleton",
       "useCaseCount": 1,
       "stateCardCount": 2,
@@ -19703,43 +19656,6 @@
             {
               "label": "dark dock",
               "normalizedLabel": "dark dock"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "HostEventRow",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[P1 product surfaces]/Host operations/Sections"
-      ],
-      "labels": [
-        "divided private event",
-        "first upcoming event"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Event row states",
-          "functionName": "hostHomeEventRowStates",
-          "file": "widgetbook/lib/hosts/host_operations_use_cases.dart",
-          "path": "[P1 product surfaces]/Host operations/Sections",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "first upcoming event",
-              "normalizedLabel": "first upcoming event"
-            },
-            {
-              "label": "divided private event",
-              "normalizedLabel": "divided private event"
             }
           ]
         }
@@ -30980,31 +30896,6 @@
       ]
     },
     {
-      "component": "EventPreviewCompanionSkeleton",
-      "useCaseCount": 1,
-      "stateCardCount": 0,
-      "paths": [
-        "[P1 product surfaces]/Event Success strict coverage/Event preview folded states"
-      ],
-      "labels": [],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "EventPreviewCompanionSkeleton",
-          "functionName": "eventSuccessStrictEventPreviewCompanionSkeleton",
-          "file": "widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart",
-          "path": "[P1 product surfaces]/Event Success strict coverage/Event preview folded states",
-          "stateCardCount": 0,
-          "stateCards": []
-        }
-      ]
-    },
-    {
       "component": "EventPreviewHero",
       "useCaseCount": 1,
       "stateCardCount": 0,
@@ -31047,106 +30938,6 @@
         {
           "name": "EventPreviewHeroSkeleton",
           "functionName": "eventSuccessStrictEventPreviewHeroSkeleton",
-          "file": "widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart",
-          "path": "[P1 product surfaces]/Event Success strict coverage/Event preview folded states",
-          "stateCardCount": 0,
-          "stateCards": []
-        }
-      ]
-    },
-    {
-      "component": "EventPreviewLiveSkeleton",
-      "useCaseCount": 1,
-      "stateCardCount": 0,
-      "paths": [
-        "[P1 product surfaces]/Event Success strict coverage/Event preview folded states"
-      ],
-      "labels": [],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "EventPreviewLiveSkeleton",
-          "functionName": "eventSuccessStrictEventPreviewLiveSkeleton",
-          "file": "widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart",
-          "path": "[P1 product surfaces]/Event Success strict coverage/Event preview folded states",
-          "stateCardCount": 0,
-          "stateCards": []
-        }
-      ]
-    },
-    {
-      "component": "EventPreviewNotesSkeleton",
-      "useCaseCount": 1,
-      "stateCardCount": 0,
-      "paths": [
-        "[P1 product surfaces]/Event Success strict coverage/Event preview folded states"
-      ],
-      "labels": [],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "EventPreviewNotesSkeleton",
-          "functionName": "eventSuccessStrictEventPreviewNotesSkeleton",
-          "file": "widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart",
-          "path": "[P1 product surfaces]/Event Success strict coverage/Event preview folded states",
-          "stateCardCount": 0,
-          "stateCards": []
-        }
-      ]
-    },
-    {
-      "component": "EventPreviewReportSkeleton",
-      "useCaseCount": 1,
-      "stateCardCount": 0,
-      "paths": [
-        "[P1 product surfaces]/Event Success strict coverage/Event preview folded states"
-      ],
-      "labels": [],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "EventPreviewReportSkeleton",
-          "functionName": "eventSuccessStrictEventPreviewReportSkeleton",
-          "file": "widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart",
-          "path": "[P1 product surfaces]/Event Success strict coverage/Event preview folded states",
-          "stateCardCount": 0,
-          "stateCards": []
-        }
-      ]
-    },
-    {
-      "component": "EventPreviewSetupSkeleton",
-      "useCaseCount": 1,
-      "stateCardCount": 0,
-      "paths": [
-        "[P1 product surfaces]/Event Success strict coverage/Event preview folded states"
-      ],
-      "labels": [],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "EventPreviewSetupSkeleton",
-          "functionName": "eventSuccessStrictEventPreviewSetupSkeleton",
           "file": "widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart",
           "path": "[P1 product surfaces]/Event Success strict coverage/Event preview folded states",
           "stateCardCount": 0,

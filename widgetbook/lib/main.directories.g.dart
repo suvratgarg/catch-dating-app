@@ -770,16 +770,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'EventHeroSurface',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .eventHeroSurfaceCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'EventTicketPerforatedDivider',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -2594,17 +2584,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .eventActivityStampContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'EventHeroSurface',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .eventHeroSurfaceContractStates,
               ),
             ],
           ),
@@ -5920,17 +5899,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Event preview folded states',
             children: [
               _widgetbook.WidgetbookComponent(
-                name: 'EventPreviewCompanionSkeleton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'EventPreviewCompanionSkeleton',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictEventPreviewCompanionSkeleton,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'EventPreviewHero',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -5949,50 +5917,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
                             .eventSuccessStrictEventPreviewHeroSkeleton,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'EventPreviewLiveSkeleton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'EventPreviewLiveSkeleton',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictEventPreviewLiveSkeleton,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'EventPreviewNotesSkeleton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'EventPreviewNotesSkeleton',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictEventPreviewNotesSkeleton,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'EventPreviewReportSkeleton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'EventPreviewReportSkeleton',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictEventPreviewReportSkeleton,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'EventPreviewSetupSkeleton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'EventPreviewSetupSkeleton',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictEventPreviewSetupSkeleton,
                   ),
                 ],
               ),
@@ -7955,17 +7879,6 @@ final directories = <_widgetbook.WidgetbookNode>[
           _widgetbook.WidgetbookFolder(
             name: 'Sections',
             children: [
-              _widgetbook.WidgetbookComponent(
-                name: 'HostEventRow',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Event row states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostHomeEventRowStates,
-                  ),
-                ],
-              ),
               _widgetbook.WidgetbookComponent(
                 name: 'HostMetaRow',
                 useCases: [

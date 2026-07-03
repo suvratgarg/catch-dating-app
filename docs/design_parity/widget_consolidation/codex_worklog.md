@@ -1594,12 +1594,12 @@ of the batch closed keep-distinct with no code work).
 7. Widgetbook (gotcha 2) + build_runner regen + registries + receipts; flip
    the four WO-022 ledger entries to `executed-WO-022`.
 
-- [ ] EventPreview skeleton inlines
-- [ ] EventHeroSurface inline
-- [ ] HostEventRow inline
-- [ ] empty-state inlines
-- [ ] avatar tokens + repoints
-- [ ] D1 + widgetbook + regen + receipts
+- [x] EventPreview skeleton inlines
+- [x] EventHeroSurface inline
+- [x] HostEventRow inline
+- [x] empty-state inlines
+- [x] avatar tokens + repoints
+- [x] D1 + widgetbook + regen + receipts
 
 ## WO-023 — Name-family batch 2: pass-through absorbs + D1
 

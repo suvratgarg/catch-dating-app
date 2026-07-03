@@ -2490,3 +2490,103 @@ Known blockers / inherited debt:
   `layout.tabRailHeight` is not a known DTCG token reference.
 - `node tool/design/check_widgetbook_contract_refs.mjs --check` still fails on
   inherited HostOperations and HostTeam preview-id drift.
+
+## 2026-07-04 - WO-022 name-family batch 1
+
+Summary:
+
+- Integrated three isolated worker patches for WO-022, then completed the
+  parent-owned generated, catalog, ledger, component-contract, and audit layer.
+- Inlined the five Event Preview tab skeleton wrappers into
+  `EventSuccessEventPreviewLoadingBody` and removed their strict Widgetbook
+  blocks.
+- Deleted the former `EventHeroSurface` alias, inlined every active production
+  call site to `catchHeroSurface`, removed its core catalog and contract
+  Widgetbook use cases, and removed `catch.event_card.hero_surface` from
+  `design/components/catch.components.json`.
+- Inlined `HostEventRow`, `HostSettingsClubsEmptyState`, and `EmptyRoster`;
+  added `CatchLayout.avatarRowExtent` and `avatarIdentityExtent`; repointed host
+  organizer avatar sizes; and tokenized `HostEventToolCard` radius to
+  `CatchRadius.heroCard`.
+- Left `EventDetailMapCard` grid/route opacity literals as an explicit D1
+  escalation because exact numeric matches exist only on semantically unrelated
+  opacity tokens.
+- Flipped the four WO-022 ledger entries to `executed-WO-022`, checked off the
+  worklog, regenerated Widgetbook directories and widget registries, and
+  recorded three accepted worktree-delegation outcomes.
+
+Commands:
+
+- `node tool/agent/context_pack.mjs --task widget-consolidation-wo-022 --paths docs/design_parity/widget_consolidation,docs/audit_registry/widget_similarity.json,docs/audit_registry/widget_classification.json,docs/widget_catalog.md,lib,widgetbook/lib`
+- `git worktree add /private/tmp/catch-wo022-preview-12ffdbc HEAD`
+- `git worktree add /private/tmp/catch-wo022-event-detail-12ffdbc HEAD`
+- `git worktree add /private/tmp/catch-wo022-host-12ffdbc HEAD`
+- `git cherry-pick -n 17bb7517401a93cf26cea063b5c75257699ff41b cd06a77071083f5333b939277b27604b0e7c5ad8 8ecb2fe6f4a0e8865553ce109dd8f2f449f59a5e`
+- `dart format lib/core/theme/catch_tokens.dart lib/core/widgets/catch_event_activity_cards.dart lib/core/widgets/event_ticket_surface.dart lib/event_success/presentation/event_success_event_preview_loading_screen.dart lib/events/presentation/widgets/event_detail_hero_app_bar.dart lib/events/shared/event_tiles/event_date_rail_card.dart lib/hosts/presentation/host_account_screen.dart lib/hosts/presentation/host_operations_screen.dart lib/hosts/presentation/widgets/host_event_tools.dart lib/swipes/presentation/event_recap_screen.dart widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart widgetbook/lib/hosts/host_operations_use_cases.dart widgetbook/lib/primitives/core_catalog_use_cases.dart widgetbook/lib/primitives/primitive_contract_use_cases.dart`
+- `node -e "for (const p of ['design/components/catch.components.json','design/screens/catch.screens.json','docs/design_parity/state_matrix.json','docs/design_parity/widget_consolidation/decisions.json']) JSON.parse(require('fs').readFileSync(p,'utf8')); console.log('json ok');"`
+- `rg -n "\\b(EventPreviewNotesSkeleton|EventPreviewSetupSkeleton|EventPreviewLiveSkeleton|EventPreviewCompanionSkeleton|EventPreviewReportSkeleton|EventHeroSurface|HostEventRow|HostSettingsClubsEmptyState|EmptyRoster)\\b" lib widgetbook/lib design/components/catch.components.json --glob '!**/*.freezed.dart'`
+- `dart run build_runner build -d` in `widgetbook/`
+- `npm run design:widgets:classify`
+- `npm run design:widgets:check`
+- `npm run design:widgets:variants`
+- `npm run design:widgets:variants:check`
+- `node tool/design/build_widget_similarity.mjs`
+- `node tool/design/build_widget_similarity.mjs --check`
+- `npm run design:widgets:new:check`
+- `bash tool/widget_cleanup_scan.sh --summary`
+- `node tool/run.mjs check --manifest-only`
+- `node tool/design/check_component_contracts.mjs`
+- `node tool/design/check_widgetbook_contract_refs.mjs --check`
+- `node tool/design/check_screen_contracts.mjs --check`
+- `flutter analyze --no-fatal-infos lib/core/theme/catch_tokens.dart lib/core/widgets/catch_event_activity_cards.dart lib/core/widgets/event_ticket_surface.dart lib/event_success/presentation/event_success_event_preview_loading_screen.dart lib/events/presentation/widgets/event_detail_hero_app_bar.dart lib/events/shared/event_tiles/event_date_rail_card.dart lib/hosts/presentation/host_account_screen.dart lib/hosts/presentation/host_operations_screen.dart lib/hosts/presentation/widgets/host_event_tools.dart lib/swipes/presentation/event_recap_screen.dart`
+- `flutter analyze --no-fatal-infos lib/event_success/event_success_strict_coverage_use_cases.dart lib/hosts/host_operations_use_cases.dart lib/primitives/core_catalog_use_cases.dart lib/primitives/primitive_contract_use_cases.dart lib/main.directories.g.dart` in `widgetbook/`
+- `flutter analyze --no-fatal-infos`
+- `flutter test test/event_success/event_success_event_preview_test.dart test/swipes/event_recap_screen_test.dart test/hosts/host_operations_screen_test.dart`
+- `node tool/agent/record_delegation_outcome.mjs ...` for `wo022-preview-skeletons`, `wo022-event-hero-surface`, and `wo022-host-row-empty-avatar`
+- `dart tool/audit_registry.dart refresh`
+- `dart tool/audit_registry.dart mark-pass --pass widget-consolidation-wo-022-name-family-batch-1 ...`
+- `node tool/agent/check_agent_readiness.mjs`
+
+Verification:
+
+- Active retired-symbol scan found no `lib`, `widgetbook/lib`, or
+  `design/components` references to the deleted WO-022 public wrappers after
+  Widgetbook regeneration.
+- Focused root analyzer reported no issues for the changed production files.
+- Full root `flutter analyze --no-fatal-infos` exited 0 with the existing
+  190-info baseline.
+- Focused tests passed: Event Success event preview, Event Recap screen, and
+  Host Operations screen.
+- Widgetbook build_runner completed and regenerated `main.directories.g.dart`
+  without the deleted wrapper use cases.
+- Widget classification check passed with 1,121 entries, 50 review items, and
+  0 private widget classes flagged.
+- Widget variant inventory check passed with 873 use cases, 1,749 state cards,
+  and 36 review candidates.
+- Widget similarity check passed with 1,038 widgets, 50 clusters, 200 ranked
+  pairs, 222 name families, and 8 absorb candidates.
+- New-widget inventory check passed with 1 added public widget class covered
+  and documented relative to `HEAD^ -> working tree`.
+- Widget cleanup scanner and tool manifest validation passed.
+- Widgetbook contract reference check no longer reports the deleted
+  `HostEventRow/Event row states` preview id after the screen/state matrix
+  repoint to `HostEventRows/Exact catalog`.
+
+Known blockers / inherited debt:
+
+- Widgetbook focused analyzer still fails on inherited Host Operations preview
+  drift in `widgetbook/lib/hosts/host_operations_use_cases.dart`, including
+  range/granularity type mismatches, missing mutation-preview helpers, missing
+  route-state functions, and stale named parameters.
+- `node tool/design/check_widgetbook_contract_refs.mjs --check` still fails on
+  inherited HostOperations route-state and HostTeam preview-id drift.
+- `node tool/design/check_screen_contracts.mjs --check` still fails on inherited
+  missing-symbol drift for Calendar, Saved Events, host create/edit footers,
+  Host settings adapter ownership, Event edit footer, and Reviews History.
+- `node tool/design/check_component_contracts.mjs` and
+  `node tool/run.mjs check --category design` still fail on inherited
+  `catch.tab_rail` token drift:
+  `layout.tabRailHeight` is not a known DTCG token reference.
+- `EventDetailMapCard` still has map-specific alpha literals 0.52 and 0.24;
+  exact existing opacity tokens are semantically unrelated. Proposed future
+  token names: `eventDetailMapGridLine` and `eventDetailMapRouteWash`.

@@ -1823,7 +1823,9 @@ abstract final class CatchLayout {
   static const double skeletonCardCompactHeight = 96.0;
   static const double skeletonTextHeight = CatchIcon.sm;
   static const double skeletonCircleExtent = CatchSpacing.s12;
-  static const double skeletonAvatarCompactExtent = 42.0;
+  static const double avatarRowExtent = 42.0;
+  static const double skeletonAvatarCompactExtent = avatarRowExtent;
+  static const double avatarIdentityExtent = 64.0;
   static const double skeletonMediaTileExtent = 52.0;
   static const double skeletonTextMicroWidth = 22.0;
   static const double skeletonTextTinyWidth = CatchSpacing.s3;

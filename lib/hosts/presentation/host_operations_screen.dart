@@ -1635,7 +1635,13 @@ class HostEventRows extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         for (final row in rows.rows)
-          HostEventRow(row: row, onTap: () => onManageEvent(club, row.event)),
+          CatchField.nav(
+            title: row.title,
+            valueText: row.timeRangeLabel,
+            icon: CatchIcons.calendarTodayOutlined,
+            divider: row.divider,
+            onTap: () => onManageEvent(club, row.event),
+          ),
         CatchField.nav(
           title: 'Add event',
           icon: CatchIcons.addRounded,
@@ -1915,7 +1921,7 @@ class HostOrganizerHeader extends StatelessWidget {
         Row(
           children: [
             CatchPersonAvatar(
-              size: 64,
+              size: CatchLayout.avatarIdentityExtent,
               name: club.name,
               initials: _initialsForName(club.name),
               imageUrl: club.logoPhotoUrl,
@@ -2123,7 +2129,7 @@ class HostOrganizerTeamRow extends StatelessWidget {
           child: Row(
             children: [
               CatchPersonAvatar(
-                size: CatchLayout.skeletonAvatarCompactExtent,
+                size: CatchLayout.avatarRowExtent,
                 name: profile.displayName,
                 imageUrl: profile.avatarUrl,
               ),
@@ -4126,24 +4132,6 @@ class _ParsedAgeRange {
   final int? minAge;
   final int? maxAge;
   final String? error;
-}
-
-class HostEventRow extends StatelessWidget {
-  const HostEventRow({super.key, required this.row, required this.onTap});
-
-  final HostHomeEventRowData row;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchField.nav(
-      title: row.title,
-      valueText: row.timeRangeLabel,
-      icon: CatchIcons.calendarTodayOutlined,
-      divider: row.divider,
-      onTap: onTap,
-    );
-  }
 }
 
 final _hostClubsForUserProvider = Provider.autoDispose
