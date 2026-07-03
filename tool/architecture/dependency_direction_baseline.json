@@ -8,10 +8,6 @@
       "path": "lib/event_success/presentation/event_success_host_screen.dart"
     },
     {
-      "rule": "misplacedStateClass",
-      "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart"
-    },
-    {
       "rule": "multiRouteScreenFile",
       "path": "lib/dashboard/presentation/dashboard_screen.dart"
     },

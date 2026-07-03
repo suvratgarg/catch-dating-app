@@ -378,6 +378,19 @@
           "role": "HostClubEditState owner, co-host, loading identity, missing identity, and forbidden identity behavior coverage",
           "status": "aligned",
           "lastReviewedPass": "2026-07-03-host-create-club-screen-state"
+        },
+        {
+          "path": "lib/hosts/presentation/club_management/create/create_club_screen_state.dart",
+          "role": "provider-free Host Create Club wizard/edit display-state adapter for footer policy, edit scaffold affordances, media previews, city/currency display, validation, draft/submit requests, and submit-success transition",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-create-club-screen-state"
+        },
+        {
+          "path": "test/hosts/host_club_create_state_test.dart",
+          "role": "HostClubCreateState, draft request, submit request, validation, media display, and submit outcome behavior coverage",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-create-club-screen-state"
         }
       ],
       "variantPatterns": [],
