@@ -283,6 +283,25 @@ function readMetricEntries(relativePath) {
 }
 
 export function extractDependencyBaselineSnapshot(entry) {
+  if (
+    entry?.event === "enforcement_baseline" &&
+    entry.baseline === "tool/architecture/dependency_direction_baseline.json"
+  ) {
+    return {
+      baseline_total: Number(
+        entry.counts?.allowedFindings ?? entry.allowedFindingsCount ?? 0,
+      ),
+      baseline_by_rule: Object.fromEntries(
+        Object.entries(entry.ruleCounts ?? {}).map(([rule, count]) => [
+          rule,
+          Number(count),
+        ]),
+      ),
+      new_findings_total: 0,
+      checked_files: 0,
+    };
+  }
+
   const snapshot = entry?.architecture_baselines?.dependency_direction;
   if (snapshot == null) return null;
   return {

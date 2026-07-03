@@ -32,6 +32,43 @@ test("extractDependencyBaselineSnapshot reads readiness baseline metrics", () =>
   });
 });
 
+test("extractDependencyBaselineSnapshot reads dependency enforcement receipts", () => {
+  const snapshot = extractDependencyBaselineSnapshot({
+    event: "enforcement_baseline",
+    baseline: "tool/architecture/dependency_direction_baseline.json",
+    counts: {allowedFindings: 104},
+    ruleCounts: {
+      undocumentedKeepAlive: 37,
+      widgetRefParameter: 21,
+    },
+  });
+
+  assert.deepEqual(snapshot, {
+    baseline_total: 104,
+    baseline_by_rule: {
+      undocumentedKeepAlive: 37,
+      widgetRefParameter: 21,
+    },
+    new_findings_total: 0,
+    checked_files: 0,
+  });
+});
+
+test("extractDependencyBaselineSnapshot reads legacy dependency receipt counts", () => {
+  const snapshot = extractDependencyBaselineSnapshot({
+    event: "enforcement_baseline",
+    baseline: "tool/architecture/dependency_direction_baseline.json",
+    allowedFindingsCount: 27,
+  });
+
+  assert.deepEqual(snapshot, {
+    baseline_total: 27,
+    baseline_by_rule: {},
+    new_findings_total: 0,
+    checked_files: 0,
+  });
+});
+
 test("dependencyBaselineGrowthWarnings warns when baseline total grows", () => {
   const warnings = dependencyBaselineGrowthWarnings(
     [
@@ -65,6 +102,31 @@ test("dependencyBaselineGrowthWarnings warns when baseline total grows", () => {
   assert.match(warnings[0], /Dependency direction baseline grew 79->81/u);
   assert.match(warnings[0], /crossFeaturePresentationImport 69->70/u);
   assert.match(warnings[0], /domainFrameworkImport 10->11/u);
+});
+
+test("dependencyBaselineGrowthWarnings warns from enforcement receipts", () => {
+  const warnings = dependencyBaselineGrowthWarnings(
+    [
+      {
+        event: "enforcement_baseline",
+        baseline: "tool/architecture/dependency_direction_baseline.json",
+        counts: {allowedFindings: 0},
+        ruleCounts: {},
+      },
+    ],
+    {
+      baseline_total: 2,
+      baseline_by_rule: {
+        multiRouteScreenFile: 2,
+      },
+      new_findings_total: 0,
+      checked_files: 725,
+    },
+  );
+
+  assert.equal(warnings.length, 1);
+  assert.match(warnings[0], /Dependency direction baseline grew 0->2/u);
+  assert.match(warnings[0], /multiRouteScreenFile 0->2/u);
 });
 
 test("dependencyBaselineGrowthWarnings is silent when baseline is stable", () => {
