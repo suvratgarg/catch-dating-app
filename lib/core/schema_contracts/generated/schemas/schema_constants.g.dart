@@ -83,6 +83,7 @@ export 'host_analytics_callable_response.g.dart';
 export 'host_analytics_event.g.dart';
 export 'host_analytics_query_callable_payload.g.dart';
 export 'host_payment_account_document.g.dart';
+export 'host_profile_document.g.dart';
 export 'list_public_club_reviews_callable_payload.g.dart';
 export 'list_public_club_reviews_callable_response.g.dart';
 export 'list_suvbot_demo_actions_callable_response.g.dart';

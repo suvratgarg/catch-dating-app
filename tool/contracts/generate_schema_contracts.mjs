@@ -61,6 +61,11 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/publicProfileDocument.ts",
   },
   {
+    name: "HostProfileDocument",
+    source: "firestore/host_profiles.schema.json",
+    typeOutput: "functions/src/shared/generated/hostProfileDocument.ts",
+  },
+  {
     name: "ClubDocument",
     source: "firestore/clubs.schema.json",
     typeOutput: "functions/src/shared/generated/clubDocument.ts",

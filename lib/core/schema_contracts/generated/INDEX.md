@@ -21,6 +21,7 @@ Do not edit it by hand.
 | OnboardingDraftDocument | `firestore/onboarding_drafts.schema.json` | `functions/src/shared/generated/onboardingDraftDocument.ts` |
 | UserProfileDocument | `firestore/users.schema.json` | `functions/src/shared/generated/userProfileDocument.ts` |
 | PublicProfileDocument | `firestore/public_profiles.schema.json` | `functions/src/shared/generated/publicProfileDocument.ts` |
+| HostProfileDocument | `firestore/host_profiles.schema.json` | `functions/src/shared/generated/hostProfileDocument.ts` |
 | ClubDocument | `firestore/clubs.schema.json` | `functions/src/shared/generated/clubDocument.ts` |
 | ClubMembershipDocument | `firestore/club_memberships.schema.json` | `functions/src/shared/generated/clubMembershipDocument.ts` |
 | ClubHostClaimDocument | `firestore/club_host_claims.schema.json` | `functions/src/shared/generated/clubHostClaimDocument.ts` |
@@ -171,6 +172,7 @@ Do not edit it by hand.
 | `schemaOnboardingDraftDocumentSchema` | OnboardingDraftDocument | `firestore/onboarding_drafts.schema.json` | `lib/core/schema_contracts/generated/schemas/onboarding_draft_document.g.dart` |
 | `schemaUserProfileDocumentSchema` | UserProfileDocument | `firestore/users.schema.json` | `lib/core/schema_contracts/generated/schemas/user_profile_document.g.dart` |
 | `schemaPublicProfileDocumentSchema` | PublicProfileDocument | `firestore/public_profiles.schema.json` | `lib/core/schema_contracts/generated/schemas/public_profile_document.g.dart` |
+| `schemaHostProfileDocumentSchema` | HostProfileDocument | `firestore/host_profiles.schema.json` | `lib/core/schema_contracts/generated/schemas/host_profile_document.g.dart` |
 | `schemaClubDocumentSchema` | ClubDocument | `firestore/clubs.schema.json` | `lib/core/schema_contracts/generated/schemas/club_document.g.dart` |
 | `schemaClubMembershipDocumentSchema` | ClubMembershipDocument | `firestore/club_memberships.schema.json` | `lib/core/schema_contracts/generated/schemas/club_membership_document.g.dart` |
 | `schemaClubHostClaimDocumentSchema` | ClubHostClaimDocument | `firestore/club_host_claims.schema.json` | `lib/core/schema_contracts/generated/schemas/club_host_claim_document.g.dart` |

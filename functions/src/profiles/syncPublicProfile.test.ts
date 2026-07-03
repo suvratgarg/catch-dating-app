@@ -272,6 +272,7 @@ test("syncHostedClubHostProfile updates every club hosted by the user",
 
 test("syncHostProfileProjectionsHandler owns club host display snapshots",
   async () => {
+    const timestamp = {} as FirebaseFirestore.Timestamp;
     const firestore = new FakeFirestore({
       "clubs/club-1": {
         hostUserId: "host-1",
@@ -304,6 +305,9 @@ test("syncHostProfileProjectionsHandler owns club host display snapshots",
       {
         displayName: "Asha Studio",
         avatarUrl: "https://example.test/host-avatar.jpg",
+        status: "active",
+        createdAt: timestamp,
+        updatedAt: timestamp,
       },
       {firestore: () => firestore as never}
     );
