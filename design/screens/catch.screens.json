@@ -18186,7 +18186,7 @@
             "symbol": "ImageUploadRepository"
           }
         ],
-        "notes": "HostCreateClubScreen is the route-facing wrapper for CreateClubScreen. CreateClubScreen owns PageController step state, form controllers, draft restoration/saving, cover/profile photo picking, host defaults, Event Success defaults, submit mutation execution, and the actual Navigator pop side effect. HostClubCreateState owns the visible step title, footer labels/enabled state, media/edit-scaffold enabled state, media display values, field/city display state, edit validation display state, mutation error copy, and typed primary/save-draft intents; HostClubCreateRouteIntent owns route callback dispatch; HostClubCreateDraftRequest and HostClubCreateSubmitRequest own draft/submit request construction; HostClubSubmitOutcomeState owns the submit-success close-route decision. Draft-load retry still needs to move out of the route before visual parity edits."
+        "notes": "HostCreateClubScreen is the route-facing wrapper for CreateClubScreen. CreateClubScreen owns PageController step state, form controllers, draft restoration/saving, cover/profile photo picking, host defaults, Event Success defaults, submit mutation execution, and the actual Navigator pop side effect. HostClubCreateState owns the visible step title, footer labels/enabled state, media/edit-scaffold enabled state, media display values, field/city display state, edit validation display state, mutation error copy, draft-load retry state, and typed primary/save-draft/draft-restore intents; HostClubCreateRouteIntent owns route callback dispatch; HostClubCreateDraftRequest and HostClubCreateSubmitRequest own draft/submit request construction; HostClubSubmitOutcomeState owns the submit-success close-route decision."
       },
       "designRefs": [
         {
@@ -18480,7 +18480,7 @@
       ],
       "composition": {
         "currentLayout": "HostCreateClubScreen delegates to CreateClubScreen, where route-level form state, draft persistence, form validation, media value ownership, and Navigator side effects still live beside visual sections; HostClubCreateState owns step title, footer action state, media/edit-scaffold enabled state, mutation error copy, and primary/save-draft intents. HostClubSubmitOutcomeState owns the submit-success close-route decision.",
-        "targetLayout": "Host Create Club should continue moving draft-load retry into adapter state before composing provider-free step sections and a footer.",
+        "targetLayout": "Host Create Club has route, wizard, mutation, accessibility, and theme coverage. Continue only state-specific reference export/pixel work unless product changes the wizard behavior.",
         "sections": [
           {
             "id": "section.host.club_create.adapter",
@@ -18505,7 +18505,7 @@
               "submit_pending",
               "submit_error"
             ],
-            "migration": "HostClubCreateState now owns current-step title, submit/save loading, mutation error copy, media/edit-scaffold enabled state, media display values, edit validation display state, footer labels, and primary/save-draft action intents. HostClubCreateRouteIntent owns route callback dispatch. HostClubCreateDraftRequest and HostClubCreateSubmitRequest own draft/submit request construction. HostClubSubmitOutcomeState owns the submit-success close-route decision. Continue moving draft-load retry into adapters before visual parity refactors."
+            "migration": "HostClubCreateState now owns current-step title, submit/save loading, mutation error copy, media/edit-scaffold enabled state, media display values, edit validation display state, draft-load retry state, footer labels, and primary/save-draft/draft-restore action intents. HostClubCreateRouteIntent owns route callback dispatch. HostClubCreateDraftRequest and HostClubCreateSubmitRequest own draft/submit request construction. HostClubSubmitOutcomeState owns the submit-success close-route decision."
           },
           {
             "id": "section.host.club_create.step_header",
@@ -18635,13 +18635,13 @@
       "openGaps": [
         {
           "id": "DS-HOST-CLUB-CREATE-001",
-          "status": "open",
-          "nextAction": "Add remaining Widgetbook states for reference-specific variants."
+          "status": "closed",
+          "nextAction": "Closed: Widgetbook covers route entry, basics validation, picked media, restored draft, all wizard steps, save-draft pending/error, submit pending/error, offline submit failure, text scale, reduced motion, and dark theme. Additional variants are reference-specific and blocked by DS-HOST-CLUB-CREATE-004 until design exports them."
         },
         {
           "id": "DS-HOST-CLUB-CREATE-002",
-          "status": "open",
-          "nextAction": "Add remaining deterministic captures for reference-specific variants."
+          "status": "closed",
+          "nextAction": "Closed: deterministic captures cover basics, validation, picked media, restored draft, details, host defaults, Event Success defaults, save-draft pending/error, submit pending/error/offline, text scale, reduced motion, and light/dark. Additional captures should be added only with new state-specific references."
         },
         {
           "id": "DS-HOST-CLUB-CREATE-003",
@@ -18650,8 +18650,8 @@
         },
         {
           "id": "DS-HOST-CLUB-CREATE-004",
-          "status": "open",
-          "nextAction": "Export canonical Claude/Figma Host Create Club references and wire advisory pixel comparison."
+          "status": "blocked",
+          "nextAction": "Blocked: Host Create Club basics reference is exported and wired. Additional wizard, mutation, accessibility, and theme pixel comparisons need canonical state-specific Claude/Figma references before app-code work resumes."
         }
       ]
     },
@@ -19174,13 +19174,13 @@
       "openGaps": [
         {
           "id": "DS-HOST-CLUB-EDIT-001",
-          "status": "open",
-          "nextAction": "Add remaining Widgetbook states for reference-specific variants."
+          "status": "closed",
+          "nextAction": "Closed: Widgetbook covers route loading/error/offline/not-found, owner edit, validation, media replacement, submit pending/error, co-host media-only mode, forbidden identity, text scale, reduced motion, and dark theme. Additional variants are reference-specific only."
         },
         {
           "id": "DS-HOST-CLUB-EDIT-002",
-          "status": "open",
-          "nextAction": "Add remaining deterministic captures for reference-specific variants."
+          "status": "closed",
+          "nextAction": "Closed: deterministic captures cover owner edit, validation, media replacement, submit pending/error, route loading/error/offline/not-found, co-host media-only mode, forbidden identity, text scale, reduced motion, and light/dark. Owner-edit pixel comparison is already within threshold."
         },
         {
           "id": "DS-HOST-CLUB-EDIT-003",
@@ -19758,13 +19758,13 @@
       "openGaps": [
         {
           "id": "DS-HOST-EVENT-EDIT-001",
-          "status": "open",
-          "nextAction": "Add remaining Widgetbook states for reference-specific variants."
+          "status": "closed",
+          "nextAction": "Closed: Widgetbook covers route loading/error/offline/not-found/unauthorized, prefilled editable form, schedule locked form, cancelled disabled form, private-access loading, validation, selected location, submit pending/error, text scale, reduced motion, and dark theme. Additional variants are reference-specific only."
         },
         {
           "id": "DS-HOST-EVENT-EDIT-002",
-          "status": "open",
-          "nextAction": "Add remaining deterministic captures for reference-specific variants."
+          "status": "closed",
+          "nextAction": "Closed: deterministic captures cover route loading/error/offline/not-found/unauthorized, prefilled event, schedule/policy locked, selected location, validation, private-access loading, submit pending/error, cancelled disabled, text scale, reduced motion, and light/dark. Prefilled-event pixel comparison is already within threshold."
         },
         {
           "id": "DS-HOST-EVENT-EDIT-003",
