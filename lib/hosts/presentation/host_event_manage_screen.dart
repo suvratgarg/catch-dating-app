@@ -18,6 +18,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_segmented_control.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
@@ -603,7 +604,7 @@ class HostManageMetaRow extends StatelessWidget {
       children: [
         Expanded(
           flex: 5,
-          child: HostManageMetaItem(
+          child: CatchMetaRow(
             icon: CatchIcons.calendarTodayOutlined,
             label:
                 '${event.shortDateLabel} · ${EventFormatters.time(event.startTime)}',
@@ -613,7 +614,7 @@ class HostManageMetaRow extends StatelessWidget {
         gapW12,
         Expanded(
           flex: 4,
-          child: HostManageMetaItem(
+          child: CatchMetaRow(
             icon: CatchIcons.pinOutlined,
             label: event.locationName,
             color: t.ink2,
@@ -622,41 +623,10 @@ class HostManageMetaRow extends StatelessWidget {
         gapW12,
         Expanded(
           flex: 3,
-          child: HostManageMetaItem(
+          child: CatchMetaRow(
             icon: CatchIcons.groupsOutlined,
             label: event.spotsLabel,
             color: t.ink2,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class HostManageMetaItem extends StatelessWidget {
-  const HostManageMetaItem({
-    super.key,
-    required this.icon,
-    required this.label,
-    required this.color,
-  });
-
-  final IconData icon;
-  final String label;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, size: CatchIcon.badge, color: color),
-        gapW4,
-        Expanded(
-          child: Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.supporting(context, color: color),
           ),
         ),
       ],

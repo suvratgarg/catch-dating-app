@@ -1176,22 +1176,6 @@ Widget eventShareCardStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Share meta row',
-  type: EventShareMetaRow,
-  path: '[Event Detail]/Cards',
-)
-Widget eventShareMetaRowState(BuildContext context) {
-  return Padding(
-    padding: CatchInsets.contentDense,
-    child: EventShareMetaRow(
-      icon: CatchIcons.calendarTodayOutlined,
-      label: _event.longDateLabel,
-      accent: CatchTokens.of(context).accent,
-    ),
-  );
-}
-
-@widgetbook.UseCase(
   name: 'Share pill',
   type: EventSharePill,
   path: '[Event Detail]/Cards',

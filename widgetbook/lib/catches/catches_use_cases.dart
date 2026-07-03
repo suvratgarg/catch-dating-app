@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import "package:catch_dating_app/core/widgets/catch_stat_column.dart";
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
@@ -936,7 +937,7 @@ Widget profilePromptStates(BuildContext context) {
   type: ProfileRunning,
   path: '[P1 product surfaces]/Catches/Sections',
 )
-Widget profileRunningStates(BuildContext context) {
+Widget profileCatchStatColumnes(BuildContext context) {
   return _CatchesCatalog(
     title: 'ProfileRunning',
     contractId: 'screen.catches.profile.running',
@@ -959,17 +960,17 @@ Widget profileRunningStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Running stat states',
-  type: RunningStat,
+  type: CatchStatColumn,
   path: '[P1 product surfaces]/Catches/Sections',
 )
 Widget runningStatStates(BuildContext context) {
   return const _CatchesCatalog(
-    title: 'RunningStat',
+    title: 'CatchStatColumn',
     contractId: 'screen.catches.profile.running_stat',
     children: [
       _StateCard(
         label: 'pace',
-        child: RunningStat(label: 'Pace', value: '5:30/km'),
+        child: CatchStatColumn(label: 'Pace', value: '5:30/km'),
       ),
     ],
   );

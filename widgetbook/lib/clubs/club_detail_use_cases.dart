@@ -1,3 +1,4 @@
+import "package:catch_dating_app/core/widgets/catch_meta_row.dart";
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
@@ -1651,24 +1652,24 @@ Widget clubShareArtworkStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Share meta row states',
-  type: ClubShareMetaRow,
+  type: CatchMetaRow,
   path: '[Club Detail]/Cards',
 )
 Widget clubShareMetaRowStates(BuildContext context) {
   return _CatalogScreen(
-    title: 'ClubShareMetaRow',
+    title: 'CatchMetaRow',
     catalogId: 'card.club.share.meta_row',
     children: [
       _StateCard(
         label: 'location',
-        child: ClubShareMetaRow(
+        child: CatchMetaRow(
           icon: CatchIcons.locationOnOutlined,
           label: 'Bandra, Mumbai',
         ),
       ),
       _StateCard(
         label: 'member count',
-        child: ClubShareMetaRow(
+        child: CatchMetaRow(
           icon: CatchIcons.group,
           label: clubMemberCountLabel(_club),
         ),

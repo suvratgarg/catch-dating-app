@@ -111,6 +111,16 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Cards',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'CatchMetaRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Share meta row states',
+                builder: _widgetbook_workspace_clubs_club_detail_use_cases
+                    .clubShareMetaRowStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'ClubShareArtwork',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -127,16 +137,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Share card states',
                 builder: _widgetbook_workspace_clubs_club_detail_use_cases
                     .clubShareCardStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ClubShareMetaRow',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Share meta row states',
-                builder: _widgetbook_workspace_clubs_club_detail_use_cases
-                    .clubShareMetaRowStates,
               ),
             ],
           ),
@@ -2941,16 +2941,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'EventShareMetaRow',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Share meta row',
-                builder: _widgetbook_workspace_events_event_detail_use_cases
-                    .eventShareMetaRowState,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'EventSharePill',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -4507,6 +4497,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'CatchStatColumn',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Running stat states',
+                    builder: _widgetbook_workspace_catches_catches_use_cases
+                        .runningStatStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'CatchesBottomScrim',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -4772,7 +4772,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Running states',
                     builder: _widgetbook_workspace_catches_catches_use_cases
-                        .profileRunningStates,
+                        .profileCatchStatColumnes,
                   ),
                 ],
               ),
@@ -4883,16 +4883,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Reaction button states',
                     builder: _widgetbook_workspace_catches_catches_use_cases
                         .reactionControlButtonStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'RunningStat',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Running stat states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
-                        .runningStatStates,
                   ),
                 ],
               ),
@@ -5250,17 +5240,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_event_success_event_success_companion_use_cases
                         .eventSuccessFeedbackFormStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'FeedbackIconAction',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Feedback icon action',
-                builder:
-                    _widgetbook_workspace_event_success_event_success_companion_use_cases
-                        .eventSuccessFeedbackIconActionStates,
               ),
             ],
           ),
@@ -6481,17 +6460,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostOverrideIconAction',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'HostOverrideIconAction',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictHostOverrideIconAction,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostReportSignalGrid',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -6554,17 +6522,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
                             .eventSuccessStrictLiveNowPill,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'LiveSectionHeader',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'LiveSectionHeader',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictLiveSectionHeader,
                   ),
                 ],
               ),
@@ -6697,17 +6654,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
                             .eventSuccessStrictRotationsHostCard,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'SetupSectionTitle',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'SetupSectionTitle',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictSetupSectionTitle,
                   ),
                 ],
               ),
@@ -7902,7 +7848,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Covered by host clubs route states',
                     builder:
                         _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostClubsRouteStates,
+                            .hostTeamAddHostSheetStates,
                   ),
                 ],
               ),
@@ -7913,7 +7859,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Covered by host event manage route states',
                     builder:
                         _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostEventManageRouteAndSectionStates,
+                            .hostStrictCatchRosterActionCellCatalogStates,
                   ),
                 ],
               ),
@@ -8029,17 +7975,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostTeamAddHostSheet',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Add host sheet states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostTeamAddHostSheetStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostTeamHostActionDialog',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -8055,17 +7990,6 @@ final directories = <_widgetbook.WidgetbookNode>[
           _widgetbook.WidgetbookFolder(
             name: 'Strict coverage',
             children: [
-              _widgetbook.WidgetbookComponent(
-                name: 'CatchRosterActionCell',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictCatchRosterActionCellCatalogStates,
-                  ),
-                ],
-              ),
               _widgetbook.WidgetbookComponent(
                 name: 'CatchRosterDecideTarget',
                 useCases: [
@@ -8621,562 +8545,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_operations_use_cases
                             .hostStrictHostLoadingScreenCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostManageMetaItem',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostManageMetaItemCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostManageMetaRow',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostManageMetaRowCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostManageSectionPicker',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostManageSectionPickerCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostOperationsHomeScreen',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostOperationsHomeScreenCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostOrganizerHeader',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostOrganizerHeaderCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostOrganizerMetricGrid',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostOrganizerMetricGridCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostOrganizerMetricRow',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostOrganizerMetricRowCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostOrganizerMetricTile',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostOrganizerMetricTileCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostOrganizerPayoutPrompt',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostOrganizerPayoutPromptCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostOrganizerPayoutPromptController',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                        .hostStrictHostOrganizerPayoutPromptControllerCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostOrganizerSectionHeader',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostOrganizerSectionHeaderCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostOrganizerTeamCard',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostOrganizerTeamCardCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostOrganizerTeamRow',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostOrganizerTeamRowCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostOrganizerTrendStrip',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostOrganizerTrendStripCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostParticipationLifecycleBoard',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                        .hostStrictHostParticipationLifecycleBoardCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostPaymentAccountCard',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostPaymentAccountCardCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostPaymentAccountContentCard',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                        .hostStrictHostPaymentAccountContentCardCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostPaymentAccountControllerCard',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                        .hostStrictHostPaymentAccountControllerCardCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostPaymentAccountErrorCard',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostPaymentAccountErrorCardCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostPaymentAccountLoadingCard',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                        .hostStrictHostPaymentAccountLoadingCardCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostPrivateAccessBody',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostPrivateAccessBodyCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostPrivateAccessCard',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostPrivateAccessCardCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostPrivateAccessShell',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostPrivateAccessShellCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostProfileEditorSheet',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostProfileEditorSheetCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostRosterFilterHeader',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostRosterFilterHeaderCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostRosterSearchBar',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostRosterSearchBarCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostRosterSkeleton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostRosterSkeletonCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostSectionLabel',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostSectionLabelCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostSettingsClubRows',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostSettingsClubRowsCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostSettingsClubsEmptyState',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostSettingsClubsEmptyStateCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostSettingsProfileRows',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostSettingsProfileRowsCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostSettingsRowsSkeleton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostSettingsRowsSkeletonCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostStatChip',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostStatChipCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostSummarySkeleton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostSummarySkeletonCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostTabRailSkeleton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostTabRailSkeletonCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostTeamManagementSection',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostTeamManagementSectionCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostTeamOwnerHostRow',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostTeamOwnerHostRowCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostTodayAvatarDot',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostTodayAvatarDotCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostTodayAvatarStack',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostTodayAvatarStackCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostTodayClubPill',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostTodayClubPillCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostTodayCountdownPill',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostTodayCountdownPillCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostTodayDashboardCard',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostTodayDashboardCardCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostTodayDashboardSection',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostTodayDashboardSectionCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostTodayEmptyEvents',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostTodayEmptyEventsCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostTodayEventHero',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostTodayEventHeroCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostTodayHeader',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostTodayHeaderCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostTodayHeroMetric',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostTodayHeroMetricCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostTodayLoadingBody',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostTodayLoadingBodyCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostTodayTaskCard',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostTodayTaskCardCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostTrendKpi',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostTrendKpiCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostWaitlistBulkOfferAction',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostWaitlistBulkOfferActionCatalogStates,
                   ),
                 ],
               ),
@@ -10113,6 +9481,17 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'User analytics',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'CatchStatColumn',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Inline stat states',
+                builder:
+                    _widgetbook_workspace_user_analytics_user_analytics_use_cases
+                        .userAnalyticsInlineStatStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'UserAnalyticsBar',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -10153,17 +9532,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_user_analytics_user_analytics_use_cases
                         .userAnalyticsEmptyState,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'UserAnalyticsInlineStat',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Inline stat states',
-                builder:
-                    _widgetbook_workspace_user_analytics_user_analytics_use_cases
-                        .userAnalyticsInlineStatStates,
               ),
             ],
           ),

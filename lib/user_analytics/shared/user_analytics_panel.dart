@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/user_analytics/data/user_analytics_repository.dart';
 import 'package:catch_dating_app/user_analytics/shared/user_analytics_copy.dart';
@@ -427,13 +428,13 @@ class UserAnalyticsTrendPanel extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: UserAnalyticsInlineStat(
+                  child: CatchStatColumn(
                     label: UserAnalyticsCopy.trendMetricLabel('caughtYou'),
                     value: _formatCount(totalCaughtYou),
                   ),
                 ),
                 Expanded(
-                  child: UserAnalyticsInlineStat(
+                  child: CatchStatColumn(
                     label: UserAnalyticsCopy.trendMetricLabel('mutualCatches'),
                     value: _formatCount(totalMatches),
                   ),
@@ -623,30 +624,6 @@ class UserAnalyticsSection extends StatelessWidget {
         Text(label, style: CatchTextStyles.labelL(context)),
         gapH8,
         child,
-      ],
-    );
-  }
-}
-
-class UserAnalyticsInlineStat extends StatelessWidget {
-  const UserAnalyticsInlineStat({
-    super.key,
-    required this.label,
-    required this.value,
-  });
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(value, style: CatchTextStyles.numericLarge(context)),
-        gapH2,
-        Text(label, style: CatchTextStyles.supporting(context, color: t.ink3)),
       ],
     );
   }

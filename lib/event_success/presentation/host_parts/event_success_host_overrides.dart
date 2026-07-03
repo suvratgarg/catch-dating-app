@@ -477,10 +477,11 @@ class GroupOverrideUnitEditor extends StatelessWidget {
                 ),
               ),
               gapW8,
-              HostOverrideIconAction(
+              CatchTopBarIconAction(
+                size: CatchIconButton.defaultSize,
                 tooltip: 'Remove group',
                 icon: CatchIcons.deleteOutlineRounded,
-                color: t.danger,
+                foregroundColor: t.danger,
                 onPressed: onRemoveGroup,
               ),
             ],
@@ -548,7 +549,8 @@ class GroupOverrideMemberEditor extends StatelessWidget {
           ),
         ),
         gapW8,
-        HostOverrideIconAction(
+        CatchTopBarIconAction(
+          size: CatchIconButton.defaultSize,
           tooltip: 'Remove attendee',
           icon: CatchIcons.closeRounded,
           onPressed: onRemove,
@@ -1043,40 +1045,14 @@ class RotationOverridePairEditor extends StatelessWidget {
           ),
         ),
         gapW8,
-        HostOverrideIconAction(
+        CatchTopBarIconAction(
+          size: CatchIconButton.defaultSize,
           tooltip: 'Remove pair',
           icon: CatchIcons.deleteOutlineRounded,
-          color: CatchTokens.of(context).danger,
+          foregroundColor: CatchTokens.of(context).danger,
           onPressed: onRemove,
         ),
       ],
-    );
-  }
-}
-
-class HostOverrideIconAction extends StatelessWidget {
-  const HostOverrideIconAction({
-    super.key,
-    required this.tooltip,
-    required this.icon,
-    required this.onPressed,
-    this.color,
-  });
-
-  final String tooltip;
-  final IconData icon;
-  final VoidCallback? onPressed;
-  final Color? color;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Tooltip(
-      message: tooltip,
-      child: CatchIconButton(
-        onTap: onPressed,
-        child: Icon(icon, size: CatchIcon.md, color: color ?? t.ink2),
-      ),
     );
   }
 }

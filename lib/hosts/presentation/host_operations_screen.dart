@@ -28,6 +28,7 @@ import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -2280,9 +2281,14 @@ class HostOrganizerTrendStrip extends StatelessWidget {
         children: [
           Row(
             children: [
-              HostTrendKpi(value: _compactCount(memberCount), label: 'Members'),
+              CatchStatColumn(
+                monoValue: true,
+                value: _compactCount(memberCount),
+                label: 'Members',
+              ),
               gapW16,
-              HostTrendKpi(
+              CatchStatColumn(
+                monoValue: true,
                 value: _compactCount(activeEventCount),
                 label: 'Active events',
               ),
@@ -2321,26 +2327,6 @@ class HostOrganizerTrendStrip extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class HostTrendKpi extends StatelessWidget {
-  const HostTrendKpi({super.key, required this.value, required this.label});
-
-  final String value;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(value, style: CatchTextStyles.statCompact(context, color: t.ink)),
-        gapH2,
-        Text(label, style: CatchTextStyles.monoLabelS(context, color: t.ink3)),
-      ],
     );
   }
 }

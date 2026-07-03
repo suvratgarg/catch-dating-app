@@ -602,49 +602,6 @@ Widget eventSuccessFeedbackCounterRowStates(BuildContext context) {
   );
 }
 
-@widgetbook.UseCase(
-  name: 'Feedback icon action',
-  type: FeedbackIconAction,
-  path: '[P1 product surfaces]/Event Success companion',
-)
-Widget eventSuccessFeedbackIconActionStates(BuildContext context) {
-  return _CompanionCatalog(
-    title: 'FeedbackIconAction',
-    contractId: 'component.event_success.companion.feedback.icon_action',
-    children: [
-      _StateCard(
-        label: 'enabled and disabled',
-        child: _DeviceFrame(
-          child: Builder(
-            builder: (context) {
-              final t = CatchTokens.of(context);
-              return _feedbackPartPreview(
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    FeedbackIconAction(
-                      tooltip: 'Positive signal',
-                      icon: Icons.check_circle_rounded,
-                      color: t.success,
-                      onPressed: () {},
-                    ),
-                    FeedbackIconAction(
-                      tooltip: 'Unavailable signal',
-                      icon: Icons.remove_circle_outline_rounded,
-                      color: t.ink3,
-                      onPressed: null,
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
 class _CompanionRouteScope extends StatelessWidget {
   const _CompanionRouteScope({
     this.uid = EventSuccessCompanionFixtures.viewerUid,

@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_detail_hero_backdrop.dart';
+import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
@@ -95,12 +96,12 @@ class ClubShareCard extends StatelessWidget {
                     ),
                   ),
                   gapH8,
-                  ClubShareMetaRow(
+                  CatchMetaRow(
                     icon: CatchIcons.locationOnOutlined,
                     label: '${club.area}, ${cityLabel(club.location)}',
                   ),
                   gapH8,
-                  ClubShareMetaRow(
+                  CatchMetaRow(
                     icon: CatchIcons.group,
                     label: clubMemberCountLabel(club),
                   ),
@@ -147,31 +148,5 @@ class ClubShareArtwork extends StatelessWidget {
       );
     }
     return ClubPolaroidArtwork(club: club);
-  }
-}
-
-class ClubShareMetaRow extends StatelessWidget {
-  const ClubShareMetaRow({super.key, required this.icon, required this.label});
-
-  final IconData icon;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Row(
-      children: [
-        Icon(icon, size: CatchIcon.md, color: t.primary),
-        gapW8,
-        Expanded(
-          child: Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.labelM(context, color: t.ink2),
-          ),
-        ),
-      ],
-    );
   }
 }

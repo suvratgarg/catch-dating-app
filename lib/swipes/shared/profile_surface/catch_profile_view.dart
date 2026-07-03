@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
+import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_reaction_controls.dart';
@@ -440,11 +441,14 @@ class ProfileRunning extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: RunningStat(label: 'Pace', value: section.pace),
+              child: CatchStatColumn(label: 'Pace', value: section.pace),
             ),
             gapW12,
             Expanded(
-              child: RunningStat(label: 'Distance', value: section.distance),
+              child: CatchStatColumn(
+                label: 'Distance',
+                value: section.distance,
+              ),
             ),
           ],
         ),
@@ -463,29 +467,6 @@ class ProfileRunning extends StatelessWidget {
             children: [for (final tag in section.tags) CatchBadge(label: tag)],
           ),
         ],
-      ],
-    );
-  }
-}
-
-class RunningStat extends StatelessWidget {
-  const RunningStat({super.key, required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label.toUpperCase(),
-          style: CatchTextStyles.kicker(context, color: t.ink3),
-        ),
-        gapH4,
-        Text(value, style: CatchTextStyles.numericLarge(context, color: t.ink)),
       ],
     );
   }

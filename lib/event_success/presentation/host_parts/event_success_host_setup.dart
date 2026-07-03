@@ -149,7 +149,9 @@ class _SetupTabState extends State<SetupTab> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SetupSectionTitle(
+              const CatchSectionHeader(
+                heavy: true,
+                padding: EdgeInsets.zero,
                 title: 'Recommended setup',
                 subtitle:
                     'Review the essentials first. Format controls and advanced timing stay available below.',
@@ -355,33 +357,6 @@ EventRunOfShowStep? _activeRunOfShowStep(EventSuccessRuntime runtime) {
   if (index <= 0) return steps.first;
   if (index >= steps.length) return steps.last;
   return steps[index];
-}
-
-class SetupSectionTitle extends StatelessWidget {
-  const SetupSectionTitle({
-    super.key,
-    required this.title,
-    required this.subtitle,
-  });
-
-  final String title;
-  final String subtitle;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: CatchTextStyles.titleL(context)),
-        gapH4,
-        Text(
-          subtitle,
-          style: CatchTextStyles.supporting(context, color: t.ink2),
-        ),
-      ],
-    );
-  }
 }
 
 class UnsavedChangesPill extends StatelessWidget {

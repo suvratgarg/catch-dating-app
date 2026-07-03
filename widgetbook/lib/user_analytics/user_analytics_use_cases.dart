@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import "package:catch_dating_app/core/widgets/catch_stat_column.dart";
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -319,7 +320,7 @@ Widget userAnalyticsSectionStates(BuildContext context) {
         label: 'labeled child',
         child: UserAnalyticsSection(
           label: 'Suggestions',
-          child: UserAnalyticsInlineStat(label: 'Caught you', value: '38'),
+          child: CatchStatColumn(label: 'Caught you', value: '38'),
         ),
       ),
     ],
@@ -328,17 +329,17 @@ Widget userAnalyticsSectionStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Inline stat states',
-  type: UserAnalyticsInlineStat,
+  type: CatchStatColumn,
   path: '[P1 product surfaces]/User analytics',
 )
 Widget userAnalyticsInlineStatStates(BuildContext context) {
   return const _UserAnalyticsCatalog(
-    title: 'UserAnalyticsInlineStat',
+    title: 'CatchStatColumn',
     contractId: 'component.profile.user_analytics.inline_stat',
     children: [
       _StateCard(
         label: 'count',
-        child: UserAnalyticsInlineStat(label: 'Mutual catches', value: '9'),
+        child: CatchStatColumn(label: 'Mutual catches', value: '9'),
       ),
     ],
   );

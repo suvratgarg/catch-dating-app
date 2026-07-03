@@ -1,0 +1,115 @@
+{
+  "version": 1,
+  "description": "Consolidation decisions for widget_similarity.json clusters. decidedBy 'owner+claude' entries are taste decisions; execution status lives in codex_worklog.md.",
+  "decisions": [
+    {
+      "clusterId": "c008-live-section-header (stats subset)",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchStatColumn",
+      "members": [
+        {"name": "RunningStat", "action": "absorb"},
+        {"name": "UserAnalyticsInlineStat", "action": "absorb"},
+        {"name": "HostTrendKpi", "action": "absorb", "note": "monoValue: true"}
+      ],
+      "rationale": "Three ad-hoc label/value stat treatments; CatchStatColumn already covers all with monoValue flag. Standardizes stat typography (RunningStat flips from label-first kicker to value-first).",
+      "decidedBy": "owner+claude",
+      "date": "2026-07-03",
+      "status": "executed-slice-1"
+    },
+    {
+      "clusterId": "c008-live-section-header (header subset)",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchSectionHeader",
+      "members": [
+        {"name": "LiveSectionHeader", "action": "absorb"},
+        {"name": "SetupSectionTitle", "action": "absorb", "note": "heavy: true"}
+      ],
+      "rationale": "Title+subtitle section headers; CatchSectionHeader gained an optional subtitle slot. Call sites pass padding: EdgeInsets.zero to stay pixel-faithful.",
+      "decidedBy": "owner+claude",
+      "date": "2026-07-03",
+      "status": "executed-slice-1"
+    },
+    {
+      "clusterId": "c008-live-section-header (StructureNumberField)",
+      "decision": "keep-distinct",
+      "members": [{"name": "StructureNumberField", "action": "keep"}],
+      "rationale": "Form-field wrapper (label + detail + child slot), not a stat; coarse fingerprint conflated it. Revisit against labelled.dart/CatchFormFieldLabel in a form-field pass.",
+      "decidedBy": "owner+claude",
+      "date": "2026-07-03",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "c002-icon-action",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchTopBarIconAction",
+      "members": [
+        {"name": "FeedbackIconAction", "action": "absorb"},
+        {"name": "HostOverrideIconAction", "action": "absorb"}
+      ],
+      "rationale": "Both re-implement Tooltip+CatchIconButton. Call sites pass size: CatchIconButton.defaultSize (canonical defaults navSize) and foregroundColor. Future candidate: rename CatchTopBarIconAction -> CatchIconAction since it is now used off top bars.",
+      "decidedBy": "owner+claude",
+      "date": "2026-07-03",
+      "status": "executed-slice-1"
+    },
+    {
+      "clusterId": "c006-club-share-meta-row",
+      "decision": "merge-new-primitive",
+      "canonicalSymbol": "CatchMetaRow",
+      "members": [
+        {"name": "ClubShareMetaRow", "action": "absorb"},
+        {"name": "EventShareMetaRow", "action": "absorb", "note": "accent: -> color:"},
+        {"name": "HostManageMetaItem", "action": "absorb", "note": "color: maps to icon tint; label defaults ink2"},
+        {"name": "StageSectionLabel", "action": "keep", "note": "icon section title, not meta; candidate for CatchSectionHeader icon variant later"}
+      ],
+      "rationale": "One standard icon+label meta treatment (sm icon, labelM ink2, single line) added to catch_meta_row.dart beside CatchMetaDotRow.",
+      "decidedBy": "owner+claude",
+      "date": "2026-07-03",
+      "status": "executed-slice-1"
+    },
+    {
+      "clusterId": "c004-catch-detail-hero-scrim",
+      "decision": "merge-new-primitive",
+      "canonicalSymbol": "CatchScrim",
+      "members": [
+        {"name": "CatchDetailHeroScrim", "action": "absorb", "note": "becomes CatchScrim.detailHero()"},
+        {"name": "ClubPhotoScrim", "action": "absorb", "note": "becomes CatchScrim.photoFrame()"},
+        {"name": "ProfileHeroScrim", "action": "absorb", "note": "becomes CatchScrim.heroTint(base: ...)"},
+        {"name": "CatchEventThumbnailScrimOverlay", "action": "keep", "note": "already a parameterized core primitive tied to thumbnail styles; may delegate to CatchScrim later"}
+      ],
+      "rationale": "Four gradient recipes on one skeleton; centralizing them makes the photo-treatment language a design-system asset and standardizes IgnorePointer wrapping.",
+      "decidedBy": "owner+claude",
+      "date": "2026-07-03",
+      "status": "work-order WO-002"
+    },
+    {
+      "clusterId": "c009-event-map-empty-state",
+      "decision": "delete",
+      "members": [
+        {"name": "EventMapEmptyState", "action": "delete", "note": "inline"},
+        {"name": "EventMapNoPinnedEventsState", "action": "delete", "note": "inline"},
+        {"name": "LaunchAccessDisabledView", "action": "delete", "note": "inline"},
+        {"name": "LaunchAccessSignedOutView", "action": "delete", "note": "inline"},
+        {"name": "LaunchAccessStatusView", "action": "delete", "note": "inline incl. status conditionals"},
+        {"name": "ProfileUnavailableBody", "action": "delete", "note": "inline"}
+      ],
+      "rationale": "All six are thin Center(child: CatchEmptyState(...)) content bindings around the existing primitive. Not components; catalogue noise. Inline at single call sites and delete.",
+      "decidedBy": "owner+claude",
+      "date": "2026-07-03",
+      "status": "work-order WO-003"
+    },
+    {
+      "clusterId": "small-widget: AttendedLeading/BookedLeading/UnsavedChangesPill",
+      "decision": "merge-new-primitive",
+      "canonicalSymbol": "EventCtaStatusLeading (feature-level)",
+      "members": [
+        {"name": "AttendedLeading", "action": "absorb"},
+        {"name": "BookedLeading", "action": "absorb"},
+        {"name": "UnsavedChangesPill", "action": "keep", "note": "warning-dot status indicator, distinct concept and tokens"}
+      ],
+      "rationale": "Two content variants of the same CTA leading in the same file; parameterize icon+label. Not promoted to core: CTA-leading is an event-detail concept with 2 uses.",
+      "decidedBy": "owner+claude",
+      "date": "2026-07-03",
+      "status": "work-order WO-004"
+    }
+  ]
+}

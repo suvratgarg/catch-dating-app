@@ -1544,20 +1544,6 @@ Widget eventSuccessStrictHostFunnelSummary(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "HostOverrideIconAction",
-  type: HostOverrideIconAction,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictHostOverrideIconAction(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.host,
-    componentName: "HostOverrideIconAction",
-  );
-}
-
-@widgetbook.UseCase(
   name: "HostReportSignalGrid",
   type: HostReportSignalGrid,
   path:
@@ -1638,20 +1624,6 @@ Widget eventSuccessStrictLiveNowPill(BuildContext context) {
     context,
     surface: _EventSuccessStrictSurface.host,
     componentName: "LiveNowPill",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "LiveSectionHeader",
-  type: LiveSectionHeader,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictLiveSectionHeader(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.host,
-    componentName: "LiveSectionHeader",
   );
 }
 
@@ -1820,20 +1792,6 @@ Widget eventSuccessStrictRotationsHostCard(BuildContext context) {
     context,
     surface: _EventSuccessStrictSurface.host,
     componentName: "RotationsHostCard",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "SetupSectionTitle",
-  type: SetupSectionTitle,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictSetupSectionTitle(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.host,
-    componentName: "SetupSectionTitle",
   );
 }
 

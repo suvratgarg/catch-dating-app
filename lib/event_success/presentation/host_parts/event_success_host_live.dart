@@ -94,7 +94,8 @@ class LiveTab extends StatelessWidget {
           ),
           if (liveRoster != null) ...[
             gapH16,
-            const LiveSectionHeader(
+            const CatchSectionHeader(
+              padding: EdgeInsets.zero,
               title: 'Editable roster',
               subtitle:
                   'Tap a booked attendee if their check-in state is wrong.',
@@ -134,7 +135,8 @@ class LiveTab extends StatelessWidget {
           ),
           if (liveRoster != null) ...[
             gapH16,
-            const LiveSectionHeader(
+            const CatchSectionHeader(
+              padding: EdgeInsets.zero,
               title: 'Editable roster',
               subtitle:
                   'Tap a booked attendee if their check-in state is wrong.',
@@ -325,7 +327,8 @@ class LiveTab extends StatelessWidget {
         ),
         if (supportingCards.isNotEmpty) ...[
           gapH20,
-          const LiveSectionHeader(
+          const CatchSectionHeader(
+            padding: EdgeInsets.zero,
             title: 'Supporting controls',
             subtitle:
                 'Controls that stay available without competing with the current live step.',
@@ -495,7 +498,8 @@ class LiveNowConsole extends StatelessWidget {
         ),
         if (liveRoster != null) ...[
           gapH14,
-          const LiveSectionHeader(
+          const CatchSectionHeader(
+            padding: EdgeInsets.zero,
             title: 'Editable roster',
             subtitle: 'Tap a booked attendee if their check-in state is wrong.',
           ),
@@ -504,7 +508,8 @@ class LiveNowConsole extends StatelessWidget {
         ],
         if (currentStepControls.isNotEmpty) ...[
           gapH14,
-          const LiveSectionHeader(
+          const CatchSectionHeader(
+            padding: EdgeInsets.zero,
             title: 'Controls for this step',
             subtitle: 'Handle these before moving the room forward.',
           ),
@@ -727,33 +732,6 @@ class LiveStepNavigation extends StatelessWidget {
             onPressed: onNext,
             fullWidth: true,
           ),
-        ),
-      ],
-    );
-  }
-}
-
-class LiveSectionHeader extends StatelessWidget {
-  const LiveSectionHeader({
-    super.key,
-    required this.title,
-    required this.subtitle,
-  });
-
-  final String title;
-  final String subtitle;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: CatchTextStyles.sectionTitle(context)),
-        gapH4,
-        Text(
-          subtitle,
-          style: CatchTextStyles.supporting(context, color: t.ink2),
         ),
       ],
     );
