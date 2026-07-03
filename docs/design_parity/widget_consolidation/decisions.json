@@ -812,123 +812,123 @@
     },
     {
       "clusterId": "c011-event-success-report-metrics-skeleton",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "EventSuccessReportMetricsSkeleton",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "EventSuccessSetupControlsSkeleton",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "PaymentConfirmationLoadingScreen",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "ReviewHistoryItemSkeleton",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "Rulebook scope limit: current cluster is scope: screen, so it needs review instead of mechanical merge.",
-      "decidedBy": "codex-rule:scope-screen",
+      "rationale": "Rulebook scope limit: current cluster is scope: screen, so it needs review instead of mechanical merge. REVIEW (claude, 2026-07-03): per-surface skeleton compositions; keep, but opportunistically migrate onto CatchSkeletonRows/BoxRow/Chips when files are next touched.",
+      "decidedBy": "codex-rule:scope-screen -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015"
+      "status": "recorded"
     },
     {
       "clusterId": "c016-loading-screen",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "EventSuccessEventPreviewLoadingScreen",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "HostLoadingScreen",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "Rulebook scope limit: current cluster is scope: screen, so it needs review instead of mechanical merge.",
-      "decidedBy": "codex-rule:scope-screen",
+      "rationale": "Rulebook scope limit: current cluster is scope: screen, so it needs review instead of mechanical merge. REVIEW (claude, 2026-07-03): distinct product surfaces; structural similarity reflects the uniform screen architecture (CatchScreenBody/section stacks), which is the goal, not debt.",
+      "decidedBy": "codex-rule:scope-screen -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015"
+      "status": "recorded"
     },
     {
       "clusterId": "c039-filters-section",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "FiltersSection",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "ReadOnlyHostedEventScheduleCard",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "Rulebook scope limit: current cluster is scope: screen, so it needs review instead of mechanical merge.",
-      "decidedBy": "codex-rule:scope-screen",
+      "rationale": "Rulebook scope limit: current cluster is scope: screen, so it needs review instead of mechanical merge. REVIEW (claude, 2026-07-03): cross-concept structural coincidence; different design intents (per K5 read of names/roles against prior batch context).",
+      "decidedBy": "codex-rule:scope-screen -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015"
+      "status": "recorded"
     },
     {
       "clusterId": "c043-calendar-stats-header",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "CalendarStatsHeader",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "CalendarStatsHeaderSkeleton",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "Rulebook scope limit: current cluster is scope: screen, so it needs review instead of mechanical merge.",
-      "decidedBy": "codex-rule:scope-screen",
+      "rationale": "Rulebook scope limit: current cluster is scope: screen, so it needs review instead of mechanical merge. REVIEW (claude, 2026-07-03): loading/skeleton counterpart of the same surface; the pairing is intentional, not duplication.",
+      "decidedBy": "codex-rule:scope-screen -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015"
+      "status": "recorded"
     },
     {
       "clusterId": "c048-companion-primary-action-skeleton",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "CompanionPrimaryActionSkeleton",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "CompanionStageSkeleton",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "DashboardFocusLoadingCard",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "Rulebook scope limit: current cluster is scope: screen, so it needs review instead of mechanical merge.",
-      "decidedBy": "codex-rule:scope-screen",
+      "rationale": "Rulebook scope limit: current cluster is scope: screen, so it needs review instead of mechanical merge. REVIEW (claude, 2026-07-03): per-surface skeleton compositions; keep, but opportunistically migrate onto CatchSkeletonRows/BoxRow/Chips when files are next touched.",
+      "decidedBy": "codex-rule:scope-screen -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015"
+      "status": "recorded"
     },
     {
       "clusterId": "c049-sliver-body",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "PreviewTabSkeletonSliverBody",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "PreviewTabSliverBody",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "Rulebook scope limit: current cluster is scope: screen, so it needs review instead of mechanical merge.",
-      "decidedBy": "codex-rule:scope-screen",
+      "rationale": "Rulebook scope limit: current cluster is scope: screen, so it needs review instead of mechanical merge. REVIEW (claude, 2026-07-03): loading/skeleton counterpart of the same surface; the pairing is intentional, not duplication.",
+      "decidedBy": "codex-rule:scope-screen -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015"
+      "status": "recorded"
     },
     {
       "clusterId": "c051-footer",
@@ -943,10 +943,10 @@
           "action": "escalate"
         }
       ],
-      "rationale": "Rulebook scope limit: current cluster is scope: screen, so it needs review instead of mechanical merge.",
+      "rationale": "Rulebook scope limit: current cluster is scope: screen, so it needs review instead of mechanical merge. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 needs read.",
       "decidedBy": "codex-rule:scope-screen",
       "date": "2026-07-03",
-      "status": "escalated-WO-015"
+      "status": "deferred-next-review-batch"
     },
     {
       "clusterId": "c003-catch-meta-row",
@@ -1367,10 +1367,10 @@
           "action": "escalate"
         }
       ],
-      "rationale": "No exact K/R match: both are profile inline choice editors, but single-choice owns nullable selected state and optional empty-selection behavior while multi-choice owns Set<T> state, optional/non-optional removal rules, and patchForLatestProfile handling.",
+      "rationale": "No exact K/R match: both are profile inline choice editors, but single-choice owns nullable selected state and optional empty-selection behavior while multi-choice owns Set<T> state, optional/non-optional removal rules, and patchForLatestProfile handling. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 generic classes; needs type-aware read.",
       "decidedBy": "codex-rule:no-exact",
       "date": "2026-07-03",
-      "status": "escalated-WO-015"
+      "status": "deferred-next-review-batch"
     },
     {
       "clusterId": "c012-pill",
@@ -1403,28 +1403,28 @@
           "action": "escalate"
         }
       ],
-      "rationale": "No exact K/R match: ExploreRailLabel is structurally close to core CatchOptionGroupItem, but absorbing it requires a core option-item API decision around selectedRule, variant, option typing, and whether explore filter rails are option groups.",
+      "rationale": "No exact K/R match: ExploreRailLabel is structurally close to core CatchOptionGroupItem, but absorbing it requires a core option-item API decision around selectedRule, variant, option typing, and whether explore filter rails are option groups. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 generic classes; needs type-aware read.",
       "decidedBy": "codex-rule:no-exact",
       "date": "2026-07-03",
-      "status": "escalated-WO-015"
+      "status": "deferred-next-review-batch"
     },
     {
       "clusterId": "c018-icon",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "CatchErrorIcon",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "PaperCelebrationIcon",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: both render circular icon medallions, but CatchErrorIcon is the core danger/error medallion with configurable extent/iconSize while PaperCelebrationIcon is celebration-specific primary art direction with fixed 64/30 sizing.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: both render circular icon medallions, but CatchErrorIcon is the core danger/error medallion with configurable extent/iconSize while PaperCelebrationIcon is celebration-specific primary art direction with fixed 64/30 sizing. REVIEW (claude, 2026-07-03): cross-concept structural coincidence; different design intents (per K5 read of names/roles against prior batch context).",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015"
+      "status": "recorded"
     },
     {
       "clusterId": "c028-panel",
@@ -1446,21 +1446,21 @@
     },
     {
       "clusterId": "c030-catch-framework-error-debug-details",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "CatchFrameworkErrorDebugDetails",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "SetupDisclosureSection",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: both are expandable disclosure shells, but CatchFrameworkErrorDebugDetails is core developer-error detail UI with danger label and debug text while SetupDisclosureSection is Event Success setup content with title, subtitle, and children.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: both are expandable disclosure shells, but CatchFrameworkErrorDebugDetails is core developer-error detail UI with danger label and debug text while SetupDisclosureSection is Event Success setup content with title, subtitle, and children. REVIEW (claude, 2026-07-03): cross-concept structural coincidence; different design intents (per K5 read of names/roles against prior batch context).",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015"
+      "status": "recorded"
     },
     {
       "clusterId": "c031-event-detail-policy-summary",
@@ -1482,87 +1482,87 @@
     },
     {
       "clusterId": "c035-reveal-host-copy",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "RevealHostCopy",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "StructureNumberField",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "No exact K/R match: StructureNumberField was already kept as a form-field wrapper, while RevealHostCopy is event-success copy content; the shared skeleton does not identify one canonical component.",
-      "decidedBy": "codex-rule:no-exact",
+      "rationale": "No exact K/R match: StructureNumberField was already kept as a form-field wrapper, while RevealHostCopy is event-success copy content; the shared skeleton does not identify one canonical component. REVIEW (claude, 2026-07-03): cross-concept structural coincidence; different design intents (per K5 read of names/roles against prior batch context).",
+      "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015"
+      "status": "recorded"
     },
     {
       "clusterId": "c002-afterglow-beat-row",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "AfterglowBeatRow",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "CountdownCuePill",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "EmptyRosterMessage",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "EventSuccessPromptCard",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "EventSuccessRecommendationTile",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "HostFunnelSummary",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "HostReportSignalGrid",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "LiveAttendanceSummaryCard",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "LiveCheckInQrCard",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "NoticeCard",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "UserAnalyticsDataQualityRow",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "UserAnalyticsEmptyState",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "UserAnalyticsTipRow",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "WaitingRevealCue",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: the shared icon/text/surface skeleton spans companion beats, live host cards, setup notices, and user analytics rows with different typography, token roles, and data contracts.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: the shared icon/text/surface skeleton spans companion beats, live host cards, setup notices, and user analytics rows with different typography, token roles, and data contracts. REVIEW (claude, 2026-07-03): low-cohesion chained cluster (union-find noise); member pairs individually triaged elsewhere.",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015"
+      "status": "recorded"
     },
     {
       "clusterId": "c006-sliver-body",
@@ -1588,79 +1588,79 @@
     },
     {
       "clusterId": "c007-attendee-prompt-preview",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "AttendeePromptPreview",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "DashboardSectionStateCard",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "FoundationLine",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "PaperExpectationRow",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "PaperPrivacyCard",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "PreviewLine",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "ProfileCompatibility",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "ProfileFacts",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "SafetyFooter",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "StagePrivacyLine",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "SwipeWindowBanner",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: these icon/text rows and cards carry setup, dashboard, paper-companion, profile, safety, and swipe-window semantics with different label/body/kicker and surface roles.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: these icon/text rows and cards carry setup, dashboard, paper-companion, profile, safety, and swipe-window semantics with different label/body/kicker and surface roles. REVIEW (claude, 2026-07-03): low-cohesion chained cluster (union-find noise); member pairs individually triaged elsewhere.",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015"
+      "status": "recorded"
     },
     {
       "clusterId": "c008-stage-action-dock",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "StageActionDock",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "StagePanel",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "StageSoftBand",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: all three are child surfaces, but StagePanel is the animated ambient stage card, StageActionDock is the dark action surface, and StageSoftBand is the soft nested band with different token roles.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: all three are child surfaces, but StagePanel is the animated ambient stage card, StageActionDock is the dark action surface, and StageSoftBand is the soft nested band with different token roles. REVIEW (claude, 2026-07-03): three distinct stage furniture roles (dock/panel/band) within one art direction; cohesion 0.47 is skeleton coincidence.",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015"
+      "status": "recorded"
     },
     {
       "clusterId": "c014-skeleton",
@@ -1797,10 +1797,10 @@
           "action": "escalate"
         }
       ],
-      "rationale": "No exact K/R match: the shared CatchSelectChip/Wrap shape hides different multi-select, questionnaire, reveal countdown, and rotation-cadence APIs that need a feature-level chip-group design decision.",
+      "rationale": "No exact K/R match: the shared CatchSelectChip/Wrap shape hides different multi-select, questionnaire, reveal countdown, and rotation-cadence APIs that need a feature-level chip-group design decision. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 chips-row family; needs read against CatchSelectChip/option-group vocabulary.",
       "decidedBy": "codex-rule:no-exact",
       "date": "2026-07-03",
-      "status": "escalated-WO-015"
+      "status": "deferred-next-review-batch"
     },
     {
       "clusterId": "c039-people-token-row",
@@ -1896,21 +1896,22 @@
     },
     {
       "clusterId": "ranked-pair: EditHostedEventPickerTile/WhenStepPickerTile",
-      "decision": "escalate",
+      "decision": "merge-new-primitive",
       "members": [
         {
           "name": "EditHostedEventPickerTile",
-          "action": "escalate"
+          "action": "absorb"
         },
         {
           "name": "WhenStepPickerTile",
-          "action": "escalate"
+          "action": "absorb"
         }
       ],
-      "rationale": "No exact K/R match: the bodies are near-identical host picker tiles, but they live in separate create/edit event surfaces and merging requires a shared host picker-tile contract, file ownership decision, and empty-string behavior standardization.",
-      "decidedBy": "codex-rule:no-exact",
+      "rationale": "No exact K/R match: the bodies are near-identical host picker tiles, but they live in separate create/edit event surfaces and merging requires a shared host picker-tile contract, file ownership decision, and empty-string behavior standardization. REVIEW (claude, 2026-07-03): identical params AND bodies across two host screens; one shared hosts widget. Later form-controls pass may fold into CatchField.nav.",
+      "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "work-order WO-020",
+      "canonicalSymbol": "HostPickerTile (feature-level)"
     },
     {
       "clusterId": "ranked-pair: HostAnalyticsTrendPanel/UserAnalyticsTrendPanel",
@@ -1988,57 +1989,58 @@
     },
     {
       "clusterId": "ranked-pair: CatchMetaRow/EventPolicyLabSectionTitle",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "CatchMetaRow",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "EventPolicyLabSectionTitle",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: CatchMetaRow is icon plus single-line metadata using labelM/ink2, while EventPolicyLabSectionTitle is a section-title row with md icon, sectionTitle typography, and optional trailing controls.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: CatchMetaRow is icon plus single-line metadata using labelM/ink2, while EventPolicyLabSectionTitle is a section-title row with md icon, sectionTitle typography, and optional trailing controls. REVIEW (claude, 2026-07-03): cross-concept structural coincidence; different design intents (per K5 read of names/roles against prior batch context).",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: CatchTopBarIconAction/OverlayIconAction",
-      "decision": "escalate",
+      "decision": "absorb-into-existing",
       "members": [
         {
           "name": "CatchTopBarIconAction",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "OverlayIconAction",
-          "action": "escalate"
+          "action": "absorb"
         }
       ],
-      "rationale": "No exact K/R match: OverlayIconAction is close to CatchTopBarIconAction, but preserving it requires a reviewed API decision for semantic wrapper ownership, floating-control background alpha, button extent, and row-sized icon support.",
-      "decidedBy": "codex-rule:no-exact",
+      "rationale": "No exact K/R match: OverlayIconAction is close to CatchTopBarIconAction, but preserving it requires a reviewed API decision for semantic wrapper ownership, floating-control background alpha, button extent, and row-sized icon support. REVIEW (claude, 2026-07-03): OverlayIconAction is the third tooltip+CatchIconButton wrapper; canonical params already cover its floating treatment. Also triggers the planned rename CatchTopBarIconAction -> CatchIconAction (used off top bars since slice 1). Icon size standardizes row -> md.",
+      "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "work-order WO-020",
+      "canonicalSymbol": "CatchIconAction"
     },
     {
       "clusterId": "ranked-pair: EventDetailBody/EventDetailOptimisticBody",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "EventDetailBody",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "EventDetailOptimisticBody",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "No exact K/R match: the optimistic body is a route-level fallback composition with fixed stubs and no callbacks, while EventDetailBody owns the full loaded state/action contract; merging needs an event-detail state API decision.",
-      "decidedBy": "codex-rule:no-exact",
+      "rationale": "No exact K/R match: the optimistic body is a route-level fallback composition with fixed stubs and no callbacks, while EventDetailBody owns the full loaded state/action contract; merging needs an event-detail state API decision. REVIEW (claude, 2026-07-03): optimistic pre-data render of the same surface; intentional counterpart pair.",
+      "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: CatchSectionLabel/StageSectionLabel",
@@ -2078,39 +2080,40 @@
     },
     {
       "clusterId": "ranked-pair: CatchPersonAvatar/CatchVeiledPersonAvatar",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "CatchPersonAvatar",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "CatchVeiledPersonAvatar",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "No exact K/R match: CatchVeiledPersonAvatar could become a named avatar state, but absorbing it requires a reviewed core avatar API decision for veiled activity placeholders and border behavior.",
-      "decidedBy": "codex-rule:no-exact",
+      "rationale": "No exact K/R match: CatchVeiledPersonAvatar could become a named avatar state, but absorbing it requires a reviewed core avatar API decision for veiled activity placeholders and border behavior. REVIEW (claude, 2026-07-03): same-file complementary variants (real person vs privacy-veiled placeholder with different data needs).",
+      "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: CatchSectionHeader/HostOrganizerSectionHeader",
-      "decision": "escalate",
+      "decision": "absorb-into-existing",
       "members": [
         {
           "name": "CatchSectionHeader",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "HostOrganizerSectionHeader",
-          "action": "escalate"
+          "action": "absorb"
         }
       ],
-      "rationale": "K5 concept mismatch: CatchSectionHeader is a section title/subtitle/trailing primitive, while HostOrganizerSectionHeader is a mono-label row with optional neutral text action and host-organizer semantics.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: CatchSectionHeader is a section title/subtitle/trailing primitive, while HostOrganizerSectionHeader is a mono-label row with optional neutral text action and host-organizer semantics. REVIEW (claude, 2026-07-03): CatchSectionHeader already covers it via titleStyle (monoLabel ink2) + trailing (CatchTextButton).",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "work-order WO-020",
+      "canonicalSymbol": "CatchSectionHeader"
     },
     {
       "clusterId": "ranked-pair: ClubHeroAppBar/EventDetailHeroAppBar",
@@ -2168,21 +2171,21 @@
     },
     {
       "clusterId": "ranked-pair: EventDetailPolicySummary/EventPolicySummary",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "EventDetailPolicySummary",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "EventPolicySummary",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: the event-detail summary is attendee-facing booking policy copy inside a detail surface, while the policy-lab summary is a scenario/debug policy-shape panel with divider rows and lab-only fields.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: the event-detail summary is attendee-facing booking policy copy inside a detail surface, while the policy-lab summary is a scenario/debug policy-shape panel with divider rows and lab-only fields. REVIEW (claude, 2026-07-03): user-facing event summary vs policy-lab scenario summary; lab tooling.",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: CatchCountPill/CatchPersonUnreadCountPill",
@@ -2204,21 +2207,21 @@
     },
     {
       "clusterId": "ranked-pair: CatchEmptyStateContent/EmptyHeroContent",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "CatchEmptyStateContent",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "EmptyHeroContent",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: CatchEmptyStateContent is the core empty-state layout body, while EmptyHeroContent is the dashboard editorial hero CTA with welcome eyebrow, marketing copy, and light button treatment.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: CatchEmptyStateContent is the core empty-state layout body, while EmptyHeroContent is the dashboard editorial hero CTA with welcome eyebrow, marketing copy, and light button treatment. REVIEW (claude, 2026-07-03): EmptyHeroContent is bespoke dashboard editorial hero copy, not generic empty-state content.",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: EventDetailSocialSection/EventReviewsSection",
@@ -2240,21 +2243,21 @@
     },
     {
       "clusterId": "ranked-pair: CatchPersonAvatarStack/HostTodayAvatarStack",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "CatchPersonAvatarStack",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "HostTodayAvatarStack",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: CatchPersonAvatarStack is a real person-avatar stack with overflow and veiled states, while HostTodayAvatarStack is a fixed decorative activity-dot preview for host today cards.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: CatchPersonAvatarStack is a real person-avatar stack with overflow and veiled states, while HostTodayAvatarStack is a fixed decorative activity-dot preview for host today cards. REVIEW (claude, 2026-07-03): HostTodayAvatarStack is a static decorative vignette (fixed dots, mock labels), not a data-driven stack. Naming candidate: HostTodayAvatarVignette.",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: CatchEmptyState/ChatsEmptyState",
@@ -2294,21 +2297,21 @@
     },
     {
       "clusterId": "ranked-pair: CatchTopBarTabBar/ProfileTabBar",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "CatchTopBarTabBar",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "ProfileTabBar",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: CatchTopBarTabBar is a PreferredSizeWidget wrapper for Material tabs under a top bar, while ProfileTabBar is a profile-specific segmented CatchOptionGroup rail with edit/preview/insights state.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: CatchTopBarTabBar is a PreferredSizeWidget wrapper for Material tabs under a top bar, while ProfileTabBar is a profile-specific segmented CatchOptionGroup rail with edit/preview/insights state. REVIEW (claude, 2026-07-03): different control primitives (Material TabBar vs CatchOptionGroup bound to a TabController); ProfileTabBar is a future CatchTabRail variant candidate, not a merge.",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: ClubDetailBody/EventDetailBody",
@@ -2330,21 +2333,21 @@
     },
     {
       "clusterId": "ranked-pair: EventAgendaSliverList/EventDetailHintList",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "EventAgendaSliverList",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "EventDetailHintList",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: EventAgendaSliverList groups event rows into a sliver agenda, while EventDetailHintList renders static event-detail hints in a hairline list with activity-colored dots.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: EventAgendaSliverList groups event rows into a sliver agenda, while EventDetailHintList renders static event-detail hints in a hairline list with activity-colored dots. REVIEW (claude, 2026-07-03): cross-concept structural coincidence; different design intents (per K5 read of names/roles against prior batch context).",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: CatchDetailSliverSectionList/CatchSectionList",
@@ -2366,21 +2369,21 @@
     },
     {
       "clusterId": "ranked-pair: CatchScreenBody/PublicProfileScreenBody",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "CatchScreenBody",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "PublicProfileScreenBody",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "No exact K/R match: CatchScreenBody is a generic padding/scroll shell, while PublicProfileScreenBody is a route-state dispatcher for loading/error/unavailable/ready profile states.",
-      "decidedBy": "codex-rule:no-exact",
+      "rationale": "No exact K/R match: CatchScreenBody is a generic padding/scroll shell, while PublicProfileScreenBody is a route-state dispatcher for loading/error/unavailable/ready profile states. REVIEW (claude, 2026-07-03): name collision only \u2014 PublicProfileScreenBody is a route status switch (StateView), not a body primitive. Naming-pass candidate: PublicProfileStateView.",
+      "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: CatchPrivacyBadge/PrivacyBadge",
@@ -2403,21 +2406,21 @@
     },
     {
       "clusterId": "ranked-pair: CatchFieldRow/ProfileFieldRow",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "CatchFieldRow",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "ProfileFieldRow",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "No exact K/R match: CatchFieldRow is a core row layout primitive, while ProfileFieldRow is a descriptor dispatcher across read-only, text, height, and enum inline editors.",
-      "decidedBy": "codex-rule:no-exact",
+      "rationale": "No exact K/R match: CatchFieldRow is a core row layout primitive, while ProfileFieldRow is a descriptor dispatcher across read-only, text, height, and enum inline editors. REVIEW (claude, 2026-07-03): K1: descriptor-driven dispatcher composing CatchField and profile editors.",
+      "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: CreateEventPhotoPicker/OrderedPhotoPicker",
@@ -2457,21 +2460,21 @@
     },
     {
       "clusterId": "ranked-pair: FiltersSection/StageCard",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "FiltersSection",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "StageCard",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: FiltersSection is a filter/editing section surface while StageCard is an Event Success stage card; the shared surface skeleton hides different user tasks and data contracts.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: FiltersSection is a filter/editing section surface while StageCard is an Event Success stage card; the shared surface skeleton hides different user tasks and data contracts. REVIEW (claude, 2026-07-03): cross-concept structural coincidence; different design intents (per K5 read of names/roles against prior batch context).",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: CompanionStageSkeleton/HostChartSkeleton",
@@ -2493,21 +2496,21 @@
     },
     {
       "clusterId": "ranked-pair: HostAnalyticsInlineStat/StructureNumberField",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "HostAnalyticsInlineStat",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "StructureNumberField",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: HostAnalyticsInlineStat is a compact analytics stat, while StructureNumberField is a setup form-field label/detail/child wrapper already kept distinct from stat concepts.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: HostAnalyticsInlineStat is a compact analytics stat, while StructureNumberField is a setup form-field label/detail/child wrapper already kept distinct from stat concepts. REVIEW (claude, 2026-07-03): cross-concept structural coincidence; different design intents (per K5 read of names/roles against prior batch context).",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: DashboardFocusLoadingCard/HostChartSkeleton",
@@ -2583,111 +2586,111 @@
     },
     {
       "clusterId": "ranked-pair: EventPolicyLabSectionTitle/StageSectionLabel",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "EventPolicyLabSectionTitle",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "StageSectionLabel",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: EventPolicyLabSectionTitle is a policy-lab section row with optional trailing control, while StageSectionLabel is an Event Success live-stage label with required color and two-line wrapping.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: EventPolicyLabSectionTitle is a policy-lab section row with optional trailing control, while StageSectionLabel is an Event Success live-stage label with required color and two-line wrapping. REVIEW (claude, 2026-07-03): cross-concept structural coincidence; different design intents (per K5 read of names/roles against prior batch context).",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: EventPolicyLabSectionTitle/PreviewLine",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "EventPolicyLabSectionTitle",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "PreviewLine",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: EventPolicyLabSectionTitle is a policy-lab section header, while PreviewLine is preview/detail copy inside Event Success composition.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: EventPolicyLabSectionTitle is a policy-lab section header, while PreviewLine is preview/detail copy inside Event Success composition. REVIEW (claude, 2026-07-03): cross-concept structural coincidence; different design intents (per K5 read of names/roles against prior batch context).",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: EventPolicyLabScreen/EventSuccessEventPreviewLoadingScreen",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "EventPolicyLabScreen",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "EventSuccessEventPreviewLoadingScreen",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "No exact K/R match: both are screen-level compositions, but the policy lab and Event Success preview loading screen are separate routes/states and should not be merged by widget similarity.",
-      "decidedBy": "codex-rule:no-exact",
+      "rationale": "No exact K/R match: both are screen-level compositions, but the policy lab and Event Success preview loading screen are separate routes/states and should not be merged by widget similarity. REVIEW (claude, 2026-07-03): distinct product surfaces; structural similarity reflects the uniform screen architecture (CatchScreenBody/section stacks), which is the goal, not debt.",
+      "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: HostEventManageRouteScreen/HostLoadingScreen",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "HostEventManageRouteScreen",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "HostLoadingScreen",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "No exact K/R match: HostEventManageRouteScreen is a route/provider composition while HostLoadingScreen is a generic host loading state; this is screen-scope similarity, not duplication.",
-      "decidedBy": "codex-rule:no-exact",
+      "rationale": "No exact K/R match: HostEventManageRouteScreen is a route/provider composition while HostLoadingScreen is a generic host loading state; this is screen-scope similarity, not duplication. REVIEW (claude, 2026-07-03): distinct product surfaces; structural similarity reflects the uniform screen architecture (CatchScreenBody/section stacks), which is the goal, not debt.",
+      "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: EventSuccessEventPreviewLoadingScreen/EventSuccessEventPreviewScreen",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "EventSuccessEventPreviewLoadingScreen",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "EventSuccessEventPreviewScreen",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "No exact K/R match: the loading screen and loaded preview route are screen-level state variants; merging would require an Event Success preview screen-state contract.",
-      "decidedBy": "codex-rule:no-exact",
+      "rationale": "No exact K/R match: the loading screen and loaded preview route are screen-level state variants; merging would require an Event Success preview screen-state contract. REVIEW (claude, 2026-07-03): loading/skeleton counterpart of the same surface; the pairing is intentional, not duplication.",
+      "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: EventSuccessEventPreviewLoadingScreen/EventSuccessManualQaScreen",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "EventSuccessEventPreviewLoadingScreen",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "EventSuccessManualQaScreen",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "No exact K/R match: the Event Success preview loading screen and manual QA screen are separate screen-level compositions with different data and workflow ownership.",
-      "decidedBy": "codex-rule:no-exact",
+      "rationale": "No exact K/R match: the Event Success preview loading screen and manual QA screen are separate screen-level compositions with different data and workflow ownership. REVIEW (claude, 2026-07-03): distinct product surfaces; structural similarity reflects the uniform screen architecture (CatchScreenBody/section stacks), which is the goal, not debt.",
+      "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: CompanionPrimaryActionSkeleton/HostChartSkeleton",
@@ -2727,21 +2730,21 @@
     },
     {
       "clusterId": "ranked-pair: EditHostedEventRouteScreen/HostEventManageRouteScreen",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "EditHostedEventRouteScreen",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "HostEventManageRouteScreen",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "No exact K/R match: both are host route-level screens with provider/action ownership; route screens are not merged by structural similarity without an architecture review.",
-      "decidedBy": "codex-rule:no-exact",
+      "rationale": "No exact K/R match: both are host route-level screens with provider/action ownership; route screens are not merged by structural similarity without an architecture review. REVIEW (claude, 2026-07-03): distinct product surfaces; structural similarity reflects the uniform screen architecture (CatchScreenBody/section stacks), which is the goal, not debt.",
+      "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: StageConversationCueCard/StagePromptCard",
@@ -2792,10 +2795,10 @@
           "action": "escalate"
         }
       ],
-      "rationale": "No exact K/R match: both dispatch Explore empty-state copy after ExploreEmptyState was inlined, but the list variant owns provider-backed clear actions while the screen variant consumes route-level empty state and callbacks.",
+      "rationale": "No exact K/R match: both dispatch Explore empty-state copy after ExploreEmptyState was inlined, but the list variant owns provider-backed clear actions while the screen variant consumes route-level empty state and callbacks. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 likely R2 inlines; conditional order in WO-020.",
       "decidedBy": "codex-rule:no-exact",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "deferred-next-review-batch"
     },
     {
       "clusterId": "ranked-pair: EventCheckInCelebrationScreen/EventJoinedCelebrationScreen",
@@ -2846,10 +2849,10 @@
           "action": "escalate"
         }
       ],
-      "rationale": "No exact K/R match: both wrap profile inline enum editors, but single-choice owns nullable value/add affordance while multi-choice owns list selection, empty affordance rules, and latest-profile patching.",
+      "rationale": "No exact K/R match: both wrap profile inline enum editors, but single-choice owns nullable value/add affordance while multi-choice owns list selection, empty affordance rules, and latest-profile patching. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 generic classes; needs type-aware read.",
       "decidedBy": "codex-rule:no-exact",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "deferred-next-review-batch"
     },
     {
       "clusterId": "ranked-pair: ProfileSurfaceFactsSkeleton/ProfileSurfaceRunningSkeleton",
@@ -2882,10 +2885,10 @@
           "action": "escalate"
         }
       ],
-      "rationale": "K5 concept mismatch: HostActivitySummary describes setup draft activity configuration while HostFunnelSummary explains post-event funnel metrics and conversion pills.",
+      "rationale": "K5 concept mismatch: HostActivitySummary describes setup draft activity configuration while HostFunnelSummary explains post-event funnel metrics and conversion pills. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 needs read.",
       "decidedBy": "codex-rule:K5",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "deferred-next-review-batch"
     },
     {
       "clusterId": "ranked-pair: ClubDetailsStep/EventDetailsStep",
@@ -2943,39 +2946,39 @@
     },
     {
       "clusterId": "ranked-pair: HostClubsScaffold/HostEventsScaffold",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "HostClubsScaffold",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "HostEventsScaffold",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "No exact K/R match: both are host screen scaffolds with stateful tab/selection ownership; screen-scope scaffold similarity needs host operations architecture review, not a widget merge.",
-      "decidedBy": "codex-rule:no-exact",
+      "rationale": "No exact K/R match: both are host screen scaffolds with stateful tab/selection ownership; screen-scope scaffold similarity needs host operations architecture review, not a widget merge. REVIEW (claude, 2026-07-03): distinct product surfaces; structural similarity reflects the uniform screen architecture (CatchScreenBody/section stacks), which is the goal, not debt.",
+      "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: CelebrationIcon/PaperCelebrationIcon",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "CelebrationIcon",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "PaperCelebrationIcon",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: both are celebration medallions, but immersive celebration and paper celebration modes use different color tokens, extents, and icon treatments.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: both are celebration medallions, but immersive celebration and paper celebration modes use different color tokens, extents, and icon treatments. REVIEW (claude, 2026-07-03): dual celebration art directions (cream vs paper), same precedent as the details cards.",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: ClubHostLoadingSkeleton/ClubStatsLoadingSkeleton",
@@ -3033,21 +3036,21 @@
     },
     {
       "clusterId": "ranked-pair: EventRecapLoadingBody/EventSuccessCompanionLoadingBody",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "EventRecapLoadingBody",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "EventSuccessCompanionLoadingBody",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "No exact K/R match: both are screen-level loading bodies, but recap and Event Success companion loading states have different composition and route ownership.",
-      "decidedBy": "codex-rule:no-exact",
+      "rationale": "No exact K/R match: both are screen-level loading bodies, but recap and Event Success companion loading states have different composition and route ownership. REVIEW (claude, 2026-07-03): distinct product surfaces; structural similarity reflects the uniform screen architecture (CatchScreenBody/section stacks), which is the goal, not debt.",
+      "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: ClubBasicsStep/ClubDetailsStep",
@@ -3177,39 +3180,39 @@
     },
     {
       "clusterId": "ranked-pair: ClubShareCard/EventShareCard",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "ClubShareCard",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "EventShareCard",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "No exact K/R match: both are rich share cards, but club and event cards use different art systems, surface colors, metadata, and CTAs; a shared share-card contract needs review-session API design.",
-      "decidedBy": "codex-rule:no-exact",
+      "rationale": "No exact K/R match: both are rich share cards, but club and event cards use different art systems, surface colors, metadata, and CTAs; a shared share-card contract needs review-session API design. REVIEW (claude, 2026-07-03): share-card frames with genuinely different bodies (v0.1 finding); extract the shared CATCH brand footer as CatchShareCardFooter instead (WO-020).",
+      "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "work-order WO-020 (footer extraction only)"
     },
     {
       "clusterId": "ranked-pair: HostClubEditorStateView/HostCreateEventRouteStateView",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "HostClubEditorStateView",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "HostCreateEventRouteStateView",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "No exact K/R match: both are host route/editor state views; merging state dispatchers requires host admin route architecture review.",
-      "decidedBy": "codex-rule:no-exact",
+      "rationale": "No exact K/R match: both are host route/editor state views; merging state dispatchers requires host admin route architecture review. REVIEW (claude, 2026-07-03): distinct product surfaces; structural similarity reflects the uniform screen architecture (CatchScreenBody/section stacks), which is the goal, not debt.",
+      "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: ClubReviewsSection/EventReviewsSection",
@@ -3231,21 +3234,22 @@
     },
     {
       "clusterId": "ranked-pair: HostCapacityTile/HostOrganizerMetricTile",
-      "decision": "escalate",
+      "decision": "absorb-into-existing",
       "members": [
         {
           "name": "HostCapacityTile",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "HostOrganizerMetricTile",
-          "action": "escalate"
+          "action": "absorb"
         }
       ],
-      "rationale": "K5 concept mismatch: both are host metric tiles, but capacity tiles own management detail/suffix rows while organizer metrics are compact rail cells with different typography and surface ownership.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: both are host metric tiles, but capacity tiles own management detail/suffix rows while organizer metrics are compact rail cells with different typography and surface ownership. REVIEW (claude, 2026-07-03): HostOrganizerMetricTile is another value+label stat (CatchStatColumn shape; uppercase label standardizes away, same as RunningStat). HostCapacityTile keeps (suffix+detail richer; stat-tile v2 candidate).",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "work-order WO-020",
+      "canonicalSymbol": "CatchStatColumn"
     },
     {
       "clusterId": "ranked-pair: CreateClubPhotosPicker/CreateEventPhotoPicker",
@@ -3267,21 +3271,21 @@
     },
     {
       "clusterId": "ranked-pair: PaperCelebrationDetailRow/PaperExpectationRow",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "PaperCelebrationDetailRow",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "PaperExpectationRow",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: paper celebration detail rows show label/value facts while paper expectation rows show companion expectation copy with different alignment and typography.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: paper celebration detail rows show label/value facts while paper expectation rows show companion expectation copy with different alignment and typography. REVIEW (claude, 2026-07-03): label/value row vs icon+text row; different structures. Drift: raw icon size: 18 in celebration row (exempt file, note only).",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: HostProfileEditorSheet/HostTeamAddHostSheet",
@@ -3357,21 +3361,21 @@
     },
     {
       "clusterId": "ranked-pair: EventActionCardHeader/EventPolicyLabHeader",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "EventActionCardHeader",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "EventPolicyLabHeader",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: EventActionCardHeader is compact action-card badge chrome while EventPolicyLabHeader is a screen hero with scenario title, description, and metrics.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: EventActionCardHeader is compact action-card badge chrome while EventPolicyLabHeader is a screen hero with scenario title, description, and metrics. REVIEW (claude, 2026-07-03): cross-concept structural coincidence; different design intents (per K5 read of names/roles against prior batch context).",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: EventSuccessConversationCueCard/StageConversationCueCard",
@@ -3393,21 +3397,21 @@
     },
     {
       "clusterId": "ranked-pair: StageCueLine/StagePrivacyLine",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "StageCueLine",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "StagePrivacyLine",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: stage cue lines are copyable conversation prompts while privacy lines are locked explanatory notices with stage-theme foreground treatment.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: stage cue lines are copyable conversation prompts while privacy lines are locked explanatory notices with stage-theme foreground treatment. REVIEW (claude, 2026-07-03): cue content card vs privacy note; different roles in the stage family. Drift: raw icon size: 18 (WO-020).",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: EventSuccessQuestionnaireConfigEditor/EventSuccessStructureConfigEditor",
@@ -3429,21 +3433,21 @@
     },
     {
       "clusterId": "ranked-pair: HostActionRow/HostEventSummaryRow",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "HostActionRow",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "HostEventSummaryRow",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: host action rows are tappable/destructive management commands while summary rows are icon-led label/value facts inside the hosted-event summary card.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: host action rows are tappable/destructive management commands while summary rows are icon-led label/value facts inside the hosted-event summary card. REVIEW (claude, 2026-07-03): action row vs summary row; different row types in one file.",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: CountdownBeatPill/CountdownCuePill",
@@ -3573,21 +3577,21 @@
     },
     {
       "clusterId": "ranked-pair: EventActionCard/HostEmptyActionCard",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "EventActionCard",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "HostEmptyActionCard",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: event action cards model event badges, meta rows, gradients, and action lists while host empty action cards are simple empty-state CTA surfaces.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: event action cards model event badges, meta rows, gradients, and action lists while host empty action cards are simple empty-state CTA surfaces. REVIEW (claude, 2026-07-03): cross-concept structural coincidence; different design intents (per K5 read of names/roles against prior batch context).",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: ClubDetailBody/ClubDetailLoadingBody",
@@ -3627,39 +3631,39 @@
     },
     {
       "clusterId": "ranked-pair: DashboardHeaderContent/ExploreBrowseHeaderContent",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "DashboardHeaderContent",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "ExploreBrowseHeaderContent",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: dashboard title chrome and explore browse/search/city-picker chrome are different app-header concepts despite similar text layout.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: dashboard title chrome and explore browse/search/city-picker chrome are different app-header concepts despite similar text layout. REVIEW (claude, 2026-07-03): cross-concept structural coincidence; different design intents (per K5 read of names/roles against prior batch context).",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: CompanionPaperScaffold/CompanionStageScaffold",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "CompanionPaperScaffold",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "CompanionStageScaffold",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: paper and cinematic stage companion scaffolds have different background, navigation, animation, and self-check-in ownership.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: paper and cinematic stage companion scaffolds have different background, navigation, animation, and self-check-in ownership. REVIEW (claude, 2026-07-03): deliberate dual art-direction shells (paper vs stage moments) with different param sets.",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: AttendedEventTile/HostAnalyticsEventTile",
@@ -3699,21 +3703,21 @@
     },
     {
       "clusterId": "ranked-pair: EditHostedEventRouteScreen/EditHostedEventScreen",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "EditHostedEventRouteScreen",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "EditHostedEventScreen",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "No exact K/R match: the route screen owns providers, async route states, and error/loading scaffolds while the stateful edit screen owns form state; screen-scope merges require architecture review.",
-      "decidedBy": "codex-rule:no-exact",
+      "rationale": "No exact K/R match: the route screen owns providers, async route states, and error/loading scaffolds while the stateful edit screen owns form state; screen-scope merges require architecture review. REVIEW (claude, 2026-07-03): loading/skeleton counterpart of the same surface; the pairing is intentional, not duplication.",
+      "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: HostSettingsSection/SettingsSection",
@@ -3807,21 +3811,21 @@
     },
     {
       "clusterId": "ranked-pair: ProfileHeightStepperControls/ProfileReactionControls",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "ProfileHeightStepperControls",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "ProfileReactionControls",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: height steppers are numeric editor controls while reaction controls are profile interaction actions with pending state and axis/style modes.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: height steppers are numeric editor controls while reaction controls are profile interaction actions with pending state and axis/style modes. REVIEW (claude, 2026-07-03): cross-concept structural coincidence; different design intents (per K5 read of names/roles against prior batch context).",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: BookingConflictEventRow/ExploreExternalEventRow",
@@ -3897,21 +3901,21 @@
     },
     {
       "clusterId": "ranked-pair: HostTodayClubPill/HostTodayCountdownPill",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "HostTodayClubPill",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "HostTodayCountdownPill",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: host today club identity pills and countdown urgency pills have different token roles, copy, and status semantics.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: host today club identity pills and countdown urgency pills have different token roles, copy, and status semantics. REVIEW (claude, 2026-07-03): club switcher control vs static countdown mono pill; same file, different roles.",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: HostAnalyticsMetricGrid/HostReportSignalGrid",
@@ -3933,57 +3937,57 @@
     },
     {
       "clusterId": "ranked-pair: ClubDirectorySkeletonCard/ClubShareCard",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "ClubDirectorySkeletonCard",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "ClubShareCard",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: directory loading skeleton cards and rich club share cards are different surfaces despite similar card outlines.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: directory loading skeleton cards and rich club share cards are different surfaces despite similar card outlines. REVIEW (claude, 2026-07-03): cross-concept structural coincidence; different design intents (per K5 read of names/roles against prior batch context).",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: EventDetailTicketSurface/EventSuccessSkeletonSurface",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "EventDetailTicketSurface",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "EventSuccessSkeletonSurface",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: event-detail ticket surfaces are live ticket chrome while Event Success skeleton surfaces are loading placeholders.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: event-detail ticket surfaces are live ticket chrome while Event Success skeleton surfaces are loading placeholders. REVIEW (claude, 2026-07-03): cross-concept structural coincidence; different design intents (per K5 read of names/roles against prior batch context).",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: HostOrganizerHeader/HostTodayHeader",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "HostOrganizerHeader",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "HostTodayHeader",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: organizer identity headers and today-dashboard headers own different host contexts, actions, and information hierarchy.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: organizer identity headers and today-dashboard headers own different host contexts, actions, and information hierarchy. REVIEW (claude, 2026-07-03): different header compositions (organizer identity vs today greeting). Drift: raw CatchPersonAvatar(size: 64) -> tokenize (WO-020).",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: PaperProgressRail/QuestionProgressRail",
@@ -3998,46 +4002,46 @@
           "action": "escalate"
         }
       ],
-      "rationale": "K5 concept mismatch: paper progress rails show passive companion-step progress while questionnaire rails are interactive progress controls.",
+      "rationale": "K5 concept mismatch: paper progress rails show passive companion-step progress while questionnaire rails are interactive progress controls. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 needs read.",
       "decidedBy": "codex-rule:K5",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "deferred-next-review-batch"
     },
     {
       "clusterId": "ranked-pair: ExploreBrowseHeaderContent/ExplorePeekRailContent",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "ExploreBrowseHeaderContent",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "ExplorePeekRailContent",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: explore browse headers own search/city chrome while peek rails own compact preview navigation and feed state.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: explore browse headers own search/city chrome while peek rails own compact preview navigation and feed state. REVIEW (claude, 2026-07-03): cross-concept structural coincidence; different design intents (per K5 read of names/roles against prior batch context).",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: EventPolicyLabScreen/EventSuccessLabScreen",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "EventPolicyLabScreen",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "EventSuccessLabScreen",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "No exact K/R match: these are separate screen-level lab compositions with different feature domains, state, and review ownership.",
-      "decidedBy": "codex-rule:no-exact",
+      "rationale": "No exact K/R match: these are separate screen-level lab compositions with different feature domains, state, and review ownership. REVIEW (claude, 2026-07-03): distinct product surfaces; structural similarity reflects the uniform screen architecture (CatchScreenBody/section stacks), which is the goal, not debt.",
+      "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: WingmanCandidateRow/WingmanRequestHostRow",
@@ -4077,93 +4081,93 @@
     },
     {
       "clusterId": "ranked-pair: HostClubInsightsPane/HostClubPreviewPane",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "HostClubInsightsPane",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "HostClubPreviewPane",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "No exact K/R match: host club insights and preview panes are screen-pane compositions with different providers, state, and host operations responsibilities.",
-      "decidedBy": "codex-rule:no-exact",
+      "rationale": "No exact K/R match: host club insights and preview panes are screen-pane compositions with different providers, state, and host operations responsibilities. REVIEW (claude, 2026-07-03): distinct product surfaces; structural similarity reflects the uniform screen architecture (CatchScreenBody/section stacks), which is the goal, not debt.",
+      "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: PresetReviewCard/ReviewCard",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "PresetReviewCard",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "ReviewCard",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: Event Success preset review cards and user review cards carry different data, actions, and review semantics.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: Event Success preset review cards and user review cards carry different data, actions, and review semantics. REVIEW (claude, 2026-07-03): 'Review' name collision (setup preset summary vs user review). Naming candidate: PresetSummaryCard.",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: PaymentHistoryScreen/ReviewsHistoryScreen",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "PaymentHistoryScreen",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "ReviewsHistoryScreen",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "No exact K/R match: payment history and review history are separate screen-level flows with different providers, empty/error states, and navigation.",
-      "decidedBy": "codex-rule:no-exact",
+      "rationale": "No exact K/R match: payment history and review history are separate screen-level flows with different providers, empty/error states, and navigation. REVIEW (claude, 2026-07-03): distinct product surfaces; structural similarity reflects the uniform screen architecture (CatchScreenBody/section stacks), which is the goal, not debt.",
+      "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: CreateClubScreen/CreateEventScreen",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "CreateClubScreen",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "CreateEventScreen",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "No exact K/R match: create-club and create-event screens are separate route-level workflows with different controllers, models, and persistence contracts.",
-      "decidedBy": "codex-rule:no-exact",
+      "rationale": "No exact K/R match: create-club and create-event screens are separate route-level workflows with different controllers, models, and persistence contracts. REVIEW (claude, 2026-07-03): distinct product surfaces; structural similarity reflects the uniform screen architecture (CatchScreenBody/section stacks), which is the goal, not debt.",
+      "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: PaymentConfirmationScreen/PaymentHistoryScreen",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "PaymentConfirmationScreen",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "PaymentHistoryScreen",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "No exact K/R match: payment confirmation and payment history screens are different payment routes with different async state and user tasks.",
-      "decidedBy": "codex-rule:no-exact",
+      "rationale": "No exact K/R match: payment confirmation and payment history screens are different payment routes with different async state and user tasks. REVIEW (claude, 2026-07-03): distinct product surfaces; structural similarity reflects the uniform screen architecture (CatchScreenBody/section stacks), which is the goal, not debt.",
+      "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: CatchesProfileReviewSkeleton/CatchesTopOverlaySkeleton",
@@ -4185,57 +4189,57 @@
     },
     {
       "clusterId": "ranked-pair: HostActionRow/SuvbotResetActionRow",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "HostActionRow",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "SuvbotResetActionRow",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: host management action rows and Suvbot reset actions are different command surfaces despite similar label/detail row structure.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: host management action rows and Suvbot reset actions are different command surfaces despite similar label/detail row structure. REVIEW (claude, 2026-07-03): cross-concept structural coincidence; different design intents (per K5 read of names/roles against prior batch context).",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: PaperExpectationCard/PaperPrivacyCard",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "PaperExpectationCard",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "PaperPrivacyCard",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: companion expectation cards and privacy cards carry different paper-mode concepts, iconography, and copy contracts.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: companion expectation cards and privacy cards carry different paper-mode concepts, iconography, and copy contracts. REVIEW (claude, 2026-07-03): items-list card vs single note; distinct paper-family components.",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: ClubDetailScreen/EventDetailScreen",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "ClubDetailScreen",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "EventDetailScreen",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "No exact K/R match: club detail and event detail are route-level screens with different providers, state machines, and detail-body ownership.",
-      "decidedBy": "codex-rule:no-exact",
+      "rationale": "No exact K/R match: club detail and event detail are route-level screens with different providers, state machines, and detail-body ownership. REVIEW (claude, 2026-07-03): distinct product surfaces; structural similarity reflects the uniform screen architecture (CatchScreenBody/section stacks), which is the goal, not debt.",
+      "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: CalendarDateHeaderSkeleton/CalendarStatsHeaderSkeleton",
@@ -4257,39 +4261,39 @@
     },
     {
       "clusterId": "ranked-pair: ExploreCityPickerSheet/ExploreFilterSheet",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "ExploreCityPickerSheet",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "ExploreFilterSheet",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "No exact K/R match: explore city and filter sheets share modal chrome but own different option models, selected state, and callbacks.",
-      "decidedBy": "codex-rule:no-exact",
+      "rationale": "No exact K/R match: explore city and filter sheets share modal chrome but own different option models, selected state, and callbacks. REVIEW (claude, 2026-07-03): distinct product surfaces; structural similarity reflects the uniform screen architecture (CatchScreenBody/section stacks), which is the goal, not debt.",
+      "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: AttendeeQaControls/ManualQaControls",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "AttendeeQaControls",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "ManualQaControls",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: attendee QA toggles and manual fixture scenario controls are different QA concepts with different ownership and actions.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: attendee QA toggles and manual fixture scenario controls are different QA concepts with different ownership and actions. REVIEW (claude, 2026-07-03): internal QA tooling surfaces; K4 class.",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: PaymentConfirmationBodyController/PaymentPendingCheckoutController",
@@ -4358,28 +4362,28 @@
           "action": "escalate"
         }
       ],
-      "rationale": "K2 discriminator audit: host and user analytics report views are structurally parallel presentation kits over role-specific analytics view models; reopen for host/user analytics-kit unification review.",
+      "rationale": "K2 discriminator audit: host and user analytics report views are structurally parallel presentation kits over role-specific analytics view models; reopen for host/user analytics-kit unification review. REVIEW (claude, 2026-07-03): stays escalated \u2014 analytics-kit v2 scope after WO-018 lands (report views compose the kit pieces; re-fingerprint then).",
       "decidedBy": "codex-rule:K2-discriminator",
       "date": "2026-07-03",
-      "status": "escalated-analytics-kit"
+      "status": "deferred-analytics-kit-v2"
     },
     {
       "clusterId": "ranked-pair: EventActionCardHeader/ShareCardHeader",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "EventActionCardHeader",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "ShareCardHeader",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: event action card headers and share card headers use different badge, title, and sharing-context contracts.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: event action card headers and share card headers use different badge, title, and sharing-context contracts. REVIEW (claude, 2026-07-03): cross-concept structural coincidence; different design intents (per K5 read of names/roles against prior batch context).",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: ProfileInfoSkeletonSection/ProfilePhotosSkeletonSection",
@@ -4401,111 +4405,111 @@
     },
     {
       "clusterId": "ranked-pair: CreateEventScreen/EditHostedEventScreen",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "CreateEventScreen",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "EditHostedEventScreen",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "No exact K/R match: create and edit event screens are route-level form workflows with different controllers, initialization, and persistence paths.",
-      "decidedBy": "codex-rule:no-exact",
+      "rationale": "No exact K/R match: create and edit event screens are route-level form workflows with different controllers, initialization, and persistence paths. REVIEW (claude, 2026-07-03): create vs edit screens; shared form sections are a feature-architecture question, not widget dedupe.",
+      "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: DraftPickerSheet/ExploreCityPickerSheet",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "DraftPickerSheet",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "ExploreCityPickerSheet",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "No exact K/R match: draft and city picker sheets share bottom-sheet chrome but own different option data, destructive actions, and completion behavior.",
-      "decidedBy": "codex-rule:no-exact",
+      "rationale": "No exact K/R match: draft and city picker sheets share bottom-sheet chrome but own different option data, destructive actions, and completion behavior. REVIEW (claude, 2026-07-03): distinct product surfaces; structural similarity reflects the uniform screen architecture (CatchScreenBody/section stacks), which is the goal, not debt.",
+      "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: HostProfileScreen/PublicProfileScreen",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "HostProfileScreen",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "PublicProfileScreen",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "No exact K/R match: host and public profile screens are separate route-level flows with different providers, editing affordances, and profile ownership.",
-      "decidedBy": "codex-rule:no-exact",
+      "rationale": "No exact K/R match: host and public profile screens are separate route-level flows with different providers, editing affordances, and profile ownership. REVIEW (claude, 2026-07-03): distinct product surfaces; structural similarity reflects the uniform screen architecture (CatchScreenBody/section stacks), which is the goal, not debt.",
+      "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: EventPolicyScenarioPicker/EventSuccessTabPicker",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "EventPolicyScenarioPicker",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "EventSuccessTabPicker",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: policy scenario pickers and Event Success tab pickers have different option domains, labels, and surrounding chrome.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: policy scenario pickers and Event Success tab pickers have different option domains, labels, and surrounding chrome. REVIEW (claude, 2026-07-03): cross-concept structural coincidence; different design intents (per K5 read of names/roles against prior batch context).",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: CalendarDateHeader/CalendarStatsHeader",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "CalendarDateHeader",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "CalendarStatsHeader",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: calendar date selectors and calendar stats headers have different interaction, data, and typography contracts.",
-      "decidedBy": "codex-rule:K5",
+      "rationale": "K5 concept mismatch: calendar date selectors and calendar stats headers have different interaction, data, and typography contracts. REVIEW (claude, 2026-07-03): cross-concept structural coincidence; different design intents (per K5 read of names/roles against prior batch context).",
+      "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: EventLocationMapScreen/ExploreMapScreen",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "EventLocationMapScreen",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "ExploreMapScreen",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "No exact K/R match: event location maps and explore maps are route-level map screens with different data sources, markers, and navigation behavior.",
-      "decidedBy": "codex-rule:no-exact",
+      "rationale": "No exact K/R match: event location maps and explore maps are route-level map screens with different data sources, markers, and navigation behavior. REVIEW (claude, 2026-07-03): distinct product surfaces; structural similarity reflects the uniform screen architecture (CatchScreenBody/section stacks), which is the goal, not debt.",
+      "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-03",
-      "status": "escalated-WO-015-ranked-pair"
+      "status": "recorded"
     },
     {
       "clusterId": "ranked-pair: ChatConversationsList/ChatMessageList",

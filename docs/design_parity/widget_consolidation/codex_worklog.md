@@ -1313,6 +1313,67 @@ class CatchAnalyticsSection extends StatelessWidget {
 - [ ] privacy badge kinds + migration + micro-icon fix
 - [ ] widgetbook + regen + registries + receipts
 
+## WO-020 — Escalation-queue resolutions (batch A/B/C)
+
+1. **CatchIconAction rename + OverlayIconAction absorb**: rename
+   `CatchTopBarIconAction` → `CatchIconAction`, moving it to its own
+   `lib/core/widgets/catch_icon_action.dart` (it is used well beyond top bars
+   since slice 1). Leave `@Deprecated('Use CatchIconAction') typedef
+   CatchTopBarIconAction = CatchIconAction;` in catch_top_bar.dart for one
+   release; migrate all call sites now anyway (rg -w, ~25 sites). Then absorb
+   `OverlayIconAction` (`lib/swipes/presentation/swipe_screen.dart`):
+   `OverlayIconAction(tooltip:, icon:, onPressed:)` →
+   `CatchIconAction(icon:, tooltip:, onPressed:, size:
+   CatchLayout.floatingControlExtent, backgroundColor:
+   t.surface.withValues(alpha: CatchOpacity.floatingControlFill))`.
+   Accepted standardization: overlay icon glyph size row → md; the extra
+   Semantics(button:) wrapper drops (Tooltip provides the label).
+2. **HostOrganizerSectionHeader → CatchSectionHeader** (delete class in
+   host_operations_screen.dart): call sites become
+   `CatchSectionHeader(title: label, padding: EdgeInsets.zero, titleStyle:
+   CatchTextStyles.monoLabel(context, color: t.ink2), trailing: actionLabel
+   != null ? CatchTextButton(label: actionLabel!, onPressed: onAction, tone:
+   CatchTextButtonTone.neutral, minimumSize: const Size(0, CatchSpacing.s8))
+   : null)` — expand per call site with its actual args.
+3. **HostOrganizerMetricTile → CatchStatColumn** (delete class in
+   host_operations_screen.dart): `CatchStatColumn(value: item.value, label:
+   item.label)` — keep the surrounding horizontal padding at call sites;
+   uppercase label standardizes away (intentional, same as RunningStat).
+4. **HostPickerTile merge** (rule R1 cross-screen): move the shared body of
+   `EditHostedEventPickerTile` (`edit_hosted_event_screen.dart`) and
+   `WhenStepPickerTile` (`event_management/widgets/when_step.dart`) into
+   `lib/hosts/presentation/widgets/host_picker_tile.dart` as
+   `HostPickerTile({icon, value, placeholder, onTap})` (diff the two bodies
+   first — take the union; they were verified identical through the Row
+   opening). Delete both originals, repoint call sites + widgetbook.
+5. **CatchShareCardFooter**: the share cards each hand-roll the brand footer
+   `Row(['CATCH' kicker(t.ink), Spacer(), Text(trailing, labelS(color))])`
+   (see chat_share_card.dart ~line 212 and club_share_card.dart ~line 109;
+   check event_share_card.dart for its variant). New tiny primitive in
+   `lib/core/widgets/catch_share_card_footer.dart`:
+   `CatchShareCardFooter({required String trailing, Color? trailingColor})`
+   rendering exactly that row; replace the three hand-rolled footers. If the
+   event card's footer diverges structurally, escalate instead.
+6. **Explore empty states** (conditional R2): `ExploreListEmptyState` and
+   `ExploreScreenEmptyState` — if each is a thin wrapper over
+   CatchEmptyState per rule R2's predicate, inline and delete; otherwise
+   ledger keep-distinct with the body quoted. (Explore files are globally
+   lint-exempt; still follow the standard verification suite.)
+7. **D1 drift fixes**: `size: 18` → `CatchIcon.sm` (verify token value ==18,
+   else nearest) in `StagePrivacyLine`
+   (event_success_companion_shared.dart); `CatchPersonAvatar(size: 64 …)` in
+   `HostOrganizerHeader` → nearest CatchLayout avatar token (list candidates
+   first; escalate if none within 10%).
+8. Widgetbook for all changed/new types (gotcha 2) + regen + registries +
+   receipts.
+
+- [ ] CatchIconAction rename + overlay absorb
+- [ ] section header + metric tile absorbs
+- [ ] HostPickerTile merge
+- [ ] CatchShareCardFooter extraction
+- [ ] explore empty-state conditional inlines
+- [ ] drift fixes + widgetbook + regen + receipts
+
 ## Audit note (2026-07-03, claude): WO-015 sweep quality
 
 Code-level audit of sampled sweep decisions: 3 of 4 sampled keeps verified
