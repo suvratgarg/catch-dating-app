@@ -1088,6 +1088,13 @@ K4. Escalated four K5 concept mismatches and six no-exact API/screen-state
 questions. No code was changed in this ledger-only batch. Ranked-pair-only
 candidates still remain open after this targeted triage.
 
+Progress by Codex: triaged ranked-pair-only candidates 131-160 by member set.
+Kept one composition-wrapper pair under K1, seven domain-fork pairs under K2,
+and thirteen small/state/skeleton pairs under K4. Escalated eight K5 concept
+mismatches and one no-exact screen-scope/API question. No code was changed in
+this ledger-only batch. Ranked-pair-only candidates still remain open after
+this targeted triage.
+
 ## WO-016 — Review answers from the WO-001..014 audit
 
 1. **`CatchSkeletonRows.divided` flag** (answers the WO-006 skip): add
@@ -1352,6 +1359,38 @@ listed in the receipt.
 - WO-015 ranked-pair: `PaperCelebrationDetailRow`, `PaperExpectationRow` —
   nearest rule: K5 concept mismatch, blocked because paper celebration
   label/value facts and companion expectation rows are different row concepts.
+- WO-015 ranked-pair: `EventActionCardHeader`, `EventPolicyLabHeader` —
+  nearest rule: K5 concept mismatch, blocked because compact action-card badge
+  chrome and policy-lab screen hero headers are different concepts.
+- WO-015 ranked-pair: `StageCueLine`, `StagePrivacyLine` — nearest rule: K5
+  concept mismatch, blocked because copyable conversation cue rows and locked
+  privacy notices have different action, icon, and token roles.
+- WO-015 ranked-pair: `HostActionRow`, `HostEventSummaryRow` — nearest rule:
+  K5 concept mismatch, blocked because host management action rows and
+  icon-led event summary facts are different row concepts.
+- WO-015 ranked-pair: `CountdownBeatPill`, `CountdownCuePill` — nearest rule:
+  K5 concept mismatch, blocked because reveal-progress beat pills and cue
+  instruction cards carry different typography and state semantics.
+- WO-015 ranked-pair: `EventActionCard`, `HostEmptyActionCard` — nearest
+  rule: K5 concept mismatch, blocked because event action cards model badges,
+  meta rows, gradients, and actions while host empty action cards are simple
+  empty-state CTA surfaces.
+- WO-015 ranked-pair: `DashboardHeaderContent`, `ExploreBrowseHeaderContent`
+  — nearest rule: K5 concept mismatch, blocked because dashboard title chrome
+  and explore browse/search/city-picker chrome are different app-header
+  concepts.
+- WO-015 ranked-pair: `CompanionPaperScaffold`, `CompanionStageScaffold` —
+  nearest rule: K5 concept mismatch, blocked because paper and cinematic stage
+  companion scaffolds own different background, animation, navigation, and
+  self-check-in contracts.
+- WO-015 ranked-pair: `EditHostedEventRouteScreen`,
+  `EditHostedEventScreen` — nearest rule: no exact K/R match, blocked because
+  the route screen owns providers, async route states, and error/loading
+  scaffolds while the edit screen owns form state.
+- WO-015 ranked-pair: `ProfileHeightStepperControls`,
+  `ProfileReactionControls` — nearest rule: K5 concept mismatch, blocked
+  because numeric height steppers and profile reaction controls are different
+  interaction concepts.
 
 ## Completed
 

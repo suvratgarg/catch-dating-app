@@ -3296,6 +3296,546 @@
       "decidedBy": "codex-rule:K3",
       "date": "2026-07-03",
       "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: ExploreExternalEventRow/ExploreFeedClubRow",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "ExploreExternalEventRow",
+          "action": "keep"
+        },
+        {
+          "name": "ExploreFeedClubRow",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K2 domain fork: external event rows and club feed rows share explore card chrome but consume different feed models, thumbnails, navigation callbacks, and status/source presentation.",
+      "decidedBy": "codex-rule:K2",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: ChatPersonRowSkeleton/NotificationRowSkeleton",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "ChatPersonRowSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "NotificationRowSkeleton",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: both are row skeletons with optional dividers, but chat avatars and activity notifications use different avatar/icon geometry, text widths, and padding.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: HostAnalyticsDataQualityPanel/UserAnalyticsDataQualityPanel",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "HostAnalyticsDataQualityPanel",
+          "action": "keep"
+        },
+        {
+          "name": "UserAnalyticsDataQualityPanel",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K2 domain fork: host and user analytics quality panels use parallel role-specific row models, section shells, warning states, and copy contracts.",
+      "decidedBy": "codex-rule:K2",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: EventActionCardHeader/EventPolicyLabHeader",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "EventActionCardHeader",
+          "action": "escalate"
+        },
+        {
+          "name": "EventPolicyLabHeader",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: EventActionCardHeader is compact action-card badge chrome while EventPolicyLabHeader is a screen hero with scenario title, description, and metrics.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: EventSuccessConversationCueCard/StageConversationCueCard",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "EventSuccessConversationCueCard",
+          "action": "keep"
+        },
+        {
+          "name": "StageConversationCueCard",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: both render conversation cues, but feature-block cards and companion stage panels use different shells, row affordances, copy actions, and badge treatment.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: StageCueLine/StagePrivacyLine",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "StageCueLine",
+          "action": "escalate"
+        },
+        {
+          "name": "StagePrivacyLine",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: stage cue lines are copyable conversation prompts while privacy lines are locked explanatory notices with stage-theme foreground treatment.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: EventSuccessQuestionnaireConfigEditor/EventSuccessStructureConfigEditor",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "EventSuccessQuestionnaireConfigEditor",
+          "action": "keep"
+        },
+        {
+          "name": "EventSuccessStructureConfigEditor",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K2 domain fork: questionnaire and structure config editors own separate Event Success config objects, controls, validation, and update callbacks.",
+      "decidedBy": "codex-rule:K2",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: HostActionRow/HostEventSummaryRow",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "HostActionRow",
+          "action": "escalate"
+        },
+        {
+          "name": "HostEventSummaryRow",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: host action rows are tappable/destructive management commands while summary rows are icon-led label/value facts inside the hosted-event summary card.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: CountdownBeatPill/CountdownCuePill",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "CountdownBeatPill",
+          "action": "escalate"
+        },
+        {
+          "name": "CountdownCuePill",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: countdown beat pills show reveal-progress state, while cue pills are instructional cue cards with title/body copy and different token roles.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: ProfileMultiChipValue/ProfileSingleChipValue",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "ProfileMultiChipValue",
+          "action": "keep"
+        },
+        {
+          "name": "ProfileSingleChipValue",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: both share placeholder chip affordances, but single-choice nullable selection and multi-choice set wrapping would require selection-mode knobs to merge.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: RecapHeroSkeleton/RecapStatSkeleton",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "RecapHeroSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "RecapStatSkeleton",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: recap hero and stat skeletons are small loading shapes with different geometry; merging would add skeleton-only layout knobs.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: ActivitySectionSkeleton/ProfileSurfaceSectionSkeleton",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "ActivitySectionSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "ProfileSurfaceSectionSkeleton",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: activity sections repeat notification-row skeletons while profile surface sections render title/text/chip placeholders with different geometry.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: FollowedClubsRailSkeleton/HostTabRailSkeleton",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "FollowedClubsRailSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "HostTabRailSkeleton",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: followed-club rails use avatar/text placeholders while host tab rails use expanded control bars; a shared skeleton would be knob-heavy.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: DashboardEmptySliverBody/DashboardFullSliverBody",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "DashboardEmptySliverBody",
+          "action": "keep"
+        },
+        {
+          "name": "DashboardFullSliverBody",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: dashboard empty and full sliver bodies share page framing but own different dashboard states, sections, providers, and instructional versus personalized content.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: EventAgendaTileSkeleton/PaymentHistoryTileSkeleton",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "EventAgendaTileSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "PaymentHistoryTileSkeleton",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: agenda and payment history skeletons use different rail/card geometry and text blocks, so a merge would centralize only loading noise.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: EventActionCard/HostEmptyActionCard",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "EventActionCard",
+          "action": "escalate"
+        },
+        {
+          "name": "HostEmptyActionCard",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: event action cards model event badges, meta rows, gradients, and action lists while host empty action cards are simple empty-state CTA surfaces.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: ClubDetailBody/ClubDetailLoadingBody",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "ClubDetailBody",
+          "action": "keep"
+        },
+        {
+          "name": "ClubDetailLoadingBody",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: loaded and loading club detail bodies share route framing but render different state trees; merging would add loading-mode branches instead of simplifying callers.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: EventDetailHeroSkeleton/ProfileSurfaceHeroSkeleton",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "EventDetailHeroSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "ProfileSurfaceHeroSkeleton",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: event and profile hero skeletons have different aspect, chrome, title placement, and presentation-mode contracts.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: DashboardHeaderContent/ExploreBrowseHeaderContent",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "DashboardHeaderContent",
+          "action": "escalate"
+        },
+        {
+          "name": "ExploreBrowseHeaderContent",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: dashboard title chrome and explore browse/search/city-picker chrome are different app-header concepts despite similar text layout.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: CompanionPaperScaffold/CompanionStageScaffold",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "CompanionPaperScaffold",
+          "action": "escalate"
+        },
+        {
+          "name": "CompanionStageScaffold",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: paper and cinematic stage companion scaffolds have different background, navigation, animation, and self-check-in ownership.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: AttendedEventTile/HostAnalyticsEventTile",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "AttendedEventTile",
+          "action": "keep"
+        },
+        {
+          "name": "HostAnalyticsEventTile",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K2 domain fork: attended-event catch tiles and host analytics event tiles consume different row models, actions, metrics, and role-specific copy.",
+      "decidedBy": "codex-rule:K2",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: EventSuccessPromptCard/StagePromptCard",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "EventSuccessPromptCard",
+          "action": "keep"
+        },
+        {
+          "name": "StagePromptCard",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: both render social-mission prompt copy, but raised feature cards and companion stage panels use different shells and typography.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: EditHostedEventRouteScreen/EditHostedEventScreen",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "EditHostedEventRouteScreen",
+          "action": "escalate"
+        },
+        {
+          "name": "EditHostedEventScreen",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "No exact K/R match: the route screen owns providers, async route states, and error/loading scaffolds while the stateful edit screen owns form state; screen-scope merges require architecture review.",
+      "decidedBy": "codex-rule:no-exact",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: HostSettingsSection/SettingsSection",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "HostSettingsSection",
+          "action": "keep"
+        },
+        {
+          "name": "SettingsSection",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: both wrap settings rows, but host settings and safety settings differ in title hiding, footer, first-section spacing, and section tone.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: ExploreEventsEmptySliver/ExploreEventsLoadingSliver",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "ExploreEventsEmptySliver",
+          "action": "keep"
+        },
+        {
+          "name": "ExploreEventsLoadingSliver",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: empty and loading explore slivers share SliverToBoxAdapter framing but own different state, callbacks, and visual bodies.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: CustomQuestionFields/CustomQuestionnaireFields",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "CustomQuestionFields",
+          "action": "keep"
+        },
+        {
+          "name": "CustomQuestionnaireFields",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K1 composition is not duplication: CustomQuestionnaireFields owns the question-set shell and instantiates CustomQuestionFields for each custom question row.",
+      "decidedBy": "codex-rule:K1",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: PaymentCheckoutSheet/PaymentReceiptSheet",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "PaymentCheckoutSheet",
+          "action": "keep"
+        },
+        {
+          "name": "PaymentReceiptSheet",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K2 domain fork: checkout status sheets and payment receipt sheets are separate payment flows with different models, actions, status copy, and bottom-sheet scaffolds.",
+      "decidedBy": "codex-rule:K2",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: ClubContactSection/ClubHostSection",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "ClubContactSection",
+          "action": "keep"
+        },
+        {
+          "name": "ClubHostSection",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K2 domain fork: club contact action sections and club host profile sections share section card chrome but own different row models, permissions, and callbacks.",
+      "decidedBy": "codex-rule:K2",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: ProfileHeightStepperControls/ProfileReactionControls",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "ProfileHeightStepperControls",
+          "action": "escalate"
+        },
+        {
+          "name": "ProfileReactionControls",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: height steppers are numeric editor controls while reaction controls are profile interaction actions with pending state and axis/style modes.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: BookingConflictEventRow/ExploreExternalEventRow",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "BookingConflictEventRow",
+          "action": "keep"
+        },
+        {
+          "name": "ExploreExternalEventRow",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K2 domain fork: booking-conflict event rows and explore external-event rows consume different event row models, status tags, glyphs, and tap behavior.",
+      "decidedBy": "codex-rule:K2",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
     }
   ]
 }

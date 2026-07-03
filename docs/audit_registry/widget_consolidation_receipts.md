@@ -1960,3 +1960,62 @@ Known blockers / inherited debt:
 - WO-015 remains open for the remaining 68 ranked-pair-only candidates.
 - No Flutter analyzer or Widgetbook analyzer was run because this batch changed
   only consolidation ledgers and receipts.
+
+## 2026-07-03 - WO-015 ranked-pair ledger batch 5
+
+Scope:
+
+- Triaged ranked-pair-only candidates 131-160 after batch 4.
+- Recorded one K1 keep, seven K2 keeps, and thirteen K4 keeps.
+- Recorded eight K5 escalations and one no-exact escalation for the remaining
+  nine pairs in the batch.
+- No production Dart, Widgetbook, generated registry, or visual output changed.
+
+Commands:
+
+- `node -e '... list uncovered ranked-pair candidates 131-160 ...'`
+- `rg -n "class (ExploreExternalEventRow|ExploreFeedClubRow|ChatPersonRowSkeleton|NotificationRowSkeleton|HostAnalyticsDataQualityPanel|UserAnalyticsDataQualityPanel|EventActionCardHeader|EventPolicyLabHeader|EventSuccessConversationCueCard|StageConversationCueCard|StageCueLine|StagePrivacyLine|EventSuccessQuestionnaireConfigEditor|EventSuccessStructureConfigEditor|HostActionRow|HostEventSummaryRow|CountdownBeatPill|CountdownCuePill|ProfileMultiChipValue|ProfileSingleChipValue|RecapHeroSkeleton|RecapStatSkeleton|ActivitySectionSkeleton|ProfileSurfaceSectionSkeleton|FollowedClubsRailSkeleton|HostTabRailSkeleton|DashboardEmptySliverBody|DashboardFullSliverBody|EventAgendaTileSkeleton|PaymentHistoryTileSkeleton|EventActionCard|HostEmptyActionCard|ClubDetailBody|ClubDetailLoadingBody|EventDetailHeroSkeleton|ProfileSurfaceHeroSkeleton|DashboardHeaderContent|ExploreBrowseHeaderContent|CompanionPaperScaffold|CompanionStageScaffold|AttendedEventTile|HostAnalyticsEventTile|EventSuccessPromptCard|StagePromptCard|EditHostedEventRouteScreen|EditHostedEventScreen|HostSettingsSection|SettingsSection|ExploreEventsEmptySliver|ExploreEventsLoadingSliver|CustomQuestionFields|CustomQuestionnaireFields|PaymentCheckoutSheet|PaymentReceiptSheet|ClubContactSection|ClubHostSection|ProfileHeightStepperControls|ProfileReactionControls|BookingConflictEventRow)\\b" lib widgetbook/lib test --glob "*.dart"`
+- `node -e '... source-snippet extraction for ranks 131-160 ...'`
+- `sed -n '1,220p' docs/design_parity/widget_consolidation/consolidation_rules.md`
+- `sed -n '680,825p' lib/event_success/presentation/event_success_feature_blocks.dart`
+- `sed -n '720,835p' lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart`
+- `sed -n '1468,1668p' lib/hosts/presentation/host_event_manage_screen.dart`
+- `sed -n '390,530p' lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart`
+- `sed -n '300,405p' lib/user_profile/presentation/widgets/inline_editor_choice.dart`
+- `sed -n '1,90p' lib/events/shared/event_tiles/event_action_card.dart`
+- `sed -n '1,75p' lib/hosts/presentation/widgets/host_empty_action_card.dart`
+- `sed -n '1,95p' lib/clubs/presentation/detail/widgets/club_detail_body.dart`
+- `sed -n '1,75p' lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart`
+- `sed -n '1,155p' lib/event_success/presentation/companion_parts/event_success_companion_shared.dart`
+- `sed -n '1,80p' lib/hosts/presentation/edit_hosted_event_route_screen.dart`
+- `sed -n '175,245p' lib/hosts/presentation/edit_hosted_event_screen.dart`
+- `sed -n '1,90p' lib/explore/presentation/widgets/explore_events_status_slivers.dart`
+- `node -e '... parse decisions JSON and recompute ranked-pair uncovered count ...'`
+- `git diff --check`
+
+Headline numbers:
+
+| metric | value |
+|---|---:|
+| ranked-pair-only candidates triaged | 30 |
+| K1 keeps recorded | 1 |
+| K2 keeps recorded | 7 |
+| K3 keeps recorded | 0 |
+| K4 keeps recorded | 13 |
+| K5 escalations recorded | 8 |
+| no-exact-match escalations recorded | 1 |
+| rule-authorized merges/deletions | 0 |
+| code changes | 0 |
+| ranked-pair-only candidates still open | 38 |
+
+Verification:
+
+- `decisions.json` parsed successfully.
+- Member-set comparison reported 38 uncovered ranked pairs after this batch.
+- `git diff --check`: passed.
+
+Known blockers / inherited debt:
+
+- WO-015 remains open for the remaining 38 ranked-pair-only candidates.
+- No Flutter analyzer or Widgetbook analyzer was run because this batch changed
+  only consolidation ledgers and receipts.
