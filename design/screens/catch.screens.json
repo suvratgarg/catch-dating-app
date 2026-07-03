@@ -20859,13 +20859,13 @@
       "openGaps": [
         {
           "id": "DS-HOST-PROFILE-001",
-          "status": "open",
-          "nextAction": "Host Profile has route captures for populated, loading, error/offline, missing, validation, create/save mutation pending/error/offline, text scale, reduced motion, and theme states. Remaining capture work is reference-backed comparison."
+          "status": "closed",
+          "nextAction": "Host Profile has route captures for populated, loading, error/offline, missing, validation, create/save mutation pending/error/offline, text scale, reduced motion, and theme states. Reference-backed comparison remains tracked by DS-HOST-PROFILE-004."
         },
         {
           "id": "DS-HOST-PROFILE-002",
-          "status": "open",
-          "nextAction": "Widgetbook now covers route, form, field/status, missing, create-pending, save-pending, validation, text-scale, reduced-motion, and dark states. Remaining preview work is save-error snackbar/offline-specific behavior if design requires visible inline treatment."
+          "status": "closed",
+          "nextAction": "Widgetbook covers route, form, field/status, missing, create-pending, save-pending, validation, text-scale, reduced-motion, and dark states. Any save-error snackbar/offline-specific visual adjustment depends on the blocked canonical reference tracked by DS-HOST-PROFILE-004."
         },
         {
           "id": "DS-HOST-PROFILE-003",
