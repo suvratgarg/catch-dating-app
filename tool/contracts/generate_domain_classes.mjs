@@ -56,8 +56,6 @@ const checkOnly = process.argv.includes("--check");
 // ── Reusable shared import fragments ────────────────────────────────────────
 const IMPORT_FREEZED =
   "import 'package:freezed_annotation/freezed_annotation.dart';";
-const IMPORT_FIRESTORE =
-  "import 'package:cloud_firestore/cloud_firestore.dart';";
 const IMPORT_CONVERTERS =
   "import 'package:catch_dating_app/core/firestore_converters.dart';";
 const IMPORT_CURRENCY =
@@ -270,13 +268,9 @@ function main() {
 
 function renderDartDomainFile(spec, bundled, rootSchema) {
   const partBase = path.basename(spec.output, ".dart");
-  const usesTimestamp = spec.classes.some((cls) =>
-    cls.fields.some((field) => field.timestamp)
-  );
   const usesLabelled = (spec.enums ?? []).some((e) => e.labelled);
 
   const imports = new Set([IMPORT_FREEZED]);
-  if (usesTimestamp) imports.add(IMPORT_FIRESTORE);
   if (usesLabelled) imports.add(IMPORT_LABELLED);
   for (const item of spec.imports ?? []) imports.add(item);
 
