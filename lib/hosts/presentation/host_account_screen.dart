@@ -32,20 +32,20 @@ class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {
     final clubsAsync = uid == null
         ? const AsyncData<List<Club>>([])
         : ref.watch(_hostClubsForUserProvider(uid));
-    final state = buildHostSettingsState(
-      uid: uid,
-      profile: hostProfileAsync,
-      clubs: clubsAsync,
-    );
-    final profileForEdit = switch (state.profile) {
-      HostSettingsProfileContent(:final profile) => profile,
-      _ => null,
-    };
     final ensureMutation = ref.watch(
       HostProfileController.ensureProfileMutation,
     );
     final signOutMutation = ref.watch(AuthSessionController.signOutMutation);
     final isEditMode = _selectedTab == HostSettingsMode.edit;
+    final state = buildHostSettingsState(
+      uid: uid,
+      profile: hostProfileAsync,
+      clubs: clubsAsync,
+      editMode: isEditMode,
+      creatingProfile: ensureMutation.isPending,
+      signOutPending: signOutMutation.isPending,
+    );
+    final actions = state.actions;
 
     return CatchMutationErrorListener(
       mutation: AuthSessionController.signOutMutation,
@@ -66,9 +66,9 @@ class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {
               CatchTopBarIconAction(
                 tooltip: 'Sign out',
                 icon: CatchIcons.logoutRounded,
-                onPressed: signOutMutation.isPending
-                    ? null
-                    : () => unawaited(_signOut()),
+                onPressed: actions.canSignOut
+                    ? () => unawaited(_signOut())
+                    : null,
               ),
             ],
             bottom: HostSettingsTabRail(
@@ -81,26 +81,30 @@ class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {
             children: [
               HostSettingsProfileSection(
                 state: state.profile,
-                editMode: isEditMode,
-                creatingProfile: ensureMutation.isPending,
+                editMode: actions.editMode,
+                creatingProfile: actions.creatingProfile,
                 onRetry: uid == null
                     ? null
                     : () => ref.invalidate(watchHostProfileProvider(uid)),
-                onCreateProfile: uid == null
-                    ? null
-                    : () => unawaited(_createHostProfile()),
-                onEditProfile: uid != null && profileForEdit != null
-                    ? () => unawaited(_openProfileEditor(uid, profileForEdit))
+                onCreateProfile: actions.canCreateProfile
+                    ? () => unawaited(_createHostProfile())
+                    : null,
+                onEditProfile: actions.canEditProfile
+                    ? () => unawaited(
+                        _openProfileEditor(
+                          actions.uid!,
+                          actions.profileForEdit!,
+                        ),
+                      )
                     : null,
               ),
               HostSettingsClubsSection(
-                uid: uid,
+                actions: actions,
                 state: state.clubs,
                 onRetry: uid == null
                     ? null
                     : () => ref.invalidate(_hostClubsForUserProvider(uid)),
-                editMode: isEditMode,
-                onOpenClub: (club) => _openSettingsClub(club, isEditMode, uid),
+                onOpenClub: _openSettingsClub,
               ),
             ],
           ),
@@ -136,13 +140,13 @@ class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {
     showCatchSnackBar(context, 'Host profile created.');
   }
 
-  void _openSettingsClub(Club club, bool editMode, String? uid) {
+  void _openSettingsClub(HostSettingsClubNavigationState navigation) {
     context.pushNamed(
-      editMode && club.isOwnedBy(uid)
+      navigation.destination == HostSettingsClubDestination.edit
           ? Routes.hostEditClubScreen.name
           : Routes.hostClubDetailScreen.name,
-      pathParameters: {'clubId': club.id},
-      extra: club,
+      pathParameters: {'clubId': navigation.club.id},
+      extra: navigation.club,
     );
   }
 
@@ -364,18 +368,16 @@ class HostSettingsProfileRows extends StatelessWidget {
 class HostSettingsClubsSection extends StatelessWidget {
   const HostSettingsClubsSection({
     super.key,
-    required this.uid,
+    required this.actions,
     required this.state,
     required this.onRetry,
-    required this.editMode,
     required this.onOpenClub,
   });
 
-  final String? uid;
+  final HostSettingsActionState actions;
   final HostSettingsClubsState state;
   final VoidCallback? onRetry;
-  final bool editMode;
-  final ValueChanged<Club> onOpenClub;
+  final ValueChanged<HostSettingsClubNavigationState> onOpenClub;
 
   @override
   Widget build(BuildContext context) {
@@ -393,7 +395,7 @@ class HostSettingsClubsSection extends StatelessWidget {
           ),
           HostSettingsClubsEmpty() => const HostSettingsClubsEmptyState(),
           HostSettingsClubsContent(:final clubs) => HostSettingsClubRows(
-            uid: uid,
+            actions: actions,
             clubs: clubs,
             onOpenClub: onOpenClub,
           ),
@@ -419,26 +421,31 @@ class HostSettingsClubsEmptyState extends StatelessWidget {
 class HostSettingsClubRows extends StatelessWidget {
   const HostSettingsClubRows({
     super.key,
-    required this.uid,
+    required this.actions,
     required this.clubs,
     required this.onOpenClub,
   });
 
-  final String? uid;
+  final HostSettingsActionState actions;
   final List<Club> clubs;
-  final ValueChanged<Club> onOpenClub;
+  final ValueChanged<HostSettingsClubNavigationState> onOpenClub;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         for (final club in clubs)
-          CatchField.nav(
-            title: club.isOwnedBy(uid) ? 'Owner' : 'Host team',
-            valueText: club.name,
-            icon: CatchIcons.groupOutlined,
-            divider: club != clubs.first,
-            onTap: () => onOpenClub(club),
+          Builder(
+            builder: (context) {
+              final navigation = actions.clubNavigationFor(club);
+              return CatchField.nav(
+                title: navigation.roleLabel,
+                valueText: club.name,
+                icon: CatchIcons.groupOutlined,
+                divider: club != clubs.first,
+                onTap: () => onOpenClub(navigation),
+              );
+            },
           ),
       ],
     );

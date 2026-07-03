@@ -7,14 +7,25 @@ HostSettingsState buildHostSettingsState({
   required String? uid,
   required AsyncValue<HostProfile?> profile,
   required AsyncValue<List<Club>> clubs,
+  bool editMode = true,
+  bool creatingProfile = false,
+  bool signOutPending = false,
 }) {
+  final profileState = buildHostSettingsProfileState(
+    uid: uid,
+    profile: profile,
+    clubs: clubs,
+  );
   return HostSettingsState(
-    profile: buildHostSettingsProfileState(
-      uid: uid,
-      profile: profile,
-      clubs: clubs,
-    ),
+    profile: profileState,
     clubs: buildHostSettingsClubsState(clubs),
+    actions: HostSettingsActionState.from(
+      uid: uid,
+      editMode: editMode,
+      creatingProfile: creatingProfile,
+      signOutPending: signOutPending,
+      profile: profileState,
+    ),
   );
 }
 

@@ -67,6 +67,63 @@ void main() {
     expect(state.clubs, isA<HostSettingsClubsContent>());
   });
 
+  test('HostSettingsActionState maps account and club navigation policy', () {
+    final profile = HostProfile(
+      uid: _hostUid,
+      displayName: 'Asha Host',
+      status: HostProfileStatus.active,
+      createdAt: DateTime(2026),
+      updatedAt: DateTime(2026),
+    );
+    final ownedClub = buildClub(
+      id: 'owned-club',
+      name: 'Owner Club',
+      ownerUserId: _hostUid,
+    );
+    final cohostClub = buildClub(
+      id: 'cohost-club',
+      name: 'Co-host Club',
+      hostUserId: 'owner-2',
+      hostUserIds: const [_hostUid],
+    );
+
+    final editState = buildHostSettingsState(
+      uid: _hostUid,
+      profile: AsyncData<HostProfile?>(profile),
+      clubs: AsyncData<List<Club>>([ownedClub, cohostClub]),
+    );
+    expect(editState.actions.canSignOut, isTrue);
+    expect(editState.actions.canCreateProfile, isFalse);
+    expect(editState.actions.canEditProfile, isTrue);
+    expect(
+      editState.actions.clubNavigationFor(ownedClub).destination,
+      HostSettingsClubDestination.edit,
+    );
+    expect(
+      editState.actions.clubNavigationFor(cohostClub).destination,
+      HostSettingsClubDestination.preview,
+    );
+    expect(
+      editState.actions.clubNavigationFor(cohostClub).roleLabel,
+      'Host team',
+    );
+
+    final previewState = buildHostSettingsState(
+      uid: _hostUid,
+      profile: const AsyncData<HostProfile?>(null),
+      clubs: const AsyncData<List<Club>>([]),
+      editMode: false,
+      signOutPending: true,
+    );
+    expect(previewState.actions.canSignOut, isFalse);
+    expect(previewState.actions.canCreateProfile, isTrue);
+    expect(previewState.actions.canEditProfile, isFalse);
+    expect(
+      previewState.actions.clubNavigationFor(ownedClub).destination,
+      HostSettingsClubDestination.preview,
+    );
+  });
+
   test('HostProfileEditState maps profile async branches', () {
     final profile = HostProfile(
       uid: _hostUid,
