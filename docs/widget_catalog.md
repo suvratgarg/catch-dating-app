@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.548
+version: 2.5.549
 updated: 2026-07-03
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,11 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.549
+
+- Replaced the booked/attended event detail CTA leading widgets with one
+  feature-level `EventCtaStatusLeading` that receives the icon and label.
 
 ### 2.5.548
 
@@ -6123,6 +6128,7 @@ Generated 2026-05-06.
 | `EventStatsGrid` | `lib/events/presentation/widgets/event_stats_grid.dart:7` | Event detail stats adapter. Converts event facts into `CatchMetricStrip` items so event stats share the same rail, dividers, value styling, and responsive truncation as club detail stats, with optional dark surface colors for spotlight detail. |
 | `EventDetailCta` | `lib/events/presentation/widgets/event_detail_cta.dart:60` | Controller-backed bottom CTA adapter for non-host event detail viewers. Owns booking, cancellation, waitlist, eligibility, attended/past, free-booking celebration, and paid booking handoff actions from the current viewer's `EventParticipation` edge, then delegates provider-free rendering to `EventBookingDock`. |
 | `EventBookingDock` | `lib/events/presentation/widgets/event_detail_cta.dart:32` | Provider-free Event Detail booking dock renderer. Composes the branded mutation/error banner and `CatchBottomDock.cta` for guest, bookable, pending, failed, booked, waitlist, offer, full, past, attended, and host-hidden Widgetbook states. |
+| `EventCtaStatusLeading` | `lib/events/presentation/widgets/event_detail_cta.dart:450` | Feature-level icon+label leading used by booked and attended Event Detail CTA states. Receives the status glyph and copy from the dock-state mapping so the two terminal CTA treatments share one row layout while `EventBookingDock` keeps the CTA shell. |
 | `AttendanceSheetViewModel` | `lib/events/presentation/attendance_sheet_view_model.dart:10` | Attendance data seam. Combines the event stream with `eventParticipations` and derives attendee IDs plus checked-in state from participation statuses. |
 | `EventHypeAvatarStack` | `lib/events/presentation/widgets/event_hype_avatar_stack.dart:84` | Provider-free attendee-hype avatar stack for event detail and roster surfaces. Obscured mode renders local activity-tinted veiled placeholders without fetching profile photos; revealed mode renders explicit `avatarItems` or deterministic fallback avatar labels through `PersonAvatarStack`. |
 | `WhoIsGoing` | `lib/events/presentation/widgets/who_is_going.dart:38` | Event detail social roster adapter. Watches `EventParticipationRoster` for booked counts, watches `eventHypeAvatarsProvider` only for revealed non-empty rosters, and passes explicit avatar items into `WhoIsGoingContent`. Standalone callers keep the local title/count header; `EventDetailSocialSection` suppresses it so the design-system section owns the label. |

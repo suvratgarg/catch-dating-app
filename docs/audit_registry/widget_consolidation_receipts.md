@@ -397,6 +397,83 @@ Known blockers / inherited debt:
   succeeds, but build_runner reports that the delete-conflicting option has
   been removed and is ignored by the current builder.
 
+## 2026-07-03 WO-004 EventCtaStatusLeading
+
+Scope:
+
+- `BookedLeading`
+- `AttendedLeading`
+- `EventCtaStatusLeading`
+
+Commands:
+
+- `dart tool/audit_registry.dart refresh`
+- `node tool/agent/context_pack.mjs --task widget-consolidation-wo-004 --paths lib/events/presentation/widgets/event_detail_cta.dart,widgetbook/lib,docs/design_parity/widget_consolidation/codex_worklog.md,docs/design_parity/widget_consolidation/decisions.json`
+- `rg -n "AttendedLeading|BookedLeading|EventCtaStatusLeading" lib widgetbook docs design --glob '!**/*.g.dart'`
+- `dart format lib/events/presentation/widgets/event_detail_cta.dart widgetbook/lib/events/event_detail_use_cases.dart widgetbook/lib/primitives/core_catalog_use_cases.dart`
+- `flutter pub get` in `widgetbook/`
+- `dart run build_runner build --delete-conflicting-outputs` in `widgetbook/`
+- `node tool/design/generate_widget_classification.mjs`
+- `node tool/design/check_widget_classification.mjs`
+- `dart run tool/widget_dedupe/bin/extract_fingerprints.dart`
+- `node tool/design/build_widget_similarity.mjs`
+- `node tool/design/build_widget_similarity.mjs --check`
+- `node tool/design/check_widgetbook_coverage.mjs --check`
+- `env DART=/Users/suvratgarg/Development/flutter/bin/dart node tool/design/check_widget_dedupe_probes.mjs`
+- `flutter analyze --no-fatal-infos lib`
+- `flutter analyze` in `widgetbook/`
+- `bash tool/widget_cleanup_scan.sh --summary`
+- `node tool/run.mjs check --manifest-only`
+- `node tool/agent/check_agent_readiness.mjs`
+- `node tool/design/check_widgetbook_contract_refs.mjs --check`
+- `rg -n "AttendedLeading|BookedLeading" lib widgetbook/lib docs/widget_catalog.md --glob '!**/*.g.dart'`
+- `node -e "const fs=require('fs'); for (const f of ['docs/audit_registry/doc_versions.json','docs/audit_registry/widget_classification.json','docs/audit_registry/widget_similarity.json']) JSON.parse(fs.readFileSync(f,'utf8')); console.log('json registries parse')"`
+- `git diff --check`
+
+Headline numbers:
+
+| metric | value |
+|---|---:|
+| widget classification entries | 1,165 |
+| classification review items | 44 |
+| private widget classes flagged | 0 |
+| widget fingerprints | 1,057 |
+| fingerprint failures | 0 |
+| similarity clusters | 60 |
+| ranked pairs | 200 |
+| name families | 231 |
+| absorb candidates | 9 |
+| root lib analyzer infos | 192 |
+| widget cleanup scan categories with findings | 0 |
+| agent readiness score | 100/100 |
+
+Spot checks:
+
+- Stale retired-symbol scan across active `lib`, `widgetbook/lib`, and
+  `docs/widget_catalog.md` returned no matches for `AttendedLeading` or
+  `BookedLeading`.
+- `widgetbook/lib/main.directories.g.dart` now exposes
+  `EventCtaStatusLeading/Status leading states` and no longer exposes the two
+  retired leading components.
+- `docs/widget_catalog.md` v2.5.549 records `EventCtaStatusLeading` as the
+  feature-level Event Detail CTA terminal-state leading.
+- `EventCtaStatusLeading` keeps a `const` constructor, but current
+  `CatchIcons` values are not valid constant expressions, so migrated call
+  sites are intentionally non-const.
+
+Known blockers / inherited debt:
+
+- `node tool/design/check_widgetbook_coverage.mjs --check` still fails on the
+  existing catalog-or-replace decision queue: 139 public widgets need
+  decisions, with 0 stale decisions.
+- `(cd widgetbook && flutter analyze)` still fails on 65 existing Widgetbook
+  issues in `lib/hosts/host_operations_use_cases.dart`.
+- `node tool/design/check_widgetbook_contract_refs.mjs --check` still fails on
+  unrelated HostOperations preview ids.
+- `dart run build_runner build --delete-conflicting-outputs` in `widgetbook/`
+  succeeds, but build_runner reports that the delete-conflicting option has
+  been removed and is ignored by the current builder.
+
 Calibration note:
 
 The v0.1.0 SimHash threshold of 18 is void. The v0.2.0 registry recalibrates

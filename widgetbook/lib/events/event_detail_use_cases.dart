@@ -1247,11 +1247,14 @@ Widget eventDetailBookingDockStates(BuildContext context) {
       ),
       _StateCard(
         label: 'booked',
-        child: const _DockFrame(
+        child: _DockFrame(
           child: EventBookingDock(
             label: 'Cancel booking',
             onPressed: _noop,
-            leadingContent: BookedLeading(),
+            leadingContent: EventCtaStatusLeading(
+              icon: CatchIcons.checkCircleRounded,
+              label: "You're in!",
+            ),
           ),
         ),
       ),
@@ -1277,16 +1280,16 @@ Widget eventDetailBookingDockStates(BuildContext context) {
       ),
       _StateCard(
         label: 'full / cancelled / past / attended',
-        child: const Column(
+        child: Column(
           children: [
-            _DockFrame(
+            const _DockFrame(
               child: EventBookingDock(
                 label: 'Spots for your gender are full',
                 onPressed: null,
               ),
             ),
             gapH12,
-            _DockFrame(
+            const _DockFrame(
               child: EventBookingDock(
                 label: 'This event has ended',
                 onPressed: null,
@@ -1297,7 +1300,10 @@ Widget eventDetailBookingDockStates(BuildContext context) {
               child: EventBookingDock(
                 label: 'You attended this event',
                 onPressed: null,
-                leadingContent: AttendedLeading(),
+                leadingContent: EventCtaStatusLeading(
+                  icon: CatchIcons.directionsRunRounded,
+                  label: 'Completed',
+                ),
               ),
             ),
           ],
@@ -2944,21 +2950,26 @@ Widget waitlistOfferLeadingState(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Booked leading',
-  type: BookedLeading,
+  name: 'Status leading states',
+  type: EventCtaStatusLeading,
   path: '[Event Detail]/Booking Dock',
 )
-Widget bookedLeadingState(BuildContext context) {
-  return const BookedLeading();
-}
-
-@widgetbook.UseCase(
-  name: 'Attended leading',
-  type: AttendedLeading,
-  path: '[Event Detail]/Booking Dock',
-)
-Widget attendedLeadingState(BuildContext context) {
-  return const AttendedLeading();
+Widget eventCtaStatusLeadingStates(BuildContext context) {
+  return Column(
+    mainAxisSize: MainAxisSize.min,
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      EventCtaStatusLeading(
+        icon: CatchIcons.checkCircleRounded,
+        label: "You're in!",
+      ),
+      gapH12,
+      EventCtaStatusLeading(
+        icon: CatchIcons.directionsRunRounded,
+        label: 'Completed',
+      ),
+    ],
+  );
 }
 
 class _EventScope extends StatelessWidget {

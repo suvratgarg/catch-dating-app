@@ -281,7 +281,25 @@ Call-site mapping: `AttendedLeading()` →
 `UnsavedChangesPill` stays. Repoint/delete widgetbook use-cases for the two
 old names (gotcha 2).
 
-- [ ] merge + call sites + widgetbook + registries + receipts
+- [x] merge + call sites + widgetbook + registries + receipts
+
+Receipt: 2026-07-03 Codex WO-004 replaced `BookedLeading` and
+`AttendedLeading` with feature-level `EventCtaStatusLeading`, updated
+production dock-state mapping plus Event Detail and core-catalog Widgetbook
+previews, repointed the standalone Widgetbook preview to the new type, added
+the new public widget to `docs/widget_catalog.md` v2.5.549, and regenerated
+Widgetbook, classification, and similarity. Clean checks:
+`flutter analyze --no-fatal-infos lib` (192 existing infos, 0 warnings/errors),
+widget classification check (1165 entries, 44 review items, 0 private widget
+classes flagged), widget similarity check (1057 widgets, 60 clusters, 9 absorb
+candidates), dedupe probes, widget cleanup scan, manifest-only, agent
+readiness, JSON parse, stale retired-symbol scan, and `git diff --check`.
+Existing blockers remain inherited: Widgetbook analyzer has 65 HostOperations
+issues, Widgetbook coverage has a 139 item queue with 0 stale decisions, and
+Widgetbook contract refs fail on unrelated HostOperations preview ids. Note:
+`EventCtaStatusLeading` keeps a `const` constructor for callers with constant
+icons, but current `CatchIcons` values are not valid constant expressions, so
+the migrated call sites are intentionally non-const.
 
 ## WO-005 — CatchAnalyticsBar + person-layout token fix
 

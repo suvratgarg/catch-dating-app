@@ -2876,22 +2876,12 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Booking Dock',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'AttendedLeading',
+            name: 'EventCtaStatusLeading',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Attended leading',
+                name: 'Status leading states',
                 builder: _widgetbook_workspace_events_event_detail_use_cases
-                    .attendedLeadingState,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'BookedLeading',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Booked leading',
-                builder: _widgetbook_workspace_events_event_detail_use_cases
-                    .bookedLeadingState,
+                    .eventCtaStatusLeadingStates,
               ),
             ],
           ),

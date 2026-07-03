@@ -2331,15 +2331,21 @@ Widget eventDetailBookingDockCatalogStates(BuildContext context) {
             CatchBottomDock.cta(
               label: 'Cancel booking',
               onPressed: _noop,
-              leadingContent: const BookedLeading(),
+              leadingContent: EventCtaStatusLeading(
+                icon: CatchIcons.checkCircleRounded,
+                label: "You're in!",
+              ),
             ),
             gapH12,
             CatchBottomDock.cta(label: 'Join waitlist', onPressed: _noop),
             gapH12,
-            const CatchBottomDock.cta(
+            CatchBottomDock.cta(
               label: 'You attended this event',
               onPressed: null,
-              leadingContent: AttendedLeading(),
+              leadingContent: EventCtaStatusLeading(
+                icon: CatchIcons.directionsRunRounded,
+                label: 'Completed',
+              ),
             ),
           ],
         ),
