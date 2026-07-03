@@ -5,10 +5,6 @@
   "allowedFindings": [
     {
       "rule": "multiRouteScreenFile",
-      "path": "lib/event_success/presentation/event_success_companion_screen.dart"
-    },
-    {
-      "rule": "multiRouteScreenFile",
       "path": "lib/hosts/presentation/host_operations_screen.dart"
     }
   ]
