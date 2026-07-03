@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-07-03T20:20:53.469Z",
+  "generatedAt": "2026-07-03T20:51:35.076Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
-    "useCases": 873,
-    "components": 848,
-    "stateCards": 1749,
+    "useCases": 870,
+    "components": 845,
+    "stateCards": 1745,
     "reviewCandidates": 36,
     "oversizedUseCases": 43,
     "multiUseCaseComponents": 24
@@ -16702,43 +16702,6 @@
       ]
     },
     {
-      "component": "ClubHostAvatar",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[Club Discovery]/Atoms"
-      ],
-      "labels": [
-        "initials",
-        "photo"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Host avatar states",
-          "functionName": "clubHostAvatarStates",
-          "file": "widgetbook/lib/clubs/club_detail_use_cases.dart",
-          "path": "[Club Discovery]/Atoms",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "photo",
-              "normalizedLabel": "photo"
-            },
-            {
-              "label": "initials",
-              "normalizedLabel": "initials"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "ClubHostIdentityLine",
       "useCaseCount": 1,
       "stateCardCount": 2,
@@ -18583,43 +18546,6 @@
             {
               "label": "spotlight transition target",
               "normalizedLabel": "spotlight transition target"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "EventFocusPageIndicator",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[P1 product surfaces]/Dashboard home"
-      ],
-      "labels": [
-        "first of three",
-        "middle of three"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Page indicator states",
-          "functionName": "dashboardEventFocusPageIndicatorReviewStates",
-          "file": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
-          "path": "[P1 product surfaces]/Dashboard home",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "first of three",
-              "normalizedLabel": "first of three"
-            },
-            {
-              "label": "middle of three",
-              "normalizedLabel": "middle of three"
             }
           ]
         }
@@ -32738,31 +32664,6 @@
         {
           "name": "ManualQaSideBySide",
           "functionName": "eventSuccessStrictManualQaSideBySide",
-          "file": "widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart",
-          "path": "[P1 product surfaces]/Event Success strict coverage/Manual QA folded states",
-          "stateCardCount": 0,
-          "stateCards": []
-        }
-      ]
-    },
-    {
-      "component": "ManualQaToggleRow",
-      "useCaseCount": 1,
-      "stateCardCount": 0,
-      "paths": [
-        "[P1 product surfaces]/Event Success strict coverage/Manual QA folded states"
-      ],
-      "labels": [],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "ManualQaToggleRow",
-          "functionName": "eventSuccessStrictManualQaToggleRow",
           "file": "widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart",
           "path": "[P1 product surfaces]/Event Success strict coverage/Manual QA folded states",
           "stateCardCount": 0,

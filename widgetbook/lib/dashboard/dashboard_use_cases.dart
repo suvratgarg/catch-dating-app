@@ -943,32 +943,6 @@ Widget dashboardEventFocusCardReviewStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Page indicator states',
-  type: EventFocusPageIndicator,
-  path: '[P1 product surfaces]/Dashboard home',
-)
-Widget dashboardEventFocusPageIndicatorReviewStates(BuildContext context) {
-  return const _DashboardCatalog(
-    title: 'EventFocusPageIndicator',
-    contractId: 'dashboard.home.event_focus_page_indicator',
-    children: [
-      _StateCard(
-        label: 'first of three',
-        child: _DashboardPrimitiveFrame(
-          child: EventFocusPageIndicator(selectedIndex: 0, itemCount: 3),
-        ),
-      ),
-      _StateCard(
-        label: 'middle of three',
-        child: _DashboardPrimitiveFrame(
-          child: EventFocusPageIndicator(selectedIndex: 1, itemCount: 3),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
   name: 'Tile states',
   type: DashboardQuickActionTile,
   path: '[P1 product surfaces]/Dashboard primitives',

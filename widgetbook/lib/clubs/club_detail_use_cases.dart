@@ -1186,32 +1186,6 @@ Widget clubHostIdentityLineStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Host avatar states',
-  type: ClubHostAvatar,
-  path: '[Club Discovery]/Atoms',
-)
-Widget clubHostAvatarStates(BuildContext context) {
-  return _CatalogScreen(
-    title: 'ClubHostAvatar',
-    catalogId: 'atom.club.host_avatar',
-    children: [
-      _StateCard(
-        label: 'photo',
-        child: ClubHostAvatar(
-          name: _club.displayHostName,
-          imageUrl: _club.hostAvatarUrl,
-          size: 56,
-        ),
-      ),
-      const _StateCard(
-        label: 'initials',
-        child: ClubHostAvatar(name: 'Ana Rao', size: 56),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
   name: 'Role badge states',
   type: ClubHostRoleBadge,
   path: '[Club Discovery]/Atoms',

@@ -138,7 +138,7 @@ class ClubHostIdentityLine extends StatelessWidget {
     final t = CatchTokens.of(context);
     return Row(
       children: [
-        ClubHostAvatar(
+        CatchPersonAvatar(
           name: hostName,
           imageUrl: hostAvatarUrl,
           size: avatarSize,
@@ -167,34 +167,6 @@ class ClubHostIdentityLine extends StatelessWidget {
         ),
         if (trailing != null) ...[gapW10, trailing!],
       ],
-    );
-  }
-}
-
-class ClubHostAvatar extends StatelessWidget {
-  const ClubHostAvatar({
-    super.key,
-    required this.name,
-    this.imageUrl,
-    this.size = 32,
-    this.borderWidth = 0,
-    this.borderColor,
-  });
-
-  final String name;
-  final String? imageUrl;
-  final double size;
-  final double borderWidth;
-  final Color? borderColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchPersonAvatar(
-      size: size,
-      name: name,
-      imageUrl: imageUrl,
-      borderWidth: borderWidth,
-      borderColor: borderColor,
     );
   }
 }

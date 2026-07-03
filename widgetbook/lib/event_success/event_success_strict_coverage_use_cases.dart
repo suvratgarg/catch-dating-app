@@ -2390,20 +2390,6 @@ Widget eventSuccessStrictManualQaSideBySide(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "ManualQaToggleRow",
-  type: ManualQaToggleRow,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Manual QA folded states",
-)
-Widget eventSuccessStrictManualQaToggleRow(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.manualQa,
-    componentName: "ManualQaToggleRow",
-  );
-}
-
-@widgetbook.UseCase(
   name: "QaDeviceFrame",
   type: QaDeviceFrame,
   path:

@@ -1643,10 +1643,10 @@ are now decided.
 5. Widgetbook (gotcha 2) + build_runner regen + registries + receipts; flip
    the three WO-023 ledger entries to `executed-WO-023`.
 
-- [ ] ClubHostAvatar absorb
-- [ ] EventFocusPageIndicator inline
-- [ ] ManualQaToggleRow inline
-- [ ] D1 + widgetbook + regen + receipts
+- [x] ClubHostAvatar absorb
+- [x] EventFocusPageIndicator inline
+- [x] ManualQaToggleRow inline
+- [x] D1 + widgetbook + regen + receipts
 
 ## Audit note (2026-07-03, claude): WO-015 sweep quality
 

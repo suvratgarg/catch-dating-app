@@ -10,28 +10,28 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1121,
-    "widgetClasses": 1014,
+    "total": 1118,
+    "widgetClasses": 1011,
     "stateClasses": 107,
-    "publicClasses": 1014,
+    "publicClasses": 1011,
     "privateClasses": 107,
     "byRole": {
       "atom": 57,
       "composition": 317,
-      "feature-adapter": 319,
+      "feature-adapter": 317,
       "pattern": 16,
-      "screen": 305,
+      "screen": 304,
       "widget-state": 107
     },
     "byDecision": {
       "keep-canonical-contract": 171,
-      "keep-public-cataloged": 793,
+      "keep-public-cataloged": 790,
       "keep-widget-state": 107,
       "review-catalog-coverage": 36,
       "review-promote-or-consolidate": 14
     },
     "byCatalogStatus": {
-      "cataloged": 721,
+      "cataloged": 718,
       "contracted": 171,
       "not-applicable": 107,
       "route-covered": 86,
@@ -1883,29 +1883,6 @@
       "visibility": "public",
       "role": "feature-adapter",
       "canonicalFamily": "feature.clubs.club_polaroid_artwork",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "ClubHostAvatar",
-      "file": "lib/clubs/shared/club_identity_atoms.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.clubs.club_host_avatar",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,
@@ -7295,29 +7272,6 @@
       "flags": []
     },
     {
-      "name": "EventFocusPageIndicator",
-      "file": "lib/dashboard/presentation/widgets/event_focus_rail.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.dashboard.event_focus_page_indicator",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
       "name": "EventFocusRail",
       "file": "lib/dashboard/presentation/widgets/event_focus_rail.dart",
       "classKind": "widget",
@@ -11030,29 +10984,6 @@
       "visibility": "public",
       "role": "screen",
       "canonicalFamily": "screen.manual_qa_side_by_side",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "ManualQaToggleRow",
-      "file": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.manual_qa_toggle_row",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-03T20:23:22.463Z",
+  "generatedAt": "2026-07-03T20:52:33.195Z",
   "baseRef": "HEAD^",
   "baseStatus": "git-ref",
   "baseWarning": null,
@@ -10,31 +10,16 @@
     "policy": "New public widget classes need Widgetbook and widget catalog coverage. New private widget classes and Widget-returning helpers must be inlined/deleted, merged into an existing primitive, or promoted to public cataloged widgets."
   },
   "summary": {
-    "addedWidgetClasses": 1,
-    "addedPublicWidgetClasses": 1,
+    "addedWidgetClasses": 0,
+    "addedPublicWidgetClasses": 0,
     "addedPrivateWidgetClasses": 0,
     "addedWidgetReturningHelpers": 0,
-    "coveredNewWidgets": 1,
+    "coveredNewWidgets": 0,
     "unresolved": 0,
-    "widgetsByStatus": {
-      "covered": 1
-    },
+    "widgetsByStatus": {},
     "helpersByStatus": {},
     "issues": {}
   },
-  "addedWidgets": [
-    {
-      "name": "CatchAnalyticsDataQualityList",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 41,
-      "file": "lib/core/widgets/catch_analytics_kit.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    }
-  ],
+  "addedWidgets": [],
   "addedWidgetHelpers": []
 }

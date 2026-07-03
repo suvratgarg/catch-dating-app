@@ -884,14 +884,14 @@ class AttendeeQaControls extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ManualQaToggleRow(
-              label: 'Micro-pods opt-out',
+            CatchField.toggle(
+              title: 'Micro-pods opt-out',
               value: microPodsOptedOut,
               onChanged: onMicroPodsOptOutChanged,
             ),
             gapH8,
-            ManualQaToggleRow(
-              label: 'Rotations opt-out',
+            CatchField.toggle(
+              title: 'Rotations opt-out',
               value: guidedRotationsOptedOut,
               onChanged: onGuidedRotationsOptOutChanged,
             ),
@@ -922,23 +922,6 @@ class ControlLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(label, style: CatchTextStyles.labelL(context));
-  }
-}
-
-class ManualQaToggleRow extends StatelessWidget {
-  const ManualQaToggleRow({
-    required this.label,
-    required this.value,
-    required this.onChanged,
-  });
-
-  final String label;
-  final bool value;
-  final ValueChanged<bool> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchField.toggle(title: label, value: value, onChanged: onChanged);
   }
 }
 

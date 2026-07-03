@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.565
+version: 2.5.566
 updated: 2026-07-04
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,18 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.566
+
+- Inlined the WO-023 pass-through wrappers: `ClubHostAvatar` now resolves
+  directly to `CatchPersonAvatar`, dashboard event-focus dots now call
+  `CatchPageDots` inline, and manual-QA toggles now call `CatchField.toggle`
+  at the owning control surface.
+- Tokenized `HostEventToolsPageIndicator` progress height to
+  `CatchSpacing.micro6`. `ForceUpdateCheckErrorScreen` keeps its 420px
+  pre-shell max width as an explicit D1 escalation because the nearest layout
+  tokens are `CatchLayout.frameworkErrorMaxWidth` (460) and
+  `CatchLayout.maxContentWidth` (600), not exact semantic matches.
 
 ### 2.5.565
 
@@ -5578,8 +5590,7 @@ Generated 2026-05-06.
 | `DashboardFull` | `lib/dashboard/presentation/widgets/dashboard_full.dart:21` | Standalone full-dashboard wrapper used by focused tests/non-tab embedding. Takes explicit `followedClubIds` from the membership-edge seam and renders the full dashboard header plus `DashboardFullSliverBody`. The header avatar is a Profile-tab button and must use thumbnail-scale profile imagery through `UserProfile.primaryPhotoThumbnailUrl`. |
 | `DashboardFullSliverBody` | `lib/dashboard/presentation/widgets/dashboard_full.dart:84` | Sliver body for the populated Home dashboard. Uses `CatchSectionStack` for the handoff rhythm and orders the body as `EventFocusRail`, `StrideCard`, `QuickActions`, the personal followed-clubs `ClubAvatarRail` when available, and the "Recommended for you" rail. It joins club names for committed events through `clubNameLookupProvider`, resolves followed clubs through `watchClubsByIdsProvider`, supplies typed Calendar/Saved Events callbacks to `QuickActions`, maps self-check-in mutation state into `EventFocusCheckInState`, supplies typed `EventFocusActions` for route/controller/external effects, supplies typed stride actions/busy state to `DashboardStrideSection`, and leaves notifications on the dedicated Notifications screen. |
 | `FollowedClubsRailSkeleton` | `lib/dashboard/presentation/widgets/dashboard_full.dart:378` | Loading placeholder for the personal followed-clubs rail. Reserves the "Your clubs" header plus three avatar/text skeleton chips so the populated dashboard does not collapse while followed club documents resolve. |
-| `EventFocusRail` | `lib/dashboard/presentation/widgets/event_focus_rail.dart:53` | Consolidated Home rail for attendee committed-event actions. Builds full-width snapping `EventActionCard` pages for upcoming, check-in, catch-window, and review states; stacks actions such as View event, Check in, Directions, Add to calendar, Start catching, and Write review so labels do not clip on narrow screens. The rail is a provider-free visual section that receives typed `EventFocusActions` plus display-only `EventFocusCheckInState`; the composing Dashboard body owns navigation, calendar, directions, self-check-in, event-success, and review-sheet effects. |
-| `EventFocusPageIndicator` | `lib/dashboard/presentation/widgets/event_focus_rail.dart:306` | Centered page-dot indicator for the dashboard event-focus carousel. Receives selected index and item count directly and supplies an accessible "Event n of m" semantic label through `CatchPageDots`. |
+| `EventFocusRail` | `lib/dashboard/presentation/widgets/event_focus_rail.dart:53` | Consolidated Home rail for attendee committed-event actions. Builds full-width snapping `EventActionCard` pages for upcoming, check-in, catch-window, and review states; stacks actions such as View event, Check in, Directions, Add to calendar, Start catching, and Write review so labels do not clip on narrow screens. The rail is a provider-free visual section that receives typed `EventFocusActions` plus display-only `EventFocusCheckInState`; the composing Dashboard body owns navigation, calendar, directions, self-check-in, event-success, review-sheet effects, and the inline `CatchPageDots` carousel indicator semantics. |
 | `EventFocusCard` | `lib/dashboard/presentation/widgets/event_focus_rail.dart:328` | Single dashboard event-focus card. Receives public `EventFocusItem` display state, card position, check-in pending state, and action callback; maps upcoming/check-in/after-event flags into `EventActionCard` badges, metadata rows, primary/secondary actions, accent colors, and pending check-in button disablement without reading route providers. |
 | `ActivityScreen` | `lib/dashboard/presentation/activity_screen.dart:19` | Route-level Activity screen registered as `screen.notifications.list` and opened from the Home header bell. Uses `CatchTopBar(title: 'Activity')`, keeps the bottom nav visible by living under the Home shell branch, watches uid/activity providers at the route edge, resolves `NotificationsListState`, owns `ActivityController.markAllReadMutation` feedback, and owns row navigation side effects. |
 | `NotificationsListState` | `lib/dashboard/presentation/notifications_list_state.dart:6` | Provider-free adapter state for the Notifications route. Converts uid/activity provider waves into loading, signed-out, loading-row, error, empty, and populated states; derives visible rows, read/unread state, route intents, relative times, and Today/Yesterday/This week/Earlier groups from an injected clock; exposes mark-all-read label/action availability for the top bar. |
@@ -5673,7 +5684,7 @@ Generated 2026-05-06.
 | `HostClubProfileCard` | `lib/hosts/presentation/host_operations_screen.dart:3124` | Host Clubs Edit tab body. Shows selected club metadata plus Identity, Contact, Event defaults, Public profile, Payouts, and Host team sections using `CatchSection`/`CatchField` rows, `HostPaymentAccountControllerCard`, and `HostTeamManagementSection`; owner-only rows expand inline editors, payout setup, and team management in place. The route can seed an initial expanded edit field for deterministic Widgetbook/capture states, and the public profile row receives a typed preview callback from `_HostClubsScaffold` instead of routing directly. |
 | `HostClubPreviewPane` | `lib/hosts/presentation/host_operations_screen.dart:4961` | Host Clubs Preview tab body. Shows the selected club description and receives a typed public-preview route callback from `_HostClubsScaffold` until the public club preview components are made embeddable inside the host tab. |
 | `HostEmptyActionCard` | `lib/hosts/presentation/widgets/host_empty_action_card.dart:8` | Host empty-state surface with section-title copy, supporting body, and optional caller-owned CTA actions. Host Home, Host Clubs, and Host Profile missing states now construct their action buttons at the route/section call site while sharing this visual shell. Widgetbook covers single-action, two-action, and pending-action states. |
-| `HostEventToolsPageIndicator` | `lib/hosts/presentation/widgets/host_event_tools.dart:164` | In-card hosted-event position indicator. Shows `N of total` plus a bounded progress rail so unbounded hosted-event counts do not grow the rendered indicator. |
+| `HostEventToolsPageIndicator` | `lib/hosts/presentation/widgets/host_event_tools.dart:164` | In-card hosted-event position indicator. Shows `N of total` plus a bounded `CatchSpacing.micro6` progress rail so unbounded hosted-event counts do not grow the rendered indicator. |
 | `HostEventToolCard` | `lib/hosts/presentation/widgets/host_event_tools.dart:208` | Shared operational card for one hosted event. Adapts host event lifecycle, bounded in-card progress, date/time, meet point, booked/waitlist counts, and one contextual CTA into `EventActionCard` using the host palette. |
 | `HostToolPalette` | `lib/hosts/presentation/widgets/host_event_tools.dart:304` | Token-backed host-tool color helper for default host panels and attendance states. Use this instead of local orange-tinted containers for host chrome. |
 | `HostRouteLoadingBody` | `lib/hosts/presentation/widgets/host_loading_skeletons.dart:8` | Host app route loading body. Mirrors the selected-club summary, optional tab rail, event rows, analytics card, and settings rows used across Host Events, Host Clubs, Host Manage, and Host Edit route gates. |

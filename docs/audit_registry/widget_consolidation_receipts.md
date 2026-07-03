@@ -2590,3 +2590,97 @@ Known blockers / inherited debt:
 - `EventDetailMapCard` still has map-specific alpha literals 0.52 and 0.24;
   exact existing opacity tokens are semantically unrelated. Proposed future
   token names: `eventDetailMapGridLine` and `eventDetailMapRouteWash`.
+
+## 2026-07-04 - WO-023 name-family batch 2
+
+Summary:
+
+- Integrated three isolated worker patches for WO-023, then completed the
+  parent-owned generated, catalog, ledger, registry, delegation-metric, and
+  audit layer.
+- Absorbed `ClubHostAvatar` into `CatchPersonAvatar`, replacing production
+  club-host row call sites and removing the deleted wrapper's Widgetbook block.
+- Inlined `EventFocusPageIndicator` into the owning dashboard event-focus rail
+  as `Center` plus `CatchPageDots`, preserving
+  `EventFocusRail.pageIndicatorKey`, and removed the deleted Widgetbook block.
+- Inlined `ManualQaToggleRow` into direct `CatchField.toggle` call sites and
+  removed the deleted strict Widgetbook block.
+- Tokenized `HostEventToolsPageIndicator` progress height from raw `6` to
+  `CatchSpacing.micro6`.
+- Left `ForceUpdateCheckErrorScreen` `maxWidth: 420` unchanged and recorded the
+  D1 escalation because the nearest candidates,
+  `CatchLayout.frameworkErrorMaxWidth` (460) and
+  `CatchLayout.maxContentWidth` (600), are not exact semantic matches.
+- Flipped the three WO-023 ledger entries to `executed-WO-023`, checked off the
+  worklog, regenerated Widgetbook directories and widget registries, and
+  recorded three accepted worktree-delegation outcomes.
+
+Commands:
+
+- `node tool/agent/context_pack.mjs --task widget-consolidation-wo-023 --paths docs/design_parity/widget_consolidation,docs/audit_registry/widget_similarity.json,docs/audit_registry/widget_classification.json,docs/widget_catalog.md,lib/clubs/shared/club_identity_atoms.dart,lib/events/presentation/widgets/event_focus_rail.dart,lib/event_success/presentation/event_success_manual_qa_screen.dart,lib/hosts/presentation/widgets/host_event_tools.dart,lib/app.dart,widgetbook/lib`
+- `git worktree add -b codex/wo023-club-host-avatar /private/tmp/catch-wo023-club-host-avatar-8bc90b 8bc90b76d2578ad51afe43e9eeb0ad1b5776131d`
+- `git worktree add -b codex/wo023-event-focus-indicator /private/tmp/catch-wo023-event-focus-indicator-8bc90b 8bc90b76d2578ad51afe43e9eeb0ad1b5776131d`
+- `git worktree add -b codex/wo023-manualqa-hosttools /private/tmp/catch-wo023-manualqa-hosttools-8bc90b 8bc90b76d2578ad51afe43e9eeb0ad1b5776131d`
+- `git cherry-pick -n 50d00425500a1b64c314294348d8392c8da02f4a 555f92aa51bddd9a83c937e70d8bf8d065217995 7a36a68334d432ff1de0fad338dde32664413ae2`
+- `dart format lib/clubs/shared/club_identity_atoms.dart lib/clubs/presentation/detail/widgets/club_host_section.dart lib/hosts/presentation/widgets/host_team_management_section.dart widgetbook/lib/clubs/club_detail_use_cases.dart lib/dashboard/presentation/widgets/event_focus_rail.dart widgetbook/lib/dashboard/dashboard_use_cases.dart lib/event_success/presentation/event_success_manual_qa_screen.dart lib/hosts/presentation/widgets/host_event_tools.dart widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart`
+- `dart run build_runner build -d` in `widgetbook/`
+- `npm run design:widgets:classify`
+- `npm run design:widgets:check`
+- `npm run design:widgets:variants`
+- `npm run design:widgets:variants:check`
+- `node tool/design/build_widget_similarity.mjs`
+- `node tool/design/build_widget_similarity.mjs --check`
+- `npm run design:widgets:new`
+- `npm run design:widgets:new:check`
+- `bash tool/widget_cleanup_scan.sh --summary`
+- `flutter analyze --no-fatal-infos lib/clubs/shared/club_identity_atoms.dart lib/clubs/presentation/detail/widgets/club_host_section.dart lib/hosts/presentation/widgets/host_team_management_section.dart lib/dashboard/presentation/widgets/event_focus_rail.dart lib/event_success/presentation/event_success_manual_qa_screen.dart lib/hosts/presentation/widgets/host_event_tools.dart`
+- `flutter analyze --no-fatal-infos lib/clubs/club_detail_use_cases.dart lib/dashboard/dashboard_use_cases.dart lib/event_success/event_success_strict_coverage_use_cases.dart lib/main.directories.g.dart` in `widgetbook/`
+- `flutter test test/event_success/event_success_manual_qa_screen_test.dart test/dashboard/dashboard_screen_test.dart test/hosts/host_team_management_section_test.dart`
+- `flutter analyze --no-fatal-infos`
+- `node tool/run.mjs check --manifest-only`
+- `node tool/design/check_component_contracts.mjs`
+- `node tool/design/check_widgetbook_contract_refs.mjs --check`
+- `node tool/design/check_screen_contracts.mjs --check`
+- `node tool/run.mjs check --category design`
+- `node tool/agent/record_delegation_outcome.mjs ...` for
+  `wo023-club-host-avatar`, `wo023-event-focus-indicator`, and
+  `wo023-manualqa-hosttools`
+
+Verification:
+
+- Active retired-symbol scan found no `lib`, `widgetbook/lib`, `test`,
+  `design`, or state-matrix references to `ClubHostAvatar`,
+  `EventFocusPageIndicator`, or `ManualQaToggleRow` after Widgetbook
+  regeneration; the only remaining deleted-name hit is this catalog changelog.
+- Focused root analyzer reported no warnings or errors for changed production
+  files after removing the stale `club_identity_atoms.dart` import from
+  `club_host_section.dart`.
+- Widgetbook focused analyzer reported no issues for changed use-case files and
+  `main.directories.g.dart`.
+- Focused tests passed: Event Success manual QA screen, Dashboard screen, and
+  Host Team Management section.
+- Full root `flutter analyze --no-fatal-infos` exited 0 with the existing
+  189-info baseline.
+- Widgetbook build_runner completed and regenerated `main.directories.g.dart`
+  without the deleted wrapper use cases.
+- Widget classification check passed with 1,118 entries, 50 review items, and
+  0 private widget classes flagged.
+- Widget variant inventory check passed with 870 use cases, 1,745 state cards,
+  and 36 review candidates.
+- Widget similarity check passed with 1,038 widgets, 50 clusters, 200 ranked
+  pairs, 222 name families, and 8 absorb candidates.
+- New-widget inventory check passed with 0 added widgets/helpers and 0
+  unresolved items relative to `HEAD^ -> working tree`.
+- Widget cleanup scanner and tool manifest validation passed.
+
+Known blockers / inherited debt:
+
+- `node tool/design/check_component_contracts.mjs` and
+  `node tool/run.mjs check --category design` still fail on inherited
+  `catch.tab_rail` token drift:
+  `layout.tabRailHeight` is not a known DTCG token reference.
+- `node tool/design/check_widgetbook_contract_refs.mjs --check` still fails on
+  inherited HostOperations route-state and HostTeam preview-id drift.
+- `node tool/design/check_screen_contracts.mjs --check` still fails on inherited
+  missing-symbol drift for Calendar, Saved Events, host create/edit footers,
+  Host settings adapter ownership, Event edit footer, and Reviews History.

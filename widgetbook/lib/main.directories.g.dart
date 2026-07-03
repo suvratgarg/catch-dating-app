@@ -435,16 +435,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubHostAvatar',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Host avatar states',
-                builder: _widgetbook_workspace_clubs_club_detail_use_cases
-                    .clubHostAvatarStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'ClubHostIdentityLine',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -5090,16 +5080,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'EventFocusPageIndicator',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Page indicator states',
-                builder: _widgetbook_workspace_dashboard_dashboard_use_cases
-                    .dashboardEventFocusPageIndicatorReviewStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'EventFocusRail',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -7130,17 +7110,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
                             .eventSuccessStrictManualQaSideBySide,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'ManualQaToggleRow',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'ManualQaToggleRow',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictManualQaToggleRow,
                   ),
                 ],
               ),

@@ -5100,7 +5100,7 @@
       "rationale": "Name-family review (batch 2): ClubHostAvatar is a pure 1:1 pass-through over CatchPersonAvatar (only adds a raw size-32 default) with 4 call sites \u2014 absorb (WO-023). HostAvatar keeps: distinct event-detail identity treatment (activity accent->deep gradient fallback + CatchGradedImage), a different visual contract from the initials avatar.",
       "decidedBy": "claude",
       "date": "2026-07-04",
-      "status": "work-order WO-023"
+      "status": "executed-WO-023"
     },
     {
       "clusterId": "n173-page-indicator",
@@ -5118,7 +5118,7 @@
       "rationale": "Name-family review (batch 2): EventFocusPageIndicator is an R2 wrapper (Center + CatchPageDots + semanticLabel) with one call site \u2014 inline (WO-023). HostEventToolsPageIndicator keeps: deliberate 'N of M + progress bar' treatment that scales to long host rails where dots do not (concept, not drift). D1: its raw minHeight: 6 goes to WO-023.",
       "decidedBy": "claude",
       "date": "2026-07-04",
-      "status": "work-order WO-023"
+      "status": "executed-WO-023"
     },
     {
       "clusterId": "n205-toggle-row",
@@ -5136,7 +5136,7 @@
       "rationale": "Name-family review (batch 2): ManualQaToggleRow is a 1:1 pass-through over CatchField.toggle with 2 call sites \u2014 inline (WO-023). ModuleToggleRow keeps: rich selected-surface module toggle.",
       "decidedBy": "claude",
       "date": "2026-07-04",
-      "status": "work-order WO-023"
+      "status": "executed-WO-023"
     },
     {
       "clusterId": "n013-host-panel",
@@ -5389,10 +5389,10 @@
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review (batch 2): DashboardErrorScreen dispatches to CatchErrorScaffold with dashboard fallback copy (K4-scale branching). ForceUpdateCheckErrorScreen renders in the pre-shell bootstrap context (Theme.textTheme, no Catch chrome) \u2014 a deliberate constraint. D1: its raw maxWidth: 420 goes to WO-023 (no exact token; escalate with candidates).",
+      "rationale": "Name-family review (batch 2): DashboardErrorScreen dispatches to CatchErrorScaffold with dashboard fallback copy (K4-scale branching). ForceUpdateCheckErrorScreen renders in the pre-shell bootstrap context (Theme.textTheme, no Catch chrome) \u2014 a deliberate constraint. WO-023 D1 escalation recorded: raw maxWidth: 420 has no exact semantic token; nearest candidates are CatchLayout.frameworkErrorMaxWidth (460) and CatchLayout.maxContentWidth (600), so no code token was invented.",
       "decidedBy": "claude",
       "date": "2026-07-04",
-      "status": "recorded"
+      "status": "recorded-WO-023-escalation"
     },
     {
       "clusterId": "n215-roster-cell",
