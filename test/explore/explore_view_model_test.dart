@@ -165,6 +165,38 @@ void main() {
       expect(focused.icon, CatchIcons.locationOnRounded);
     });
 
+    test(
+      'ExploreCityPickerState exposes provider-free picker availability',
+      () {
+        final ready = ExploreCityPickerState.from(
+          selectedCity: _city('mumbai'),
+          cities: [_city('mumbai'), _city('delhi')],
+          cityListLoading: false,
+          cityListError: null,
+        );
+
+        expect(ready.selectedCity, _city('mumbai'));
+        expect(ready.cities.map((city) => city.label), ['Mumbai', 'Delhi NCR']);
+        expect(ready.enabled, true);
+
+        final loading = ExploreCityPickerState.from(
+          selectedCity: _city('mumbai'),
+          cities: const [],
+          cityListLoading: true,
+          cityListError: null,
+        );
+        expect(loading.enabled, false);
+
+        final failed = ExploreCityPickerState.from(
+          selectedCity: _city('mumbai'),
+          cities: [_city('mumbai')],
+          cityListLoading: false,
+          cityListError: Object(),
+        );
+        expect(failed.enabled, false);
+      },
+    );
+
     test('ExploreChromeState derives browse header labels', () {
       final state = ExploreChromeState.browse(
         query: 'pickleball dinner',

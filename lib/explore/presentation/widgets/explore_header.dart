@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/core/city_catalog.dart';
+import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -15,6 +17,8 @@ class ExploreSliverHeader extends CatchSliverHeader {
     String query = '',
     ValueChanged<String>? onQueryChanged,
     bool showSearchField = true,
+    ExploreCityPickerState? cityPickerState,
+    ValueChanged<CityData>? onCitySelected,
   }) : super(
          title: const SizedBox.shrink(),
          bottomHeight: _clubsBrowseHeaderHeight,
@@ -22,6 +26,8 @@ class ExploreSliverHeader extends CatchSliverHeader {
            query: query,
            onQueryChanged: onQueryChanged,
            showSearchAction: showSearchField,
+           cityPickerState: cityPickerState,
+           onCitySelected: onCitySelected,
          ),
        );
 }
@@ -36,12 +42,16 @@ class ExploreBrowseHeaderContent extends StatelessWidget {
     this.onQueryChanged,
     this.showSearchAction = true,
     this.backgroundColor,
+    this.cityPickerState,
+    this.onCitySelected,
   });
 
   final String query;
   final ValueChanged<String>? onQueryChanged;
   final bool showSearchAction;
   final Color? backgroundColor;
+  final ExploreCityPickerState? cityPickerState;
+  final ValueChanged<CityData>? onCitySelected;
 
   @override
   Widget build(BuildContext context) {
@@ -50,13 +60,21 @@ class ExploreBrowseHeaderContent extends StatelessWidget {
       showSearchAction: showSearchAction,
     );
     final t = CatchTokens.of(context);
+    final cityPicker = ExploreCityPicker(
+      state:
+          cityPickerState ??
+          ExploreCityPickerState.disabled(
+            selectedCity: defaultCityDataForMarket(),
+          ),
+      onSelected: onCitySelected,
+    );
 
     if (!chrome.showSearchAction) {
       return Padding(
         padding: CatchInsets.screenTitleBlock,
         child: Row(
           children: [
-            const ExploreCityPicker(),
+            cityPicker,
             gapW12,
             Expanded(
               child: Column(
@@ -78,7 +96,7 @@ class ExploreBrowseHeaderContent extends StatelessWidget {
     }
 
     return CatchTopBar(
-      leading: const ExploreCityPicker(),
+      leading: cityPicker,
       title: chrome.title,
       subtitle: chrome.subtitle,
       backgroundColor: backgroundColor ?? t.bg,
@@ -98,12 +116,16 @@ class ExploreDiscoveryCoverHeader extends StatefulWidget {
     super.key,
     this.query = '',
     this.featuredItem,
+    required this.cityPickerState,
+    required this.onCitySelected,
     this.onQueryChanged,
     this.onFeaturedEventSelected,
   });
 
   final String query;
   final ExploreEventItem? featuredItem;
+  final ExploreCityPickerState cityPickerState;
+  final ValueChanged<CityData>? onCitySelected;
   final ValueChanged<String>? onQueryChanged;
   final ValueChanged<ExploreEventItem>? onFeaturedEventSelected;
 
@@ -139,7 +161,10 @@ class _ExploreDiscoveryCoverHeaderState
             CatchSpacing.s4,
           ),
           child: CatchTopBar(
-            leading: const ExploreCityPicker(),
+            leading: ExploreCityPicker(
+              state: widget.cityPickerState,
+              onSelected: widget.onCitySelected,
+            ),
             title: chrome.title,
             subtitle: chrome.subtitle,
             backgroundColor: t.bg,

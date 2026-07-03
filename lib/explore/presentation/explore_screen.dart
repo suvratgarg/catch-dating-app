@@ -4,6 +4,8 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_membership_controller.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/data/city_repository.dart';
+import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/motion/catch_transitions.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
@@ -15,6 +17,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
+import 'package:catch_dating_app/explore/presentation/explore_city_controller.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
@@ -41,7 +44,16 @@ class ExploreScreen extends ConsumerWidget {
     final t = CatchTokens.of(context);
     final feedAsync = ref.watch(exploreFeedViewModelProvider);
     final viewModelAsync = ref.watch(exploreClubsViewModelProvider);
+    ref.watch(exploreCityControllerProvider);
     final city = ref.watch(selectedExploreCityProvider);
+    final cityListAsync = ref.watch(cityListProvider);
+    final cityOptions = cityListAsync.asData?.value ?? const <CityData>[];
+    final cityPickerState = ExploreCityPickerState.from(
+      selectedCity: city,
+      cities: cityOptions,
+      cityListLoading: cityListAsync.isLoading && cityOptions.isEmpty,
+      cityListError: cityListAsync.hasError ? cityListAsync.error : null,
+    );
     final query = ref.watch(exploreSearchQueryProvider).trim();
     final filters = ref.watch(exploreFiltersProvider);
     final sourceClubsAsync = ref.watch(exploreSourceClubsProvider);
@@ -244,6 +256,7 @@ class ExploreScreen extends ConsumerWidget {
               slivers: [
                 SliverToBoxAdapter(
                   child: ExploreChrome(
+                    cityPickerState: cityPickerState,
                     query: query,
                     featuredItem: featuredItem,
                     filters: filters,
@@ -252,6 +265,9 @@ class ExploreScreen extends ConsumerWidget {
                     onQueryChanged: (value) => ref
                         .read(exploreSearchQueryProvider.notifier)
                         .setQuery(value),
+                    onCitySelected: (selectedCity) => ref
+                        .read(selectedExploreCityProvider.notifier)
+                        .setCity(selectedCity),
                     onFeaturedEventSelected: openFeaturedEvent,
                     onTimeFilterSelected: (filter) => ref
                         .read(exploreFiltersProvider.notifier)
@@ -304,12 +320,14 @@ class ExploreScreen extends ConsumerWidget {
 class ExploreChrome extends StatelessWidget {
   const ExploreChrome({
     super.key,
+    required this.cityPickerState,
     required this.query,
     required this.featuredItem,
     required this.filters,
     required this.filterRailState,
     required this.filterSheetState,
     required this.onQueryChanged,
+    required this.onCitySelected,
     required this.onFeaturedEventSelected,
     required this.onTimeFilterSelected,
     required this.onDistanceFilterSelected,
@@ -320,12 +338,14 @@ class ExploreChrome extends StatelessWidget {
     required this.onClearFilters,
   });
 
+  final ExploreCityPickerState cityPickerState;
   final String query;
   final ExploreEventItem? featuredItem;
   final ExploreFilterSelection filters;
   final ExploreFilterRailState filterRailState;
   final ExploreFilterSheetState filterSheetState;
   final ValueChanged<String> onQueryChanged;
+  final ValueChanged<CityData> onCitySelected;
   final ValueChanged<ExploreEventItem> onFeaturedEventSelected;
   final ValueChanged<ExploreTimeFilter> onTimeFilterSelected;
   final ValueChanged<ExploreDistanceFilter> onDistanceFilterSelected;
@@ -343,6 +363,8 @@ class ExploreChrome extends StatelessWidget {
         ExploreDiscoveryCoverHeader(
           query: query,
           featuredItem: featuredItem,
+          cityPickerState: cityPickerState,
+          onCitySelected: onCitySelected,
           onQueryChanged: onQueryChanged,
           onFeaturedEventSelected: onFeaturedEventSelected,
         ),

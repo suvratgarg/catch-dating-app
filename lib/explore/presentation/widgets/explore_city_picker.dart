@@ -1,78 +1,61 @@
-import 'package:catch_dating_app/core/data/city_repository.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
-import 'package:catch_dating_app/explore/presentation/explore_city_controller.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
-import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum ExploreCityPickerPresentation { icon, scopeLabel }
 
-class ExploreCityPicker extends ConsumerStatefulWidget {
+class ExploreCityPicker extends StatefulWidget {
   const ExploreCityPicker({
     super.key,
+    required this.state,
+    required this.onSelected,
     this.presentation = ExploreCityPickerPresentation.icon,
     this.foregroundColor,
   });
 
+  final ExploreCityPickerState state;
+  final ValueChanged<CityData>? onSelected;
   final ExploreCityPickerPresentation presentation;
   final Color? foregroundColor;
 
   @override
-  ConsumerState<ExploreCityPicker> createState() => _ExploreCityPickerState();
+  State<ExploreCityPicker> createState() => _ExploreCityPickerState();
 }
 
-class _ExploreCityPickerState extends ConsumerState<ExploreCityPicker> {
+class _ExploreCityPickerState extends State<ExploreCityPicker> {
   bool _isSheetOpen = false;
 
   @override
   Widget build(BuildContext context) {
-    ref.watch(exploreCityControllerProvider);
-    final selectedCity = ref.watch(selectedExploreCityProvider);
-    final citiesAsync = ref.watch(cityListProvider);
-
-    return citiesAsync.when(
-      data: (cities) => CityTrigger(
-        city: selectedCity,
-        focused: _isSheetOpen,
-        presentation: widget.presentation,
-        foregroundColor: widget.foregroundColor,
-        onTap: cities.isEmpty ? null : () => _showCitySheet(context, cities),
-      ),
-      loading: () => _disabledTrigger(selectedCity),
-      error: (_, _) => _disabledTrigger(selectedCity),
-    );
-  }
-
-  Widget _disabledTrigger(CityData city) {
+    final enabled = widget.state.enabled && widget.onSelected != null;
     return CityTrigger(
-      city: city,
-      enabled: false,
-      focused: false,
+      city: widget.state.selectedCity,
+      enabled: enabled,
+      focused: _isSheetOpen,
       presentation: widget.presentation,
       foregroundColor: widget.foregroundColor,
+      onTap: enabled ? () => _showCitySheet(context) : null,
     );
   }
 
-  Future<void> _showCitySheet(
-    BuildContext context,
-    List<CityData> cities,
-  ) async {
+  Future<void> _showCitySheet(BuildContext context) async {
+    final onSelected = widget.onSelected;
+    if (onSelected == null || widget.state.cities.isEmpty) return;
     setState(() => _isSheetOpen = true);
     await showModalBottomSheet<void>(
       context: context,
       useSafeArea: true,
       backgroundColor: Colors.transparent,
       builder: (sheetContext) => ExploreCityPickerSheet(
-        cities: cities,
-        selectedCity: ref.read(selectedExploreCityProvider),
+        cities: widget.state.cities,
+        selectedCity: widget.state.selectedCity,
         onSelected: (city) {
-          ref.read(selectedExploreCityProvider.notifier).setCity(city);
+          onSelected(city);
           Navigator.of(sheetContext).pop();
         },
       ),

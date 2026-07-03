@@ -94,6 +94,20 @@ const _testCities = [
 final _emptyExploreFeedOverride = exploreFeedViewModelProvider
     .overrideWithValue(const AsyncData(ExploreFeedViewModel(items: [])));
 
+ExploreCityPickerState _testCityPickerState({
+  CityData? selectedCity,
+  Iterable<CityData> cities = _testCities,
+  bool cityListLoading = false,
+  Object? cityListError,
+}) {
+  return ExploreCityPickerState.from(
+    selectedCity: selectedCity ?? _testCities.first,
+    cities: cities,
+    cityListLoading: cityListLoading,
+    cityListError: cityListError,
+  );
+}
+
 class _NoDeviceLocation extends DeviceLocation {
   @override
   Future<LocationCoordinate?> build() async => null;
@@ -231,6 +245,8 @@ ExploreDiscoveryCoverHeader _exploreCoverHeader({
   return ExploreDiscoveryCoverHeader(
     query: query,
     featuredItem: featuredItem,
+    cityPickerState: _testCityPickerState(),
+    onCitySelected: (_) {},
     onQueryChanged: onQueryChanged,
     onFeaturedEventSelected: onFeaturedEventSelected,
   );
@@ -652,9 +668,11 @@ void main() {
           ],
           child: MaterialApp(
             theme: AppTheme.light,
-            home: const MediaQuery(
-              data: MediaQueryData(padding: EdgeInsets.only(top: topInset)),
-              child: Scaffold(body: ExploreDiscoveryCoverHeader()),
+            home: MediaQuery(
+              data: const MediaQueryData(
+                padding: EdgeInsets.only(top: topInset),
+              ),
+              child: Scaffold(body: _exploreCoverHeader()),
             ),
           ),
         ),
@@ -679,7 +697,7 @@ void main() {
           ],
           child: MaterialApp(
             theme: AppTheme.light,
-            home: const Scaffold(body: ExploreDiscoveryCoverHeader()),
+            home: Scaffold(body: _exploreCoverHeader()),
           ),
         ),
       );
@@ -1375,41 +1393,28 @@ void main() {
     testWidgets('ExploreCityPicker renders a circular city trigger', (
       tester,
     ) async {
-      final container = ProviderContainer(
-        retry: (_, _) => null,
-        overrides: [
-          cityListProvider.overrideWith(
-            (ref) async => const [
-              CityData(
-                name: 'hyderabad',
-                label: 'Hyderabad',
-                latitude: 17.3850,
-                longitude: 78.4867,
-              ),
-            ],
-          ),
-          deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
-          uidProvider.overrideWith((ref) => Stream.value(null)),
-        ],
+      const hyderabad = CityData(
+        name: 'hyderabad',
+        label: 'Hyderabad',
+        latitude: 17.3850,
+        longitude: 78.4867,
       );
-      addTearDown(container.dispose);
-      container
-          .read(selectedExploreCityProvider.notifier)
-          .setCity(
-            const CityData(
-              name: 'hyderabad',
-              label: 'Hyderabad',
-              latitude: 17.3850,
-              longitude: 78.4867,
-            ),
-          );
 
       await tester.pumpWidget(
-        UncontrolledProviderScope(
-          container: container,
-          child: MaterialApp(
-            theme: AppTheme.light,
-            home: const Scaffold(body: Center(child: ExploreCityPicker())),
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: Center(
+              child: ExploreCityPicker(
+                state: ExploreCityPickerState.from(
+                  selectedCity: hyderabad,
+                  cities: const [hyderabad],
+                  cityListLoading: false,
+                  cityListError: null,
+                ),
+                onSelected: (_) {},
+              ),
+            ),
           ),
         ),
       );
@@ -1426,14 +1431,7 @@ void main() {
     testWidgets(
       'ExploreCityPicker changes city and clears the Explore search query',
       (tester) async {
-        final container = ProviderContainer(
-          retry: (_, _) => null,
-          overrides: [
-            cityListProvider.overrideWith((ref) async => _testCities),
-            deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
-            uidProvider.overrideWith((ref) => Stream.value(null)),
-          ],
-        );
+        final container = ProviderContainer(retry: (_, _) => null);
         addTearDown(container.dispose);
         container.read(exploreSearchQueryProvider.notifier).setQuery('asha');
 
@@ -1442,7 +1440,16 @@ void main() {
             container: container,
             child: MaterialApp(
               theme: AppTheme.light,
-              home: const Scaffold(body: Center(child: ExploreCityPicker())),
+              home: Scaffold(
+                body: Center(
+                  child: ExploreCityPicker(
+                    state: _testCityPickerState(),
+                    onSelected: (city) => container
+                        .read(selectedExploreCityProvider.notifier)
+                        .setCity(city),
+                  ),
+                ),
+              ),
             ),
           ),
         );

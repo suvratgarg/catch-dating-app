@@ -57,6 +57,20 @@ const _delhi = CityData(
   longitude: 77.1025,
 );
 
+ExploreCityPickerState _cityPickerState({
+  CityData? selectedCity,
+  Iterable<CityData> cities = const [_mumbai, _delhi],
+  bool cityListLoading = false,
+  Object? cityListError,
+}) {
+  return ExploreCityPickerState.from(
+    selectedCity: selectedCity ?? _mumbai,
+    cities: cities,
+    cityListLoading: cityListLoading,
+    cityListError: cityListError,
+  );
+}
+
 final _viewer = UserProfile(
   uid: _viewerUid,
   name: 'Neha Kapoor',
@@ -224,11 +238,7 @@ Widget exploreScreenStates(BuildContext context) {
         label: 'discovery feed',
         description:
             'Default browse chrome with mixed event/club discovery and map pill count.',
-        child: _DeviceFrame(
-          child: _ExploreScope(
-            child: const ExploreScreen(enableEventMapNetworkTiles: false),
-          ),
-        ),
+        child: _DeviceFrame(child: _ExploreScope(child: const ExploreScreen())),
       ),
       _StateCard(
         label: 'loading with sticky chrome',
@@ -237,7 +247,7 @@ Widget exploreScreenStates(BuildContext context) {
           child: _ExploreScope(
             viewModel: const AsyncLoading<ExploreViewModel>(),
             feed: const AsyncLoading<ExploreFeedViewModel>(),
-            child: const ExploreScreen(enableEventMapNetworkTiles: false),
+            child: const ExploreScreen(),
           ),
         ),
       ),
@@ -254,7 +264,7 @@ Widget exploreScreenStates(BuildContext context) {
               StateError('Widgetbook club source failed'),
               StackTrace.empty,
             ),
-            child: const ExploreScreen(enableEventMapNetworkTiles: false),
+            child: const ExploreScreen(),
           ),
         ),
       ),
@@ -272,17 +282,14 @@ Widget exploreScreenStates(BuildContext context) {
               ExploreViewModel(joinedClubs: [], allClubs: []),
             ),
             feed: const AsyncData(ExploreFeedViewModel(items: [])),
-            child: const ExploreScreen(enableEventMapNetworkTiles: false),
+            child: const ExploreScreen(),
           ),
         ),
       ),
       _StateCard(
         label: 'anonymous guest',
         child: _DeviceFrame(
-          child: _ExploreScope(
-            uid: null,
-            child: const ExploreScreen(enableEventMapNetworkTiles: false),
-          ),
+          child: _ExploreScope(uid: null, child: const ExploreScreen()),
         ),
       ),
       _StateCard(
@@ -291,9 +298,7 @@ Widget exploreScreenStates(BuildContext context) {
           textScaler: const TextScaler.linear(2),
           child: _DeviceFrame(
             height: 760,
-            child: _ExploreScope(
-              child: const ExploreScreen(enableEventMapNetworkTiles: false),
-            ),
+            child: _ExploreScope(child: const ExploreScreen()),
           ),
         ),
       ),
@@ -302,9 +307,7 @@ Widget exploreScreenStates(BuildContext context) {
         child: _MediaOverride(
           disableAnimations: true,
           child: _DeviceFrame(
-            child: _ExploreScope(
-              child: const ExploreScreen(enableEventMapNetworkTiles: false),
-            ),
+            child: _ExploreScope(child: const ExploreScreen()),
           ),
         ),
       ),
@@ -494,21 +497,19 @@ Widget exploreCityPickerStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'ready',
-        child: _ExploreScope(child: const Center(child: ExploreCityPicker())),
+        child: Center(
+          child: ExploreCityPicker(
+            state: _cityPickerState(),
+            onSelected: _noopCity,
+          ),
+        ),
       ),
       _StateCard(
         label: 'city source loading',
-        child: _ExploreScope(
-          child: ProviderScope(
-            overrides: [
-              cityListProvider.overrideWith(
-                (ref) => Future<List<CityData>>.delayed(
-                  const Duration(minutes: 1),
-                  () => const [_mumbai],
-                ),
-              ),
-            ],
-            child: const Center(child: ExploreCityPicker()),
+        child: Center(
+          child: ExploreCityPicker(
+            state: _cityPickerState(cities: const [], cityListLoading: true),
+            onSelected: _noopCity,
           ),
         ),
       ),
@@ -625,7 +626,12 @@ Widget exploreDiscoveryCoverHeaderStates(BuildContext context) {
         label: 'featured event',
         child: _DeviceFrame(
           height: 360,
-          child: _ExploreScope(child: const ExploreDiscoveryCoverHeader()),
+          child: _ExploreScope(
+            child: ExploreDiscoveryCoverHeader(
+              cityPickerState: _cityPickerState(),
+              onCitySelected: _noopCity,
+            ),
+          ),
         ),
       ),
       _StateCard(
@@ -634,7 +640,10 @@ Widget exploreDiscoveryCoverHeaderStates(BuildContext context) {
           height: 180,
           child: _ExploreScope(
             feed: const AsyncData(ExploreFeedViewModel(items: [])),
-            child: const ExploreDiscoveryCoverHeader(),
+            child: ExploreDiscoveryCoverHeader(
+              cityPickerState: _cityPickerState(),
+              onCitySelected: _noopCity,
+            ),
           ),
         ),
       ),
@@ -2314,7 +2323,7 @@ class _ExploreScope extends StatelessWidget {
         cityListProvider.overrideWith((ref) async => const [_mumbai, _delhi]),
         deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
         exploreSourceClubsProvider.overrideWithValue(effectiveSourceClubs),
-        exploreViewModelProvider.overrideWithValue(effectiveViewModel),
+        exploreClubsViewModelProvider.overrideWithValue(effectiveViewModel),
         exploreFeedViewModelProvider.overrideWithValue(effectiveFeed),
       ],
       child: _SeedExploreState(
@@ -2397,9 +2406,20 @@ class _ExploreEventsSliverPreview extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final filters = ref.watch(exploreFiltersProvider);
     return CustomScrollView(
       slivers: buildExploreEventsSlivers(
-        ref,
+        ref.watch(exploreFeedViewModelProvider),
+        filters: filters,
+        searchQuery: ref.watch(exploreSearchQueryProvider).trim(),
+        onRetry: () => ref.invalidate(exploreFeedViewModelProvider),
+        onClearSearch: () =>
+            ref.read(exploreSearchQueryProvider.notifier).clear(),
+        onClearFilters: () => ref.read(exploreFiltersProvider.notifier).clear(),
+        onSetTimeFilter: (filter) =>
+            ref.read(exploreFiltersProvider.notifier).setTimeFilter(filter),
+        onEventSelected: (_, _) {},
+        onExternalEventOpened: (_) {},
         pinnedDayHeaders: false,
         candidateClubs: _clubs,
         joinedClubIds: _joinedClubIds,
@@ -2797,6 +2817,8 @@ Widget _secondaryAction(String label) {
 }
 
 void _noop() {}
+
+void _noopCity(CityData _) {}
 
 void _ignoreActivityKind(ActivityKind _) {}
 

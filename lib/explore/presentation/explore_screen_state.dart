@@ -79,6 +79,41 @@ class ExploreCityTriggerState {
   final IconData icon;
 }
 
+class ExploreCityPickerState {
+  const ExploreCityPickerState._({
+    required this.selectedCity,
+    required this.cities,
+    required this.enabled,
+  });
+
+  factory ExploreCityPickerState.from({
+    required CityData selectedCity,
+    required Iterable<CityData> cities,
+    required bool cityListLoading,
+    required Object? cityListError,
+  }) {
+    final cityOptions = List<CityData>.unmodifiable(cities);
+    return ExploreCityPickerState._(
+      selectedCity: selectedCity,
+      cities: cityOptions,
+      enabled:
+          !cityListLoading && cityListError == null && cityOptions.isNotEmpty,
+    );
+  }
+
+  factory ExploreCityPickerState.disabled({required CityData selectedCity}) {
+    return ExploreCityPickerState._(
+      selectedCity: selectedCity,
+      cities: const [],
+      enabled: false,
+    );
+  }
+
+  final CityData selectedCity;
+  final List<CityData> cities;
+  final bool enabled;
+}
+
 class ExploreChromeState {
   const ExploreChromeState({
     required this.title,
