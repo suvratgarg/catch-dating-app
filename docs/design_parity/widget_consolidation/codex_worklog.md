@@ -1081,6 +1081,13 @@ mismatches and five no-exact screen-scope/API questions. No code was changed in
 this ledger-only batch. Ranked-pair-only candidates still remain open after
 this targeted triage.
 
+Progress by Codex: triaged ranked-pair-only candidates 101-130 by member set.
+Kept one composition-wrapper pair under K1, seven domain-fork pairs under K2,
+three shared-internal pairs under K3, and nine small/state/skeleton pairs under
+K4. Escalated four K5 concept mismatches and six no-exact API/screen-state
+questions. No code was changed in this ledger-only batch. Ranked-pair-only
+candidates still remain open after this targeted triage.
+
 ## WO-016 — Review answers from the WO-001..014 audit
 
 1. **`CatchSkeletonRows.divided` flag** (answers the WO-006 skip): add
@@ -1311,6 +1318,40 @@ listed in the receipt.
   `HostEventManageRouteScreen` — nearest rule: no exact K/R match, blocked
   because host route-level screens are architecture decisions, not widget-shape
   merges.
+- WO-015 ranked-pair: `ExploreListEmptyState`, `ExploreScreenEmptyState` —
+  nearest rule: no exact K/R match, blocked because the list variant owns
+  provider-backed clear actions while the screen variant consumes route-level
+  empty state and callbacks.
+- WO-015 ranked-pair: `ProfileMultiEnumEntry`, `ProfileSingleEnumEntry` —
+  nearest rule: no exact K/R match, blocked because single-choice and
+  multi-choice profile enum entries have different selection, empty-affordance,
+  and patching contracts.
+- WO-015 ranked-pair: `HostActivitySummary`, `HostFunnelSummary` — nearest
+  rule: K5 concept mismatch, blocked because setup activity summaries and
+  post-event funnel summaries carry different Event Success concepts.
+- WO-015 ranked-pair: `HostClubsScaffold`, `HostEventsScaffold` — nearest
+  rule: no exact K/R match, blocked because these host screen scaffolds own
+  separate stateful tab/selection flows and need host operations architecture
+  review.
+- WO-015 ranked-pair: `CelebrationIcon`, `PaperCelebrationIcon` — nearest
+  rule: K5 concept mismatch, blocked because immersive and paper celebration
+  medallions use different color, extent, and icon treatments.
+- WO-015 ranked-pair: `EventRecapLoadingBody`,
+  `EventSuccessCompanionLoadingBody` — nearest rule: no exact K/R match,
+  blocked because these are screen-level loading bodies with different route
+  ownership.
+- WO-015 ranked-pair: `ClubShareCard`, `EventShareCard` — nearest rule: no
+  exact K/R match, blocked because a shared rich share-card contract needs
+  review-session API design for art system, metadata, and CTA differences.
+- WO-015 ranked-pair: `HostClubEditorStateView`,
+  `HostCreateEventRouteStateView` — nearest rule: no exact K/R match, blocked
+  because host route/editor state dispatchers are architecture decisions.
+- WO-015 ranked-pair: `HostCapacityTile`, `HostOrganizerMetricTile` — nearest
+  rule: K5 concept mismatch, blocked because host capacity tiles and organizer
+  metric rail cells use different typography, detail, and surface contracts.
+- WO-015 ranked-pair: `PaperCelebrationDetailRow`, `PaperExpectationRow` —
+  nearest rule: K5 concept mismatch, blocked because paper celebration
+  label/value facts and companion expectation rows are different row concepts.
 
 ## Completed
 
