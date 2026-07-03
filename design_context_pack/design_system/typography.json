@@ -36,7 +36,7 @@
       "size": 44.0,
       "weight": 600,
       "lineHeight": 0.98,
-      "tracking": -0.7,
+      "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
         "light": "#16140F",
@@ -59,7 +59,7 @@
       "size": 32.0,
       "weight": 600,
       "lineHeight": 1.04,
-      "tracking": -0.35,
+      "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
         "light": "#16140F",
@@ -82,7 +82,7 @@
       "size": 26.0,
       "weight": 600,
       "lineHeight": 1.1,
-      "tracking": -0.16,
+      "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
         "light": "#16140F",
@@ -105,7 +105,7 @@
       "size": 20.0,
       "weight": 700,
       "lineHeight": 1.16,
-      "tracking": -0.1,
+      "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
         "light": "#16140F",
@@ -307,7 +307,7 @@
       "size": 36.0,
       "weight": 700,
       "lineHeight": 1.0,
-      "tracking": -1.0,
+      "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
         "light": "#16140F",
@@ -330,7 +330,7 @@
       "size": 20.0,
       "weight": 800,
       "lineHeight": 1.15,
-      "tracking": -0.2,
+      "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
         "light": "#16140F",
@@ -353,7 +353,7 @@
       "size": 16.5,
       "weight": 600,
       "lineHeight": 1.25,
-      "tracking": -0.2,
+      "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
         "light": "#16140F",
@@ -376,7 +376,7 @@
       "size": 15.0,
       "weight": 700,
       "lineHeight": 1.2,
-      "tracking": -0.1,
+      "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
         "light": "#16140F",
@@ -790,7 +790,7 @@
       "size": 11.0,
       "weight": 700,
       "lineHeight": 1.15,
-      "tracking": 1.76,
+      "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
         "light": "#544F47",
@@ -806,7 +806,7 @@
       "size": 12.0,
       "weight": 700,
       "lineHeight": 1.1,
-      "tracking": 2.16,
+      "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
         "light": "#16140F",
@@ -822,7 +822,7 @@
       "size": 11.0,
       "weight": 600,
       "lineHeight": 1.15,
-      "tracking": 1.43,
+      "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
         "light": "#544F47",
@@ -838,7 +838,7 @@
       "size": 10.0,
       "weight": 700,
       "lineHeight": 1.15,
-      "tracking": 1.3,
+      "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
         "light": "#544F47",
@@ -918,7 +918,7 @@
       "size": 9.0,
       "weight": 700,
       "lineHeight": 1.1,
-      "tracking": 0.72,
+      "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
         "light": "#16140F",
