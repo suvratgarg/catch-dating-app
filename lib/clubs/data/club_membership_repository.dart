@@ -73,6 +73,8 @@ class ClubMembershipRepository {
   );
 }
 
+// keepalive: membership repository is a shared Firestore facade for club
+// access checks across host and public routes.
 @Riverpod(keepAlive: true)
 ClubMembershipRepository clubMembershipRepository(Ref ref) =>
     ClubMembershipRepository(ref.watch(firebaseFirestoreProvider));

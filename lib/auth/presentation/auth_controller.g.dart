@@ -62,6 +62,7 @@ String _$authInitialCountryDialCodeHash() =>
 /// This provider is keepAlive so the OTP step survives route rebuilds during
 /// authentication. Call [reset] or invalidate the provider when the auth flow is
 /// cancelled, completed, or the user signs out.
+// keepalive: OTP state must survive auth route rebuilds until explicit reset.
 
 @ProviderFor(AuthController)
 final authControllerProvider = AuthControllerProvider._();
@@ -76,6 +77,7 @@ final authControllerProvider = AuthControllerProvider._();
 /// This provider is keepAlive so the OTP step survives route rebuilds during
 /// authentication. Call [reset] or invalidate the provider when the auth flow is
 /// cancelled, completed, or the user signs out.
+// keepalive: OTP state must survive auth route rebuilds until explicit reset.
 final class AuthControllerProvider
     extends $NotifierProvider<AuthController, AuthScreenState> {
   /// **Pattern B: Flow controller with freezed state + Mutations**
@@ -88,6 +90,7 @@ final class AuthControllerProvider
   /// This provider is keepAlive so the OTP step survives route rebuilds during
   /// authentication. Call [reset] or invalidate the provider when the auth flow is
   /// cancelled, completed, or the user signs out.
+  // keepalive: OTP state must survive auth route rebuilds until explicit reset.
   AuthControllerProvider._()
     : super(
         from: null,
@@ -127,6 +130,7 @@ String _$authControllerHash() => r'80128f18d842a146b3b201be4272cfa388e883fd';
 /// This provider is keepAlive so the OTP step survives route rebuilds during
 /// authentication. Call [reset] or invalidate the provider when the auth flow is
 /// cancelled, completed, or the user signs out.
+// keepalive: OTP state must survive auth route rebuilds until explicit reset.
 
 abstract class _$AuthController extends $Notifier<AuthScreenState> {
   AuthScreenState build();

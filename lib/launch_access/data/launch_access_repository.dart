@@ -125,6 +125,8 @@ class LaunchAccessRepository {
   }
 }
 
+// keepalive: launch access repository is a shared Firestore facade for the
+// pre-launch request flow.
 @Riverpod(keepAlive: true)
 LaunchAccessRepository launchAccessRepository(Ref ref) =>
     LaunchAccessRepository(ref.watch(firebaseFirestoreProvider));

@@ -58,6 +58,8 @@ abstract class OnboardingData with _$OnboardingData {
 ///
 /// **When to use this pattern:** Multi-step flows where state must survive
 /// navigation and a freezed data class captures the full form state.
+// keepalive: onboarding state must survive step navigation until completion or
+// explicit invalidation.
 @Riverpod(keepAlive: true)
 class OnboardingController extends _$OnboardingController {
   static const welcomeStep = OnboardingStep.welcome;

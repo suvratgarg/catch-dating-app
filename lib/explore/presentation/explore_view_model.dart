@@ -232,6 +232,8 @@ abstract class ExploreViewModel with _$ExploreViewModel {
 /// Holds the currently selected city for club browsing. Uses an
 /// internal `_userSelected` flag so GPS auto-detection never overrides a
 /// manual user pick. [keepAlive] is true so the city survives tab switches.
+// keepalive: selected city is user browse-session state shared by Explore list,
+// map, and city controllers across tab switches.
 @Riverpod(keepAlive: true)
 class SelectedExploreCity extends _$SelectedExploreCity {
   bool _userSelected = false;
@@ -267,6 +269,8 @@ class SelectedExploreCity extends _$SelectedExploreCity {
   }
 }
 
+// keepalive: user-selected flag protects manual city choice from later
+// auto-detection while browsing.
 @Riverpod(keepAlive: true)
 class SelectedExploreCityWasUserSelected
     extends _$SelectedExploreCityWasUserSelected {
@@ -280,6 +284,8 @@ class SelectedExploreCityWasUserSelected
 ///
 /// Holds the current search query text. [keepAlive] ensures the query
 /// survives tab switches so the user's search isn't lost while browsing.
+// keepalive: query text is browse-session state and should survive Explore
+// route/chrome rebuilds.
 @Riverpod(keepAlive: true)
 class ExploreSearchQuery extends _$ExploreSearchQuery {
   @override
@@ -320,6 +326,8 @@ Future<String> debouncedExploreSearchQuery(Ref ref) async {
   return query;
 }
 
+// keepalive: filters are browse-session state shared by Explore list, map, and
+// feed view models.
 @Riverpod(keepAlive: true)
 class ExploreFilters extends _$ExploreFilters {
   @override

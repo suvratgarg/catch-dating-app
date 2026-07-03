@@ -9,16 +9,22 @@ part of 'error_logger.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 /// A no-op default that must be overridden in [main] with the real instance.
+// keepalive: error logger is app infrastructure and must remain available for
+// providers even when no screen watches it.
 
 @ProviderFor(errorLogger)
 final errorLoggerProvider = ErrorLoggerProvider._();
 
 /// A no-op default that must be overridden in [main] with the real instance.
+// keepalive: error logger is app infrastructure and must remain available for
+// providers even when no screen watches it.
 
 final class ErrorLoggerProvider
     extends $FunctionalProvider<ErrorLogger, ErrorLogger, ErrorLogger>
     with $Provider<ErrorLogger> {
   /// A no-op default that must be overridden in [main] with the real instance.
+  // keepalive: error logger is app infrastructure and must remain available for
+  // providers even when no screen watches it.
   ErrorLoggerProvider._()
     : super(
         from: null,

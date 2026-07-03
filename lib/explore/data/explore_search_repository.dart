@@ -6,6 +6,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'explore_search_repository.g.dart';
 
+// keepalive: search repository is a shared Functions facade for Explore query
+// surfaces.
 @Riverpod(keepAlive: true)
 ExploreSearchRepository exploreSearchRepository(Ref ref) =>
     FirebaseExploreSearchRepository(ref.watch(firebaseFunctionsProvider));

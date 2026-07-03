@@ -54,6 +54,7 @@ class ChatThreadPreview {
   String? get latestEventId => eventIds.isEmpty ? null : eventIds.last;
 }
 
+// keepalive: preserve inbox search text across tab switches and route re-entry.
 @Riverpod(keepAlive: true)
 class ChatSearchQuery extends _$ChatSearchQuery {
   @override

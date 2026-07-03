@@ -7,7 +7,7 @@ import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/data/swipe_candidate_repository.dart';
 import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
-import 'package:catch_dating_app/swipes/presentation/swipe_queue_notifier.dart';
+import 'package:catch_dating_app/swipes/presentation/swipe_queue_controller.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';

@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'swipe_queue_notifier.dart';
+part of 'swipe_queue_controller.dart';
 
 // **************************************************************************
 // RiverpodGenerator

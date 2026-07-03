@@ -6,6 +6,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'launch_access_controller.g.dart';
 
+// keepalive: launch access controller preserves request form state through the
+// pre-launch flow until submission/reset.
 @Riverpod(keepAlive: true)
 class LaunchAccessController extends _$LaunchAccessController {
   static final submitMutation = Mutation<void>();

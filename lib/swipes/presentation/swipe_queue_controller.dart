@@ -12,7 +12,7 @@ import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart'
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'swipe_queue_notifier.g.dart';
+part 'swipe_queue_controller.g.dart';
 
 const _swipeQueueLoadContext = BackendErrorContext(
   service: BackendService.firestore,
@@ -20,6 +20,8 @@ const _swipeQueueLoadContext = BackendErrorContext(
   resource: 'swipe_candidates',
 );
 
+// keepalive: swipe load timeout is stable queue policy used by the async
+// controller and test overrides.
 @visibleForTesting
 @Riverpod(keepAlive: true)
 Duration swipeQueueLoadTimeout(Ref ref) => const Duration(seconds: 12);
@@ -108,7 +110,9 @@ class SwipeQueueNotifier extends _$SwipeQueueNotifier {
     _recordingSwipe = true;
     try {
       await withBackendErrorContext(
-        () => ref.read(swipeRepositoryProvider).recordSwipe(
+        () => ref
+            .read(swipeRepositoryProvider)
+            .recordSwipe(
               swipe: Swipe(
                 swiperId: currentUserId,
                 targetId: target.uid,

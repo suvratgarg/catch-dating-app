@@ -10,6 +10,8 @@ const _calendarChannel = MethodChannel('catch/calendar');
 typedef NativeCalendarLauncher =
     Future<bool> Function(CalendarEventPayload event);
 
+// keepalive: native calendar launcher is a platform facade shared by event
+// action controllers.
 @Riverpod(keepAlive: true)
 NativeCalendarLauncher nativeCalendarLauncher(Ref ref) {
   return (event) async {
@@ -27,6 +29,8 @@ NativeCalendarLauncher nativeCalendarLauncher(Ref ref) {
   };
 }
 
+// keepalive: calendar controller centralizes event calendar side effects across
+// event, dashboard, and payment surfaces.
 @Riverpod(keepAlive: true)
 EventCalendarController eventCalendarController(Ref ref) =>
     EventCalendarController(ref.watch(nativeCalendarLauncherProvider));

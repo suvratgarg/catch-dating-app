@@ -5,6 +5,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'location_service.g.dart';
 
+// keepalive: location initialization should run once per app session, not once
+// per route rebuild.
 @Riverpod(keepAlive: true)
 class LocationInitializer extends _$LocationInitializer {
   bool _collected = false;

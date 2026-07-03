@@ -14,6 +14,8 @@ part of 'launch_access_config_provider.dart';
 /// This provider is intentionally not wired into routing yet. When the router
 /// starts using it, the bundled default keeps the gate off unless Remote Config
 /// explicitly enables it.
+// keepalive: launch-access config is a global gate input and should not refetch
+// per route.
 
 @ProviderFor(launchAccessConfig)
 final launchAccessConfigProvider = LaunchAccessConfigProvider._();
@@ -24,6 +26,8 @@ final launchAccessConfigProvider = LaunchAccessConfigProvider._();
 /// This provider is intentionally not wired into routing yet. When the router
 /// starts using it, the bundled default keeps the gate off unless Remote Config
 /// explicitly enables it.
+// keepalive: launch-access config is a global gate input and should not refetch
+// per route.
 
 final class LaunchAccessConfigProvider
     extends
@@ -39,6 +43,8 @@ final class LaunchAccessConfigProvider
   /// This provider is intentionally not wired into routing yet. When the router
   /// starts using it, the bundled default keeps the gate off unless Remote Config
   /// explicitly enables it.
+  // keepalive: launch-access config is a global gate input and should not refetch
+  // per route.
   LaunchAccessConfigProvider._()
     : super(
         from: null,

@@ -18,7 +18,7 @@ import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:catch_dating_app/swipes/presentation/catches_event_screen_state.dart';
-import 'package:catch_dating_app/swipes/presentation/swipe_queue_notifier.dart';
+import 'package:catch_dating_app/swipes/presentation/swipe_queue_controller.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/catches_pass_button.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/swipe_empty_state.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_reaction_controls.dart';

@@ -52,6 +52,8 @@ final class FirebaseAnalyticsReporter implements AnalyticsReporter {
   }
 }
 
+// keepalive: analytics facade keeps user/session attribution stable across
+// navigation and background event emission.
 @Riverpod(keepAlive: true)
 AppAnalytics appAnalytics(Ref ref) => AppAnalytics();
 
