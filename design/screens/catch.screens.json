@@ -20664,7 +20664,10 @@
           "kind": "mutation",
           "status": "implemented",
           "source": "Successful save shows shared Catch snackbar feedback and keeps the editor route open.",
-          "nextAction": "Add focused success test and decide whether route should pop on save."
+          "tests": [
+            "test/hosts/host_operations_screen_test.dart"
+          ],
+          "nextAction": "Route-level success behavior is tested; compare snackbar placement against the canonical Host Profile reference once exported."
         },
         {
           "id": "status_variants",
@@ -20866,8 +20869,8 @@
         },
         {
           "id": "DS-HOST-PROFILE-003",
-          "status": "open",
-          "nextAction": "HostProfileForm, HostProfileFields, and HostProfileMissingState are source-backed and provider-free, with provider waves adapted through HostProfileEditState and create/save mutations handled by HostProfileController. Remaining work is any host-specific offline copy decision and reference-backed comparison."
+          "status": "closed",
+          "nextAction": "HostProfileForm, HostProfileFields, and HostProfileMissingState are source-backed and provider-free, provider waves adapt through HostProfileEditState, create/save mutations route through HostProfileController, and direct route save success/failure behavior is tested. Reference-backed comparison remains tracked by DS-HOST-PROFILE-001/004."
         },
         {
           "id": "DS-HOST-PROFILE-004",

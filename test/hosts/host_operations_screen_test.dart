@@ -1164,6 +1164,64 @@ void main() {
     expect(find.text('save failed'), findsOneWidget);
     expect(repository.savedUid, isNull);
   });
+
+  testWidgets('Host profile route saves and keeps the editor open', (
+    tester,
+  ) async {
+    final profile = HostProfile(
+      uid: _hostUid,
+      displayName: 'Asha Host',
+      roleTitle: 'Founder',
+      bio: 'Runs easy miles.',
+      status: HostProfileStatus.active,
+      createdAt: DateTime(2026),
+      updatedAt: DateTime(2026),
+    );
+    final repository = _FakeHostProfileRepository(profile: profile);
+
+    await _pumpHostScreen(
+      tester,
+      const HostProfileScreen(),
+      overrides: [
+        uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
+        watchHostProfileProvider(
+          _hostUid,
+        ).overrideWithValue(AsyncData<HostProfile?>(profile)),
+        hostProfileRepositoryProvider.overrideWith((ref) => repository),
+      ],
+    );
+
+    await tester.enterText(
+      find.descendant(
+        of: find.widgetWithText(CatchField, 'Display name'),
+        matching: find.byType(TextField),
+      ),
+      'Updated Host',
+    );
+    await tester.enterText(
+      find.descendant(
+        of: find.widgetWithText(CatchField, 'Role title'),
+        matching: find.byType(TextField),
+      ),
+      'Lead organizer',
+    );
+    await tester.enterText(
+      find.descendant(
+        of: find.widgetWithText(CatchField, 'Bio'),
+        matching: find.byType(TextField),
+      ),
+      'Curates social runs.',
+    );
+    await tester.tap(find.text('Save profile'));
+    await pumpFeatureUi(tester);
+
+    expect(repository.savedUid, _hostUid);
+    expect(repository.savedDisplayName, 'Updated Host');
+    expect(repository.savedRoleTitle, 'Lead organizer');
+    expect(repository.savedBio, 'Curates social runs.');
+    expect(find.byType(HostProfileScreen), findsOneWidget);
+    expect(find.text('Host profile saved.'), findsOneWidget);
+  });
 }
 
 List _hostClubOverrides({
