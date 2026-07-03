@@ -1,0 +1,8 @@
+{
+  "sessionId": "cs_test_123456789",
+  "paymentId": "payment_cubbon_social_run",
+  "amountMinor": 49900,
+  "currency": "INR",
+  "checkoutUrl": "https://checkout.stripe.com/c/pay/cs_test_123456789",
+  "provider": "stripe"
+}
