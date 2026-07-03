@@ -595,7 +595,7 @@
         "maxMismatchRatio": 0.18,
         "maxMeanDelta": 18
       },
-      "notes": "Canonical Claude Messaging thread reference for advisory comparison against match_chat_context light captures rendered on the design-phone device. 2026-06-25 non-host reference batch: above advisory threshold; mismatch 33.15%, meanDelta 52.85, maxDelta 240, masked 199692."
+      "notes": "Canonical Claude Messaging thread reference for advisory comparison against match_chat_context light captures rendered on the design-phone device. 2026-06-25 non-host reference batch: above advisory threshold; mismatch 33.15%, meanDelta 52.85, maxDelta 240, masked 199692. 2026-07-03 Match Chat fixture and reference-safe-area alignment moved the fresh comparison within threshold at mismatch 7.22%, meanDelta 8.50, maxDelta 240, masked 199692."
     },
     {
       "id": "screen.host.inbox.populated_queries",

@@ -5997,7 +5997,7 @@
           "id": "claude.match-chat",
           "kind": "claude",
           "status": "available",
-          "notes": "Messaging thread reference exported to design/reference_screens/screen.matches.chat/thread.png and registered for advisory comparison; additional empty/keyboard/share-card variants remain future work.",
+          "notes": "Messaging thread reference exported to design/reference_screens/screen.matches.chat/thread.png and registered for advisory comparison. The populated-thread capture now compares within threshold after fixture and reference-safe-area alignment. Messaging.dc.html also contains a New match (empty) source panel that still needs export/registration; keyboard, share-card, report/block dialog, and dynamic-time variants are not present in the current handoff.",
           "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-messaging/Messaging.dc.html"
         }
       ],
@@ -6703,8 +6703,8 @@
         },
         {
           "id": "DS-MATCHES-CHAT-002",
-          "status": "open",
-          "nextAction": "Deterministic chat captures now cover messages loading/error/offline, empty thread, event-context fallback, missing/blocked chat, image thread, Suvbot controls/error, share card, composer states, keyboard-open multiline, send/report failure snackbars, block confirmation, text scale, reduced motion, and paired light/dark populated thread. Remaining route capture work is design-reference pixel comparison and additional reference variants."
+          "status": "closed",
+          "nextAction": "Closed. Deterministic chat captures cover messages loading/error/offline, empty thread, event-context fallback, missing/blocked chat, image thread, Suvbot controls/error, share card, composer states, keyboard-open multiline, send/report failure snackbars, block confirmation, text scale, reduced motion, and paired light/dark populated thread. A fresh design-phone capture now compares within threshold against the registered Messaging thread reference after reference-safe-area and fixture alignment: mismatch 7.22%, meanDelta 8.50, maxDelta 240, masked 199692."
         },
         {
           "id": "DS-MATCHES-CHAT-003",
@@ -6714,7 +6714,7 @@
         {
           "id": "DS-MATCHES-CHAT-004",
           "status": "open",
-          "nextAction": "Populated Messaging thread reference and masks are exported and registered. Remaining references are empty/new-match, keyboard-open, share-card, report/block dialog, and dynamic message-time variants."
+          "nextAction": "Populated Messaging thread reference and masks are exported, registered, and within advisory threshold. Export and register the source-backed Messaging · New match (empty) panel from Messaging.dc.html, then compare it against match_chat_empty_thread. Keyboard-open, share-card, report/block dialog, and dynamic message-time references are blocked/reference-only until canonical source panels exist."
         }
       ]
     },

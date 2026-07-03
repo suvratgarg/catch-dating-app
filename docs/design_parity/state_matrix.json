@@ -3517,7 +3517,7 @@
               "id": "match-chat-reference",
               "kind": "external",
               "status": "available",
-              "notes": "Claude Messaging thread reference exported and registered for advisory pixel comparison; additional state references remain future work.",
+              "notes": "Claude Messaging thread reference exported and registered for advisory pixel comparison. The populated-thread capture now compares within threshold after fixture and reference-safe-area alignment. Messaging.dc.html also contains a New match (empty) source panel that still needs export/registration; keyboard, share-card, report/block dialog, and dynamic-time variants are not present in the current handoff.",
               "path": "design/reference_screens/screen.matches.chat/thread.png"
             }
           ],
@@ -3844,8 +3844,8 @@
             },
             {
               "id": "DP-MATCHES-CHAT-002",
-              "status": "open",
-              "nextAction": "Deterministic captures now cover loading, errors, empty, missing/blocked chat, send/report mutation failure snackbars, block confirmation, share card, Suvbot, offline, keyboard-open multiline, text scale, reduced motion, and light/dark. Remaining work is design-reference pixel comparison and additional reference variants."
+              "status": "closed",
+              "nextAction": "Closed. Deterministic captures cover loading, errors, empty, missing/blocked chat, send/report mutation failure snackbars, block confirmation, share card, Suvbot, offline, keyboard-open multiline, text scale, reduced motion, and light/dark. A fresh design-phone capture now compares within threshold against the registered Messaging thread reference after reference-safe-area and fixture alignment: mismatch 7.22%, meanDelta 8.50, maxDelta 240, masked 199692."
             },
             {
               "id": "DP-MATCHES-CHAT-003",
@@ -3855,7 +3855,7 @@
             {
               "id": "DP-MATCHES-CHAT-004",
               "status": "open",
-              "nextAction": "Populated Messaging thread reference and masks are exported and registered. Remaining references are empty/new-match, keyboard-open, share-card, report/block dialog, and dynamic message-time variants."
+              "nextAction": "Populated Messaging thread reference and masks are exported, registered, and within advisory threshold. Export and register the source-backed Messaging · New match (empty) panel from Messaging.dc.html, then compare it against match_chat_empty_thread. Keyboard-open, share-card, report/block dialog, and dynamic message-time references are blocked/reference-only until canonical source panels exist."
             }
           ]
         }

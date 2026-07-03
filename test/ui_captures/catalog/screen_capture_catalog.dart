@@ -1227,32 +1227,42 @@ class _CaptureThrowingSwipeRepository implements SwipeRepository {
 }
 
 const _matchChatViewerUid = 'nyc_jordan_ellis_002';
-final _matchChatOtherProfile = _captureFixtures.publicProfile(
-  'nyc_maya_shah_001',
+const _matchChatOtherProfile = PublicProfile(
+  uid: 'nyc_aanya_reference_001',
+  name: 'Aanya',
+  age: 29,
+  gender: Gender.woman,
+  city: 'Mumbai',
+  occupation: 'Product designer',
+  company: 'Studio Sunday',
 );
 final _matchChatEvent = buildEvent(
   id: 'event-match-chat-context',
-  clubId: 'club-nyc-riverside',
-  startTime: DateTime(2026, 5, 29, 7, 30),
-  endTime: DateTime(2026, 5, 29, 8, 30),
-  meetingPoint: 'Pier 57, Hudson River Park',
-  startingPointLat: 40.7421,
-  startingPointLng: -74.0089,
-  locationDetails: 'Meet by the south entrance benches',
+  clubId: 'club-match-chat-padel',
+  startTime: DateTime(2026, 6, 22, 18),
+  endTime: DateTime(2026, 6, 22, 20),
+  meetingPoint: 'Pali Hill Padel Club',
+  startingPointLat: 19.0644,
+  startingPointLng: 72.8295,
+  locationDetails: 'Meet beside court 2',
+  eventFormat: const EventFormatSnapshot(
+    activityKind: ActivityKind.padel,
+    interactionModel: EventInteractionModel.pairedRotations,
+    customActivityLabel: 'Doubles ladder + drinks',
+  ),
   bookedCount: 18,
   checkedInCount: 16,
   capacityLimit: 22,
-  description:
-      'A conversational riverside loop with a hosted coffee stop after.',
+  description: 'A low-pressure padel ladder with drinks after the final set.',
 );
 final _matchChatMatch = Match(
   id: 'match-chat-context',
   user1Id: _matchChatViewerUid,
   user2Id: _matchChatOtherProfile.uid,
   eventIds: [_matchChatEvent.id],
-  createdAt: DateTime(2026, 5, 29, 9, 2),
-  lastMessageAt: DateTime(2026, 5, 29, 9, 31),
-  lastMessagePreview: 'Only if you send the gallery shortlist first.',
+  createdAt: DateTime(2026, 6, 22, 9, 38),
+  lastMessageAt: DateTime(2026, 6, 22, 9, 42),
+  lastMessagePreview: 'Deal. 9am, court 2.',
   lastMessageSenderId: _matchChatOtherProfile.uid,
   unreadCounts: const {_matchChatViewerUid: 1},
 );
@@ -1260,45 +1270,32 @@ final _matchChatMessages = [
   ChatMessage(
     id: 'match-chat-message-1',
     senderId: _matchChatOtherProfile.uid,
-    text:
-        'I still think the coffee detour was the best part of that last mile.',
-    sentAt: DateTime(2026, 5, 29, 9, 8),
+    text: 'Loved the pace today — that last point was unreal.',
+    sentAt: DateTime(2026, 6, 22, 9, 38),
   ),
   ChatMessage(
     id: 'match-chat-message-2',
-    senderId: _matchChatViewerUid,
-    text: 'Strong take. I had us at least tied with the bagel debate.',
-    sentAt: DateTime(2026, 5, 29, 9, 11),
+    senderId: _matchChatOtherProfile.uid,
+    text: 'Same court next Sunday?',
+    sentAt: DateTime(2026, 6, 22, 9, 38),
   ),
   ChatMessage(
     id: 'match-chat-message-3',
-    senderId: _matchChatOtherProfile.uid,
-    text: 'Fair. You made a real case for sesame, even if everything wins.',
-    sentAt: DateTime(2026, 5, 29, 9, 16),
+    senderId: _matchChatViewerUid,
+    text: 'Ha, you set that one up. In for Sunday.',
+    sentAt: DateTime(2026, 6, 22, 9, 41),
   ),
   ChatMessage(
     id: 'match-chat-message-4',
     senderId: _matchChatViewerUid,
-    text: 'Next one: gallery night after the Thursday evening run?',
-    sentAt: DateTime(2026, 5, 29, 9, 20),
+    text: 'Bringing the good racket this time.',
+    sentAt: DateTime(2026, 6, 22, 9, 41),
   ),
   ChatMessage(
     id: 'match-chat-message-5',
     senderId: _matchChatOtherProfile.uid,
-    text: 'Deal. If it is bad, you choose the next place.',
-    sentAt: DateTime(2026, 5, 29, 9, 24),
-  ),
-  ChatMessage(
-    id: 'match-chat-message-6',
-    senderId: _matchChatViewerUid,
-    text: 'I am taking the bagel win as official.',
-    sentAt: DateTime(2026, 5, 29, 9, 28),
-  ),
-  ChatMessage(
-    id: 'match-chat-message-7',
-    senderId: _matchChatOtherProfile.uid,
-    text: 'Only if you send the gallery shortlist first.',
-    sentAt: DateTime(2026, 5, 29, 9, 31),
+    text: 'Deal. 9am, court 2.',
+    sentAt: DateTime(2026, 6, 22, 9, 42),
   ),
 ];
 final _matchChatMatchRepository = _CaptureMatchRepository(
@@ -13298,9 +13295,11 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         _matchChatOtherProfile.uid,
       ).overrideWith((ref) => Stream.value(_matchChatOtherProfile)),
     ],
-    builder: (context) => ChatScreen(
-      matchId: _matchChatMatch.id,
-      otherProfile: _matchChatOtherProfile,
+    builder: (context) => _ReferenceChromeSafeArea(
+      child: ChatScreen(
+        matchId: _matchChatMatch.id,
+        otherProfile: _matchChatOtherProfile,
+      ),
     ),
   ),
   ScreenCaptureEntry(
