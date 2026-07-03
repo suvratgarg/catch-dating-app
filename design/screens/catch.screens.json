@@ -19841,7 +19841,7 @@
             "symbol": "AuthSessionController"
           }
         ],
-        "notes": "hostSettingsScreen is backed by HostAccountScreen. The screen watches uidProvider, watchHostProfileProvider, and _hostClubsForUserProvider, adapts profile/clubs branches plus tab/account/club navigation policy through HostSettingsState, falls back to club host profile data while the dedicated host profile loads, opens HostProfileEditorSheet for inline profile edits, creates/saves host profiles through HostProfileController mutations, renders provider-free HostSettingsProfileSection and HostSettingsClubsSection rows, and signs out through AuthSessionController. Remaining adapter work is payout/admin placeholder ownership and reference-backed parity."
+        "notes": "hostSettingsScreen is backed by HostAccountScreen. The screen watches uidProvider, watchHostProfileProvider, and _hostClubsForUserProvider, adapts profile/clubs branches plus tab/account/club navigation policy through HostSettingsState, falls back to club host profile data while the dedicated host profile loads, opens HostProfileEditorSheet for inline profile edits, creates/saves host profiles through HostProfileController mutations, renders provider-free HostSettingsProfileSection and HostSettingsClubsSection rows, and signs out through AuthSessionController. Remaining non-code work is reference export/pixel parity, with payout/admin placement blocked on product IA ownership."
       },
       "designRefs": [
         {
@@ -20217,7 +20217,7 @@
       ],
       "composition": {
         "currentLayout": "HostAccountScreen owns uid/profile/club provider watches, adapts provider waves plus tab/account/club navigation policy through HostSettingsState, routes profile create/save through HostProfileController mutations, owns the profile editor bottom sheet and sign-out side effect, then composes provider-free HostSettingsProfileSection, HostSettingsClubsSection, HostSettingsTabRail, and shared HostSettingsSection rows.",
-        "targetLayout": "Host Settings should continue tightening payout/admin placeholder ownership and reference-backed parity before extracting any broader provider-free settings sections.",
+        "targetLayout": "Host Settings has no remaining provider-free extraction target until product/design resolves payout/admin ownership and a valid reference export is available for pixel parity.",
         "sections": [
           {
             "id": "section.host.settings.adapter",
@@ -20242,7 +20242,7 @@
               "profile_error",
               "active_profile"
             ],
-            "migration": "Profile/clubs waves, fallback derivation, tab/account action availability, and club navigation policy now route through HostSettingsState, while profile create/save mutations route through HostProfileController. Remaining work is payout/admin ownership and reference-backed comparison.",
+            "migration": "Profile/clubs waves, fallback derivation, tab/account action availability, and club navigation policy now route through HostSettingsState, while profile create/save mutations route through HostProfileController. Payout/admin ownership is blocked on product IA; reference-backed comparison is tracked by DS-HOST-SETTINGS-004.",
             "previewIds": [
               "HostAccountScreen/Route states"
             ]
@@ -20363,23 +20363,23 @@
       "openGaps": [
         {
           "id": "DS-HOST-SETTINGS-001",
-          "status": "open",
-          "nextAction": "Host Settings has route captures for active, fallback, no-profile, profile loading/error/offline, clubs loading/error/offline, editor-sheet, create/save mutation pending/error/offline, sign-out error/offline, text scale, reduced motion, and theme states. Remaining work is reference-backed comparison."
+          "status": "closed",
+          "nextAction": "Closed: Host Settings route captures cover active, fallback, no-profile, profile loading/error/offline, clubs loading/error/offline, editor-sheet, create/save mutation pending/error/offline, sign-out error/offline, text scale, reduced motion, and theme states. Reference comparison is tracked by DS-HOST-SETTINGS-004."
         },
         {
           "id": "DS-HOST-SETTINGS-002",
-          "status": "open",
-          "nextAction": "Widgetbook now covers route states, profile summary rows including create-pending, tab rail, clubs loading/error/empty/populated, text scale, reduced motion, and dark theme. Remaining preview work is explicit editor-sheet open/save-error/offline behavior if design requires visible treatment."
+          "status": "closed",
+          "nextAction": "Closed: Widgetbook covers route states, profile summary rows including create-pending, tab rail, clubs loading/error/empty/populated, text scale, reduced motion, and dark theme; HostProfileFields plus route captures cover editor-sheet save/error/offline behavior."
         },
         {
           "id": "DS-HOST-SETTINGS-003",
-          "status": "open",
-          "nextAction": "HostSettingsProfileSection, HostSettingsClubsSection, HostSettingsTabRail, and HostSettingsSection are source-backed provider-free components, with profile/clubs waves, tab/account action availability, and club navigation policy adapted through HostSettingsState. Remaining composition work is payout/admin ownership and reference-backed comparison."
+          "status": "blocked",
+          "nextAction": "Blocked: HostSettingsProfileSection, HostSettingsClubsSection, HostSettingsTabRail, and HostSettingsSection are source-backed provider-free components, with profile/clubs waves, tab/account action availability, and club navigation policy adapted through HostSettingsState. Payout/admin ownership needs a product IA decision before code changes; reference comparison is tracked by DS-HOST-SETTINGS-004."
         },
         {
           "id": "DS-HOST-SETTINGS-004",
-          "status": "open",
-          "nextAction": "Export the canonical Host Settings reference from the found HostAccount.dc.html source, add masks/manifest wiring, then compare against host_settings_active_profile and related route captures. Also decide whether payout/admin placeholders belong here or Host Clubs."
+          "status": "blocked",
+          "nextAction": "Blocked: export the canonical Host Settings reference from the found HostAccount.dc.html source after the Claude export/runtime issue is repaired, add masks/manifest wiring, then compare against host_settings_active_profile and related route captures."
         }
       ],
       "captureIds": [
