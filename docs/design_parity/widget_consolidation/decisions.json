@@ -659,6 +659,80 @@
       "decidedBy": "codex-rule:K2",
       "date": "2026-07-03",
       "status": "recorded-WO-015"
+    },
+    {
+      "clusterId": "c017-tab-skeleton",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "EventSuccessLiveTabSkeleton", "action": "keep"},
+        {"name": "EventSuccessReportTabSkeleton", "action": "keep"},
+        {"name": "EventSuccessSetupTabSkeleton", "action": "keep"}
+      ],
+      "rationale": "Current-registry id for prior c021-tab-skeleton/WO-013 decision: per-tab skeleton compositions stay distinct; the actionable drift was raw title-width literals, already tokenized in WO-013.",
+      "decidedBy": "owner+claude-reconciled",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015"
+    },
+    {
+      "clusterId": "c025-rows",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "EventPolicyCancellationRows", "action": "keep"},
+        {"name": "EventPolicyResultRows", "action": "keep"}
+      ],
+      "rationale": "K2 domain fork from the prior event-policy rows decision: typed cancellation/result row groups live in an internal policy lab and generics would add complexity without user-facing value.",
+      "decidedBy": "codex-rule:K2",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015"
+    },
+    {
+      "clusterId": "c029-row",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "EventPolicyCancellationRow", "action": "keep"},
+        {"name": "EventPolicyResultRow", "action": "keep"}
+      ],
+      "rationale": "K2 domain fork from the prior event-policy rows decision: cancellation and result preview rows bind to different policy preview models and should not be unified by generic conditionals.",
+      "decidedBy": "codex-rule:K2",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015"
+    },
+    {
+      "clusterId": "c046-hero",
+      "decision": "merge-new-primitive",
+      "canonicalSymbol": "EventSuccessHeroSurface (feature-level)",
+      "members": [
+        {"name": "EventPreviewHero", "action": "keep", "note": "delegates shell"},
+        {"name": "ManualQaHero", "action": "keep", "note": "delegates shell"}
+      ],
+      "rationale": "Current-registry id for prior c045-hero/WO-014 decision: the shared gradient hero shell was extracted as EventSuccessHeroSurface and the public heroes now delegate while keeping their content APIs.",
+      "decidedBy": "owner+claude-reconciled",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015"
+    },
+    {
+      "clusterId": "c047-home-screen",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "DashboardEmptyHomeScreen", "action": "keep"},
+        {"name": "DashboardHomeScreen", "action": "keep"}
+      ],
+      "rationale": "K1 composition relationship from prior c046/c043/c057 decision: dashboard home variants are screen composition, not duplicate primitives.",
+      "decidedBy": "codex-rule:K1",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015"
+    },
+    {
+      "clusterId": "c050-companion-error",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "CompanionError", "action": "keep"},
+        {"name": "CompanionMessage", "action": "keep"}
+      ],
+      "rationale": "K4 churn threshold from prior c061-companion-error decision: six-line shared shell around CatchInlineErrorState is below the threshold, and the names carry distinct intent.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015"
     }
   ]
 }

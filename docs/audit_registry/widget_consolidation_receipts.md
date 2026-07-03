@@ -1409,3 +1409,42 @@ Known blockers / inherited debt:
 
 - WO-015 remains open: 33 current similarity clusters still need rule-driven
   decisions or review escalation by the simple cluster ledger check.
+
+## 2026-07-03 — WO-015 screen/current-id reconciliation
+
+Scope:
+
+- Reconciled six screen-scope/current-id clusters to prior reviewed decisions:
+  `c017-tab-skeleton`, `c025-rows`, `c029-row`, `c046-hero`,
+  `c047-home-screen`, and `c050-companion-error`.
+- No production Dart, Widgetbook, generated widget registries, or visual output
+  changed.
+
+Commands:
+
+- `node tool/agent/context_pack.mjs --task widget-consolidation-wo-015-screen-id-reconcile --paths docs/design_parity/widget_consolidation/decisions.json,docs/design_parity/widget_consolidation/codex_worklog.md,docs/audit_registry/widget_consolidation_receipts.md,docs/design_parity/widget_consolidation/consolidation_rules.md,docs/audit_registry/widget_similarity.json`
+- `rg -n "EventSuccessLiveTabSkeleton|EventSuccessReportTabSkeleton|EventSuccessSetupTabSkeleton|EventPolicyCancellationRows|EventPolicyResultRows|EventPolicyCancellationRow|EventPolicyResultRow|EventPreviewHero|ManualQaHero|DashboardEmptyHomeScreen|DashboardHomeScreen|CompanionError|CompanionMessage" docs/design_parity/widget_consolidation/decisions.json docs/design_parity/widget_consolidation/codex_worklog.md docs/audit_registry/widget_consolidation_receipts.md`
+- `node - <<'NODE' ... JSON.parse(...) ... NODE`
+- `dart tool/audit_registry.dart refresh`
+- `dart tool/audit_registry.dart mark-pass --pass widget-consolidation-wo-015-screen-id-reconcile --rules AUDIT-REGISTRY-001,WIDGET-CATALOG-001 --paths docs/design_parity/widget_consolidation/decisions.json,docs/design_parity/widget_consolidation/codex_worklog.md,docs/audit_registry/widget_consolidation_receipts.md --proof "WO-015 ledger-only screen/current-id reconcile: recorded six current ids for prior decisions; no production Dart changed" --status clean`
+- `dart tool/audit_registry.dart report`
+- `node tool/agent/check_agent_readiness.mjs`
+- `git diff --check`
+
+Headline numbers:
+
+| metric | value |
+|---|---:|
+| current screen/current ids reconciled to existing decisions | 6 |
+| K1 composition keeps recorded | 1 |
+| K2 domain-fork keeps recorded | 2 |
+| K4 churn-threshold keeps recorded | 1 |
+| prior implementation/token decisions reconciled | 2 |
+| code changes | 0 |
+| rule-authorized merges/deletions | 0 |
+| undecided similarity clusters after this ledger pass | 27 |
+
+Known blockers / inherited debt:
+
+- WO-015 remains open: 27 current similarity clusters still need rule-driven
+  decisions or review escalation by the simple cluster ledger check.

@@ -991,6 +991,11 @@ previously reviewed decisions: `c004-layout`, `c005-dialog`,
 `c022-override-sheet`, and `c023-override-round-editor`. No code was changed in
 this ledger-only batch.
 
+Progress by Codex: reconciled six remaining screen-scope/current-id clusters
+to prior reviewed decisions: `c017-tab-skeleton`, `c025-rows`, `c029-row`,
+`c046-hero`, `c047-home-screen`, and `c050-companion-error`. No code was
+changed in this ledger-only batch.
+
 ---
 
 ## Escalations
