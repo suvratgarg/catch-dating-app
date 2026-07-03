@@ -352,6 +352,19 @@
           "role": "Event Success host live reveal behavior coverage for reveal action state, generation, overrides, and ceremony effects",
           "status": "aligned",
           "lastReviewedPass": "2026-07-03-event-success-live-reveal-action-state"
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations_screen_state.dart",
+          "role": "provider-free Host Operations clubs and club insights display-state adapter for selected club/tab ownership, analytics query range, granularity, event scope, and custom date windows",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-host-operations-screen-state"
+        },
+        {
+          "path": "test/hosts/host_operations_screen_test.dart",
+          "role": "Host Operations clubs and insights state behavior coverage for selected club, tab, owner role, analytics query, custom range, and event scope",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-host-operations-screen-state"
         }
       ],
       "variantPatterns": [],

@@ -43,6 +43,7 @@ import 'package:catch_dating_app/hosts/domain/host_profile.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_club_edit_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_home_view_model.dart';
+import 'package:catch_dating_app/hosts/presentation/host_operations_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_profile_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_settings_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_settings_view_model.dart';
@@ -57,6 +58,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+export 'package:catch_dating_app/hosts/presentation/host_operations_screen_state.dart';
 
 class HostOperationsHomeScreen extends ConsumerWidget {
   const HostOperationsHomeScreen({
@@ -165,188 +168,7 @@ class HostClubsScreen extends ConsumerWidget {
 
 enum HostSettingsMode { edit, preview }
 
-enum HostClubTab { organizer, edit, insights, preview }
-
 typedef HostClubPreviewCallback = void Function(Club club);
-
-@immutable
-class HostClubsScreenState {
-  const HostClubsScreenState._({
-    required this.clubs,
-    required this.currentUid,
-    required this.selectedClubIndex,
-    required this.selectedTab,
-  });
-
-  factory HostClubsScreenState.resolve({
-    required List<Club> clubs,
-    required String currentUid,
-    int selectedClubIndex = 0,
-    String? selectedClubId,
-    HostClubTab selectedTab = HostClubTab.organizer,
-  }) {
-    return HostClubsScreenState._(
-      clubs: List<Club>.unmodifiable(clubs),
-      currentUid: currentUid,
-      selectedClubIndex: _resolveSelectedClubIndex(
-        clubs: clubs,
-        selectedClubIndex: selectedClubIndex,
-        selectedClubId: selectedClubId,
-      ),
-      selectedTab: selectedTab,
-    );
-  }
-
-  final List<Club> clubs;
-  final String currentUid;
-  final int selectedClubIndex;
-  final HostClubTab selectedTab;
-
-  bool get hasClubs => clubs.isNotEmpty;
-  bool get showClubPicker => clubs.length > 1;
-  Club? get selectedClub => hasClubs ? clubs[selectedClubIndex] : null;
-  String get title => selectedClub?.name ?? 'Clubs';
-  bool get selectedClubIsOwner => selectedClub?.isOwnedBy(currentUid) ?? false;
-
-  HostClubsScreenState selectClubIndex(int index) {
-    return HostClubsScreenState.resolve(
-      clubs: clubs,
-      currentUid: currentUid,
-      selectedClubIndex: index,
-      selectedTab: selectedTab,
-    );
-  }
-
-  HostClubsScreenState selectTab(HostClubTab tab) {
-    return HostClubsScreenState.resolve(
-      clubs: clubs,
-      currentUid: currentUid,
-      selectedClubIndex: selectedClubIndex,
-      selectedTab: tab,
-    );
-  }
-
-  static int _resolveSelectedClubIndex({
-    required List<Club> clubs,
-    required int selectedClubIndex,
-    String? selectedClubId,
-  }) {
-    if (clubs.isEmpty) return 0;
-    final selectedId = selectedClubId;
-    if (selectedId != null) {
-      final index = clubs.indexWhere((club) => club.id == selectedId);
-      if (index != -1) return index;
-    }
-    if (selectedClubIndex < 0) return 0;
-    if (selectedClubIndex >= clubs.length) return clubs.length - 1;
-    return selectedClubIndex;
-  }
-}
-
-@immutable
-class HostClubInsightsState {
-  const HostClubInsightsState._({
-    required this.clubId,
-    required this.rangePreset,
-    required this.granularity,
-    required this.selectedEventId,
-    required this.customStartDate,
-    required this.customEndDate,
-  });
-
-  factory HostClubInsightsState.initial({
-    required String clubId,
-    DateTime? now,
-  }) {
-    final today = DateUtils.dateOnly(now ?? DateTime.now());
-    return HostClubInsightsState._(
-      clubId: clubId,
-      rangePreset: HostAnalyticsRangePreset.thirtyDays,
-      granularity: HostAnalyticsGranularity.day,
-      selectedEventId: null,
-      customStartDate: DateTime(today.year, today.month, today.day - 29),
-      customEndDate: today,
-    );
-  }
-
-  final String clubId;
-  final HostAnalyticsRangePreset rangePreset;
-  final HostAnalyticsGranularity granularity;
-  final String? selectedEventId;
-  final DateTime customStartDate;
-  final DateTime customEndDate;
-
-  HostAnalyticsQuery get query {
-    return HostAnalyticsQuery(
-      clubId: clubId,
-      eventId: selectedEventId,
-      rangePreset: rangePreset,
-      startDate: customStartDate,
-      endDate: customEndDate,
-      granularity: granularity,
-    );
-  }
-
-  HostClubInsightsState selectClub(String clubId) {
-    if (clubId == this.clubId) return this;
-    return _copyWith(clubId: clubId, selectedEventId: null);
-  }
-
-  HostClubInsightsState selectRange(HostAnalyticsRangePreset rangePreset) {
-    return _copyWith(rangePreset: rangePreset);
-  }
-
-  HostClubInsightsState selectGranularity(
-    HostAnalyticsGranularity granularity,
-  ) {
-    return _copyWith(granularity: granularity);
-  }
-
-  HostClubInsightsState selectEvent(String eventId) {
-    return _copyWith(selectedEventId: eventId);
-  }
-
-  HostClubInsightsState clearEvent() {
-    if (selectedEventId == null) return this;
-    return _copyWith(selectedEventId: null);
-  }
-
-  HostClubInsightsState selectCustomStartDate(DateTime date) {
-    return _copyWith(
-      rangePreset: HostAnalyticsRangePreset.custom,
-      customStartDate: DateUtils.dateOnly(date),
-    );
-  }
-
-  HostClubInsightsState selectCustomEndDate(DateTime date) {
-    return _copyWith(
-      rangePreset: HostAnalyticsRangePreset.custom,
-      customEndDate: DateUtils.dateOnly(date),
-    );
-  }
-
-  HostClubInsightsState _copyWith({
-    String? clubId,
-    HostAnalyticsRangePreset? rangePreset,
-    HostAnalyticsGranularity? granularity,
-    Object? selectedEventId = _unchanged,
-    DateTime? customStartDate,
-    DateTime? customEndDate,
-  }) {
-    return HostClubInsightsState._(
-      clubId: clubId ?? this.clubId,
-      rangePreset: rangePreset ?? this.rangePreset,
-      granularity: granularity ?? this.granularity,
-      selectedEventId: selectedEventId == _unchanged
-          ? this.selectedEventId
-          : selectedEventId as String?,
-      customStartDate: customStartDate ?? this.customStartDate,
-      customEndDate: customEndDate ?? this.customEndDate,
-    );
-  }
-}
-
-const Object _unchanged = Object();
 
 const _hostClubTabRailKey = ValueKey('host-club-tab-rail');
 
@@ -3649,7 +3471,7 @@ class _HostClubInsightsPaneState extends ConsumerState<HostClubInsightsPane> {
 
   @override
   Widget build(BuildContext context) {
-    final query = _state.query;
+    final query = _hostAnalyticsQueryFor(_state.query);
     final analyticsAsync = ref.watch(hostAnalyticsProvider(query));
 
     return Column(
@@ -3724,6 +3546,30 @@ class _HostClubInsightsPaneState extends ConsumerState<HostClubInsightsPane> {
   }
 }
 
+HostAnalyticsQuery _hostAnalyticsQueryFor(HostClubInsightsQueryState state) {
+  return HostAnalyticsQuery(
+    clubId: state.clubId,
+    eventId: state.eventId,
+    rangePreset: switch (state.rangePreset) {
+      HostClubInsightsRangePreset.sevenDays =>
+        HostAnalyticsRangePreset.sevenDays,
+      HostClubInsightsRangePreset.thirtyDays =>
+        HostAnalyticsRangePreset.thirtyDays,
+      HostClubInsightsRangePreset.ninetyDays =>
+        HostAnalyticsRangePreset.ninetyDays,
+      HostClubInsightsRangePreset.month => HostAnalyticsRangePreset.month,
+      HostClubInsightsRangePreset.custom => HostAnalyticsRangePreset.custom,
+    },
+    startDate: state.startDate,
+    endDate: state.endDate,
+    granularity: switch (state.granularity) {
+      HostClubInsightsGranularity.day => HostAnalyticsGranularity.day,
+      HostClubInsightsGranularity.week => HostAnalyticsGranularity.week,
+      HostClubInsightsGranularity.month => HostAnalyticsGranularity.month,
+    },
+  );
+}
+
 class HostAnalyticsControls extends StatelessWidget {
   const HostAnalyticsControls({
     super.key,
@@ -3739,13 +3585,13 @@ class HostAnalyticsControls extends StatelessWidget {
     required this.onClearEvent,
   });
 
-  final HostAnalyticsRangePreset rangePreset;
-  final HostAnalyticsGranularity granularity;
+  final HostClubInsightsRangePreset rangePreset;
+  final HostClubInsightsGranularity granularity;
   final DateTime customStartDate;
   final DateTime customEndDate;
   final String? selectedEventId;
-  final ValueChanged<HostAnalyticsRangePreset> onRangeChanged;
-  final ValueChanged<HostAnalyticsGranularity> onGranularityChanged;
+  final ValueChanged<HostClubInsightsRangePreset> onRangeChanged;
+  final ValueChanged<HostClubInsightsGranularity> onGranularityChanged;
   final VoidCallback onPickStartDate;
   final VoidCallback onPickEndDate;
   final VoidCallback onClearEvent;
@@ -3756,39 +3602,48 @@ class HostAnalyticsControls extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CatchOptionGroup<HostAnalyticsRangePreset>(
+        CatchOptionGroup<HostClubInsightsRangePreset>(
           selected: rangePreset,
           onChanged: onRangeChanged,
           variant: CatchOptionGroupVariant.mono,
           options: const [
-            CatchOption(value: HostAnalyticsRangePreset.sevenDays, label: '7D'),
             CatchOption(
-              value: HostAnalyticsRangePreset.thirtyDays,
+              value: HostClubInsightsRangePreset.sevenDays,
+              label: '7D',
+            ),
+            CatchOption(
+              value: HostClubInsightsRangePreset.thirtyDays,
               label: '30D',
             ),
             CatchOption(
-              value: HostAnalyticsRangePreset.ninetyDays,
+              value: HostClubInsightsRangePreset.ninetyDays,
               label: '90D',
             ),
-            CatchOption(value: HostAnalyticsRangePreset.month, label: 'MONTH'),
             CatchOption(
-              value: HostAnalyticsRangePreset.custom,
+              value: HostClubInsightsRangePreset.month,
+              label: 'MONTH',
+            ),
+            CatchOption(
+              value: HostClubInsightsRangePreset.custom,
               label: 'CUSTOM',
             ),
           ],
         ),
         gapH12,
-        CatchOptionGroup<HostAnalyticsGranularity>(
+        CatchOptionGroup<HostClubInsightsGranularity>(
           selected: granularity,
           onChanged: onGranularityChanged,
           variant: CatchOptionGroupVariant.mono,
           options: const [
-            CatchOption(value: HostAnalyticsGranularity.day, label: 'DAY'),
-            CatchOption(value: HostAnalyticsGranularity.week, label: 'WEEK'),
-            CatchOption(value: HostAnalyticsGranularity.month, label: 'MONTH'),
+            CatchOption(value: HostClubInsightsGranularity.day, label: 'DAY'),
+            CatchOption(value: HostClubInsightsGranularity.week, label: 'WEEK'),
+            CatchOption(
+              value: HostClubInsightsGranularity.month,
+              label: 'MONTH',
+            ),
           ],
         ),
-        if (rangePreset == HostAnalyticsRangePreset.custom) ...[
+        if (rangePreset == HostClubInsightsRangePreset.custom) ...[
           gapH12,
           Row(
             children: [

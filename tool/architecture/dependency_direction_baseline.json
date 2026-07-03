@@ -20,10 +20,6 @@
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart"
     },
     {
-      "rule": "misplacedStateClass",
-      "path": "lib/hosts/presentation/host_operations_screen.dart"
-    },
-    {
       "rule": "multiRouteScreenFile",
       "path": "lib/dashboard/presentation/dashboard_screen.dart"
     },

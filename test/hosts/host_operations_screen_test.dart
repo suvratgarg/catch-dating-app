@@ -9,7 +9,6 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_profile_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_profile.dart';
 import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
@@ -153,31 +152,30 @@ void main() {
       now: DateTime(2026, 6, 25, 12),
     );
 
-    expect(state.rangePreset, HostAnalyticsRangePreset.thirtyDays);
-    expect(state.granularity, HostAnalyticsGranularity.day);
+    expect(state.rangePreset, HostClubInsightsRangePreset.thirtyDays);
+    expect(state.granularity, HostClubInsightsGranularity.day);
     expect(state.customStartDate, DateTime(2026, 5, 27));
     expect(state.customEndDate, DateTime(2026, 6, 25));
-    expect(state.query, isA<HostAnalyticsQuery>());
     expect(state.query.clubId, 'club-1');
     expect(state.query.eventId, isNull);
 
     final scoped = state
-        .selectGranularity(HostAnalyticsGranularity.week)
+        .selectGranularity(HostClubInsightsGranularity.week)
         .selectEvent('event-1')
         .selectCustomStartDate(DateTime(2026, 6, 1, 18))
         .selectCustomEndDate(DateTime(2026, 6, 20, 9));
 
-    expect(scoped.rangePreset, HostAnalyticsRangePreset.custom);
+    expect(scoped.rangePreset, HostClubInsightsRangePreset.custom);
     expect(scoped.query.clubId, 'club-1');
     expect(scoped.query.eventId, 'event-1');
-    expect(scoped.query.granularity, HostAnalyticsGranularity.week);
+    expect(scoped.query.granularity, HostClubInsightsGranularity.week);
     expect(scoped.query.startDate, DateTime(2026, 6));
     expect(scoped.query.endDate, DateTime(2026, 6, 20));
 
     final switchedClub = scoped.selectClub('club-2');
     expect(switchedClub.query.clubId, 'club-2');
     expect(switchedClub.selectedEventId, isNull);
-    expect(switchedClub.rangePreset, HostAnalyticsRangePreset.custom);
+    expect(switchedClub.rangePreset, HostClubInsightsRangePreset.custom);
   });
 
   test('HostHomeScreenState resolves selected club and host role', () {
