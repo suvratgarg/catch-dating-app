@@ -8,6 +8,8 @@ const claudeRoot =
   process.env.CLAUDE_DS_ROOT ??
   "/Users/suvratgarg/Downloads/Catch Design System (2)";
 const widgetbookOrigin = process.env.WIDGETBOOK_ORIGIN ?? "http://127.0.0.1:8766";
+const useWidgetbookSameOriginFrame =
+  process.env.WIDGETBOOK_SAME_ORIGIN_PREVIEW_FRAME === "1";
 const widgetbookBuildWebRoot =
   process.env.WIDGETBOOK_BUILD_WEB_ROOT ??
   path.join(repoRoot, "widgetbook/build/web");
@@ -26,6 +28,7 @@ const resolutionQueuePath = path.join(
   repoRoot,
   "docs/design_parity/widgetbook_compare_resolution_queue.md",
 );
+const DEDUPE_REVIEW_LIMIT = 80;
 
 const candidateSectionMap = new Map([
   ["field-row-mode-consolidation", "Field System"],
@@ -269,6 +272,12 @@ function loadVariantReviewCandidates() {
   return inventory.reviewCandidates ?? [];
 }
 
+function loadWidgetSimilarityRegistry() {
+  const registryPath = fromRepo("docs/audit_registry/widget_similarity.json");
+  if (!fs.existsSync(registryPath)) return null;
+  return readJson(registryPath);
+}
+
 function sourcePaneForName(name, classificationByName, label = "Source only") {
   const classification = classificationByName.get(name);
   return {
@@ -345,6 +354,404 @@ function findByLocation(byName, name, match) {
   );
 }
 
+function buildDedupeCandidates({similarity, pane}) {
+  if (!similarity) return [];
+  const widgetsByName = new Map(
+    (similarity.widgets ?? []).map((widget) => [widget.name, widget]),
+  );
+  const selected = new Map();
+
+  const addCandidate = (candidate) => {
+    const key = candidate.dedupeReview.memberKey;
+    if (!key || selected.has(key)) return;
+    const candidateMembers = new Set(
+      (candidate.dedupeReview.members ?? []).map((member) => member.name),
+    );
+    for (const existing of selected.values()) {
+      const existingMembers = new Set(
+        (existing.dedupeReview.members ?? []).map((member) => member.name),
+      );
+      if (setContainsAll(existingMembers, candidateMembers)) return;
+    }
+    selected.set(key, candidate);
+  };
+
+  for (const cluster of similarity.clusters ?? []) {
+    if (cluster.scope === "screen") continue;
+    addCandidate(
+      dedupeClusterCandidate({
+        cluster,
+        pane,
+        widgetsByName,
+        registrySummary: similarity.summary,
+      }),
+    );
+  }
+
+  for (const pair of similarity.rankedPairs ?? []) {
+    const highSignal =
+      pair.absorbCandidate ||
+      pair.containment >= 0.75 ||
+      (pair.detectors ?? []).length >= 2 ||
+      (pair.signals ?? []).includes("exact-shape");
+    if (!highSignal) continue;
+    addCandidate(
+      dedupePairCandidate({
+        pair,
+        pane,
+        widgetsByName,
+        source: "ranked-pair",
+      }),
+    );
+  }
+
+  for (const family of similarity.nameFamilies ?? []) {
+    if (selected.size >= DEDUPE_REVIEW_LIMIT) break;
+    if (family.scope === "screen") continue;
+    if ((family.members ?? []).length < 2) continue;
+    addCandidate(dedupeNameFamilyCandidate({family, pane, widgetsByName}));
+  }
+
+  for (const pair of similarity.rankedPairs ?? []) {
+    if (selected.size >= DEDUPE_REVIEW_LIMIT) break;
+    addCandidate(
+      dedupePairCandidate({
+        pair,
+        pane,
+        widgetsByName,
+        source: "ranked-pair-fill",
+      }),
+    );
+  }
+
+  return [...selected.values()]
+    .sort(compareDedupeCandidates)
+    .slice(0, DEDUPE_REVIEW_LIMIT)
+    .map((candidate, index) => ({
+      ...candidate,
+      dedupeReview: {
+        ...candidate.dedupeReview,
+        queueRank: index + 1,
+      },
+    }));
+}
+
+function dedupeClusterCandidate({cluster, pane, widgetsByName, registrySummary}) {
+  const members = cluster.members ?? [];
+  const evidence = {
+    kind: "structural cluster",
+    registryId: cluster.id,
+    registryRank: cluster.rank,
+    score: cluster.score,
+    cohesion: cluster.cohesion,
+    paramCompatibility: cluster.paramCompatibility,
+    detectors: cluster.detectors ?? [],
+    signals: cluster.structuralSignals ?? [],
+    absorbCandidate: Boolean(cluster.absorbCandidate),
+    nameSignal: cluster.nameSignal,
+    scope: cluster.scope,
+    memberKey: memberKey(members),
+    selectionSource: "structural-cluster",
+    registrySummary,
+  };
+  return dedupeCandidateFromMembers({
+    id: `dedupe-cluster-${cluster.id}`,
+    title: `${cluster.nameSignal ?? titleForMembers(members)} cluster`,
+    evidence,
+    members,
+    pane,
+    widgetsByName,
+  });
+}
+
+function dedupePairCandidate({pair, pane, widgetsByName, source}) {
+  const members = [pair.a, pair.b].filter(Boolean);
+  const evidence = {
+    kind: "ranked pair",
+    registryId: `pair-${pair.rank}`,
+    registryRank: pair.rank,
+    score: pair.score,
+    jaccard: pair.jaccard,
+    containment: pair.containment,
+    smallWidgetMultisetJaccard: pair.smallWidgetMultisetJaccard,
+    hamming: pair.hamming,
+    detectors: pair.detectors ?? [],
+    signals: pair.signals ?? [],
+    nameStems: pair.nameStems ?? [],
+    flags: pair.flags ?? [],
+    selectionSources: pair.selectionSources ?? [],
+    absorbCandidate: Boolean(pair.absorbCandidate),
+    memberKey: memberKey(members),
+    selectionSource: source,
+  };
+  return dedupeCandidateFromMembers({
+    id: `dedupe-pair-${snakeCase(members.join("-"))}`,
+    title: `${members.join(" vs ")} ranked pair`,
+    evidence,
+    members,
+    pane,
+    widgetsByName,
+  });
+}
+
+function dedupeNameFamilyCandidate({family, pane, widgetsByName}) {
+  const members = family.members ?? [];
+  const evidence = {
+    kind: "name family",
+    registryId: family.id,
+    registryRank: Number(String(family.id ?? "").match(/^n(\d+)/u)?.[1] ?? 9999),
+    stem: family.stem,
+    stemType: family.stemType,
+    detectors: ["name"],
+    signals: [],
+    usageSum: family.usageSum,
+    scope: family.scope,
+    absorbCandidate: members.some((member) =>
+      isCanonicalLikeMember(member, widgetsByName),
+    ),
+    memberKey: memberKey(members),
+    selectionSource: "name-family",
+  };
+  return dedupeCandidateFromMembers({
+    id: `dedupe-family-${slug(family.stem)}-${evidence.registryRank}`,
+    title: `${family.stem} name family`,
+    evidence,
+    members,
+    pane,
+    widgetsByName,
+  });
+}
+
+function dedupeCandidateFromMembers({id, title, evidence, members, pane, widgetsByName}) {
+  const memberEvidence = members.map((name) => {
+    const widget = widgetsByName.get(name);
+    return {
+      name,
+      file: widget?.file ?? "",
+      role: widget?.role ?? "",
+      usage: widget?.usageCountRaw ?? 0,
+      tokens: widget?.coarseTokenStreamLength ?? widget?.tokenStreamLength ?? null,
+      hasWidgetHelpers: Boolean(widget?.hasWidgetHelpers),
+    };
+  });
+  const panes = members.map((name) => pane(name));
+  const primary = canonicalMember(memberEvidence, widgetsByName);
+  const suggestedActions = suggestedDedupeActions({
+    evidence,
+    members: memberEvidence,
+    primary,
+  });
+  const rawDetectors = evidence.detectors ?? [];
+  const detectorLabels = detectorSummary(evidence);
+  const whySimilar = whyDedupeSimilar({evidence, members: memberEvidence, primary});
+  const priority = dedupePriority(evidence, memberEvidence);
+  const recommended = suggestedActions[0]?.label ?? "review dedupe candidate";
+
+  return {
+    id,
+    title,
+    bucket: "dedupe",
+    priority,
+    reason: whySimilar[0] ?? "The widget similarity registry flagged this family.",
+    recommended,
+    tags: [
+      "dedupe",
+      evidence.kind.replace(/\s+/gu, "-"),
+      ...detectorLabels.map((label) => label.toLowerCase().replace(/\s+/gu, "-")),
+      evidence.absorbCandidate ? "absorb" : null,
+    ].filter(Boolean),
+    left: panes[0] ?? null,
+    right: panes[1] ?? null,
+    related: panes,
+    reviewDecisionOptions: suggestedActions.map((action) => action.label),
+    dedupeReview: {
+      ...evidence,
+      sourceDetectors: rawDetectors,
+      detectorCount: rawDetectors.length,
+      detectors: detectorLabels,
+      members: memberEvidence,
+      primary: primary?.name ?? "",
+      whySimilar,
+      suggestedActions,
+      memberKey: evidence.memberKey,
+    },
+  };
+}
+
+function detectorSummary(evidence) {
+  const labels = [];
+  for (const detector of evidence.detectors ?? []) {
+    if (detector === "structural") labels.push("Structural");
+    else if (detector === "name") labels.push("Name");
+    else if (detector === "visual") labels.push("Visual");
+    else labels.push(detector);
+  }
+  for (const signal of evidence.signals ?? []) {
+    if (signal === "exact-shape") labels.push("Exact shape");
+    if (signal === "small-widget") labels.push("Small widget");
+  }
+  return [...new Set(labels)];
+}
+
+function whyDedupeSimilar({evidence, members, primary}) {
+  const notes = [];
+  if ((evidence.detectors ?? []).length > 0) {
+    notes.push(
+      `Detected by ${detectorSummary(evidence).join(", ")} evidence in the generated similarity registry.`,
+    );
+  }
+  if (Number.isFinite(evidence.cohesion)) {
+    notes.push(`Cluster cohesion is ${percent(evidence.cohesion)} across ${members.length} members.`);
+  }
+  if (Number.isFinite(evidence.jaccard) || Number.isFinite(evidence.containment)) {
+    const parts = [];
+    if (Number.isFinite(evidence.jaccard)) parts.push(`Jaccard ${percent(evidence.jaccard)}`);
+    if (Number.isFinite(evidence.containment)) {
+      parts.push(`containment ${percent(evidence.containment)}`);
+    }
+    notes.push(parts.join(" · ") + ".");
+  }
+  if (Number.isFinite(evidence.smallWidgetMultisetJaccard) && evidence.smallWidgetMultisetJaccard > 0) {
+    notes.push(`Small-widget token overlap is ${percent(evidence.smallWidgetMultisetJaccard)}.`);
+  }
+  if ((evidence.nameStems ?? []).length > 0) {
+    notes.push(`Shared name stem: ${evidence.nameStems.join(", ")}.`);
+  } else if (evidence.nameSignal) {
+    notes.push(`Shared name signal: ${evidence.nameSignal}.`);
+  } else if (evidence.stem) {
+    notes.push(`Shared final-name family: ${evidence.stem}.`);
+  }
+  if (evidence.absorbCandidate && primary) {
+    notes.push(`${primary.name} looks like the canonical side because it is core, contracted, or Catch-prefixed.`);
+  }
+  return notes;
+}
+
+function suggestedDedupeActions({evidence, members, primary}) {
+  const actions = [];
+  if (evidence.absorbCandidate && primary) {
+    actions.push({
+      label: `absorb into ${primary.name}`,
+      description: `Make ${primary.name} the canonical implementation and migrate or delete the duplicate wrappers.`,
+    });
+  }
+  if ((evidence.signals ?? []).includes("exact-shape")) {
+    actions.push({
+      label: "merge exact duplicate",
+      description: "These have identical structural shape; prefer one implementation unless product semantics differ.",
+    });
+  }
+  if ((evidence.detectors ?? []).includes("structural") || Number(evidence.containment) >= 0.75) {
+    actions.push({
+      label: "extract shared primitive",
+      description: "Keep feature copy/state outside and move repeated chrome into a shared widget.",
+    });
+  }
+  if ((evidence.detectors ?? []).includes("name")) {
+    actions.push({
+      label: "rename only",
+      description: "Use this when the concepts should stay separate but the names should align with the canonical vocabulary.",
+    });
+  }
+  actions.push(
+    {
+      label: "keep distinct",
+      description: "Record this when visual/product semantics are different enough to keep separate implementations.",
+    },
+    {
+      label: "visual first",
+      description: "Use Widgetbook screenshots or live previews before deciding.",
+    },
+    {
+      label: "inline or delete",
+      description: "Use when a wrapper adds no reusable behavior and should not remain public.",
+    },
+  );
+  return uniqueActions(actions);
+}
+
+function uniqueActions(actions) {
+  const seen = new Set();
+  return actions.filter((action) => {
+    if (seen.has(action.label)) return false;
+    seen.add(action.label);
+    return true;
+  });
+}
+
+function dedupePriority(evidence, members) {
+  if (evidence.absorbCandidate) return "P0";
+  if ((evidence.signals ?? []).includes("exact-shape")) return "P0";
+  if ((evidence.detectors ?? []).length >= 2) return "P0";
+  if (Number(evidence.registryRank) <= 40) return "P1";
+  if (members.reduce((sum, member) => sum + Number(member.usage ?? 0), 0) >= 20) {
+    return "P1";
+  }
+  return "P2";
+}
+
+function canonicalMember(members, widgetsByName) {
+  return (
+    members.find((member) => isCanonicalLikeMember(member.name, widgetsByName)) ??
+    [...members].sort((a, b) => Number(b.usage ?? 0) - Number(a.usage ?? 0))[0] ??
+    null
+  );
+}
+
+function isCanonicalLikeMember(name, widgetsByName) {
+  const widget = widgetsByName.get(name);
+  return Boolean(
+    name.startsWith("Catch") ||
+      widget?.file?.startsWith("lib/core/widgets/") ||
+      widget?.file?.includes("/shared/"),
+  );
+}
+
+function compareDedupeCandidates(a, b) {
+  return (
+    Number(b.dedupeReview.detectorCount ?? 0) -
+      Number(a.dedupeReview.detectorCount ?? 0) ||
+    Number(b.dedupeReview.score ?? b.dedupeReview.containment ?? 0) -
+      Number(a.dedupeReview.score ?? a.dedupeReview.containment ?? 0) ||
+    Number(a.dedupeReview.registryRank ?? 9999) -
+      Number(b.dedupeReview.registryRank ?? 9999) ||
+    priorityValue(a.priority) - priorityValue(b.priority) ||
+    a.title.localeCompare(b.title)
+  );
+}
+
+function priorityValue(priority) {
+  return { P0: 0, P1: 1, P2: 2, P3: 3 }[priority] ?? 9;
+}
+
+function memberKey(members) {
+  return [...members].sort().join("|");
+}
+
+function setContainsAll(container, values) {
+  for (const value of values) {
+    if (!container.has(value)) return false;
+  }
+  return true;
+}
+
+function titleForMembers(members) {
+  if (members.length <= 3) return members.join(" / ");
+  return `${members[0]} + ${members.length - 1} more`;
+}
+
+function percent(value) {
+  return `${Math.round(Number(value) * 1000) / 10}%`;
+}
+
+function slug(value) {
+  return String(value ?? "")
+    .replace(/([a-z0-9])([A-Z])/gu, "$1-$2")
+    .replace(/[^A-Za-z0-9]+/gu, "-")
+    .replace(/^-+|-+$/gu, "")
+    .toLowerCase();
+}
+
 function buildCandidates() {
   const manifest = readJson(fromClaude("_ds_manifest.json"));
   const contracts = readJson(
@@ -362,6 +769,7 @@ function buildCandidates() {
   const coverageByName = loadCoverageByName();
   const classificationByName = loadClassificationByName();
   const variantReviewCandidates = loadVariantReviewCandidates();
+  const similarity = loadWidgetSimilarityRegistry();
 
   const candidates = [];
   const pane = (name) =>
@@ -455,6 +863,13 @@ function buildCandidates() {
       previewPanes,
     });
   };
+
+  candidates.push(
+    ...buildDedupeCandidates({
+      similarity,
+      pane,
+    }),
+  );
 
   addDecisionPreview({
     id: "decision-preview-event-visual-system",
@@ -1683,6 +2098,15 @@ function buildCandidates() {
 
   const priorityRank = { P0: 0, P1: 1, P2: 2, P3: 3 };
   candidates.sort((a, b) => {
+    const aDedupe = a.tags?.includes("dedupe") ? 0 : 1;
+    const bDedupe = b.tags?.includes("dedupe") ? 0 : 1;
+    if (aDedupe !== bDedupe) return aDedupe - bDedupe;
+    if (aDedupe === 0 && bDedupe === 0) {
+      return (
+        (a.dedupeReview?.queueRank ?? 9999) -
+        (b.dedupeReview?.queueRank ?? 9999)
+      );
+    }
     const aFocused = a.tags?.includes("decision-preview") ? 0 : 1;
     const bFocused = b.tags?.includes("decision-preview") ? 0 : 1;
     if (aFocused !== bFocused) return aFocused - bFocused;
@@ -1735,7 +2159,9 @@ function buildCandidates() {
   return {
     generatedAt: new Date().toISOString(),
     widgetbookOrigin,
-    widgetbookPreviewFrameUrl: widgetbookPreviewFrameUrl(),
+    widgetbookPreviewFrameUrl: useWidgetbookSameOriginFrame
+      ? widgetbookPreviewFrameUrl()
+      : "/preview-frame",
     stats: {
       claudeComponents: manifest.components.length,
       widgetbookComponents: components.length,
@@ -1744,6 +2170,9 @@ function buildCandidates() {
       totalConflicts: candidatesWithState.length,
       decided: decidedCandidates.length,
       resolved: resolvedCandidates.length,
+      dedupe: pendingCandidates.filter((candidate) =>
+        candidate.tags?.includes("dedupe"),
+      ).length,
       appConsolidation: pendingCandidates.filter((candidate) =>
         candidate.tags?.includes("app-consolidation"),
       ).length,
@@ -2429,6 +2858,98 @@ function appHtml() {
     }
     .notes-card, .code-card, .related-card { padding: 12px; }
     .related-card { margin-top: 12px; }
+    .evidence-card {
+      border: 1px solid var(--line);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      padding: 12px;
+      margin: 0 0 12px;
+    }
+    .evidence-top {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: start;
+      margin-bottom: 10px;
+    }
+    .evidence-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+      gap: 8px;
+      margin: 10px 0;
+    }
+    .evidence-metric {
+      border: 1px solid var(--line);
+      background: #fffdf8;
+      padding: 8px;
+    }
+    .evidence-metric strong {
+      display: block;
+      font-size: 15px;
+      line-height: 1.1;
+    }
+    .evidence-metric span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .why-list {
+      margin: 10px 0 0;
+      padding-left: 18px;
+      color: var(--muted);
+    }
+    .why-list li + li { margin-top: 4px; }
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .action-button {
+      border: 1px solid var(--line2);
+      background: #fffdf8;
+      color: var(--ink);
+      padding: 9px;
+      cursor: pointer;
+      text-align: left;
+    }
+    .action-button.active {
+      border-color: var(--ink);
+      box-shadow: inset 3px 0 0 var(--ink);
+    }
+    .action-button strong,
+    .action-button span {
+      display: block;
+      overflow-wrap: anywhere;
+    }
+    .action-button span {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .member-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 12px;
+    }
+    .member-table th,
+    .member-table td {
+      border-top: 1px solid var(--line);
+      padding: 7px 6px;
+      text-align: left;
+      vertical-align: top;
+    }
+    .member-table th {
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .member-table code {
+      display: inline-block;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+    }
     .related-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
@@ -2581,6 +3102,7 @@ function appHtml() {
         <input id="search" type="search" placeholder="Search conflicts">
         <select id="bucket">
           <option value="">All buckets</option>
+          <option value="dedupe">dedupe</option>
           <option value="needs-decision">needs-decision</option>
           <option value="variant-prune">variant-prune</option>
           <option value="consolidate">consolidate</option>
@@ -2619,7 +3141,7 @@ function appHtml() {
     const priority = document.getElementById("priority");
     const showDecided = document.getElementById("showDecided");
     const showResolved = document.getElementById("showResolved");
-    const decisions = ["left canonical", "right canonical", "merge", "separate concepts", "visual repair", "rename", "discard"];
+    const defaultDecisions = ["left canonical", "right canonical", "merge", "separate concepts", "visual repair", "rename", "discard"];
 
     function esc(value) {
       return String(value ?? "")
@@ -2638,6 +3160,11 @@ function appHtml() {
         candidate.priority,
         candidate.reviewState?.decision,
         candidate.reviewState?.note,
+        candidate.dedupeReview?.kind,
+        candidate.dedupeReview?.registryId,
+        candidate.dedupeReview?.detectors?.join(" "),
+        candidate.dedupeReview?.whySimilar?.join(" "),
+        candidate.dedupeReview?.members?.map((member) => [member.name, member.file, member.role].join(" ")).join(" "),
         ...(candidate.tags || []),
         ...(candidate.previewPanes || []).map((pane) => pane.component),
         ...(candidate.related || []).map((pane) => pane.component),
@@ -2665,9 +3192,9 @@ function appHtml() {
         [data.stats.conflicts, "open"],
         [data.stats.decided, "decided"],
         [data.stats.resolved, "resolved"],
+        [data.stats.dedupe, "dedupe"],
         [data.stats.totalConflicts, "total"],
         [data.stats.registerOnly, "register"],
-        [data.stats.widgetbookComponents, "listings"],
       ];
       document.getElementById("stats").innerHTML = stats.map(([value, label]) =>
         '<div class="stat"><strong>' + esc(value) + '</strong><span>' + esc(label) + '</span></div>'
@@ -2682,6 +3209,9 @@ function appHtml() {
       ];
       if (state.resolved) pills.push('<span class="pill">resolved</span>');
       if (state.decided) pills.push('<span class="pill">' + esc(state.decision || "decided") + '</span>');
+      if (candidate.dedupeReview) {
+        pills.push('<span class="pill">dedupe #' + esc(candidate.dedupeReview.queueRank) + '</span>');
+      }
       return pills.join("");
     }
 
@@ -2903,6 +3433,15 @@ function appHtml() {
         recommended: candidate.recommended,
         left: candidate.left?.component,
         right: candidate.right?.component,
+        dedupeReview: candidate.dedupeReview
+          ? {
+              kind: candidate.dedupeReview.kind,
+              registryId: candidate.dedupeReview.registryId,
+              queueRank: candidate.dedupeReview.queueRank,
+              members: candidate.dedupeReview.members?.map((member) => member.name) ?? [],
+              detectors: candidate.dedupeReview.detectors,
+            }
+          : null,
       };
       const response = await fetch("/api/decision", {
         method: "POST",
@@ -2932,8 +3471,15 @@ function appHtml() {
       }
     }
 
+    function decisionOptionsFor(candidate) {
+      return candidate?.reviewDecisionOptions?.length
+        ? candidate.reviewDecisionOptions
+        : defaultDecisions;
+    }
+
     function renderDecisionButtons() {
-      return decisions.map((decision) =>
+      const candidate = allCandidates().find((item) => item.id === selectedId);
+      return decisionOptionsFor(candidate).map((decision) =>
         '<button class="' + (decision === selectedDecision ? "active" : "") + '" data-decision="' + esc(decision) + '">' + esc(decision) + '</button>'
       ).join("");
     }
@@ -2952,6 +3498,54 @@ function appHtml() {
           '</div>'
         ).join("") +
         '</div></section>';
+    }
+
+    function renderDedupeReview(candidate) {
+      const review = candidate.dedupeReview;
+      if (!review) return "";
+      const metrics = [
+        review.registryRank ? [review.registryRank, "registry rank"] : null,
+        review.score != null ? [review.score, "score"] : null,
+        review.cohesion != null ? [formatPercent(review.cohesion), "cohesion"] : null,
+        review.jaccard != null ? [formatPercent(review.jaccard), "Jaccard"] : null,
+        review.containment != null ? [formatPercent(review.containment), "containment"] : null,
+        review.smallWidgetMultisetJaccard ? [formatPercent(review.smallWidgetMultisetJaccard), "small-widget overlap"] : null,
+        review.paramCompatibility?.mean != null ? [formatPercent(review.paramCompatibility.mean), "param mean"] : null,
+        review.members?.length ? [review.members.length, "members"] : null,
+      ].filter(Boolean);
+      const detectorPills = (review.detectors || []).map((detector) =>
+        '<span class="pill">' + esc(detector) + '</span>'
+      ).join("");
+      const why = (review.whySimilar || []).map((item) => '<li>' + esc(item) + '</li>').join("");
+      const actions = (review.suggestedActions || []).map((action) =>
+        '<button class="action-button ' + (selectedDecision === action.label ? "active" : "") +
+        '" type="button" data-decision="' + esc(action.label) + '">' +
+        '<strong>' + esc(action.label) + '</strong><span>' + esc(action.description) + '</span></button>'
+      ).join("");
+      const members = (review.members || []).map((member) =>
+        '<tr><td><strong>' + esc(member.name) + '</strong></td>' +
+        '<td>' + esc(member.role || "unknown") + '</td>' +
+        '<td>' + esc(member.usage ?? 0) + '</td>' +
+        '<td>' + esc(member.tokens ?? "") + '</td>' +
+        '<td><code>' + esc(member.file || "missing") + '</code></td></tr>'
+      ).join("");
+      return '<section class="evidence-card">' +
+        '<div class="evidence-top"><div><strong>Dedupe evidence</strong><p>' +
+        esc(review.kind) + ' · ' + esc(review.registryId) +
+        (review.primary ? ' · likely canonical: ' + esc(review.primary) : '') +
+        '</p></div><div>' + detectorPills + '</div></div>' +
+        '<div class="evidence-grid">' + metrics.map(([value, label]) =>
+          '<div class="evidence-metric"><strong>' + esc(value) + '</strong><span>' + esc(label) + '</span></div>'
+        ).join("") + '</div>' +
+        (why ? '<ul class="why-list">' + why + '</ul>' : '') +
+        (actions ? '<div class="action-grid">' + actions + '</div>' : '') +
+        '<table class="member-table"><thead><tr><th>Widget</th><th>role</th><th>usage</th><th>tokens</th><th>source</th></tr></thead><tbody>' +
+        members +
+        '</tbody></table></section>';
+    }
+
+    function formatPercent(value) {
+      return Math.round(Number(value) * 1000) / 10 + "%";
     }
 
     function renderDetail() {
@@ -2979,6 +3573,7 @@ function appHtml() {
         '<button class="small-button" type="button" id="nextCandidate">Next</button>' +
         '<button class="small-button" type="button" id="reloadPreviews">Reload previews</button>' +
         '</div></div>' +
+        renderDedupeReview(candidate) +
         renderPreviewGrid(candidate) +
         renderRelated(candidate) +
         '<div class="below">' +
@@ -2986,6 +3581,13 @@ function appHtml() {
         '<section class="code-card"><strong>Implementation code</strong><div class="code-tabs" id="codeTabs"></div><pre id="code">Select a file.</pre></section>' +
         '</div>';
       document.querySelectorAll("#decisionGrid button").forEach((button) => {
+        button.addEventListener("click", () => {
+          draftNotes.set(candidate.id, document.getElementById("note").value);
+          selectedDecision = button.dataset.decision;
+          renderDetail();
+        });
+      });
+      document.querySelectorAll(".action-button").forEach((button) => {
         button.addEventListener("click", () => {
           draftNotes.set(candidate.id, document.getElementById("note").value);
           selectedDecision = button.dataset.decision;

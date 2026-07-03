@@ -156,6 +156,7 @@ function discoverManagedScripts() {
       return false;
     }
     if (relativePath.includes("/lib/")) return false;
+    if (relativePath.includes("/fixtures/")) return false;
     if (relativePath.includes("/contracts/generated/")) return false;
     if (relativePath.endsWith(".test.mjs")) return false;
     return true;

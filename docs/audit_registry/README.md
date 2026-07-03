@@ -1,7 +1,7 @@
 ---
 doc_id: audit_registry
-version: 2.5.0
-updated: 2026-07-01
+version: 2.6.2
+updated: 2026-07-02
 owner: recursive_audit_loop
 status: active
 ---
@@ -30,10 +30,35 @@ Use this registry before reading long tracker docs. The goal is to answer:
 | `doc_summaries.json` | Compact read/skip policies for long docs. |
 | `agent_metrics.jsonl` | Append-only measurements for agent-readiness score, check counts, delegation outcomes, and workflow-quality trend events. |
 | `architecture_pattern_adoption.json` | Machine-readable tracker for architecture reference exhibits, prototype files, adopters, variants, exceptions, and back-propagation obligations. |
+| `react_component_governance_families.json` | Generated reader snapshot of React component families governed by `tool/web/check_react_component_governance.mjs --families-json`. |
+| `react_staff_review_remediation.json` | Staff review item tracker for the 2026-07-02 organizer publication, public listing, and claim CTA remediation pass. |
 | `widget_classification.json` | Generated registry of every Dart widget class, its role, ownership boundaries, catalog status, and allowed public remediation path. |
 | `widget_classification.schema.json` | JSON schema for the generated widget classification registry. |
+| `widget_similarity.json` | Generated structural-similarity registry for widget consolidation review packets. |
+| `widget_consolidation_receipts.md` | Command receipts, spot-checks, calibration notes, and known limitations for the widget consolidation pipeline. |
 | `new_widget_inventory_scan.json` | Generated report comparing the working tree to a base ref for newly added widgets, private widget classes, widget-returning helpers, and Widgetbook/catalog coverage gaps. |
 | `archive/` | Historical detail that should be searched only when a debt id or rule requires it. |
+
+## Enforcement Metadata
+
+Active rules declare `enforcement` entries. Machine-backed entries bind to a
+tool id in `tool/tools_manifest.json`; manual entries use `stage: manual` so
+the absence of a scanner is explicit. Manifest tools that enforce rules declare
+their `role`, reverse `rules` mapping, and, for gates or ratchets,
+`vacuityProof`. Active tools under `tool/*.sh`, `tool/architecture/**`, or
+`tool/audit/**`, and any active tool with a non-syntax manifest check, must
+declare a `role` so runtime checks cannot hide from enforcement review. Ratchet
+tools with checked baselines should also have a matching receipt in
+`agent_metrics.jsonl` when the baseline changes. For `maxCounts` baselines, the
+receipt stores the matching `maxCounts`; for `allowedFindings` baselines, it
+stores `allowedFindingsCount`.
+
+Validate this layer with:
+
+```sh
+node tool/check_enforcement_integrity.mjs
+node tool/run.mjs check --category meta
+```
 
 ## Workflow
 

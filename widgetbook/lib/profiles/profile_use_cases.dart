@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -199,7 +200,7 @@ Widget profileScreenSelfTabBodyStates(BuildContext context) {
           height: 760,
           child: _SelfProfileTabBodyPreview(
             state: SelfProfileScreenState.fromAsync(
-              profileAsync: AsyncData<UserProfile?>(_viewer),
+              profileState: CatchAsyncState.data(_viewer),
               today: ProfileSurfaceFixtures.now,
               uploadState: idleUploadState,
               uploadMutationPending: false,

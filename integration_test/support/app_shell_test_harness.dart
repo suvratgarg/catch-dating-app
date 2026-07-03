@@ -401,7 +401,7 @@ List<Object> appShellTestOverrides({
         ).overrideWithValue(AsyncData(participationsByEventId[event.id])),
       ],
     ],
-    exploreViewModelProvider.overrideWithValue(
+    exploreClubsViewModelProvider.overrideWithValue(
       AsyncData(
         ExploreViewModel(
           joinedClubs: joinedClubs,

@@ -41,6 +41,9 @@ jobs:
       - name: Backend error boundary gate
         run: npm run audit:backend-errors:check
 
+      - name: Frontend error boundary gate
+        run: npm run audit:frontend-errors:check
+
       - name: Static analysis
         run: flutter analyze --no-fatal-infos
 
@@ -55,6 +58,9 @@ jobs:
 
       - name: UI local-constant wrappers check
         run: bash tool/check_ui_local_constant_wrappers.sh
+
+      - name: UI allow-debt gate
+        run: bash tool/check_ui_allow_debt.sh
 
       - name: Raw network image guard
         run: bash tool/check_no_raw_network_image.sh

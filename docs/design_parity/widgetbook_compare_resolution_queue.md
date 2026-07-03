@@ -27,14 +27,22 @@ Generated from live review notes saved through
    information-grouping primitive with divided, contained, and plain variants;
    the former field-group, design-section, and section-surface APIs are
    removed.
-8. Current: focused visual decision review. The compare tool pins the remaining
-   open boundary questions before the broad consolidation backlog and shows all
-   relevant Widgetbook previews plus implementation-code tabs before a decision
-   is requested.
+8. Current: dedupe-assisted consolidation review. The compare tool now promotes
+   the generated `docs/audit_registry/widget_similarity.json` candidates ahead
+   of the older hand-curated backlog, ranked by detector count and similarity
+   score, while still showing the registry rank, detector evidence, similarity
+   metrics, Widgetbook previews, source tabs, and suggested actions before a
+   decision is requested.
 
 ## Focused Visual Decision Queue
 
 Status: needs review
+
+The first screen of the compare tool is now the dedupe queue generated from the
+widget similarity registry. Use the evidence card to decide whether a candidate
+is an absorb, merge/extract, rename-only, keep-distinct, visual-first, or
+inline/delete case. The older focused visual decision rows below remain in the
+same tool after the dedupe candidates.
 
 These are not implementation decisions yet. They are the unresolved boundaries
 that need visual review before more widget consolidation work proceeds.

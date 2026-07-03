@@ -13,14 +13,8 @@ This is the canonical architecture spec for Catch's Flutter app code under
 boundaries, repository access, async state handling, error surfacing, widget
 ownership, enforcement, and migration policy.
 
-Use this document first when changing app architecture. It supersedes and
-replaces the old standalone controller, UI layout, and error architecture docs:
-
-- deleted: `docs/controller_patterns.md`;
-- deleted: `docs/ui_architecture.md`;
-- deleted: `docs/error-handling-audit.md`.
-
-Do not recreate separate controller/UI/error architecture docs. If a durable
+Use this document first when changing app architecture. It is the single active
+home for controller, UI layout, and error architecture guidance. If a durable
 rule belongs to app code organization, put it here. Keep only narrow generated
 inventories, implementation plans, or domain-specific contracts elsewhere.
 
@@ -30,14 +24,13 @@ This spec consolidates and normalizes guidance from:
 
 - `lib/README.md`: feature-first folder structure.
 - `PROJECT_CONTEXT.md`: current product/route/code map.
-- deleted `docs/controller_patterns.md`: action, flow, async, view-model
+- historical controller/view-model guidance: action, flow, async, view-model
   provider patterns, and realtime stream lifecycle.
-- deleted `docs/error-handling-audit.md`: app error taxonomy, branded error
+- historical error architecture guidance: app error taxonomy, branded error
   surfaces, mutation errors, operation context, scanner policy, and global
   reporting.
-- deleted `docs/ui_architecture.md`: screen padding, sliver/scroll ownership,
-  token tiers, sizing rules, design-tool boundaries, and analyzer-plugin
-  policy.
+- historical UI architecture guidance: screen padding, sliver/scroll ownership,
+  token tiers, sizing rules, design-tool boundaries, and analyzer-plugin policy.
 - `docs/widget_catalog.md`: widget ownership, primitive governance, public
   widget catalog, and private-helper remediation.
 - `docs/audit_registry/rules.json`: active enforceable rules such as
@@ -46,10 +39,10 @@ This spec consolidates and normalizes guidance from:
   `EXTERNAL-SIDE-EFFECT-001`, `UI-LINT-001`, and
   `WIDGET-CATALOG-001`.
 
-## Supersession And Overrides
+## Canonical Decisions And Overrides
 
-This section is intentionally explicit so older docs do not compete with this
-one.
+This section is intentionally explicit so architecture decisions stay in one
+place.
 
 1. Keep the canonical feature folder shape as `domain`, `data`, and
    `presentation`. Do not rename `data` to `repositories`.
@@ -58,10 +51,9 @@ one.
    It does have to use a named async state boundary: `CatchAsyncValueView`,
    `CatchAsyncValueSliver`, or a feature-owned typed UI-state adapter.
 
-3. Widgets should not read repository providers directly. Older wording that
-   allowed widgets to call repositories for "pure UI plumbing" is narrowed:
-   plugin/platform/local side effects must go through a provider, controller,
-   repository, or service seam with a test replacement path.
+3. Widgets should not read repository providers directly. Plugin, platform, and
+   local side effects must go through a provider, controller, repository, or
+   service seam with a test replacement path.
 
 4. Do not ban `StatefulWidget`. Use it for Flutter mechanics. Use controllers
    or view models for durable product state, async data, mutations, validation
@@ -143,6 +135,12 @@ Small features do not need every file. A feature may have only a repository and
 one screen if the behavior is simple. Large features may split by surface under
 `presentation/`, but should keep route-level screens easy to find.
 
+Files under `lib/**/presentation/**` ending in `_state.dart` are provider-free
+display adapters by naming convention. They may depend on domain/core/value
+types and `CatchAsyncState`, but they must not import Riverpod, declare
+providers, or call `ref.watch/read/listen`; provider-owned composition belongs
+in a neighboring `_view_model.dart`, `_controller.dart`, or route screen.
+
 Allowed exceptions:
 
 - `lib/core/**` for app-wide primitives, theme, shared widgets, global app
@@ -213,7 +211,27 @@ Hard rules:
   provider, and may watch mutation state for display. It should not reach
   around those seams into repositories.
 - Cross-feature reads must go through a named provider/view-model/repository
-  seam. Do not import sibling feature presentation code.
+  seam or an explicitly sanctioned presentation seam. Do not deep-import
+  sibling feature presentation internals. Sanctioned presentation seams are:
+  (a) a sibling feature's public controller (`presentation/*_controller.dart`)
+  imported from a route-level `*_screen.dart` or another `*_controller.dart`;
+  and (b) symbols exported by the sibling feature root barrel
+  (`lib/<feature>/<feature>.dart`). Every feature-root barrel export of a
+  `presentation/` file must carry a same-line or previous-line
+  `// public-api:` annotation explaining why that symbol is public. Widgets,
+  state adapters, domain files, data files, and arbitrary presentation helpers
+  do not get the direct-controller-import carve-out.
+- Firebase SDK types are not a domain contract. New domain files must stay pure
+  Dart plus approved annotation/value packages. Firestore, Auth, Functions,
+  Storage, Remote Config, App Check, and plugin-specific types belong in
+  repository/data boundaries or feature-neutral adapter seams that keep those
+  SDKs out of domain models and validators.
+- Domain serialization that still needs Firestore `Timestamp` handling routes
+  through `core/firestore_converters`. Existing direct Firebase imports in
+  domain are ratcheted debt in
+  `tool/architecture/dependency_direction_baseline.json`; new domain code must
+  not add them. The long-term target is no Firebase API calls or Firebase types
+  in domain signatures. Full DTO purity is not the target by default.
 - Platform/plugin effects such as URL launch, share, image picker, location,
   calendar, clipboard, haptics, notifications, and connectivity need a seam
   that tests can replace.
@@ -285,8 +303,6 @@ boundaries through `SliverToBoxAdapter`, but growing repeated content should use
 lazy slivers.
 
 ## Layout, Spacing, And UI Architecture
-
-This section replaces the deleted `docs/ui_architecture.md`.
 
 Use `CatchSpacing` from `lib/core/theme/catch_tokens.dart` for reusable layout
 contracts. Feature screens should usually consume the semantic layer
@@ -580,9 +596,9 @@ empty states.
 
 ## Error Handling Contract
 
-This section replaces the deleted `docs/error-handling-audit.md`. Historical
-error-migration counts and old pass notes remain in git/audit history; current
-architecture lives here.
+This section is the current error architecture contract. Historical migration
+counts and old pass notes remain in git and audit history; active guidance lives
+here.
 
 ### Current Error Surface Model
 
@@ -741,7 +757,12 @@ Rules:
 - Empty state means successful data load with zero items. It is not an error
   fallback.
 
-Every mutation watched for `isPending` must also surface `hasError`.
+Every mutation watched for `isPending` must also surface `hasError`. Mutation
+objects should use the same grain as the action cardinality contract: one
+visible action plus one scope key maps to one pending/error surface. Do not use
+one screen-wide mutation to drive several CTAs with different scope keys, and do
+not split one singleton action into multiple independent mutation objects unless
+the UI still renders one resulting state.
 
 ### Controller And Mutation Errors
 
@@ -846,12 +867,17 @@ Run the frontend/local scanner before frontend/local/plugin error work:
 
 ```sh
 dart tool/audit/frontend_error_candidates.dart
+dart tool/audit/frontend_error_candidates.dart --check
 ```
 
 Both scanners use stable buckets: `mustMigrate`, `review`, `verified`,
 `intentional`, `fixture`, and `migrated`. `mustMigrate` and `review` should stay
-at zero. The scanner is not proof by itself; it gives a single source of truth
-for what still needs migration and what was intentionally retained.
+at zero. The frontend check uses
+`tool/audit/frontend_error_candidates_baseline.json` as a temporary ratchet for
+reviewed legacy candidates, so new unbaselined `review` or `mustMigrate`
+findings fail without requiring unrelated Flutter edits in the same pass. The
+scanner is not proof by itself; it gives a single source of truth for what still
+needs migration and what was intentionally retained.
 
 Candidate patterns:
 
@@ -901,6 +927,16 @@ Use the smallest controller pattern that owns the lifecycle correctly:
 | Async state controller | loaded state that is then mutated by user actions | `AsyncNotifier<T>` |
 | View-model provider | read-only composition of repository streams/futures into screen-ready state | generated function provider |
 | Domain/use-case class | shared or complex business logic independent of Flutter | pure Dart class/function |
+
+Mutation key grain must match the UI interaction grain. Route-level single
+actions such as book, cancel, submit, and delete for the route's single subject
+may use static `Mutation` fields. Repeated row or list actions such as
+attendance, waitlist offers, join-request decisions, or any per-entity action
+rendered multiple times on one surface must key mutation state per target with
+`mutation(key)` family instances. Keys are typed Dart records with value
+equality, not concatenated strings. Use
+`lib/hosts/presentation/host_event_booking_controller.dart` as the reference
+implementation.
 
 ### Action Controller
 
@@ -1003,7 +1039,10 @@ Use these lifecycle rules:
   reads. Let the provider close when the route is popped or when the screen
   stops watching it.
 - Use `@Riverpod(keepAlive: true)` only when the stream is deliberately global
-  or prewarmed. Document the reason at the provider or call site.
+  or prewarmed. Document the reason at the provider or call site with a
+  `// keepalive:` marker within the three lines above the annotation or
+  handwritten provider declaration; the dependency-direction scanner enforces
+  that marker.
 - For bottom-tab branches retained by `StatefulShellRoute.indexedStack`, decide
   whether the stream should remain active while its tab is inactive. If not,
   gate the screen/view model on the active tab before watching feature-owned
@@ -1220,6 +1259,9 @@ Rules:
 - Route definitions should construct screens and parse path/query parameters.
 - Route guards can redirect based on auth/profile/app state.
 - Route config should not perform repository mutations.
+- Production navigation outside `lib/routing/**` should use named routes, route
+  constants, or typed route helpers instead of raw path string literals. Raw
+  paths stay owned by route definitions and URL contract files.
 - Screen constructors receive simple route values, not repository instances.
 - Complex route extras should be normalized into a typed route argument object
   or handled by the screen/controller boundary.
@@ -1250,6 +1292,13 @@ more explicit.
 
 Use three enforcement levels.
 
+The enforcement registry is checked by
+`node tool/check_enforcement_integrity.mjs`. When a rule gains, loses, or
+changes enforcement, update `docs/audit_registry/rules.json`,
+`tool/tools_manifest.json`, the owner-doc anchor, and the known-bad proof or
+baseline receipt together. Manual enforcement is explicit with `stage: manual`;
+absence of an enforcement entry is drift.
+
 ### Analyzer plugin rules
 
 Use `packages/catch_ui_lints` or a future architecture lint package for
@@ -1258,7 +1307,8 @@ deterministic rules that should be visible in IDE/analyzer output.
 Good analyzer-rule candidates:
 
 - `presentation/widgets/**` must not import or watch `*RepositoryProvider`.
-- feature presentation must not import sibling feature presentation.
+- feature presentation must not import sibling feature presentation internals
+  except the sanctioned screen/controller-to-controller seam.
 - `domain/**` must not import Flutter, Riverpod, Firebase, or platform plugins.
 - direct raw Firebase UI messages are forbidden in presentation.
 - `*_screen.dart` classes should use a named async boundary when they watch

@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/matches/domain/match.dart';
-import 'package:catch_dating_app/reviews/presentation/review_keys.dart';
+import 'package:catch_dating_app/reviews/shared/review_keys.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/safety/presentation/settings_keys.dart';
 import 'package:flutter/material.dart' show TextButton, TextField;

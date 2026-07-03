@@ -1563,7 +1563,7 @@
       "name": "Explore Discovery",
       "owner": "explore",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "ready",
       "routes": [
         {
           "id": "exploreScreen",
@@ -1581,11 +1581,11 @@
         "symbol": "ExploreScreen"
       },
       "stateController": {
-        "primary": "exploreViewModelProvider",
+        "primary": "exploreClubsViewModelProvider",
         "files": [
           {
             "file": "lib/explore/presentation/explore_view_model.dart",
-            "symbol": "exploreViewModel"
+            "symbol": "exploreClubsViewModel"
           },
           {
             "file": "lib/explore/presentation/explore_feed_view_model.dart",
@@ -1752,7 +1752,7 @@
           "id": "loading",
           "kind": "loading",
           "status": "captured",
-          "source": "AsyncLoading from exploreViewModelProvider renders the Explore chrome plus skeleton cards.",
+          "source": "AsyncLoading from exploreClubsViewModelProvider renders the Explore chrome plus skeleton cards.",
           "previewIds": [
             "ExploreScreen/Screen states"
           ],
@@ -1768,7 +1768,7 @@
           "id": "club_source_error",
           "kind": "error",
           "status": "captured",
-          "source": "AsyncError from exploreViewModelProvider renders CatchSliverErrorState.fromError for AppErrorContext.club with retry invalidation.",
+          "source": "AsyncError from exploreClubsViewModelProvider renders CatchSliverErrorState.fromError for AppErrorContext.club with retry invalidation.",
           "previewIds": [
             "ExploreScreen/Screen states"
           ],

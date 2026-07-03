@@ -24,6 +24,7 @@ import 'dart:io';
 /// `mustMigrate`, `review`, `verified`, `intentional`, `fixture`, `migrated`.
 /// The finished-state invariant is `mustMigrate == 0` and `review == 0`.
 const defaultRoots = ['lib', 'test'];
+const defaultBaselinePath = 'tool/audit/frontend_error_candidates_baseline.json';
 const generatedSuffixes = ['.g.dart', '.freezed.dart', '.mocks.dart'];
 
 final rules = <CandidateRule>[
@@ -126,12 +127,28 @@ final rules = <CandidateRule>[
 ];
 
 void main(List<String> args) {
-  final jsonOutput = args.contains('--json');
-  final markdownOutput = args.contains('--markdown');
-  final roots = _rootsFromArgs(args);
+  final options = _parseArgs(args);
+  if (options.help) {
+    _printUsage();
+    return;
+  }
+  if (options.selfTest) {
+    _runSelfTest();
+    return;
+  }
+
+  final roots = options.roots;
   final candidates = _scan(roots);
 
-  if (jsonOutput) {
+  if (options.checkOutput) {
+    final baseline = _loadBaseline(options.baselinePath);
+    final blockingCandidates = _blockingCandidates(candidates, baseline);
+    _printCheck(roots, candidates, baseline, blockingCandidates);
+    if (blockingCandidates.isNotEmpty) exitCode = 1;
+    return;
+  }
+
+  if (options.jsonOutput) {
     stdout.writeln(
       const JsonEncoder.withIndent('  ').convert({
         'roots': roots,
@@ -144,7 +161,7 @@ void main(List<String> args) {
     return;
   }
 
-  if (markdownOutput) {
+  if (options.markdownOutput) {
     _printMarkdown(roots, candidates);
     return;
   }
@@ -152,13 +169,79 @@ void main(List<String> args) {
   _printText(roots, candidates);
 }
 
-List<String> _rootsFromArgs(List<String> args) {
+CliOptions _parseArgs(List<String> args) {
   final roots = <String>[];
-  for (final arg in args) {
-    if (arg.startsWith('--')) continue;
+  var baselinePath = defaultBaselinePath;
+  var checkOutput = false;
+  var jsonOutput = false;
+  var markdownOutput = false;
+  var selfTest = false;
+  var help = false;
+
+  for (var i = 0; i < args.length; i += 1) {
+    final arg = args[i];
+    if (arg == '--baseline') {
+      if (i + 1 >= args.length) {
+        stderr.writeln('--baseline requires a path.');
+        exitCode = 64;
+        return const CliOptions(help: true);
+      }
+      baselinePath = args[i + 1];
+      i += 1;
+      continue;
+    }
+    if (arg == '--check') {
+      checkOutput = true;
+      continue;
+    }
+    if (arg == '--json') {
+      jsonOutput = true;
+      continue;
+    }
+    if (arg == '--markdown') {
+      markdownOutput = true;
+      continue;
+    }
+    if (arg == '--self-test') {
+      selfTest = true;
+      continue;
+    }
+    if (arg == '--help' || arg == '-h') {
+      help = true;
+      continue;
+    }
+    if (arg.startsWith('--')) {
+      stderr.writeln('Unknown option: $arg');
+      exitCode = 64;
+      return const CliOptions(help: true);
+    }
     roots.add(arg);
   }
-  return roots.isEmpty ? defaultRoots : roots;
+
+  return CliOptions(
+    roots: roots.isEmpty ? defaultRoots : roots,
+    baselinePath: baselinePath,
+    checkOutput: checkOutput,
+    jsonOutput: jsonOutput,
+    markdownOutput: markdownOutput,
+    selfTest: selfTest,
+    help: help,
+  );
+}
+
+void _printUsage() {
+  stdout.writeln('''
+Usage:
+  dart tool/audit/frontend_error_candidates.dart [options] [roots...]
+
+Options:
+  --check             Fail on unbaselined mustMigrate/review candidates.
+  --baseline <path>   Baseline JSON path for --check.
+  --json              Print JSON report.
+  --markdown          Print Markdown report.
+  --self-test         Run seeded scanner probes.
+  --help              Show this help.
+''');
 }
 
 List<Candidate> _scan(List<String> roots) {
@@ -251,6 +334,155 @@ void _printText(List<String> roots, List<Candidate> candidates) {
       '${candidate.path}:${candidate.line} | ${candidate.disposition} | '
       '${candidate.snippet}',
     );
+  }
+}
+
+void _printCheck(
+  List<String> roots,
+  List<Candidate> candidates,
+  FrontendErrorBaseline baseline,
+  List<Candidate> blockingCandidates,
+) {
+  final summary = _summary(candidates);
+  stdout.writeln('Frontend error pre-submit check');
+  stdout.writeln('roots: ${roots.join(', ')}');
+  stdout.writeln('baseline: ${baseline.path}');
+  for (final entry in summary.entries) {
+    stdout.writeln('${entry.key}: ${entry.value}');
+  }
+  stdout.writeln('blocking: ${blockingCandidates.length}');
+
+  if (blockingCandidates.isEmpty) {
+    stdout.writeln('No unbaselined frontend error candidates found.');
+    return;
+  }
+
+  stderr.writeln();
+  stderr.writeln('Unresolved frontend error candidates block this check:');
+  for (final candidate in blockingCandidates) {
+    stderr.writeln(
+      '- ${candidate.rule.id} at ${candidate.path}:${candidate.line}: '
+      '${candidate.disposition}. ${candidate.recommendation}',
+    );
+    stderr.writeln('  ${candidate.snippet}');
+  }
+}
+
+FrontendErrorBaseline _loadBaseline(String path) {
+  final file = File(path);
+  if (!file.existsSync()) {
+    return FrontendErrorBaseline.empty(path);
+  }
+  final decoded = jsonDecode(file.readAsStringSync());
+  if (decoded is! Map<String, Object?>) {
+    throw FormatException('Frontend error baseline must be a JSON object: $path');
+  }
+  final entries = decoded['allowedReviewCandidates'];
+  final allowedReviewCandidates = <String, int>{};
+  if (entries is List) {
+    for (final entry in entries) {
+      if (entry is! Map<String, Object?>) continue;
+      final rule = entry['rule'];
+      final candidatePath = entry['path'];
+      final snippet = entry['snippet'];
+      if (rule is! String || candidatePath is! String || snippet is! String) {
+        throw FormatException(
+          'Baseline entries require string rule/path/snippet: $path',
+        );
+      }
+      final countValue = entry['maxOccurrences'];
+      final maxOccurrences = countValue is int ? countValue : 1;
+      allowedReviewCandidates[_candidateKeyParts(rule, candidatePath, snippet)] =
+          maxOccurrences;
+    }
+  }
+  return FrontendErrorBaseline(
+    path: path,
+    allowedReviewCandidates: allowedReviewCandidates,
+  );
+}
+
+List<Candidate> _blockingCandidates(
+  List<Candidate> candidates,
+  FrontendErrorBaseline baseline,
+) {
+  final usedReviewCounts = <String, int>{};
+  final blocking = <Candidate>[];
+  for (final candidate in candidates) {
+    if (candidate.status == CandidateStatus.mustMigrate) {
+      blocking.add(candidate);
+      continue;
+    }
+    if (candidate.status != CandidateStatus.review) continue;
+
+    final key = _candidateKey(candidate);
+    final used = (usedReviewCounts[key] ?? 0) + 1;
+    usedReviewCounts[key] = used;
+    final allowed = baseline.allowedReviewCandidates[key] ?? 0;
+    if (used > allowed) {
+      blocking.add(candidate);
+    }
+  }
+  return blocking;
+}
+
+String _candidateKey(Candidate candidate) => _candidateKeyParts(
+  candidate.rule.id,
+  candidate.path,
+  candidate.snippet,
+);
+
+String _candidateKeyParts(String rule, String path, String snippet) =>
+    '$rule|${path.replaceAll('\\', '/')}|$snippet';
+
+void _runSelfTest() {
+  final temp = Directory.systemTemp.createTempSync(
+    'catch-frontend-error-self-test-',
+  );
+  try {
+    final fixtureFile = File('${temp.path}/lib/bad.dart');
+    fixtureFile.parent.createSync(recursive: true);
+    fixtureFile.writeAsStringSync('''
+Future<void> swallow() async {
+  try {
+    throw StateError('boom');
+  } catch (_) {
+  }
+}
+''');
+    final candidates = _scan(['${temp.path}/lib']);
+    final reviewCandidate = candidates.where((candidate) {
+      return candidate.rule.id == 'bare_catch' &&
+          candidate.status == CandidateStatus.review;
+    }).toList();
+    if (reviewCandidate.length != 1) {
+      stderr.writeln(
+        'Expected one bare_catch review candidate, found '
+        '${reviewCandidate.length}.',
+      );
+      exitCode = 1;
+      return;
+    }
+
+    final baseline = FrontendErrorBaseline(
+      path: '<self-test>',
+      allowedReviewCandidates: {
+        _candidateKey(reviewCandidate.single): 1,
+      },
+    );
+    final blockedWithoutBaseline = _blockingCandidates(
+      candidates,
+      FrontendErrorBaseline.empty('<empty>'),
+    );
+    final blockedWithBaseline = _blockingCandidates(candidates, baseline);
+    if (blockedWithoutBaseline.length != 1 || blockedWithBaseline.isNotEmpty) {
+      stderr.writeln('Frontend error baseline probe failed.');
+      exitCode = 1;
+      return;
+    }
+    stdout.writeln('Frontend error scanner self-test passed.');
+  } finally {
+    temp.deleteSync(recursive: true);
   }
 }
 
@@ -871,4 +1103,36 @@ class Candidate {
     'recommendation': recommendation,
     'snippet': snippet,
   };
+}
+
+class CliOptions {
+  const CliOptions({
+    this.roots = defaultRoots,
+    this.baselinePath = defaultBaselinePath,
+    this.checkOutput = false,
+    this.jsonOutput = false,
+    this.markdownOutput = false,
+    this.selfTest = false,
+    this.help = false,
+  });
+
+  final List<String> roots;
+  final String baselinePath;
+  final bool checkOutput;
+  final bool jsonOutput;
+  final bool markdownOutput;
+  final bool selfTest;
+  final bool help;
+}
+
+class FrontendErrorBaseline {
+  const FrontendErrorBaseline({
+    required this.path,
+    required this.allowedReviewCandidates,
+  });
+
+  FrontendErrorBaseline.empty(this.path) : allowedReviewCandidates = const {};
+
+  final String path;
+  final Map<String, int> allowedReviewCandidates;
 }

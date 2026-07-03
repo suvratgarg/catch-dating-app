@@ -81,6 +81,7 @@ codex_audit/**/logs/
 
 # Generated UI review captures
 artifacts/ui-captures/
+artifacts/widget_dedupe/
 artifacts/marketing/app-screenshots/raw/
 test/goldens/failures/
 
