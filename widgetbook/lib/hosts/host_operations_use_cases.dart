@@ -22,6 +22,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_analytics_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
@@ -1051,16 +1052,16 @@ Widget _hostAnalyticsExactCatalog(BuildContext context, String focus) {
 Widget _hostAnalyticsPreviewFor(String focus) {
   final report = HostOperationsFixtures.analyticsReport;
   return switch (focus) {
-    'HostAnalyticsBar' => const SizedBox(
+    'CatchAnalyticsBar' => const SizedBox(
       height: 96,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Expanded(child: HostAnalyticsBar(value: 18, maxValue: 42)),
+          Expanded(child: CatchAnalyticsBar(value: 18, maxValue: 42)),
           gapW8,
-          Expanded(child: HostAnalyticsBar(value: 32, maxValue: 42)),
+          Expanded(child: CatchAnalyticsBar(value: 32, maxValue: 42)),
           gapW8,
-          Expanded(child: HostAnalyticsBar(value: 42, maxValue: 42)),
+          Expanded(child: CatchAnalyticsBar(value: 42, maxValue: 42)),
         ],
       ),
     ),
@@ -4443,11 +4444,11 @@ Widget hostStrictHostActionRowCatalogStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostAnalyticsBar,
+  type: CatchAnalyticsBar,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
-Widget hostStrictHostAnalyticsBarCatalogStates(BuildContext context) =>
-    _hostAnalyticsExactCatalog(context, 'HostAnalyticsBar');
+Widget hostStrictCatchAnalyticsBarCatalogStates(BuildContext context) =>
+    _hostAnalyticsExactCatalog(context, 'CatchAnalyticsBar');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',

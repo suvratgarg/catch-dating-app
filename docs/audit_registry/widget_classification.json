@@ -10,28 +10,28 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1165,
-    "widgetClasses": 1057,
+    "total": 1164,
+    "widgetClasses": 1056,
     "stateClasses": 108,
-    "publicClasses": 1057,
+    "publicClasses": 1056,
     "privateClasses": 108,
     "byRole": {
       "atom": 56,
-      "composition": 314,
-      "feature-adapter": 329,
+      "composition": 315,
+      "feature-adapter": 328,
       "pattern": 16,
-      "screen": 342,
+      "screen": 341,
       "widget-state": 108
     },
     "byDecision": {
       "keep-canonical-contract": 171,
-      "keep-public-cataloged": 842,
+      "keep-public-cataloged": 840,
       "keep-widget-state": 108,
       "review-catalog-coverage": 40,
-      "review-promote-or-consolidate": 4
+      "review-promote-or-consolidate": 5
     },
     "byCatalogStatus": {
-      "cataloged": 747,
+      "cataloged": 746,
       "contracted": 171,
       "not-applicable": 108,
       "route-covered": 99,
@@ -2697,6 +2697,33 @@
         "mergeIntoCanonical"
       ],
       "flags": []
+    },
+    {
+      "name": "CatchAnalyticsBar",
+      "file": "lib/core/widgets/catch_analytics_bar.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.analytics_bar",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract"
+      ]
     },
     {
       "name": "CatchAsyncScreenLoading",
@@ -19633,29 +19660,6 @@
       "flags": []
     },
     {
-      "name": "HostAnalyticsBar",
-      "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.host_analytics_bar",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
       "name": "HostAnalyticsControls",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
       "classKind": "widget",
@@ -25780,29 +25784,6 @@
       "remediationOptions": [
         "moveStateToController",
         "routeThroughScreenState"
-      ],
-      "flags": []
-    },
-    {
-      "name": "UserAnalyticsBar",
-      "file": "lib/user_analytics/shared/user_analytics_panel.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.user_analytics.user_analytics_bar",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
       ],
       "flags": []
     },

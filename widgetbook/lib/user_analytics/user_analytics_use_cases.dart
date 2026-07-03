@@ -1,10 +1,11 @@
 import 'dart:async';
 
-import "package:catch_dating_app/core/widgets/catch_stat_column.dart";
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_analytics_bar.dart';
+import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
 import 'package:catch_dating_app/labs/design_fixtures/profile_surface_fixtures.dart';
 import 'package:catch_dating_app/user_analytics/data/user_analytics_repository.dart';
 import 'package:catch_dating_app/user_analytics/shared/user_analytics_panel.dart';
@@ -193,12 +194,12 @@ Widget userAnalyticsTrendPanelStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Bar states',
-  type: UserAnalyticsBar,
+  type: CatchAnalyticsBar,
   path: '[P1 product surfaces]/User analytics',
 )
 Widget userAnalyticsBarStates(BuildContext context) {
   return const _UserAnalyticsCatalog(
-    title: 'UserAnalyticsBar',
+    title: 'CatchAnalyticsBar',
     contractId: 'component.profile.user_analytics.bar',
     children: [
       _StateCard(
@@ -208,13 +209,13 @@ Widget userAnalyticsBarStates(BuildContext context) {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Expanded(child: UserAnalyticsBar(value: 0, maxValue: 12)),
+              Expanded(child: CatchAnalyticsBar(value: 0, maxValue: 12)),
               SizedBox(width: CatchSpacing.micro6),
-              Expanded(child: UserAnalyticsBar(value: 3, maxValue: 12)),
+              Expanded(child: CatchAnalyticsBar(value: 3, maxValue: 12)),
               SizedBox(width: CatchSpacing.micro6),
-              Expanded(child: UserAnalyticsBar(value: 8, maxValue: 12)),
+              Expanded(child: CatchAnalyticsBar(value: 8, maxValue: 12)),
               SizedBox(width: CatchSpacing.micro6),
-              Expanded(child: UserAnalyticsBar(value: 12, maxValue: 12)),
+              Expanded(child: CatchAnalyticsBar(value: 12, maxValue: 12)),
             ],
           ),
         ),

@@ -474,6 +474,89 @@ Known blockers / inherited debt:
   succeeds, but build_runner reports that the delete-conflicting option has
   been removed and is ignored by the current builder.
 
+## 2026-07-03 WO-005 CatchAnalyticsBar
+
+Scope:
+
+- `HostAnalyticsBar`
+- `UserAnalyticsBar`
+- `CatchAnalyticsBar`
+- `CatchPersonRosterLayout` context icon sizing
+
+Commands:
+
+- `dart tool/audit_registry.dart refresh`
+- `node tool/agent/context_pack.mjs --task widget-consolidation-wo-005 --paths lib/core/widgets/catch_analytics_bar.dart,lib/hosts/presentation/host_operations_screen.dart,lib/user_analytics/shared/user_analytics_panel.dart,lib/core/widgets/catch_person_row.dart,widgetbook/lib,docs/design_parity/widget_consolidation/codex_worklog.md,docs/design_parity/widget_consolidation/decisions.json`
+- `rg -n "CatchAnalyticsBar|HostAnalyticsBar|UserAnalyticsBar|hostStrictCatchAnalyticsBar|hostStrictHostAnalyticsBar|CatchIcon\\.micro|size: 11" lib widgetbook/lib docs/widget_catalog.md docs/design_parity/widget_consolidation docs/audit_registry/doc_versions.json`
+- `dart format lib/core/widgets/catch_analytics_bar.dart lib/hosts/presentation/host_operations_screen.dart lib/user_analytics/shared/user_analytics_panel.dart lib/core/widgets/catch_person_row.dart widgetbook/lib/hosts/host_operations_use_cases.dart widgetbook/lib/user_analytics/user_analytics_use_cases.dart`
+- `flutter pub get` in `widgetbook/`
+- `dart run build_runner build --delete-conflicting-outputs` in `widgetbook/`
+- `node tool/design/generate_widget_classification.mjs`
+- `node tool/design/check_widget_classification.mjs`
+- `dart run tool/widget_dedupe/bin/extract_fingerprints.dart`
+- `node tool/design/build_widget_similarity.mjs`
+- `node tool/design/build_widget_similarity.mjs --check`
+- `node tool/design/check_widgetbook_coverage.mjs --check`
+- `env DART=/Users/suvratgarg/Development/flutter/bin/dart node tool/design/check_widget_dedupe_probes.mjs`
+- `flutter analyze --no-fatal-infos lib`
+- `flutter analyze` in `widgetbook/`
+- `bash tool/widget_cleanup_scan.sh --summary`
+- `node tool/run.mjs check --manifest-only`
+- `node tool/design/check_widgetbook_contract_refs.mjs --check`
+- `node -e "const fs=require('fs'); for (const f of process.argv.slice(1)) JSON.parse(fs.readFileSync(f,'utf8')); console.log('JSON parse passed');" docs/audit_registry/widget_classification.json artifacts/widget_dedupe/fingerprints.json docs/audit_registry/widget_similarity.json docs/audit_registry/doc_versions.json docs/design_parity/widget_consolidation/decisions.json`
+- `git diff --check`
+
+Headline numbers:
+
+| metric | value |
+|---|---:|
+| widget classification entries | 1,164 |
+| classification review items | 45 |
+| private widget classes flagged | 0 |
+| widget fingerprints | 1,056 |
+| fingerprint failures | 0 |
+| similarity clusters | 60 |
+| ranked pairs | 200 |
+| name families | 230 |
+| absorb candidates | 9 |
+| Widgetbook coverage decision queue | 139 |
+| Widgetbook coverage stale decisions | 0 |
+| root lib analyzer infos | 192 |
+| Widgetbook analyzer issues | 65 |
+| widget cleanup scan categories with findings | 0 |
+| agent readiness score | 100/100 |
+
+Spot checks:
+
+- Active `lib`, `widgetbook/lib`, and `docs/widget_catalog.md` references now
+  use `CatchAnalyticsBar`; the retired `HostAnalyticsBar` and
+  `UserAnalyticsBar` names only remain in the consolidation decision/worklog
+  evidence.
+- `widgetbook/lib/main.directories.g.dart` now exposes
+  `CatchAnalyticsBar/Exact catalog` in Host Operations strict coverage and
+  `CatchAnalyticsBar/Bar states` under User Analytics.
+- `docs/widget_catalog.md` v2.5.550 records `CatchAnalyticsBar` as the core
+  analytics mini-chart bar primitive, updates `UserAnalyticsTrendPanel` to the
+  shared `user_analytics/shared` file path, and drops the stale
+  `UserAnalyticsInlineStat` catalog row from the prior stats merge.
+- `CatchPersonRosterLayout` now matches `CatchPersonChatLayout` by using
+  `CatchIcon.micro` for the context-line activity icon.
+
+Known blockers / inherited debt:
+
+- `node tool/design/check_widgetbook_coverage.mjs --check` still fails on the
+  existing catalog-or-replace decision queue: 139 public widgets need
+  decisions, with 0 stale decisions.
+- `(cd widgetbook && flutter analyze)` still fails on 65 existing Widgetbook
+  issues in `lib/hosts/host_operations_use_cases.dart`; the WO-005 touched
+  helper still contains inherited HostOperations preview type drift in branches
+  outside the `CatchAnalyticsBar` preview.
+- `node tool/design/check_widgetbook_contract_refs.mjs --check` still fails on
+  unrelated HostOperations preview ids.
+- `dart run build_runner build --delete-conflicting-outputs` in `widgetbook/`
+  succeeds, but build_runner reports that the delete-conflicting option has
+  been removed and is ignored by the current builder.
+
 Calibration note:
 
 The v0.1.0 SimHash threshold of 18 is void. The v0.2.0 registry recalibrates

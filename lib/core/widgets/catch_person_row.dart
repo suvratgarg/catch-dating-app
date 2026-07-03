@@ -350,7 +350,7 @@ class CatchPersonRosterLayout extends StatelessWidget {
             children: [
               Icon(
                 CatchIcons.directionsRunRounded,
-                size: 11,
+                size: CatchIcon.micro,
                 color: CatchTokens.of(context).ink3,
               ),
               gapW3,

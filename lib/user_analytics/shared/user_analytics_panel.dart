@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_analytics_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
@@ -451,7 +452,7 @@ class UserAnalyticsTrendPanel extends StatelessWidget {
                     if (point != points.first)
                       const SizedBox(width: CatchSpacing.micro6),
                     Expanded(
-                      child: UserAnalyticsBar(
+                      child: CatchAnalyticsBar(
                         value: point.metrics['caughtYou'] ?? 0,
                         maxValue: maxCaughtYou,
                       ),
@@ -461,35 +462,6 @@ class UserAnalyticsTrendPanel extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class UserAnalyticsBar extends StatelessWidget {
-  const UserAnalyticsBar({
-    super.key,
-    required this.value,
-    required this.maxValue,
-  });
-
-  final num value;
-  final num maxValue;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final ratio = maxValue <= 0 ? 0.02 : (value / maxValue).clamp(0.06, 1);
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: FractionallySizedBox(
-        heightFactor: ratio.toDouble(),
-        child: CatchSurface(
-          radius: CatchRadius.xs,
-          borderWidth: 0,
-          backgroundColor: value <= 0 ? t.line2 : t.ink,
-          child: const SizedBox.expand(),
         ),
       ),
     );

@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.549
+version: 2.5.550
 updated: 2026-07-03
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,12 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.550
+
+- Promoted host/user analytics trend bars into the core
+  `CatchAnalyticsBar` primitive and replaced a hardcoded person-row context
+  icon size with `CatchIcon.micro`.
 
 ### 2.5.549
 
@@ -5301,6 +5307,7 @@ Generated 2026-05-06.
 | `CatchMetricStrip` | `lib/core/widgets/catch_metric_strip.dart:21` | Canonical metric rail for compact value-over-label stats. Owns the surface, border, spacing, hairline dividers, mono value styling, optional unit styling, label truncation, and surface/color overrides so club and event detail stats cannot drift. Registered as formal component contract `catch.metric_strip`; Widgetbook contract states are the canonical review surface. |
 | `CatchMetricStripCell` | `lib/core/widgets/catch_metric_strip.dart:76` | Direct value-over-label metric cell renderer used by `CatchMetricStrip`. Keeps mono value/unit styling, label truncation, optional color overrides, and expanded-row behavior reviewable without private widget-returning helpers. |
 | `CatchMetricStripDivider` | `lib/core/widgets/catch_metric_strip.dart:141` | Direct metric-rail hairline divider renderer used between `CatchMetricStripCell` instances. Centralizes metric divider height, width, and optional color override. |
+| `CatchAnalyticsBar` | `lib/core/widgets/catch_analytics_bar.dart:8` | Bottom-anchored fractional fill bar for dense host and user analytics mini charts. Normalizes `value / maxValue`, keeps zero values visible with a faint stub, and owns the shared `CatchSurface` fill treatment so analytics trend panels do not duplicate chart bars. |
 | `CatchMiniBarChart` | `lib/core/widgets/catch_mini_bar_chart.dart:5` | Compact mini bar-chart primitive for trend summaries inside dense metric panels. Owns the surface, border, content padding, bar spacing, zero-value treatment, tokenized fill/empty colors, and semantic label wrapper so insights and dashboard panels do not hand-roll tiny chart chrome. Registered as formal component contract `catch.mini_bar_chart`; Widgetbook contract states cover default, empty, zero-value, color-override, and semantic-label states. |
 | `CatchTextButton` | `lib/core/widgets/catch_text_button.dart:6` | Canonical text-only action primitive for inline actions, dialog actions, retry links, and top-bar text actions. Uses Catch tokens and text styles while preserving Material `TextButton` semantics. Use `CatchButton` for pill CTAs. |
 | `CatchCodeInput` | `lib/core/widgets/catch_otp_code_field.dart:11` | Handoff `CodeInput`: static controlled verification-code row with 6-cell default, mono digits, 64px surface cells, 10px gaps, interactive-tile radius, ink active rule, and optional caret. |
@@ -5781,25 +5788,23 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `UserAnalyticsPanel` | `lib/user_analytics/presentation/user_analytics_panel.dart:17` | Profile insights panel embedded from the profile Insights tab. Watches the user analytics repository at the route edge, owns the range preset selector, and composes loading, error, empty, summary metrics, trend, coaching tips, and data-quality states through public child renderers. Widgetbook catalogs the panel for loaded, empty, loading, and error states, and catalogs the child renderers directly for deterministic visual review. |
+| `UserAnalyticsPanel` | `lib/user_analytics/shared/user_analytics_panel.dart:19` | Profile insights panel embedded from the profile Insights tab. Watches the user analytics repository at the route edge, owns the range preset selector, and composes loading, error, empty, summary metrics, trend, coaching tips, and data-quality states through public child renderers. Widgetbook catalogs the panel for loaded, empty, loading, and error states, and catalogs the child renderers directly for deterministic visual review. |
 
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `UserAnalyticsReportView` | `lib/user_analytics/presentation/user_analytics_panel.dart:84` | Provider-free report renderer for loaded user analytics. Routes all-missing summaries to `UserAnalyticsEmptyState`; otherwise composes metric grid, trend panel, optional coaching tips, and data-quality panel in the profile Insights order. |
-| `UserAnalyticsEmptyState` | `lib/user_analytics/presentation/user_analytics_panel.dart:114` | Profile Insights empty-state surface for reports with no measurable summary cards. Uses shared icon, supporting copy, and `CatchSurface` chrome instead of a feature-local empty card. |
-| `UserAnalyticsReportSkeleton` | `lib/user_analytics/presentation/user_analytics_panel.dart:150` | Report-shaped loading skeleton for profile analytics. Reserves summary cards, trend bars, coaching tips, and data-quality rows while the selected analytics range is loading. |
-| `UserAnalyticsMetricGrid` | `lib/user_analytics/presentation/user_analytics_panel.dart:309` | Responsive two-column summary metric grid. Receives precomputed metric cards and delegates card copy/status rendering to `UserAnalyticsMetricTile`. |
-| `UserAnalyticsMetricTile` | `lib/user_analytics/presentation/user_analytics_panel.dart:335` | Single profile analytics summary card. Maps metric id/unit/status to icon, value formatting, status badge, canonical label/caption copy, and missing-data warning fill. |
-| `UserAnalyticsTrendPanel` | `lib/user_analytics/presentation/user_analytics_panel.dart:399` | Profile analytics trend section. Summarizes caught-you and mutual-catch totals, then renders the caught-you time series through `UserAnalyticsBar` columns. |
-| `UserAnalyticsBar` | `lib/user_analytics/presentation/user_analytics_panel.dart:469` | Single trend bar used by `UserAnalyticsTrendPanel`. Normalizes the value against the maximum and keeps zero-value bars visible with muted styling. |
-| `UserAnalyticsTipsPanel` | `lib/user_analytics/presentation/user_analytics_panel.dart:498` | Coaching-tip section for profile analytics. Wraps ordered tip refs in the shared section/surface chrome and delegates row copy to `UserAnalyticsTipRow`. |
-| `UserAnalyticsTipRow` | `lib/user_analytics/presentation/user_analytics_panel.dart:523` | Single coaching-tip row. Resolves copy from `UserAnalyticsCopy`, then renders the sparkle icon, title, and supporting body without provider access. |
-| `UserAnalyticsDataQualityPanel` | `lib/user_analytics/presentation/user_analytics_panel.dart:558` | Data-quality section for profile analytics. Presents quality rows inside shared section/surface chrome with dividers between rows. |
-| `UserAnalyticsDataQualityRow` | `lib/user_analytics/presentation/user_analytics_panel.dart:583` | Single data-quality row. Maps quality state to icon and renders the repository-provided detail text in supporting copy style. |
-| `UserAnalyticsSection` | `lib/user_analytics/presentation/user_analytics_panel.dart:607` | Small labeled section shell used by analytics trend, tips, data-quality, and skeleton sections. Keeps the label/child spacing consistent across Insights blocks. |
-| `UserAnalyticsInlineStat` | `lib/user_analytics/presentation/user_analytics_panel.dart:630` | Inline numeric stat used by the trend panel. Renders a large numeric value with a supporting label below it. |
+| `UserAnalyticsReportView` | `lib/user_analytics/shared/user_analytics_panel.dart:85` | Provider-free report renderer for loaded user analytics. Routes all-missing summaries to `UserAnalyticsEmptyState`; otherwise composes metric grid, trend panel, optional coaching tips, and data-quality panel in the profile Insights order. |
+| `UserAnalyticsEmptyState` | `lib/user_analytics/shared/user_analytics_panel.dart:115` | Profile Insights empty-state surface for reports with no measurable summary cards. Uses shared icon, supporting copy, and `CatchSurface` chrome instead of a feature-local empty card. |
+| `UserAnalyticsReportSkeleton` | `lib/user_analytics/shared/user_analytics_panel.dart:151` | Report-shaped loading skeleton for profile analytics. Reserves summary cards, trend bars, coaching tips, and data-quality rows while the selected analytics range is loading. |
+| `UserAnalyticsMetricGrid` | `lib/user_analytics/shared/user_analytics_panel.dart:311` | Responsive two-column summary metric grid. Receives precomputed metric cards and delegates card copy/status rendering to `UserAnalyticsMetricTile`. |
+| `UserAnalyticsMetricTile` | `lib/user_analytics/shared/user_analytics_panel.dart:337` | Single profile analytics summary card. Maps metric id/unit/status to icon, value formatting, status badge, canonical label/caption copy, and missing-data warning fill. |
+| `UserAnalyticsTrendPanel` | `lib/user_analytics/shared/user_analytics_panel.dart:401` | Profile analytics trend section. Summarizes caught-you and mutual-catch totals, then renders the caught-you time series through `CatchAnalyticsBar` columns. |
+| `UserAnalyticsTipsPanel` | `lib/user_analytics/shared/user_analytics_panel.dart:471` | Coaching-tip section for profile analytics. Wraps ordered tip refs in the shared section/surface chrome and delegates row copy to `UserAnalyticsTipRow`. |
+| `UserAnalyticsTipRow` | `lib/user_analytics/shared/user_analytics_panel.dart:496` | Single coaching-tip row. Resolves copy from `UserAnalyticsCopy`, then renders the sparkle icon, title, and supporting body without provider access. |
+| `UserAnalyticsDataQualityPanel` | `lib/user_analytics/shared/user_analytics_panel.dart:531` | Data-quality section for profile analytics. Presents quality rows inside shared section/surface chrome with dividers between rows. |
+| `UserAnalyticsDataQualityRow` | `lib/user_analytics/shared/user_analytics_panel.dart:557` | Single data-quality row. Maps quality state to icon and renders the repository-provided detail text in supporting copy style. |
+| `UserAnalyticsSection` | `lib/user_analytics/shared/user_analytics_panel.dart:581` | Small labeled section shell used by analytics trend, tips, data-quality, and skeleton sections. Keeps the label/child spacing consistent across Insights blocks. |
 | `SelfProfileTabBody` | `lib/user_profile/presentation/profile_screen.dart:161` | Provider-free self-profile branch renderer for loading, error, unavailable, and ready states inside `ProfileScreen`'s `NestedScrollView.body`. Receives the route-owned `TabController`, preview scroll controller, preview bridge callbacks, and retry callback explicitly. Loading preserves the tab shell with Edit skeleton, Preview skeleton, and Insights body; unavailable renders the canonical profile `CatchEmptyState` inline; ready renders Edit, Preview, and Insights through sliver-aware tab scroll views. Widgetbook mounts it inside a `NestedScrollView` preview so the `SliverOverlapInjector` contract is exercised. |
 | `ProfileTabScrollView` | `lib/user_profile/presentation/profile_screen.dart:250` | Shared tab scroll wrapper used by `SelfProfileTabBody`. Installs `CatchPagerFocusBoundary`, starts each tab with the `NestedScrollView` overlap injector, and then appends the tab slivers. |
 | `ProfileInsightsTabSliverBody` | `lib/user_profile/presentation/widgets/profile_insights_tab.dart:7` | Sliver-native Profile Insights body. Applies the canonical profile tab padding and max-width constraint before embedding `UserAnalyticsPanel`, leaving analytics provider loading/error/empty/report ownership inside the panel. |

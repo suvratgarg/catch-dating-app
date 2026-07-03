@@ -358,9 +358,25 @@ an import in this file, mirror what catch_surface.dart consumers do.)
    `size: CatchIcon.micro`. Change `11` → `CatchIcon.micro`.
 4. Registries + checks + receipts (gotchas 6–8).
 
-- [ ] primitive + migration + deletions
-- [ ] token drift fix
-- [ ] widgetbook + regen + registries + receipts
+- [x] primitive + migration + deletions
+- [x] token drift fix
+- [x] widgetbook + regen + registries + receipts
+
+Receipt: 2026-07-03 Codex WO-005 promoted the byte-identical
+`HostAnalyticsBar` and `UserAnalyticsBar` implementations into
+`CatchAnalyticsBar`, repointed production and Widgetbook use cases, refreshed
+the generated Widgetbook directory, replaced the `CatchPersonRosterLayout`
+raw context-icon size with `CatchIcon.micro`, and updated the widget catalog
+to v2.5.550. Clean checks: widget classification check (1164 entries, 45
+review items, 0 private widget classes flagged), widget similarity check (1056
+widgets, 60 clusters, 9 absorb candidates), widget dedupe probes, root
+`flutter analyze --no-fatal-infos lib` (192 existing infos, 0 warnings/errors),
+widget cleanup scan, manifest-only, JSON parse, agent readiness, and
+`git diff --check`. Existing blockers recorded in the receipt: Widgetbook
+analyzer still has 65 inherited HostOperations issues, Widgetbook coverage
+still has a 139 item catalog-or-replace decision queue with 0 stale decisions,
+and Widgetbook contract refs still have inherited HostOperations preview-id
+drift.
 
 ## WO-006 — Skeleton composition kit
 
