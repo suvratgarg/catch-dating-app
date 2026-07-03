@@ -24,7 +24,7 @@ final class LaunchAccessControllerProvider
         argument: null,
         retry: null,
         name: r'launchAccessControllerProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -46,7 +46,7 @@ final class LaunchAccessControllerProvider
 }
 
 String _$launchAccessControllerHash() =>
-    r'6446fe40a6ab2774cd13d48802d7c6eb0fb13470';
+    r'864094c0487be7a8140d98eb12428578da429056';
 
 abstract class _$LaunchAccessController
     extends $Notifier<LaunchAccessApplicationDraft> {
