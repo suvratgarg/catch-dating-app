@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.552
+version: 2.5.553
 updated: 2026-07-03
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.553
+
+- Inlined four more thin `CatchEmptyState` wrappers:
+  `PaymentHistoryEmptyState`, `ReviewsHistoryEmptyState`, `CalendarMessage`,
+  and `SavedEventsMessage`. Saved Events now uses the Calendar empty-state
+  icon sizing, spacing, and typography override set with its own bookmark icon.
 
 ### 2.5.552
 
@@ -6319,7 +6326,6 @@ Generated 2026-05-06.
 | `CalendarWeekStrip` | `lib/events/presentation/calendar/calendar_screen.dart:651` | Week selector row anchored to the selected date. Marks days that have calendar events and emits selected date changes without reading providers. |
 | `CalendarMonthGrid` | `lib/events/presentation/calendar/calendar_screen.dart:695` | Six-week month selector grid. Shows weekday labels, disables out-of-month dates, highlights today and selected date, and marks days that have events from `CalendarEventSummary`. |
 | `CalendarStatDivider` | `lib/events/presentation/calendar/calendar_screen.dart:773` | Tokenized vertical hairline divider between stats in the Calendar summary card. |
-| `CalendarMessage` | `lib/events/presentation/calendar/calendar_screen.dart:792` | Calendar empty-message body backed by `CatchEmptyState`, used when there are no joined or saved planned events. |
 
 ### Presentation state
 
@@ -6363,12 +6369,11 @@ Generated 2026-05-06.
 | `PaymentConfirmationBody` | `lib/payments/presentation/payment_confirmation_screen.dart:512` | Provider-free completed payment celebration body. Composes `EventJoinedCelebrationScreen`, payment quick actions, heads-up copy, referral share prompt, event navigation, and Back home from explicit data/actions passed by `PaymentConfirmationBodyController`. |
 | `PaymentConfirmationHeadsUp` | `lib/payments/presentation/payment_confirmation_screen.dart:578` | `CatchSurface` info box about arrival/run-day expectations. |
 | `PaymentReferralBanner` | `lib/payments/presentation/payment_confirmation_screen.dart:625` | Provider-free tappable referral banner shown inside the run-joined celebration. Receives an explicit `onShare` callback from `PaymentReferralBannerController` or `PaymentConfirmationBodyController` instead of watching share providers directly. |
-| `PaymentHistoryList` | `lib/payments/presentation/payment_history_screen.dart:77` | Provider-free list renderer for `screen.payments.history`. Receives a resolved `PaymentHistoryViewModel`, renders the empty-history state or constrained `PaymentHistoryTile` rows, and keeps provider watches in `PaymentHistoryListController`. |
-| `PaymentHistorySkeleton` | `lib/payments/presentation/payment_history_screen.dart:115` | Provider-free loading list for `screen.payments.history`. Renders five constrained `PaymentHistoryTileSkeleton` rows with the same dividers and width cap as the loaded payment list. |
-| `PaymentHistoryTileSkeleton` | `lib/payments/presentation/payment_history_screen.dart:143` | Single payment-history loading row. Mirrors the transaction title/date/detail and amount/status columns with shared skeleton primitives. |
-| `PaymentHistoryEmptyState` | `lib/payments/presentation/payment_history_screen.dart:192` | Provider-free full-body empty state for signed-out and no-payment branches. Uses `CatchScreenBody` and `CatchEmptyState` while callers provide the icon and copy. |
-| `PaymentHistoryTile` | `lib/payments/presentation/payment_history_screen.dart:213` | Provider-free semantic payment transaction row with amount, date, event title, and status. Tapping opens `PaymentReceiptSheet` and preserves the stable payment tile key. |
-| `PaymentReceiptSheet` | `lib/payments/presentation/payment_history_screen.dart:323` | Provider-free receipt/detail bottom sheet for `screen.payments.history`. Renders status badge, amount, payment/order/event/date rows, refund or sign-up failure detail copy, and the failed-signup help CTA while `PaymentHistoryTile` owns presentation and support snackbar wiring. |
+| `PaymentHistoryList` | `lib/payments/presentation/payment_history_screen.dart:83` | Provider-free list renderer for `screen.payments.history`. Receives a resolved `PaymentHistoryViewModel`, renders the empty-history state or constrained `PaymentHistoryTile` rows, and keeps provider watches in `PaymentHistoryListController`. |
+| `PaymentHistorySkeleton` | `lib/payments/presentation/payment_history_screen.dart:126` | Provider-free loading list for `screen.payments.history`. Renders five constrained `PaymentHistoryTileSkeleton` rows with the same dividers and width cap as the loaded payment list. |
+| `PaymentHistoryTileSkeleton` | `lib/payments/presentation/payment_history_screen.dart:154` | Single payment-history loading row. Mirrors the transaction title/date/detail and amount/status columns with shared skeleton primitives. |
+| `PaymentHistoryTile` | `lib/payments/presentation/payment_history_screen.dart:203` | Provider-free semantic payment transaction row with amount, date, event title, and status. Tapping opens `PaymentReceiptSheet` and preserves the stable payment tile key. |
+| `PaymentReceiptSheet` | `lib/payments/presentation/payment_history_screen.dart:313` | Provider-free receipt/detail bottom sheet for `screen.payments.history`. Renders status badge, amount, payment/order/event/date rows, refund or sign-up failure detail copy, and the failed-signup help CTA while `PaymentHistoryTile` owns presentation and support snackbar wiring. |
 
 ---
 
@@ -6439,12 +6444,11 @@ Generated 2026-05-06.
 | `EventReviewsSection` | `lib/reviews/presentation/reviews_section.dart:44` | Event-scoped reviews with write/edit CTA for attended participants. Uses the same compact inline empty-state primitive as club reviews; this is the only page-level review section that should open `WriteReviewSheet`. |
 | `ReviewsPreviewSection` | `lib/reviews/presentation/reviews_section.dart:121` | Shared read-only preview list: header, aggregate rating, compact/stacked empty-state configuration, top-N review cards, and optional see-all sheet. Callers supply edit callbacks only when the parent surface is event-scoped. |
 | `ReviewsHistoryState` | `lib/reviews/presentation/reviews_history_state.dart:7` | Reviews History display seam. Owns signed-out/loading/error/empty/content selection, event-context labels, edit availability, retry targets, and provider-free `ReviewsHistoryRow` data. |
-| `ReviewsHistoryBody` | `lib/reviews/presentation/reviews_history_screen.dart:80` | Provider-free dispatcher for `screen.reviews.history`. Renders loading, empty, retryable error, or content branches from `ReviewsHistoryState` while receiving retry/edit callbacks from the route adapters. |
-| `ReviewsHistoryList` | `lib/reviews/presentation/reviews_history_screen.dart:117` | Provider-free review-history list. Owns relaxed page padding, stable row spacing, and delegates each `ReviewsHistoryRow` to `ReviewHistoryItem` with an explicit edit callback. |
-| `ReviewHistoryItem` | `lib/reviews/presentation/reviews_history_screen.dart:139` | Single review-history row. Shows the event/date context label above the shared `ReviewCard` and exposes edit only when the row's state marks the review editable. |
-| `ReviewsHistoryEmptyState` | `lib/reviews/presentation/reviews_history_screen.dart:173` | Provider-free full-body empty state for signed-out and no-review history branches. Uses `CatchScreenBody` plus `CatchEmptyState` with the review icon. |
-| `ReviewsHistorySkeleton` | `lib/reviews/presentation/reviews_history_screen.dart:198` | Provider-free loading list for review history. Renders four stable `ReviewHistoryItemSkeleton` rows with production page padding and spacing. |
-| `ReviewHistoryItemSkeleton` | `lib/reviews/presentation/reviews_history_screen.dart:212` | Single review-history loading row. Mirrors the context label, reviewer/avatar row, star strip, and comment block using shared skeleton primitives. |
+| `ReviewsHistoryBody` | `lib/reviews/presentation/reviews_history_screen.dart:81` | Provider-free dispatcher for `screen.reviews.history`. Renders loading, empty, retryable error, or content branches from `ReviewsHistoryState` while receiving retry/edit callbacks from the route adapters. |
+| `ReviewsHistoryList` | `lib/reviews/presentation/reviews_history_screen.dart:126` | Provider-free review-history list. Owns relaxed page padding, stable row spacing, and delegates each `ReviewsHistoryRow` to `ReviewHistoryItem` with an explicit edit callback. |
+| `ReviewHistoryItem` | `lib/reviews/presentation/reviews_history_screen.dart:148` | Single review-history row. Shows the event/date context label above the shared `ReviewCard` and exposes edit only when the row's state marks the review editable. |
+| `ReviewsHistorySkeleton` | `lib/reviews/presentation/reviews_history_screen.dart:182` | Provider-free loading list for review history. Renders four stable `ReviewHistoryItemSkeleton` rows with production page padding and spacing. |
+| `ReviewHistoryItemSkeleton` | `lib/reviews/presentation/reviews_history_screen.dart:196` | Single review-history loading row. Mirrors the context label, reviewer/avatar row, star strip, and comment block using shared skeleton primitives. |
 | `ReviewCard` | `lib/reviews/presentation/reviews_section.dart:226` | Single tokenized review surface with reviewer avatar/name, star rating, optional comment, and optional edit action for the current user's own review. |
 | `StarRating` | `lib/reviews/presentation/star_rating.dart:5` | Read-only token-colored 5-star display. Clamps rating values into the valid visual range. |
 | `StarRatingPicker` | `lib/reviews/presentation/star_rating.dart:31` | Semantic/tappable 5-star picker. Supports caller-provided keys for stable widget tests and exposes tooltip/semantics labels per rating. |

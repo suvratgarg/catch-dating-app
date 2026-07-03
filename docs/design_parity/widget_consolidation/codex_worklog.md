@@ -585,12 +585,12 @@ preview-id drift.
 Same policy as WO-003 (thin `CatchEmptyState` wrappers; inline at call sites,
 delete class, widgetbook per gotcha 2, imports per gotcha 1):
 
-- [ ] `PaymentHistoryEmptyState` (`lib/payments/presentation/payment_history_screen.dart`)
+- [x] `PaymentHistoryEmptyState` (`lib/payments/presentation/payment_history_screen.dart`)
   and `ReviewsHistoryEmptyState` (`lib/reviews/presentation/reviews_history_screen.dart`)
   — both are `CatchScreenBody(scrollable: false, child: Center(child:
   CatchEmptyState(…)))`; inline with each call site's actual icon/title/message
   arguments.
-- [ ] `CalendarMessage` (`lib/events/presentation/calendar/calendar_screen.dart`)
+- [x] `CalendarMessage` (`lib/events/presentation/calendar/calendar_screen.dart`)
   and `SavedEventsMessage` (`lib/events/presentation/saved_events_screen.dart`)
   — inline, and use CalendarMessage's override set for BOTH surfaces:
   `iconSize: CatchLayout.calendarEmptyIconSize, padding:
@@ -599,12 +599,35 @@ delete class, widgetbook per gotcha 2, imports per gotcha 1):
   site's own icon: calendar → `calendarMonthOutlined`, saved →
   `bookmarkBorderRounded`). This intentionally replaces SavedEventsMessage's
   `eventInfoTileExtent` icon size (token misuse) — accepted visual change.
-- [ ] **Recon (report only, no code)**: count occurrences of the pattern
+- [x] **Recon (report only, no code)**: count occurrences of the pattern
   `CatchScreenBody(… Center(child: CatchEmptyState(…)))` and of `Center(child:
   CatchEmptyState(…))` inside `lib/` after the inlines land. Post both counts
   under Escalations — if ≥4 screen-body cases, the next review batch designs a
   `CatchEmptyState` screen variant.
-- [ ] regen + registries + receipts
+- [x] regen + registries + receipts
+
+Escalations:
+
+- Post-inline recon found 3 `CatchScreenBody(... Center(child:
+  CatchEmptyState(...)))` cases and 14 direct `Center(child:
+  CatchEmptyState(...))` cases in `lib/`. The screen-body count is below the
+  >=4 threshold, so no `CatchEmptyState` screen variant work order was opened.
+
+Receipt: 2026-07-03 Codex WO-008 inlined `PaymentHistoryEmptyState`,
+`ReviewsHistoryEmptyState`, `CalendarMessage`, and `SavedEventsMessage`;
+standardized Saved Events on the Calendar empty-state override set while
+keeping its bookmark icon; deleted the wrapper-specific Widgetbook use cases;
+regenerated Widgetbook/classification/similarity; and recorded the recon
+counts above. Clean checks: focused analyzer, root `flutter analyze
+--no-fatal-infos lib` (192 existing infos, 0 warnings/errors), widget
+classification (1152 entries, 46 review items, 0 private widget classes
+flagged), widget similarity (1045 widgets, 57 clusters, 9 absorb candidates),
+widget dedupe probes, widget cleanup scan, manifest-only, JSON parse, active
+code stale-name scan, and `git diff --check`. Existing blockers: Widgetbook
+analyzer still has 65 inherited HostOperations issues, Widgetbook coverage
+still has a 133 item catalog-or-replace decision queue with 0 stale decisions,
+and Widgetbook contract refs still have inherited HostOperations preview-id
+drift.
 
 ## WO-009 — CatchCountBadge + badge/pill cleanups
 

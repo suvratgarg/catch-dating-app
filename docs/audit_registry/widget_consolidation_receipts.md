@@ -739,6 +739,100 @@ Known blockers / inherited debt:
   wrapper attempted SDK cache writes outside the workspace before reporting
   `Widget dedupe probes passed`.
 
+## 2026-07-03 WO-008 Empty-state wrapper inlines
+
+Scope:
+
+- `PaymentHistoryEmptyState`
+- `ReviewsHistoryEmptyState`
+- `CalendarMessage`
+- `SavedEventsMessage`
+
+Commands:
+
+- `node tool/agent/context_pack.mjs --task widget-consolidation-wo-008 --paths lib/payments/presentation/payment_history_screen.dart,lib/reviews/presentation/reviews_history_screen.dart,lib/events/presentation/calendar/calendar_screen.dart,lib/events/presentation/saved_events_screen.dart,widgetbook/lib,payment,docs/design_parity/widget_consolidation/codex_worklog.md,docs/design_parity/widget_consolidation/decisions.json,docs/widget_catalog.md,docs/audit_registry/widget_consolidation_receipts.md`
+- `dart format lib/payments/presentation/payment_history_screen.dart lib/reviews/presentation/reviews_history_screen.dart lib/events/presentation/calendar/calendar_screen.dart lib/events/presentation/saved_events_screen.dart widgetbook/lib/utility/p3_utility_use_cases.dart`
+- `flutter analyze --no-fatal-infos lib/payments/presentation/payment_history_screen.dart lib/reviews/presentation/reviews_history_screen.dart lib/events/presentation/calendar/calendar_screen.dart lib/events/presentation/saved_events_screen.dart widgetbook/lib/utility/p3_utility_use_cases.dart`
+- `node - <<'NODE' ...` recon count script for `CatchScreenBody(... Center(child: CatchEmptyState(...)))` and direct `Center(child: CatchEmptyState(...))` hits in `lib/`
+- `dart run build_runner build --delete-conflicting-outputs` in `widgetbook/`
+- `node tool/design/generate_widget_classification.mjs`
+- `node tool/design/check_widget_classification.mjs`
+- `dart run tool/widget_dedupe/bin/extract_fingerprints.dart`
+- `node tool/design/build_widget_similarity.mjs`
+- `node tool/design/build_widget_similarity.mjs --check`
+- `node tool/design/check_widgetbook_coverage.mjs --check`
+- `DART=/Users/suvratgarg/Development/flutter/bin/dart node tool/design/check_widget_dedupe_probes.mjs`
+- `flutter analyze --no-fatal-infos lib`
+- `flutter analyze` in `widgetbook/`
+- `bash tool/widget_cleanup_scan.sh --summary`
+- `node tool/run.mjs check --manifest-only`
+- `node tool/design/check_widgetbook_contract_refs.mjs --check`
+- `node -e "const fs=require('fs'); for (const f of process.argv.slice(1)) JSON.parse(fs.readFileSync(f,'utf8')); console.log('JSON parse passed');" docs/audit_registry/widget_classification.json artifacts/widget_dedupe/fingerprints.json docs/audit_registry/widget_similarity.json docs/audit_registry/doc_versions.json docs/design_parity/widget_consolidation/decisions.json`
+- `rg -n "PaymentHistoryEmptyState|ReviewsHistoryEmptyState|CalendarMessage|SavedEventsMessage" lib widgetbook/lib --glob '!widgetbook/lib/main.directories.g.dart'`
+- `git diff --check`
+
+Headline numbers:
+
+| metric | value |
+|---|---:|
+| widget classification entries | 1,152 |
+| classification review items | 46 |
+| private widget classes flagged | 0 |
+| widget fingerprints | 1,045 |
+| fingerprint failures | 0 |
+| similarity clusters | 57 |
+| ranked pairs | 200 |
+| name families | 224 |
+| absorb candidates | 9 |
+| Widgetbook coverage decision queue | 133 |
+| Widgetbook coverage stale decisions | 0 |
+| root lib analyzer infos | 192 |
+| Widgetbook analyzer issues | 65 |
+| widget cleanup scan categories with findings | 0 |
+
+Recon:
+
+| pattern | count |
+|---|---:|
+| `CatchScreenBody(... Center(child: CatchEmptyState(...)))` in `lib/` | 3 |
+| `Center(child: CatchEmptyState(...))` in `lib/` | 14 |
+
+The screen-body count is below the >=4 threshold from WO-008, so no follow-up
+`CatchEmptyState` screen-variant work order was opened.
+
+Spot checks:
+
+- Payment History signed-out and empty-history branches now inline
+  `CatchScreenBody(scrollable: false)` plus the correct icon/title/message.
+- Reviews History empty branches now inline the review icon empty state inside
+  the existing `ReviewsHistoryBody` dispatcher.
+- Calendar agenda empty state now inlines the former `CalendarMessage`
+  `CatchEmptyState` override set.
+- Saved Events now uses the Calendar override set with
+  `CatchLayout.calendarEmptyIconSize`, `CatchInsets.contentSpacious`,
+  `CatchTextStyles.titleL`, and `CatchTextStyles.proseM(..., color: t.ink2)`
+  while keeping `CatchIcons.bookmarkBorderRounded`.
+- Widgetbook deleted the three wrapper-specific use cases; route/body/list
+  states remain as the review surface.
+- Active `lib` and `widgetbook/lib` code no longer references the deleted
+  wrapper names.
+
+Known blockers / inherited debt:
+
+- `node tool/design/check_widgetbook_coverage.mjs --check` still fails on the
+  existing catalog-or-replace decision queue: 133 public widgets need
+  decisions, with 0 stale decisions.
+- `(cd widgetbook && flutter analyze)` still fails on 65 existing Widgetbook
+  issues in `lib/hosts/host_operations_use_cases.dart`.
+- `node tool/design/check_widgetbook_contract_refs.mjs --check` still fails on
+  unrelated HostOperations preview ids.
+- `dart run build_runner build --delete-conflicting-outputs` in `widgetbook/`
+  succeeds, but build_runner reports that the delete-conflicting option has
+  been removed and is ignored by the current builder.
+- The dedupe-probe script needed unsandboxed access because Flutter's Dart
+  wrapper attempted SDK cache writes outside the workspace before reporting
+  `Widget dedupe probes passed`.
+
 Calibration note:
 
 The v0.1.0 SimHash threshold of 18 is void. The v0.2.0 registry recalibrates

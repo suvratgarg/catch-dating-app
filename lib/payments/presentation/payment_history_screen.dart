@@ -40,10 +40,15 @@ class PaymentHistoryScreen extends ConsumerWidget {
         onRetry: () => ref.invalidate(uidProvider),
         builder: (context, uid) {
           if (uid == null) {
-            return PaymentHistoryEmptyState(
-              icon: CatchIcons.lockOutlineRounded,
-              title: 'Sign in required',
-              message: 'Sign in again to view payment history.',
+            return CatchScreenBody(
+              scrollable: false,
+              child: Center(
+                child: CatchEmptyState(
+                  icon: CatchIcons.lockOutlineRounded,
+                  title: 'Sign in required',
+                  message: 'Sign in again to view payment history.',
+                ),
+              ),
             );
           }
           return PaymentHistoryListController(userId: uid);
@@ -83,10 +88,15 @@ class PaymentHistoryList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (paymentHistory.isEmpty) {
-      return PaymentHistoryEmptyState(
-        icon: CatchIcons.receiptLongOutlined,
-        title: 'No payments yet',
-        message: 'Event bookings and refunds will appear here.',
+      return CatchScreenBody(
+        scrollable: false,
+        child: Center(
+          child: CatchEmptyState(
+            icon: CatchIcons.receiptLongOutlined,
+            title: 'No payments yet',
+            message: 'Event bookings and refunds will appear here.',
+          ),
+        ),
       );
     }
 
@@ -185,29 +195,6 @@ class PaymentHistoryTileSkeleton extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class PaymentHistoryEmptyState extends StatelessWidget {
-  const PaymentHistoryEmptyState({
-    super.key,
-    required this.icon,
-    required this.title,
-    required this.message,
-  });
-
-  final IconData icon;
-  final String title;
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchScreenBody(
-      scrollable: false,
-      child: Center(
-        child: CatchEmptyState(icon: icon, title: title, message: message),
       ),
     );
   }

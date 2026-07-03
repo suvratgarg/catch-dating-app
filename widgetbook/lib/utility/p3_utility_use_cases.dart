@@ -1394,22 +1394,6 @@ Widget calendarStatDividerStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Empty message state',
-  type: CalendarMessage,
-  path: '[P3 utility surfaces]/Calendar/Components',
-)
-Widget calendarMessageStates(BuildContext context) {
-  return const _DeviceFrame(
-    child: Scaffold(
-      body: CalendarMessage(
-        title: 'No planned events yet',
-        body: 'Events you book or save will show up here by day and time.',
-      ),
-    ),
-  );
-}
-
-@widgetbook.UseCase(
   name: 'Scenario states',
   type: EventPolicyLabScreen,
   path: '[P3 utility surfaces]/Event policy lab',
@@ -2104,30 +2088,6 @@ Widget reviewsHistoryListStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'History empty state',
-  type: ReviewsHistoryEmptyState,
-  path: '[P3 utility surfaces]/Reviews history',
-)
-Widget reviewsHistoryEmptyStateStates(BuildContext context) {
-  return const _UtilityCatalog(
-    title: 'ReviewsHistoryEmptyState',
-    contractId: 'screen.reviews.history.empty',
-    children: [
-      _StateCard(
-        label: 'signed out',
-        child: SizedBox(
-          height: 300,
-          child: ReviewsHistoryEmptyState(
-            title: 'Sign in to see reviews',
-            message: 'Your past event reviews will appear here.',
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
   name: 'History skeleton states',
   type: ReviewsHistorySkeleton,
   path: '[P3 utility surfaces]/Reviews history',
@@ -2774,40 +2734,6 @@ Widget paymentHistoryTileSkeletonStates(BuildContext context) {
     contractId: 'screen.payments.history.row_skeleton',
     children: [
       _StateCard(label: 'loading row', child: PaymentHistoryTileSkeleton()),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Empty states',
-  type: PaymentHistoryEmptyState,
-  path: '[P3 utility surfaces]/Payment history',
-)
-Widget paymentHistoryEmptyStateStates(BuildContext context) {
-  return _UtilityCatalog(
-    title: 'PaymentHistoryEmptyState',
-    contractId: 'screen.payments.history.empty',
-    children: [
-      _StateCard(
-        label: 'no payments',
-        child: _DeviceFrame(
-          child: PaymentHistoryEmptyState(
-            icon: CatchIcons.receiptLongOutlined,
-            title: 'No payments yet',
-            message: 'Event bookings and refunds will appear here.',
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'signed out',
-        child: _DeviceFrame(
-          child: PaymentHistoryEmptyState(
-            icon: CatchIcons.lockOutlineRounded,
-            title: 'Sign in required',
-            message: 'Sign in again to view payment history.',
-          ),
-        ),
-      ),
     ],
   );
 }

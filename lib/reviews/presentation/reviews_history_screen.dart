@@ -96,8 +96,16 @@ class ReviewsHistoryBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return switch (state) {
       ReviewsHistoryLoading() => const ReviewsHistorySkeleton(),
-      ReviewsHistoryEmpty(:final title, :final message) =>
-        ReviewsHistoryEmptyState(title: title, message: message),
+      ReviewsHistoryEmpty(:final title, :final message) => CatchScreenBody(
+        scrollable: false,
+        child: Center(
+          child: CatchEmptyState(
+            icon: CatchIcons.rateReviewOutlined,
+            title: title,
+            message: message,
+          ),
+        ),
+      ),
       ReviewsHistoryError(:final title, :final message, :final retryTarget) =>
         CatchErrorState(
           title: title,
@@ -167,31 +175,6 @@ class ReviewHistoryItem extends StatelessWidget {
               : null,
         ),
       ],
-    );
-  }
-}
-
-class ReviewsHistoryEmptyState extends StatelessWidget {
-  const ReviewsHistoryEmptyState({
-    super.key,
-    required this.title,
-    required this.message,
-  });
-
-  final String title;
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchScreenBody(
-      scrollable: false,
-      child: Center(
-        child: CatchEmptyState(
-          icon: CatchIcons.rateReviewOutlined,
-          title: title,
-          message: message,
-        ),
-      ),
     );
   }
 }

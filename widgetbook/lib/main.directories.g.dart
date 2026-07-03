@@ -9820,16 +9820,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'CalendarMessage',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Empty message state',
-                    builder: _widgetbook_workspace_utility_p3_utility_use_cases
-                        .calendarMessageStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'CalendarMonthGrid',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -10372,16 +10362,6 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Payment history',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'PaymentHistoryEmptyState',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Empty states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
-                    .paymentHistoryEmptyStateStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'PaymentHistoryList',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -10513,16 +10493,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'History body states',
                 builder: _widgetbook_workspace_utility_p3_utility_use_cases
                     .reviewsHistoryBodyStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ReviewsHistoryEmptyState',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'History empty state',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
-                    .reviewsHistoryEmptyStateStates,
               ),
             ],
           ),

@@ -10,31 +10,31 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1156,
-    "widgetClasses": 1049,
+    "total": 1152,
+    "widgetClasses": 1045,
     "stateClasses": 107,
-    "publicClasses": 1049,
+    "publicClasses": 1045,
     "privateClasses": 107,
     "byRole": {
       "atom": 56,
       "composition": 317,
       "feature-adapter": 326,
       "pattern": 16,
-      "screen": 334,
+      "screen": 330,
       "widget-state": 107
     },
     "byDecision": {
       "keep-canonical-contract": 171,
-      "keep-public-cataloged": 832,
+      "keep-public-cataloged": 828,
       "keep-widget-state": 107,
       "review-catalog-coverage": 38,
       "review-promote-or-consolidate": 8
     },
     "byCatalogStatus": {
-      "cataloged": 744,
+      "cataloged": 741,
       "contracted": 171,
       "not-applicable": 107,
-      "route-covered": 96,
+      "route-covered": 95,
       "uncataloged": 38
     }
   },
@@ -13138,29 +13138,6 @@
       "flags": []
     },
     {
-      "name": "CalendarMessage",
-      "file": "lib/events/presentation/calendar/calendar_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.calendar_message",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
       "name": "CalendarMonthGrid",
       "file": "lib/events/presentation/calendar/calendar_screen.dart",
       "classKind": "widget",
@@ -13812,29 +13789,6 @@
       "visibility": "public",
       "role": "screen",
       "canonicalFamily": "screen.saved_events_loading",
-      "publicApi": true,
-      "catalogStatus": "route-covered",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "SavedEventsMessage",
-      "file": "lib/events/presentation/saved_events_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.saved_events_message",
       "publicApi": true,
       "catalogStatus": "route-covered",
       "contractId": null,
@@ -23204,29 +23158,6 @@
       "flags": []
     },
     {
-      "name": "PaymentHistoryEmptyState",
-      "file": "lib/payments/presentation/payment_history_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.payment_history_empty_state",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
       "name": "PaymentHistoryList",
       "file": "lib/payments/presentation/payment_history_screen.dart",
       "classKind": "widget",
@@ -23556,29 +23487,6 @@
       "visibility": "public",
       "role": "screen",
       "canonicalFamily": "screen.reviews_history_body",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "ReviewsHistoryEmptyState",
-      "file": "lib/reviews/presentation/reviews_history_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.reviews_history_empty_state",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,
