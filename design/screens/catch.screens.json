@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.screens.schema.json",
   "version": 1,
-  "updated": "2026-07-02",
+  "updated": "2026-07-03",
   "sourceOfTruth": {
     "purpose": "Screen contracts connect route state, controller ownership, section composition, captures, and design references.",
     "tokens": "Foundation values remain in design/tokens/catch.tokens.json.",
@@ -15987,6 +15987,14 @@
             "symbol": "PhotosPage"
           },
           {
+            "file": "lib/onboarding/presentation/pages/photos_page_state.dart",
+            "symbol": "OnboardingPhotosState"
+          },
+          {
+            "file": "lib/onboarding/presentation/pages/photos_page.dart",
+            "symbol": "OnboardingPhotosStep"
+          },
+          {
             "file": "lib/onboarding/presentation/pages/profile_prompts_page.dart",
             "symbol": "ProfilePromptsPage"
           },
@@ -16001,6 +16009,14 @@
           {
             "file": "lib/onboarding/presentation/pages/running_prefs_page.dart",
             "symbol": "RunningPrefsPage"
+          },
+          {
+            "file": "lib/onboarding/presentation/pages/running_prefs_page_state.dart",
+            "symbol": "OnboardingRunningPrefsState"
+          },
+          {
+            "file": "lib/onboarding/presentation/pages/running_prefs_page.dart",
+            "symbol": "OnboardingRunningPrefsStep"
           }
         ],
         "mutationOwners": [
@@ -16017,7 +16033,7 @@
             "symbol": "UserProfileRepository"
           }
         ],
-        "notes": "OnboardingScreen owns initStep scheduling and visible step composition. OnboardingFlowState owns flow entry mode, current step, previous-step/back boundary, welcome-vs-progress shell, and OnboardingTopBarState header/progress copy. OnboardingController owns draft hydration, profile completion/run-preferences entry decisions, saveProfileMutation, completeMutation, and draft persistence. Name/DOB and photo pages now wrap provider-free step state/section adapters. Remaining step pages still own local field controllers, validation UI, and mutation surfaces until their adapters land."
+        "notes": "OnboardingScreen owns initStep scheduling and visible step composition. OnboardingFlowState owns flow entry mode, current step, previous-step/back boundary, welcome-vs-progress shell, and OnboardingTopBarState header/progress copy. OnboardingController owns draft hydration, profile completion/run-preferences entry decisions, saveProfileMutation, completeMutation, and draft persistence. Onboarding step pages now wrap provider-free step state/section adapters for identity, Instagram, photos, prompts, and running preferences."
       },
       "designRefs": [
         {
@@ -16288,7 +16304,7 @@
           "id": "running_prefs_step",
           "kind": "populated",
           "status": "captured",
-          "source": "RunningPrefsPage collects running preferences, adapts copy for profileCompletionOnly and runPreferencesOnly modes, and can be the route entry step.",
+          "source": "RunningPrefsPage owns the route/provider edge while OnboardingRunningPrefsState and OnboardingRunningPrefsStep own pace labels, run-preference chip selections, mode-specific footer/reason/time labels, mutation error display, and typed complete-run-preferences submit intent.",
           "captureIds": [
             "onboarding_running_prefs"
           ],
@@ -16296,7 +16312,7 @@
             "test/onboarding/onboarding_controller_test.dart",
             "test/onboarding/onboarding_widgets_test.dart"
           ],
-          "nextAction": "Deterministic route capture covers run-preferences-only entry. Add standard/profile-completion variants, mutation variants, and state-specific references."
+          "nextAction": "Provider-free step adapter coverage now validates pace label display, mode-specific copy, pending/error display, typed submit payload, and continue callback. Deterministic route captures cover run-preferences-only entry, completion pending/error, and text scale 2.0. Add standard/profile-completion variants and state-specific references."
         },
         {
           "id": "required_field_errors",
@@ -16379,8 +16395,8 @@
         }
       ],
       "composition": {
-        "currentLayout": "OnboardingScreen watches OnboardingController state, schedules initStep, builds OnboardingFlowState for route shell/back/progress/header policy, renders OnboardingTopBar from OnboardingTopBarState for non-welcome steps, and delegates visible forms to step pages that own local controllers and validation UI.",
-        "targetLayout": "Onboarding should keep route-shell policy in OnboardingFlowState, keep photo gate/upload display state in OnboardingPhotosState, then continue extracting remaining page-level draft data, validation, mutation state, and typed callbacks before composing provider-free step sections and shared step frames.",
+        "currentLayout": "OnboardingScreen watches OnboardingController state, schedules initStep, builds OnboardingFlowState for route shell/back/progress/header policy, renders OnboardingTopBar from OnboardingTopBarState for non-welcome steps, and delegates visible forms to step pages that adapt provider state into provider-free step state plus typed callbacks.",
+        "targetLayout": "Onboarding should keep route-shell policy in OnboardingFlowState and keep step-specific display data, validation, mutation state, and typed callbacks in provider-free state adapters before composing shared step frames.",
         "sections": [
           {
             "id": "section.onboarding.flow_adapter",
@@ -16406,7 +16422,7 @@
               "save_profile_mutation",
               "complete_mutation"
             ],
-            "migration": "Route-shell entry-mode derivation, progress/back bounds, current-step identity, and header display data now live in OnboardingFlowState. PhotosPage now adapts photo gate/upload state into OnboardingPhotosState and OnboardingPhotosStep. Continue moving identity/prompts/running preference validation, mutation modes, and typed callbacks into follow-on step adapters."
+            "migration": "Route-shell entry-mode derivation, progress/back bounds, current-step identity, and header display data now live in OnboardingFlowState. Step pages now adapt identity, Instagram, photo, prompt, and running-preference display state into provider-free step states while keeping provider watches and controller side effects at the route edge."
           },
           {
             "id": "section.onboarding.step_header",
@@ -16546,9 +16562,9 @@
             ],
             "flutter": {
               "file": "lib/onboarding/presentation/pages/running_prefs_page.dart",
-              "symbol": "RunningPrefsPage"
+              "symbol": "OnboardingRunningPrefsStep"
             },
-            "currentOwner": "RunningPrefsPage",
+            "currentOwner": "RunningPrefsPage adapter over OnboardingRunningPrefsState + OnboardingRunningPrefsStep",
             "targetOwner": "provider-free running preferences step section",
             "dependencies": [
               "catch.chip",
@@ -16560,7 +16576,7 @@
               "complete_mutation",
               "text_scale_2"
             ],
-            "migration": "Move run preference display data, optionality, completion mutation, and entry-mode copy into adapter state."
+            "migration": "OnboardingRunningPrefsState owns pace label display, selected run-preference chips, run-preferences-only copy variants, completion pending/error display, and typed complete-run-preferences submit intent while RunningPrefsPage retains profile seeding, provider watches, controller mutation execution, and route side effects."
           }
         ]
       },
@@ -16577,8 +16593,8 @@
         },
         {
           "id": "DS-ONBOARDING-003",
-          "status": "open",
-          "nextAction": "Route-shell adapter and photo-step adapter landed: OnboardingFlowState owns entry mode/current step/back/progress/top-bar copy, while OnboardingPhotosState and OnboardingPhotosStep own photo gate/upload display state plus typed photo callbacks. Remaining adapter work is identity draft display data, validation state, prompt/running-preference state, mutation modes, and typed callbacks so capture seeders no longer need page-local side effects."
+          "status": "closed",
+          "nextAction": "Closed by route-shell plus step adapters: OnboardingFlowState owns entry mode/current step/back/progress/top-bar copy, while OnboardingNameDobState, OnboardingGenderInterestState, OnboardingInstagramState, OnboardingPhotosState, OnboardingProfilePromptsState, and OnboardingRunningPrefsState own step-local display state, validation/copy policy, mutation display state, and typed callbacks or submit intents. State-specific references remain tracked under DS-ONBOARDING-004."
         },
         {
           "id": "DS-ONBOARDING-004",

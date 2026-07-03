@@ -27,6 +27,7 @@ import 'package:catch_dating_app/onboarding/presentation/pages/photos_page_state
 import 'package:catch_dating_app/onboarding/presentation/pages/profile_prompts_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/profile_prompts_page_state.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/running_prefs_page.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/running_prefs_page_state.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
 import 'package:catch_dating_app/routing/go_router.dart' as app_router;
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -1021,6 +1022,79 @@ void main() {
   });
 
   group('RunningPrefsPage', () {
+    test('state derives labels and submit payload', () {
+      final state = OnboardingRunningPrefsState.fromDraft(
+        paceRange: const RangeValues(300, 420),
+        distances: const [PreferredDistance.fiveK],
+        reasons: const [RunReason.community],
+        runTimes: const [PreferredRunTime.morning],
+        runPreferencesOnly: true,
+        isCompleting: true,
+        completeErrorMessage: 'Could not save run preferences.',
+      );
+
+      expect(state.footerLabel, 'Continue booking');
+      expect(state.reasonLabel, 'Why do you run?');
+      expect(state.runTimesLabel, 'FAVOURITE RUN TIMES');
+      expect(state.minPaceLabel, '5:00/km');
+      expect(state.maxPaceLabel, '7:00/km');
+      expect(state.canSubmit, isFalse);
+      expect(state.hasCompleteError, isTrue);
+
+      final intent = state.submitIntent();
+      expect(intent.paceMinSecsPerKm, 300);
+      expect(intent.paceMaxSecsPerKm, 420);
+      expect(intent.preferredDistances, [PreferredDistance.fiveK]);
+      expect(intent.runningReasons, [RunReason.community]);
+      expect(intent.preferredRunTimes, [PreferredRunTime.morning]);
+    });
+
+    testWidgets('provider-free step shows state and forwards continue', (
+      tester,
+    ) async {
+      final state = OnboardingRunningPrefsState.fromDraft(
+        paceRange: const RangeValues(300, 420),
+        distances: const [PreferredDistance.fiveK],
+        reasons: const [RunReason.community],
+        runTimes: const [PreferredRunTime.morning],
+        completeErrorMessage: 'Could not save run preferences.',
+      );
+      var continueCount = 0;
+      RangeValues? nextPace;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: OnboardingRunningPrefsStep(
+              state: state,
+              callbacks: OnboardingRunningPrefsCallbacks(
+                onPaceChanged: (next) => nextPace = next,
+                onDistancesChanged: (_) {},
+                onReasonsChanged: (_) {},
+                onRunTimesChanged: (_) {},
+                onContinue: () => continueCount += 1,
+              ),
+            ),
+          ),
+        ),
+      );
+      await pumpOnboardingUi(tester);
+
+      expect(find.text('Save run preferences'), findsOneWidget);
+      expect(find.text('5:00/km'), findsOneWidget);
+      expect(find.text('7:00/km'), findsOneWidget);
+      expect(find.text('Could not save run preferences.'), findsOneWidget);
+
+      await tester.tap(
+        find.widgetWithText(CatchButton, 'Save run preferences'),
+      );
+      await pumpOnboardingUi(tester);
+
+      expect(continueCount, 1);
+      expect(nextPace, isNull);
+    });
+
     testWidgets('explains run preferences as event-specific booking data', (
       tester,
     ) async {
