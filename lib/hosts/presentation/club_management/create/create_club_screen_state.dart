@@ -13,6 +13,44 @@ enum HostClubCreatePrimaryIntent { nextStep, submit }
 
 enum HostClubCreateSaveDraftIntent { saveDraft }
 
+enum HostClubCreateDraftRestoreIntent { retry }
+
+@immutable
+class HostClubCreateDraftRestoreState {
+  const HostClubCreateDraftRestoreState({
+    required this.isLoading,
+    required this.error,
+    required this.retryIntent,
+  });
+
+  factory HostClubCreateDraftRestoreState.resolve({
+    required bool enabled,
+    required bool loadPending,
+    required Object? loadError,
+  }) {
+    if (!enabled) {
+      return const HostClubCreateDraftRestoreState(
+        isLoading: false,
+        error: null,
+        retryIntent: null,
+      );
+    }
+    return HostClubCreateDraftRestoreState(
+      isLoading: loadPending,
+      error: loadError,
+      retryIntent: loadError == null
+          ? null
+          : HostClubCreateDraftRestoreIntent.retry,
+    );
+  }
+
+  final bool isLoading;
+  final Object? error;
+  final HostClubCreateDraftRestoreIntent? retryIntent;
+
+  bool get hasError => error != null;
+}
+
 @immutable
 class HostClubCreateFooterState {
   const HostClubCreateFooterState({
@@ -286,6 +324,7 @@ class HostClubCreateState {
     required this.media,
     required this.fields,
     required this.editValidation,
+    required this.draftRestore,
     required this.mutationError,
   });
 
@@ -303,6 +342,7 @@ class HostClubCreateState {
   final HostClubCreateMediaState media;
   final HostClubCreateFieldDisplayState fields;
   final HostClubEditValidationState editValidation;
+  final HostClubCreateDraftRestoreState draftRestore;
   final String? mutationError;
 
   bool get canSaveDraft => footer.canSaveDraft;
@@ -318,6 +358,9 @@ class HostClubCreateState {
     required bool submitPending,
     required bool saveDraftPending,
     required String? mutationError,
+    bool draftLoadPending = false,
+    Object? draftLoadError,
+    bool draftRestoreEnabled = true,
     List<OrderedPhotoPreview> clubPhotoPreviews = const [],
     PickedClubProfileImage? profileImage,
     bool editSubmitAttempted = false,
@@ -374,6 +417,11 @@ class HostClubCreateState {
       area: area,
       description: description,
     );
+    final draftRestore = HostClubCreateDraftRestoreState.resolve(
+      enabled: draftRestoreEnabled && !isEditing,
+      loadPending: draftLoadPending,
+      loadError: draftLoadError,
+    );
     return HostClubCreateState(
       isEditing: isEditing,
       mediaOnly: mediaOnly,
@@ -395,6 +443,7 @@ class HostClubCreateState {
       media: media,
       fields: fields,
       editValidation: editValidation,
+      draftRestore: draftRestore,
       mutationError: mutationError,
     );
   }

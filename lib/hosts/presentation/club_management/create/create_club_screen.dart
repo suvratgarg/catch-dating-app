@@ -36,6 +36,7 @@ import 'package:catch_dating_app/hosts/presentation/club_management/create/widge
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 export 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_screen_state.dart';
@@ -250,25 +251,32 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
   }
 
   Future<void> _restoreSavedDraft() async {
-    final ClubDraft? draft;
     try {
-      draft = await ref
-          .read(createClubDraftControllerProvider.notifier)
-          .loadDraft();
-    } catch (_) {
+      final draft = await CreateClubDraftController.loadDraftMutation.run(
+        ref,
+        (tx) => tx.get(createClubDraftControllerProvider.notifier).loadDraft(),
+      );
+      if (!mounted || draft == null || draft.isEmpty) {
+        return;
+      }
+      final restoredDraft = draft;
+
+      setState(() {
+        _restoreFromDraft(restoredDraft);
+        _restoredDraft = true;
+      });
+
+      showCatchSnackBar(context, 'Restored your club draft');
+    } catch (error, stackTrace) {
+      ref
+          .read(errorLoggerProvider)
+          .logError(
+            error,
+            stackTrace,
+            reason: 'CreateClubScreen._restoreSavedDraft failed',
+          );
       return;
     }
-    if (!mounted || draft == null || draft.isEmpty) {
-      return;
-    }
-    final restoredDraft = draft;
-
-    setState(() {
-      _restoreFromDraft(restoredDraft);
-      _restoredDraft = true;
-    });
-
-    showCatchSnackBar(context, 'Restored your club draft');
   }
 
   void _seedInitialMedia() {
@@ -426,6 +434,16 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
     switch (intent) {
       case HostClubCreateSaveDraftIntent.saveDraft:
         await _saveDraft();
+        return;
+    }
+  }
+
+  Future<void> _handleDraftRestoreIntent(
+    HostClubCreateDraftRestoreIntent intent,
+  ) async {
+    switch (intent) {
+      case HostClubCreateDraftRestoreIntent.retry:
+        await _restoreSavedDraft();
         return;
     }
   }
@@ -598,10 +616,16 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
     final saveDraftMutation = ref.watch(
       CreateClubDraftController.saveDraftMutation,
     );
+    final loadDraftMutation = ref.watch(
+      CreateClubDraftController.loadDraftMutation,
+    );
     final mutationError = submitMutation.hasError
         ? mutationErrorMessage(submitMutation)
         : saveDraftMutation.hasError
         ? mutationErrorMessage(saveDraftMutation)
+        : null;
+    final draftLoadError = loadDraftMutation.hasError
+        ? (loadDraftMutation as MutationError).error
         : null;
     final screenState = HostClubCreateState.resolve(
       isEditing: _isEditing,
@@ -611,6 +635,9 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
       initialClub: widget.initialClub,
       submitPending: submitMutation.isPending,
       saveDraftPending: saveDraftMutation.isPending,
+      draftLoadPending: loadDraftMutation.isPending,
+      draftLoadError: draftLoadError,
+      draftRestoreEnabled: widget.restoreSavedDraft && !_restoredDraft,
       mutationError: mutationError,
       clubPhotoPreviews: _clubPhotoPreviews,
       profileImage: _profileImage,
@@ -745,6 +772,20 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
             ),
             if (screenState.mutationError != null)
               CatchErrorBanner(message: screenState.mutationError!),
+            if (screenState.draftRestore.hasError)
+              CatchErrorBanner.fromError(
+                screenState.draftRestore.error!,
+                context: AppErrorContext.club,
+                onRetry:
+                    screenState.draftRestore.retryIntent == null ||
+                        screenState.draftRestore.isLoading
+                    ? null
+                    : () => unawaited(
+                        _handleDraftRestoreIntent(
+                          screenState.draftRestore.retryIntent!,
+                        ),
+                      ),
+              ),
             StepperFooter(
               isLastStep: screenState.footer.isLastStep,
               isLoading: screenState.footer.isLoading,

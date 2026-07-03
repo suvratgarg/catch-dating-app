@@ -12,6 +12,7 @@ part 'create_club_draft_controller.g.dart';
 /// controllers and restoration because those are UI mechanics.
 @riverpod
 class CreateClubDraftController extends _$CreateClubDraftController {
+  static final loadDraftMutation = Mutation<ClubDraft?>();
   static final saveDraftMutation = Mutation<ClubDraft?>();
   static final deleteDraftMutation = Mutation<void>();
 

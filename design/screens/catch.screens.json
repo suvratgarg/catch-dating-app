@@ -18645,8 +18645,8 @@
         },
         {
           "id": "DS-HOST-CLUB-CREATE-003",
-          "status": "open",
-          "nextAction": "HostClubCreateState now owns footer action labels/enabled state, media/edit-scaffold enabled state, media display values, field/city display state, edit validation display state, mutation error copy, and typed primary/save-draft intents; HostClubCreateRouteIntent owns route callback dispatch; HostClubCreateDraftRequest and HostClubCreateSubmitRequest own draft/submit request construction; HostClubSubmitOutcomeState now owns submit-success close-route policy. Continue moving draft-load retry into adapters."
+          "status": "closed",
+          "nextAction": "HostClubCreateState now owns footer action labels/enabled state, media/edit-scaffold enabled state, media display values, field/city display state, edit validation display state, mutation error copy, draft-load retry state, and typed primary/save-draft/draft-restore intents; HostClubCreateRouteIntent owns route callback dispatch; HostClubCreateDraftRequest and HostClubCreateSubmitRequest own draft/submit request construction; HostClubSubmitOutcomeState owns submit-success close-route policy."
         },
         {
           "id": "DS-HOST-CLUB-CREATE-004",

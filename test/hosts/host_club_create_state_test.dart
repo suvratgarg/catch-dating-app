@@ -38,6 +38,8 @@ void main() {
     expect(state.lastStepLabel, 'Create club');
     expect(state.isLoading, isTrue);
     expect(state.mutationError, 'Unable to save draft.');
+    expect(state.draftRestore.hasError, isFalse);
+    expect(state.draftRestore.retryIntent, isNull);
     expect(state.footer.isLastStep, isFalse);
     expect(state.footer.isLoading, isTrue);
     expect(state.footer.primaryEnabled, isFalse);
@@ -48,6 +50,80 @@ void main() {
       state.footer.saveDraftIntent,
       HostClubCreateSaveDraftIntent.saveDraft,
     );
+  });
+
+  test('HostClubCreateState maps draft restore retry state for create', () {
+    final error = StateError('Unable to reload draft.');
+    final state = HostClubCreateState.resolve(
+      isEditing: false,
+      mediaOnly: false,
+      currentStep: 0,
+      activeSteps: steps,
+      initialClub: null,
+      submitPending: false,
+      saveDraftPending: false,
+      draftLoadError: error,
+      mutationError: null,
+    );
+
+    expect(state.draftRestore.hasError, isTrue);
+    expect(state.draftRestore.error, error);
+    expect(
+      state.draftRestore.retryIntent,
+      HostClubCreateDraftRestoreIntent.retry,
+    );
+  });
+
+  test('HostClubCreateState suppresses draft restore retry when disabled', () {
+    final error = StateError('Unable to reload draft.');
+    final state = HostClubCreateState.resolve(
+      isEditing: false,
+      mediaOnly: false,
+      currentStep: 0,
+      activeSteps: steps,
+      initialClub: null,
+      submitPending: false,
+      saveDraftPending: false,
+      draftLoadError: error,
+      draftRestoreEnabled: false,
+      mutationError: null,
+    );
+
+    expect(state.draftRestore.hasError, isFalse);
+    expect(state.draftRestore.error, isNull);
+    expect(state.draftRestore.retryIntent, isNull);
+  });
+
+  test('HostClubCreateState suppresses draft restore retry for edit', () {
+    final error = StateError('Unable to reload draft.');
+    final club = Club(
+      id: 'club-1',
+      name: 'Sea Face Social',
+      description: 'Hosted social formats.',
+      location: 'Mumbai',
+      area: 'Bandra',
+      hostUserId: 'host-1',
+      hostName: 'Mira',
+      ownerUserId: 'host-1',
+      hostUserIds: const ['host-1'],
+      createdAt: DateTime(2026),
+    );
+
+    final state = HostClubCreateState.resolve(
+      isEditing: true,
+      mediaOnly: false,
+      currentStep: 0,
+      activeSteps: steps,
+      initialClub: club,
+      submitPending: false,
+      saveDraftPending: false,
+      draftLoadError: error,
+      mutationError: null,
+    );
+
+    expect(state.draftRestore.hasError, isFalse);
+    expect(state.draftRestore.error, isNull);
+    expect(state.draftRestore.retryIntent, isNull);
   });
 
   test('HostClubCreateState maps owner edit state', () {
