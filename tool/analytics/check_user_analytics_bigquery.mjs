@@ -42,7 +42,7 @@ const refresh = readText("analytics/sql/marts/refresh_mart_user_analytics_daily.
 const deploy = readText("tool/analytics/deploy_user_analytics_bigquery.sh");
 const bqSource = readText("functions/src/analytics/userAnalyticsBigQuery.ts");
 const callable = readText("functions/src/analytics/userAnalytics.ts");
-const copy = readText("lib/user_analytics/presentation/user_analytics_copy.dart");
+const copy = readText("lib/user_analytics/shared/user_analytics_copy.dart");
 
 requireText(
   ddlEvents,
