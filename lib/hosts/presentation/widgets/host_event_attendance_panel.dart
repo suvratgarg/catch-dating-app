@@ -62,7 +62,7 @@ class HostEventAttendancePanel extends StatelessWidget {
   }
 }
 
-class HostEventParticipantsPanel extends ConsumerWidget {
+class HostEventParticipantsPanel extends ConsumerStatefulWidget {
   const HostEventParticipantsPanel({
     super.key,
     required this.eventId,
@@ -79,7 +79,15 @@ class HostEventParticipantsPanel extends ConsumerWidget {
   final String initialSearchQuery;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HostEventParticipantsPanel> createState() =>
+      _HostEventParticipantsPanelState();
+}
+
+class _HostEventParticipantsPanelState
+    extends ConsumerState<HostEventParticipantsPanel> {
+  @override
+  Widget build(BuildContext context) {
+    final eventId = widget.eventId;
     final attendanceAsync = ref.watch(
       attendanceSheetViewModelProvider(eventId),
     );
@@ -135,7 +143,6 @@ class HostEventParticipantsPanel extends ConsumerWidget {
             : null;
         final mutationState = HostParticipantsMutationDisplayState.resolve(
           markAttendancePendingIds: _pendingMutationIds(
-            ref,
             participantIds,
             (uid) => HostEventBookingController.markAttendanceMutation(
               HostEventBookingController.markAttendanceMutationKey(
@@ -145,7 +152,6 @@ class HostEventParticipantsPanel extends ConsumerWidget {
             ),
           ),
           approveJoinRequestPendingIds: _pendingMutationIds(
-            ref,
             participantIds,
             (uid) => HostEventBookingController.approveJoinRequestMutation(
               HostEventBookingController.approveJoinRequestMutationKey(
@@ -155,7 +161,6 @@ class HostEventParticipantsPanel extends ConsumerWidget {
             ),
           ),
           declineJoinRequestPendingIds: _pendingMutationIds(
-            ref,
             participantIds,
             (uid) => HostEventBookingController.declineJoinRequestMutation(
               HostEventBookingController.declineJoinRequestMutationKey(
@@ -165,7 +170,6 @@ class HostEventParticipantsPanel extends ConsumerWidget {
             ),
           ),
           createWaitlistOfferPendingIds: _pendingMutationIds(
-            ref,
             participantIds,
             (uid) => HostEventBookingController.createWaitlistOfferMutation(
               HostEventBookingController.waitlistOfferMutationKey(
@@ -178,7 +182,6 @@ class HostEventParticipantsPanel extends ConsumerWidget {
           opsReportPending: opsExportMutation.isPending,
           revenueReportPending: revenueExportMutation.isPending,
           markAttendanceError: _firstMutationErrorForIds(
-            ref,
             participantIds,
             (uid) => HostEventBookingController.markAttendanceMutation(
               HostEventBookingController.markAttendanceMutationKey(
@@ -188,7 +191,6 @@ class HostEventParticipantsPanel extends ConsumerWidget {
             ),
           ),
           approveJoinRequestError: _firstMutationErrorForIds(
-            ref,
             participantIds,
             (uid) => HostEventBookingController.approveJoinRequestMutation(
               HostEventBookingController.approveJoinRequestMutationKey(
@@ -198,7 +200,6 @@ class HostEventParticipantsPanel extends ConsumerWidget {
             ),
           ),
           declineJoinRequestError: _firstMutationErrorForIds(
-            ref,
             participantIds,
             (uid) => HostEventBookingController.declineJoinRequestMutation(
               HostEventBookingController.declineJoinRequestMutationKey(
@@ -210,7 +211,6 @@ class HostEventParticipantsPanel extends ConsumerWidget {
           createWaitlistOfferError:
               bulkOfferError ??
               _firstMutationErrorForIds(
-                ref,
                 participantIds,
                 (uid) => HostEventBookingController.createWaitlistOfferMutation(
                   HostEventBookingController.waitlistOfferMutationKey(
@@ -236,29 +236,23 @@ class HostEventParticipantsPanel extends ConsumerWidget {
 
         return HostEventParticipantsList(
           viewModel: viewModel,
-          mode: mode,
-          scrollable: scrollable,
-          showSummaryHeader: showSummaryHeader,
-          initialSearchQuery: initialSearchQuery,
+          mode: widget.mode,
+          scrollable: widget.scrollable,
+          showSummaryHeader: widget.showSummaryHeader,
+          initialSearchQuery: widget.initialSearchQuery,
           profileLookupState: profileLookupState,
           mutationState: mutationState,
           actions: HostParticipantLifecycleActions(
             openProfile: (uid) => _openPublicProfile(context, uid),
-            approveJoinRequest: (uid) =>
-                _approveJoinRequest(ref, viewModel, uid),
-            declineJoinRequest: (uid) =>
-                _declineJoinRequest(ref, viewModel, uid),
-            toggleAttendance: (uid) => _toggleAttendance(ref, viewModel, uid),
+            approveJoinRequest: (uid) => _approveJoinRequest(viewModel, uid),
+            declineJoinRequest: (uid) => _declineJoinRequest(viewModel, uid),
+            toggleAttendance: (uid) => _toggleAttendance(viewModel, uid),
             createWaitlistOffers: (userIds) =>
-                _createWaitlistOffers(ref, viewModel, userIds),
+                _createWaitlistOffers(viewModel, userIds),
             shareOpsReport: () =>
-                _shareOpsReport(context, ref, viewModel, profileLookupState),
-            shareRevenueReport: () => _shareRevenueReport(
-              context,
-              ref,
-              viewModel,
-              profileLookupState,
-            ),
+                _shareOpsReport(viewModel, profileLookupState),
+            shareRevenueReport: () =>
+                _shareRevenueReport(viewModel, profileLookupState),
           ),
           onRetryProfiles: () => ref.invalidate(
             attendeeProfilesProvider(profileLookupState.profileIds),
@@ -267,6 +261,142 @@ class HostEventParticipantsPanel extends ConsumerWidget {
       },
     );
   }
+
+  void _toggleAttendance(AttendanceSheetViewModel viewModel, String uid) {
+    final mutation = HostEventBookingController.markAttendanceMutation(
+      HostEventBookingController.markAttendanceMutationKey(
+        eventId: viewModel.event.id,
+        userId: uid,
+      ),
+    );
+    if (ref.read(mutation).isPending) return;
+    mutation.run(
+      ref,
+      (tx) async => tx
+          .get(hostEventBookingControllerProvider.notifier)
+          .markAttendance(eventId: viewModel.event.id, userId: uid),
+    );
+  }
+
+  void _approveJoinRequest(AttendanceSheetViewModel viewModel, String uid) {
+    final mutation = HostEventBookingController.approveJoinRequestMutation(
+      HostEventBookingController.approveJoinRequestMutationKey(
+        eventId: viewModel.event.id,
+        userId: uid,
+      ),
+    );
+    if (ref.read(mutation).isPending) return;
+    mutation.run(
+      ref,
+      (tx) async => tx
+          .get(hostEventBookingControllerProvider.notifier)
+          .approveJoinRequest(eventId: viewModel.event.id, userId: uid),
+    );
+  }
+
+  void _declineJoinRequest(AttendanceSheetViewModel viewModel, String uid) {
+    final mutation = HostEventBookingController.declineJoinRequestMutation(
+      HostEventBookingController.declineJoinRequestMutationKey(
+        eventId: viewModel.event.id,
+        userId: uid,
+      ),
+    );
+    if (ref.read(mutation).isPending) return;
+    mutation.run(
+      ref,
+      (tx) async => tx
+          .get(hostEventBookingControllerProvider.notifier)
+          .declineJoinRequest(eventId: viewModel.event.id, userId: uid),
+    );
+  }
+
+  void _createWaitlistOffers(
+    AttendanceSheetViewModel viewModel,
+    List<String> userIds,
+  ) {
+    if (userIds.isEmpty) return;
+    final mutation = HostEventBookingController.createWaitlistOfferMutation(
+      _waitlistOfferMutationKey(viewModel.event.id, userIds),
+    );
+    if (ref.read(mutation).isPending) return;
+    mutation.run(
+      ref,
+      (tx) async => tx
+          .get(hostEventBookingControllerProvider.notifier)
+          .createWaitlistOffers(eventId: viewModel.event.id, userIds: userIds),
+    );
+  }
+
+  Future<void> _shareRevenueReport(
+    AttendanceSheetViewModel viewModel,
+    HostParticipantProfilesLookupState profileLookupState,
+  ) async {
+    final origin = _shareOrigin(context);
+    try {
+      await HostEventManageController.shareRevenueReportMutation.run(
+        ref,
+        (tx) => tx
+            .get(hostEventManageActionsProvider)
+            .shareRevenueReport(
+              viewModel: viewModel,
+              profiles: profileLookupState.profiles,
+              origin: origin,
+            ),
+      );
+      if (!mounted) return;
+      showCatchSnackBar(context, 'Revenue CSV ready.');
+    } catch (error, stackTrace) {
+      ref
+          .read(errorLoggerProvider)
+          .logError(error, stackTrace, reason: '_shareRevenueReport failed');
+    }
+  }
+
+  Future<void> _shareOpsReport(
+    AttendanceSheetViewModel viewModel,
+    HostParticipantProfilesLookupState profileLookupState,
+  ) async {
+    final origin = _shareOrigin(context);
+    try {
+      await HostEventManageController.shareOpsReportMutation.run(
+        ref,
+        (tx) => tx
+            .get(hostEventManageActionsProvider)
+            .shareOpsReport(
+              viewModel: viewModel,
+              profiles: profileLookupState.profiles,
+              origin: origin,
+            ),
+      );
+      if (!mounted) return;
+      showCatchSnackBar(context, 'Ops CSV ready.');
+    } catch (error, stackTrace) {
+      ref
+          .read(errorLoggerProvider)
+          .logError(error, stackTrace, reason: '_shareOpsReport failed');
+    }
+  }
+
+  Set<String> _pendingMutationIds(
+    Iterable<String> ids,
+    Mutation<void> Function(String uid) mutationFor,
+  ) {
+    return {
+      for (final uid in ids)
+        if (ref.watch(mutationFor(uid)).isPending) uid,
+    };
+  }
+
+  Object? _firstMutationErrorForIds(
+    Iterable<String> ids,
+    Mutation<void> Function(String uid) mutationFor,
+  ) {
+    for (final uid in ids) {
+      final error = _mutationError(ref.watch(mutationFor(uid)));
+      if (error != null) return error;
+    }
+    return null;
+  }
 }
 
 CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
@@ -274,84 +404,6 @@ CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
     data: CatchAsyncState<T>.data,
     loading: () => const CatchAsyncState.loading(),
     error: (error, stackTrace) => CatchAsyncState<T>.error(error),
-  );
-}
-
-void _toggleAttendance(
-  WidgetRef ref,
-  AttendanceSheetViewModel viewModel,
-  String uid,
-) {
-  final mutation = HostEventBookingController.markAttendanceMutation(
-    HostEventBookingController.markAttendanceMutationKey(
-      eventId: viewModel.event.id,
-      userId: uid,
-    ),
-  );
-  if (ref.read(mutation).isPending) return;
-  mutation.run(
-    ref,
-    (tx) async => tx
-        .get(hostEventBookingControllerProvider.notifier)
-        .markAttendance(eventId: viewModel.event.id, userId: uid),
-  );
-}
-
-void _approveJoinRequest(
-  WidgetRef ref,
-  AttendanceSheetViewModel viewModel,
-  String uid,
-) {
-  final mutation = HostEventBookingController.approveJoinRequestMutation(
-    HostEventBookingController.approveJoinRequestMutationKey(
-      eventId: viewModel.event.id,
-      userId: uid,
-    ),
-  );
-  if (ref.read(mutation).isPending) return;
-  mutation.run(
-    ref,
-    (tx) async => tx
-        .get(hostEventBookingControllerProvider.notifier)
-        .approveJoinRequest(eventId: viewModel.event.id, userId: uid),
-  );
-}
-
-void _declineJoinRequest(
-  WidgetRef ref,
-  AttendanceSheetViewModel viewModel,
-  String uid,
-) {
-  final mutation = HostEventBookingController.declineJoinRequestMutation(
-    HostEventBookingController.declineJoinRequestMutationKey(
-      eventId: viewModel.event.id,
-      userId: uid,
-    ),
-  );
-  if (ref.read(mutation).isPending) return;
-  mutation.run(
-    ref,
-    (tx) async => tx
-        .get(hostEventBookingControllerProvider.notifier)
-        .declineJoinRequest(eventId: viewModel.event.id, userId: uid),
-  );
-}
-
-void _createWaitlistOffers(
-  WidgetRef ref,
-  AttendanceSheetViewModel viewModel,
-  List<String> userIds,
-) {
-  if (userIds.isEmpty) return;
-  final mutation = HostEventBookingController.createWaitlistOfferMutation(
-    _waitlistOfferMutationKey(viewModel.event.id, userIds),
-  );
-  if (ref.read(mutation).isPending) return;
-  mutation.run(
-    ref,
-    (tx) async => tx
-        .get(hostEventBookingControllerProvider.notifier)
-        .createWaitlistOffers(eventId: viewModel.event.id, userIds: userIds),
   );
 }
 
@@ -364,60 +416,6 @@ Object _waitlistOfferMutationKey(String eventId, List<String> userIds) {
       : HostEventBookingController.bulkWaitlistOfferMutationKey(
           eventId: eventId,
         );
-}
-
-Future<void> _shareRevenueReport(
-  BuildContext context,
-  WidgetRef ref,
-  AttendanceSheetViewModel viewModel,
-  HostParticipantProfilesLookupState profileLookupState,
-) async {
-  final origin = _shareOrigin(context);
-  try {
-    await HostEventManageController.shareRevenueReportMutation.run(
-      ref,
-      (tx) => tx
-          .get(hostEventManageActionsProvider)
-          .shareRevenueReport(
-            viewModel: viewModel,
-            profiles: profileLookupState.profiles,
-            origin: origin,
-          ),
-    );
-    if (!context.mounted) return;
-    showCatchSnackBar(context, 'Revenue CSV ready.');
-  } catch (error, stackTrace) {
-    ref
-        .read(errorLoggerProvider)
-        .logError(error, stackTrace, reason: '_shareRevenueReport failed');
-  }
-}
-
-Future<void> _shareOpsReport(
-  BuildContext context,
-  WidgetRef ref,
-  AttendanceSheetViewModel viewModel,
-  HostParticipantProfilesLookupState profileLookupState,
-) async {
-  final origin = _shareOrigin(context);
-  try {
-    await HostEventManageController.shareOpsReportMutation.run(
-      ref,
-      (tx) => tx
-          .get(hostEventManageActionsProvider)
-          .shareOpsReport(
-            viewModel: viewModel,
-            profiles: profileLookupState.profiles,
-            origin: origin,
-          ),
-    );
-    if (!context.mounted) return;
-    showCatchSnackBar(context, 'Ops CSV ready.');
-  } catch (error, stackTrace) {
-    ref
-        .read(errorLoggerProvider)
-        .logError(error, stackTrace, reason: '_shareOpsReport failed');
-  }
 }
 
 Rect? _shareOrigin(BuildContext context) {
@@ -936,29 +934,6 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
 Object? _mutationError(MutationState<dynamic> mutation) {
   if (!mutation.hasError) return null;
   return (mutation as MutationError).error;
-}
-
-Set<String> _pendingMutationIds(
-  WidgetRef ref,
-  Iterable<String> ids,
-  Mutation<void> Function(String uid) mutationFor,
-) {
-  return {
-    for (final uid in ids)
-      if (ref.watch(mutationFor(uid)).isPending) uid,
-  };
-}
-
-Object? _firstMutationErrorForIds(
-  WidgetRef ref,
-  Iterable<String> ids,
-  Mutation<void> Function(String uid) mutationFor,
-) {
-  for (final uid in ids) {
-    final error = _mutationError(ref.watch(mutationFor(uid)));
-    if (error != null) return error;
-  }
-  return null;
 }
 
 class HostRosterSearchBar extends StatelessWidget {
