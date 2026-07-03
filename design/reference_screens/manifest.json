@@ -215,17 +215,12 @@
         "kind": "claude",
         "id": "claude.profile-self",
         "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-profile/Profile.dc.html",
-        "exportedAt": "2026-06-22",
-        "exportTool": "Google Chrome headless screenshot + sips crop",
+        "exportedAt": "2026-07-03",
+        "exportTool": "tool/design/export_reference_screen.mjs",
+        "label": "Profile · self (preview)",
         "viewport": {
-          "width": 1340,
+          "width": 1320,
           "height": 920
-        },
-        "crop": {
-          "x": 476,
-          "y": 41,
-          "width": 390,
-          "height": 812
         }
       },
       "thresholds": {
@@ -233,7 +228,7 @@
         "maxMismatchRatio": 0.18,
         "maxMeanDelta": 18
       },
-      "notes": "Canonical self-profile preview Claude template reference for advisory comparison against profile_self_preview_tab light captures rendered on the design-phone device. 2026-06-25 non-host reference batch: above advisory threshold; mismatch 19.98%, meanDelta 26.87, maxDelta 226, masked 219570."
+      "notes": "Canonical self-profile preview Claude template reference for advisory comparison against profile_self_preview_tab light captures rendered on the claude-phone-390x812 device. 2026-07-03 reference refresh: regenerated from the current Profile · self (preview) handoff panel with tool/design/export_reference_screen.mjs and aligned the capture fixture to the handoff identity/photo content. The compare remains blocked because the current handoff models a two-tab header while production ProfileScreen intentionally renders Edit, Preview, and Insights; refreshed comparison is above advisory threshold at 26.84% mismatch / 46.15 meanDelta, maxDelta 237, masked 219570."
     },
     {
       "id": "screen.profile.self.edit_tab_default",
@@ -254,17 +249,12 @@
         "kind": "claude",
         "id": "claude.profile-self",
         "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-profile/Profile.dc.html",
-        "exportedAt": "2026-06-22",
-        "exportTool": "Google Chrome headless screenshot + sips crop",
+        "exportedAt": "2026-07-03",
+        "exportTool": "tool/design/export_reference_screen.mjs",
+        "label": "Profile · edit",
         "viewport": {
-          "width": 1340,
+          "width": 1320,
           "height": 920
-        },
-        "crop": {
-          "x": 898,
-          "y": 41,
-          "width": 390,
-          "height": 812
         }
       },
       "thresholds": {
@@ -272,7 +262,7 @@
         "maxMismatchRatio": 0.18,
         "maxMeanDelta": 18
       },
-      "notes": "Canonical self-profile edit Claude template reference for advisory comparison against profile_self_edit_tab light captures rendered on the design-phone device. 2026-06-25 non-host reference batch: within advisory threshold; mismatch 14.80%, meanDelta 16.59, maxDelta 240, masked 134640."
+      "notes": "Canonical self-profile edit Claude template reference for advisory comparison against profile_self_edit_tab light captures rendered on the claude-phone-390x812 device. 2026-07-03 reference refresh: regenerated from the current Profile · edit handoff panel with tool/design/export_reference_screen.mjs and aligned the capture fixture to the handoff identity/photo content. The compare remains blocked because the current handoff models a two-tab header and older field-group edit layout while production ProfileScreen intentionally renders Edit, Preview, and Insights plus current photo/editor rows; refreshed comparison is above advisory threshold at 13.67% mismatch / 20.03 meanDelta, maxDelta 244, masked 134640."
     },
     {
       "id": "screen.host.event.manage.setup_workspace",

@@ -4167,8 +4167,8 @@
             },
             {
               "id": "DP-PROFILE-SELF-002",
-              "status": "open",
-              "nextAction": "Deterministic full-route captures are now registered for loading, error, offline, unavailable, edit tab, preview tab, upload pending, upload failure, inline save pending/error drawers, text scale, reduced motion, and paired light/dark. Settings navigation proof is covered by profile_widgets_test. Remaining work is delete/reorder route captures if visually distinct and advisory pixel comparison."
+              "status": "blocked",
+              "nextAction": "Blocked after the 2026-07-03 reference refresh and fixture alignment. Deterministic full-route captures are registered for loading, error, offline, unavailable, edit tab, preview tab, upload pending, upload failure, inline save pending/error drawers, text scale, reduced motion, and paired light/dark, and Settings navigation proof is covered by profile_widgets_test. Fresh edit/preview handoff exports still model a compact two-tab header and older edit field/photo-grid layout while production ProfileScreen intentionally renders Edit, Preview, and Insights plus current photo/editor rows. The refreshed advisory compare remains above threshold: preview 26.84% mismatch / 46.15 meanDelta, edit 13.67% mismatch / 20.03 meanDelta. Resume when the canonical self-profile source reflects the current production IA or product chooses to remove the Insights/current edit-grid treatment."
             },
             {
               "id": "DP-PROFILE-SELF-003",

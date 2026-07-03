@@ -1632,14 +1632,46 @@ Stream<T> _captureLoadingStream<T>() => Stream<T>.empty();
 Stream<T> _captureErrorStream<T>(String message) =>
     Stream<T>.error(StateError(message), StackTrace.empty);
 
-final _profileCaptureViewerNoNetwork = ProfileSurfaceFixtures.viewer.copyWith(
-  profilePhotos: const [],
-);
 final _profileCaptureTargetNoNetwork = ProfileSurfaceFixtures
     .targetPublicProfile
     .copyWith(profilePhotos: const []);
 final _profileCaptureOwnNoNetwork = ProfileSurfaceFixtures.ownPublicProfile
     .copyWith(profilePhotos: const []);
+final _profileSelfReferenceProfile = ProfileSurfaceFixtures.viewer.copyWith(
+  name: 'Aanya',
+  firstName: 'Aanya',
+  lastName: '',
+  displayName: 'Aanya',
+  dateOfBirth: DateTime(1998, 12, 31),
+  email: 'aanya@catch.test',
+  instagramHandle: 'aanyaruns',
+  profilePrompts: ProfileSurfaceFixtures.profilePrompts(
+    perfectEvent:
+        'Long run, longer brunch, and a bookshop I have no business being in.',
+    weekend:
+        'Gallery mornings, unhurried coffee, and a playlist that keeps the walk going.',
+  ),
+  profilePhotos: [
+    for (final photo in ProfileSurfaceFixtures.viewer.profilePhotos)
+      photo.copyWith(url: _profilePortraitAssetPath),
+  ],
+  city: 'Bandra',
+  occupation: 'Designer',
+  company: '',
+  education: EducationLevel.bachelors,
+  religion: Religion.jain,
+  languages: const [Language.english, Language.hindi, Language.gujarati],
+  activityPreferences: const ActivityPreferences(
+    running: RunningPreferences(
+      paceMinSecsPerKm: 320,
+      paceMaxSecsPerKm: 360,
+      preferredDistances: [PreferredDistance.fiveK, PreferredDistance.tenK],
+      runningReasons: [RunReason.mindfulness, RunReason.social],
+      preferredRunTimes: [PreferredRunTime.earlyMorning],
+      version: currentRunPreferencesVersion,
+    ),
+  ),
+);
 final _publicProfileReferenceProfile = ProfileSurfaceFixtures
     .targetPublicProfile
     .copyWith(
@@ -7248,15 +7280,19 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'profile_self_edit_tab',
     routeIds: const <String>['profileScreen'],
     device: CaptureDevice.reviewTall,
-    providerOverrides: _selfProfileProviderOverrides(),
+    precache: const <ImageProvider<Object>>[_profilePortraitAssetImage],
+    providerOverrides: _selfProfileProviderOverrides(
+      profile: _profileSelfReferenceProfile,
+    ),
     builder: (context) => _selfProfileCapture(),
   ),
   ScreenCaptureEntry(
     id: 'profile_self_preview_tab',
     routeIds: const <String>['profileScreen'],
     device: CaptureDevice.reviewTall,
+    precache: const <ImageProvider<Object>>[_profilePortraitAssetImage],
     providerOverrides: _selfProfileProviderOverrides(
-      profile: _profileCaptureViewerNoNetwork,
+      profile: _profileSelfReferenceProfile,
     ),
     builder: (context) => _selfProfileCapture(initialTabIndex: 1),
   ),
