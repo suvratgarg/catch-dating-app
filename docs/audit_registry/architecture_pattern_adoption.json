@@ -342,6 +342,13 @@
           "lastReviewedPass": "2026-07-03-event-success-live-reveal-action-state"
         },
         {
+          "path": "lib/event_success/presentation/event_success_host_screen_state.dart",
+          "role": "provider-free Event Success host section and action-state adapter for setup save state, live action mutations, assignment generation actions, host section async status, fallback plan data, retry intent mapping, roster/profile/preference/wingman defaults, and error display snapshots",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-event-success-host-screen-state"
+        },
+        {
           "path": "test/event_success/event_success_live_reveal_card_state_test.dart",
           "role": "EventSuccessRevealActionState pending and error-priority behavior coverage",
           "status": "aligned",
@@ -349,9 +356,9 @@
         },
         {
           "path": "test/event_success/event_success_live_screens_test.dart",
-          "role": "Event Success host live reveal behavior coverage for reveal action state, generation, overrides, and ceremony effects",
+          "role": "Event Success host screen-state and live behavior coverage for host section async status, retry intents, reveal action state, generation, overrides, and ceremony effects",
           "status": "aligned",
-          "lastReviewedPass": "2026-07-03-event-success-live-reveal-action-state"
+          "lastReviewedPass": "2026-07-03-event-success-host-screen-state"
         },
         {
           "path": "lib/hosts/presentation/host_operations_screen_state.dart",

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
@@ -377,50 +378,58 @@ void main() {
     );
 
     EventSuccessHostSectionState resolve({
-      AsyncValue<EventSuccessPlan?>? planAsync,
-      AsyncValue<EventParticipationRoster>? rosterAsync,
-      AsyncValue<EventSuccessScorecard?>? scorecardAsync,
-      AsyncValue<List<EventSuccessAssignment>>? assignmentsAsync,
-      AsyncValue<List<PublicProfile>>? assignmentProfilesAsync,
-      AsyncValue<List<EventSuccessAssignment>>? rotationAssignmentsAsync,
-      AsyncValue<List<PublicProfile>>? rotationProfilesAsync,
-      AsyncValue<List<EventSuccessPreference>>? preferencesAsync,
-      AsyncValue<List<EventSuccessWingmanRequest>>? wingmanRequestsAsync,
-      AsyncValue<List<PublicProfile>>? wingmanProfilesAsync,
+      CatchAsyncState<EventSuccessPlan?>? planState,
+      CatchAsyncState<EventParticipationRoster>? rosterState,
+      CatchAsyncState<EventSuccessScorecard?>? scorecardState,
+      CatchAsyncState<List<EventSuccessAssignment>>? assignmentsState,
+      CatchAsyncState<List<PublicProfile>>? assignmentProfilesState,
+      CatchAsyncState<List<EventSuccessAssignment>>? rotationAssignmentsState,
+      CatchAsyncState<List<PublicProfile>>? rotationProfilesState,
+      CatchAsyncState<List<EventSuccessPreference>>? preferencesState,
+      CatchAsyncState<List<EventSuccessWingmanRequest>>? wingmanRequestsState,
+      CatchAsyncState<List<PublicProfile>>? wingmanProfilesState,
     }) {
       return EventSuccessHostSectionState.resolve(
         event: event,
         now: event.startTime,
-        planAsync: planAsync ?? AsyncData<EventSuccessPlan?>(plan),
-        rosterAsync: rosterAsync ?? const AsyncData(roster),
-        scorecardAsync:
-            scorecardAsync ?? const AsyncData<EventSuccessScorecard?>(null),
-        assignmentsAsync:
-            assignmentsAsync ?? const AsyncData(<EventSuccessAssignment>[]),
-        assignmentParticipantProfilesAsync:
-            assignmentProfilesAsync ?? const AsyncData(<PublicProfile>[]),
-        rotationAssignmentsAsync:
-            rotationAssignmentsAsync ??
-            const AsyncData(<EventSuccessAssignment>[]),
-        rotationParticipantProfilesAsync:
-            rotationProfilesAsync ?? const AsyncData(<PublicProfile>[]),
-        preferencesAsync:
-            preferencesAsync ?? const AsyncData(<EventSuccessPreference>[]),
-        wingmanRequestsAsync:
-            wingmanRequestsAsync ??
-            const AsyncData(<EventSuccessWingmanRequest>[]),
-        wingmanProfilesAsync:
-            wingmanProfilesAsync ?? const AsyncData(<PublicProfile>[]),
+        planState: planState ?? CatchAsyncState<EventSuccessPlan?>.data(plan),
+        rosterState: rosterState ?? const CatchAsyncState.data(roster),
+        scorecardState:
+            scorecardState ??
+            const CatchAsyncState<EventSuccessScorecard?>.data(null),
+        assignmentsState:
+            assignmentsState ??
+            const CatchAsyncState<List<EventSuccessAssignment>>.data([]),
+        assignmentParticipantProfilesState:
+            assignmentProfilesState ??
+            const CatchAsyncState<List<PublicProfile>>.data([]),
+        rotationAssignmentsState:
+            rotationAssignmentsState ??
+            const CatchAsyncState<List<EventSuccessAssignment>>.data([]),
+        rotationParticipantProfilesState:
+            rotationProfilesState ??
+            const CatchAsyncState<List<PublicProfile>>.data([]),
+        preferencesState:
+            preferencesState ??
+            const CatchAsyncState<List<EventSuccessPreference>>.data([]),
+        wingmanRequestsState:
+            wingmanRequestsState ??
+            const CatchAsyncState<List<EventSuccessWingmanRequest>>.data([]),
+        wingmanProfilesState:
+            wingmanProfilesState ??
+            const CatchAsyncState<List<PublicProfile>>.data([]),
       );
     }
 
     expect(
-      resolve(planAsync: const AsyncLoading<EventSuccessPlan?>()).status,
+      resolve(
+        planState: const CatchAsyncState<EventSuccessPlan?>.loading(),
+      ).status,
       EventSuccessHostSectionStatus.loading,
     );
 
     final unsaved = resolve(
-      planAsync: const AsyncData<EventSuccessPlan?>(null),
+      planState: const CatchAsyncState<EventSuccessPlan?>.data(null),
     );
     expect(unsaved.status, EventSuccessHostSectionStatus.ready);
     expect(unsaved.planIsPersisted, isFalse);
@@ -428,10 +437,7 @@ void main() {
 
     final rosterError = StateError('roster failed');
     final rosterState = resolve(
-      rosterAsync: AsyncError<EventParticipationRoster>(
-        rosterError,
-        StackTrace.empty,
-      ),
+      rosterState: CatchAsyncState<EventParticipationRoster>.error(rosterError),
     );
     expect(rosterState.status, EventSuccessHostSectionStatus.error);
     expect(rosterState.retryIntent, EventSuccessHostRetryIntent.roster);
@@ -440,9 +446,8 @@ void main() {
     final profileError = StateError('profiles failed');
     expect(
       resolve(
-        assignmentProfilesAsync: AsyncError<List<PublicProfile>>(
+        assignmentProfilesState: CatchAsyncState<List<PublicProfile>>.error(
           profileError,
-          StackTrace.empty,
         ),
       ).retryIntent,
       EventSuccessHostRetryIntent.assignmentParticipantProfiles,
@@ -451,9 +456,8 @@ void main() {
     final scorecardError = StateError('scorecard failed');
     expect(
       resolve(
-        scorecardAsync: AsyncError<EventSuccessScorecard?>(
+        scorecardState: CatchAsyncState<EventSuccessScorecard?>.error(
           scorecardError,
-          StackTrace.empty,
         ),
       ).retryIntent,
       EventSuccessHostRetryIntent.scorecard,

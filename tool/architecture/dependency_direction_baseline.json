@@ -4,10 +4,6 @@
   "description": "Current dependency-direction debt baseline. Normal scanner runs fail on findings not listed here.",
   "allowedFindings": [
     {
-      "rule": "misplacedStateClass",
-      "path": "lib/event_success/presentation/event_success_host_screen.dart"
-    },
-    {
       "rule": "multiRouteScreenFile",
       "path": "lib/dashboard/presentation/dashboard_screen.dart"
     },

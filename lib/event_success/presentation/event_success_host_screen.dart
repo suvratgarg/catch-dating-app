@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -34,6 +35,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_runtime.dart
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_feature_blocks.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_setup_body.dart';
@@ -47,6 +49,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+
+export 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
 
 part 'host_parts/event_success_host_live.dart';
 part 'host_parts/event_success_host_overrides.dart';
@@ -69,272 +73,6 @@ const EdgeInsets _hostWingmanRequestNotePadding = EdgeInsets.only(
   right: CatchSpacing.s5,
   bottom: CatchSpacing.s2,
 );
-
-enum EventSuccessHostTab { setup, live, report }
-
-enum EventSuccessHostSectionStatus { loading, error, ready }
-
-enum EventSuccessHostRetryIntent {
-  plan,
-  roster,
-  assignments,
-  rotationAssignments,
-  assignmentParticipantProfiles,
-  rotationParticipantProfiles,
-  preferences,
-  wingmanRequests,
-  wingmanProfiles,
-  scorecard,
-}
-
-class EventSuccessSetupActionState {
-  const EventSuccessSetupActionState({this.isSaving = false, this.error});
-
-  factory EventSuccessSetupActionState.resolve({
-    required MutationState<EventSuccessPlan> ensureMutation,
-    required MutationState<void> saveMutation,
-  }) {
-    final error = saveMutation.hasError
-        ? (saveMutation as MutationError).error
-        : ensureMutation.hasError
-        ? (ensureMutation as MutationError).error
-        : null;
-    return EventSuccessSetupActionState(
-      isSaving: ensureMutation.isPending || saveMutation.isPending,
-      error: error,
-    );
-  }
-
-  final bool isSaving;
-  final Object? error;
-
-  bool get hasError => error != null;
-}
-
-class EventSuccessSetupSaveRequest {
-  const EventSuccessSetupSaveRequest({
-    required this.event,
-    required this.plan,
-    required this.planIsPersisted,
-    required this.draft,
-    required this.attendeePrompt,
-  });
-
-  final Event event;
-  final EventSuccessPlan plan;
-  final bool planIsPersisted;
-  final EventSuccessHostDraft draft;
-  final String attendeePrompt;
-}
-
-class EventSuccessLiveActionState {
-  const EventSuccessLiveActionState({
-    this.isChangingStep = false,
-    this.isCompleting = false,
-    this.stepError,
-    this.completeError,
-    this.attendanceError,
-  });
-
-  factory EventSuccessLiveActionState.resolve({
-    required MutationState<void> stepMutation,
-    required MutationState<void> completeMutation,
-    MutationState<void>? attendanceErrorMutation,
-  }) {
-    return EventSuccessLiveActionState(
-      isChangingStep: stepMutation.isPending,
-      isCompleting: completeMutation.isPending,
-      stepError: stepMutation.hasError
-          ? (stepMutation as MutationError).error
-          : null,
-      completeError: completeMutation.hasError
-          ? (completeMutation as MutationError).error
-          : null,
-      attendanceError: attendanceErrorMutation == null
-          ? null
-          : (attendanceErrorMutation as MutationError).error,
-    );
-  }
-
-  final bool isChangingStep;
-  final bool isCompleting;
-  final Object? stepError;
-  final Object? completeError;
-  final Object? attendanceError;
-}
-
-class EventSuccessAssignmentGenerationActionState {
-  const EventSuccessAssignmentGenerationActionState({
-    this.isGenerating = false,
-    this.error,
-  });
-
-  factory EventSuccessAssignmentGenerationActionState.resolve(
-    MutationState<void> mutation,
-  ) {
-    return EventSuccessAssignmentGenerationActionState(
-      isGenerating: mutation.isPending,
-      error: mutation.hasError ? (mutation as MutationError).error : null,
-    );
-  }
-
-  final bool isGenerating;
-  final Object? error;
-}
-
-class EventSuccessHostSectionState {
-  const EventSuccessHostSectionState._({
-    required this.status,
-    required this.plan,
-    required this.planIsPersisted,
-    required this.roster,
-    required this.scorecard,
-    required this.assignments,
-    required this.assignmentParticipantProfiles,
-    required this.rotationAssignments,
-    required this.rotationParticipantProfiles,
-    required this.preferences,
-    required this.wingmanRequests,
-    required this.wingmanProfiles,
-    this.error,
-    this.retryIntent,
-  });
-
-  factory EventSuccessHostSectionState.resolve({
-    required Event event,
-    required DateTime now,
-    required AsyncValue<EventSuccessPlan?> planAsync,
-    required AsyncValue<EventParticipationRoster> rosterAsync,
-    required AsyncValue<EventSuccessScorecard?> scorecardAsync,
-    required AsyncValue<List<EventSuccessAssignment>> assignmentsAsync,
-    required AsyncValue<List<PublicProfile>> assignmentParticipantProfilesAsync,
-    required AsyncValue<List<EventSuccessAssignment>> rotationAssignmentsAsync,
-    required AsyncValue<List<PublicProfile>> rotationParticipantProfilesAsync,
-    required AsyncValue<List<EventSuccessPreference>> preferencesAsync,
-    required AsyncValue<List<EventSuccessWingmanRequest>> wingmanRequestsAsync,
-    required AsyncValue<List<PublicProfile>> wingmanProfilesAsync,
-  }) {
-    final persistedPlan = planAsync.asData?.value;
-    final plan =
-        persistedPlan ?? EventSuccessPlan.defaultForEvent(event, now: now);
-    final fallback = EventSuccessHostSectionState._(
-      status: EventSuccessHostSectionStatus.ready,
-      plan: plan,
-      planIsPersisted: persistedPlan != null,
-      roster: rosterAsync.asData?.value ?? EventParticipationRoster.empty(),
-      scorecard: scorecardAsync.asData?.value,
-      assignments:
-          assignmentsAsync.asData?.value ?? const <EventSuccessAssignment>[],
-      assignmentParticipantProfiles:
-          assignmentParticipantProfilesAsync.asData?.value ??
-          const <PublicProfile>[],
-      rotationAssignments:
-          rotationAssignmentsAsync.asData?.value ??
-          const <EventSuccessAssignment>[],
-      rotationParticipantProfiles:
-          rotationParticipantProfilesAsync.asData?.value ??
-          const <PublicProfile>[],
-      preferences:
-          preferencesAsync.asData?.value ?? const <EventSuccessPreference>[],
-      wingmanRequests:
-          wingmanRequestsAsync.asData?.value ??
-          const <EventSuccessWingmanRequest>[],
-      wingmanProfiles:
-          wingmanProfilesAsync.asData?.value ?? const <PublicProfile>[],
-    );
-
-    if (planAsync.isLoading ||
-        rosterAsync.isLoading ||
-        scorecardAsync.isLoading ||
-        assignmentsAsync.isLoading ||
-        assignmentParticipantProfilesAsync.isLoading ||
-        rotationAssignmentsAsync.isLoading ||
-        rotationParticipantProfilesAsync.isLoading ||
-        preferencesAsync.isLoading ||
-        wingmanRequestsAsync.isLoading ||
-        wingmanProfilesAsync.isLoading) {
-      return fallback.copyWith(status: EventSuccessHostSectionStatus.loading);
-    }
-
-    final error = _firstEventSuccessHostError([
-      (planAsync, EventSuccessHostRetryIntent.plan),
-      (rosterAsync, EventSuccessHostRetryIntent.roster),
-      (assignmentsAsync, EventSuccessHostRetryIntent.assignments),
-      (
-        rotationAssignmentsAsync,
-        EventSuccessHostRetryIntent.rotationAssignments,
-      ),
-      (
-        assignmentParticipantProfilesAsync,
-        EventSuccessHostRetryIntent.assignmentParticipantProfiles,
-      ),
-      (
-        rotationParticipantProfilesAsync,
-        EventSuccessHostRetryIntent.rotationParticipantProfiles,
-      ),
-      (preferencesAsync, EventSuccessHostRetryIntent.preferences),
-      (wingmanRequestsAsync, EventSuccessHostRetryIntent.wingmanRequests),
-      (wingmanProfilesAsync, EventSuccessHostRetryIntent.wingmanProfiles),
-      (scorecardAsync, EventSuccessHostRetryIntent.scorecard),
-    ]);
-    if (error != null) {
-      return fallback.copyWith(
-        status: EventSuccessHostSectionStatus.error,
-        error: error.$1,
-        retryIntent: error.$2,
-      );
-    }
-
-    return fallback;
-  }
-
-  final EventSuccessHostSectionStatus status;
-  final EventSuccessPlan plan;
-  final bool planIsPersisted;
-  final EventParticipationRoster roster;
-  final EventSuccessScorecard? scorecard;
-  final List<EventSuccessAssignment> assignments;
-  final List<PublicProfile> assignmentParticipantProfiles;
-  final List<EventSuccessAssignment> rotationAssignments;
-  final List<PublicProfile> rotationParticipantProfiles;
-  final List<EventSuccessPreference> preferences;
-  final List<EventSuccessWingmanRequest> wingmanRequests;
-  final List<PublicProfile> wingmanProfiles;
-  final Object? error;
-  final EventSuccessHostRetryIntent? retryIntent;
-
-  EventSuccessHostSectionState copyWith({
-    EventSuccessHostSectionStatus? status,
-    Object? error,
-    EventSuccessHostRetryIntent? retryIntent,
-  }) {
-    return EventSuccessHostSectionState._(
-      status: status ?? this.status,
-      plan: plan,
-      planIsPersisted: planIsPersisted,
-      roster: roster,
-      scorecard: scorecard,
-      assignments: assignments,
-      assignmentParticipantProfiles: assignmentParticipantProfiles,
-      rotationAssignments: rotationAssignments,
-      rotationParticipantProfiles: rotationParticipantProfiles,
-      preferences: preferences,
-      wingmanRequests: wingmanRequests,
-      wingmanProfiles: wingmanProfiles,
-      error: error ?? this.error,
-      retryIntent: retryIntent ?? this.retryIntent,
-    );
-  }
-}
-
-(Object, EventSuccessHostRetryIntent)? _firstEventSuccessHostError(
-  List<(AsyncValue<dynamic>, EventSuccessHostRetryIntent)> values,
-) {
-  for (final (value, intent) in values) {
-    if (value.hasError) return (value.error!, intent);
-  }
-  return null;
-}
 
 MutationState<void>? _firstHostRosterMutationError(
   MutationState<void> Function(Mutation<void> mutation) watchMutation, {
@@ -381,6 +119,22 @@ MutationState<void>? _firstHostRosterMutationError(
     ),
   );
   return bulkOfferState.hasError ? bulkOfferState : null;
+}
+
+CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
+  return value.when(
+    data: CatchAsyncState<T>.data,
+    loading: () => const CatchAsyncState.loading(),
+    error: (error, stackTrace) => CatchAsyncState<T>.error(error),
+  );
+}
+
+Object? _nullableMutationError(MutationState<dynamic>? state) {
+  return state == null ? null : _mutationError(state);
+}
+
+Object? _mutationError(MutationState<dynamic> state) {
+  return state.hasError ? (state as MutationError).error : null;
 }
 
 class EventSuccessHostSection extends ConsumerStatefulWidget {
@@ -462,6 +216,25 @@ class _EventSuccessHostSectionState
             eventId: event.id,
             roster: rosterAsync.asData?.value,
           );
+    final ensureError = ensureMutation.hasError
+        ? _mutationError(ensureMutation)
+        : null;
+    final saveSetupError = saveSetupMutation.hasError
+        ? _mutationError(saveSetupMutation)
+        : null;
+    final updateStepError = updateStepMutation.hasError
+        ? _mutationError(updateStepMutation)
+        : null;
+    final completePlanError = completePlanMutation.hasError
+        ? _mutationError(completePlanMutation)
+        : null;
+    final generateMicroPodsError = generateMicroPodsMutation.hasError
+        ? _mutationError(generateMicroPodsMutation)
+        : null;
+    final generateGuidedRotationsError =
+        generateGuidedRotationsMutation.hasError
+        ? _mutationError(generateGuidedRotationsMutation)
+        : null;
     final AsyncValue<EventSuccessScorecard?> scorecardAsync =
         shouldLoadScorecard
         ? ref.watch(watchEventSuccessScorecardProvider(event.id))
@@ -525,16 +298,20 @@ class _EventSuccessHostSectionState
     final state = EventSuccessHostSectionState.resolve(
       event: event,
       now: DateTime.now(),
-      planAsync: planAsync,
-      rosterAsync: rosterAsync,
-      scorecardAsync: scorecardAsync,
-      assignmentsAsync: assignmentsAsync,
-      assignmentParticipantProfilesAsync: assignmentParticipantProfilesAsync,
-      rotationAssignmentsAsync: rotationAssignmentsAsync,
-      rotationParticipantProfilesAsync: rotationParticipantProfilesAsync,
-      preferencesAsync: preferencesAsync,
-      wingmanRequestsAsync: wingmanRequestsAsync,
-      wingmanProfilesAsync: wingmanProfilesAsync,
+      planState: _catchAsyncState(planAsync),
+      rosterState: _catchAsyncState(rosterAsync),
+      scorecardState: _catchAsyncState(scorecardAsync),
+      assignmentsState: _catchAsyncState(assignmentsAsync),
+      assignmentParticipantProfilesState: _catchAsyncState(
+        assignmentParticipantProfilesAsync,
+      ),
+      rotationAssignmentsState: _catchAsyncState(rotationAssignmentsAsync),
+      rotationParticipantProfilesState: _catchAsyncState(
+        rotationParticipantProfilesAsync,
+      ),
+      preferencesState: _catchAsyncState(preferencesAsync),
+      wingmanRequestsState: _catchAsyncState(wingmanRequestsAsync),
+      wingmanProfilesState: _catchAsyncState(wingmanProfilesAsync),
     );
 
     switch (state.status) {
@@ -578,14 +355,18 @@ class _EventSuccessHostSectionState
       liveRoster: liveRoster,
       compactLiveControls: compactLiveControls,
       setupActionState: EventSuccessSetupActionState.resolve(
-        ensureMutation: ensureMutation,
-        saveMutation: saveSetupMutation,
+        ensurePending: ensureMutation.isPending,
+        savePending: saveSetupMutation.isPending,
+        ensureError: ensureError,
+        saveError: saveSetupError,
       ),
       onSaveSetup: _saveEventSuccessSetup,
       liveActionState: EventSuccessLiveActionState.resolve(
-        stepMutation: updateStepMutation,
-        completeMutation: completePlanMutation,
-        attendanceErrorMutation: attendanceErrorMutation,
+        stepPending: updateStepMutation.isPending,
+        completePending: completePlanMutation.isPending,
+        stepError: updateStepError,
+        completeError: completePlanError,
+        attendanceError: _nullableMutationError(attendanceErrorMutation),
       ),
       onSetLiveStep: (index) =>
           _setEventSuccessLiveStep(eventId: event.id, index: index),
@@ -593,11 +374,13 @@ class _EventSuccessHostSectionState
           _completeEventSuccessLiveGuide(eventId: event.id),
       microPodsGenerationState:
           EventSuccessAssignmentGenerationActionState.resolve(
-            generateMicroPodsMutation,
+            pending: generateMicroPodsMutation.isPending,
+            error: generateMicroPodsError,
           ),
       rotationsGenerationState:
           EventSuccessAssignmentGenerationActionState.resolve(
-            generateGuidedRotationsMutation,
+            pending: generateGuidedRotationsMutation.isPending,
+            error: generateGuidedRotationsError,
           ),
       onGenerateMicroPods: () =>
           _generateEventSuccessMicroPods(eventId: event.id),
