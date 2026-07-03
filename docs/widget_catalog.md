@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.557
+version: 2.5.558
 updated: 2026-07-03
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,16 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.558
+
+- Merged the image-backed and no-cover Explore directory club cards into
+  `DirectoryClubCard`, with `DirectoryCard` preserving the cover-photo
+  availability switch at the call site.
+- Added `EventSuccessHeroSurface` as the shared feature-level gradient shell
+  for Event Success preview, lab, and manual QA heroes.
+- Rewrote `PaperTicketSerial` to delegate its computed strings through
+  `PaperTicketDetail`, allowing the shared value layout to own wrapping.
 
 ### 2.5.557
 
@@ -6111,18 +6121,17 @@ Generated 2026-05-06.
 | `CreateClubProfileImagePicker` | `lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart:84` | Profile/logo image picker for host create/edit club forms. Standard mode keeps the create-flow square add/change tile; `editLogo` mode renders the compact Host Edit Club logo row with kicker, square tile, camera/edit affordance, and supporting copy. |
 | `ClubProfileImageTile` | `lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart:167` | Reusable square club profile/logo image tile used by create/edit club pickers. Renders memory or network images, the empty raised slot, optional empty label, semantics, and size variants without owning picker state. |
 | `CreateClubContactFields` | `lib/hosts/presentation/club_management/create/widgets/create_club_contact_fields.dart:6` | Contact fields (Instagram, WhatsApp, website, email) for the host create/edit club form. |
-| `DirectoryCard` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:3` | Directory-style club card router for Explore. Chooses the photo card when cover imagery exists and the no-cover identity card otherwise, wraps both in button semantics when tappable, and centralizes joined-state sash selection before delegating to the display cards. |
-| `DirectoryPhotoCard` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:40` | Image-backed Explore club directory card. Uses `CatchPolaroid` with real club imagery through `ClubPhotoMediaOverlay`, overlays `ClubPhotoChrome`, keeps the Archivo club identity band below the media, and renders tags plus hosted-by/action affordances without moving join mutation state into display-only card code. |
-| `DirectoryIdentityCard` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:82` | No-cover Explore club directory card. Uses `CatchPolaroid` with `ClubPolaroidArtwork`, the same `ClubPhotoChrome` overlay, metadata, tags, hosted-by context, and role-aware membership action row without generated initials. |
-| `ClubPhotoMediaOverlay` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:125` | Directory-card media slot that renders `ClubImage` in cover-first mode with the full-size fallback treatment expected by photo-backed club cards. |
-| `ClubPhotoChrome` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:136` | Directory-card media chrome. Layers `CatchScrim.photoFrame`, logo crest, optional joined sash, and compact member seal over card media while using the deterministic `ClubCoverVisualPalette` accent. |
-| `ClubLogoCrest` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:181` | Circular club logo mark used by directory media chrome. Renders the club profile image when present, otherwise falls back to `ClubLogoFallback`, with caller-supplied palette, border, size, and elevation. |
-| `ClubLogoFallback` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:221` | Empty logo fallback used inside the accent-colored `ClubLogoCrest` shell when the club has no profile image or the network image fails. |
-| `ClubDirectoryFooter` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:230` | Directory-card footer stack for rating, host/action row, separator rule, and visible club tags. Keeps card metadata layout separate from the media and title band. |
-| `ClubRule` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:268` | Single-pixel directory-card separator used between host/action metadata and tag chips. |
-| `ClubHostActionRow` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:313` | Directory-card hosted-by row. Reuses `ClubHostIdentityLine` and delegates joined/joinable trailing state to `MembershipTrailingController`. |
-| `MembershipTrailingController` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:372` | Directory-card membership action adapter. Hides redundant joined controls because the card sash carries that state, keys join mutation state by `clubId` so one pending Join button does not disable every visible club card, and routes signed-out users through the auth flow. |
-| `MembershipTrailing` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:417` | Provider-free directory-card join renderer. Shows the compact `CatchButton` for joinable clubs, disables it while the controller mutation is pending, and renders no redundant joined control when the sash already carries membership state. |
+| `DirectoryCard` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:3` | Directory-style club card router for Explore. Computes cover-photo availability, wraps the display card in button semantics when tappable, and delegates image/no-cover rendering to `DirectoryClubCard`. |
+| `DirectoryClubCard` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:32` | Merged Explore club directory card. Uses `CatchPolaroid` with real club imagery through `ClubPhotoMediaOverlay` when cover imagery exists and `ClubPolaroidArtwork` otherwise, preserves the two-line no-cover title allowance, overlays shared `ClubPhotoChrome`, renders tags plus hosted-by/action affordances, and derives the joined sash from `isJoined` without moving join mutation state into display-only card code. |
+| `ClubPhotoMediaOverlay` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:74` | Directory-card media slot that renders `ClubImage` in cover-first mode with the full-size fallback treatment expected by photo-backed club cards. |
+| `ClubPhotoChrome` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:85` | Directory-card media chrome. Layers `CatchScrim.photoFrame`, logo crest, optional joined sash, and compact member seal over card media while using the deterministic `ClubCoverVisualPalette` accent. |
+| `ClubLogoCrest` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:138` | Circular club logo mark used by directory media chrome. Renders the club profile image when present, otherwise falls back to `ClubLogoFallback`, with caller-supplied palette, border, size, and elevation. |
+| `ClubLogoFallback` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:178` | Empty logo fallback used inside the accent-colored `ClubLogoCrest` shell when the club has no profile image or the network image fails. |
+| `ClubDirectoryFooter` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:187` | Directory-card footer stack for rating, host/action row, separator rule, and visible club tags. Keeps card metadata layout separate from the media and title band. |
+| `ClubRule` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:225` | Single-pixel directory-card separator used between host/action metadata and tag chips. |
+| `ClubHostActionRow` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:239` | Directory-card hosted-by row. Reuses `ClubHostIdentityLine` and delegates joined/joinable trailing state to `MembershipTrailingController`. |
+| `MembershipTrailingController` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:301` | Directory-card membership action adapter. Hides redundant joined controls because the card sash carries that state, keys join mutation state by `clubId` so one pending Join button does not disable every visible club card, and routes signed-out users through the auth flow. |
+| `MembershipTrailing` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:369` | Provider-free directory-card join renderer. Shows the compact `CatchButton` for joinable clubs, disables it while the controller mutation is pending, and renders no redundant joined control when the sash already carries membership state. |
 | `ClubImage` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/club_image.dart:3` | Club media renderer for list tiles and avatar chips. Selects cover/profile image order by explicit flags, grades network imagery through `CatchGradedImage`, and falls back to `ClubPolaroidArtwork` with compact or full fallback chrome chosen by the caller. |
 | `AvatarChip` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/avatar_chip.dart:6` | Joined-club rail tile with a rounded image/fallback chip, optional live-badge border/copy, semantic open-club label, and truncated club name. |
 
@@ -6265,6 +6274,7 @@ Generated 2026-05-06.
 | Widget | File | Purpose |
 |---|---|---|
 | `EventSuccessManualQaScreen` | `lib/event_success/presentation/event_success_manual_qa_screen.dart:38` | Dev/staging manual QA harness. Uses handoff `SelectChip` choices for the fixture event-format selector and `CatchField.toggle` rows for attendee opt-out settings while rendering the canonical `HostEventManageScreen` beside the production attendee companion from one synchronized in-memory fixture store. The host pane overrides the exact Host Manage providers for event, roster, profile, event-success, and attendance-table state so Setup, Live, Report, and participation table changes stay covered without a duplicate host QA fixture. |
+| `EventSuccessHeroSurface` | `lib/event_success/presentation/event_success_hero_surface.dart:6` | Shared feature-level accent-to-ink gradient hero shell for Event Success preview, lab, and manual QA surfaces. Owns the diagonal gradient, transparent border, and relaxed content padding while each hero keeps its own badges, title, metadata, and pill content. |
 | `FirstHelloCheckInCard` | `lib/event_success/presentation/companion_parts/event_success_companion_arrival_mission.dart:14` | Provider-free attendee companion First Hello mission card. Renders a server/manual-QA-provided target, one short question, private answer chips, completion, and fallback check-in action from explicit `FirstHelloActionState` and typed callbacks without leaking broader attendee data. |
 | `CompatibilityQuestionnaireSection` | `lib/event_success/presentation/companion_parts/event_success_companion_questionnaire.dart:14` | Provider-free attendee companion quick-question clue ritual for event-scoped reveal clues. Focuses one question at a time, uses selected answer chips and progress, then saves through the stage action dock from explicit `CompatibilityQuestionnaireActionState` and a typed save callback while preserving questionnaire privacy language. |
 | `SelfCheckInCard` | `lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart:489` | Provider-free attendee companion arrival card. Owns the QR scanner sheet presentation and calls a typed self-check-in callback from explicit `SelfCheckInActionState`; the actual attendance write and live-entry effect stay at the companion screen edge. |

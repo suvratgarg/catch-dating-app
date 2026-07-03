@@ -16,6 +16,7 @@ import "package:catch_dating_app/event_success/presentation/event_success_compan
 import "package:catch_dating_app/event_success/presentation/event_success_defaults_panel.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_event_preview_screen.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_feature_blocks.dart";
+import "package:catch_dating_app/event_success/presentation/event_success_hero_surface.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_host_screen.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_lab_screen.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_live_reveal_card.dart";
@@ -1061,6 +1062,50 @@ Widget eventSuccessStrictEventSuccessDarkPill(BuildContext context) {
     context,
     surface: _EventSuccessStrictSurface.featureBlocks,
     componentName: "EventSuccessDarkPill",
+  );
+}
+
+@widgetbook.UseCase(
+  name: "EventSuccessHeroSurface",
+  type: EventSuccessHeroSurface,
+  path:
+      "[P1 product surfaces]/Event Success strict coverage/Feature block folded states",
+)
+Widget eventSuccessStrictEventSuccessHeroSurface(BuildContext context) {
+  final t = CatchTokens.of(context);
+  return _StrictCoverageScaffold(
+    componentName: "EventSuccessHeroSurface",
+    child: EventSuccessHeroSurface(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Event success hero shell",
+            style: CatchTextStyles.headline(context, color: t.accentInk),
+          ),
+          gapH8,
+          Text(
+            "Shared accent-to-ink surface for preview, lab, and manual QA heroes.",
+            style: CatchTextStyles.bodyL(
+              context,
+              color: t.accentInk.withValues(
+                alpha: CatchOpacity.eventSuccessPreviewMeta,
+              ),
+            ),
+          ),
+          gapH16,
+          const Wrap(
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s2,
+            children: [
+              EventSuccessDarkPill(label: "Preview"),
+              EventSuccessDarkPill(label: "Lab"),
+              EventSuccessDarkPill(label: "Manual QA"),
+            ],
+          ),
+        ],
+      ),
+    ),
   );
 }
 

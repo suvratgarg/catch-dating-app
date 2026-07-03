@@ -932,10 +932,20 @@ class EventSuccessHeroSurface extends StatelessWidget {
 4. widgetbook per gotcha 2 where types changed + regen + registries +
    receipts.
 
-- [ ] DirectoryClubCard merge
-- [ ] PaperTicketSerial delegation
-- [ ] EventSuccessHeroSurface + three delegations
-- [ ] regen + registries + receipts
+- [x] DirectoryClubCard merge
+- [x] PaperTicketSerial delegation
+- [x] EventSuccessHeroSurface + three delegations
+- [x] regen + registries + receipts
+
+Completed by Codex: merged `DirectoryPhotoCard` and `DirectoryIdentityCard`
+into `DirectoryClubCard`, folding the photo/no-cover choice inside the widget
+from `hasCoverImage` while preserving the no-cover two-line title behavior;
+rewrote `PaperTicketSerial` to compute its label/value and delegate to
+`PaperTicketDetail`; added `EventSuccessHeroSurface` and delegated
+`EventPreviewHero`, `LabHero`, and `ManualQaHero` to the shared shell; added
+direct Widgetbook coverage for the merged directory card and new hero shell;
+regenerated Widgetbook, variant, classification, fingerprint, similarity, and
+coverage artifacts; and recorded the receipt.
 
 ## WO-015 — Rule-driven triage sweep (read consolidation_rules.md first)
 

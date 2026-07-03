@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_event_preview.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_feature_blocks.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_hero_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -97,14 +98,7 @@ class EventPreviewHero extends StatelessWidget {
     final event = preview.event;
     final clubName = preview.club?.name ?? 'This club';
 
-    return CatchSurface(
-      gradient: LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [t.accent, t.ink],
-      ),
-      borderColor: t.surface.withValues(alpha: CatchOpacity.none),
-      padding: CatchInsets.contentRelaxed,
+    return EventSuccessHeroSurface(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

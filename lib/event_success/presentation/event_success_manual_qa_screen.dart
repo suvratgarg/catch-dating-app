@@ -27,6 +27,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_preference.d
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_hero_surface.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -493,14 +494,7 @@ class ManualQaHero extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchSurface(
-      gradient: LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [t.accent, t.ink],
-      ),
-      borderColor: t.surface.withValues(alpha: CatchOpacity.none),
-      padding: CatchInsets.contentRelaxed,
+    return EventSuccessHeroSurface(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

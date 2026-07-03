@@ -618,22 +618,12 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'DirectoryIdentityCard',
+            name: 'DirectoryClubCard',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Directory identity card states',
+                name: 'Directory club card states',
                 builder: _widgetbook_workspace_clubs_club_detail_use_cases
-                    .directoryIdentityCardStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'DirectoryPhotoCard',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Directory photo card states',
-                builder: _widgetbook_workspace_clubs_club_detail_use_cases
-                    .directoryPhotoCardStates,
+                    .directoryClubCardStates,
               ),
             ],
           ),
@@ -6079,6 +6069,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
                             .eventSuccessStrictEventSuccessDarkPill,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessHeroSurface',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'EventSuccessHeroSurface',
+                    builder:
+                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                            .eventSuccessStrictEventSuccessHeroSurface,
                   ),
                 ],
               ),

@@ -760,49 +760,35 @@ Widget directoryCardStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Directory photo card states',
-  type: DirectoryPhotoCard,
+  name: 'Directory club card states',
+  type: DirectoryClubCard,
   path: '[Club Discovery]/Cards',
 )
-Widget directoryPhotoCardStates(BuildContext context) {
+Widget directoryClubCardStates(BuildContext context) {
   return _CatalogScreen(
-    title: 'DirectoryPhotoCard',
-    catalogId: 'card.club.directory_photo',
+    title: 'DirectoryClubCard',
+    catalogId: 'card.club.directory_club',
     children: [
       _StateCard(
-        label: 'joinable',
+        label: 'photo / joinable',
         child: _ClubDiscoveryFrame(
           child: _ClubDirectoryPreviewScope(
-            child: DirectoryPhotoCard(
+            child: DirectoryClubCard(
               club: _logoClub,
               isJoined: false,
-              sash: null,
+              hasCoverImage: true,
             ),
           ),
         ),
       ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Directory identity card states',
-  type: DirectoryIdentityCard,
-  path: '[Club Discovery]/Cards',
-)
-Widget directoryIdentityCardStates(BuildContext context) {
-  return _CatalogScreen(
-    title: 'DirectoryIdentityCard',
-    catalogId: 'card.club.directory_identity',
-    children: [
       _StateCard(
-        label: 'no cover',
+        label: 'identity / joined',
         child: _ClubDiscoveryFrame(
           child: _ClubDirectoryPreviewScope(
-            child: DirectoryIdentityCard(
+            child: DirectoryClubCard(
               club: _minimalClub,
-              isJoined: false,
-              sash: null,
+              isJoined: true,
+              hasCoverImage: false,
             ),
           ),
         ),

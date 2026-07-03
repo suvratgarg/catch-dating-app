@@ -897,6 +897,96 @@ Known blockers / inherited debt:
   wrapper attempted SDK cache writes outside the workspace before reporting
   `Widget dedupe probes passed`.
 
+## 2026-07-03 — WO-014 Batch A/B directory, ticket, hero merges
+
+Scope:
+
+- Merged `DirectoryPhotoCard` and `DirectoryIdentityCard` into
+  `DirectoryClubCard`.
+- `DirectoryCard` already chooses the visual variant from cover-photo
+  availability, so `DirectoryClubCard` owns the `hasCoverImage` media choice
+  instead of exposing a caller-provided `media` parameter.
+- Preserved the no-cover two-line title allowance and joined-state sash
+  behavior inside the merged directory card.
+- Rewrote `PaperTicketSerial.build` to compute `label` and `value`, then
+  delegate to `PaperTicketDetail`. Accepted visual delta: serial value can now
+  wrap to the shared detail row's two-line value behavior.
+- Added `EventSuccessHeroSurface` as the shared feature-level
+  accent-to-ink gradient hero shell and delegated `EventPreviewHero`, `LabHero`,
+  and `ManualQaHero` to it.
+- Added direct Widgetbook coverage for `DirectoryClubCard` and
+  `EventSuccessHeroSurface`; removed direct Widgetbook coverage for the deleted
+  directory variant classes.
+
+Deleted public widget classes:
+
+- `DirectoryPhotoCard`
+- `DirectoryIdentityCard`
+
+Commands:
+
+- `node tool/agent/context_pack.mjs --task widget-consolidation-wo-014 --paths lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart,lib/event_success/presentation/companion_parts/event_success_companion_shared.dart,lib/event_success/presentation/event_success_event_preview_body_screen.dart,lib/event_success/presentation/event_success_lab_screen.dart,lib/event_success/presentation/event_success_manual_qa_screen.dart,widgetbook/lib/clubs/club_detail_use_cases.dart,widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart,docs/design_parity/widget_consolidation/codex_worklog.md,docs/widget_catalog.md,docs/audit_registry/widget_consolidation_receipts.md`
+- `dart format lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart lib/event_success/presentation/event_success_hero_surface.dart lib/event_success/presentation/event_success_event_preview_body_screen.dart lib/event_success/presentation/event_success_lab_screen.dart lib/event_success/presentation/event_success_manual_qa_screen.dart lib/event_success/presentation/companion_parts/event_success_companion_shared.dart widgetbook/lib/clubs/club_detail_use_cases.dart widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart`
+- `flutter analyze --no-fatal-infos lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart lib/event_success/presentation/event_success_hero_surface.dart lib/event_success/presentation/event_success_event_preview_body_screen.dart lib/event_success/presentation/event_success_lab_screen.dart lib/event_success/presentation/event_success_manual_qa_screen.dart lib/event_success/presentation/companion_parts/event_success_companion_shared.dart`
+- `dart run build_runner build --delete-conflicting-outputs` in `widgetbook/`
+- `flutter analyze --no-fatal-infos lib/clubs/club_detail_use_cases.dart lib/event_success/event_success_strict_coverage_use_cases.dart lib/main.directories.g.dart` in `widgetbook/`
+- `node tool/design/generate_widget_classification.mjs`
+- `node tool/design/check_widget_classification.mjs`
+- `dart run tool/widget_dedupe/bin/extract_fingerprints.dart`
+- `node tool/design/build_widget_similarity.mjs`
+- `node tool/design/build_widget_similarity.mjs --check`
+- `node tool/design/generate_widget_variant_inventory.mjs`
+- `node tool/design/check_widgetbook_coverage.mjs --write docs/design_parity/widgetbook_coverage_report.json`
+- `node tool/design/check_widgetbook_coverage.mjs --check`
+- `DART=/Users/suvratgarg/Development/flutter/bin/dart node tool/design/check_widget_dedupe_probes.mjs`
+- `flutter analyze --no-fatal-infos lib`
+- `flutter analyze` in `widgetbook/`
+- `bash tool/widget_cleanup_scan.sh --summary`
+- `node tool/run.mjs check --manifest-only`
+- `node tool/agent/check_agent_readiness.mjs`
+- `node tool/design/check_widgetbook_contract_refs.mjs --check`
+- `rg -n "DirectoryPhotoCard|DirectoryIdentityCard" lib widgetbook/lib test --glob '*.dart' --glob '!widgetbook/lib/main.directories.g.dart'`
+- `node -e "for (const f of ['docs/audit_registry/widget_classification.json','docs/audit_registry/widget_similarity.json','docs/audit_registry/widget_variant_inventory.json','docs/design_parity/widgetbook_coverage_report.json','docs/audit_registry/doc_versions.json']) JSON.parse(require('fs').readFileSync(f,'utf8')); console.log('json ok 5');"`
+
+Headline numbers:
+
+| metric | value |
+|---|---:|
+| widget classification entries | 1,148 |
+| classification review items | 47 |
+| private widget classes flagged | 0 |
+| widget fingerprints | 1,041 |
+| fingerprint failures | 0 |
+| similarity clusters | 51 |
+| ranked pairs | 200 |
+| name families | 223 |
+| absorb candidates | 8 |
+| Widgetbook use cases | 883 |
+| Widgetbook state cards | 1,750 |
+| Widgetbook variant review candidates | 35 |
+| Widgetbook coverage decision queue | 132 |
+| Widgetbook coverage stale decisions | 0 |
+| root lib analyzer infos | 188 |
+| Widgetbook analyzer issues | 65 |
+| widget cleanup scan categories with findings | 0 |
+| agent readiness | 100/100 |
+
+Known blockers / inherited debt:
+
+- `node tool/design/check_widgetbook_coverage.mjs --check` still fails on the
+  existing catalog-or-replace decision queue: 132 public widgets need
+  decisions, with 0 stale decisions.
+- `(cd widgetbook && flutter analyze)` still fails on 65 existing Widgetbook
+  issues in `lib/hosts/host_operations_use_cases.dart`.
+- `node tool/design/check_widgetbook_contract_refs.mjs --check` still fails
+  only on unrelated HostOperations home/team preview ids.
+- `dart run build_runner build --delete-conflicting-outputs` in `widgetbook/`
+  succeeds, but build_runner reports that the delete-conflicting option has
+  been removed and is ignored by the current builder.
+- The dedupe-probe script needed unsandboxed access because Flutter's Dart
+  wrapper attempted SDK cache writes outside the workspace before reporting
+  `Widget dedupe probes passed`.
+
 ## 2026-07-03 WO-008 Empty-state wrapper inlines
 
 Scope:

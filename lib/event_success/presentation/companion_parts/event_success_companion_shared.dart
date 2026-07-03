@@ -557,27 +557,14 @@ class PaperTicketSerial extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final booked = event.bookedCount ?? 0;
     final capacity = event.capacityLimit;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'ADMIT ONE - NO ${booked.toString().padLeft(2, '0')} / $capacity',
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: CatchTextStyles.sectionTitle(context, color: t.ink3),
-        ),
-        gapH6,
-        Text(
-          _paperTicketCode(event),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: CatchTextStyles.labelL(context),
-        ),
-      ],
-    );
+    final label =
+        'ADMIT ONE - NO ${booked.toString().padLeft(2, '0')} / '
+        '$capacity';
+    final value = _paperTicketCode(event);
+
+    return PaperTicketDetail(label: label, value: value);
   }
 }
 

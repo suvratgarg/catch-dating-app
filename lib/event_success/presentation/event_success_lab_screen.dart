@@ -11,6 +11,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_coach.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_feature_blocks.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_hero_surface.dart';
 import 'package:flutter/material.dart';
 
 const EdgeInsets _labRunStepContentGap = EdgeInsets.only(
@@ -127,14 +128,7 @@ class LabHero extends StatelessWidget {
           constraints: const BoxConstraints(
             maxWidth: CatchLayout.maxContentWidth,
           ),
-          child: CatchSurface(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [t.accent, t.ink],
-            ),
-            borderColor: t.surface.withValues(alpha: CatchOpacity.none),
-            padding: CatchInsets.contentRelaxed,
+          child: EventSuccessHeroSurface(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
