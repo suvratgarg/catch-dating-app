@@ -3953,6 +3953,16 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Controls',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'CatchOptionGroupItem',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Filter option item states',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .exploreFilterOptionItemStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CityOptionTile',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -4019,16 +4029,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Filter sheet states',
                 builder: _widgetbook_workspace_explore_explore_use_cases
                     .exploreFilterSheetStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ExploreRailLabel',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Rail label states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
-                    .exploreRailLabelStates,
               ),
             ],
           ),
@@ -7363,28 +7363,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'RevealCountdownChips',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'RevealCountdownChips',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictRevealCountdownChips,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'RotationCadenceChips',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'RotationCadenceChips',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictRotationCadenceChips,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'SafetyFooter',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -7392,6 +7370,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
                             .eventSuccessStrictSafetyFooter,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'SetupChoiceChips',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'SetupChoiceChips',
+                    builder:
+                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                            .eventSuccessStrictSetupChoiceChips,
                   ),
                 ],
               ),
@@ -8027,6 +8016,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'CatchAnalyticsDataQualityList',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Exact catalog',
+                    builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                        .hostStrictCatchAnalyticsDataQualityListCatalogStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'CatchRosterDecideTarget',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -8071,16 +8070,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostAnalyticsDataQualityPanel',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                        .hostStrictHostAnalyticsDataQualityPanelCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostAnalyticsDateButton',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -8110,17 +8099,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_operations_use_cases
                             .hostStrictHostAnalyticsEventTileCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostAnalyticsInlineStat',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostAnalyticsInlineStatCatalogStates,
                   ),
                 ],
               ),
@@ -9452,18 +9430,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchStatColumn',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Inline stat states',
-                builder:
-                    _widgetbook_workspace_user_analytics_user_analytics_use_cases
-                        .userAnalyticsInlineStatStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'UserAnalyticsDataQualityPanel',
+            name: 'CatchAnalyticsDataQualityList',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Data quality panel states',
@@ -9474,13 +9441,13 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'UserAnalyticsDataQualityRow',
+            name: 'CatchStatColumn',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Data quality row states',
+                name: 'Inline stat states',
                 builder:
                     _widgetbook_workspace_user_analytics_user_analytics_use_cases
-                        .userAnalyticsDataQualityRowStates,
+                        .userAnalyticsInlineStatStates,
               ),
             ],
           ),

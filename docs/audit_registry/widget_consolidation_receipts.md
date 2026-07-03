@@ -2406,3 +2406,87 @@ Known blockers / inherited debt:
   covered at 148/148.
 - `node tool/design/check_widgetbook_contract_refs.mjs --check` still fails on
   inherited HostOperations home and host-team preview-id drift.
+
+## 2026-07-04 - WO-021 analytics kit v2 closeout
+
+Summary:
+
+- Completed the parent-owned closeout layer for WO-021 after Fable's
+  `181c75503` queued WO-022 and landed the worker-leaf edits.
+- Added `CatchAnalyticsDataQualityList` and `CatchDataQualityRowData` to
+  `CatchAnalyticsKit`, then removed the host/user data-quality panel wrappers
+  and mapped both surfaces through the shared primitive.
+- Absorbed the remaining host inline stats into `CatchStatColumn`, updated
+  Host Operations and User Analytics Widgetbook coverage, regenerated
+  Widgetbook directories, and refreshed the widget registries.
+- Repointed stale test/capture references left by previous consolidation
+  passes: `AppShellNavigationBadge` to `CatchCountBadge`,
+  `HostRosterSkeleton` to `CatchSkeletonRows`, and `ChatShareCardSheet` to
+  `CatchShareCardSheet`.
+- Flipped the WO-021 ledger entries to `executed-WO-021`, checked off the
+  worklog, and recorded three accepted worktree-delegation outcomes in
+  `docs/audit_registry/agent_metrics.jsonl`.
+
+Commands:
+
+- `node tool/agent/context_pack.mjs --task widget-consolidation-wo-021 --paths docs/design_parity/widget_consolidation,docs/audit_registry/widget_similarity.json,docs/audit_registry/widget_classification.json,docs/audit_registry/widget_consolidation_receipts.md,docs/widget_catalog.md,lib/core/widgets/catch_analytics_kit.dart,lib/hosts/presentation/host_operations_screen.dart,lib/user_analytics/shared/user_analytics_panel.dart,lib/explore,lib/hosts/presentation/event_management,lib/hosts/presentation/edit_hosted_event_screen.dart,widgetbook/lib`
+- `git worktree add /private/tmp/catch-wo021-explore-label 181c75503`
+- `git worktree add /private/tmp/catch-wo021-setup-chips 181c75503`
+- `git worktree add /private/tmp/catch-wo021-footer-inline 181c75503`
+- `dart format lib/core/widgets/catch_analytics_kit.dart lib/hosts/presentation/host_operations_screen.dart lib/user_analytics/shared/user_analytics_panel.dart widgetbook/lib/hosts/host_operations_use_cases.dart widgetbook/lib/user_analytics/user_analytics_use_cases.dart test/core/app_shell_test.dart test/events/attendance_sheet_screen_test.dart test/ui_captures/catalog/screen_capture_catalog.dart`
+- `dart run build_runner build -d` in `widgetbook/`
+- `rg -n "ExploreRailLabel|RotationCadenceChips|RevealCountdownChips|HostAnalyticsDataQualityPanel|HostAnalyticsInlineStat|UserAnalyticsDataQualityPanel|UserAnalyticsDataQualityRow|HostClubEditFooter|AppShellNavigationBadge|HostRosterSkeleton|ChatShareCardSheet" docs/widget_catalog.md lib test widgetbook/lib --glob '!docs/design_parity/widget_consolidation/*'`
+- `flutter analyze --no-fatal-infos lib/core/widgets/catch_analytics_kit.dart lib/hosts/presentation/host_operations_screen.dart lib/user_analytics/shared/user_analytics_panel.dart test/core/app_shell_test.dart test/events/attendance_sheet_screen_test.dart test/ui_captures/catalog/screen_capture_catalog.dart`
+- `flutter analyze --no-fatal-infos lib/hosts/host_operations_use_cases.dart lib/user_analytics/user_analytics_use_cases.dart lib/main.directories.g.dart` in `widgetbook/`
+- `node tool/design/check_new_widget_inventory.mjs --check`
+- `npm run design:widgets:classify`
+- `npm run design:widgets:check`
+- `npm run design:widgets:variants`
+- `npm run design:widgets:variants:check`
+- `node tool/design/build_widget_similarity.mjs`
+- `node tool/design/build_widget_similarity.mjs --check`
+- `npm run design:widgets:new:check`
+- `bash tool/widget_cleanup_scan.sh --summary`
+- `node tool/run.mjs check --manifest-only`
+- `dart tool/audit_registry.dart refresh`
+- `dart tool/audit_registry.dart mark-pass --pass widget-consolidation-wo-021-analytics-kit-v2-closeout ...`
+- `node tool/agent/check_agent_readiness.mjs`
+
+Verification:
+
+- Focused root analyzer reported no issues for the changed production files and
+  stale test/capture repoints.
+- Widgetbook build_runner regenerated `widgetbook/lib/main.directories.g.dart`;
+  the generated directories now expose `CatchAnalyticsDataQualityList`,
+  `SetupChoiceChips`, and `CatchOptionGroupItem` while omitting the absorbed
+  wrapper entries.
+- Retired-symbol scan found no active Dart/Widgetbook/test references to the
+  absorbed WO-021 classes; remaining old-name hits are historical catalog text
+  and the intentional `showChatShareCardSheet` route function.
+- Widget classification check passed with 1,130 entries, 50 review items, and
+  0 private widget classes flagged.
+- Widget variant inventory check passed with 881 use cases, 1,753 state cards,
+  and 36 review candidates.
+- Widget similarity check passed with 1,038 widgets, 50 clusters, 200 ranked
+  pairs, 222 name families, and 8 absorb candidates.
+- New-widget inventory check passed with 2 added public widget classes, both
+  covered and documented.
+- `npm run design:widgets:check`, `npm run design:widgets:variants:check`,
+  `node tool/design/build_widget_similarity.mjs --check`,
+  `npm run design:widgets:new:check`, `bash tool/widget_cleanup_scan.sh --summary`,
+  and `node tool/run.mjs check --manifest-only` all passed.
+- Audit registry refresh completed with 3,178 file entries.
+
+Known blockers / inherited debt:
+
+- Widgetbook focused analyzer still fails on inherited Host Operations preview
+  drift in `widgetbook/lib/hosts/host_operations_use_cases.dart`, including
+  range/granularity type mismatches, missing mutation-preview helpers, missing
+  route-state functions, and stale named parameters. The new
+  `CatchAnalyticsDataQualityList` use case itself is not the source of those
+  errors.
+- `node tool/run.mjs check --category design` still fails on inherited
+  `catch.tab_rail` component-contract token drift:
+  `layout.tabRailHeight` is not a known DTCG token reference.
+- `node tool/design/check_widgetbook_contract_refs.mjs --check` still fails on
+  inherited HostOperations and HostTeam preview-id drift.

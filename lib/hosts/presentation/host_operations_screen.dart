@@ -3052,7 +3052,15 @@ class HostAnalyticsReportView extends StatelessWidget {
         gapH24,
         HostAnalyticsReviewDiscoveryPanel(report: report),
         gapH24,
-        HostAnalyticsDataQualityPanel(rows: report.dataQuality),
+        CatchAnalyticsSection(
+          label: 'Data quality',
+          child: CatchAnalyticsDataQualityList(
+            rows: [
+              for (final row in report.dataQuality)
+                _hostDataQualityRowData(row),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -3089,13 +3097,13 @@ class HostAnalyticsTrendPanel extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: HostAnalyticsInlineStat(
+                  child: CatchStatColumn(
                     label: 'Demand',
                     value: _formatCount(totalDemand),
                   ),
                 ),
                 Expanded(
-                  child: HostAnalyticsInlineStat(
+                  child: CatchStatColumn(
                     label: 'Bookings',
                     value: _formatCount(totalBookings),
                   ),
@@ -3343,13 +3351,13 @@ class HostAnalyticsReviewDiscoveryPanel extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: HostAnalyticsInlineStat(
+                  child: CatchStatColumn(
                     label: 'New reviews',
                     value: '${report.reviewSummary.newReviews}',
                   ),
                 ),
                 Expanded(
-                  child: HostAnalyticsInlineStat(
+                  child: CatchStatColumn(
                     label: 'Average rating',
                     value: report.reviewSummary.averageRating <= 0
                         ? '—'
@@ -3362,13 +3370,13 @@ class HostAnalyticsReviewDiscoveryPanel extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: HostAnalyticsInlineStat(
+                  child: CatchStatColumn(
                     label: 'Event saves',
                     value: '${report.discoverySummary.eventSaves}',
                   ),
                 ),
                 Expanded(
-                  child: HostAnalyticsInlineStat(
+                  child: CatchStatColumn(
                     label: 'Responses',
                     value: '${report.reviewSummary.ownerResponseCount}',
                   ),
@@ -3378,86 +3386,6 @@ class HostAnalyticsReviewDiscoveryPanel extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class HostAnalyticsDataQualityPanel extends StatelessWidget {
-  const HostAnalyticsDataQualityPanel({super.key, required this.rows});
-
-  final List<HostAnalyticsDataQuality> rows;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return CatchAnalyticsSection(
-      label: 'Data quality',
-      child: Column(
-        children: [
-          for (final indexedRow in rows.indexed) ...[
-            if (indexedRow.$1 > 0) gapH8,
-            CatchSurface(
-              padding: CatchInsets.contentDense,
-              borderColor: t.line,
-              backgroundColor:
-                  indexedRow.$2.state == HostAnalyticsDataQualityState.ok
-                  ? t.surface
-                  : t.warning.withValues(alpha: CatchOpacity.warningFill),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(
-                    indexedRow.$2.state == HostAnalyticsDataQualityState.ok
-                        ? CatchIcons.checkCircleOutlineRounded
-                        : CatchIcons.warningAmberRounded,
-                    size: CatchIcon.md,
-                    color:
-                        indexedRow.$2.state == HostAnalyticsDataQualityState.ok
-                        ? t.success
-                        : t.warning,
-                  ),
-                  const SizedBox(width: CatchSpacing.s3),
-                  Expanded(
-                    child: Text(
-                      indexedRow.$2.detail,
-                      style: CatchTextStyles.supporting(context, color: t.ink2),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class HostAnalyticsInlineStat extends StatelessWidget {
-  const HostAnalyticsInlineStat({
-    super.key,
-    required this.label,
-    required this.value,
-  });
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(value, style: CatchTextStyles.numericMeta(context, color: t.ink)),
-        gapH4,
-        Text(
-          label,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: CatchTextStyles.labelS(context, color: t.ink3),
-        ),
-      ],
     );
   }
 }
@@ -3488,6 +3416,17 @@ CatchMetricCardData _hostMetricCardData(HostAnalyticsMetricCard metric) {
       HostAnalyticsMetricStatus.partial => CatchMetricStatus.partial,
       HostAnalyticsMetricStatus.missing => CatchMetricStatus.missing,
     },
+  );
+}
+
+CatchDataQualityRowData _hostDataQualityRowData(HostAnalyticsDataQuality row) {
+  return CatchDataQualityRowData(
+    status: switch (row.state) {
+      HostAnalyticsDataQualityState.ok => CatchMetricStatus.ready,
+      HostAnalyticsDataQualityState.partial => CatchMetricStatus.partial,
+      HostAnalyticsDataQualityState.missing => CatchMetricStatus.missing,
+    },
+    detail: row.detail,
   );
 }
 

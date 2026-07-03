@@ -54,6 +54,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
+import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/dashboard/data/dashboard_recommendations_repository.dart';
@@ -5147,11 +5148,18 @@ class _ChatShareCardCapture extends StatelessWidget {
       body: SafeArea(
         child: Align(
           alignment: Alignment.bottomCenter,
-          child: ChatShareCardSheet(
-            messages: MatchesChatSurfaceFixtures.conversationMessages,
-            currentUid: MatchesChatSurfaceFixtures.viewerUid,
-            event: MatchesChatSurfaceFixtures.event,
+          child: CatchShareCardSheet(
+            card: ChatShareCard(
+              messages: MatchesChatSurfaceFixtures.conversationMessages,
+              currentUid: MatchesChatSurfaceFixtures.viewerUid,
+              event: MatchesChatSurfaceFixtures.event,
+            ),
             share: ExternalShareController((_) async {}),
+            fileName: 'catch-chat-card.png',
+            buttonLabel: 'Share card',
+            footnote: 'Names, photos, and timestamps are hidden.',
+            subject: 'Catch chat card',
+            text: 'Shared from Catch.',
           ),
         ),
       ),

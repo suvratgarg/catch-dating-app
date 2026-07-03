@@ -1,16 +1,16 @@
 {
-  "generatedAt": "2026-07-03T19:17:15.310Z",
+  "generatedAt": "2026-07-03T20:00:39.281Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
-    "useCases": 883,
-    "components": 858,
-    "stateCards": 1755,
+    "useCases": 881,
+    "components": 855,
+    "stateCards": 1753,
     "reviewCandidates": 36,
     "oversizedUseCases": 43,
-    "multiUseCaseComponents": 24
+    "multiUseCaseComponents": 25
   },
   "reviewCandidates": [
     {
@@ -9521,6 +9521,68 @@
       ]
     },
     {
+      "component": "CatchOptionGroupItem",
+      "useCaseCount": 2,
+      "stateCardCount": 5,
+      "paths": [
+        "[Core primitives]/Selection",
+        "[Explore]/Controls"
+      ],
+      "labels": [
+        "long copy",
+        "mono",
+        "selected",
+        "time scope options",
+        "unselected"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchOptionGroupItemContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Selection",
+          "stateCardCount": 3,
+          "stateCards": [
+            {
+              "label": "selected",
+              "normalizedLabel": "selected"
+            },
+            {
+              "label": "unselected",
+              "normalizedLabel": "unselected"
+            },
+            {
+              "label": "mono",
+              "normalizedLabel": "mono"
+            }
+          ]
+        },
+        {
+          "name": "Filter option item states",
+          "functionName": "exploreFilterOptionItemStates",
+          "file": "widgetbook/lib/explore/explore_use_cases.dart",
+          "path": "[Explore]/Controls",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "time scope options",
+              "normalizedLabel": "time scope options"
+            },
+            {
+              "label": "long copy",
+              "normalizedLabel": "long copy"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "CatchPageDots",
       "useCaseCount": 2,
       "stateCardCount": 5,
@@ -13318,48 +13380,6 @@
             {
               "label": "disabled-by-null-action",
               "normalizedLabel": "disabled by null action"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "CatchOptionGroupItem",
-      "useCaseCount": 1,
-      "stateCardCount": 3,
-      "paths": [
-        "[Core primitives]/Selection"
-      ],
-      "labels": [
-        "mono",
-        "selected",
-        "unselected"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Contract states",
-          "functionName": "catchOptionGroupItemContractStates",
-          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
-          "path": "[Core primitives]/Selection",
-          "stateCardCount": 3,
-          "stateCards": [
-            {
-              "label": "selected",
-              "normalizedLabel": "selected"
-            },
-            {
-              "label": "unselected",
-              "normalizedLabel": "unselected"
-            },
-            {
-              "label": "mono",
-              "normalizedLabel": "mono"
             }
           ]
         }
@@ -19578,43 +19598,6 @@
       ]
     },
     {
-      "component": "ExploreRailLabel",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[Explore]/Controls"
-      ],
-      "labels": [
-        "long copy",
-        "time scope options"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Rail label states",
-          "functionName": "exploreRailLabelStates",
-          "file": "widgetbook/lib/explore/explore_use_cases.dart",
-          "path": "[Explore]/Controls",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "time scope options",
-              "normalizedLabel": "time scope options"
-            },
-            {
-              "label": "long copy",
-              "normalizedLabel": "long copy"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "ExploreScreenEmptyState",
       "useCaseCount": 1,
       "stateCardCount": 2,
@@ -21576,43 +21559,6 @@
       ]
     },
     {
-      "component": "UserAnalyticsDataQualityRow",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[P1 product surfaces]/User analytics"
-      ],
-      "labels": [
-        "partial",
-        "ready"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Data quality row states",
-          "functionName": "userAnalyticsDataQualityRowStates",
-          "file": "widgetbook/lib/user_analytics/user_analytics_use_cases.dart",
-          "path": "[P1 product surfaces]/User analytics",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "ready",
-              "normalizedLabel": "ready"
-            },
-            {
-              "label": "partial",
-              "normalizedLabel": "partial"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "UserAnalyticsReportView",
       "useCaseCount": 1,
       "stateCardCount": 2,
@@ -22245,6 +22191,38 @@
             {
               "label": "range",
               "normalizedLabel": "range"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchAnalyticsDataQualityList",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[P1 product surfaces]/User analytics"
+      ],
+      "labels": [
+        "quality rows"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Data quality panel states",
+          "functionName": "userAnalyticsDataQualityPanelStates",
+          "file": "widgetbook/lib/user_analytics/user_analytics_use_cases.dart",
+          "path": "[P1 product surfaces]/User analytics",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "quality rows",
+              "normalizedLabel": "quality rows"
             }
           ]
         }
@@ -29035,38 +29013,6 @@
       ]
     },
     {
-      "component": "UserAnalyticsDataQualityPanel",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[P1 product surfaces]/User analytics"
-      ],
-      "labels": [
-        "quality rows"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Data quality panel states",
-          "functionName": "userAnalyticsDataQualityPanelStates",
-          "file": "widgetbook/lib/user_analytics/user_analytics_use_cases.dart",
-          "path": "[P1 product surfaces]/User analytics",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "quality rows",
-              "normalizedLabel": "quality rows"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "UserAnalyticsEmptyState",
       "useCaseCount": 1,
       "stateCardCount": 1,
@@ -34184,31 +34130,6 @@
       ]
     },
     {
-      "component": "RevealCountdownChips",
-      "useCaseCount": 1,
-      "stateCardCount": 0,
-      "paths": [
-        "[P1 product surfaces]/Event Success strict coverage/Setup body folded states"
-      ],
-      "labels": [],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "RevealCountdownChips",
-          "functionName": "eventSuccessStrictRevealCountdownChips",
-          "file": "widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart",
-          "path": "[P1 product surfaces]/Event Success strict coverage/Setup body folded states",
-          "stateCardCount": 0,
-          "stateCards": []
-        }
-      ]
-    },
-    {
       "component": "RevealGroupSlotRow",
       "useCaseCount": 1,
       "stateCardCount": 0,
@@ -34403,31 +34324,6 @@
           "functionName": "eventSuccessStrictRevealTicker",
           "file": "widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart",
           "path": "[P1 product surfaces]/Event Success strict coverage/Live reveal folded states",
-          "stateCardCount": 0,
-          "stateCards": []
-        }
-      ]
-    },
-    {
-      "component": "RotationCadenceChips",
-      "useCaseCount": 1,
-      "stateCardCount": 0,
-      "paths": [
-        "[P1 product surfaces]/Event Success strict coverage/Setup body folded states"
-      ],
-      "labels": [],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "RotationCadenceChips",
-          "functionName": "eventSuccessStrictRotationCadenceChips",
-          "file": "widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart",
-          "path": "[P1 product surfaces]/Event Success strict coverage/Setup body folded states",
           "stateCardCount": 0,
           "stateCards": []
         }
@@ -34778,6 +34674,31 @@
           "functionName": "eventSuccessStrictSelfCheckInCard",
           "file": "widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart",
           "path": "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
+          "stateCardCount": 0,
+          "stateCards": []
+        }
+      ]
+    },
+    {
+      "component": "SetupChoiceChips",
+      "useCaseCount": 1,
+      "stateCardCount": 0,
+      "paths": [
+        "[P1 product surfaces]/Event Success strict coverage/Setup body folded states"
+      ],
+      "labels": [],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "SetupChoiceChips",
+          "functionName": "eventSuccessStrictSetupChoiceChips",
+          "file": "widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart",
+          "path": "[P1 product surfaces]/Event Success strict coverage/Setup body folded states",
           "stateCardCount": 0,
           "stateCards": []
         }

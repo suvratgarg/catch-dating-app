@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-03T19:17:49.109Z",
+  "generatedAt": "2026-07-03T20:12:07.322Z",
   "baseRef": "HEAD^",
   "baseStatus": "git-ref",
   "baseWarning": null,
@@ -10,61 +10,25 @@
     "policy": "New public widget classes need Widgetbook and widget catalog coverage. New private widget classes and Widget-returning helpers must be inlined/deleted, merged into an existing primitive, or promoted to public cataloged widgets."
   },
   "summary": {
-    "addedWidgetClasses": 4,
-    "addedPublicWidgetClasses": 4,
+    "addedWidgetClasses": 1,
+    "addedPublicWidgetClasses": 1,
     "addedPrivateWidgetClasses": 0,
     "addedWidgetReturningHelpers": 0,
-    "coveredNewWidgets": 4,
+    "coveredNewWidgets": 1,
     "unresolved": 0,
     "widgetsByStatus": {
-      "covered": 4
+      "covered": 1
     },
     "helpersByStatus": {},
     "issues": {}
   },
   "addedWidgets": [
     {
-      "name": "CatchIconAction",
+      "name": "CatchAnalyticsDataQualityList",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "line": 6,
-      "file": "lib/core/widgets/catch_icon_action.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "CatchShareCardFooter",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 7,
-      "file": "lib/core/widgets/catch_share_card_footer.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "EventSuccessDarkPill",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 28,
-      "file": "lib/event_success/presentation/event_success_hero_surface.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "HostPickerTile",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 9,
-      "file": "lib/hosts/presentation/widgets/host_picker_tile.dart",
+      "line": 41,
+      "file": "lib/core/widgets/catch_analytics_kit.dart",
       "widgetbookCovered": true,
       "catalogMentioned": true,
       "status": "covered",
