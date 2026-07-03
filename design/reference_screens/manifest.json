@@ -1653,8 +1653,9 @@
         "kind": "claude",
         "id": "auth-handoff",
         "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-onboarding/OnboardingV2.dc.html",
-        "exportedAt": "2026-06-22",
-        "exportTool": "Google Chrome headless screenshot + CDP clip",
+        "exportedAt": "2026-07-03",
+        "exportTool": "tool/design/export_reference_screen.mjs",
+        "label": "02 Phone",
         "viewport": {
           "width": 900,
           "height": 940
@@ -1671,7 +1672,47 @@
         "maxMismatchRatio": 0.18,
         "maxMeanDelta": 18
       },
-      "notes": "Canonical Auth phone-entry Claude template reference for advisory comparison against auth_phone_entry light captures rendered on the design-phone device. 2026-06-25 non-host reference batch: within advisory threshold; mismatch 6.81%, meanDelta 11.81, maxDelta 240, masked 47608."
+      "notes": "Canonical Auth phone-entry Claude template reference for advisory comparison against auth_phone_entry light captures rendered on the claude-phone-390x812 device. 2026-07-03 reference refresh: regenerated from the current 02 Phone handoff panel with tool/design/export_reference_screen.mjs using onboarding_v2.step=2 and the established 390x812 clip. The current production capture is above advisory threshold at 11.09% mismatch / 22.89 meanDelta, maxDelta 240, masked 47608, because the app uses a vertically centered production auth frame and current labeled phone field while the handoff still models top chrome/back button and a compact field row."
+    },
+    {
+      "id": "screen.auth.phone_entry.otp_entry",
+      "screenId": "screen.auth.phone_entry",
+      "stateId": "otp_entry",
+      "captureId": "auth_otp_entry",
+      "theme": "light",
+      "textScale": 1,
+      "device": {
+        "id": "claude-phone-390x812",
+        "width": 390,
+        "height": 812,
+        "pixelRatio": 1
+      },
+      "referencePath": "design/reference_screens/screen.auth.phone_entry/otp_entry.png",
+      "maskPath": "design/reference_screens/screen.auth.phone_entry/masks.json",
+      "source": {
+        "kind": "claude",
+        "id": "auth-handoff",
+        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-onboarding/OnboardingV2.dc.html",
+        "exportedAt": "2026-07-03",
+        "exportTool": "tool/design/export_reference_screen.mjs",
+        "label": "03 OTP",
+        "viewport": {
+          "width": 900,
+          "height": 940
+        },
+        "crop": {
+          "x": 255,
+          "y": 37,
+          "width": 390,
+          "height": 812
+        }
+      },
+      "thresholds": {
+        "perChannelDelta": 16,
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 18
+      },
+      "notes": "Canonical Auth OTP Claude template reference for advisory comparison against auth_otp_entry light captures rendered on the claude-phone-390x812 device. 2026-07-03 reference addition: exported from the current 03 OTP handoff panel with tool/design/export_reference_screen.mjs using onboarding_v2.step=3 and the established 390x812 clip. The reference is registered to expose drift; production currently renders a vertically centered auth frame and empty OTP cells while the handoff models top chrome/back button and prefilled digits."
     },
     {
       "id": "screen.filters.preferences.default_preferences",

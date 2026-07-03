@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_comprehensive_todo
-version: 0.2.287
+version: 0.2.288
 updated: 2026-07-03
 owner: product_design_parity
 status: active
@@ -27,7 +27,7 @@ ledgers as the source of truth when counts differ:
 - Screen priority spread: 18 P1, 12 P2, and 5 P3 contracted screens.
 - Contracted screen states: 619.
 - Contracted screen sections: 241.
-- Screen registry migration gaps: 3 open, 27 blocked, and 109 closed. These are
+- Screen registry migration gaps: 2 open, 28 blocked, and 109 closed. These are
   product migration gaps in `design/screens/catch.screens.json`, not
   validation failures.
 - Contracted section states: 1,110.
@@ -678,7 +678,7 @@ from those ledgers rather than hand-editing counts.
 | P1 | `screen.matches.list` | 15 | 6 | 1 | None | None | `HostInboxScreenState` and `ChatsListDisplayState` now live in `chats_list_screen_state.dart` and own visible row derivation, unread filtering, empty-state selection, search affordance, and display-error retry intents. `ChatsListCelebrationController` owns new-match celebration target selection and dialog execution, and `ChatsSearchHeaderController` owns search-open close policy while the route passes query value/callback into the header. No `ChatNewMatchesRail` symbol remains; new matches render through the shared row list with fresh treatment. The populated baseline is within advisory threshold against `matches_list_context` (`6.84%` mismatch, meanDelta `8.21`); continue only if design exports distinct search/filter/loading/empty panels or the interaction state becomes external. |
 | P1 | `screen.profile.public` | 17 | 6 | 1 | None | None | `PublicProfileScreenState` owns target-profile branches, initial fallback, viewer context projection, safety action availability, retry intent, and report/block mutation mode. Selected report reason, report pending overlay, report success snackbar, report failure snackbar, and block failure snackbar now have focused test or capture proof. Public-profile reference parity is within threshold at `13.40%` mismatch / `17.15` meanDelta after refreshing the stale source export, matching poppable route chrome, and using the `claude-phone-390x812` capture device. |
 | P1 | `screen.profile.self` | 16 | 8 | 1 | Blocked: current handoff is two-tab/stale edit layout | `DS-PROFILE-SELF-002` blocked | SelfProfileScreenState, SelfProfileEditTabState, SelfProfilePhotoActionController, and SelfProfileInlineEditPatchFactory now own the route, row descriptor, photo intent, patch seams, and settings navigation proof. Fresh references and Aanya fixture alignment still compare above threshold because the handoff lacks the production Insights tab and current photo/editor rows; resume when canonical design source catches up or product chooses the older two-tab/edit layout. |
-| P2 | `screen.auth.phone_entry` | 8 | 4 | 1 | `auth-handoff` | `DS-AUTH-001` | Widgetbook and deterministic captures now cover phone entry, OTP cooldown, validation error, country picker, send/verify/resend pending and failure, text scale, reduced motion, and light/dark. Continue state-specific references and decide whether Auth still needs a production display-state adapter before larger refactors. |
+| P2 | `screen.auth.phone_entry` | 8 | 4 | 2 | Blocked: phone handoff layout is stale | `DS-AUTH-001` blocked | Auth phone and OTP references are exported, masked, and registered. OTP compares within threshold at `12.20%` mismatch / `16.05` meanDelta, but phone entry remains above threshold at `11.09%` / `22.89` because the handoff uses top chrome/back plus a compact field row while production uses the vertically centered auth frame and current labeled field. Continue when canonical Auth source reflects production layout or product chooses the older compact/top-chrome treatment; validation/country/mutation references are still unavailable. |
 | P2 | `screen.calendar.home` | 10 | 5 | 0 | Blocked: no standalone Calendar Home source; only `CalendarPrimitive.html`/`DateRangePicker` | `DS-CALENDAR-004` blocked | CalendarHomeState and CalendarAgendaSectionState own summary/header/agenda/state adapters. Widgetbook and deterministic captures cover uid-missing signed-out fallback, planned events, loading, provider error, empty, club-name loading/error, expanded month, selected day, text-scale, reduced-motion, and paired light/dark states; reference export waits on a canonical Calendar Home source. |
 | P2 | `screen.event.recap` | 10 | 5 | 2 | Blocked: no standalone Event Recap source | `DS-EVENT-RECAP-004` blocked | EventRecapScreenState owns async branch mapping, attendee/profile rows, selected ids, hero/window copy, retry intents, and open-deck intent data. Widgetbook and deterministic captures cover loading, error, missing, empty roster, partial profile, selected tile, text-scale, reduced-motion, and paired light/dark states; reference export waits on a canonical recap source. |
 | P2 | `screen.filters.preferences` | 11 | 5 | 2 | None | None | FiltersPreferencesState owns saved defaults, draft values, dirty state, reset/apply availability, pending state, and save request fields. Widgetbook and deterministic captures now cover loading, profile error, missing profile, dirty edit, reset, save pending/error, text scale, reduced motion, and light/dark; continue only visual parity/reference-specific variants. |
@@ -1362,11 +1362,11 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
   - captured: `animated_reel`, `landed_direct`, `cta_navigation`, `reduced_motion`, `text_scale_2`, `light_dark`
   - DP-START-001: Landed direct Start Welcome reference and masks are registered, and deterministic captures cover animated reel, reduced motion, text scale, CTA, and canonical fixed-dark theme treatment. Export state-specific animated, reduced-motion, text-scale, or alternate-theme references only if strict visual comparison requires them.
   - DP-START-002: Closed by Widgetbook states for animated reel, landed direct, reduced motion, text scale, CTA, and canonical fixed-dark theme treatment.
-- [ ] `auth.phone_entry` (8 state follow-ups, 1 open gap)
+- [ ] `auth.phone_entry` (8 state follow-ups, 0 open gaps; 1 blocked reference gap)
   - implemented: None
   - tested: `validation_error`
   - captured: `phone_entry`, `country_selector`, `otp_entry`, `validation_error`, `send_code_mutation`, `verify_otp_mutation`, `text_scale_2`, `reduced_motion`
-  - DP-AUTH-001: Auth phone-entry reference and masks are exported and registered. Widgetbook and deterministic captures now cover OTP cooldown, validation error, country picker, send/verify/resend pending and failure, text scale, reduced motion, and light/dark. Add state-specific references before strict visual comparison.
+  - DP-AUTH-001: Blocked after the 2026-07-03 phone/OTP reference refresh. Auth phone and OTP references are exported, masked, and registered. Widgetbook and deterministic captures cover OTP cooldown, validation error, country picker, send/verify/resend pending and failure, text scale, reduced motion, and light/dark. OTP compares within threshold at `12.20%` mismatch / `16.05` meanDelta, but phone entry remains above threshold at `11.09%` / `22.89` because the handoff uses top chrome/back plus a compact field row while production uses the vertically centered auth frame and current labeled field. Validation/country/mutation references remain unavailable.
   - DP-AUTH-002: Closed by `auth_phone_validation_error`, which drives invalid phone input and submit through the capture harness.
 - [ ] `onboarding.flow` (13 state follow-ups, 1 open gap)
   - planned: None

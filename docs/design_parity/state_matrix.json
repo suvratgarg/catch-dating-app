@@ -163,8 +163,8 @@
               "id": "auth-handoff",
               "kind": "external",
               "status": "needs_export",
-              "notes": "Canonical Auth phone-entry Claude template reference for advisory comparison against auth_phone_entry light captures rendered on the design-phone device. Masked in design/reference_screens/screen.auth.phone_entry/masks.json.",
-              "path": "design/reference_screens/screen.auth.phone_entry/phone_entry.png"
+              "notes": "Canonical Auth phone-entry and OTP Claude template references are exported, masked, and manifest-registered. OTP compares within advisory threshold; phone entry is blocked because production uses the vertically centered auth frame and current labeled field while the handoff uses top chrome/back plus a compact row. Validation, country-picker, mutation, resend, text-scale, and reduced-motion references still need canonical exports before strict comparison.",
+              "path": "design/reference_screens/screen.auth.phone_entry"
             }
           ],
           "states": [
@@ -179,7 +179,7 @@
               "tests": [
                 "test/auth/presentation/auth_screen_test.dart"
               ],
-              "notes": "Auth phone entry now has a manifest-registered design reference and deterministic captures. Widgetbook and route captures cover OTP cooldown, validation error, country picker, send/verify/resend pending and failure, text scale, and reduced motion; add state-specific references before strict visual comparison."
+              "notes": "Auth phone entry has a manifest-registered design reference and deterministic captures, but the current advisory compare is above threshold at 11.09% mismatch / 22.89 meanDelta because production uses the vertically centered auth frame and current labeled field while the handoff uses top chrome/back plus a compact row. Widgetbook and route captures cover OTP cooldown, validation error, country picker, send/verify/resend pending and failure, text scale, and reduced motion."
             },
             {
               "id": "country_selector",
@@ -206,7 +206,7 @@
               "tests": [
                 "test/auth/presentation/auth_screen_test.dart"
               ],
-              "notes": "After codeSent, AuthScreen renders OtpPage with CatchOtpCodeField, verify CTA, resend cooldown, and change-number action; Widgetbook and deterministic route captures cover OTP cooldown."
+              "notes": "After codeSent, AuthScreen renders OtpPage with CatchOtpCodeField, verify CTA, resend cooldown, and change-number action; Widgetbook and deterministic route captures cover OTP cooldown. OTP reference comparison is within advisory threshold at 12.20% mismatch / 16.05 meanDelta after masking fixture-only code digits and caret."
             },
             {
               "id": "validation_error",
@@ -272,8 +272,8 @@
           "gaps": [
             {
               "id": "DP-AUTH-001",
-              "status": "open",
-              "nextAction": "Auth Widgetbook and deterministic captures now cover OTP cooldown, validation error, country picker, send/verify/resend pending and failure, text scale, and reduced motion. Add state-specific references before strict visual comparison."
+              "status": "blocked",
+              "nextAction": "Blocked after the 2026-07-03 phone/OTP reference refresh. Auth Widgetbook and deterministic captures cover OTP cooldown, validation error, country picker, send/verify/resend pending and failure, text scale, and reduced motion. OTP reference comparison is within threshold at 12.20% mismatch / 16.05 meanDelta, but phone entry remains above threshold at 11.09% mismatch / 22.89 meanDelta because the current handoff models top chrome/back plus a compact field row while production renders the vertically centered auth frame and current labeled field. Validation, country-picker, mutation, resend, text-scale, and reduced-motion design references remain unavailable. Resume when canonical Auth source reflects production layout or product chooses the older compact/top-chrome treatment."
             },
             {
               "id": "DP-AUTH-002",

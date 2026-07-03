@@ -15571,7 +15571,7 @@
           "id": "auth-handoff",
           "kind": "external",
           "status": "needs_export",
-          "notes": "Auth phone-entry reference is exported, masked, and manifest-registered. OTP, validation, mutation, resend, text-scale, and reduced-motion references still need canonical export before this design ref is complete.",
+          "notes": "Auth phone-entry and OTP references are exported, masked, and manifest-registered. Validation, country-picker, mutation, resend, text-scale, and reduced-motion references still need canonical export before this design ref is complete. Current phone-entry comparison is blocked because the handoff uses top chrome/back plus a compact field row while production renders the vertically centered auth frame and current labeled field.",
           "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-onboarding/OnboardingV2.dc.html"
         },
         {
@@ -15580,6 +15580,13 @@
           "status": "available",
           "path": "design/reference_screens/screen.auth.phone_entry/phone_entry.png",
           "notes": "390x812 Auth Phone Entry phone_entry PNG reference exported from the Claude template."
+        },
+        {
+          "id": "generated.auth-otp-entry-reference",
+          "kind": "generated",
+          "status": "available",
+          "path": "design/reference_screens/screen.auth.phone_entry/otp_entry.png",
+          "notes": "390x812 Auth OTP otp_entry PNG reference exported from the Claude template."
         },
         {
           "id": "generated.auth-phone_entry-reference-manifest",
@@ -15674,7 +15681,7 @@
           "tests": [
             "test/auth/presentation/auth_screen_test.dart"
           ],
-          "nextAction": "Auth phone entry now has a manifest-registered design reference and deterministic captures. Widgetbook and route captures cover OTP cooldown, validation error, country picker, send/verify/resend pending and failure, text scale, and reduced motion; add state-specific references before strict visual comparison."
+          "nextAction": "Auth phone entry has a manifest-registered design reference and deterministic captures, but the current advisory compare is above threshold at 11.09% mismatch / 22.89 meanDelta because production uses the vertically centered auth frame and current labeled field while the handoff uses top chrome/back plus a compact row. Widgetbook and route captures cover OTP cooldown, validation error, country picker, send/verify/resend pending and failure, text scale, and reduced motion; add state-specific references before strict visual comparison."
         },
         {
           "id": "country_selector",
@@ -15731,7 +15738,7 @@
           "tests": [
             "test/auth/presentation/auth_screen_test.dart"
           ],
-          "nextAction": "Add complete-code ready state if product treats it as visually distinct."
+          "nextAction": "OTP entry has a manifest-registered design reference and compares within advisory threshold at 12.20% mismatch / 16.05 meanDelta after masking fixture-only code digits and caret. Add complete-code ready state if product treats it as visually distinct."
         },
         {
           "id": "verify_otp_mutation",
@@ -15883,8 +15890,8 @@
       "openGaps": [
         {
           "id": "DS-AUTH-001",
-          "status": "open",
-          "nextAction": "Auth Widgetbook and deterministic captures now cover phone entry, OTP cooldown, validation error, country picker, send/verify/resend pending and failure, text scale, reduced motion, and light/dark through AuthController, Mutation, and capture-drive seams. Remaining work is state-specific design references."
+          "status": "blocked",
+          "nextAction": "Blocked after the 2026-07-03 phone/OTP reference refresh. Auth Widgetbook and deterministic captures cover phone entry, OTP cooldown, validation error, country picker, send/verify/resend pending and failure, text scale, reduced motion, and light/dark through AuthController, Mutation, and capture-drive seams. OTP reference comparison is within threshold at 12.20% mismatch / 16.05 meanDelta, but phone entry remains above threshold at 11.09% mismatch / 22.89 meanDelta because the current handoff models top chrome/back plus a compact field row while production renders the vertically centered auth frame and current labeled field. Validation, country-picker, mutation, resend, text-scale, and reduced-motion design references remain unavailable. Resume when canonical Auth source reflects production layout or product chooses the older compact/top-chrome treatment."
         },
         {
           "id": "DS-AUTH-002",

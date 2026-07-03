@@ -15,7 +15,11 @@ const sourcePath = resolvePath(valueAfter("--source"));
 const label = valueAfter("--label");
 const outputPath = resolvePath(valueAfter("--out"));
 const viewport = parseViewport(valueAfter("--viewport") ?? "1320x920");
+const clipOverride = parseClip(valueAfter("--clip"));
 const waitMs = Number.parseInt(valueAfter("--wait-ms") ?? "600", 10);
+const localStorageEntries = valuesAfter("--local-storage").map(
+  parseLocalStorageEntry,
+);
 const write = args.includes("--write");
 
 if (args.includes("--help") || args.includes("-h")) {
@@ -91,10 +95,14 @@ try {
   }, sessionId);
 
   await navigate(browser, sessionId, pathToFileURL(sourcePath).href);
+  if (localStorageEntries.length > 0) {
+    await applyLocalStorage(browser, sessionId, localStorageEntries);
+    await waitForLoad(browser, sessionId);
+  }
   await waitForElement(browser, sessionId, label);
   await sleep(waitMs);
 
-  const clip = await elementClip(browser, sessionId, label);
+  const clip = clipOverride ?? await elementClip(browser, sessionId, label);
   const screenshot = await browser.send("Page.captureScreenshot", {
     format: "png",
     fromSurface: true,
@@ -129,9 +137,35 @@ function valueAfter(flag) {
   return value;
 }
 
+function valuesAfter(flag) {
+  const values = [];
+  for (let index = 0; index < args.length; index += 1) {
+    if (args[index] !== flag) continue;
+    const value = args[index + 1];
+    if (!value || value.startsWith("--")) {
+      console.error(`${flag} requires a value.`);
+      process.exit(64);
+    }
+    values.push(value);
+  }
+  return values;
+}
+
 function resolvePath(value) {
   if (!value) return null;
   return path.isAbsolute(value) ? value : fromRepo(value);
+}
+
+function parseLocalStorageEntry(value) {
+  const separatorIndex = value.indexOf("=");
+  if (separatorIndex <= 0) {
+    console.error("--local-storage must use key=value.");
+    process.exit(64);
+  }
+  return {
+    key: value.slice(0, separatorIndex),
+    value: value.slice(separatorIndex + 1),
+  };
 }
 
 function parseViewport(value) {
@@ -146,9 +180,40 @@ function parseViewport(value) {
   };
 }
 
+function parseClip(value) {
+  if (!value) return null;
+  const match = /^(\d+),(\d+),(\d+),(\d+)$/u.exec(value);
+  if (!match) {
+    console.error("--clip must use x,y,width,height, for example 255,37,390,812.");
+    process.exit(64);
+  }
+  return {
+    x: Number.parseInt(match[1], 10),
+    y: Number.parseInt(match[2], 10),
+    width: Number.parseInt(match[3], 10),
+    height: Number.parseInt(match[4], 10),
+    scale: 1,
+  };
+}
+
 async function navigate(cdp, sessionId, url) {
   await cdp.send("Page.navigate", {url}, sessionId);
   await waitForLoad(cdp, sessionId);
+}
+
+async function applyLocalStorage(cdp, sessionId, entries) {
+  const serializedEntries = JSON.stringify(entries);
+  await cdp.send("Runtime.evaluate", {
+    expression: `
+      (() => {
+        for (const entry of ${serializedEntries}) {
+          localStorage.setItem(entry.key, entry.value);
+        }
+        location.reload();
+      })()
+    `,
+    awaitPromise: false,
+  }, sessionId);
 }
 
 async function waitForLoad(cdp, sessionId) {
@@ -292,7 +357,9 @@ Options:
   --label <label>       Exact data-screen-label value to capture.
   --out <png>           Output PNG path, relative to repo or absolute.
   --viewport <WxH>      Chrome viewport. Default: 1320x920.
+  --clip <x,y,w,h>      Capture this viewport clip after the target appears.
   --wait-ms <ms>        Delay after the target appears. Default: 600.
+  --local-storage <k=v> Set localStorage before capture. Repeatable.
   --chrome-path <path>  Override Chrome binary. CHROME_PATH is also supported.
 
 The exporter captures the target element's bounding box directly, which avoids
