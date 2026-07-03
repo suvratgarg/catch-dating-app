@@ -733,6 +733,78 @@
       "decidedBy": "codex-rule:K4",
       "date": "2026-07-03",
       "status": "recorded-WO-015"
+    },
+    {
+      "clusterId": "c026-slot-row",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "GroupRotationSlotRow", "action": "keep"},
+        {"name": "RevealGroupSlotRow", "action": "keep"}
+      ],
+      "rationale": "K2 domain fork from the group/rotation family decision: group and reveal rotation slots carry different assignment semantics even though their row chrome is similar.",
+      "decidedBy": "codex-rule:K2",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015"
+    },
+    {
+      "clusterId": "c034-celebration-details-card",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "CelebrationDetailsCard", "action": "keep"},
+        {"name": "PaperCelebrationDetailsCard", "action": "keep"}
+      ],
+      "rationale": "K4 churn threshold from prior c041-celebration-details-card decision: the cards intentionally carry different art direction, and parameterizing the visual knobs is churn.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015"
+    },
+    {
+      "clusterId": "c036-dashboard-full",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "DashboardFull", "action": "keep"},
+        {"name": "DashboardFullSliverBody", "action": "keep"}
+      ],
+      "rationale": "K1 composition relationship from prior c046/c043/c057 decision: DashboardFull wraps DashboardFullSliverBody, so the similarity is pass-through composition rather than duplication.",
+      "decidedBy": "codex-rule:K1",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015"
+    },
+    {
+      "clusterId": "c037-card",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "MicroPodCard", "action": "keep"},
+        {"name": "RotationScheduleCard", "action": "keep"}
+      ],
+      "rationale": "K2 domain fork from the group/rotation family decision: micro-pod and rotation schedule cards expose different assignment models and business logic.",
+      "decidedBy": "codex-rule:K2",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015"
+    },
+    {
+      "clusterId": "c038-profile-tab",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "ProfileTab", "action": "keep"},
+        {"name": "ProfileTabContent", "action": "keep"}
+      ],
+      "rationale": "K1 composition relationship from prior c046/c043/c057 decision: ProfileTab instantiates ProfileTabContent, so the match is wrapper/content composition.",
+      "decidedBy": "codex-rule:K1",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015"
+    },
+    {
+      "clusterId": "c042-editor",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "GroupOverrideMemberEditor", "action": "keep"},
+        {"name": "RotationOverridePairEditor", "action": "keep"}
+      ],
+      "rationale": "K2 domain fork from the group/rotation family decision: member and pair editors are backed by different override model families and should not be unified by conditional generics.",
+      "decidedBy": "codex-rule:K2",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015"
     }
   ]
 }

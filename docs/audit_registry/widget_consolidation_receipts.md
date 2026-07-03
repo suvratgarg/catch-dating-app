@@ -1448,3 +1448,42 @@ Known blockers / inherited debt:
 
 - WO-015 remains open: 27 current similarity clusters still need rule-driven
   decisions or review escalation by the simple cluster ledger check.
+
+## 2026-07-03 — WO-015 additional current-id reconciliation
+
+Scope:
+
+- Reconciled six additional current similarity-registry ids to prior reviewed
+  decisions: `c026-slot-row`, `c034-celebration-details-card`,
+  `c036-dashboard-full`, `c037-card`, `c038-profile-tab`, and `c042-editor`.
+- Left deferred or partial-hit clusters unresolved.
+- No production Dart, Widgetbook, generated widget registries, or visual output
+  changed.
+
+Commands:
+
+- `node tool/agent/context_pack.mjs --task widget-consolidation-wo-015-more-current-id-reconcile --paths docs/design_parity/widget_consolidation/decisions.json,docs/design_parity/widget_consolidation/codex_worklog.md,docs/audit_registry/widget_consolidation_receipts.md,docs/design_parity/widget_consolidation/consolidation_rules.md,docs/audit_registry/widget_similarity.json`
+- `node - <<'NODE' ... member-to-decision mapping ... NODE`
+- `node - <<'NODE' ... JSON.parse(...) ... NODE`
+- `dart tool/audit_registry.dart refresh`
+- `dart tool/audit_registry.dart mark-pass --pass widget-consolidation-wo-015-more-current-id-reconcile --rules AUDIT-REGISTRY-001,WIDGET-CATALOG-001 --paths docs/design_parity/widget_consolidation/decisions.json,docs/design_parity/widget_consolidation/codex_worklog.md,docs/audit_registry/widget_consolidation_receipts.md --proof "WO-015 ledger-only current-id reconcile: recorded six more current ids for prior decisions; no production Dart changed" --status clean`
+- `dart tool/audit_registry.dart report`
+- `node tool/agent/check_agent_readiness.mjs`
+- `git diff --check`
+
+Headline numbers:
+
+| metric | value |
+|---|---:|
+| current ids reconciled to existing decisions | 6 |
+| K1 composition keeps recorded | 2 |
+| K2 domain-fork keeps recorded | 3 |
+| K4 churn-threshold keeps recorded | 1 |
+| code changes | 0 |
+| rule-authorized merges/deletions | 0 |
+| undecided similarity clusters after this ledger pass | 21 |
+
+Known blockers / inherited debt:
+
+- WO-015 remains open: 21 current similarity clusters still need rule-driven
+  decisions or review escalation by the simple cluster ledger check.

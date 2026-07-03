@@ -996,6 +996,11 @@ to prior reviewed decisions: `c017-tab-skeleton`, `c025-rows`, `c029-row`,
 `c046-hero`, `c047-home-screen`, and `c050-companion-error`. No code was
 changed in this ledger-only batch.
 
+Progress by Codex: reconciled six more current registry ids to prior reviewed
+decisions: `c026-slot-row`, `c034-celebration-details-card`,
+`c036-dashboard-full`, `c037-card`, `c038-profile-tab`, and `c042-editor`. No
+code was changed in this ledger-only batch.
+
 ---
 
 ## Escalations
