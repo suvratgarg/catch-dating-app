@@ -316,6 +316,13 @@
           "lastReviewedPass": "2026-07-02-onboarding-flow-state-adapter"
         },
         {
+          "path": "lib/onboarding/presentation/pages/photos_page_state.dart",
+          "role": "provider-free OnboardingPhotosState adapter for onboarding photo count, upload pending state, continue gating/hints, supporting copy, delete availability, and typed photo slot intents",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-onboarding-photos-step-adapter"
+        },
+        {
           "path": "test/onboarding/onboarding_flow_state_test.dart",
           "role": "OnboardingFlowState and OnboardingTopBarState route-shell display-policy behavior coverage",
           "status": "aligned",

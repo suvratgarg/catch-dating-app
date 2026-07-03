@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
+import 'package:catch_dating_app/image_uploads/shared/photo_grid_keys.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_form_keys.dart';
@@ -18,6 +19,7 @@ import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/gender_interest_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/name_dob_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/photos_page.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/photos_page_state.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/profile_prompts_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/running_prefs_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
@@ -336,6 +338,109 @@ void main() {
   });
 
   group('PhotosPage', () {
+    test('state derives continue gating and photo slot intents', () {
+      final onePhoto = buildUser(
+        photoUrls: const ['assets/test/onboarding-photo-1.jpg'],
+      ).effectiveProfilePhotos;
+      final readyPhotos = buildUser(
+        photoUrls: const [
+          'assets/test/onboarding-photo-1.jpg',
+          'assets/test/onboarding-photo-2.jpg',
+        ],
+      ).effectiveProfilePhotos;
+      final editablePhotos = buildUser(
+        photoUrls: const [
+          'assets/test/onboarding-photo-1.jpg',
+          'assets/test/onboarding-photo-2.jpg',
+          'assets/test/onboarding-photo-3.jpg',
+        ],
+      ).effectiveProfilePhotos;
+
+      final empty = OnboardingPhotosState.from(
+        profilePhotos: const [],
+        loadingIndices: const {},
+        profileCompletionOnly: false,
+      );
+      expect(empty.canContinue, isFalse);
+      expect(empty.continueHint, 'Add 2 more photos to continue.');
+      expect(empty.supportingCopy, 'Running photos boost catches by 2.3x.');
+
+      final pending = OnboardingPhotosState.from(
+        profilePhotos: onePhoto,
+        loadingIndices: const {1},
+        profileCompletionOnly: true,
+      );
+      expect(pending.canContinue, isFalse);
+      expect(pending.continueHint, 'Finish uploading your photos to continue.');
+      expect(
+        pending.supportingCopy,
+        'This only gates Catches. Event booking stays available.',
+      );
+
+      final ready = OnboardingPhotosState.from(
+        profilePhotos: readyPhotos,
+        loadingIndices: const {},
+        profileCompletionOnly: false,
+      );
+      expect(ready.canContinue, isTrue);
+      expect(ready.continueHint, isNull);
+      expect(ready.slotIntent(0).photo, readyPhotos.first);
+      expect(ready.slotIntent(0).canDelete, isFalse);
+
+      final editable = OnboardingPhotosState.from(
+        profilePhotos: editablePhotos,
+        loadingIndices: const {},
+        profileCompletionOnly: false,
+      );
+      expect(editable.slotIntent(0).canDelete, isTrue);
+      expect(editable.slotIntent(3).photo, isNull);
+    });
+
+    testWidgets('provider-free step forwards typed photo actions', (
+      tester,
+    ) async {
+      final state = OnboardingPhotosState.from(
+        profilePhotos: const [],
+        loadingIndices: const {},
+        profileCompletionOnly: false,
+      );
+      var continueCount = 0;
+      OnboardingPhotoSlotIntent? slotIntent;
+      int? deletedIndex;
+      (int, int)? reorderIntent;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: OnboardingPhotosStep(
+              state: state,
+              callbacks: OnboardingPhotosCallbacks(
+                onContinue: () => continueCount += 1,
+                onSlotTapped: (intent) => slotIntent = intent,
+                onDeletePhoto: (index) => deletedIndex = index,
+                onReorderPhoto: (fromIndex, toIndex) {
+                  reorderIntent = (fromIndex, toIndex);
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+      await pumpOnboardingUi(tester);
+
+      await tester.tap(find.widgetWithText(CatchButton, 'Continue'));
+      await tester.tap(find.byKey(PhotoGridKeys.slot(0)));
+      await pumpOnboardingUi(tester);
+
+      expect(continueCount, 1);
+      expect(slotIntent?.index, 0);
+      expect(slotIntent?.photo, isNull);
+      expect(slotIntent?.canDelete, isFalse);
+      expect(deletedIndex, isNull);
+      expect(reorderIntent, isNull);
+    });
+
     testWidgets(
       'explains why continue is disabled until enough photos are added',
       (tester) async {

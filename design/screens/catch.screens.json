@@ -16348,7 +16348,7 @@
       ],
       "composition": {
         "currentLayout": "OnboardingScreen watches OnboardingController state, schedules initStep, builds OnboardingFlowState for route shell/back/progress/header policy, renders OnboardingTopBar from OnboardingTopBarState for non-welcome steps, and delegates visible forms to step pages that own local controllers and validation UI.",
-        "targetLayout": "Onboarding should keep route-shell policy in OnboardingFlowState, then continue extracting page-level draft data, validation, photo gate, mutation state, and typed callbacks before composing provider-free step sections and shared step frames.",
+        "targetLayout": "Onboarding should keep route-shell policy in OnboardingFlowState, keep photo gate/upload display state in OnboardingPhotosState, then continue extracting remaining page-level draft data, validation, mutation state, and typed callbacks before composing provider-free step sections and shared step frames.",
         "sections": [
           {
             "id": "section.onboarding.flow_adapter",
@@ -16374,7 +16374,7 @@
               "save_profile_mutation",
               "complete_mutation"
             ],
-            "migration": "Route-shell entry-mode derivation, progress/back bounds, current-step identity, and header display data now live in OnboardingFlowState. Continue moving page-level validation, photo gate, mutation modes, and typed callbacks into follow-on step adapters."
+            "migration": "Route-shell entry-mode derivation, progress/back bounds, current-step identity, and header display data now live in OnboardingFlowState. PhotosPage now adapts photo gate/upload state into OnboardingPhotosState and OnboardingPhotosStep. Continue moving identity/prompts/running preference validation, mutation modes, and typed callbacks into follow-on step adapters."
           },
           {
             "id": "section.onboarding.step_header",
@@ -16464,9 +16464,9 @@
             ],
             "flutter": {
               "file": "lib/onboarding/presentation/pages/photos_page.dart",
-              "symbol": "PhotosPage"
+              "symbol": "OnboardingPhotosStep"
             },
-            "currentOwner": "PhotosPage",
+            "currentOwner": "PhotosPage adapter over OnboardingPhotosState + OnboardingPhotosStep",
             "targetOwner": "provider-free photos step section plus upload controller seam",
             "dependencies": [
               "catch.button",
@@ -16477,7 +16477,7 @@
               "save_profile_mutation",
               "text_scale_2"
             ],
-            "migration": "Expose photo gate, uploaded photo count, upload pending/error, and continue availability as fixtureable state before pixel comparison."
+            "migration": "OnboardingPhotosState owns uploaded photo count, upload pending/error display state, continue availability/hints, supporting copy, and typed slot intents. OnboardingPhotosStep is provider-free and receives typed callbacks while PhotosPage retains provider watches, upload/editor side effects, and controller navigation."
           },
           {
             "id": "section.onboarding.prompts_step",
@@ -16546,7 +16546,7 @@
         {
           "id": "DS-ONBOARDING-003",
           "status": "open",
-          "nextAction": "Route-shell adapter landed: OnboardingFlowState now owns entry mode, current step, previous-step/back boundary, welcome/progress shell, and OnboardingTopBarState copy/progress with focused tests. Remaining adapter work is page-level draft display data, validation, photo gate state, mutation modes, and typed callbacks so capture seeders no longer need page-local side effects."
+          "nextAction": "Route-shell adapter and photo-step adapter landed: OnboardingFlowState owns entry mode/current step/back/progress/top-bar copy, while OnboardingPhotosState and OnboardingPhotosStep own photo gate/upload display state plus typed photo callbacks. Remaining adapter work is identity draft display data, validation state, prompt/running-preference state, mutation modes, and typed callbacks so capture seeders no longer need page-local side effects."
         },
         {
           "id": "DS-ONBOARDING-004",

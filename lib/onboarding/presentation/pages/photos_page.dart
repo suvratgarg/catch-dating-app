@@ -11,9 +11,9 @@ import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.da
 import 'package:catch_dating_app/image_uploads/shared/profile_photo_editor_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/photos_page_state.dart';
 import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
-import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -32,7 +32,11 @@ class PhotosPage extends ConsumerWidget {
             ?.effectiveProfilePhotos ??
         const [];
     final uploadState = ref.watch(photoUploadControllerProvider);
-    final t = CatchTokens.of(context);
+    final state = OnboardingPhotosState.from(
+      profilePhotos: profilePhotos,
+      loadingIndices: uploadState.loadingIndices,
+      profileCompletionOnly: profileCompletionOnly,
+    );
 
     ref.listen(photoUploadControllerProvider, (_, state) {
       if (state.uploadError != null) {
@@ -42,13 +46,61 @@ class PhotosPage extends ConsumerWidget {
       }
     });
 
-    final canContinue =
-        profilePhotos.length >= minimumProfilePhotoCount &&
-        uploadState.loadingIndices.isEmpty;
-    final continueHint = _continueHint(
-      photoCount: profilePhotos.length,
-      uploadingCount: uploadState.loadingIndices.length,
+    return OnboardingPhotosStep(
+      state: state,
+      callbacks: OnboardingPhotosCallbacks(
+        onContinue: state.canContinue
+            ? () => ref
+                  .read(onboardingControllerProvider.notifier)
+                  .goToStepAndSaveDraft(OnboardingStep.prompts)
+            : null,
+        onSlotTapped: (intent) {
+          unawaited(
+            openProfilePhotoEditor(
+              context: context,
+              ref: ref,
+              index: intent.index,
+              photo: intent.photo,
+              canDelete: intent.canDelete,
+            ),
+          );
+        },
+        onDeletePhoto: (index) {
+          unawaited(
+            PhotoUploadController.uploadPhotoMutation.run(ref, (tx) async {
+              await tx
+                  .get(photoUploadControllerProvider.notifier)
+                  .deletePhoto(index);
+            }),
+          );
+        },
+        onReorderPhoto: (fromIndex, toIndex) {
+          unawaited(
+            PhotoUploadController.uploadPhotoMutation.run(ref, (tx) async {
+              await tx
+                  .get(photoUploadControllerProvider.notifier)
+                  .reorderPhoto(fromIndex: fromIndex, toIndex: toIndex);
+            }),
+          );
+        },
+      ),
     );
+  }
+}
+
+class OnboardingPhotosStep extends StatelessWidget {
+  const OnboardingPhotosStep({
+    super.key,
+    required this.state,
+    required this.callbacks,
+  });
+
+  final OnboardingPhotosState state;
+  final OnboardingPhotosCallbacks callbacks;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
 
     return OnboardingStepLayout(
       footer: Column(
@@ -57,15 +109,11 @@ class PhotosPage extends ConsumerWidget {
         children: [
           CatchButton(
             label: 'Continue',
-            onPressed: canContinue
-                ? () => ref
-                      .read(onboardingControllerProvider.notifier)
-                      .goToStepAndSaveDraft(OnboardingStep.prompts)
-                : null,
+            onPressed: callbacks.onContinue,
             fullWidth: true,
             size: CatchButtonSize.lg,
           ),
-          if (continueHint != null) ...[
+          if (state.continueHint case final continueHint?) ...[
             gapH12,
             Text(
               continueHint,
@@ -77,39 +125,13 @@ class PhotosPage extends ConsumerWidget {
       ),
       children: [
         PhotoGrid(
-          profilePhotos: profilePhotos,
-          loadingIndices: uploadState.loadingIndices,
-          onSlotTapped: (index) {
-            unawaited(
-              openProfilePhotoEditor(
-                context: context,
-                ref: ref,
-                index: index,
-                photo: index < profilePhotos.length
-                    ? profilePhotos[index]
-                    : null,
-                canDelete: profilePhotos.length > minimumProfilePhotoCount,
-              ),
-            );
-          },
-          onDeletePhoto: (index) {
-            unawaited(
-              PhotoUploadController.uploadPhotoMutation.run(ref, (tx) async {
-                await tx
-                    .get(photoUploadControllerProvider.notifier)
-                    .deletePhoto(index);
-              }),
-            );
-          },
-          onReorderPhoto: (fromIndex, toIndex) {
-            unawaited(
-              PhotoUploadController.uploadPhotoMutation.run(ref, (tx) async {
-                await tx
-                    .get(photoUploadControllerProvider.notifier)
-                    .reorderPhoto(fromIndex: fromIndex, toIndex: toIndex);
-              }),
-            );
-          },
+          profilePhotos: state.profilePhotos,
+          loadingIndices: state.loadingIndices,
+          canDeletePhotos: state.canDeletePhotos,
+          onSlotTapped: (index) =>
+              callbacks.onSlotTapped(state.slotIntent(index)),
+          onDeletePhoto: callbacks.onDeletePhoto,
+          onReorderPhoto: callbacks.onReorderPhoto,
         ),
         gapH16,
         Divider(height: 1, color: t.line),
@@ -121,9 +143,7 @@ class PhotosPage extends ConsumerWidget {
             gapW8,
             Expanded(
               child: Text(
-                profileCompletionOnly
-                    ? 'This only gates Catches. Event booking stays available.'
-                    : 'Running photos boost catches by 2.3x.',
+                state.supportingCopy,
                 style: CatchTextStyles.supporting(context, color: t.ink2),
               ),
             ),
@@ -131,24 +151,5 @@ class PhotosPage extends ConsumerWidget {
         ),
       ],
     );
-  }
-
-  String? _continueHint({
-    required int photoCount,
-    required int uploadingCount,
-  }) {
-    if (uploadingCount > 0) {
-      return 'Finish uploading your photos to continue.';
-    }
-
-    final remainingPhotos = minimumProfilePhotoCount - photoCount;
-    if (remainingPhotos > 0) {
-      final label = remainingPhotos == 1
-          ? '1 more photo'
-          : '$remainingPhotos more photos';
-      return 'Add $label to continue.';
-    }
-
-    return null;
   }
 }
