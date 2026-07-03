@@ -16481,8 +16481,8 @@
       "openGaps": [
         {
           "id": "DS-ONBOARDING-001",
-          "status": "open",
-          "nextAction": "Expand Onboarding Widgetbook states beyond default route/step coverage for validation, disabled CTA, upload pending, save/complete mutation pending/error, text scale, reduced motion, and theme variants now covered by deterministic route captures."
+          "status": "closed",
+          "nextAction": "Closed by deterministic Onboarding Widgetbook scope and state fixtures covering route entry modes, prefilled name/DOB, selected gender/interest, Instagram filled/skipped, photo disabled/count-met/upload-pending states, prompt empty/partial/complete/long-answer states, save/complete pending and error states, text scale, and reduced motion. Validation-error Widgetbook states remain intentionally tracked under DS-ONBOARDING-003 because page-local form state still needs provider-free adapters; deterministic captures already cover current validation UI."
         },
         {
           "id": "DS-ONBOARDING-002",
