@@ -1068,6 +1068,13 @@ and `CatchTopBarIconAction`/`OverlayIconAction`). No code was changed in this
 ledger-only batch. Ranked-pair-only candidates still remain open after this
 targeted triage.
 
+Progress by Codex: triaged ranked-pair-only candidates 34-56 by member set.
+Kept five composition-wrapper pairs under K1, three domain-fork pairs under K2,
+and three small/specialized pairs under K4. Escalated eight K5 concept
+mismatches and four no-exact API/screen-state questions. No code was changed in
+this ledger-only batch. Ranked-pair-only candidates still remain open after
+this targeted triage.
+
 ## WO-016 — Review answers from the WO-001..014 audit
 
 1. **`CatchSkeletonRows.divided` flag** (answers the WO-006 skip): add
@@ -1226,6 +1233,44 @@ listed in the receipt.
   rule: no exact K/R match, blocked because absorbing the overlay action needs
   reviewed core API support for semantic wrapper ownership, floating-control
   background alpha, button extent, and row-sized icons.
+- WO-015 ranked-pair: `EventDetailBody`, `EventDetailOptimisticBody` —
+  nearest rule: no exact K/R match, blocked because merging the optimistic
+  fallback into the loaded detail body requires an event-detail state/action API
+  decision.
+- WO-015 ranked-pair: `CatchSectionLabel`, `StageSectionLabel` — nearest rule:
+  K5 concept mismatch, blocked because the core kicker/header label and Event
+  Success live-stage label use different typography, required color, and
+  wrapping contracts.
+- WO-015 ranked-pair: `CatchPersonAvatar`, `CatchVeiledPersonAvatar` —
+  nearest rule: no exact K/R match, blocked because absorbing veiled activity
+  placeholders into the core avatar requires a reviewed avatar API decision.
+- WO-015 ranked-pair: `CatchSectionHeader`, `HostOrganizerSectionHeader` —
+  nearest rule: K5 concept mismatch, blocked because section title/subtitle
+  headers and host organizer mono-label/action rows carry different token roles.
+- WO-015 ranked-pair: `EventDetailPolicySummary`, `EventPolicySummary` —
+  nearest rule: K5 concept mismatch, blocked because attendee-facing event
+  policy copy and policy-lab scenario/debug policy rows are different surfaces.
+- WO-015 ranked-pair: `CatchEmptyStateContent`, `EmptyHeroContent` — nearest
+  rule: K5 concept mismatch, blocked because the core empty-state layout body
+  and dashboard editorial hero CTA are different concepts.
+- WO-015 ranked-pair: `CatchPersonAvatarStack`, `HostTodayAvatarStack` —
+  nearest rule: K5 concept mismatch, blocked because real person-avatar stacks
+  and fixed host activity-dot previews are different concepts.
+- WO-015 ranked-pair: `CatchTopBarTabBar`, `ProfileTabBar` — nearest rule: K5
+  concept mismatch, blocked because the top-bar Material tab wrapper and
+  profile-specific segmented option rail have different behavior contracts.
+- WO-015 ranked-pair: `EventAgendaSliverList`, `EventDetailHintList` —
+  nearest rule: K5 concept mismatch, blocked because grouped sliver agendas and
+  event-detail hint hairline lists have different layout/data contracts.
+- WO-015 ranked-pair: `CatchScreenBody`, `PublicProfileScreenBody` — nearest
+  rule: no exact K/R match, blocked because a generic padding/scroll shell and
+  public-profile route-state dispatcher are not the same abstraction.
+- WO-015 ranked-pair: `CatchPrivacyBadge`, `PrivacyBadge` — nearest rule: K5
+  concept mismatch, blocked because the core uppercase privacy token badge and
+  Event Success audience-to-CatchBadge adapter use different visual contracts.
+- WO-015 ranked-pair: `CatchFieldRow`, `ProfileFieldRow` — nearest rule: no
+  exact K/R match, blocked because the core row layout primitive and profile
+  descriptor/editor dispatcher live at different abstraction levels.
 
 ## Completed
 

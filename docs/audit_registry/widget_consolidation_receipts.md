@@ -1804,3 +1804,58 @@ Known blockers / inherited debt:
 - WO-015 remains open for the remaining 139 ranked-pair-only candidates.
 - No Flutter analyzer or Widgetbook analyzer was run because this batch changed
   only consolidation ledgers and receipts.
+
+## 2026-07-03 - WO-015 ranked-pair ledger batch 2
+
+Scope:
+
+- Triaged ranked-pair-only candidates 34-56 after batch 1.
+- Recorded K1 keeps for composition-wrapper pairs:
+  `CatchTopBar`/`HostOperationsTopBar`,
+  `EventDetailSocialSection`/`EventReviewsSection`,
+  `CatchMetaRow`/`HostManageMetaRow`,
+  `CatchDetailSliverSectionList`/`CatchSectionList`, and
+  `CreateEventPhotoPicker`/`OrderedPhotoPicker`.
+- Recorded K2 keeps for `ClubPhotoStrip`/`EventDetailPhotoStrip`,
+  `ClubHeroAppBar`/`EventDetailHeroAppBar`, and
+  `ClubDetailBody`/`EventDetailBody`.
+- Recorded K4 keeps for `OrderedPhotoAddTile`/`OrderedPhotoTile`,
+  `CatchCountPill`/`CatchPersonUnreadCountPill`, and
+  `CatchEmptyState`/`ChatsEmptyState`.
+- Recorded K5/no-exact escalations for the remaining twelve pairs in the batch.
+- No production Dart, Widgetbook, generated registry, or visual output changed.
+
+Commands:
+
+- `node -e '... source-snippet extraction for ranks 34-56 ...'`
+- `rg -n "class HostOperationsTopBar|class CatchTopBar|HostOperationsTopBar\\(|CatchTopBar\\(" lib/core/widgets/catch_top_bar.dart lib/hosts/presentation/host_operations_screen.dart widgetbook/lib test --glob "*.dart"`
+- `rg -n "class HostManageMetaRow|HostManageMetaRow\\(" lib/hosts/presentation/host_event_manage_screen.dart widgetbook/lib/hosts/host_operations_use_cases.dart`
+- `rg -n "class EventAgendaSliverList|class EventDetailHintList|EventAgendaSliverList\\(|EventDetailHintList\\(" lib widgetbook/lib test --glob "*.dart"`
+- `node -e '... parse decisions JSON and recompute ranked-pair uncovered count ...'`
+- `git diff --check`
+
+Headline numbers:
+
+| metric | value |
+|---|---:|
+| ranked-pair-only candidates triaged | 23 |
+| K1 keeps recorded | 5 |
+| K2 keeps recorded | 3 |
+| K4 keeps recorded | 3 |
+| K5 escalations recorded | 8 |
+| no-exact-match escalations recorded | 4 |
+| rule-authorized merges/deletions | 0 |
+| code changes | 0 |
+| ranked-pair-only candidates still open | 116 |
+
+Verification:
+
+- `decisions.json` parsed successfully.
+- Member-set comparison reported 116 uncovered ranked pairs after this batch.
+- `git diff --check`: passed.
+
+Known blockers / inherited debt:
+
+- WO-015 remains open for the remaining 116 ranked-pair-only candidates.
+- No Flutter analyzer or Widgetbook analyzer was run because this batch changed
+  only consolidation ledgers and receipts.

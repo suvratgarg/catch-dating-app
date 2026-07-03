@@ -2018,6 +2018,420 @@
       "decidedBy": "codex-rule:no-exact",
       "date": "2026-07-03",
       "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: EventDetailBody/EventDetailOptimisticBody",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "EventDetailBody",
+          "action": "escalate"
+        },
+        {
+          "name": "EventDetailOptimisticBody",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "No exact K/R match: the optimistic body is a route-level fallback composition with fixed stubs and no callbacks, while EventDetailBody owns the full loaded state/action contract; merging needs an event-detail state API decision.",
+      "decidedBy": "codex-rule:no-exact",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: CatchSectionLabel/StageSectionLabel",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "CatchSectionLabel",
+          "action": "escalate"
+        },
+        {
+          "name": "StageSectionLabel",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: CatchSectionLabel is a core kicker/header label with optional icon and bounded-width behavior, while StageSectionLabel is an Event Success live-stage row using labelL typography, required color, and two-line text.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: ClubPhotoStrip/EventDetailPhotoStrip",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "ClubPhotoStrip",
+          "action": "keep"
+        },
+        {
+          "name": "EventDetailPhotoStrip",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K2 domain fork: both are photo strips, but the club strip renders actual club photos and count copy while the event strip owns event photos, fixed placeholder slots, and activity-colored fallback art.",
+      "decidedBy": "codex-rule:K2",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: CatchPersonAvatar/CatchVeiledPersonAvatar",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "CatchPersonAvatar",
+          "action": "escalate"
+        },
+        {
+          "name": "CatchVeiledPersonAvatar",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "No exact K/R match: CatchVeiledPersonAvatar could become a named avatar state, but absorbing it requires a reviewed core avatar API decision for veiled activity placeholders and border behavior.",
+      "decidedBy": "codex-rule:no-exact",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: CatchSectionHeader/HostOrganizerSectionHeader",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "CatchSectionHeader",
+          "action": "escalate"
+        },
+        {
+          "name": "HostOrganizerSectionHeader",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: CatchSectionHeader is a section title/subtitle/trailing primitive, while HostOrganizerSectionHeader is a mono-label row with optional neutral text action and host-organizer semantics.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: ClubHeroAppBar/EventDetailHeroAppBar",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "ClubHeroAppBar",
+          "action": "keep"
+        },
+        {
+          "name": "EventDetailHeroAppBar",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K2 domain fork: both are detail hero sliver app bars, but club and event heroes own different domain models, action sets, collapsed title treatments, media-height calculations, and presentation modes.",
+      "decidedBy": "codex-rule:K2",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: CatchTopBar/HostOperationsTopBar",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "CatchTopBar",
+          "action": "keep"
+        },
+        {
+          "name": "HostOperationsTopBar",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K1 composition is not duplication: HostOperationsTopBar is a host-specific PreferredSizeWidget adapter that constructs CatchTopBar with host title/search/filter/action state.",
+      "decidedBy": "codex-rule:K1",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: OrderedPhotoAddTile/OrderedPhotoTile",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "OrderedPhotoAddTile",
+          "action": "keep"
+        },
+        {
+          "name": "OrderedPhotoTile",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: both live in the ordered photo picker and share a raised tile shell, but one is an add-photo action while the other is an image tile with remove/reorder/cover affordances.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: EventDetailPolicySummary/EventPolicySummary",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "EventDetailPolicySummary",
+          "action": "escalate"
+        },
+        {
+          "name": "EventPolicySummary",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: the event-detail summary is attendee-facing booking policy copy inside a detail surface, while the policy-lab summary is a scenario/debug policy-shape panel with divider rows and lab-only fields.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: CatchCountPill/CatchPersonUnreadCountPill",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "CatchCountPill",
+          "action": "keep"
+        },
+        {
+          "name": "CatchPersonUnreadCountPill",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: the existing WO-009 recon found CatchCountPill owns a floating control with caller-supplied badge text, while CatchPersonUnreadCountPill owns chat unread semantics, 99+ clamping, and CatchBadge styling.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: CatchEmptyStateContent/EmptyHeroContent",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "CatchEmptyStateContent",
+          "action": "escalate"
+        },
+        {
+          "name": "EmptyHeroContent",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: CatchEmptyStateContent is the core empty-state layout body, while EmptyHeroContent is the dashboard editorial hero CTA with welcome eyebrow, marketing copy, and light button treatment.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: EventDetailSocialSection/EventReviewsSection",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "EventDetailSocialSection",
+          "action": "keep"
+        },
+        {
+          "name": "EventReviewsSection",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K1 composition is not duplication: EventDetailSocialSection composes the Who's Going section and conditionally instantiates EventReviewsSection when member context is available.",
+      "decidedBy": "codex-rule:K1",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: CatchPersonAvatarStack/HostTodayAvatarStack",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "CatchPersonAvatarStack",
+          "action": "escalate"
+        },
+        {
+          "name": "HostTodayAvatarStack",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: CatchPersonAvatarStack is a real person-avatar stack with overflow and veiled states, while HostTodayAvatarStack is a fixed decorative activity-dot preview for host today cards.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: CatchEmptyState/ChatsEmptyState",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "CatchEmptyState",
+          "action": "keep"
+        },
+        {
+          "name": "ChatsEmptyState",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: ChatsEmptyState delegates to CatchEmptyState but owns chat-specific named constructors and host-app copy switching; inlining would duplicate feature copy at call sites without simplifying the primitive.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: CatchMetaRow/HostManageMetaRow",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "CatchMetaRow",
+          "action": "keep"
+        },
+        {
+          "name": "HostManageMetaRow",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K1 composition is not duplication: HostManageMetaRow lays out three weighted event metadata columns and constructs CatchMetaRow for the date, location, and capacity cells.",
+      "decidedBy": "codex-rule:K1",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: CatchTopBarTabBar/ProfileTabBar",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "CatchTopBarTabBar",
+          "action": "escalate"
+        },
+        {
+          "name": "ProfileTabBar",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: CatchTopBarTabBar is a PreferredSizeWidget wrapper for Material tabs under a top bar, while ProfileTabBar is a profile-specific segmented CatchOptionGroup rail with edit/preview/insights state.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: ClubDetailBody/EventDetailBody",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "ClubDetailBody",
+          "action": "keep"
+        },
+        {
+          "name": "EventDetailBody",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K2 domain fork: the club and event detail bodies share broad detail-page shape but own different route state, hero app bars, sections, action callbacks, and domain-specific navigation.",
+      "decidedBy": "codex-rule:K2",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: EventAgendaSliverList/EventDetailHintList",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "EventAgendaSliverList",
+          "action": "escalate"
+        },
+        {
+          "name": "EventDetailHintList",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: EventAgendaSliverList groups event rows into a sliver agenda, while EventDetailHintList renders static event-detail hints in a hairline list with activity-colored dots.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: CatchDetailSliverSectionList/CatchSectionList",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "CatchDetailSliverSectionList",
+          "action": "keep"
+        },
+        {
+          "name": "CatchSectionList",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K1 composition is not duplication: CatchDetailSliverSectionList is a detail-screen sliver adapter that applies detail padding and delegates its child layout to CatchSectionList.",
+      "decidedBy": "codex-rule:K1",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: CatchScreenBody/PublicProfileScreenBody",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "CatchScreenBody",
+          "action": "escalate"
+        },
+        {
+          "name": "PublicProfileScreenBody",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "No exact K/R match: CatchScreenBody is a generic padding/scroll shell, while PublicProfileScreenBody is a route-state dispatcher for loading/error/unavailable/ready profile states.",
+      "decidedBy": "codex-rule:no-exact",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: CatchPrivacyBadge/PrivacyBadge",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "CatchPrivacyBadge",
+          "action": "escalate"
+        },
+        {
+          "name": "PrivacyBadge",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: CatchPrivacyBadge is a core uppercase privacy token badge with transparent surface styling, while the Event Success PrivacyBadge maps a private audience enum to CatchBadge labels and icons.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: CatchFieldRow/ProfileFieldRow",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "CatchFieldRow",
+          "action": "escalate"
+        },
+        {
+          "name": "ProfileFieldRow",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "No exact K/R match: CatchFieldRow is a core row layout primitive, while ProfileFieldRow is a descriptor dispatcher across read-only, text, height, and enum inline editors.",
+      "decidedBy": "codex-rule:no-exact",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015-ranked-pair"
+    },
+    {
+      "clusterId": "ranked-pair: CreateEventPhotoPicker/OrderedPhotoPicker",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "CreateEventPhotoPicker",
+          "action": "keep"
+        },
+        {
+          "name": "OrderedPhotoPicker",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K1 composition is not duplication: CreateEventPhotoPicker is a feature adapter that supplies event-photo labels and copy while delegating the picker mechanics to OrderedPhotoPicker.",
+      "decidedBy": "codex-rule:K1",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015-ranked-pair"
     }
   ]
 }
