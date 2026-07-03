@@ -1589,7 +1589,7 @@
           },
           {
             "file": "lib/explore/presentation/explore_feed_view_model.dart",
-            "symbol": "exploreFeedViewModelProvider"
+            "symbol": "exploreFeedViewModel"
           },
           {
             "file": "lib/explore/presentation/explore_view_model.dart",
@@ -2377,8 +2377,8 @@
             "symbol": "dashboardFullViewModel"
           },
           {
-            "file": "lib/dashboard/presentation/dashboard_recommendations_provider.dart",
-            "symbol": "dashboardRecommendedEvents"
+            "file": "lib/dashboard/data/dashboard_recommendations_repository.dart",
+            "symbol": "dashboardRecommendedEventsProvider"
           },
           {
             "file": "lib/dashboard/presentation/dashboard_screen.dart",
@@ -2387,7 +2387,7 @@
         ],
         "mutationOwners": [
           {
-            "file": "lib/dashboard/presentation/dashboard_stride_actions.dart",
+            "file": "lib/dashboard/presentation/dashboard_stride_actions_controller.dart",
             "symbol": "DashboardStrideActions"
           },
           {
@@ -4640,7 +4640,7 @@
             "symbol": "CatchesEventScreenState"
           },
           {
-            "file": "lib/swipes/presentation/swipe_queue_notifier.dart",
+            "file": "lib/swipes/presentation/swipe_queue_controller.dart",
             "symbol": "SwipeQueueNotifier"
           },
           {
@@ -4658,7 +4658,7 @@
         ],
         "mutationOwners": [
           {
-            "file": "lib/swipes/presentation/swipe_queue_notifier.dart",
+            "file": "lib/swipes/presentation/swipe_queue_controller.dart",
             "symbol": "SwipeQueueNotifier"
           },
           {
@@ -6755,8 +6755,8 @@
             "symbol": "SelfProfileInlineEditPatchFactory"
           },
           {
-            "file": "lib/user_profile/presentation/self_profile_photo_action_controller.dart",
-            "symbol": "SelfProfilePhotoActionController"
+            "file": "lib/user_profile/presentation/self_profile_photo_intent_factory.dart",
+            "symbol": "SelfProfilePhotoIntentFactory"
           },
           {
             "file": "lib/user_profile/data/user_profile_repository.dart",
@@ -8009,14 +8009,14 @@
         }
       ],
       "source": {
-        "file": "lib/hosts/presentation/host_operations_screen.dart",
+        "file": "lib/hosts/presentation/host_operations_home_screen.dart",
         "symbol": "HostOperationsHomeScreen"
       },
       "stateController": {
         "primary": "uidProvider + _hostClubsForUserProvider + watchEventsForClubProvider",
         "files": [
           {
-            "file": "lib/hosts/presentation/host_operations_screen.dart",
+            "file": "lib/hosts/presentation/host_operations_home_screen.dart",
             "symbol": "HostOperationsHomeScreen"
           },
           {
@@ -8405,7 +8405,7 @@
               "HostHomeScreenState"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations_screen.dart",
+              "file": "lib/hosts/presentation/host_operations_home_screen.dart",
               "symbol": "HostOperationsHomeScreen"
             },
             "currentOwner": "HostHomeRouteState + HostOperationsHomeScreen",
@@ -8597,7 +8597,7 @@
               "HostErrorState"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations_screen.dart",
+              "file": "lib/hosts/presentation/host_auth_required_screen.dart",
               "symbol": "HostAuthRequiredScreen"
             },
             "currentOwner": "HostOperationsHomeScreen",
@@ -8655,14 +8655,14 @@
         }
       ],
       "source": {
-        "file": "lib/hosts/presentation/host_operations_screen.dart",
+        "file": "lib/hosts/presentation/host_clubs_screen.dart",
         "symbol": "HostClubsScreen"
       },
       "stateController": {
         "primary": "uidProvider + _hostClubsForUserProvider + HostClubsScreenState + HostClubEditController + HostPaymentAccountController + watchHostPaymentAccountProvider + hostAnalyticsProvider",
         "files": [
           {
-            "file": "lib/hosts/presentation/host_operations_screen.dart",
+            "file": "lib/hosts/presentation/host_clubs_screen.dart",
             "symbol": "HostClubsScreen"
           },
           {
@@ -8675,11 +8675,11 @@
           },
           {
             "file": "lib/payments/data/host_payment_account_repository.dart",
-            "symbol": "watchHostPaymentAccountProvider"
+            "symbol": "watchHostPaymentAccount"
           },
           {
             "file": "lib/hosts/data/host_analytics_repository.dart",
-            "symbol": "hostAnalyticsProvider"
+            "symbol": "hostAnalytics"
           },
           {
             "file": "lib/hosts/presentation/payments/host_payment_account_card.dart",
@@ -9287,7 +9287,7 @@
               "HostClubsScreenState"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations_screen.dart",
+              "file": "lib/hosts/presentation/host_clubs_screen.dart",
               "symbol": "HostClubsScreen"
             },
             "currentOwner": "HostClubsScreen",
@@ -9691,7 +9691,7 @@
               "HostErrorState"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations_screen.dart",
+              "file": "lib/hosts/presentation/host_auth_required_screen.dart",
               "symbol": "HostAuthRequiredScreen"
             },
             "currentOwner": "HostClubsScreen",
@@ -11773,14 +11773,14 @@
         }
       ],
       "source": {
-        "file": "lib/hosts/presentation/host_event_manage_screen.dart",
+        "file": "lib/hosts/presentation/host_event_manage_route_screen.dart",
         "symbol": "HostEventManageRouteScreen"
       },
       "stateController": {
         "primary": "uidProvider + fetchClubProvider + watchEventProvider + ARCH-SCREEN-001C HostEventManageRouteScreen + HostEventManageScreenState + HostEventManageScreen + HostEventParticipantsPanel + EventSuccessHostSection",
         "files": [
           {
-            "file": "lib/hosts/presentation/host_event_manage_screen.dart",
+            "file": "lib/hosts/presentation/host_event_manage_route_screen.dart",
             "symbol": "HostEventManageRouteScreen"
           },
           {
@@ -13028,7 +13028,7 @@
               "HostManageAccessState"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_event_manage_screen.dart",
+              "file": "lib/hosts/presentation/host_event_manage_route_screen.dart",
               "symbol": "HostEventManageRouteScreen"
             },
             "currentOwner": "HostEventManageRouteScreen",
@@ -13395,7 +13395,7 @@
               "HostManageAccessState"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_event_manage_screen.dart",
+              "file": "lib/hosts/presentation/host_event_manage_route_screen.dart",
               "symbol": "HostEventManageRouteScreen"
             },
             "currentOwner": "HostEventManageRouteScreen",
@@ -18792,18 +18792,18 @@
         }
       ],
       "source": {
-        "file": "lib/hosts/presentation/club_management/host_create_club_screen.dart",
+        "file": "lib/hosts/presentation/club_management/host_edit_club_route_screen.dart",
         "symbol": "HostEditClubRouteScreen"
       },
       "stateController": {
         "primary": "HostEditClubRouteScreen + fetchClubProvider + HostClubEditorStateView + CreateClubScreen(initialClub) + CreateClubController",
         "files": [
           {
-            "file": "lib/hosts/presentation/club_management/host_create_club_screen.dart",
+            "file": "lib/hosts/presentation/club_management/host_edit_club_route_screen.dart",
             "symbol": "HostEditClubRouteScreen"
           },
           {
-            "file": "lib/hosts/presentation/club_management/host_create_club_screen.dart",
+            "file": "lib/hosts/presentation/club_management/host_edit_club_route_screen.dart",
             "symbol": "HostClubEditorStateView"
           },
           {
@@ -19154,7 +19154,7 @@
               "HostClubEditState"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/club_management/host_create_club_screen.dart",
+              "file": "lib/hosts/presentation/club_management/host_edit_club_route_screen.dart",
               "symbol": "HostEditClubRouteScreen"
             },
             "currentOwner": "HostEditClubRouteScreen + HostClubEditorStateView + HostClubEditState",
@@ -19331,14 +19331,14 @@
         }
       ],
       "source": {
-        "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+        "file": "lib/hosts/presentation/edit_hosted_event_route_screen.dart",
         "symbol": "EditHostedEventRouteScreen"
       },
       "stateController": {
         "primary": "EditHostedEventRouteScreen + uidProvider + fetchClubProvider + watchEventProvider + EditHostedEventScreen + EventBookingController",
         "files": [
           {
-            "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+            "file": "lib/hosts/presentation/edit_hosted_event_route_screen.dart",
             "symbol": "EditHostedEventRouteScreen"
           },
           {
@@ -19732,7 +19732,7 @@
               "HostEventEditState"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+              "file": "lib/hosts/presentation/edit_hosted_event_route_screen.dart",
               "symbol": "EditHostedEventRouteScreen"
             },
             "currentOwner": "EditHostedEventRouteScreen + HostEventEditState",
@@ -19915,14 +19915,14 @@
         }
       ],
       "source": {
-        "file": "lib/hosts/presentation/host_operations_screen.dart",
+        "file": "lib/hosts/presentation/host_account_screen.dart",
         "symbol": "HostAccountScreen"
       },
       "stateController": {
         "primary": "HostAccountScreen + HostSettingsState + HostProfileController + uidProvider + watchHostProfileProvider + _hostClubsForUserProvider + AuthSessionController",
         "files": [
           {
-            "file": "lib/hosts/presentation/host_operations_screen.dart",
+            "file": "lib/hosts/presentation/host_account_screen.dart",
             "symbol": "HostAccountScreen"
           },
           {
@@ -20351,7 +20351,7 @@
               "HostSettingsState"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations_screen.dart",
+              "file": "lib/hosts/presentation/host_account_screen.dart",
               "symbol": "HostAccountScreen"
             },
             "currentOwner": "HostAccountScreen + provider watches",
@@ -20379,7 +20379,7 @@
               "HostSettingsTopBar"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations_screen.dart",
+              "file": "lib/hosts/presentation/host_account_screen.dart",
               "symbol": "HostSettingsTabRail"
             },
             "currentOwner": "HostAccountScreen + HostSettingsTabRail",
@@ -20408,7 +20408,7 @@
               "HostProfileSummaryRows"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations_screen.dart",
+              "file": "lib/hosts/presentation/host_account_screen.dart",
               "symbol": "HostSettingsProfileSection"
             },
             "currentOwner": "HostSettingsProfileSection",
@@ -20435,7 +20435,7 @@
               "HostProfileEditorSheet"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations_screen.dart",
+              "file": "lib/hosts/presentation/host_account_screen.dart",
               "symbol": "HostProfileEditorSheet"
             },
             "currentOwner": "HostAccountScreen private bottom sheet",
@@ -20463,7 +20463,7 @@
               "HostSettingsClubsSection"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations_screen.dart",
+              "file": "lib/hosts/presentation/host_account_screen.dart",
               "symbol": "HostSettingsClubsSection"
             },
             "currentOwner": "HostSettingsClubsSection",
@@ -23060,8 +23060,8 @@
             "symbol": "watchPaymentsForUser"
           },
           {
-            "file": "lib/payments/presentation/payment_history_state.dart",
-            "symbol": "paymentHistoryViewModelProvider"
+            "file": "lib/payments/presentation/payment_history_view_model.dart",
+            "symbol": "paymentHistoryViewModel"
           },
           {
             "file": "lib/events/data/event_repository.dart",

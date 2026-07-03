@@ -1672,7 +1672,6 @@
           "implementationPaths": [
             "lib/dashboard/presentation/dashboard_screen.dart",
             "lib/dashboard/presentation/dashboard_full_view_model.dart",
-            "lib/dashboard/presentation/dashboard_recommendations_view_model.dart",
             "lib/dashboard/presentation/widgets/dashboard_empty.dart",
             "lib/dashboard/presentation/widgets/dashboard_full.dart",
             "lib/dashboard/presentation/widgets/dashboard_sliver_header.dart",
