@@ -18,6 +18,7 @@ import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart'
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/gender_interest_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/name_dob_page.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/name_dob_page_state.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/photos_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/photos_page_state.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/profile_prompts_page.dart';
@@ -194,6 +195,121 @@ void main() {
   });
 
   group('NameDobPage', () {
+    test('state derives draft display, date policy, and submit intent', () {
+      final state = OnboardingNameDobState.fromDraft(
+        firstName: ' Asha ',
+        lastName: ' Runner ',
+        phoneNumber: ' 9876543210 ',
+        countryCode: '+91',
+        dateOfBirth: DateTime(1997, 4, 15),
+        step: OnboardingStep.nameDob,
+        today: DateTime(2026, 7, 3),
+      );
+
+      expect(state.shouldAutofocus, isTrue);
+      expect(state.dateText, '15 Apr 1997');
+      expect(state.ageSuffix, 'AGE 29');
+      expect(state.phonePrefix, '+91 ');
+      expect(state.datePickerRequest.initialDate, DateTime(1997, 4, 15));
+      expect(state.datePickerRequest.firstDate, DateTime(1920));
+      expect(state.datePickerRequest.title, 'Date of birth');
+
+      final intent = state.submitIntent(
+        firstName: state.firstName,
+        lastName: state.lastName,
+        phoneNumber: state.phoneNumber,
+      );
+      expect(intent?.firstName, 'Asha');
+      expect(intent?.lastName, 'Runner');
+      expect(intent?.phoneNumber, '9876543210');
+      expect(intent?.countryCode, '+91');
+      expect(intent?.dateOfBirth, DateTime(1997, 4, 15));
+
+      final missingDate = OnboardingNameDobState.fromDraft(
+        firstName: 'Asha',
+        lastName: 'Runner',
+        phoneNumber: '9876543210',
+        countryCode: '+91',
+        dateOfBirth: null,
+        step: OnboardingStep.genderInterest,
+        today: DateTime(2026, 7, 3),
+      );
+      expect(missingDate.shouldAutofocus, isFalse);
+      expect(missingDate.dateText, isEmpty);
+      expect(missingDate.ageSuffix, isNull);
+      expect(
+        missingDate.validateDateOfBirth(),
+        'Please select your date of birth',
+      );
+      expect(
+        missingDate.submitIntent(
+          firstName: 'Asha',
+          lastName: 'Runner',
+          phoneNumber: '9876543210',
+        ),
+        isNull,
+      );
+    });
+
+    testWidgets('provider-free step forwards date and continue actions', (
+      tester,
+    ) async {
+      final formKey = GlobalKey<FormState>();
+      final controllers = OnboardingNameDobTextControllers(
+        firstName: TextEditingController(text: 'Asha'),
+        lastName: TextEditingController(text: 'Runner'),
+        phone: TextEditingController(text: '9876543210'),
+        date: TextEditingController(text: '15 Apr 1997'),
+      );
+      addTearDown(controllers.firstName.dispose);
+      addTearDown(controllers.lastName.dispose);
+      addTearDown(controllers.phone.dispose);
+      addTearDown(controllers.date.dispose);
+      final state = OnboardingNameDobState.fromDraft(
+        firstName: controllers.firstName.text,
+        lastName: controllers.lastName.text,
+        phoneNumber: controllers.phone.text,
+        countryCode: '+91',
+        dateOfBirth: DateTime(1997, 4, 15),
+        step: OnboardingStep.nameDob,
+        today: DateTime(2026, 7, 3),
+      );
+      OnboardingNameDobDatePickerRequest? dateRequest;
+      var continueCount = 0;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: OnboardingNameDobStep(
+              formKey: formKey,
+              state: state,
+              controllers: controllers,
+              callbacks: OnboardingNameDobCallbacks(
+                onPickDate: (request) => dateRequest = request,
+                onContinue: () => continueCount += 1,
+              ),
+            ),
+          ),
+        ),
+      );
+      await pumpOnboardingUi(tester);
+
+      await tester.tap(
+        find.descendant(
+          of: find.widgetWithText(CatchField, 'DATE OF BIRTH'),
+          matching: find.byType(EditableText),
+        ),
+      );
+      await tester.tap(find.widgetWithText(CatchButton, 'Continue'));
+      await pumpOnboardingUi(tester);
+
+      expect(dateRequest?.title, 'Date of birth');
+      expect(dateRequest?.initialDate, DateTime(1997, 4, 15));
+      expect(continueCount, 1);
+      expect(find.text('AGE 29'), findsOneWidget);
+    });
+
     testWidgets('validates required fields before continuing', (tester) async {
       final container = createOnboardingTestContainer();
       addTearDown(container.dispose);

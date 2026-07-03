@@ -15951,6 +15951,14 @@
             "symbol": "NameDobPage"
           },
           {
+            "file": "lib/onboarding/presentation/pages/name_dob_page_state.dart",
+            "symbol": "OnboardingNameDobState"
+          },
+          {
+            "file": "lib/onboarding/presentation/pages/name_dob_page.dart",
+            "symbol": "OnboardingNameDobStep"
+          },
+          {
             "file": "lib/onboarding/presentation/pages/gender_interest_page.dart",
             "symbol": "GenderInterestPage"
           },
@@ -15985,7 +15993,7 @@
             "symbol": "UserProfileRepository"
           }
         ],
-        "notes": "OnboardingScreen owns initStep scheduling and visible step composition. OnboardingFlowState owns flow entry mode, current step, previous-step/back boundary, welcome-vs-progress shell, and OnboardingTopBarState header/progress copy. OnboardingController owns draft hydration, profile completion/run-preferences entry decisions, saveProfileMutation, completeMutation, and draft persistence. Step pages still own local field controllers, validation UI, photo gates, and mutation surfaces."
+        "notes": "OnboardingScreen owns initStep scheduling and visible step composition. OnboardingFlowState owns flow entry mode, current step, previous-step/back boundary, welcome-vs-progress shell, and OnboardingTopBarState header/progress copy. OnboardingController owns draft hydration, profile completion/run-preferences entry decisions, saveProfileMutation, completeMutation, and draft persistence. Name/DOB and photo pages now wrap provider-free step state/section adapters. Remaining step pages still own local field controllers, validation UI, and mutation surfaces until their adapters land."
       },
       "designRefs": [
         {
@@ -16184,7 +16192,7 @@
           "id": "name_dob_step",
           "kind": "populated",
           "status": "captured",
-          "source": "NameDobPage collects first name, last name, DOB, and verified phone state inside the shared step frame.",
+          "source": "NameDobPage owns the route/provider edge while OnboardingNameDobState and OnboardingNameDobStep own first name, last name, DOB, verified phone display, date policy, validation, and typed submit/date callbacks inside the shared step frame.",
           "captureIds": [
             "onboarding_name_dob",
             "onboarding_name_dob_validation_error",
@@ -16193,7 +16201,7 @@
           "tests": [
             "test/onboarding/onboarding_widgets_test.dart"
           ],
-          "nextAction": "Deterministic route captures cover default, required-field validation, and text scale 2.0. Add state-specific reference exports."
+          "nextAction": "Provider-free step adapter coverage now validates draft display, date bounds, age suffix, trimmed submit intent, date callback, and continue callback. Deterministic route captures cover default, required-field validation, and text scale 2.0. Add state-specific reference exports."
         },
         {
           "id": "gender_interest_step",
@@ -16437,7 +16445,7 @@
               "file": "lib/onboarding/presentation/pages/name_dob_page.dart",
               "symbol": "NameDobPage"
             },
-            "currentOwner": "NameDobPage + GenderInterestPage + InstagramPage",
+            "currentOwner": "NameDobPage adapter over OnboardingNameDobState + OnboardingNameDobStep; GenderInterestPage + InstagramPage still page-owned",
             "targetOwner": "provider-free identity step sections",
             "dependencies": [
               "catch.field",
@@ -16452,7 +16460,7 @@
               "required_field_errors",
               "save_profile_mutation"
             ],
-            "migration": "Move field display data, validation, and save/advance modes into adapter state while preserving step-specific form widgets."
+            "migration": "Name/DOB field display data, date policy, validation, and submit intent now live in provider-free adapter state. Move remaining gender/interest and Instagram display data, validation, and save/advance modes into adapter state while preserving step-specific form widgets."
           },
           {
             "id": "section.onboarding.photos_step",
