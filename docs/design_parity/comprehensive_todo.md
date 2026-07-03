@@ -27,7 +27,7 @@ ledgers as the source of truth when counts differ:
 - Screen priority spread: 18 P1, 12 P2, and 5 P3 contracted screens.
 - Contracted screen states: 619.
 - Contracted screen sections: 241.
-- Screen registry migration gaps: 19 open, 18 blocked, and 102 closed. These are
+- Screen registry migration gaps: 16 open, 21 blocked, and 102 closed. These are
   product migration gaps in `design/screens/catch.screens.json`, not
   validation failures.
 - Contracted section states: 1,110.
@@ -690,10 +690,10 @@ from those ledgers rather than hand-editing counts.
 | P2 | `screen.host.settings` | 18 | 5 | 0 | Source found but exporter-blocked: `explorations/archived-templates/host-account/HostAccount.dc.html`; payout/admin IA decision needed | `DS-HOST-SETTINGS-003` blocked, `DS-HOST-SETTINGS-004` blocked | Widgetbook now covers route, profile summary, create-pending row, clubs section, tab rail, accessibility, and theme states; `HostSettingsState` adapts profile/club display state, tab/account action availability, and club navigation policy while `HostProfileController` owns profile create/save mutations. Host Settings create/save success feedback now uses the shared Catch snackbar helper. Route/capture and Widgetbook gaps are closed. Remaining work is blocked on source/runtime repair or alternate export path for pixel comparison, plus product IA ownership for payout/admin placement. |
 | P2 | `screen.onboarding.flow` | 13 | 7 | 1 | `onboarding-handoff` | `DS-ONBOARDING-001`, `DS-ONBOARDING-002`, `DS-ONBOARDING-003`, `DS-ONBOARDING-004` | Deterministic route captures now cover welcome, name/DOB, gender/interest, validation errors, Instagram, empty/one-photo/count-met/upload-pending photo gates, empty prompts, run-preferences entry, save/complete mutation pending/error, saved-draft resume, text scale, and reduced motion. Continue upload-failure transition coverage, prompt variants, Instagram filled/invalid/skipped variants, Widgetbook parity variants, and state-specific references. |
 | P2 | `screen.saved_events.list` | 9 | 4 | 0 | Blocked: no standalone Saved Events source | `DS-SAVED-EVENTS-004` blocked | SavedEventsListState owns ordering, saved/past labels, statuses, today, and club-id lookup input, while SavedEventsHeaderSliver, SavedEventsAgendaSliver, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorSliver, and SavedEventsMessage own provider-free UI sections. Widgetbook and deterministic captures cover uid-missing signed-out fallback, populated rows, empty/deleted-doc fallback, loading, stream error, club-name loading/error, past-only, text-scale, and paired light/dark states; reference export waits on a canonical Saved Events source. |
-| P2 | `screen.start.welcome` | 6 | 3 | 1 | None | `DS-START-001` | Widgetbook and deterministic captures now cover animated reel, landed direct, CTA, reduced motion, text scale, and canonical fixed-dark theme treatment; continue state-specific reference exports and visual comparison. |
-| P3 | `screen.event.location_map` | 11 | 4 | 0 | Blocked: no standalone full-screen map source; map primitives only | `DP-EVENT-MAP-003`, `DP-EVENT-MAP-004` blocked | Continue route-state adapter and map-mask planning; reference export waits on canonical map route source. |
+| P2 | `screen.start.welcome` | 6 | 3 | 1 | State-specific references are optional until strict comparison requires them | `DS-START-001` blocked | Widgetbook and deterministic captures now cover animated reel, landed direct, CTA, reduced motion, text scale, and canonical fixed-dark theme treatment; landed direct reference and masks are registered. Additional state-specific references are blocked/reference-only unless strict visual comparison requires them. |
+| P3 | `screen.event.location_map` | 11 | 4 | 0 | Blocked: no standalone full-screen map source; map primitives only | `DP-EVENT-MAP-003` blocked, `DP-EVENT-MAP-004` blocked | EventLocationMapState, Widgetbook states, and deterministic route captures are implemented. Exported map masks and pixel comparison wait on a canonical map route source. |
 | P3 | `screen.notifications.list` | 13 | 4 | 1 | None | None | Use the complete Notifications state/capture/adapter set during pixel comparison and future visual polish. |
-| P3 | `screen.payments.history` | 15 | 4 | 0 | Blocked: no standalone Payment History source; Booking moments only | `DP-PAYMENT-HISTORY-002`, `DP-PAYMENT-HISTORY-004` blocked | Preserve current capture/Widgetbook coverage; reference export waits on canonical payment-history source. |
+| P3 | `screen.payments.history` | 15 | 4 | 0 | Blocked: no standalone Payment History source; Booking moments only | `DP-PAYMENT-HISTORY-002` blocked, `DP-PAYMENT-HISTORY-004` blocked | Preserve current capture/Widgetbook coverage; canonical reference export, receipt-id masks, and pixel comparison wait on a standalone payment-history source. |
 | P3 | `screen.reviews.history` | 12 | 4 | 0 | Blocked: no standalone Reviews History source; `ReviewRow` primitive only | `DP-REVIEWS-HISTORY-004` blocked | Preserve current capture/Widgetbook coverage; reference export waits on canonical reviews-history source. |
 | P3 | `screen.settings.account` | 19 | 6 | 1 | None | None | Use the complete Settings state capture set during pixel comparison and future visual polish. |
 
@@ -1622,11 +1622,11 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
 
 ### P3 utility_surfaces
 
-- [ ] `event.location_map` (11 state follow-ups, 1 open gap)
+- [ ] `event.location_map` (11 state follow-ups, 0 open gaps; 2 blocked reference gaps)
   - planned: `map_masking`
   - captured: `route_loading`, `route_error`, `event_not_found`, `no_exact_coordinate`, `pinned_location`, `network_tiles_disabled_capture`, `text_scale_2`, `reduced_motion`, `light_dark`
   - tested: `directions_action`
-  - DP-EVENT-MAP-003: Add exported map masks before advisory pixel comparison; EventLocationMapState is implemented.
+  - DP-EVENT-MAP-003: Blocked/reference-only. EventLocationMapState is implemented and route/state captures exist; exported map masks wait on a canonical standalone full-screen map reference.
 - [ ] `notifications.list` (13 state follow-ups, 0 open gaps)
   - tested: `read_unread_rows`, `row_navigation_targets`
   - captured: `uid_loading`, `signed_out`, `activity_loading`, `activity_error`, `empty_activity`, `notifications_activity`, `mark_all_read`, `deep_link_failures`, `text_scale_2`, `reduced_motion`, `light_dark`
@@ -1637,10 +1637,10 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
   - tested: `history_navigation_rows`, `host_app_handoff`, `shared_unblock_feedback`
   - captured: `profile_backed_account`, `profile_loading`, `profile_error`, `profile_missing`, `notification_preferences`, `preference_save_error`, `privacy_safety_defaults`, `blocked_accounts_loading_error`, `blocked_accounts_empty`, `blocked_accounts_list`, `unblock_mutation`, `delete_account_flow`, `sign_out_action`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
   - DP-SETTINGS-ACCOUNT-002: closed; Settings Account route captures now cover profile loading/error/offline/missing, blocked-user loading/error/offline/list, preference/delete/sign-out/unblock mutation pending/error/offline, text scale, reduced motion, and light/dark. Unblock success feedback now uses the shared Catch snackbar helper. Settings intentionally uses the shared offline provider/mutation error copy instead of Settings-specific copy.
-- [ ] `payments.history` (15 state follow-ups, 1 open gap)
+- [ ] `payments.history` (15 state follow-ups, 0 open gaps; 2 blocked reference gaps)
   - tested: `status_variants`
   - captured: `uid_loading`, `uid_error`, `signed_out`, `payments_loading`, `payments_error`, `payment_history_empty`, `populated_payments`, `detail_sheet`, `failed_signup_help`, `event_title_loading_missing`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
-  - DP-PAYMENT-HISTORY-002: Payment History route captures now cover access, provider waves, empty, populated rows, receipt sheet, failed sign-up help sheet, support snackbar, missing event-title fallback, offline provider errors, text scale, reduced motion, and light/dark. The support snackbar now uses the shared Catch snackbar helper. Remaining work: export the canonical reference baseline, add receipt-id masks, and compare pixels.
+  - DP-PAYMENT-HISTORY-002: Blocked/reference-only. Payment History route captures now cover access, provider waves, empty, populated rows, receipt sheet, failed sign-up help sheet, support snackbar, missing event-title fallback, offline provider errors, text scale, reduced motion, and light/dark. The support snackbar uses the shared Catch snackbar helper. Canonical reference export, receipt-id masks, and pixel comparison wait on a standalone Payment History design source.
 - [ ] Feature-level drift/previews
   - DP-UTILITY-LINT-001: After adapter boundaries exist, extend contracted-screen hygiene checks for utility routes that add raw Material controls or one-off visual constants.
   - DP-UTILITY-PREVIEW-001: Add Widgetbook states and deterministic captures for map, notifications, reviews, settings, and payments utility surfaces before pixel comparison.

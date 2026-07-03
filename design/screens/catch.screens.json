@@ -15472,8 +15472,8 @@
       "openGaps": [
         {
           "id": "DS-START-001",
-          "status": "open",
-          "nextAction": "Landed direct Start Welcome reference and masks are registered; export animated reel samples, reduced-motion, text-scale, and any alternate theme references before strict visual comparison."
+          "status": "blocked",
+          "nextAction": "Blocked/reference-only: landed direct Start Welcome reference and masks are registered. Export animated reel samples, reduced-motion, text-scale, or alternate theme references only if strict visual comparison requires state-specific references."
         },
         {
           "id": "DS-START-002",
@@ -21282,8 +21282,8 @@
         },
         {
           "id": "DP-EVENT-MAP-003",
-          "status": "open",
-          "nextAction": "Add exported map masks before advisory pixel comparison; EventLocationMapState is implemented."
+          "status": "blocked",
+          "nextAction": "Blocked/reference-only: EventLocationMapState is implemented and route/state captures exist, but exported map masks depend on a canonical standalone full-screen map reference. See DP-EVENT-MAP-004."
         },
         {
           "id": "DP-EVENT-MAP-004",
@@ -23387,8 +23387,8 @@
         },
         {
           "id": "DP-PAYMENT-HISTORY-002",
-          "status": "open",
-          "nextAction": "Payment History route captures now cover access, provider waves, empty, populated rows, receipt sheet, failed sign-up help sheet, support snackbar, missing event-title fallback, offline provider errors, text scale, reduced motion, and light/dark. Remaining work: export the canonical reference baseline, add receipt-id masks, and compare pixels."
+          "status": "blocked",
+          "nextAction": "Blocked/reference-only: Payment History route captures cover access, provider waves, empty, populated rows, receipt sheet, failed sign-up help sheet, support snackbar, missing event-title fallback, offline provider errors, text scale, reduced motion, and light/dark. Canonical reference export, receipt-id masks, and pixel comparison wait on a standalone Payment History design source; see DP-PAYMENT-HISTORY-004."
         },
         {
           "id": "DP-PAYMENT-HISTORY-003",
