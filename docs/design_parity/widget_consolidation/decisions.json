@@ -946,7 +946,7 @@
       "rationale": "Rulebook scope limit: current cluster is scope: screen, so it needs review instead of mechanical merge. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 needs read. REVIEW (claude, 2026-07-04): not screen composition after read \u2014 each is an R2-shape thin wrapper (CatchBottomDock(CatchButton(save))) over a typed footer state with exactly one call site. Inline the expression at each call site verbatim (keep the key and padding args) and delete both classes; the footer-state types stay.",
       "decidedBy": "codex-rule:scope-screen -> claude",
       "date": "2026-07-04",
-      "status": "work-order WO-021"
+      "status": "executed-WO-021"
     },
     {
       "clusterId": "c003-catch-meta-row",
@@ -1406,7 +1406,7 @@
       "rationale": "No exact K/R match: ExploreRailLabel is structurally close to core CatchOptionGroupItem, but absorbing it requires a core option-item API decision around selectedRule, variant, option typing, and whether explore filter rails are option groups. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 generic classes; needs type-aware read. REVIEW (claude, 2026-07-04): ExploreRailLabel is a near-byte clone of CatchOptionGroupItem's label variant (same Semantics/InkWell/AnimatedContainer underline, micro10/s3 padding flip, micro3 rule, labelL ink/ink3) \u2014 the explore time rail IS an option-group row that only needed a scrollable layout the group shell doesn't provide. Core API loosened: selectedRule becomes optional (defaults to t.ink), variant defaults to label; explore constructs items directly in its scroll row. Accepted standardization: rail labels gain ellipsis overflow (visual noop at these lengths).",
       "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-04",
-      "status": "work-order WO-021"
+      "status": "executed-WO-021"
     },
     {
       "clusterId": "c018-icon",
@@ -1800,7 +1800,7 @@
       "rationale": "No exact K/R match: the shared CatchSelectChip/Wrap shape hides different multi-select, questionnaire, reveal countdown, and rotation-cadence APIs that need a feature-level chip-group design decision. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 chips-row family; needs read against CatchSelectChip/option-group vocabulary. REVIEW (claude, 2026-07-04): the titled chip-wrap is a layout convention, not one concept \u2014 typography intentionally differs by level (labelM setup control, labelL block title, supporting sub-field). Merge only the same-file twins RotationCadenceChips + RevealCountdownChips (identical labelM + gapH6 + Wrap bodies over const single-select option lists) into one feature-local generic SetupChoiceChips<T> taking List<CatchOption<T>>; option lists and label formatting move to call sites as data. QuestionnaireBlock keeps (3-state mode derivation + nested config editor); ActivityAttributeGoalChips keeps (multi-select contains-semantics, sub-field typography). No core primitive \u2014 a Catch* chip row would need a typography knob per concept (K5).",
       "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-04",
-      "status": "work-order WO-021"
+      "status": "executed-WO-021"
     },
     {
       "clusterId": "c039-people-token-row",
@@ -3357,7 +3357,7 @@
       "rationale": "K2 domain fork: host and user analytics quality panels use parallel role-specific row models, section shells, warning states, and copy contracts. AUDIT (claude, 2026-07-03): K2 misapplied \u2014 bodies are structurally parallel presentation over parallel view-model types (same surfaces, tokens, layout; only typed field access/metric keys differ). Re-opened for the host/user analytics-kit unification review. REVIEW (claude, 2026-07-03): same concept, genuinely different treatments (per-row warning surfaces vs single divided surface); kit v2 candidate (CatchAnalyticsDataQualityList) after v1 lands. REVIEW (claude, 2026-07-04): kit v2 lands \u2014 new core CatchAnalyticsDataQualityList (display-ready rows reusing CatchMetricStatus). Canonical treatment = host per-row status surfaces; accepted standardization: user side moves from one divided surface with sm neutral icons to per-row contentDense surfaces with md status-colored icons (partial/missing take the warning treatment). Both panels inline into their report views and die, along with UserAnalyticsDataQualityRow.",
       "decidedBy": "codex-rule:K2 -> claude",
       "date": "2026-07-04",
-      "status": "work-order WO-021"
+      "status": "executed-WO-021"
     },
     {
       "clusterId": "ranked-pair: EventActionCardHeader/EventPolicyLabHeader",
@@ -4564,7 +4564,7 @@
       "rationale": "Same slot, drifted twins: host analytics panels hand-roll a stat column (numericMeta value + labelS label) where the user trend panel already uses CatchStatColumn. Absorb the 6 host_operations_screen call sites. Accepted standardization: value numericMeta (mono 12) -> sectionTitle, label labelS -> supporting, aligning with the user analytics side and the WO-020 HostOrganizerMetricTile absorb.",
       "decidedBy": "claude",
       "date": "2026-07-04",
-      "status": "work-order WO-021"
+      "status": "executed-WO-021"
     },
     {
       "clusterId": "n093-profile-photo",
@@ -5044,6 +5044,818 @@
         }
       ],
       "rationale": "Name-family review: per-screen loading compositions mimicking their loaded layouts (c010/c011/c016 precedent); the startup screen is a core pattern with its own contract.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n098-mono-label",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "CatchMonoLabel",
+          "action": "keep"
+        },
+        {
+          "name": "ExploreMonoLabel",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): byte-identical API/chrome but different type roles \u2014 CatchMonoLabel renders monoLabel, ExploreMonoLabel renders kicker. Distinct concepts per K5. LEXICON: ExploreMonoLabel's name lies about its style (rename candidate ExploreKickerLabel at ratification).",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n103-step-header",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "CatchStepHeader",
+          "action": "keep"
+        },
+        {
+          "name": "CreateEventStepHeader",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): CreateEventStepHeader is a domain adapter over core CatchStepHeader carrying real mapping semantics (0-indexed step -> 1-indexed display, clubName -> subtitle) used at 3 step call sites; inlining would duplicate the +1 offset. K1/K4 keep.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n129-host-avatar",
+      "decision": "absorb-into-existing",
+      "members": [
+        {
+          "name": "ClubHostAvatar",
+          "action": "absorb"
+        },
+        {
+          "name": "HostAvatar",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): ClubHostAvatar is a pure 1:1 pass-through over CatchPersonAvatar (only adds a raw size-32 default) with 4 call sites \u2014 absorb (WO-023). HostAvatar keeps: distinct event-detail identity treatment (activity accent->deep gradient fallback + CatchGradedImage), a different visual contract from the initials avatar.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "work-order WO-023"
+    },
+    {
+      "clusterId": "n173-page-indicator",
+      "decision": "delete",
+      "members": [
+        {
+          "name": "EventFocusPageIndicator",
+          "action": "delete"
+        },
+        {
+          "name": "HostEventToolsPageIndicator",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): EventFocusPageIndicator is an R2 wrapper (Center + CatchPageDots + semanticLabel) with one call site \u2014 inline (WO-023). HostEventToolsPageIndicator keeps: deliberate 'N of M + progress bar' treatment that scales to long host rails where dots do not (concept, not drift). D1: its raw minHeight: 6 goes to WO-023.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "work-order WO-023"
+    },
+    {
+      "clusterId": "n205-toggle-row",
+      "decision": "delete",
+      "members": [
+        {
+          "name": "ManualQaToggleRow",
+          "action": "delete"
+        },
+        {
+          "name": "ModuleToggleRow",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): ManualQaToggleRow is a 1:1 pass-through over CatchField.toggle with 2 call sites \u2014 inline (WO-023). ModuleToggleRow keeps: rich selected-surface module toggle.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "work-order WO-023"
+    },
+    {
+      "clusterId": "n013-host-panel",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "HostCheckInQrPanel",
+          "action": "keep"
+        },
+        {
+          "name": "HostClubManagementPanel",
+          "action": "keep"
+        },
+        {
+          "name": "HostEventAttendancePanel",
+          "action": "keep"
+        },
+        {
+          "name": "HostEventParticipantsPanel",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): HostEventAttendancePanel already delegates to HostEventParticipantsPanel(mode: live) \u2014 the R4 delegation exists; the named entry point is API ergonomics (K3). QR and club-management panels are unrelated features.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n016-host-card",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "CompatibilitySignalHostCard",
+          "action": "keep"
+        },
+        {
+          "name": "WingmanRequestsHostCard",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): same-file Event Success host cards with different content contracts (compatibility signal toggle surface vs wingman request list); shared vocabulary is already CatchSurface/CatchBadge.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n017-profile-skeleton",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "ProfileSurfacePhotoSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "ProfileSurfaceSkeleton",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): K1 \u2014 the surface skeleton composes the photo skeleton; both are profile-surface loading mimics.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n059-skeleton-list",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "CatchSkeletonList",
+          "action": "keep"
+        },
+        {
+          "name": "ClubDirectorySkeletonList",
+          "action": "keep"
+        },
+        {
+          "name": "ExploreSkeletonList",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): core CatchSkeletonList is the uniform-list primitive; the two feature lists are non-uniform mimics it cannot express (explore mixes three different card heights/gaps; club directory repeats a custom skeleton card). Parameterizing would move jitter to call sites (c010/c011 precedent).",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n144-async-loading + n213-screen-loading",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "CatchAsyncScreenLoading",
+          "action": "keep"
+        },
+        {
+          "name": "CatchAsyncSliverLoading",
+          "action": "keep"
+        },
+        {
+          "name": "ActivityScreenLoading",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): CatchAsyncScreen/SliverLoading are intentional box/sliver duals of the async-view kit (both compose CatchSkeletonList). ActivityScreenLoading is a feature loading composition over its own section skeleton.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n172-page-body",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "CatchPageBody",
+          "action": "keep"
+        },
+        {
+          "name": "CatchSliverPageBody",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): intentional box/sliver duals of the core section-layout kit (Padding vs SliverPadding carrying the pageBody token).",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n052-top-action",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "CatchTopBarMenuAction",
+          "action": "keep"
+        },
+        {
+          "name": "CatchTopBarTextAction",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): intentional top-bar action API family: thin slot adapters over CatchActionMenu and CatchTextButton with top-bar defaults; matches the CatchIconAction family split from WO-020.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n024-profile-editor + n072-host-editor + n029-entry-editor + n141-range-editor",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "ProfileInlineHeightEditor",
+          "action": "keep"
+        },
+        {
+          "name": "ProfileInlinePromptEntryEditor",
+          "action": "keep"
+        },
+        {
+          "name": "ProfileInlineRangeEditor",
+          "action": "keep"
+        },
+        {
+          "name": "HostInlineAgeRangeEditor",
+          "action": "keep"
+        },
+        {
+          "name": "HostInlineOptionEditor",
+          "action": "keep"
+        },
+        {
+          "name": "HostInlineTextEntryEditor",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): the two inline-editor kits (profile: UpdateUserProfilePatch; host: UpdateClubPatch + clubId) both already delegate their chrome to core CatchField.actions \u2014 K3 \u2014 and fork on genuinely different domain plumbing (save repos, latest-profile rebase, hostDefaults derivation) plus per-field-type logic (slider vs text vs prompt vs options). KIT-WATCH: if a third inline-editor family appears, revisit with a patch-abstraction design.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n168-history-list + n191-history-skeleton",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "PaymentHistoryList",
+          "action": "keep"
+        },
+        {
+          "name": "ReviewsHistoryList",
+          "action": "keep"
+        },
+        {
+          "name": "PaymentHistorySkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "ReviewsHistorySkeleton",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): the history lists genuinely differ in layout treatment (payments: empty gate + maxContentWidth-constrained hairline-divided rows, listBody padding; reviews: gapH14-separated items, pageBodyRelaxed) and row models; the skeletons mirror their own lists 1:1. Presentation differs in kind, not just typed field access.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n171-is-going",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "GuestWhoIsGoing",
+          "action": "keep"
+        },
+        {
+          "name": "WhoIsGoing",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): WhoIsGoing is the provider-wired roster dispatcher, GuestWhoIsGoing the static locked variant; both render through shared WhoIsGoingContent (K3).",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n211-event-cta",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "EventDetailCta",
+          "action": "keep"
+        },
+        {
+          "name": "EventDetailLoadingCta",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): loaded consumer CTA flow vs its skeleton mimic (loading/loaded pair precedent).",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n210-error-screen",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "DashboardErrorScreen",
+          "action": "keep"
+        },
+        {
+          "name": "ForceUpdateCheckErrorScreen",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): DashboardErrorScreen dispatches to CatchErrorScaffold with dashboard fallback copy (K4-scale branching). ForceUpdateCheckErrorScreen renders in the pre-shell bootstrap context (Theme.textTheme, no Catch chrome) \u2014 a deliberate constraint. D1: its raw maxWidth: 420 goes to WO-023 (no exact token; escalate with candidates).",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n215-roster-cell",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "CatchRosterActionCell",
+          "action": "keep"
+        },
+        {
+          "name": "CatchRosterTileCell",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): internal cells of the roster-board kit: a sealed-union action dispatcher vs a selectable tile \u2014 different slots of one kit.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n190-explore-lead",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "ExploreMapSheetLead",
+          "action": "keep"
+        },
+        {
+          "name": "ExploreSelectedEventLead",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): mode-dispatching sheet lead (list/summary) vs single selected-event card adapter over CatchEventCard.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n109-club-artwork + n135-explore-card",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "ClubPolaroidArtwork",
+          "action": "keep"
+        },
+        {
+          "name": "ClubShareArtwork",
+          "action": "keep"
+        },
+        {
+          "name": "ExploreClubPolaroidCard",
+          "action": "keep"
+        },
+        {
+          "name": "ExploreEventTicketCard",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): K1 chains, dedupe already done: ClubShareArtwork composes ClubPolaroidArtwork (photo-else-polaroid fallback); ExploreClubPolaroidCard composes CatchPolaroid + ClubPolaroidArtwork. The event ticket card is a different art system.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n006-loading-body + n069-host-body",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "CreateEventLoadingBody",
+          "action": "keep"
+        },
+        {
+          "name": "HostRouteLoadingBody",
+          "action": "keep"
+        },
+        {
+          "name": "HostTodayLoadingBody",
+          "action": "keep"
+        },
+        {
+          "name": "LaunchAccessLoadingBody",
+          "action": "keep"
+        },
+        {
+          "name": "HostPrivateAccessBody",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): per-screen loading/body compositions with distinct route ownership (screen-scope precedent; no structural-pair signal).",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n009-host-section",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "HostEventActionsSection",
+          "action": "keep"
+        },
+        {
+          "name": "HostEventsClubSection",
+          "action": "keep"
+        },
+        {
+          "name": "HostSettingsClubsSection",
+          "action": "keep"
+        },
+        {
+          "name": "HostSettingsProfileSection",
+          "action": "keep"
+        },
+        {
+          "name": "HostTeamManagementSection",
+          "action": "keep"
+        },
+        {
+          "name": "HostTodayDashboardSection",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): screen-level host sections owning distinct flows/providers (screen-section precedent; no structural-pair signal).",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n023-club-section + n115-activity-section",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "ClubActivitySection",
+          "action": "keep"
+        },
+        {
+          "name": "ClubScheduleSection",
+          "action": "keep"
+        },
+        {
+          "name": "ActivitySection",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): club-detail activity vs schedule sections, and the dashboard ActivitySection is a different feature entirely; stem-only match.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n015-club-skeleton + n018-loading-skeleton",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "ClubHeroLoadingSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "ClubScheduleLoadingSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "ClubStatLoadingSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "ClubStatsDividerSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "ClubTextLoadingSkeleton",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): per-section club-detail skeleton mimics composing CatchSkeleton primitives (skeleton composition precedent; widths/arithmetic are sanctioned jitter noise).",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n032-profile-entry",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "ProfileDirectTextEntry",
+          "action": "keep"
+        },
+        {
+          "name": "ProfilePromptEntry",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): profile_tab adapters dispatching to different editors (text vs prompt), same K1 adapter pattern as the enum entries (c010 family).",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n034-payment-controller + n139-host-controller",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "PaymentHistoryListController",
+          "action": "keep"
+        },
+        {
+          "name": "PaymentReferralBannerController",
+          "action": "keep"
+        },
+        {
+          "name": "HostClubOrganizerOverviewController",
+          "action": "keep"
+        },
+        {
+          "name": "HostOrganizerPayoutPromptController",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): provider-wiring controller layers per the app controller pattern; architecture, not widget shape.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n033-calendar-skeleton",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "CalendarStatSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "CalendarWeekStripSkeleton",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): same-screen calendar skeleton mimics of different loaded sections (stat vs week strip).",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n113-dashboard-section",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "DashboardRecommendedLoadingSection",
+          "action": "keep"
+        },
+        {
+          "name": "DashboardStrideSection",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): loading mimic vs stride content section; stem-only match.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n030-event-list + n065-event-tile",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "EventAgendaList",
+          "action": "keep"
+        },
+        {
+          "name": "EventDetailMechanismList",
+          "action": "keep"
+        },
+        {
+          "name": "EventAgendaTile",
+          "action": "keep"
+        },
+        {
+          "name": "EventDetailPhotoStripTile",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): agenda list/tile vs event-detail mechanism list and photo-strip tile \u2014 different content contracts; stem-only match.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n124-club-tile",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "ClubListTile",
+          "action": "keep"
+        },
+        {
+          "name": "ClubProfileImageTile",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): discovery list tile vs create-club photo-picker tile; unrelated concepts sharing a stem.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n070-report-skeleton",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "HostAnalyticsReportSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "UserAnalyticsReportSkeleton",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): per-feature mimics of their own report views (which stay distinct per the analytics-kit v2 close-out); WO-021 aligns their data-quality blocks to the new kit shape.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n161-profile-button + n154-host-button",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "ProfileHeightStepButton",
+          "action": "keep"
+        },
+        {
+          "name": "ProfileSettingsButton",
+          "action": "keep"
+        },
+        {
+          "name": "HostAnalyticsDateButton",
+          "action": "keep"
+        },
+        {
+          "name": "HostExportReportButton",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): stepper +/- control, settings gear, analytics date-range picker, and export CTA \u2014 four unrelated button concepts; stem-only matches.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n080-event-line + n207-summary-line",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "EventDetailPolicySummaryLine",
+          "action": "keep"
+        },
+        {
+          "name": "EventPolicyDividerLine",
+          "action": "keep"
+        },
+        {
+          "name": "EventPolicySummaryLine",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): attendee-facing detail policy line vs policy-lab debug lines \u2014 same verdict as the parent EventDetailPolicySummary/EventPolicySummary K5 keep.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n175-payment-body",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "PaymentConfirmationBody",
+          "action": "keep"
+        },
+        {
+          "name": "PaymentPendingCheckoutBody",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): different states of the confirmation screen (confirmed vs pending checkout); screen-state composition.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n086-saved-sliver",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "SavedEventsAgendaSliver",
+          "action": "keep"
+        },
+        {
+          "name": "SavedEventsClubNamesErrorSliver",
+          "action": "keep"
+        },
+        {
+          "name": "SavedEventsHeaderSliver",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): sliver parts of one screen (agenda/error/header); composition, not duplication.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n212-profile-view",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "ProfileSectionView",
+          "action": "keep"
+        },
+        {
+          "name": "ProfileTabScrollView",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): section-type dispatcher inside the shared profile surface vs the profile screen scroll view; different abstraction levels.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n185-club-list",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "ClubDiscoverList",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): loaded discovery list vs its skeleton (ClubDirectorySkeletonList, kept under n059); loading/loaded pair precedent.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n019-onboarding-step",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "OnboardingInstagramStep",
+          "action": "keep"
+        },
+        {
+          "name": "OnboardingNameDobStep",
+          "action": "keep"
+        },
+        {
+          "name": "OnboardingPhotosStep",
+          "action": "keep"
+        },
+        {
+          "name": "OnboardingProfilePromptsStep",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review (batch 2): per-page onboarding form steps with distinct fields and validation; stem-only match.",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded"

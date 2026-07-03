@@ -1521,12 +1521,12 @@ class SetupChoiceChips<T> extends StatelessWidget {
    registries + receipts; flip the WO-021 ledger entries to
    `executed-WO-021`.
 
-- [ ] CatchAnalyticsDataQualityList + panel deletions + skeleton alignment
-- [ ] HostAnalyticsInlineStat absorb
-- [ ] ExploreRailLabel absorb + core param loosening
-- [ ] SetupChoiceChips merge
-- [ ] footer inlines
-- [ ] D1 + widgetbook + regen + receipts
+- [x] CatchAnalyticsDataQualityList + panel deletions + skeleton alignment
+- [x] HostAnalyticsInlineStat absorb
+- [x] ExploreRailLabel absorb + core param loosening
+- [x] SetupChoiceChips merge
+- [x] footer inlines
+- [x] D1 + widgetbook + regen + receipts
 
 ## WO-022 — Name-family batch 1: thin-wrapper inlines + avatar tokens + D1
 
@@ -1599,6 +1599,53 @@ of the batch closed keep-distinct with no code work).
 - [ ] HostEventRow inline
 - [ ] empty-state inlines
 - [ ] avatar tokens + repoints
+- [ ] D1 + widgetbook + regen + receipts
+
+## WO-023 — Name-family batch 2: pass-through absorbs + D1
+
+From the 2026-07-04 name-family review batch 2 (ledger `n0xx` entries dated
+2026-07-04; the three carrying `work-order WO-023` flip to `executed-WO-023`
+as they land). This closes the name-family detector queue — all 222 families
+are now decided.
+
+1. **Absorb ClubHostAvatar into CatchPersonAvatar** (decision n129): the
+   class in `lib/clubs/shared/club_identity_atoms.dart` is a 1:1 pass-through
+   (name/imageUrl/borderWidth/borderColor) whose only addition is a raw
+   `size = 32` default. Replace its ~4 call sites with
+   `CatchPersonAvatar(...)` passing the same args; where a call site relied
+   on the 32 default: if CatchPersonAvatar's own default size is 32, omit
+   `size`; otherwise pass `size: 32` verbatim and check for an exact
+   32-valued CatchLayout avatar token (none known — if none, keep the
+   literal and escalate with a proposed name per D1). Delete the class +
+   widgetbook block. HostAvatar (event detail) stays.
+
+2. **Inline EventFocusPageIndicator** (decision n173): single call site in
+   event_focus_rail.dart becomes `Center(child:
+   CatchPageDots(selectedIndex: <expr>, itemCount: <expr>, semanticLabel:
+   'Event ${<expr> + 1} of $<expr>'))` with the call site's actual
+   expressions. Delete the class + widgetbook block.
+
+3. **Inline ManualQaToggleRow** (decision n205): both call sites in
+   event_success_manual_qa_screen.dart become `CatchField.toggle(title:,
+   value:, onChanged:)` with the call sites' args. Delete the class (+ any
+   widgetbook block).
+
+4. **D1 fixes**:
+   - `HostEventToolsPageIndicator` (host_event_tools.dart):
+     `minHeight: 6` → the CatchSpacing token whose value is exactly 6
+     (expected micro6; verify), else escalate.
+   - `ForceUpdateCheckErrorScreen` (lib/app.dart): raw
+     `maxWidth: 420` — no exact token exists (maxContentWidth is 600). Per
+     D1, do NOT invent a token: leave the literal and record an escalation
+     listing nearest candidates. Its `Theme.textTheme` usage is a deliberate
+     pre-shell bootstrap constraint — leave it.
+
+5. Widgetbook (gotcha 2) + build_runner regen + registries + receipts; flip
+   the three WO-023 ledger entries to `executed-WO-023`.
+
+- [ ] ClubHostAvatar absorb
+- [ ] EventFocusPageIndicator inline
+- [ ] ManualQaToggleRow inline
 - [ ] D1 + widgetbook + regen + receipts
 
 ## Audit note (2026-07-03, claude): WO-015 sweep quality
