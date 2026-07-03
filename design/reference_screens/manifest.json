@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-06-25",
+  "updated": "2026-07-03",
   "references": [
     {
       "id": "screen.dashboard.home.full_dashboard",
@@ -1380,6 +1380,240 @@
         "maxMeanDelta": 18
       },
       "notes": "Canonical Onboarding welcome Claude template reference for advisory comparison against onboarding_welcome light captures rendered on the design-phone device. 2026-06-25 non-host reference batch: above advisory threshold; mismatch 15.35%, meanDelta 23.29, maxDelta 229, masked 32760."
+    },
+    {
+      "id": "screen.onboarding.flow.name_dob_step",
+      "stateId": "name_dob_step",
+      "captureId": "onboarding_name_dob",
+      "referencePath": "design/reference_screens/screen.onboarding.flow/name_dob_step.png",
+      "notes": "Canonical Onboarding name/DOB Claude template reference for advisory comparison against onboarding_name_dob light captures rendered on the design-phone device. Status and bottom safe-area regions are masked; date-picker-open variants remain separate future exports.",
+      "screenId": "screen.onboarding.flow",
+      "theme": "light",
+      "textScale": 1,
+      "device": {
+        "id": "claude-phone-390x812",
+        "width": 390,
+        "height": 812,
+        "pixelRatio": 1
+      },
+      "maskPath": "design/reference_screens/screen.onboarding.flow/masks.json",
+      "source": {
+        "kind": "claude",
+        "id": "onboarding-handoff",
+        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-onboarding/OnboardingV2.dc.html",
+        "exportedAt": "2026-07-03",
+        "exportTool": "node tool/design/export_onboarding_references.mjs --write",
+        "viewport": {
+          "width": 900,
+          "height": 940
+        },
+        "crop": {
+          "x": 255,
+          "y": 37,
+          "width": 390,
+          "height": 812
+        }
+      },
+      "thresholds": {
+        "perChannelDelta": 16,
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 18
+      }
+    },
+    {
+      "id": "screen.onboarding.flow.gender_interest_step",
+      "stateId": "gender_interest_step",
+      "captureId": "onboarding_gender_interest",
+      "referencePath": "design/reference_screens/screen.onboarding.flow/gender_interest_step.png",
+      "notes": "Canonical Onboarding gender/interest Claude template reference for advisory comparison against onboarding_gender_interest light captures rendered on the design-phone device. Status and bottom safe-area regions are masked; validation and long-option variants remain separate future exports.",
+      "screenId": "screen.onboarding.flow",
+      "theme": "light",
+      "textScale": 1,
+      "device": {
+        "id": "claude-phone-390x812",
+        "width": 390,
+        "height": 812,
+        "pixelRatio": 1
+      },
+      "maskPath": "design/reference_screens/screen.onboarding.flow/masks.json",
+      "source": {
+        "kind": "claude",
+        "id": "onboarding-handoff",
+        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-onboarding/OnboardingV2.dc.html",
+        "exportedAt": "2026-07-03",
+        "exportTool": "node tool/design/export_onboarding_references.mjs --write",
+        "viewport": {
+          "width": 900,
+          "height": 940
+        },
+        "crop": {
+          "x": 255,
+          "y": 37,
+          "width": 390,
+          "height": 812
+        }
+      },
+      "thresholds": {
+        "perChannelDelta": 16,
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 18
+      }
+    },
+    {
+      "id": "screen.onboarding.flow.instagram_step",
+      "stateId": "instagram_step",
+      "captureId": "onboarding_instagram_filled",
+      "referencePath": "design/reference_screens/screen.onboarding.flow/instagram_step.png",
+      "notes": "Canonical Onboarding Instagram filled-handle Claude template reference for advisory comparison against onboarding_instagram_filled light captures rendered on the design-phone device. Status and bottom safe-area regions are masked; skipped/empty variants remain capture-backed without a separate Claude export.",
+      "screenId": "screen.onboarding.flow",
+      "theme": "light",
+      "textScale": 1,
+      "device": {
+        "id": "claude-phone-390x812",
+        "width": 390,
+        "height": 812,
+        "pixelRatio": 1
+      },
+      "maskPath": "design/reference_screens/screen.onboarding.flow/masks.json",
+      "source": {
+        "kind": "claude",
+        "id": "onboarding-handoff",
+        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-onboarding/OnboardingV2.dc.html",
+        "exportedAt": "2026-07-03",
+        "exportTool": "node tool/design/export_onboarding_references.mjs --write",
+        "viewport": {
+          "width": 900,
+          "height": 940
+        },
+        "crop": {
+          "x": 255,
+          "y": 37,
+          "width": 390,
+          "height": 812
+        }
+      },
+      "thresholds": {
+        "perChannelDelta": 16,
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 18
+      }
+    },
+    {
+      "id": "screen.onboarding.flow.photos_count_met",
+      "stateId": "photos_photo_gate",
+      "captureId": "onboarding_photos_count_met",
+      "referencePath": "design/reference_screens/screen.onboarding.flow/photos_count_met.png",
+      "notes": "Canonical Onboarding photos count-met Claude template reference for advisory comparison against onboarding_photos_count_met light captures rendered on the design-phone device. Status and bottom safe-area regions are masked; picker, upload-pending, upload-failure, and disabled-count variants remain separate future exports.",
+      "screenId": "screen.onboarding.flow",
+      "theme": "light",
+      "textScale": 1,
+      "device": {
+        "id": "claude-phone-390x812",
+        "width": 390,
+        "height": 812,
+        "pixelRatio": 1
+      },
+      "maskPath": "design/reference_screens/screen.onboarding.flow/masks.json",
+      "source": {
+        "kind": "claude",
+        "id": "onboarding-handoff",
+        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-onboarding/OnboardingV2.dc.html",
+        "exportedAt": "2026-07-03",
+        "exportTool": "node tool/design/export_onboarding_references.mjs --write",
+        "viewport": {
+          "width": 900,
+          "height": 940
+        },
+        "crop": {
+          "x": 255,
+          "y": 37,
+          "width": 390,
+          "height": 812
+        }
+      },
+      "thresholds": {
+        "perChannelDelta": 16,
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 18
+      }
+    },
+    {
+      "id": "screen.onboarding.flow.prompts_partial",
+      "stateId": "prompts_step",
+      "captureId": "onboarding_prompts_partial",
+      "referencePath": "design/reference_screens/screen.onboarding.flow/prompts_partial.png",
+      "notes": "Canonical Onboarding prompts partial Claude template reference for advisory comparison against onboarding_prompts_partial light captures rendered on the design-phone device. Status and bottom safe-area regions are masked; prompt-picker, empty, complete, long-answer, and keyboard variants remain separate future exports.",
+      "screenId": "screen.onboarding.flow",
+      "theme": "light",
+      "textScale": 1,
+      "device": {
+        "id": "claude-phone-390x812",
+        "width": 390,
+        "height": 812,
+        "pixelRatio": 1
+      },
+      "maskPath": "design/reference_screens/screen.onboarding.flow/masks.json",
+      "source": {
+        "kind": "claude",
+        "id": "onboarding-handoff",
+        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-onboarding/OnboardingV2.dc.html",
+        "exportedAt": "2026-07-03",
+        "exportTool": "node tool/design/export_onboarding_references.mjs --write",
+        "viewport": {
+          "width": 900,
+          "height": 940
+        },
+        "crop": {
+          "x": 255,
+          "y": 37,
+          "width": 390,
+          "height": 812
+        }
+      },
+      "thresholds": {
+        "perChannelDelta": 16,
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 18
+      }
+    },
+    {
+      "id": "screen.onboarding.flow.running_prefs_step",
+      "stateId": "running_prefs_step",
+      "captureId": "onboarding_running_prefs",
+      "referencePath": "design/reference_screens/screen.onboarding.flow/running_prefs_step.png",
+      "notes": "Canonical Onboarding running-preferences Claude template reference for advisory comparison against onboarding_running_prefs light captures rendered on the design-phone device. Status and bottom safe-area regions are masked; completion mutation and profile-completion copy variants remain capture-backed without separate Claude exports.",
+      "screenId": "screen.onboarding.flow",
+      "theme": "light",
+      "textScale": 1,
+      "device": {
+        "id": "claude-phone-390x812",
+        "width": 390,
+        "height": 812,
+        "pixelRatio": 1
+      },
+      "maskPath": "design/reference_screens/screen.onboarding.flow/masks.json",
+      "source": {
+        "kind": "claude",
+        "id": "onboarding-handoff",
+        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-onboarding/OnboardingV2.dc.html",
+        "exportedAt": "2026-07-03",
+        "exportTool": "node tool/design/export_onboarding_references.mjs --write",
+        "viewport": {
+          "width": 900,
+          "height": 940
+        },
+        "crop": {
+          "x": 255,
+          "y": 37,
+          "width": 390,
+          "height": 812
+        }
+      },
+      "thresholds": {
+        "perChannelDelta": 16,
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 18
+      }
     },
     {
       "id": "screen.auth.phone_entry.phone_entry",

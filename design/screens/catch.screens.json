@@ -16053,8 +16053,8 @@
         {
           "id": "onboarding-handoff",
           "kind": "external",
-          "status": "needs_export",
-          "notes": "Onboarding welcome reference is exported, masked, and manifest-registered. Remaining onboarding steps, validation, upload, mutation, text-scale, and reduced-motion references still need canonical export before this design ref is complete.",
+          "status": "available",
+          "notes": "Onboarding welcome plus primary name/DOB, gender/interest, Instagram filled, photos count-met, prompts partial, and running-preferences references are exported, masked, and manifest-registered from OnboardingV2.dc.html. Interaction-specific keyboard, picker, upload, validation, mutation, accessibility, and theme references remain future variants.",
           "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-onboarding/OnboardingV2.dc.html"
         },
         {
@@ -16063,6 +16063,20 @@
           "status": "available",
           "path": "design/reference_screens/screen.onboarding.flow/welcome_entry.png",
           "notes": "390x812 Onboarding Flow welcome_entry PNG reference exported from the Claude template."
+        },
+        {
+          "id": "generated.onboarding-step-references",
+          "kind": "generated",
+          "status": "available",
+          "path": "design/reference_screens/screen.onboarding.flow/",
+          "notes": "390x812 Onboarding Flow PNG references for welcome_entry, name_dob_step, gender_interest_step, instagram_step, photos_count_met, prompts_partial, and running_prefs_step exported from the Claude template."
+        },
+        {
+          "id": "repo.onboarding-reference-exporter",
+          "kind": "repo",
+          "status": "available",
+          "path": "tool/design/export_onboarding_references.mjs",
+          "notes": "Headless Chrome/CDP exporter that sets OnboardingV2 localStorage step state and clips the 390x812 phone viewport for steps 4-9."
         },
         {
           "id": "generated.onboarding-flow-reference-manifest",
@@ -16226,7 +16240,7 @@
           "tests": [
             "test/onboarding/onboarding_widgets_test.dart"
           ],
-          "nextAction": "Onboarding welcome now has a manifest-registered design reference and deterministic capture. Primary step, validation-error, Instagram filled/skipped, photo gate/upload-pending/upload-failure, prompt partial/complete/long-answer, save/complete mutation, text-scale, and reduced-motion captures exist; remaining work is state-specific references."
+          "nextAction": "Onboarding welcome and the primary step references are now manifest-registered. Remaining reference work is interaction-specific: keyboard, date picker, photo picker/upload, prompt picker/copy variants, mutation feedback, accessibility, and theme variants."
         },
         {
           "id": "name_dob_step",
@@ -16241,7 +16255,7 @@
           "tests": [
             "test/onboarding/onboarding_widgets_test.dart"
           ],
-          "nextAction": "Provider-free step adapter coverage now validates draft display, date bounds, age suffix, trimmed submit intent, date callback, and continue callback. Deterministic route captures cover default, required-field validation, and text scale 2.0. Add state-specific reference exports."
+          "nextAction": "Provider-free step adapter coverage validates draft display, date bounds, age suffix, trimmed submit intent, date callback, and continue callback. Deterministic route captures cover default, required-field validation, and text scale 2.0; the main Claude name/DOB reference is exported and masked. Add date-picker-open and validation-specific references only if strict comparison needs them."
         },
         {
           "id": "gender_interest_step",
@@ -16256,7 +16270,7 @@
           "tests": [
             "test/onboarding/onboarding_widgets_test.dart"
           ],
-          "nextAction": "Provider-free step adapter coverage now validates selected-chip display, required-selection validation, save error display, save pending flag, typed chip callbacks, and submit intent. Deterministic route captures cover default, required-selection validation, and reduced-motion samples. Add partial/complete selection, long-option, and state-specific reference variants."
+          "nextAction": "Provider-free step adapter coverage validates selected-chip display, required-selection validation, save error display, save pending flag, typed chip callbacks, and submit intent. Deterministic route captures cover default, required-selection validation, and reduced-motion samples; the main Claude gender/interest reference is exported and masked. Add validation, long-option, and accessibility references only if strict comparison needs them."
         },
         {
           "id": "instagram_step",
@@ -16268,7 +16282,7 @@
             "onboarding_instagram_filled",
             "onboarding_instagram_skipped"
           ],
-          "nextAction": "Provider-free step adapter coverage now validates optional-handle trimming, empty-handle normalization, skip clearing, continue callback, and skip callback. Deterministic route captures cover default, filled, and skipped handle states. Add invalid-handle coverage only if Instagram validation is introduced, plus state-specific reference variants."
+          "nextAction": "Provider-free step adapter coverage validates optional-handle trimming, empty-handle normalization, skip clearing, continue callback, and skip callback. Deterministic route captures cover default, filled, and skipped handle states; the filled-handle Claude reference is exported and masked. Add skipped/empty or invalid-handle references only if product validation or strict comparison needs them."
         },
         {
           "id": "photos_photo_gate",
@@ -16285,7 +16299,7 @@
           "tests": [
             "test/onboarding/onboarding_widgets_test.dart"
           ],
-          "nextAction": "Deterministic route captures cover the empty profile-completion gate, one-photo disabled CTA, count-met CTA, upload-pending disabled CTA, and upload-failure snackbar; the production upload-failure path is also covered by a focused widget test. Add state-specific reference variants."
+          "nextAction": "Deterministic route captures cover empty gate, one-photo disabled CTA, count-met CTA, upload-pending disabled CTA, and upload-failure snackbar; the production upload-failure path is covered by a focused widget test. The count-met Claude reference is exported and masked. Add picker, upload-pending, upload-failure, and disabled-count references when canonical interaction sources exist."
         },
         {
           "id": "prompts_step",
@@ -16298,7 +16312,7 @@
             "onboarding_prompts_complete",
             "onboarding_prompts_long_answer"
           ],
-          "nextAction": "Provider-free step adapter coverage now validates prompt progress, available prompt filtering, submit gating, error display, and continue callback. Deterministic route captures cover empty, partial, complete, and long-answer prompt states. Add validation-error coverage only if prompt validation becomes blocking, plus state-specific reference variants."
+          "nextAction": "Provider-free step adapter coverage validates prompt progress, available prompt filtering, submit gating, error display, and continue callback. Deterministic route captures cover empty, partial, complete, and long-answer prompt states; the partial-prompts Claude reference is exported and masked. Add prompt-picker, keyboard, complete, and long-answer references when canonical interaction sources exist."
         },
         {
           "id": "running_prefs_step",
@@ -16312,7 +16326,7 @@
             "test/onboarding/onboarding_controller_test.dart",
             "test/onboarding/onboarding_widgets_test.dart"
           ],
-          "nextAction": "Provider-free step adapter coverage now validates pace label display, mode-specific copy, pending/error display, typed submit payload, and continue callback. Deterministic route captures cover run-preferences-only entry, completion pending/error, and text scale 2.0. Add standard/profile-completion variants and state-specific references."
+          "nextAction": "Provider-free step adapter coverage validates pace label display, mode-specific copy, pending/error display, typed submit payload, and continue callback. Deterministic route captures cover run-preferences-only entry, completion pending/error, and text scale 2.0; the main Claude running-preferences reference is exported and masked. Add profile-completion, mutation, and accessibility references only if strict comparison needs them."
         },
         {
           "id": "required_field_errors",
@@ -16599,7 +16613,7 @@
         {
           "id": "DS-ONBOARDING-004",
           "status": "open",
-          "nextAction": "Export step-by-step onboarding design references and define masks for keyboard, date picker, photo picker/upload, prompt copy, safe-area, and sticky footer variance."
+          "nextAction": "Primary onboarding step references are exported and manifest-registered for welcome, name/DOB, gender/interest, Instagram filled, photos count-met, prompts partial, and running preferences. Continue only interaction-specific references and masks for keyboard, date picker, photo picker/upload, prompt picker/copy variants, mutation feedback, accessibility, and theme variants when canonical sources exist."
         }
       ]
     },
