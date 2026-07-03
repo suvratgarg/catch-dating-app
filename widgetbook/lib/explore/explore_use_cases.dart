@@ -13,6 +13,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -1163,30 +1164,47 @@ Widget exploreFilterRailStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Rail label states',
-  type: ExploreRailLabel,
+  name: 'Filter option item states',
+  type: CatchOptionGroupItem,
   path: '[Explore]/Controls',
 )
-Widget exploreRailLabelStates(BuildContext context) {
+Widget exploreFilterOptionItemStates(BuildContext context) {
   return _CatalogScreen(
-    title: 'ExploreRailLabel',
-    catalogId: 'control.explore.filter_rail_label',
+    title: 'CatchOptionGroupItem',
+    catalogId: 'control.explore.filter_option_item',
     children: [
       _StateCard(
         label: 'time scope options',
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ExploreRailLabel(label: 'Tonight', selected: true, onTap: _noop),
+            CatchOptionGroupItem<ExploreTimeFilter>(
+              option: const CatchOption(
+                value: ExploreTimeFilter.tonight,
+                label: 'Tonight',
+              ),
+              selected: true,
+              onTap: _noop,
+            ),
             gapW12,
-            ExploreRailLabel(label: 'Weekend', selected: false, onTap: _noop),
+            CatchOptionGroupItem<ExploreTimeFilter>(
+              option: const CatchOption(
+                value: ExploreTimeFilter.weekend,
+                label: 'Weekend',
+              ),
+              selected: false,
+              onTap: _noop,
+            ),
           ],
         ),
       ),
       _StateCard(
         label: 'long copy',
-        child: ExploreRailLabel(
-          label: 'This week',
+        child: CatchOptionGroupItem<ExploreTimeFilter>(
+          option: const CatchOption(
+            value: ExploreTimeFilter.thisWeek,
+            label: 'This week',
+          ),
           selected: false,
           onTap: _noop,
         ),

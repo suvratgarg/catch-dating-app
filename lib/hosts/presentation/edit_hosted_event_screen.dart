@@ -594,9 +594,17 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: EditHostedEventFooter(
-        state: screenState.footer,
-        onSave: () => _handleIntent(const HostEventEditSaveIntent()),
+      bottomNavigationBar: CatchBottomDock(
+        child: CatchButton(
+          key: EditHostedEventKeys.saveButton,
+          label: screenState.footer.label,
+          onPressed: screenState.footer.isEnabled
+              ? () => _handleIntent(const HostEventEditSaveIntent())
+              : null,
+          isLoading: screenState.footer.isLoading,
+          fullWidth: true,
+          icon: Icon(CatchIcons.saveOutlined),
+        ),
       ),
     );
   }
@@ -808,31 +816,6 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
           await Navigator.of(context).maybePop();
         }
       }),
-    );
-  }
-}
-
-class EditHostedEventFooter extends StatelessWidget {
-  const EditHostedEventFooter({
-    super.key,
-    required this.state,
-    required this.onSave,
-  });
-
-  final EditHostedEventFooterState state;
-  final VoidCallback onSave;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchBottomDock(
-      child: CatchButton(
-        key: EditHostedEventKeys.saveButton,
-        label: state.label,
-        onPressed: state.isEnabled ? onSave : null,
-        isLoading: state.isLoading,
-        fullWidth: true,
-        icon: Icon(CatchIcons.saveOutlined),
-      ),
     );
   }
 }

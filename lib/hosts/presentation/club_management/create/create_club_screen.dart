@@ -1039,9 +1039,17 @@ class HostClubEditScaffold extends StatelessWidget {
             ),
           ),
           if (mutationError != null) CatchErrorBanner(message: mutationError!),
-          HostClubEditFooter(
-            footer: scaffoldState.footer,
-            onSave: () => onIntent(const HostClubCreateSaveEditIntent()),
+          CatchBottomDock(
+            padding: CatchInsets.formActionDock,
+            child: CatchButton(
+              label: scaffoldState.footer.primaryLabel,
+              icon: Icon(CatchIcons.saveOutlined),
+              isLoading: scaffoldState.footer.isLoading,
+              fullWidth: true,
+              onPressed: scaffoldState.footer.primaryEnabled
+                  ? () => onIntent(const HostClubCreateSaveEditIntent())
+                  : null,
+            ),
           ),
         ],
       ),
@@ -1130,31 +1138,6 @@ class HostClubEditCityField extends StatelessWidget {
               : null,
         );
       },
-    );
-  }
-}
-
-class HostClubEditFooter extends StatelessWidget {
-  const HostClubEditFooter({
-    super.key,
-    required this.footer,
-    required this.onSave,
-  });
-
-  final HostClubCreateFooterState footer;
-  final VoidCallback onSave;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchBottomDock(
-      padding: CatchInsets.formActionDock,
-      child: CatchButton(
-        label: footer.primaryLabel,
-        icon: Icon(CatchIcons.saveOutlined),
-        isLoading: footer.isLoading,
-        fullWidth: true,
-        onPressed: footer.primaryEnabled ? onSave : null,
-      ),
     );
   }
 }

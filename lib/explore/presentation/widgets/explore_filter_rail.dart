@@ -79,8 +79,8 @@ class ExploreFilterRail extends StatelessWidget {
                       for (final option in _timeOptions) ...[
                         if (option != _timeOptions.first)
                           const SizedBox(width: _optionGap),
-                        ExploreRailLabel(
-                          label: option.label,
+                        CatchOptionGroupItem<ExploreTimeFilter>(
+                          option: option,
                           selected: option.value == filters.timeFilter,
                           onTap: () => onTimeFilterSelected?.call(option.value),
                         ),
@@ -118,55 +118,6 @@ class ExploreFilterRail extends StatelessWidget {
         onToggleActivityTag: onToggleActivityTag,
         onToggleArea: onToggleArea,
         onClearFilters: onClearFilters,
-      ),
-    );
-  }
-}
-
-class ExploreRailLabel extends StatelessWidget {
-  const ExploreRailLabel({
-    super.key,
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final foreground = selected ? t.ink : t.ink3;
-
-    return Semantics(
-      button: true,
-      selected: selected,
-      child: InkWell(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: CatchMotion.fast,
-          curve: CatchMotion.standardCurve,
-          padding: EdgeInsets.only(
-            bottom: selected ? CatchSpacing.micro10 : CatchSpacing.s3,
-          ),
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: selected ? t.ink : Colors.transparent,
-                width: CatchSpacing.micro3,
-              ),
-            ),
-          ),
-          child: Text(
-            label,
-            maxLines: 1,
-            softWrap: false,
-            style: CatchTextStyles.labelL(context, color: foreground),
-            textAlign: TextAlign.start,
-          ),
-        ),
       ),
     );
   }

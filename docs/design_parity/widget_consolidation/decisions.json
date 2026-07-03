@@ -3984,9 +3984,9 @@
           "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: organizer identity headers and today-dashboard headers own different host contexts, actions, and information hierarchy. REVIEW (claude, 2026-07-03): different header compositions (organizer identity vs today greeting). WO-020 token review: exact 64.0 layout tokens exist only for unrelated club/chat surfaces, so HostOrganizerHeader keeps the raw value until a semantic host organizer avatar token is added.",
+      "rationale": "K5 concept mismatch: organizer identity headers and today-dashboard headers own different host contexts, actions, and information hierarchy. REVIEW (claude, 2026-07-03): different header compositions (organizer identity vs today greeting). WO-020 token review: exact 64.0 layout tokens exist only for unrelated club/chat surfaces, so HostOrganizerHeader keeps the raw value until a semantic host organizer avatar token is added. REVIEW (claude, 2026-07-04): semantic token decided \u2014 CatchLayout.avatarIdentityExtent = 64.0 lands in WO-022 and HostOrganizerHeader repoints to it.",
       "decidedBy": "codex-rule:K5 -> claude",
-      "date": "2026-07-03",
+      "date": "2026-07-04",
       "status": "recorded-token-escalation-WO-020"
     },
     {
@@ -4565,6 +4565,488 @@
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "work-order WO-021"
+    },
+    {
+      "clusterId": "n093-profile-photo",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "ProfilePhoto",
+          "action": "keep"
+        },
+        {
+          "name": "RecapProfilePhoto",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review: different data contracts (ImageProvider + activity-art fallback + CatchGradedImage vs profile-thumbnail URL + person-icon fallback via CatchNetworkImage). The person-icon fallback is correct for recap person tiles; the photo-grade treatment is a size-class question for the design-parity track, not a consolidation defect.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n005-host-screen",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "HostAccountScreen",
+          "action": "keep"
+        },
+        {
+          "name": "HostAuthRequiredScreen",
+          "action": "keep"
+        },
+        {
+          "name": "HostClubsScreen",
+          "action": "keep"
+        },
+        {
+          "name": "HostCreateClubScreen",
+          "action": "keep"
+        },
+        {
+          "name": "HostCreateEventRouteLoadingScreen",
+          "action": "keep"
+        },
+        {
+          "name": "HostCreateEventRouteScreen",
+          "action": "keep"
+        },
+        {
+          "name": "HostEditClubRouteScreen",
+          "action": "keep"
+        },
+        {
+          "name": "HostEventManageScreen",
+          "action": "keep"
+        },
+        {
+          "name": "HostOperationsHomeScreen",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review: shared stem only. Route-level host screens with distinct providers, state machines, and flows; consistent with every screen-scope cluster reviewed to date (composition, not duplication).",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n002-event-screen",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "EventDetailLoadingScreen",
+          "action": "keep"
+        },
+        {
+          "name": "EventLocationMapRouteScreen",
+          "action": "keep"
+        },
+        {
+          "name": "EventRecapScreen",
+          "action": "keep"
+        },
+        {
+          "name": "EventSuccessCompanionRouteScreen",
+          "action": "keep"
+        },
+        {
+          "name": "EventSuccessCompanionScreen",
+          "action": "keep"
+        },
+        {
+          "name": "EventSuccessEventPreviewRouteScreen",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review: shared stem only. Route/state screens with distinct providers and flows; screen-scope precedent holds.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n012-route-screen",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "EventLocationMapRouteScreen",
+          "action": "keep"
+        },
+        {
+          "name": "EventSuccessCompanionRouteScreen",
+          "action": "keep"
+        },
+        {
+          "name": "EventSuccessEventPreviewRouteScreen",
+          "action": "keep"
+        },
+        {
+          "name": "HostCreateEventRouteScreen",
+          "action": "keep"
+        },
+        {
+          "name": "HostEditClubRouteScreen",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review: route dispatchers owning providers/async route states; architecture-level, not widget-shape, overlap (matches prior ranked-pair keeps for route screens).",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n010-empty-state-residual",
+      "decision": "delete",
+      "members": [
+        {
+          "name": "CatchesHubEmptyState",
+          "action": "keep"
+        },
+        {
+          "name": "SwipeEmptyState",
+          "action": "keep"
+        },
+        {
+          "name": "HostSettingsClubsEmptyState",
+          "action": "delete"
+        },
+        {
+          "name": "EmptyRoster",
+          "action": "delete"
+        }
+      ],
+      "rationale": "Name-family review: CatchesHubEmptyState is a full screen-state body (header + empty state + explainer surface) \u2014 keep. SwipeEmptyState has 6 content-driven call sites, above the R2 bar \u2014 keep. HostSettingsClubsEmptyState is a single supporting Text with one call site \u2014 inline it (WO-022). EmptyRoster (event_recap_screen) is an R2 thin CatchEmptyState wrapper with one call site \u2014 inline it (WO-022).",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "work-order WO-022"
+    },
+    {
+      "clusterId": "n003-host-card",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "HostClubProfileCard",
+          "action": "keep"
+        },
+        {
+          "name": "HostEventsClubCard",
+          "action": "keep"
+        },
+        {
+          "name": "HostEventSummaryCard",
+          "action": "keep"
+        },
+        {
+          "name": "HostEventToolCard",
+          "action": "keep"
+        },
+        {
+          "name": "HostInboxBroadcastCard",
+          "action": "keep"
+        },
+        {
+          "name": "HostOrganizerTeamCard",
+          "action": "keep"
+        },
+        {
+          "name": "HostPaymentAccountCard",
+          "action": "keep"
+        },
+        {
+          "name": "HostPaymentAccountContentCard",
+          "action": "keep"
+        },
+        {
+          "name": "HostPaymentAccountControllerCard",
+          "action": "keep"
+        },
+        {
+          "name": "HostPrivateAccessCard",
+          "action": "keep"
+        },
+        {
+          "name": "HostTodayDashboardCard",
+          "action": "keep"
+        },
+        {
+          "name": "HostTodayTaskCard",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review: no duplication \u2014 the family mixes provider adapters (EventsClub/TodayDashboard -> *Section; EventToolCard -> EventActionCard), a layered payments stack (ControllerCard = providers, Card = dispatch + payout sheet, ContentCard = display surface: K1/K3), rich async orchestration (PrivateAccess), and distinct content cards (TodayTask, InboxBroadcast, OrganizerTeam, EventSummary). LEXICON: 'Card' currently spans controller/adapter/surface layers \u2014 reserve Card for visual card surfaces at ratification. D1 found: HostEventToolCard passes raw radius: 22 (exact token CatchRadius.heroCard exists) \u2014 WO-022.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n004-event-card",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "EventDateRailCard",
+          "action": "keep"
+        },
+        {
+          "name": "EventDetailHostCard",
+          "action": "keep"
+        },
+        {
+          "name": "EventDetailMapCard",
+          "action": "keep"
+        },
+        {
+          "name": "EventFocusCard",
+          "action": "keep"
+        },
+        {
+          "name": "EventPolicyScenarioCard",
+          "action": "keep"
+        },
+        {
+          "name": "EventSuccessLiveRevealAttendeeCard",
+          "action": "keep"
+        },
+        {
+          "name": "EventSuccessLiveRevealHostCard",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review: distinct concepts \u2014 ticket-strip rail card, rich host identity card, map-preview card, adapter over EventActionCard (K1), lab scenario card (screen scope), and the live-reveal pair. The attendee/host reveal cards are a GENUINE K2 fork (attendee = reveal-gated view of own assignment with opt-out; host = round-control surface computing reveal sets/actions) already sharing RevealTicker and plan reveal APIs via the same part library. D1 found: EventDetailMapCard hand-rolls alphas 0.52/0.24 on grid/route painter colors \u2014 WO-022.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n094-error-banner",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "CatchErrorBanner",
+          "action": "keep"
+        },
+        {
+          "name": "CatchMutationErrorBanner",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review: K3 \u2014 CatchMutationErrorBanner already delegates to CatchErrorBanner.fromError and both render through CatchInlineMessageSurface; the mutation variant is a deliberate API layer for the hasError-gate pattern.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n001-event-skeleton-residual",
+      "decision": "delete",
+      "members": [
+        {
+          "name": "EventPreviewNotesSkeleton",
+          "action": "delete"
+        },
+        {
+          "name": "EventPreviewSetupSkeleton",
+          "action": "delete"
+        },
+        {
+          "name": "EventPreviewLiveSkeleton",
+          "action": "delete"
+        },
+        {
+          "name": "EventPreviewCompanionSkeleton",
+          "action": "delete"
+        },
+        {
+          "name": "EventPreviewReportSkeleton",
+          "action": "delete"
+        },
+        {
+          "name": "EventPreviewHeroSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "EventAgendaSliverSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "EventDetailItinerarySkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "EventDetailMapSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "EventDetailPlanSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "EventDetailTicketStubSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "EventSuccessHostSectionSkeleton",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review: the five EventPreview{Notes,Setup,Live,Companion,Report}Skeleton widgets are 10-line const R2 wrappers over EventSuccessSkeletonSurface(titleWidth/textLines/trailingCount) with single call sites \u2014 inline them (WO-022). The rest are per-screen skeleton compositions; parameterizing moves the same jitter to call sites (c010/c011 precedent).",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "work-order WO-022"
+    },
+    {
+      "clusterId": "n020-event-pill",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "EventCompactDatePill",
+          "action": "keep"
+        },
+        {
+          "name": "EventStatusPill",
+          "action": "keep"
+        },
+        {
+          "name": "EventSuccessMetricPill",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review: three distinct concepts \u2014 a month/day date block (md radius, fixed extent; 'Pill' is a misnomer), the core uppercase mono status pill with soft/dark tones, and the Event Success percentage metric chip (21 usages, above the merge bar). LEXICON: reserve 'Pill' for pill-radius chips; EventCompactDatePill is a rename candidate at ratification.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n021-event-surface",
+      "decision": "delete",
+      "members": [
+        {
+          "name": "EventHeroSurface",
+          "action": "delete"
+        },
+        {
+          "name": "EventDetailTicketHeroSurface",
+          "action": "keep"
+        },
+        {
+          "name": "EventSuccessHeroSurface",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review: EventHeroSurface is a 3-line widget alias for the catchHeroSurface() transition helper with one call site \u2014 inline and delete (WO-022). EventDetailTicketHeroSurface is K1 composition (conditional hero wrapper over the ticket surface). EventSuccessHeroSurface is an unrelated gradient shell. LEXICON: 'hero' means transition wrapper in events but prominent gradient shell in event_success \u2014 disambiguate at ratification.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "work-order WO-022"
+    },
+    {
+      "clusterId": "n007-event-body",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "EventLocationMapLoadingBody",
+          "action": "keep"
+        },
+        {
+          "name": "EventMapLoadingBody",
+          "action": "keep"
+        },
+        {
+          "name": "EventRecapReadyBody",
+          "action": "keep"
+        },
+        {
+          "name": "EventSuccessEventPreviewLoadingBody",
+          "action": "keep"
+        },
+        {
+          "name": "EventSuccessSetupBody",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review: EventLocationMapLoadingBody composes EventMapLoadingBody (Positioned.fill) plus an overlay skeleton card \u2014 K1, dedupe already done. The rest are screen-level bodies with distinct route ownership.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n022-event-section",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "EventDetailHostsSection",
+          "action": "keep"
+        },
+        {
+          "name": "EventDetailOverviewSection",
+          "action": "keep"
+        },
+        {
+          "name": "EventSuccessHostSection",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review: a host-state dispatcher, a CatchSection.divided composition, and a stateful tabbed Event Success section \u2014 different features and abstraction levels.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "n008-host-row",
+      "decision": "delete",
+      "members": [
+        {
+          "name": "HostEventRow",
+          "action": "delete"
+        },
+        {
+          "name": "HostInviteLinkRow",
+          "action": "keep"
+        },
+        {
+          "name": "HostMetaRow",
+          "action": "keep"
+        },
+        {
+          "name": "HostOrganizerMetricRow",
+          "action": "keep"
+        },
+        {
+          "name": "HostOrganizerTeamRow",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review: HostEventRow is an R2 thin wrapper over CatchField.nav (<=3 call sites) \u2014 inline and delete (WO-022). HostInviteLinkRow (stateful display resolution), HostMetaRow (badge/chip wrap with domain formatting; LEXICON: name collides with core CatchMetaRow's icon/text concept), HostOrganizerMetricRow (K1 over CatchStatColumn), and HostOrganizerTeamRow (person row) stay. TOKEN FIX (WO-022): HostOrganizerTeamRow sizes a REAL avatar with CatchLayout.skeletonAvatarCompactExtent \u2014 add semantic CatchLayout.avatarRowExtent; and add CatchLayout.avatarIdentityExtent = 64.0 to close the WO-020 HostOrganizerHeader raw-64 escalation.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "work-order WO-022"
+    },
+    {
+      "clusterId": "n011-loading-screen",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "CalendarLoadingScreen",
+          "action": "keep"
+        },
+        {
+          "name": "CatchStartupLoadingScreen",
+          "action": "keep"
+        },
+        {
+          "name": "DashboardLoadingScreen",
+          "action": "keep"
+        },
+        {
+          "name": "EventDetailLoadingScreen",
+          "action": "keep"
+        },
+        {
+          "name": "HostCreateEventRouteLoadingScreen",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Name-family review: per-screen loading compositions mimicking their loaded layouts (c010/c011/c016 precedent); the startup screen is a core pattern with its own contract.",
+      "decidedBy": "claude",
+      "date": "2026-07-04",
+      "status": "recorded"
     }
   ]
 }

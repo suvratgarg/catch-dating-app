@@ -86,14 +86,14 @@ class CatchOptionGroupItem<T> extends StatelessWidget {
     super.key,
     required this.option,
     required this.selected,
-    required this.selectedRule,
-    required this.variant,
+    this.selectedRule,
+    this.variant = CatchOptionGroupVariant.label,
     this.onTap,
   });
 
   final CatchOption<T> option;
   final bool selected;
-  final Color selectedRule;
+  final Color? selectedRule;
   final CatchOptionGroupVariant variant;
   final VoidCallback? onTap;
 
@@ -101,6 +101,7 @@ class CatchOptionGroupItem<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final foreground = selected ? t.ink : t.ink3;
+    final selectedRuleColor = selectedRule ?? t.ink;
     final style = switch (variant) {
       CatchOptionGroupVariant.label => CatchTextStyles.labelL(
         context,
@@ -129,7 +130,7 @@ class CatchOptionGroupItem<T> extends StatelessWidget {
           decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(
-                color: selected ? selectedRule : Colors.transparent,
+                color: selected ? selectedRuleColor : Colors.transparent,
                 width: CatchSpacing.micro3,
               ),
             ),

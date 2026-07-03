@@ -1528,6 +1528,79 @@ class SetupChoiceChips<T> extends StatelessWidget {
 - [ ] footer inlines
 - [ ] D1 + widgetbook + regen + receipts
 
+## WO-022 — Name-family batch 1: thin-wrapper inlines + avatar tokens + D1
+
+From the 2026-07-04 name-family review (ledger entries `n001…n094`; the four
+carrying `work-order WO-022` flip to `executed-WO-022` as they land; the rest
+of the batch closed keep-distinct with no code work).
+
+1. **Inline five EventPreview tab skeletons** (decision
+   n001-event-skeleton-residual), all in
+   `event_success_event_preview_loading_screen.dart`:
+   `EventPreviewNotesSkeleton`, `EventPreviewSetupSkeleton`,
+   `EventPreviewLiveSkeleton`, `EventPreviewCompanionSkeleton`,
+   `EventPreviewReportSkeleton` are each a const
+   `EventSuccessSkeletonSurface(titleWidth:, textLines:, trailingCount:)`
+   wrapper. Replace each call site with the wrapped expression verbatim,
+   delete the five classes (EventPreviewHeroSkeleton and the body/screen
+   stay), repoint/delete widgetbook blocks (gotcha 2).
+
+2. **Inline EventHeroSurface** (decision n021-event-surface): the core class
+   in `event_ticket_surface.dart` only wraps `catchHeroSurface(tag:, child:)`
+   from catch_transitions.dart. Replace its single construction
+   (event_detail_hero_app_bar.dart, inside `EventDetailTicketHeroSurface`)
+   with `catchHeroSurface(tag: tag, child: surface)`, delete the class +
+   widgetbook block + now-unused imports.
+
+3. **Inline HostEventRow** (decision n008-host-row): thin wrapper over
+   `CatchField.nav(title: row.title, valueText: row.timeRangeLabel, icon:
+   CatchIcons.calendarTodayOutlined, divider: row.divider, onTap: onTap)` in
+   host_operations_screen.dart, ≤3 call sites. Inline the expression
+   (substitute each call site's actual `row`/`onTap` expressions), delete the
+   class + widgetbook block. `HostHomeEventRowData` stays.
+
+4. **Inline two trivial empty states** (decision n010-empty-state-residual):
+   - `HostSettingsClubsEmptyState` (host_account_screen.dart) → its single
+     call site becomes `Text('No host clubs yet.', style:
+     CatchTextStyles.supporting(context, color: t.ink2))` (resolve `t` from
+     the call-site context; add a local `final t =` only if none is in
+     scope).
+   - `EmptyRoster` (event_recap_screen.dart) → single call site becomes the
+     wrapped `CatchEmptyState(icon: CatchIcons.groupOffRounded, title: 'No
+     attendees to tag', message: 'No other checked-in attendees are attached
+     to this event yet.')`.
+   Delete both classes + widgetbook blocks.
+
+5. **Semantic avatar tokens** (decision n008-host-row; closes the WO-020
+   64px escalation). In CatchLayout (next to the other avatar/extent tokens):
+   - `avatarRowExtent` with the SAME value as `skeletonAvatarCompactExtent`
+     (read the current value; define the skeleton token as
+     `= avatarRowExtent` so they stay locked, keeping the skeleton name for
+     skeleton call sites).
+   - `avatarIdentityExtent = 64.0`.
+   Repoint `HostOrganizerTeamRow`'s `CatchPersonAvatar(size:
+   CatchLayout.skeletonAvatarCompactExtent …)` → `avatarRowExtent`, and
+   `HostOrganizerHeader`'s raw `size: 64` → `avatarIdentityExtent`.
+
+6. **D1 fixes**:
+   - `HostEventToolCard` (host_event_tools.dart): `EventActionCard(radius:
+     22 …)` → `CatchRadius.heroCard` (verified == 22.0).
+   - `EventDetailMapCard` (event_detail_design_primitives.dart,
+     `_MapGridPainter` args): `t.surface.withValues(alpha: 0.52)` and
+     `activity.accent.withValues(alpha: 0.24)` → existing CatchOpacity
+     tokens with exact values; if no exact token exists, escalate with
+     proposed names (do not add tokens for these yourself).
+
+7. Widgetbook (gotcha 2) + build_runner regen + registries + receipts; flip
+   the four WO-022 ledger entries to `executed-WO-022`.
+
+- [ ] EventPreview skeleton inlines
+- [ ] EventHeroSurface inline
+- [ ] HostEventRow inline
+- [ ] empty-state inlines
+- [ ] avatar tokens + repoints
+- [ ] D1 + widgetbook + regen + receipts
+
 ## Audit note (2026-07-03, claude): WO-015 sweep quality
 
 Code-level audit of sampled sweep decisions: 3 of 4 sampled keeps verified

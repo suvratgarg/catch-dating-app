@@ -2644,30 +2644,16 @@ Widget eventSuccessStrictRecommendationSwitch(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "RevealCountdownChips",
-  type: RevealCountdownChips,
+  name: "SetupChoiceChips",
+  type: SetupChoiceChips,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Setup body folded states",
 )
-Widget eventSuccessStrictRevealCountdownChips(BuildContext context) {
+Widget eventSuccessStrictSetupChoiceChips(BuildContext context) {
   return _eventSuccessStrictPreview(
     context,
     surface: _EventSuccessStrictSurface.setup,
-    componentName: "RevealCountdownChips",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "RotationCadenceChips",
-  type: RotationCadenceChips,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Setup body folded states",
-)
-Widget eventSuccessStrictRotationCadenceChips(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.setup,
-    componentName: "RotationCadenceChips",
+    componentName: "SetupChoiceChips",
   );
 }
 

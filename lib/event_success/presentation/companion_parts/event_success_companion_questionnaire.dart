@@ -244,7 +244,7 @@ class QuestionProgressRail extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(CatchRadius.pill),
             child: LinearProgressIndicator(
-              minHeight: 8,
+              minHeight: CatchSpacing.s2,
               value: questionCount == 0 ? 0 : answeredCount / questionCount,
               backgroundColor: t.line,
               valueColor: AlwaysStoppedAnimation<Color>(t.primary),
