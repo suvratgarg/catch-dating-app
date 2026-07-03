@@ -1297,10 +1297,6 @@ Widget _hostClubPreviewFor(String focus) {
       isOwner: true,
       onPreviewClub: (_) {},
     ),
-    'HostClubTabRail' => HostClubTabRail(
-      selected: HostClubTab.organizer,
-      onChanged: (_) {},
-    ),
     'HostEventsClubCard' => HostEventsClubCard(
       club: club,
       currentUid: _hostUid,
@@ -1759,11 +1755,6 @@ String _hostComponentSlug(String name) {
 )
 @widgetbook.UseCase(
   name: 'Covered by host clubs route states',
-  type: HostClubTabRail,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
   type: HostClubOrganizerOverview,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
@@ -2195,41 +2186,6 @@ Widget hostSettingsClubsStates(BuildContext context) {
           child: _MediaOverride(
             textScaler: TextScaler.linear(2),
             child: _HostSettingsClubsFrame(),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Tab states',
-  type: HostSettingsTabRail,
-  path: '[P2 host surfaces]/Host settings',
-)
-Widget hostSettingsTabStates(BuildContext context) {
-  return _HostCatalog(
-    title: 'HostSettingsTabRail',
-    contractId: 'section.host.settings.top_bar_tabs',
-    children: [
-      _StateCard(
-        label: 'edit selected',
-        child: const _DeviceFrame(
-          child: _HostSettingsTabFrame(selected: HostSettingsMode.edit),
-        ),
-      ),
-      _StateCard(
-        label: 'preview selected',
-        child: const _DeviceFrame(
-          child: _HostSettingsTabFrame(selected: HostSettingsMode.preview),
-        ),
-      ),
-      _StateCard(
-        label: 'text scale 2.0',
-        child: const _DeviceFrame(
-          child: _MediaOverride(
-            textScaler: TextScaler.linear(2),
-            child: _HostSettingsTabFrame(selected: HostSettingsMode.edit),
           ),
         ),
       ),
@@ -4636,14 +4592,6 @@ Widget hostStrictHostClubsScreenCatalogStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostClubTabRail,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostClubTabRailCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostClubTabRail');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
   type: HostEmptyState,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
@@ -5667,27 +5615,6 @@ class _HostHomeScaffoldFrame extends StatelessWidget {
     }
 
     return _DeviceFrame(child: _HostShellScope(child: framedChild));
-  }
-}
-
-class _HostSettingsTabFrame extends StatelessWidget {
-  const _HostSettingsTabFrame({required this.selected});
-
-  final HostSettingsMode selected;
-
-  @override
-  Widget build(BuildContext context) {
-    return _ThemedHostPreview(
-      themeMode: ThemeMode.light,
-      child: Scaffold(
-        appBar: CatchTopBar(
-          title: 'Host profile',
-          showBackButton: false,
-          border: true,
-          bottom: HostSettingsTabRail(selected: selected, onChanged: (_) {}),
-        ),
-      ),
-    );
   }
 }
 

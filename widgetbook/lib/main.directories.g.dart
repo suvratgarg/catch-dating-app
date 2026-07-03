@@ -2765,6 +2765,17 @@ final directories = <_widgetbook.WidgetbookNode>[
               ),
             ],
           ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchTabRail',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchTabRailContractStates,
+              ),
+            ],
+          ),
         ],
       ),
       _widgetbook.WidgetbookFolder(
@@ -8221,17 +8232,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostClubTabRail',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostClubTabRailCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostClubsScreen',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -9684,16 +9684,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Profile summary states',
                 builder: _widgetbook_workspace_hosts_host_operations_use_cases
                     .hostSettingsProfileSummaryStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'HostSettingsTabRail',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Tab states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .hostSettingsTabStates,
               ),
             ],
           ),

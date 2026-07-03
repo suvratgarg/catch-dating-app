@@ -977,3 +977,76 @@ trailing row. A direct delegation would either change confirm button layout or
 place the confirm action row inside an unconstrained trailing form-action row.
 Both public classes stay distinct pending a later explicit decision to extract a
 private shared dialog shell.
+
+## 2026-07-03 — WO-011 CatchTabRail<T>
+
+Scope:
+
+- Added `CatchTabRail<T>` and `CatchLayout.tabRailHeight`.
+- Migrated Host Clubs and Host Settings app-bar bottom rails to `CatchTabRail`.
+- Deleted `HostClubTabRail` and `HostSettingsTabRail`.
+- Added the `catch.tab_rail` component contract and primitive Widgetbook states.
+- Repointed Host Clubs and Host Settings design metadata from retired rail
+  symbols to shared `CatchTabRail` coverage.
+
+Deleted public widget wrappers:
+
+- `HostClubTabRail`
+- `HostSettingsTabRail`
+
+Commands:
+
+- `node tool/agent/context_pack.mjs --task widget-consolidation-wo-011 --paths lib/core/widgets/catch_option_group.dart,lib/core/widgets/catch_tab_rail.dart,widgetbook/lib/primitives/primitive_contract_use_cases.dart,docs/design_parity/widget_consolidation/codex_worklog.md,docs/widget_catalog.md,docs/audit_registry/widget_consolidation_receipts.md`
+- `dart format lib/core/widgets/catch_tab_rail.dart lib/core/theme/catch_tokens.dart lib/hosts/presentation/host_operations_screen.dart lib/hosts/presentation/host_account_screen.dart widgetbook/lib/primitives/primitive_contract_use_cases.dart widgetbook/lib/hosts/host_operations_use_cases.dart`
+- `flutter analyze --no-fatal-infos lib/core/widgets/catch_tab_rail.dart lib/core/theme/catch_tokens.dart lib/hosts/presentation/host_operations_screen.dart lib/hosts/presentation/host_account_screen.dart widgetbook/lib/primitives/primitive_contract_use_cases.dart`
+- `flutter analyze --no-fatal-infos widgetbook/lib/hosts/host_operations_use_cases.dart`
+- `dart run build_runner build --delete-conflicting-outputs` in `widgetbook/`
+- `node tool/design/generate_widget_classification.mjs`
+- `node tool/design/check_widget_classification.mjs`
+- `dart run tool/widget_dedupe/bin/extract_fingerprints.dart`
+- `node tool/design/build_widget_similarity.mjs`
+- `node tool/design/build_widget_similarity.mjs --check`
+- `node tool/design/check_widgetbook_coverage.mjs --check`
+- `DART=/Users/suvratgarg/Development/flutter/bin/dart node tool/design/check_widget_dedupe_probes.mjs`
+- `flutter analyze --no-fatal-infos lib`
+- `flutter analyze` in `widgetbook/`
+- `bash tool/widget_cleanup_scan.sh --summary`
+- `node tool/run.mjs check --manifest-only`
+- `node tool/design/check_widgetbook_contract_refs.mjs --check`
+- `node -e "for (const f of ['design/screens/catch.screens.json','docs/design_parity/state_matrix.json','design/components/catch.components.json','docs/audit_registry/widget_classification.json','docs/audit_registry/widget_similarity.json','docs/audit_registry/doc_versions.json']) JSON.parse(require('fs').readFileSync(f,'utf8')); console.log('json ok')"`
+- `rg -n "HostClubTabRail|HostSettingsTabRail" lib widgetbook/lib test --glob '*.dart' --glob '!widgetbook/lib/main.directories.g.dart'`
+
+Headline numbers:
+
+| metric | value |
+|---|---:|
+| widget classification entries | 1,150 |
+| classification review items | 46 |
+| private widget classes flagged | 0 |
+| widget fingerprints | 1,043 |
+| fingerprint failures | 0 |
+| similarity clusters | 54 |
+| ranked pairs | 200 |
+| name families | 223 |
+| absorb candidates | 8 |
+| Widgetbook coverage decision queue | 133 |
+| Widgetbook coverage stale decisions | 0 |
+| root lib analyzer infos | 192 |
+| Widgetbook analyzer issues | 65 |
+| widget cleanup scan categories with findings | 0 |
+
+Known blockers / inherited debt:
+
+- `node tool/design/check_widgetbook_coverage.mjs --check` still fails on the
+  existing catalog-or-replace decision queue: 133 public widgets need
+  decisions, with 0 stale decisions.
+- `(cd widgetbook && flutter analyze)` still fails on 65 existing Widgetbook
+  issues in `lib/hosts/host_operations_use_cases.dart`.
+- `node tool/design/check_widgetbook_contract_refs.mjs --check` now fails only
+  on unrelated HostOperations home/team preview ids.
+- `dart run build_runner build --delete-conflicting-outputs` in `widgetbook/`
+  succeeds, but build_runner reports that the delete-conflicting option has
+  been removed and is ignored by the current builder.
+- The dedupe-probe script needed unsandboxed access because Flutter's Dart
+  wrapper attempted SDK cache writes outside the workspace before reporting
+  `Widget dedupe probes passed`.

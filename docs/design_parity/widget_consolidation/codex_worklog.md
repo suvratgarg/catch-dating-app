@@ -777,7 +777,15 @@ class CatchTabRail<T> extends StatelessWidget implements PreferredSizeWidget {
    CatchTabRail use-case under primitives.
 4. regen + registries + receipts.
 
-- [ ] token + primitive + migrations + widgetbook + regen + receipts
+- [x] token + primitive + migrations + widgetbook + regen + receipts
+
+Completed by Codex: added `CatchTabRail<T>` plus
+`CatchLayout.tabRailHeight`, migrated Host Clubs and Host Settings app-bar
+bottom rails to the shared primitive, deleted `HostClubTabRail` and
+`HostSettingsTabRail`, removed their Widgetbook use cases, added the
+`catch.tab_rail` component contract and primitive Widgetbook states, repointed
+Host Settings/Host Clubs design metadata to the shared rail, regenerated
+Widgetbook and widget registries, and recorded the receipt.
 
 ## WO-012 — HostEmptyActionCard
 

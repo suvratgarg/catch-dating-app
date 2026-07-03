@@ -8883,7 +8883,7 @@
               "status": "implemented",
               "previewIds": [
                 "HostAccountScreen/Route states",
-                "HostSettingsTabRail/Tab states"
+                "CatchTabRail/Contract states"
               ]
             },
             {
@@ -8987,7 +8987,7 @@
               ],
               "previewIds": [
                 "HostAccountScreen/Route states",
-                "HostSettingsTabRail/Tab states"
+                "CatchTabRail/Contract states"
               ]
             },
             {
@@ -9015,7 +9015,7 @@
                 "HostAccountScreen/Route states",
                 "HostSettingsProfileSection/Profile summary states",
                 "HostSettingsClubsSection/Clubs states",
-                "HostSettingsTabRail/Tab states"
+                "CatchTabRail/Contract states"
               ]
             },
             {
@@ -9054,7 +9054,7 @@
             {
               "id": "DP-HOST-SETTINGS-002",
               "status": "open",
-              "nextAction": "HostSettingsProfileSection, HostSettingsClubsSection, HostSettingsTabRail, and HostSettingsSection are source-backed provider-free components, with profile/clubs waves adapted through HostSettingsState and profile create/save handled by HostProfileController. Remaining work is payout/admin placeholder ownership, account action policy, and reference-backed comparison."
+              "nextAction": "HostSettingsProfileSection, HostSettingsClubsSection, shared CatchTabRail tabs, and HostSettingsSection are source-backed provider-free components, with profile/clubs waves adapted through HostSettingsState and profile create/save handled by HostProfileController. Remaining work is payout/admin placeholder ownership, account action policy, and reference-backed comparison."
             }
           ],
           "captureIds": [

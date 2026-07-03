@@ -5814,6 +5814,103 @@
       }
     },
     {
+      "id": "catch.tab_rail",
+      "name": "CatchTabRail",
+      "status": "active",
+      "kind": "composite",
+      "summary": "Preferred-size app-bar bottom rail that wraps CatchOptionGroup in the standard tab-rail shell.",
+      "dart": {
+        "symbol": "CatchTabRail",
+        "file": "lib/core/widgets/catch_tab_rail.dart",
+        "constructors": [
+          "CatchTabRail"
+        ]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/TabRail",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "TabRail",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "selected",
+            "type": "object",
+            "required": true,
+            "dartType": "T"
+          },
+          {
+            "name": "onChanged",
+            "type": "callback",
+            "required": true,
+            "dartType": "ValueChanged<T>"
+          },
+          {
+            "name": "options",
+            "type": "generic-list",
+            "required": true,
+            "dartType": "List<CatchOption<T>>"
+          },
+          {
+            "name": "groupKey",
+            "type": "object",
+            "required": false,
+            "dartType": "Key?"
+          }
+        ],
+        "states": [
+          "two-option",
+          "four-option",
+          "selected-middle"
+        ],
+        "slots": [],
+        "tokens": [
+          "space.s2",
+          "space.s5",
+          "theme.light.color.ink",
+          "theme.light.color.ink3",
+          "theme.light.color.line",
+          "layout.tabRailHeight"
+        ],
+        "dartRoles": [
+          "CatchOptionGroup",
+          "CatchOption",
+          "CatchLayout.tabRailHeight"
+        ],
+        "goldens": []
+      },
+      "handoff": {
+        "allowedChildren": [
+          "catch.option_group"
+        ],
+        "notes": [
+          "Use for app-bar bottom tabs. Use CatchOptionGroup directly for inline scope controls that are not PreferredSizeWidget app-bar bottoms."
+        ]
+      },
+      "governance": {
+        "role": "composition",
+        "canonicalFamily": "catch.tab_rail",
+        "publicApi": true,
+        "stateOwnership": "slot-state-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical"
+      }
+    },
+    {
       "id": "catch.search_field",
       "name": "CatchSearchField",
       "status": "active",

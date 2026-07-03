@@ -59,6 +59,7 @@ import 'package:catch_dating_app/core/widgets/catch_status_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_dock.dart';
+import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
@@ -4147,6 +4148,62 @@ Widget catchOptionGroupItemContractStates(BuildContext context) {
           selectedRule: t.primary,
           variant: CatchOptionGroupVariant.mono,
           onTap: _noop,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchTabRail,
+  path: '[Core primitives]/Selection',
+)
+Widget catchTabRailContractStates(BuildContext context) {
+  const hostOptions = [
+    CatchOption(value: 'organizer', label: 'Organizer'),
+    CatchOption(value: 'edit', label: 'Edit'),
+    CatchOption(value: 'insights', label: 'Insights'),
+    CatchOption(value: 'preview', label: 'Preview'),
+  ];
+  const settingsOptions = [
+    CatchOption(value: 'edit', label: 'Edit'),
+    CatchOption(value: 'preview', label: 'Preview'),
+  ];
+
+  return _ContractScreen(
+    title: 'CatchTabRail',
+    contractId: 'catch.tab_rail',
+    states: const ['two-option', 'four-option', 'selected-middle'],
+    children: [
+      _StateCard(
+        label: 'two-option',
+        child: _FieldWidth(
+          child: CatchTabRail<String>(
+            selected: 'edit',
+            onChanged: _ignoreString,
+            options: settingsOptions,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'four-option',
+        child: _FieldWidth(
+          child: CatchTabRail<String>(
+            selected: 'organizer',
+            onChanged: _ignoreString,
+            options: hostOptions,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'selected-middle',
+        child: _FieldWidth(
+          child: CatchTabRail<String>(
+            selected: 'insights',
+            onChanged: _ignoreString,
+            options: hostOptions,
+          ),
         ),
       ),
     ],

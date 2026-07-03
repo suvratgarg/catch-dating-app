@@ -71,9 +71,13 @@ class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {
                     : null,
               ),
             ],
-            bottom: HostSettingsTabRail(
+            bottom: CatchTabRail<HostSettingsMode>(
               selected: _selectedTab,
               onChanged: (tab) => setState(() => _selectedTab = tab),
+              options: const [
+                CatchOption(value: HostSettingsMode.edit, label: 'Edit'),
+                CatchOption(value: HostSettingsMode.preview, label: 'Preview'),
+              ],
             ),
           ),
           body: ListView(
@@ -163,44 +167,6 @@ class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {
       return;
     }
     if (mounted) context.go(Routes.startScreen.path);
-  }
-}
-
-class HostSettingsTabRail extends StatelessWidget
-    implements PreferredSizeWidget {
-  const HostSettingsTabRail({
-    super.key,
-    required this.selected,
-    required this.onChanged,
-  });
-
-  final HostSettingsMode selected;
-  final ValueChanged<HostSettingsMode> onChanged;
-
-  @override
-  Size get preferredSize => const Size.fromHeight(48);
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: preferredSize.height,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          CatchSpacing.s5,
-          0,
-          CatchSpacing.s5,
-          CatchSpacing.s2,
-        ),
-        child: CatchOptionGroup<HostSettingsMode>(
-          selected: selected,
-          onChanged: onChanged,
-          options: const [
-            CatchOption(value: HostSettingsMode.edit, label: 'Edit'),
-            CatchOption(value: HostSettingsMode.preview, label: 'Preview'),
-          ],
-        ),
-      ),
-    );
   }
 }
 

@@ -9390,16 +9390,16 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "HostClubTabRail"
+              "CatchTabRail"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations_screen.dart",
-              "symbol": "HostClubTabRail"
+              "file": "lib/core/widgets/catch_tab_rail.dart",
+              "symbol": "CatchTabRail"
             },
             "currentOwner": "_HostClubsScaffold",
-            "targetOwner": "provider-free host club tab rail",
+            "targetOwner": "shared CatchTabRail",
             "dependencies": [
-              "catch.segmented_control"
+              "catch.tab_rail"
             ],
             "states": [
               "organizer",
@@ -9409,7 +9409,7 @@
               "long_labels",
               "text_scale"
             ],
-            "migration": "Keep tab selection as screen state and add Widgetbook states for all tabs, text scale, and light/dark styling. The Organizer tab is the default route state and does not render the AppBar tab rail until the host switches into another tab.",
+            "migration": "Keep tab selection as screen state and route visual review through HostClubsScreen states plus the shared CatchTabRail primitive. The Organizer tab is the default route state and does not render the AppBar tab rail until the host switches into another tab.",
             "previewIds": [
               "HostClubsScreen/Route states"
             ]
@@ -20167,7 +20167,7 @@
           "nextAction": "Compare tab rail placement against the canonical Host Settings reference once exported.",
           "previewIds": [
             "HostAccountScreen/Route states",
-            "HostSettingsTabRail/Tab states"
+            "CatchTabRail/Contract states"
           ]
         },
         {
@@ -20279,7 +20279,7 @@
           ],
           "previewIds": [
             "HostAccountScreen/Route states",
-            "HostSettingsTabRail/Tab states"
+            "CatchTabRail/Contract states"
           ]
         },
         {
@@ -20308,7 +20308,7 @@
             "HostAccountScreen/Route states",
             "HostSettingsProfileSection/Profile summary states",
             "HostSettingsClubsSection/Clubs states",
-            "HostSettingsTabRail/Tab states"
+            "CatchTabRail/Contract states"
           ]
         },
         {
@@ -20339,7 +20339,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "HostAccountScreen owns uid/profile/club provider watches, adapts provider waves plus tab/account/club navigation policy through HostSettingsState, routes profile create/save through HostProfileController mutations, owns the profile editor bottom sheet and sign-out side effect, then composes provider-free HostSettingsProfileSection, HostSettingsClubsSection, HostSettingsTabRail, and shared HostSettingsSection rows.",
+        "currentLayout": "HostAccountScreen owns uid/profile/club provider watches, adapts provider waves plus tab/account/club navigation policy through HostSettingsState, routes profile create/save through HostProfileController mutations, owns the profile editor bottom sheet and sign-out side effect, then composes provider-free HostSettingsProfileSection, HostSettingsClubsSection, shared CatchTabRail tabs, and HostSettingsSection rows.",
         "targetLayout": "Host Settings has no remaining provider-free extraction target until product/design resolves payout/admin ownership and a valid reference export is available for pixel parity.",
         "sections": [
           {
@@ -20351,7 +20351,7 @@
               "HostSettingsState"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_account_screen.dart",
+              "file": "lib/core/widgets/catch_tab_rail.dart",
               "symbol": "HostAccountScreen"
             },
             "currentOwner": "HostAccountScreen + provider watches",
@@ -20380,23 +20380,23 @@
             ],
             "flutter": {
               "file": "lib/hosts/presentation/host_account_screen.dart",
-              "symbol": "HostSettingsTabRail"
+              "symbol": "CatchTabRail"
             },
-            "currentOwner": "HostAccountScreen + HostSettingsTabRail",
-            "targetOwner": "provider-free top bar/tab rail section",
+            "currentOwner": "HostAccountScreen + CatchTabRail",
+            "targetOwner": "route-owned top bar with shared tab rail",
             "dependencies": [
               "catch.top_bar",
-              "catch.segmented_control"
+              "catch.tab_rail"
             ],
             "states": [
               "edit_preview_tabs",
               "sign_out_action",
               "text_scale_2"
             ],
-            "migration": "HostSettingsTabRail is now provider-free and previewed directly; remaining work is deciding whether tab/action state belongs in HostSettingsState or stays route-local until broader account-action policy is settled.",
+            "migration": "Host Settings tab rail now uses shared CatchTabRail; remaining work is deciding whether tab/action state belongs in HostSettingsState or stays route-local until broader account-action policy is settled.",
             "previewIds": [
               "HostAccountScreen/Route states",
-              "HostSettingsTabRail/Tab states"
+              "CatchTabRail/Contract states"
             ]
           },
           {
@@ -20497,7 +20497,7 @@
         {
           "id": "DS-HOST-SETTINGS-003",
           "status": "blocked",
-          "nextAction": "Blocked: HostSettingsProfileSection, HostSettingsClubsSection, HostSettingsTabRail, and HostSettingsSection are source-backed provider-free components, with profile/clubs waves, tab/account action availability, and club navigation policy adapted through HostSettingsState. Payout/admin ownership needs a product IA decision before code changes; reference comparison is tracked by DS-HOST-SETTINGS-004."
+          "nextAction": "Blocked: HostSettingsProfileSection, HostSettingsClubsSection, shared CatchTabRail tabs, and HostSettingsSection are source-backed provider-free components, with profile/clubs waves, tab/account action availability, and club navigation policy adapted through HostSettingsState. Payout/admin ownership needs a product IA decision before code changes; reference comparison is tracked by DS-HOST-SETTINGS-004."
         },
         {
           "id": "DS-HOST-SETTINGS-004",

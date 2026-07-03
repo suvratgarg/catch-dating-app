@@ -31,6 +31,7 @@ import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
@@ -656,9 +657,25 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold> {
               title: _state.title,
               bottom: selectedClub == null
                   ? null
-                  : HostClubTabRail(
+                  : CatchTabRail<HostClubTab>(
+                      groupKey: _hostClubTabRailKey,
                       selected: _state.selectedTab,
                       onChanged: _selectTab,
+                      options: const [
+                        CatchOption(
+                          value: HostClubTab.organizer,
+                          label: 'Organizer',
+                        ),
+                        CatchOption(value: HostClubTab.edit, label: 'Edit'),
+                        CatchOption(
+                          value: HostClubTab.insights,
+                          label: 'Insights',
+                        ),
+                        CatchOption(
+                          value: HostClubTab.preview,
+                          label: 'Preview',
+                        ),
+                      ],
                     ),
               actions: [
                 if (_state.showClubPicker)
@@ -746,46 +763,6 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold> {
 
   void _openHostSettings() {
     context.pushNamed(Routes.hostSettingsScreen.name);
-  }
-}
-
-class HostClubTabRail extends StatelessWidget implements PreferredSizeWidget {
-  const HostClubTabRail({
-    super.key,
-    required this.selected,
-    required this.onChanged,
-  });
-
-  final HostClubTab selected;
-  final ValueChanged<HostClubTab> onChanged;
-
-  @override
-  Size get preferredSize => const Size.fromHeight(48);
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: preferredSize.height,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          CatchSpacing.s5,
-          0,
-          CatchSpacing.s5,
-          CatchSpacing.s2,
-        ),
-        child: CatchOptionGroup<HostClubTab>(
-          key: _hostClubTabRailKey,
-          selected: selected,
-          onChanged: onChanged,
-          options: const [
-            CatchOption(value: HostClubTab.organizer, label: 'Organizer'),
-            CatchOption(value: HostClubTab.edit, label: 'Edit'),
-            CatchOption(value: HostClubTab.insights, label: 'Insights'),
-            CatchOption(value: HostClubTab.preview, label: 'Preview'),
-          ],
-        ),
-      ),
-    );
   }
 }
 

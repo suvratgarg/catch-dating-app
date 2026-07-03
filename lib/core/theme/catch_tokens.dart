@@ -1875,6 +1875,7 @@ abstract final class CatchLayout {
   static const double tabDockItemGap = CatchSpacing.s1;
   static const double tabDockIconSize = 22.0;
   static const double tabDockLabelFontSize = 8.5;
+  static const double tabRailHeight = 48.0;
   static const double topBarHeight = 56.0;
   static const double topBarLargeHeight = 104.0;
   static const double hostEventManageTopBarHeight =

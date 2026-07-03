@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.554
+version: 2.5.555
 updated: 2026-07-03
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,12 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.555
+
+- Added `CatchTabRail<T>` for app-bar bottom tab rails, migrated Host Clubs and
+  Host Settings to it, and retired the feature-local `HostClubTabRail` and
+  `HostSettingsTabRail` wrappers.
 
 ### 2.5.554
 
@@ -1825,12 +1831,12 @@ a feature section here only when auditing that feature's widget surface.
   `HostSettingsState`, while profile create/save mutations go through
   `HostProfileController` and navigation/sign-out side effects remain
   route-owned. It composes `HostSettingsProfileSection`,
-  `HostSettingsClubsSection`, `HostSettingsTabRail`, and shared
+  `HostSettingsClubsSection`, shared `CatchTabRail` tabs, and
   `HostSettingsSection` rows. Widgetbook now exposes
   `HostAccountScreen/Route states`,
   `HostSettingsProfileSection/Profile summary states`,
-  `HostSettingsClubsSection/Clubs states`, and `HostSettingsTabRail/Tab states`
-  under the P2 Host Settings surface.
+  `HostSettingsClubsSection/Clubs states`, and the shared
+  `CatchTabRail/Contract states` review surface.
 
 ### 2.5.333
 
@@ -5404,6 +5410,7 @@ Generated 2026-05-06.
 | `CatchTabDock<T>` | `lib/core/widgets/catch_tab_dock.dart:26` | Handoff `TabDock`: typed bottom-navigation adapter backed by Flutter's Material 3 `NavigationBar` metrics, stable safe-area handling, selected glyphs, typed tab IDs, and optional per-tab unread indicators through `CatchCountBadge`. Used by non-iOS `AppShellNavigationBar`. |
 | `CatchTabDockButton<T>` | `lib/core/widgets/catch_tab_dock.dart:87` | Direct per-tab button renderer used by `CatchTabDock`. Keeps selected semantics, typed item binding, tap handling, icon selection, uppercase mono label styling, and dock item padding reviewable without private widget-returning helpers. |
 | `CatchTabDockIcon` | `lib/core/widgets/catch_tab_dock.dart:142` | Direct dock icon renderer that centralizes dock glyph sizing and delegates unread badge overlay, 99+ truncation, and badge chrome to `CatchCountBadge`. |
+| `CatchTabRail<T>` | `lib/core/widgets/catch_tab_rail.dart:7` | Preferred-size app-bar bottom tab rail that wraps `CatchOptionGroup` in the standard 48px rail shell. Receives typed options, selected value, change callback, and an optional `groupKey`; use it instead of feature-local `CatchOptionGroup` app-bar wrappers. Registered as formal component contract `catch.tab_rail`; Widgetbook contract states cover two-option, four-option, and middle-selected rails. |
 | `CatchMetaDotRow` | `lib/core/widgets/catch_meta_row.dart:13` | Inline dot-separated metadata row for event/club cards. Keeps icon/text entries and optional strong trailing meta in one line with ellipsis behavior, so cards can show time, place, distance, and status without bolting on multiple badges. |
 | `CatchMetaEntryFlow` | `lib/core/widgets/catch_meta_row.dart:61` | Direct dot-separated metadata flow renderer used by `CatchMetaDotRow`. Owns separator insertion, flexible entry wrapping, numeric-meta separator styling, and truncation constraints for inline card metadata. |
 | `CatchMetaEntryView` | `lib/core/widgets/catch_meta_row.dart:108` | Direct metadata entry renderer used by `CatchMetaDotRow` and `CatchMetaEntryFlow`. Centralizes optional icon, icon color override, text color override, strong trailing weight, and label ellipsis behavior. |
@@ -5571,7 +5578,6 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `HostClubTabRail` | `lib/hosts/presentation/host_operations_screen.dart:1521` | Host Clubs Organizer / Edit / Insights / Preview rail. Reuses `CatchOptionGroup` in the AppBar bottom slot for non-organizer tabs so the host clubs screen follows the handoff tab composition without custom segmented chrome. |
 | `HostOperationsTopBar` | `lib/hosts/presentation/host_operations_screen.dart:1575` | Host app top bar used by the explicit Events branch and Host Clubs. Wraps `CatchTopBar` with a mono kicker, title, optional shared action slots, and optional bottom content so host tabs can expose club pickers and tab rails without custom chrome. Widgetbook exposes standalone top-bar states under Host operations sections. |
 | `HostTodayDashboardCard` | `lib/hosts/presentation/host_operations_screen.dart:1644` | Narrow Host Home Today provider adapter. Watches the selected club event stream, maps it through `HostHomeTodayDashboardState`, supplies typed retry/create/manage callbacks and club-switching data, then delegates rendering to provider-free `HostTodayDashboardSection`. |
 | `HostTodayDashboardSection` | `lib/hosts/presentation/host_operations_screen.dart:1686` | Provider-free Host Home Today section. Renders the greeting/club pill, next-event hero, needs-you task cards, loading/error/empty branches, and typed callbacks from `HostHomeTodayDashboardState` without repository or router reads. |
@@ -5600,7 +5606,6 @@ Generated 2026-05-06.
 | `CatchRosterTable` | `lib/hosts/presentation/widgets/catch_roster_board.dart:416` | Handoff `RosterTable` shell for host roster boards. Owns the hairline table surface, mono three-column header, fixed row proportions matching `CatchRosterRow`, row composition, and built-in empty state. Registered as formal component contract `catch.roster_table`; Widgetbook contract states are the canonical review surface for populated, empty, partial-column, and long-copy tables. |
 | `HostClubManagementPanel` | `lib/hosts/presentation/widgets/host_club_tools.dart:15` | Reusable combined host-club tools panel for surfaces that intentionally need Add event, Edit club, and upcoming booked/waitlist/base-revenue stats in one section. Public `ClubDetailBody` no longer embeds this panel; Host app tab surfaces own those actions. |
 | `HostStatChip` | `lib/hosts/presentation/widgets/host_club_tools.dart:161` | Single reusable host stat chip used by the consolidated club host management panel and host event management stats. |
-| `HostSettingsTabRail` | `lib/hosts/presentation/host_operations_screen.dart:411` | Provider-free Host Settings Edit / Preview rail used in the Account app bar and rendered directly in Widgetbook. The route owns selected tab state; the rail only receives the current `HostSettingsMode` and change callback. |
 | `HostSettingsSection` | `lib/hosts/presentation/host_operations_screen.dart:449` | Shared host settings section wrapper for Account and Host Clubs row groups. Owns section kicker, top divider spacing, and row grouping while callers supply provider-free `CatchField` children. |
 | `HostSettingsProfileSection` | `lib/hosts/presentation/host_operations_screen.dart:483` | Provider-free profile summary section for `screen.host.settings`. Renders loading, error, missing, create-pending, club-backed fallback, loaded, edit, preview, and status rows from explicit `HostSettingsProfileState` plus create/edit/retry callbacks. |
 | `HostSettingsClubsSection` | `lib/hosts/presentation/host_operations_screen.dart:609` | Provider-free hosted-clubs section for `screen.host.settings`. Renders loading, error, empty, edit-mode, and preview-mode club rows from `HostSettingsClubsState`, retry callback, and route callback so Widgetbook can cover section states without Riverpod reads. |
@@ -5614,7 +5619,7 @@ Generated 2026-05-06.
 |---|---|---|
 | `HostOperationsHomeScreen` | `lib/hosts/presentation/host_operations_screen.dart:60` | Host app Home route. Watches uid and clubs the signed-in host can operate, maps them through `HostHomeRouteState`, and delegates selected-club Today/Events composition to `_HostEventsScaffold` through `HostHomeScreenState`. The route now defaults to `HostHomeTab.today`; explicit Events captures/tests use `HostHomeTab.events`. Selected club, selected tab, title, switcher visibility, owner/co-host role capability, route branch selection, Today/event async branch selection, event row/task derivation, retry intents, and create/manage route callbacks are typed. |
 | `HostClubsScreen` | `lib/hosts/presentation/host_operations_screen.dart:100` | Host app Clubs tab. Watches clubs the signed-in host can operate and delegates selected-club Organizer / Edit / Insights / Preview composition to `_HostClubsScaffold` through `HostClubsScreenState` instead of rendering every operated club in one grouped scroll. The design contract treats it as `screen.host.clubs`; Widgetbook/captures now cover the default organizer overview, signed-out, route loading/error/offline/empty, co-host edit, expanded inline editor pending/error/offline, insights loading/error/offline/report, payout provider loading/ready/restricted/error/offline, payout setup/refresh pending/error/offline, host-team mutation pending/error/offline, preview, text-scale, reduced-motion, and theme states. The canonical Host Organizer advisory comparison is within threshold; future pixel variants depend on additional Claude exports. |
-| `HostAccountScreen` | `lib/hosts/presentation/host_operations_screen.dart:257` | Host app Account tab registered as `screen.host.settings`. It resolves host profile and club provider waves into `HostSettingsState`, owns Edit / Preview tab state, opens `HostProfileEditorSheet` for inline profile edits, routes profile create/save through `HostProfileController`, shows create/save success feedback through `showCatchSnackBar`, keeps sign-out/account actions in the route, and composes provider-free `HostSettingsProfileSection`, `HostSettingsClubsSection`, and `HostSettingsTabRail`. |
+| `HostAccountScreen` | `lib/hosts/presentation/host_account_screen.dart:3` | Host app Account tab registered as `screen.host.settings`. It resolves host profile and club provider waves into `HostSettingsState`, owns Edit / Preview tab state, opens `HostProfileEditorSheet` for inline profile edits, routes profile create/save through `HostProfileController`, shows create/save success feedback through `showCatchSnackBar`, keeps sign-out/account actions in the route, and composes provider-free `HostSettingsProfileSection`, `HostSettingsClubsSection`, and shared `CatchTabRail` tabs. |
 | `HostClubOrganizerOverviewController` | `lib/hosts/presentation/host_operations_screen.dart:2528` | Host Clubs organizer overview provider adapter. Watches the selected club event stream, derives loaded/event/active counts, and passes explicit count props plus route callbacks into provider-free `HostClubOrganizerOverview`. |
 | `HostOrganizerPayoutPromptController` | `lib/hosts/presentation/widgets/host_organizer_payout_prompt_controller.dart:7` | Host Clubs organizer payout provider adapter. Resolves the host payment-account stream for the selected owner uid, maps ready/loading/error/setup-required branches into `HostOrganizerPayoutPromptState`, and supplies the explicit manage-payouts callback to provider-free `HostOrganizerPayoutPrompt`. |
 | `HostPaymentAccountControllerCard` | `lib/hosts/presentation/payments/host_payment_account_controller_card.dart:15` | Host Clubs payout provider adapter. Resolves the signed-in host payment-account stream, maps provider loading/error states to payout card branches, converts setup/refresh mutation failures to explicit error copy, and supplies typed onboarding/refresh callbacks to provider-free `HostPaymentAccountCard`. |
