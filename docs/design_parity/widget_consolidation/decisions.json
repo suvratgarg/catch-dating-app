@@ -575,6 +575,90 @@
       "decidedBy": "codex-rule:K5",
       "date": "2026-07-03",
       "status": "escalated-WO-015"
+    },
+    {
+      "clusterId": "c004-layout",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "CatchPersonChatLayout", "action": "keep"},
+        {"name": "CatchPersonRosterLayout", "action": "keep"}
+      ],
+      "rationale": "Current-registry id for prior c005-layout decision: chat preview with unread emphasis and roster meta are intentional presentation variants over CatchPersonRowData; the only drift was the raw roster icon size fixed in WO-005.",
+      "decidedBy": "owner+claude-reconciled",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015"
+    },
+    {
+      "clusterId": "c005-dialog",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "CatchConfirmDialog", "action": "keep"},
+        {"name": "CatchFormDialog", "action": "keep"}
+      ],
+      "rationale": "Current-registry id for prior c006-dialog/WO-010 decision: confirm and form dialogs remain separate public entry points; full-body inspection rejected direct delegation because action layout and content-slot contracts differ.",
+      "decidedBy": "owner+claude-reconciled",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015"
+    },
+    {
+      "clusterId": "c009-rows-skeleton",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "HostEventRowsSkeleton", "action": "keep"},
+        {"name": "HostSettingsRowsSkeleton", "action": "keep"}
+      ],
+      "rationale": "Current-registry id for WO-006 skipped members: both full bodies use divider-separated rows, while CatchSkeletonRows models gap-separated rows; merging would change structure instead of removing drift.",
+      "decidedBy": "codex-wo006-reconciled",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015"
+    },
+    {
+      "clusterId": "c013-host-card",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "MicroPodsHostCard", "action": "keep"},
+        {"name": "RotationsHostCard", "action": "keep"}
+      ],
+      "rationale": "K2 domain fork: micro-pods and guided rotations carry parallel typed business logic and already compose tokenized primitives; generic unification would add conditional complexity.",
+      "decidedBy": "codex-rule:K2",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015"
+    },
+    {
+      "clusterId": "c021-rotation-slots",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "VisibleGroupRotationSlots", "action": "keep"},
+        {"name": "VisibleRotationSlots", "action": "keep"}
+      ],
+      "rationale": "K2 domain fork: group rotation slots and rotation slots bind to different assignment families with different semantics; keep the public widgets split until a third assignment mode appears.",
+      "decidedBy": "codex-rule:K2",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015"
+    },
+    {
+      "clusterId": "c022-override-sheet",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "GroupOverrideSheet", "action": "keep"},
+        {"name": "RotationOverrideSheet", "action": "keep"}
+      ],
+      "rationale": "K2 domain fork: group override and rotation override sheets are backed by parallel override model families and different business rules, so a generic sheet would concentrate conditional logic.",
+      "decidedBy": "codex-rule:K2",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015"
+    },
+    {
+      "clusterId": "c023-override-round-editor",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "GroupOverrideRoundEditor", "action": "keep"},
+        {"name": "RotationOverrideRoundEditor", "action": "keep"}
+      ],
+      "rationale": "K2 domain fork: the round editors operate on EventSuccessGroupOverrideRound versus RotationOverrideRound and differ in opt-out/fairness/interval behavior, not just row chrome.",
+      "decidedBy": "codex-rule:K2",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015"
     }
   ]
 }

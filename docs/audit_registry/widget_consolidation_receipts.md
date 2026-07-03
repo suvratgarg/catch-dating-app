@@ -1371,3 +1371,41 @@ Known blockers / inherited debt:
 
 - WO-015 remains open: 40 current similarity clusters still need rule-driven
   decisions or review escalation by the simple cluster ledger check.
+
+## 2026-07-03 — WO-015 prior-decision id reconciliation
+
+Scope:
+
+- Reconciled seven current similarity-registry ids to prior reviewed decisions:
+  `c004-layout`, `c005-dialog`, `c009-rows-skeleton`, `c013-host-card`,
+  `c021-rotation-slots`, `c022-override-sheet`, and
+  `c023-override-round-editor`.
+- No production Dart, Widgetbook, generated widget registries, or visual output
+  changed.
+
+Commands:
+
+- `node tool/agent/context_pack.mjs --task widget-consolidation-wo-015-reconcile-prior-decisions --paths docs/design_parity/widget_consolidation/decisions.json,docs/design_parity/widget_consolidation/codex_worklog.md,docs/audit_registry/widget_consolidation_receipts.md,docs/design_parity/widget_consolidation/consolidation_rules.md,docs/audit_registry/widget_similarity.json`
+- `rg -n "CatchPersonChatLayout|CatchPersonRosterLayout|CatchConfirmDialog|CatchFormDialog|HostEventRowsSkeleton|HostSettingsRowsSkeleton|VisibleGroupRotationSlots|VisibleRotationSlots|GroupOverrideSheet|RotationOverrideSheet|ProfileInlineMultiChoiceEntryEditor|ProfileInlineSingleChoiceEntryEditor" docs/design_parity/widget_consolidation/decisions.json docs/design_parity/widget_consolidation/codex_worklog.md docs/audit_registry/widget_consolidation_receipts.md`
+- `node - <<'NODE' ... JSON.parse(...) ... NODE`
+- `dart tool/audit_registry.dart refresh`
+- `dart tool/audit_registry.dart mark-pass --pass widget-consolidation-wo-015-prior-decision-reconcile --rules AUDIT-REGISTRY-001,WIDGET-CATALOG-001 --paths docs/design_parity/widget_consolidation/decisions.json,docs/design_parity/widget_consolidation/codex_worklog.md,docs/audit_registry/widget_consolidation_receipts.md --proof "WO-015 ledger-only reconcile: recorded current ids for seven prior decisions; no production Dart changed" --status clean`
+- `dart tool/audit_registry.dart report`
+- `node tool/agent/check_agent_readiness.mjs`
+- `git diff --check`
+
+Headline numbers:
+
+| metric | value |
+|---|---:|
+| current cluster ids reconciled to existing decisions | 7 |
+| K2 domain-fork keeps recorded | 4 |
+| prior implementation/skip decisions reconciled | 3 |
+| code changes | 0 |
+| rule-authorized merges/deletions | 0 |
+| undecided similarity clusters after this ledger pass | 33 |
+
+Known blockers / inherited debt:
+
+- WO-015 remains open: 33 current similarity clusters still need rule-driven
+  decisions or review escalation by the simple cluster ledger check.

@@ -985,6 +985,12 @@ Progress by Codex: reconciled current registry ids `c003-catch-meta-row` and
 (`ActivityTypeRow`, `MoreActivityTypesRow`) under K5. No code was changed in
 this ledger-only batch.
 
+Progress by Codex: reconciled seven additional current registry ids to
+previously reviewed decisions: `c004-layout`, `c005-dialog`,
+`c009-rows-skeleton`, `c013-host-card`, `c021-rotation-slots`,
+`c022-override-sheet`, and `c023-override-round-editor`. No code was changed in
+this ledger-only batch.
+
 ---
 
 ## Escalations
