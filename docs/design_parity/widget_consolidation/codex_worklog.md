@@ -848,7 +848,15 @@ title/body/actions (e.g. the `creating` flag maps to the button's isLoading
 at the call site), keep that logic at the call site — escalate only if it
 does not fit the actions-slot shape.
 
-- [ ] widget + 3 migrations + widgetbook + regen + receipts
+- [x] widget + 3 migrations + widgetbook + regen + receipts
+
+Completed by Codex: added feature-level `HostEmptyActionCard`, migrated Host
+Home no-club branches, Host Clubs no-club branch, Host Profile missing branch,
+and Host Today empty-events branch to caller-owned actions inside the shared
+card, deleted `HostEmptyState`, `HostProfileMissingState`, and
+`HostTodayEmptyEvents`, replaced wrapper Widgetbook coverage with
+`HostEmptyActionCard` states, repointed design metadata, regenerated Widgetbook
+and widget registries, and recorded the receipt.
 
 ## WO-013 — Skeleton title-width token drift
 

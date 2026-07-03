@@ -739,6 +739,87 @@ Known blockers / inherited debt:
   wrapper attempted SDK cache writes outside the workspace before reporting
   `Widget dedupe probes passed`.
 
+## 2026-07-03 — WO-012 HostEmptyActionCard
+
+Scope:
+
+- Added feature-level `HostEmptyActionCard` in host widgets.
+- Migrated Host Home no-club branches, Host Clubs no-club branch, Host Profile
+  missing branch, and Host Today empty-events branch to the shared card while
+  keeping route/section-owned CTA construction at the call sites.
+- Deleted `HostEmptyState`, `HostProfileMissingState`, and
+  `HostTodayEmptyEvents`.
+- Replaced wrapper Widgetbook coverage with `HostEmptyActionCard` action-card
+  states and strict exact coverage.
+- Repointed Host Home, Host Clubs, and Host Profile design metadata to the
+  shared card review surface.
+
+Deleted public widget wrappers:
+
+- `HostEmptyState`
+- `HostProfileMissingState`
+- `HostTodayEmptyEvents`
+
+Commands:
+
+- `node tool/agent/context_pack.mjs --task widget-consolidation-wo-012 --paths lib/hosts/presentation/host_operations_screen.dart,lib/hosts/presentation/widgets/host_empty_action_card.dart,widgetbook/lib/hosts/host_operations_use_cases.dart,docs/design_parity/widget_consolidation/codex_worklog.md,docs/widget_catalog.md,docs/audit_registry/widget_consolidation_receipts.md`
+- `dart format lib/hosts/presentation/widgets/host_empty_action_card.dart lib/hosts/presentation/host_operations_screen.dart widgetbook/lib/hosts/host_operations_use_cases.dart`
+- `flutter analyze --no-fatal-infos lib/hosts/presentation/widgets/host_empty_action_card.dart lib/hosts/presentation/host_operations_screen.dart`
+- `flutter analyze --no-fatal-infos widgetbook/lib/hosts/host_operations_use_cases.dart`
+- `dart run build_runner build --delete-conflicting-outputs` in `widgetbook/`
+- `node tool/design/generate_widget_classification.mjs`
+- `node tool/design/check_widget_classification.mjs`
+- `dart run tool/widget_dedupe/bin/extract_fingerprints.dart`
+- `node tool/design/build_widget_similarity.mjs`
+- `node tool/design/build_widget_similarity.mjs --check`
+- `node tool/design/check_widgetbook_coverage.mjs --check`
+- `node tool/design/check_widget_dedupe_probes.mjs`
+- `flutter analyze --no-fatal-infos lib`
+- `flutter analyze` in `widgetbook/`
+- `bash tool/widget_cleanup_scan.sh --summary`
+- `node tool/run.mjs check --manifest-only`
+- `node tool/design/check_widgetbook_contract_refs.mjs --check`
+- `node -e "const fs=require('fs'); const files=['design/screens/catch.screens.json','docs/design_parity/state_matrix.json','design/components/catch.components.json','docs/audit_registry/widget_classification.json','docs/audit_registry/widget_similarity.json','docs/audit_registry/doc_versions.json']; for (const f of files) JSON.parse(fs.readFileSync(f,'utf8')); console.log('json ok', files.length);"`
+- `rg -n "HostEmptyState|HostProfileMissingState|HostTodayEmptyEvents" lib widgetbook/lib test design/screens/catch.screens.json docs/design_parity/state_matrix.json docs/widget_catalog.md --glob '*.dart' --glob '*.json' --glob '*.md' --glob '!widgetbook/lib/main.directories.g.dart'`
+- `dart tool/audit_registry.dart refresh`
+- `dart tool/audit_registry.dart mark-pass --pass 2026-07-03-widget-consolidation-wo-012-host-empty-action-card ...`
+
+Headline numbers:
+
+| metric | value |
+|---|---:|
+| widget classification entries | 1,148 |
+| classification review items | 46 |
+| private widget classes flagged | 0 |
+| widget fingerprints | 1,041 |
+| fingerprint failures | 0 |
+| similarity clusters | 53 |
+| ranked pairs | 200 |
+| name families | 223 |
+| absorb candidates | 8 |
+| Widgetbook coverage decision queue | 132 |
+| Widgetbook coverage stale decisions | 0 |
+| root lib analyzer infos | 192 |
+| Widgetbook analyzer issues | 65 |
+| widget cleanup scan categories with findings | 0 |
+| audit registry file entries | 3,173 |
+
+Known blockers / inherited debt:
+
+- `node tool/design/check_widgetbook_coverage.mjs --check` still fails on the
+  existing catalog-or-replace decision queue: 132 public widgets need
+  decisions, with 0 stale decisions.
+- `(cd widgetbook && flutter analyze)` still fails on 65 existing Widgetbook
+  issues in `lib/hosts/host_operations_use_cases.dart`.
+- `node tool/design/check_widgetbook_contract_refs.mjs --check` still fails
+  only on unrelated HostOperations home/team preview ids.
+- `dart run build_runner build --delete-conflicting-outputs` in `widgetbook/`
+  succeeds, but build_runner reports that the delete-conflicting option has
+  been removed and is ignored by the current builder.
+- The dedupe-probe script needed unsandboxed access because Flutter's Dart
+  wrapper attempted SDK cache writes outside the workspace before reporting
+  `Widget dedupe probes passed`.
+
 ## 2026-07-03 WO-008 Empty-state wrapper inlines
 
 Scope:

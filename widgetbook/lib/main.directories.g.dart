@@ -7822,6 +7822,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostEmptyActionCard',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Action card states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostEmptyActionCardStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostEventManageScreen',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -8243,13 +8254,13 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostEmptyState',
+                name: 'HostEmptyActionCard',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
                         _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostEmptyStateCatalogStates,
+                            .hostStrictHostEmptyActionCardCatalogStates,
                   ),
                 ],
               ),
@@ -9639,16 +9650,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Form states',
                 builder: _widgetbook_workspace_hosts_host_operations_use_cases
                     .hostProfileFormStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'HostProfileMissingState',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Missing states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .hostProfileMissingStates,
               ),
             ],
           ),

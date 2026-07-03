@@ -4561,7 +4561,7 @@
               "id": "no_host_clubs",
               "kind": "empty",
               "status": "captured",
-              "notes": "No hosted or owned clubs renders _HostEmptyState with Create your first club copy and Create club action. Verify create-club CTA routing once Host Club Create callbacks are fully typed.",
+              "notes": "No hosted or owned clubs renders HostEmptyActionCard with Create your first club copy and Create club action. Verify create-club CTA routing once Host Club Create callbacks are fully typed.",
               "previewIds": [
                 "HostOperationsHomeScreen/Route states"
               ],
@@ -4888,7 +4888,7 @@
               "id": "no_host_clubs",
               "kind": "empty",
               "status": "captured",
-              "notes": "No hosted or owned clubs renders _HostEmptyState with No host clubs yet copy. Decide whether this route should expose create-club directly or defer to host setup routes.",
+              "notes": "No hosted or owned clubs renders HostEmptyActionCard with No host clubs yet copy. Decide whether this route should expose create-club directly or defer to host setup routes.",
               "previewIds": [
                 "HostClubsScreen/Route states"
               ],
@@ -9154,7 +9154,7 @@
               "nextAction": "Compare missing-profile and create-pending treatment against the canonical Host Profile reference once exported.",
               "previewIds": [
                 "HostProfileScreen/Route states",
-                "HostProfileMissingState/Missing states"
+                "HostEmptyActionCard/Action card states"
               ]
             },
             {
@@ -9197,7 +9197,7 @@
                 "host_profile_create_offline"
               ],
               "previewIds": [
-                "HostProfileMissingState/Missing states"
+                "HostEmptyActionCard/Action card states"
               ]
             },
             {
@@ -9262,7 +9262,7 @@
               "previewIds": [
                 "HostProfileScreen/Route states",
                 "HostProfileForm/Form states",
-                "HostProfileMissingState/Missing states"
+                "HostEmptyActionCard/Action card states"
               ]
             },
             {
@@ -9303,7 +9303,7 @@
             {
               "id": "DP-HOST-PROFILE-002",
               "status": "open",
-              "nextAction": "HostProfileForm, HostProfileFields, and HostProfileMissingState are source-backed and provider-free, with provider waves adapted through HostProfileEditState and create/save mutations handled by HostProfileController. Remaining work is validation capture, any host-specific offline copy decision, and reference-backed comparison."
+              "nextAction": "HostProfileForm and HostProfileFields are source-backed and provider-free, the missing-profile branch uses shared HostEmptyActionCard, with provider waves adapted through HostProfileEditState and create/save mutations handled by HostProfileController. Remaining work is validation capture, any host-specific offline copy decision, and reference-backed comparison."
             },
             {
               "id": "DP-HOST-PROFILE-004",

@@ -8189,7 +8189,7 @@
           "id": "no_host_clubs",
           "kind": "empty",
           "status": "captured",
-          "source": "No hosted or owned clubs renders _HostEmptyState with Create your first club copy and Create club action.",
+          "source": "No hosted or owned clubs renders HostEmptyActionCard with Create your first club copy and Create club action.",
           "nextAction": "Verify create-club CTA routing in host shell once Host Club Create callbacks are fully typed.",
           "previewIds": [
             "HostOperationsHomeScreen/Route states"
@@ -8564,14 +8564,14 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "HostEmptyState"
+              "HostEmptyActionCard"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations_screen.dart",
-              "symbol": "HostEmptyState"
+              "file": "lib/hosts/presentation/widgets/host_empty_action_card.dart",
+              "symbol": "HostEmptyActionCard"
             },
-            "currentOwner": "_HostEventsScaffold",
-            "targetOwner": "provider-free host empty section",
+            "currentOwner": "_HostEventsScaffold + HostEmptyActionCard",
+            "targetOwner": "shared host empty action card",
             "dependencies": [
               "catch.button",
               "catch.surface"
@@ -8581,9 +8581,10 @@
               "no_events",
               "access_required"
             ],
-            "migration": "Split no-clubs and no-events copy into explicit display states and add capture coverage for both.",
+            "migration": "Keep no-clubs and no-events copy/action construction in route call sites while sharing HostEmptyActionCard for the visual shell.",
             "previewIds": [
-              "HostOperationsHomeScreen/Route states"
+              "HostOperationsHomeScreen/Route states",
+              "HostEmptyActionCard/Action card states"
             ]
           },
           {
@@ -8952,7 +8953,7 @@
           "id": "no_host_clubs",
           "kind": "empty",
           "status": "captured",
-          "source": "No hosted or owned clubs renders _HostEmptyState with No host clubs yet copy.",
+          "source": "No hosted or owned clubs renders HostEmptyActionCard with No host clubs yet copy.",
           "nextAction": "Decide whether this route should expose create-club directly or defer to host setup routes.",
           "previewIds": [
             "HostClubsScreen/Route states"
@@ -9659,14 +9660,14 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "HostEmptyState"
+              "HostEmptyActionCard"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations_screen.dart",
-              "symbol": "HostEmptyState"
+              "file": "lib/hosts/presentation/widgets/host_empty_action_card.dart",
+              "symbol": "HostEmptyActionCard"
             },
-            "currentOwner": "_HostClubsScaffold",
-            "targetOwner": "provider-free host empty section",
+            "currentOwner": "_HostClubsScaffold + HostEmptyActionCard",
+            "targetOwner": "shared host empty action card",
             "dependencies": [
               "catch.button",
               "catch.surface"
@@ -9675,9 +9676,10 @@
               "no_host_clubs",
               "access_required"
             ],
-            "migration": "Split no-clubs copy and action availability into explicit display states and add capture coverage for no-host-clubs.",
+            "migration": "Keep no-clubs copy/action availability in the route call site while sharing HostEmptyActionCard for the visual shell.",
             "previewIds": [
-              "HostClubsScreen/Route states"
+              "HostClubsScreen/Route states",
+              "HostEmptyActionCard/Action card states"
             ]
           },
           {
@@ -20575,7 +20577,7 @@
             "symbol": "HostProfileController"
           }
         ],
-        "notes": "HostProfileScreen is the direct professional profile editor route kept alongside HostAccountScreen. It resolves uid and watchHostProfileProvider through HostProfileEditState, renders loading/error/missing-profile states, syncs controllers from the loaded HostProfile, validates display name, saves display name/role title/bio through HostProfileController.saveProfileMutation, creates a missing profile through HostProfileController.ensureProfileMutation, composes provider-free HostProfileForm and HostProfileMissingState sections, and reports mutation failures through CatchMutationErrorListeners. Remaining route work is reference-backed parity and any product decision for host-specific offline copy."
+        "notes": "HostProfileScreen is the direct professional profile editor route kept alongside HostAccountScreen. It resolves uid and watchHostProfileProvider through HostProfileEditState, renders loading/error/missing-profile states, syncs controllers from the loaded HostProfile, validates display name, saves display name/role title/bio through HostProfileController.saveProfileMutation, creates a missing profile through HostProfileController.ensureProfileMutation, composes provider-free HostProfileForm and HostEmptyActionCard missing-profile states, and reports mutation failures through CatchMutationErrorListeners. Remaining route work is reference-backed parity and any product decision for host-specific offline copy."
       },
       "designRefs": [
         {
@@ -20695,7 +20697,7 @@
           "id": "missing_profile",
           "kind": "empty",
           "status": "captured",
-          "source": "A null HostProfile renders _HostProfileMissingState with Create host profile action.",
+          "source": "A null HostProfile renders HostEmptyActionCard with Create host profile action.",
           "nextAction": "Compare missing-profile and create-pending treatment against the canonical Host Profile reference once exported.",
           "captureIds": [
             "host_profile_missing",
@@ -20705,7 +20707,7 @@
           ],
           "previewIds": [
             "HostProfileScreen/Route states",
-            "HostProfileMissingState/Missing states"
+            "HostEmptyActionCard/Action card states"
           ]
         },
         {
@@ -20752,7 +20754,7 @@
             "host_profile_create_offline"
           ],
           "previewIds": [
-            "HostProfileMissingState/Missing states"
+            "HostEmptyActionCard/Action card states"
           ]
         },
         {
@@ -20827,7 +20829,7 @@
           "previewIds": [
             "HostProfileScreen/Route states",
             "HostProfileForm/Form states",
-            "HostProfileMissingState/Missing states"
+            "HostEmptyActionCard/Action card states"
           ]
         },
         {
@@ -20860,7 +20862,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "HostProfileScreen owns controller synchronization, validation, and shared Catch snackbar success feedback at the route edge, adapts uid/profile provider waves through HostProfileEditState, routes create/save through HostProfileController, then composes provider-free HostProfileForm and HostProfileMissingState sections. Host Settings editor sheet reuses HostProfileFields and the same save mutation.",
+        "currentLayout": "HostProfileScreen owns controller synchronization, validation, and shared Catch snackbar success feedback at the route edge, adapts uid/profile provider waves through HostProfileEditState, routes create/save through HostProfileController, then composes provider-free HostProfileForm plus HostEmptyActionCard for the missing-profile branch. Host Settings editor sheet reuses HostProfileFields and the same save mutation.",
         "targetLayout": "Host Profile should continue sharing HostProfileEditState and HostProfileController with Host Settings so provider-free profile form sections render populated, missing, validation, and mutation states consistently.",
         "sections": [
           {
@@ -20956,14 +20958,14 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "HostProfileMissingState"
+              "HostEmptyActionCard"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations_screen.dart",
-              "symbol": "HostProfileMissingState"
+              "file": "lib/hosts/presentation/widgets/host_empty_action_card.dart",
+              "symbol": "HostEmptyActionCard"
             },
-            "currentOwner": "HostProfileMissingState",
-            "targetOwner": "provider-free missing profile section",
+            "currentOwner": "HostProfileScreen + HostEmptyActionCard",
+            "targetOwner": "shared host empty action card plus route-owned create action",
             "dependencies": [
               "catch.button",
               "catch.surface"
@@ -20972,9 +20974,10 @@
               "missing_profile",
               "create_profile_mutation"
             ],
-            "migration": "Provider-free HostProfileMissingState now owns the missing-profile visual section while HostProfileController owns create-profile side effects. Capture proof should cover pending/error/success state shared with Host Settings.",
+            "migration": "HostProfileScreen now composes HostEmptyActionCard for the missing-profile visual section while HostProfileController owns create-profile side effects. Capture proof should cover pending/error/success state shared with Host Settings.",
             "previewIds": [
-              "HostProfileMissingState/Missing states"
+              "HostProfileScreen/Route states",
+              "HostEmptyActionCard/Action card states"
             ]
           }
         ]
@@ -20993,7 +20996,7 @@
         {
           "id": "DS-HOST-PROFILE-003",
           "status": "closed",
-          "nextAction": "HostProfileForm, HostProfileFields, and HostProfileMissingState are source-backed and provider-free, provider waves adapt through HostProfileEditState, create/save mutations route through HostProfileController, and direct route save success/failure behavior is tested. Reference-backed comparison remains tracked by DS-HOST-PROFILE-001/004."
+          "nextAction": "HostProfileForm and HostProfileFields are source-backed and provider-free, the missing-profile branch uses shared HostEmptyActionCard, provider waves adapt through HostProfileEditState, create/save mutations route through HostProfileController, and direct route save success/failure behavior is tested. Reference-backed comparison remains tracked by DS-HOST-PROFILE-001/004."
         },
         {
           "id": "DS-HOST-PROFILE-004",

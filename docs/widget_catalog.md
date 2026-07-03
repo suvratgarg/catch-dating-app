@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.555
+version: 2.5.556
 updated: 2026-07-03
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.556
+
+- Added `HostEmptyActionCard` for host empty-state surfaces with caller-owned
+  CTA actions, migrated Host Home, Host Clubs, and Host Profile missing states
+  to it, and retired `HostEmptyState`, `HostTodayEmptyEvents`, and
+  `HostProfileMissingState`.
 
 ### 2.5.555
 
@@ -1626,7 +1633,7 @@ a feature section here only when auditing that feature's widget surface.
   data or ad hoc loading/error props, and Widgetbook uses those same state
   classes for loading, error, missing, fallback, empty, and content previews.
 - `HostProfileScreen` now renders through `HostProfileEditState` before
-  composing `HostProfileForm` and `HostProfileMissingState`; the follow-up
+  composing `HostProfileForm` and `HostEmptyActionCard`; the follow-up
   `HostProfileController` pass moves create/save mutations out of the routes.
 
 ### 2.5.353
@@ -1845,11 +1852,11 @@ a feature section here only when auditing that feature's widget surface.
   `HostProfileEditState`, while create/save mutations go through
   `HostProfileController` and controller sync/snackbar side effects remain
   route-owned. It composes `HostProfileForm` and
-  `HostProfileMissingState`; the Host Settings editor sheet reuses
+  `HostEmptyActionCard`; the Host Settings editor sheet reuses
   `HostProfileFields`. Widgetbook now exposes
   `HostProfileScreen/Route states`, `HostProfileForm/Form states`,
   `HostProfileFields/Field states`, and
-  `HostProfileMissingState/Missing states` under the P2 Host Profile surface.
+  `HostEmptyActionCard/Action card states` under the Host Operations surface.
 
 ### 2.5.332
 
@@ -5549,7 +5556,7 @@ Generated 2026-05-06.
 | `HostSettingsState` | `lib/hosts/presentation/host_settings_state.dart:5` | Account-tab display seam for `screen.host.settings`. Adapts the uid/profile/clubs provider wave into profile and clubs display states before the route composes sections. |
 | `HostSettingsProfileState` | `lib/hosts/presentation/host_settings_state.dart:27` | Profile-summary display state for Host Settings. Covers loading, error, missing, loaded profile, and club-backed fallback profile branches so fallback identity is not derived inline in the screen. |
 | `HostSettingsClubsState` | `lib/hosts/presentation/host_settings_state.dart:82` | Clubs-section display state for Host Settings. Covers loading, error, empty, and content branches before `HostSettingsClubsSection` renders rows. |
-| `HostProfileEditState` | `lib/hosts/presentation/host_settings_state.dart:117` | Direct Host Profile route display state. Covers auth-required, loading, error, missing, and content before the route composes `HostProfileForm` or `HostProfileMissingState`. |
+| `HostProfileEditState` | `lib/hosts/presentation/host_settings_state.dart:117` | Direct Host Profile route display state. Covers auth-required, loading, error, missing, and content before the route composes `HostProfileForm` or the shared `HostEmptyActionCard` missing-profile branch. |
 | `HostHomeRouteState` | `lib/hosts/presentation/host_operations_screen.dart:168` | Host Home route adapter seam. Maps `uidProvider` plus the combined host-club async state into auth-required, loading, error, empty, or loaded branches before `HostOperationsHomeScreen` composes the shell or route-level error/loading surfaces. |
 | `HostHomeScreenState` | `lib/hosts/presentation/host_operations_screen.dart:237` | Host Home selected-club and selected-tab display seam. Resolves an optional initial club id, clamps selected indexes as club streams change, exposes title/switcher visibility, tracks `HostHomeTab.today` versus `HostHomeTab.events`, and centralizes owner/co-host role capability before the scaffold composes Today or Events sections. |
 | `HostHomeEventRowsState` / `HostHomeEventRowData` | `lib/hosts/presentation/host_operations_screen.dart:297` | Host Home Events-list display seam. Sorts selected-club events by start time, filters cancelled events, limits visible rows, and provides title/time/divider row data so `HostEventRow` does not own filtering or routing. |
@@ -5589,6 +5596,7 @@ Generated 2026-05-06.
 | `HostClubProfileCard` | `lib/hosts/presentation/host_operations_screen.dart:3124` | Host Clubs Edit tab body. Shows selected club metadata plus Identity, Contact, Event defaults, Public profile, Payouts, and Host team sections using `CatchSection`/`CatchField` rows, `HostPaymentAccountControllerCard`, and `HostTeamManagementSection`; owner-only rows expand inline editors, payout setup, and team management in place. The route can seed an initial expanded edit field for deterministic Widgetbook/capture states, and the public profile row receives a typed preview callback from `_HostClubsScaffold` instead of routing directly. |
 | `HostClubPreviewPane` | `lib/hosts/presentation/host_operations_screen.dart:4961` | Host Clubs Preview tab body. Shows the selected club description and receives a typed public-preview route callback from `_HostClubsScaffold` until the public club preview components are made embeddable inside the host tab. |
 | `HostEventRow` | `lib/hosts/presentation/host_operations_screen.dart:5115` | Provider-free Host Home Events row. Uses `CatchField.nav` with date icon, event title, time value, divider, and chevron tap target from `HostHomeEventRowData`, and delegates tap handling to the parent-supplied manage callback. Widgetbook exposes first-row and divided-row variants. |
+| `HostEmptyActionCard` | `lib/hosts/presentation/widgets/host_empty_action_card.dart:8` | Host empty-state surface with section-title copy, supporting body, and optional caller-owned CTA actions. Host Home, Host Clubs, and Host Profile missing states now construct their action buttons at the route/section call site while sharing this visual shell. Widgetbook covers single-action, two-action, and pending-action states. |
 | `HostEventToolsPageIndicator` | `lib/hosts/presentation/widgets/host_event_tools.dart:164` | In-card hosted-event position indicator. Shows `N of total` plus a bounded progress rail so unbounded hosted-event counts do not grow the rendered indicator. |
 | `HostEventToolCard` | `lib/hosts/presentation/widgets/host_event_tools.dart:208` | Shared operational card for one hosted event. Adapts host event lifecycle, bounded in-card progress, date/time, meet point, booked/waitlist counts, and one contextual CTA into `EventActionCard` using the host palette. |
 | `HostToolPalette` | `lib/hosts/presentation/widgets/host_event_tools.dart:304` | Token-backed host-tool color helper for default host panels and attendance states. Use this instead of local orange-tinted containers for host chrome. |
@@ -5611,7 +5619,6 @@ Generated 2026-05-06.
 | `HostSettingsClubsSection` | `lib/hosts/presentation/host_operations_screen.dart:609` | Provider-free hosted-clubs section for `screen.host.settings`. Renders loading, error, empty, edit-mode, and preview-mode club rows from `HostSettingsClubsState`, retry callback, and route callback so Widgetbook can cover section states without Riverpod reads. |
 | `HostProfileForm` | `lib/hosts/presentation/host_operations_screen.dart:962` | Provider-free professional profile form for `screen.host.profile`. Renders status-aware profile fields and the save action from explicit controllers, save state, profile status, and callback so Widgetbook can cover active/pending/suspended, validation, pending, text-scale, reduced-motion, and theme states without live providers. |
 | `HostProfileFields` | `lib/hosts/presentation/host_operations_screen.dart:1014` | Shared host professional profile field stack for the full-screen Host Profile route and Host Settings editor sheet. It owns display name validation and status label rendering while keeping persistence and controller ownership outside the field section. |
-| `HostProfileMissingState` | `lib/hosts/presentation/host_operations_screen.dart:1076` | Provider-free missing-profile section for the direct Host Profile route. Receives create and pending state from the route/adapter boundary so Widgetbook can review missing and create-pending states without repository side effects. |
 
 ### ConsumerWidget
 
@@ -5638,7 +5645,7 @@ Generated 2026-05-06.
 | Widget | File | Purpose |
 |---|---|---|
 | `HostProfileEditorSheet` | `lib/hosts/presentation/host_operations_screen.dart:692` | Source-backed Host Account editor sheet. Reuses `HostProfileFields`, watches save pending state, and saves display name, role title, and bio through `HostProfileController` without pushing the full-screen editor route. |
-| `HostProfileScreen` | `lib/hosts/presentation/host_operations_screen.dart:775` | Direct professional host profile editor route registered as `screen.host.profile`. It resolves uid/profile loading through `HostProfileEditState`, renders `HostSettingsRowsSkeleton` for loading, handles error and missing states, syncs display name, role title, bio, and status into controllers, composes provider-free `HostProfileForm` and `HostProfileMissingState`, routes create/save through `HostProfileController`, exposes a default-disabled `formAutovalidateMode` for deterministic validation captures, and shows save success feedback through `showCatchSnackBar` while keeping navigation behavior at the route edge until a broader route-action adapter exists. |
+| `HostProfileScreen` | `lib/hosts/presentation/host_operations_screen.dart:775` | Direct professional host profile editor route registered as `screen.host.profile`. It resolves uid/profile loading through `HostProfileEditState`, renders `HostSettingsRowsSkeleton` for loading, handles error and missing states, syncs display name, role title, bio, and status into controllers, composes provider-free `HostProfileForm` plus shared `HostEmptyActionCard` for the missing-profile branch, routes create/save through `HostProfileController`, exposes a default-disabled `formAutovalidateMode` for deterministic validation captures, and shows save success feedback through `showCatchSnackBar` while keeping navigation behavior at the route edge until a broader route-action adapter exists. |
 | `HostClubInsightsState` | `lib/hosts/presentation/host_operations_screen.dart:284` | Immutable Host Clubs analytics state. Owns range, granularity, custom date bounds, selected event scope, provider query derivation, and club-switch event-scope clearing so retry invalidation uses the same `HostAnalyticsQuery` key as the current UI. |
 | `_HostClubInsightsPane` | `lib/hosts/presentation/host_operations_screen.dart:2142` | Host Clubs Insights tab body. Owns local date-picker presentation while delegating analytics range, granularity, custom-date, event-scope, and `hostAnalyticsProvider` query derivation to `HostClubInsightsState`; loading renders `HostAnalyticsReportSkeleton`. A future migration can still split the private analytics sections into a provider-free public section adapter if the design reference requires deeper review states. |
 

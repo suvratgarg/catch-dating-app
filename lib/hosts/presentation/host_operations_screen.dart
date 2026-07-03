@@ -51,6 +51,7 @@ import 'package:catch_dating_app/hosts/presentation/host_profile_controller.dart
 import 'package:catch_dating_app/hosts/presentation/host_settings_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_settings_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_empty_action_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_payout_prompt_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
@@ -192,9 +193,25 @@ class _HostProfileScreenState extends ConsumerState<HostProfileScreen> {
         context: AppErrorContext.profile,
         onRetry: () => ref.invalidate(watchHostProfileProvider(uid)),
       ),
-      HostProfileEditMissing() => HostProfileMissingState(
-        creating: creatingProfile,
-        onCreateProfile: () => unawaited(_createHostProfile()),
+      HostProfileEditMissing() => ListView(
+        padding: CatchInsets.pageBodyUnderHeader,
+        children: [
+          HostEmptyActionCard(
+            title: 'No host profile yet',
+            body:
+                'Create a professional host identity before editing profile details.',
+            actions: [
+              CatchButton(
+                label: 'Create host profile',
+                icon: Icon(CatchIcons.businessOutlined, size: CatchIcon.md),
+                isLoading: creatingProfile,
+                onPressed: creatingProfile
+                    ? null
+                    : () => unawaited(_createHostProfile()),
+              ),
+            ],
+          ),
+        ],
       ),
       HostProfileEditContent(:final profile) => _buildProfileForm(
         profile: profile,
@@ -384,52 +401,6 @@ class HostProfileFields extends StatelessWidget {
   }
 }
 
-class HostProfileMissingState extends StatelessWidget {
-  const HostProfileMissingState({
-    super.key,
-    required this.onCreateProfile,
-    this.creating = false,
-  });
-
-  final VoidCallback onCreateProfile;
-  final bool creating;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return ListView(
-      padding: CatchInsets.pageBodyUnderHeader,
-      children: [
-        CatchSurface(
-          padding: CatchInsets.content,
-          borderColor: t.line,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'No host profile yet',
-                style: CatchTextStyles.sectionTitle(context),
-              ),
-              gapH8,
-              Text(
-                'Create a professional host identity before editing profile details.',
-                style: CatchTextStyles.supporting(context, color: t.ink2),
-              ),
-              gapH18,
-              CatchButton(
-                label: 'Create host profile',
-                icon: Icon(CatchIcons.businessOutlined, size: CatchIcon.md),
-                isLoading: creating,
-                onPressed: creating ? null : onCreateProfile,
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 String? _requiredDisplayName(String? value) {
   if (value == null || value.trim().isEmpty) {
     return 'Enter a display name.';
@@ -508,10 +479,18 @@ class _HostEventsScaffoldState extends State<HostEventsScaffold> {
             ),
             children: [
               if (selectedClub == null)
-                const HostEmptyState(
+                HostEmptyActionCard(
                   title: 'Create your first club',
                   body:
                       'Create a club to publish events, manage attendees, and run Event Success.',
+                  actions: [
+                    CatchButton(
+                      label: 'Create club',
+                      icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+                      onPressed: () =>
+                          context.pushNamed(Routes.hostCreateClubScreen.name),
+                    ),
+                  ],
                 )
               else
                 HostTodayDashboardCard(
@@ -561,10 +540,18 @@ class _HostEventsScaffoldState extends State<HostEventsScaffold> {
         padding: CatchInsets.pageBodyUnderHeader,
         children: [
           if (selectedClub == null)
-            const HostEmptyState(
+            HostEmptyActionCard(
               title: 'Create your first club',
               body:
                   'Create a club to publish events, manage attendees, and run Event Success.',
+              actions: [
+                CatchButton(
+                  label: 'Create club',
+                  icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+                  onPressed: () =>
+                      context.pushNamed(Routes.hostCreateClubScreen.name),
+                ),
+              ],
             )
           else
             HostEventsClubCard(
@@ -701,10 +688,18 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold> {
               : CatchInsets.pageBodyUnderHeader,
           children: [
             if (selectedClub == null)
-              const HostEmptyState(
+              HostEmptyActionCard(
                 title: 'No host clubs yet',
                 body:
                     'Create a club or accept a host invite to start managing events.',
+                actions: [
+                  CatchButton(
+                    label: 'Create club',
+                    icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+                    onPressed: () =>
+                        context.pushNamed(Routes.hostCreateClubScreen.name),
+                  ),
+                ],
               )
             else
               switch (_state.selectedTab) {
@@ -937,10 +932,23 @@ class HostTodayDashboardSection extends StatelessWidget {
             context: AppErrorContext.event,
             onRetry: onRetryEvents,
           ),
-          HostHomeTodayStatus.empty => HostTodayEmptyEvents(
-            club: club,
-            onCreateEvent: onCreateEvent,
-            onViewEvents: onViewEvents,
+          HostHomeTodayStatus.empty => HostEmptyActionCard(
+            title: 'No active events yet',
+            body:
+                'Create an event for ${club.name} to start filling the host dashboard.',
+            actions: [
+              CatchButton(
+                label: 'New event',
+                icon: Icon(CatchIcons.addRounded, size: CatchIcon.sm),
+                onPressed: () => onCreateEvent(club),
+              ),
+              CatchButton(
+                label: 'Events',
+                variant: CatchButtonVariant.secondary,
+                size: CatchButtonSize.sm,
+                onPressed: onViewEvents,
+              ),
+            ],
           ),
           HostHomeTodayStatus.content => _buildContent(),
         },
@@ -1113,62 +1121,6 @@ class HostTodayLoadingBody extends StatelessWidget {
         gapH14,
         HostEventRowsSkeleton(count: 3),
       ],
-    );
-  }
-}
-
-class HostTodayEmptyEvents extends StatelessWidget {
-  const HostTodayEmptyEvents({
-    super.key,
-    required this.club,
-    required this.onCreateEvent,
-    required this.onViewEvents,
-  });
-
-  final Club club;
-  final HostHomeCreateEventCallback onCreateEvent;
-  final VoidCallback onViewEvents;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.content,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'No active events yet',
-            style: CatchTextStyles.sectionTitle(context, color: t.ink),
-          ),
-          gapH8,
-          Text(
-            'Create an event for ${club.name} to start filling the host dashboard.',
-            style: CatchTextStyles.supporting(context, color: t.ink2),
-          ),
-          gapH18,
-          Row(
-            children: [
-              Expanded(
-                child: CatchButton(
-                  label: 'New event',
-                  icon: Icon(CatchIcons.addRounded, size: CatchIcon.sm),
-                  onPressed: () => onCreateEvent(club),
-                ),
-              ),
-              gapW12,
-              CatchButton(
-                label: 'Events',
-                variant: CatchButtonVariant.secondary,
-                size: CatchButtonSize.sm,
-                onPressed: onViewEvents,
-              ),
-            ],
-          ),
-        ],
-      ),
     );
   }
 }
@@ -4363,38 +4315,6 @@ class HostEventRow extends StatelessWidget {
       icon: CatchIcons.calendarTodayOutlined,
       divider: row.divider,
       onTap: onTap,
-    );
-  }
-}
-
-class HostEmptyState extends StatelessWidget {
-  const HostEmptyState({super.key, required this.title, required this.body});
-
-  final String title;
-  final String body;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      padding: CatchInsets.content,
-      borderColor: t.line,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title, style: CatchTextStyles.sectionTitle(context)),
-          gapH8,
-          Text(body, style: CatchTextStyles.supporting(context, color: t.ink2)),
-          gapH18,
-          CatchButton(
-            label: 'Create club',
-            icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
-            onPressed: () =>
-                context.pushNamed(Routes.hostCreateClubScreen.name),
-          ),
-        ],
-      ),
     );
   }
 }

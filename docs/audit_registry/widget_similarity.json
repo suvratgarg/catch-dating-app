@@ -35,9 +35,9 @@
     },
     {
       "hammingBucket": "20-24",
-      "pairs": 15,
+      "pairs": 14,
       "jaccardMin": 0.5806,
-      "jaccardMean": 0.6702,
+      "jaccardMean": 0.6766,
       "jaccardMax": 0.7647
     },
     {
@@ -51,56 +51,56 @@
       "hammingBucket": "30-34",
       "pairs": 88,
       "jaccardMin": 0.1273,
-      "jaccardMean": 0.4044,
+      "jaccardMean": 0.4071,
       "jaccardMax": 0.7353
     },
     {
       "hammingBucket": "35-39",
-      "pairs": 200,
+      "pairs": 196,
       "jaccardMin": 0.0395,
-      "jaccardMean": 0.3179,
+      "jaccardMean": 0.3196,
       "jaccardMax": 0.5682
     },
     {
       "hammingBucket": "40-44",
-      "pairs": 518,
+      "pairs": 530,
       "jaccardMin": 0.0303,
-      "jaccardMean": 0.2292,
+      "jaccardMean": 0.2298,
       "jaccardMax": 0.5
     },
     {
       "hammingBucket": "45-49",
-      "pairs": 1141,
+      "pairs": 1152,
       "jaccardMin": 0,
-      "jaccardMean": 0.1529,
+      "jaccardMean": 0.1538,
       "jaccardMax": 0.4902
     },
     {
       "hammingBucket": "50-54",
-      "pairs": 2257,
+      "pairs": 2272,
       "jaccardMin": 0,
-      "jaccardMean": 0.1023,
+      "jaccardMean": 0.1029,
       "jaccardMax": 0.4412
     },
     {
       "hammingBucket": "55-59",
-      "pairs": 3449,
+      "pairs": 3459,
       "jaccardMin": 0,
-      "jaccardMean": 0.0645,
+      "jaccardMean": 0.0647,
       "jaccardMax": 0.3256
     },
     {
       "hammingBucket": "60-64",
-      "pairs": 3419,
+      "pairs": 3427,
       "jaccardMin": 0,
-      "jaccardMean": 0.0388,
+      "jaccardMean": 0.039,
       "jaccardMax": 0.2982
     },
     {
       "hammingBucket": "65-69",
       "pairs": 1979,
       "jaccardMin": 0,
-      "jaccardMean": 0.0252,
+      "jaccardMean": 0.0253,
       "jaccardMax": 0.2143
     },
     {
@@ -112,9 +112,9 @@
     },
     {
       "hammingBucket": "75-79",
-      "pairs": 118,
+      "pairs": 120,
       "jaccardMin": 0,
-      "jaccardMean": 0.011,
+      "jaccardMean": 0.0111,
       "jaccardMax": 0.1333
     },
     {
@@ -133,16 +133,16 @@
     }
   ],
   "summary": {
-    "widgets": 1043,
+    "widgets": 1041,
     "fingerprintFailures": 0,
     "exactClusters": 1,
-    "clusters": 54,
-    "structuralEdges": 99,
+    "clusters": 53,
+    "structuralEdges": 97,
     "smallWidgetEdges": 45,
     "rankedPairs": 200,
     "nameFamilies": 223,
     "relatedEdges": 44,
-    "screenClusters": 14,
+    "screenClusters": 13,
     "skippedTrivial": 100,
     "absorbCandidates": 8
   },
@@ -171,7 +171,7 @@
           {
             "a": "DarkPill",
             "b": "EventSuccessDarkPill",
-            "rank": 32,
+            "rank": 31,
             "score": 0.6667,
             "containment": 0.6667,
             "jaccard": 0.4444
@@ -1247,7 +1247,7 @@
       "simhash128": "e5d8cc04bb9be224ebe7cc9766399b67",
       "tokenStreamLength": 97,
       "coarseTokenStreamLength": 97,
-      "usageCountRaw": 176,
+      "usageCountRaw": 183,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -3132,7 +3132,7 @@
       "simhash128": "7dc9d929c8a5c9bf3e46c41ff06fdd21",
       "tokenStreamLength": 100,
       "coarseTokenStreamLength": 100,
-      "usageCountRaw": 329,
+      "usageCountRaw": 327,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": true
     },
@@ -8275,11 +8275,11 @@
       "name": "HostClubsScaffold",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
       "role": "screen",
-      "shapeHash": "94062b9dcc31a4cec85fe5f26b0c6c1bc6bfc9ac42ca36249a59fef600452953",
-      "coarseShapeHash": "6940ad0246b7f37a8b241677bdd5efc84bdb0c55fd5bc6bbbf23981d65762f82",
-      "simhash128": "71b9129da349f17fef4f457c08aafc79",
-      "tokenStreamLength": 92,
-      "coarseTokenStreamLength": 92,
+      "shapeHash": "83ee4e935be0867485099a3baf077b5bcfc2082901e6a958684ad1059ec61694",
+      "coarseShapeHash": "5699e3afece4fa58daf95245185b68e9918d323cdde6fe79f9f1f656e3246d07",
+      "simhash128": "7079029d0041f077ee4e454c28aafc69",
+      "tokenStreamLength": 103,
+      "coarseTokenStreamLength": 103,
       "usageCountRaw": 2,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
@@ -8363,15 +8363,15 @@
       "hasWidgetHelpers": false
     },
     {
-      "name": "HostEmptyState",
-      "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "role": "screen",
-      "shapeHash": "a8ba00a2f03a12180b0da0c852df22876eaa926755eb55634419240f76a2316a",
-      "coarseShapeHash": "4a0bd1469d27de574762a84ae208853e54445ae2eb0de90b9bdc61286b2e70b3",
-      "simhash128": "2b5d7f8b072192a3b40e6538ee32f1bd",
-      "tokenStreamLength": 24,
-      "coarseTokenStreamLength": 24,
-      "usageCountRaw": 5,
+      "name": "HostEmptyActionCard",
+      "file": "lib/hosts/presentation/widgets/host_empty_action_card.dart",
+      "role": "composition",
+      "shapeHash": "0e6d83848819c113dd3ac681c59acc4ede4988fa566f2e9e9f7c3bc6cc53b6a7",
+      "coarseShapeHash": "0ad0776ba21ca2b372f09e8feb9210598f579b3f71d8aa98b23e1351347a508d",
+      "simhash128": "0358fea8fc31f238af42f57df63f93fd",
+      "tokenStreamLength": 27,
+      "coarseTokenStreamLength": 27,
+      "usageCountRaw": 15,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -8522,11 +8522,11 @@
       "name": "HostEventsScaffold",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
       "role": "screen",
-      "shapeHash": "d3f831fe7499d18dbff6350543dc86ecaf88beb9d64368393bc955318f95935b",
-      "coarseShapeHash": "1f7bb9f362e7051e802da181a25591960303bc99f5e95d3810faf72d8a93c09d",
-      "simhash128": "b43003bfa1e1305bef77572e09b8f87f",
-      "tokenStreamLength": 75,
-      "coarseTokenStreamLength": 75,
+      "shapeHash": "2aec9cfd491ac6f4ab0c82cb2f790b4d875648521d8930aba055adab696875a7",
+      "coarseShapeHash": "2de65b23fe4abaf68cfb543683896d2fc830d169e70b437679de3a4744b75692",
+      "simhash128": "286003bb0081305bee2e412669b2d86f",
+      "tokenStreamLength": 97,
+      "coarseTokenStreamLength": 97,
       "usageCountRaw": 3,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
@@ -9104,27 +9104,14 @@
       "hasWidgetHelpers": false
     },
     {
-      "name": "HostProfileMissingState",
-      "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "role": "screen",
-      "shapeHash": "4dbdd992c66756ef7753b40044e5417962784311007a17b6f901f8529647583d",
-      "coarseShapeHash": "f0ac8dd0afbeb00e89f491eaba452956fb7640fd8b81ed153921390c7ce93d7c",
-      "simhash128": "2b5b7bcb5721da0bbc0e6d7866b275be",
-      "tokenStreamLength": 33,
-      "coarseTokenStreamLength": 33,
-      "usageCountRaw": 3,
-      "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
-      "hasWidgetHelpers": false
-    },
-    {
       "name": "HostProfileScreen",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
       "role": "screen",
-      "shapeHash": "96eb47bd00ffffa5b444826864a5567b999c21f7c85211d38c79001e24af1ed3",
-      "coarseShapeHash": "a63994aa37ea17c94e59d6509b5c0faf5869502ea2efc62b5518a86d845e0901",
-      "simhash128": "64f562df1349136af71cfd6fbb84807f",
-      "tokenStreamLength": 70,
-      "coarseTokenStreamLength": 70,
+      "shapeHash": "18368145e0f6ee484b0c42b1e7acd1648bbd00985b37ee60b4d56dd73e3dd629",
+      "coarseShapeHash": "a2158715ad24ee61b86a03bbff260f4b9ce58997eb9c7f6c12aa99c96d9dda01",
+      "simhash128": "2a7172cf0301da2aa53ccd7de9921077",
+      "tokenStreamLength": 90,
+      "coarseTokenStreamLength": 90,
       "usageCountRaw": 11,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": true
@@ -9458,27 +9445,14 @@
       "name": "HostTodayDashboardSection",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
       "role": "screen",
-      "shapeHash": "428cc9bbe4a513014488738b59e482082efc46dfb9fb55bb7745331431b8c456",
-      "coarseShapeHash": "80003aebda13c41a1654853b0e650fa341ac61f4c785b81ad0eaefa5af5e3af3",
-      "simhash128": "e6b1bd28bd23a73e7fde3b5527db9aae",
-      "tokenStreamLength": 29,
-      "coarseTokenStreamLength": 29,
+      "shapeHash": "6a3cec24ae0a871c26f36591b8651e4952f10d3aeb422fff7d5d8ccf7d64ebc4",
+      "coarseShapeHash": "1acb45ed67225102b08fc1baa465bbd1f01f0ba2f01955d52ca98141a6a3e431",
+      "simhash128": "2a72bfab0501bbbe669a19502792d0a0",
+      "tokenStreamLength": 47,
+      "coarseTokenStreamLength": 47,
       "usageCountRaw": 3,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": true
-    },
-    {
-      "name": "HostTodayEmptyEvents",
-      "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "role": "screen",
-      "shapeHash": "6809526316eded5cee7d1cf710f02d80e0a213362737d6a0e078e10d496966c9",
-      "coarseShapeHash": "bd1d1c3d2a9993dfd3b65e56b6e0a8c79e32337f66cd5371628e6fb18c831eaf",
-      "simhash128": "2b5b3ccb972112babc0a4d30e832e38c",
-      "tokenStreamLength": 36,
-      "coarseTokenStreamLength": 36,
-      "usageCountRaw": 3,
-      "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
-      "hasWidgetHelpers": false
     },
     {
       "name": "HostTodayEventHero",
@@ -14324,34 +14298,8 @@
       "scope": "widget"
     },
     {
-      "id": "c014-host-empty-state",
+      "id": "c014-skeleton",
       "rank": 14,
-      "score": 15.5794,
-      "cohesion": 0.5564,
-      "absorbCandidate": false,
-      "nameSignal": null,
-      "detectors": [
-        "structural",
-        "name"
-      ],
-      "members": [
-        "HostEmptyState",
-        "HostProfileMissingState",
-        "HostTodayEmptyEvents"
-      ],
-      "paramCompatibility": {
-        "min": 0.1667,
-        "mean": 0.1778
-      },
-      "structuralSignals": [
-        "structural"
-      ],
-      "visualBridges": [],
-      "scope": "screen"
-    },
-    {
-      "id": "c015-skeleton",
-      "rank": 15,
       "score": 15.4088,
       "cohesion": 0.4815,
       "absorbCandidate": false,
@@ -14377,8 +14325,8 @@
       "scope": "widget"
     },
     {
-      "id": "c016-loading-screen",
-      "rank": 16,
+      "id": "c015-loading-screen",
+      "rank": 15,
       "score": 14.8571,
       "cohesion": 0.5714,
       "absorbCandidate": false,
@@ -14402,8 +14350,8 @@
       "scope": "screen"
     },
     {
-      "id": "c017-icon",
-      "rank": 17,
+      "id": "c016-icon",
+      "rank": 16,
       "score": 14.4444,
       "cohesion": 0.5556,
       "absorbCandidate": true,
@@ -14426,8 +14374,8 @@
       "scope": "widget"
     },
     {
-      "id": "c018-card",
-      "rank": 18,
+      "id": "c017-card",
+      "rank": 17,
       "score": 14.2105,
       "cohesion": 0.7105,
       "absorbCandidate": false,
@@ -14451,8 +14399,8 @@
       "scope": "widget"
     },
     {
-      "id": "c019-pill",
-      "rank": 19,
+      "id": "c018-pill",
+      "rank": 18,
       "score": 14.1176,
       "cohesion": 0.4706,
       "absorbCandidate": false,
@@ -14476,8 +14424,8 @@
       "scope": "widget"
     },
     {
-      "id": "c020-tab-skeleton",
-      "rank": 20,
+      "id": "c019-tab-skeleton",
+      "rank": 19,
       "score": 14.0353,
       "cohesion": 0.5848,
       "absorbCandidate": false,
@@ -14503,8 +14451,8 @@
       "scope": "screen"
     },
     {
-      "id": "c021-skeleton",
-      "rank": 21,
+      "id": "c020-skeleton",
+      "rank": 20,
       "score": 13.2938,
       "cohesion": 0.391,
       "absorbCandidate": false,
@@ -14533,8 +14481,8 @@
       "scope": "widget"
     },
     {
-      "id": "c022-rotation-slots",
-      "rank": 22,
+      "id": "c021-rotation-slots",
+      "rank": 21,
       "score": 13,
       "cohesion": 0.65,
       "absorbCandidate": false,
@@ -14559,8 +14507,8 @@
       "scope": "widget"
     },
     {
-      "id": "c023-override-sheet",
-      "rank": 23,
+      "id": "c022-override-sheet",
+      "rank": 22,
       "score": 12.2353,
       "cohesion": 0.7647,
       "absorbCandidate": false,
@@ -14584,8 +14532,8 @@
       "scope": "widget"
     },
     {
-      "id": "c024-override-round-editor",
-      "rank": 24,
+      "id": "c023-override-round-editor",
+      "rank": 23,
       "score": 11.7333,
       "cohesion": 0.7333,
       "absorbCandidate": false,
@@ -14609,8 +14557,8 @@
       "scope": "widget"
     },
     {
-      "id": "c025-app-shell",
-      "rank": 25,
+      "id": "c024-app-shell",
+      "rank": 24,
       "score": 11.3636,
       "cohesion": 0.5682,
       "absorbCandidate": false,
@@ -14634,8 +14582,8 @@
       "scope": "widget"
     },
     {
-      "id": "c026-rows",
-      "rank": 26,
+      "id": "c025-rows",
+      "rank": 25,
       "score": 11.1304,
       "cohesion": 0.6957,
       "absorbCandidate": false,
@@ -14660,8 +14608,8 @@
       "scope": "screen"
     },
     {
-      "id": "c027-slot-row",
-      "rank": 27,
+      "id": "c026-slot-row",
+      "rank": 26,
       "score": 11.1304,
       "cohesion": 0.6957,
       "absorbCandidate": false,
@@ -14685,8 +14633,8 @@
       "scope": "widget"
     },
     {
-      "id": "c028-event-success-skeleton-surface",
-      "rank": 28,
+      "id": "c027-event-success-skeleton-surface",
+      "rank": 27,
       "score": 11.1111,
       "cohesion": 0.5556,
       "absorbCandidate": false,
@@ -14709,8 +14657,8 @@
       "scope": "widget"
     },
     {
-      "id": "c029-panel",
-      "rank": 29,
+      "id": "c028-panel",
+      "rank": 28,
       "score": 10.9474,
       "cohesion": 0.6842,
       "absorbCandidate": false,
@@ -14734,8 +14682,8 @@
       "scope": "widget"
     },
     {
-      "id": "c030-row",
-      "rank": 30,
+      "id": "c029-row",
+      "rank": 29,
       "score": 10.9091,
       "cohesion": 0.6818,
       "absorbCandidate": false,
@@ -14759,8 +14707,8 @@
       "scope": "screen"
     },
     {
-      "id": "c031-card",
-      "rank": 31,
+      "id": "c030-card",
+      "rank": 30,
       "score": 10.88,
       "cohesion": 0.68,
       "absorbCandidate": false,
@@ -14785,8 +14733,8 @@
       "scope": "widget"
     },
     {
-      "id": "c032-catch-framework-error-debug-details",
-      "rank": 32,
+      "id": "c031-catch-framework-error-debug-details",
+      "rank": 31,
       "score": 10.08,
       "cohesion": 0.56,
       "absorbCandidate": true,
@@ -14809,8 +14757,8 @@
       "scope": "widget"
     },
     {
-      "id": "c033-event-detail-policy-summary",
-      "rank": 33,
+      "id": "c032-event-detail-policy-summary",
+      "rank": 32,
       "score": 10,
       "cohesion": 0.625,
       "absorbCandidate": true,
@@ -14833,8 +14781,8 @@
       "scope": "widget"
     },
     {
-      "id": "c034-activity-attribute-goal-chips",
-      "rank": 34,
+      "id": "c033-activity-attribute-goal-chips",
+      "rank": 33,
       "score": 9.4299,
       "cohesion": 0.5894,
       "absorbCandidate": false,
@@ -14860,8 +14808,8 @@
       "scope": "widget"
     },
     {
-      "id": "c035-event-cta-status-leading",
-      "rank": 35,
+      "id": "c034-event-cta-status-leading",
+      "rank": 34,
       "score": 8.3077,
       "cohesion": 0.6923,
       "absorbCandidate": false,
@@ -14885,8 +14833,8 @@
       "scope": "widget"
     },
     {
-      "id": "c036-celebration-details-card",
-      "rank": 36,
+      "id": "c035-celebration-details-card",
+      "rank": 35,
       "score": 8.2162,
       "cohesion": 0.5135,
       "absorbCandidate": false,
@@ -14910,8 +14858,8 @@
       "scope": "widget"
     },
     {
-      "id": "c037-reveal-host-copy",
-      "rank": 37,
+      "id": "c036-reveal-host-copy",
+      "rank": 36,
       "score": 7.7143,
       "cohesion": 0.8571,
       "absorbCandidate": false,
@@ -14935,8 +14883,8 @@
       "scope": "widget"
     },
     {
-      "id": "c038-dashboard-full",
-      "rank": 38,
+      "id": "c037-dashboard-full",
+      "rank": 37,
       "score": 7.4176,
       "cohesion": 0.8242,
       "absorbCandidate": false,
@@ -14959,8 +14907,8 @@
       "scope": "widget"
     },
     {
-      "id": "c039-card",
-      "rank": 39,
+      "id": "c038-card",
+      "rank": 38,
       "score": 7.2,
       "cohesion": 0.72,
       "absorbCandidate": false,
@@ -14983,8 +14931,8 @@
       "scope": "widget"
     },
     {
-      "id": "c040-hero",
-      "rank": 40,
+      "id": "c039-hero",
+      "rank": 39,
       "score": 7.1621,
       "cohesion": 0.5968,
       "absorbCandidate": false,
@@ -15008,8 +14956,8 @@
       "scope": "screen"
     },
     {
-      "id": "c041-profile-tab",
-      "rank": 41,
+      "id": "c040-profile-tab",
+      "rank": 40,
       "score": 6.7833,
       "cohesion": 0.6167,
       "absorbCandidate": false,
@@ -15032,8 +14980,8 @@
       "scope": "widget"
     },
     {
-      "id": "c042-filters-section",
-      "rank": 42,
+      "id": "c041-filters-section",
+      "rank": 41,
       "score": 6.6667,
       "cohesion": 0.8333,
       "absorbCandidate": false,
@@ -15056,8 +15004,8 @@
       "scope": "screen"
     },
     {
-      "id": "c043-people-token-row",
-      "rank": 43,
+      "id": "c042-people-token-row",
+      "rank": 42,
       "score": 6.3,
       "cohesion": 0.7,
       "absorbCandidate": false,
@@ -15081,8 +15029,8 @@
       "scope": "widget"
     },
     {
-      "id": "c044-card",
-      "rank": 44,
+      "id": "c043-card",
+      "rank": 43,
       "score": 6.1111,
       "cohesion": 0.6111,
       "absorbCandidate": false,
@@ -15105,8 +15053,8 @@
       "scope": "widget"
     },
     {
-      "id": "c045-editor",
-      "rank": 45,
+      "id": "c044-editor",
+      "rank": 44,
       "score": 6,
       "cohesion": 0.75,
       "absorbCandidate": false,
@@ -15129,8 +15077,8 @@
       "scope": "widget"
     },
     {
-      "id": "c046-paper-ticket-detail",
-      "rank": 46,
+      "id": "c045-paper-ticket-detail",
+      "rank": 45,
       "score": 6,
       "cohesion": 0.75,
       "absorbCandidate": false,
@@ -15154,8 +15102,8 @@
       "scope": "widget"
     },
     {
-      "id": "c047-calendar-stats-header",
-      "rank": 47,
+      "id": "c046-calendar-stats-header",
+      "rank": 46,
       "score": 5.85,
       "cohesion": 0.65,
       "absorbCandidate": false,
@@ -15178,8 +15126,8 @@
       "scope": "screen"
     },
     {
-      "id": "c048-row",
-      "rank": 48,
+      "id": "c047-row",
+      "rank": 47,
       "score": 5.58,
       "cohesion": 0.62,
       "absorbCandidate": false,
@@ -15202,8 +15150,8 @@
       "scope": "widget"
     },
     {
-      "id": "c049-event-focus-rail",
-      "rank": 49,
+      "id": "c048-event-focus-rail",
+      "rank": 48,
       "score": 5.5172,
       "cohesion": 0.5517,
       "absorbCandidate": false,
@@ -15226,8 +15174,8 @@
       "scope": "widget"
     },
     {
-      "id": "c050-home-screen",
-      "rank": 50,
+      "id": "c049-home-screen",
+      "rank": 49,
       "score": 5.3333,
       "cohesion": 0.6667,
       "absorbCandidate": false,
@@ -15251,8 +15199,8 @@
       "scope": "screen"
     },
     {
-      "id": "c051-companion-primary-action-skeleton",
-      "rank": 51,
+      "id": "c050-companion-primary-action-skeleton",
+      "rank": 50,
       "score": 4.7797,
       "cohesion": 0.5975,
       "absorbCandidate": false,
@@ -15278,8 +15226,8 @@
       "scope": "screen"
     },
     {
-      "id": "c052-sliver-body",
-      "rank": 52,
+      "id": "c051-sliver-body",
+      "rank": 51,
       "score": 2.963,
       "cohesion": 0.7407,
       "absorbCandidate": false,
@@ -15304,8 +15252,8 @@
       "scope": "screen"
     },
     {
-      "id": "c053-companion-error",
-      "rank": 53,
+      "id": "c052-companion-error",
+      "rank": 52,
       "score": 1.4,
       "cohesion": 0.7,
       "absorbCandidate": false,
@@ -15328,8 +15276,8 @@
       "scope": "screen"
     },
     {
-      "id": "c054-footer",
-      "rank": 54,
+      "id": "c053-footer",
+      "rank": 53,
       "score": 0.7619,
       "cohesion": 0.381,
       "absorbCandidate": false,
@@ -15626,7 +15574,8 @@
       ],
       "visualHamming": null,
       "selectionSources": [
-        "name-family"
+        "name-family",
+        "top-score"
       ],
       "absorbCandidate": false
     },
@@ -15846,32 +15795,6 @@
     },
     {
       "rank": 19,
-      "a": "HostEmptyState",
-      "b": "HostProfileMissingState",
-      "jaccard": 0.5806,
-      "containment": 0.8571,
-      "score": 0.8571,
-      "smallWidgetMultisetJaccard": 0.7273,
-      "hamming": 21,
-      "flags": [],
-      "detectors": [
-        "structural",
-        "name"
-      ],
-      "signals": [
-        "structural"
-      ],
-      "nameStems": [
-        "HostState"
-      ],
-      "visualHamming": null,
-      "selectionSources": [
-        "name-family"
-      ],
-      "absorbCandidate": false
-    },
-    {
-      "rank": 20,
       "a": "ProfileInlineMultiChoiceEntryEditor",
       "b": "ProfileInlineSingleChoiceEntryEditor",
       "jaccard": 0.7188,
@@ -15899,7 +15822,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 21,
+      "rank": 20,
       "a": "DirectoryIdentityCard",
       "b": "DirectoryPhotoCard",
       "jaccard": 0.68,
@@ -15926,7 +15849,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 22,
+      "rank": 21,
       "a": "EventPolicyCancellationRows",
       "b": "EventPolicyResultRows",
       "jaccard": 0.6957,
@@ -15953,7 +15876,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 23,
+      "rank": 22,
       "a": "EventSuccessLiveTabSkeleton",
       "b": "EventSuccessSetupTabSkeleton",
       "jaccard": 0.625,
@@ -15981,7 +15904,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 24,
+      "rank": 23,
       "a": "GroupRotationSlotRow",
       "b": "RevealGroupSlotRow",
       "jaccard": 0.6957,
@@ -16007,7 +15930,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 25,
+      "rank": 24,
       "a": "HostAnalyticsMetricGrid",
       "b": "UserAnalyticsMetricGrid",
       "jaccard": 0.65,
@@ -16036,7 +15959,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 26,
+      "rank": 25,
       "a": "VisibleGroupRotationSlots",
       "b": "VisibleRotationSlots",
       "jaccard": 0.65,
@@ -16063,7 +15986,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 27,
+      "rank": 26,
       "a": "EventPolicyCancellationRow",
       "b": "EventPolicyResultRow",
       "jaccard": 0.6818,
@@ -16089,7 +16012,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 28,
+      "rank": 27,
       "a": "AppShell",
       "b": "HostAppShell",
       "jaccard": 0.5682,
@@ -16115,7 +16038,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 29,
+      "rank": 28,
       "a": "EventSuccessEventPreviewLoadingScreen",
       "b": "HostLoadingScreen",
       "jaccard": 0.5714,
@@ -16141,7 +16064,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 30,
+      "rank": 29,
       "a": "EventSharePill",
       "b": "EventSuccessDarkPill",
       "jaccard": 0.4706,
@@ -16167,7 +16090,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 31,
+      "rank": 30,
       "a": "CelebrationDetailsCard",
       "b": "PaperCelebrationDetailsCard",
       "jaccard": 0.5135,
@@ -16193,7 +16116,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 32,
+      "rank": 31,
       "a": "DarkPill",
       "b": "EventSuccessDarkPill",
       "jaccard": 0.4444,
@@ -16221,7 +16144,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 33,
+      "rank": 32,
       "a": "CatchMetaRow",
       "b": "StageSectionLabel",
       "jaccard": 1,
@@ -16246,7 +16169,7 @@
       "absorbCandidate": true
     },
     {
-      "rank": 34,
+      "rank": 33,
       "a": "CatchBrandedSheetHeader",
       "b": "CatchPlainSheetHeader",
       "jaccard": 0.5294,
@@ -16270,7 +16193,7 @@
       "absorbCandidate": true
     },
     {
-      "rank": 35,
+      "rank": 34,
       "a": "CatchMetaRow",
       "b": "EventPolicyLabSectionTitle",
       "jaccard": 0.6667,
@@ -16296,7 +16219,7 @@
       "absorbCandidate": true
     },
     {
-      "rank": 36,
+      "rank": 35,
       "a": "CatchTopBarIconAction",
       "b": "OverlayIconAction",
       "jaccard": 0.5238,
@@ -16321,7 +16244,7 @@
       "absorbCandidate": true
     },
     {
-      "rank": 37,
+      "rank": 36,
       "a": "EventDetailBody",
       "b": "EventDetailOptimisticBody",
       "jaccard": 0.3582,
@@ -16344,7 +16267,7 @@
       "absorbCandidate": true
     },
     {
-      "rank": 38,
+      "rank": 37,
       "a": "CatchSectionLabel",
       "b": "StageSectionLabel",
       "jaccard": 0.2727,
@@ -16367,7 +16290,7 @@
       "absorbCandidate": true
     },
     {
-      "rank": 39,
+      "rank": 38,
       "a": "ClubPhotoStrip",
       "b": "EventDetailPhotoStrip",
       "jaccard": 0.3265,
@@ -16390,7 +16313,7 @@
       "absorbCandidate": true
     },
     {
-      "rank": 40,
+      "rank": 39,
       "a": "CatchPersonAvatar",
       "b": "CatchVeiledPersonAvatar",
       "jaccard": 0.1646,
@@ -16413,7 +16336,7 @@
       "absorbCandidate": true
     },
     {
-      "rank": 41,
+      "rank": 40,
       "a": "CatchSectionHeader",
       "b": "HostOrganizerSectionHeader",
       "jaccard": 0.2963,
@@ -16438,7 +16361,7 @@
       "absorbCandidate": true
     },
     {
-      "rank": 42,
+      "rank": 41,
       "a": "ClubHeroAppBar",
       "b": "EventDetailHeroAppBar",
       "jaccard": 0.2703,
@@ -16461,7 +16384,7 @@
       "absorbCandidate": true
     },
     {
-      "rank": 43,
+      "rank": 42,
       "a": "CatchTopBar",
       "b": "HostOperationsTopBar",
       "jaccard": 0.0917,
@@ -16486,7 +16409,7 @@
       "absorbCandidate": true
     },
     {
-      "rank": 44,
+      "rank": 43,
       "a": "OrderedPhotoAddTile",
       "b": "OrderedPhotoTile",
       "jaccard": 0.1597,
@@ -16509,7 +16432,7 @@
       "absorbCandidate": true
     },
     {
-      "rank": 45,
+      "rank": 44,
       "a": "EventDetailPolicySummary",
       "b": "EventPolicySummary",
       "jaccard": 0.1778,
@@ -16534,7 +16457,7 @@
       "absorbCandidate": true
     },
     {
-      "rank": 46,
+      "rank": 45,
       "a": "CatchEmptyState",
       "b": "ExploreEmptyState",
       "jaccard": 0.0811,
@@ -16557,7 +16480,7 @@
       "absorbCandidate": true
     },
     {
-      "rank": 47,
+      "rank": 46,
       "a": "CatchCountPill",
       "b": "CatchPersonUnreadCountPill",
       "jaccard": 0.0349,
@@ -16580,7 +16503,7 @@
       "absorbCandidate": true
     },
     {
-      "rank": 48,
+      "rank": 47,
       "a": "CatchEmptyStateContent",
       "b": "EmptyHeroContent",
       "jaccard": 0.1064,
@@ -16603,7 +16526,7 @@
       "absorbCandidate": true
     },
     {
-      "rank": 49,
+      "rank": 48,
       "a": "EventDetailSocialSection",
       "b": "EventReviewsSection",
       "jaccard": 0.1,
@@ -16626,7 +16549,7 @@
       "absorbCandidate": true
     },
     {
-      "rank": 50,
+      "rank": 49,
       "a": "CatchPersonAvatarStack",
       "b": "HostTodayAvatarStack",
       "jaccard": 0.0667,
@@ -16651,7 +16574,7 @@
       "absorbCandidate": true
     },
     {
-      "rank": 51,
+      "rank": 50,
       "a": "CatchMetaRow",
       "b": "HostManageMetaRow",
       "jaccard": 0.08,
@@ -16676,7 +16599,7 @@
       "absorbCandidate": true
     },
     {
-      "rank": 52,
+      "rank": 51,
       "a": "CatchTopBarTabBar",
       "b": "ProfileTabBar",
       "jaccard": 0.0333,
@@ -16699,7 +16622,7 @@
       "absorbCandidate": true
     },
     {
-      "rank": 53,
+      "rank": 52,
       "a": "ClubDetailBody",
       "b": "EventDetailBody",
       "jaccard": 0.0157,
@@ -16722,7 +16645,7 @@
       "absorbCandidate": true
     },
     {
-      "rank": 54,
+      "rank": 53,
       "a": "EventAgendaSliverList",
       "b": "EventDetailHintList",
       "jaccard": 0.0179,
@@ -16745,7 +16668,7 @@
       "absorbCandidate": true
     },
     {
-      "rank": 55,
+      "rank": 54,
       "a": "CatchDetailSliverSectionList",
       "b": "CatchSectionList",
       "jaccard": 0,
@@ -16768,7 +16691,7 @@
       "absorbCandidate": true
     },
     {
-      "rank": 56,
+      "rank": 55,
       "a": "CatchScreenBody",
       "b": "PublicProfileScreenBody",
       "jaccard": 0,
@@ -16793,7 +16716,7 @@
       "absorbCandidate": true
     },
     {
-      "rank": 57,
+      "rank": 56,
       "a": "CatchPrivacyBadge",
       "b": "PrivacyBadge",
       "jaccard": 0,
@@ -16816,7 +16739,7 @@
       "absorbCandidate": true
     },
     {
-      "rank": 58,
+      "rank": 57,
       "a": "CatchFieldRow",
       "b": "ProfileFieldRow",
       "jaccard": 0,
@@ -16839,7 +16762,7 @@
       "absorbCandidate": true
     },
     {
-      "rank": 59,
+      "rank": 58,
       "a": "CreateEventPhotoPicker",
       "b": "OrderedPhotoPicker",
       "jaccard": 0,
@@ -16862,7 +16785,7 @@
       "absorbCandidate": true
     },
     {
-      "rank": 60,
+      "rank": 59,
       "a": "HostFunnelSummary",
       "b": "HostReportSignalGrid",
       "jaccard": 0.9744,
@@ -16885,7 +16808,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 61,
+      "rank": 60,
       "a": "DarkPill",
       "b": "EventSharePill",
       "jaccard": 0.9167,
@@ -16911,7 +16834,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 62,
+      "rank": 61,
       "a": "RevealHostCopy",
       "b": "StructureNumberField",
       "jaccard": 0.8571,
@@ -16935,7 +16858,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 63,
+      "rank": 62,
       "a": "FiltersSection",
       "b": "ReadOnlyHostedEventScheduleCard",
       "jaccard": 0.8333,
@@ -16958,7 +16881,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 64,
+      "rank": 63,
       "a": "DashboardFull",
       "b": "DashboardFullSliverBody",
       "jaccard": 0.8242,
@@ -16981,7 +16904,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 65,
+      "rank": 64,
       "a": "PaperTicketDetail",
       "b": "PaperTicketSerial",
       "jaccard": 0.75,
@@ -17005,7 +16928,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 66,
+      "rank": 65,
       "a": "PeopleTokenRow",
       "b": "VisiblePodAssignment",
       "jaccard": 0.7,
@@ -17029,7 +16952,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 67,
+      "rank": 66,
       "a": "CompanionError",
       "b": "CompanionMessage",
       "jaccard": 0.7,
@@ -17052,7 +16975,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 68,
+      "rank": 67,
       "a": "ActivityAttributeGoalChips",
       "b": "QuestionnaireBlock",
       "jaccard": 0.6667,
@@ -17075,7 +16998,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 69,
+      "rank": 68,
       "a": "FiltersSection",
       "b": "StageCard",
       "jaccard": 0.6667,
@@ -17100,7 +17023,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 70,
+      "rank": 69,
       "a": "PaperExpectationRow",
       "b": "ProfileFacts",
       "jaccard": 0.6667,
@@ -17123,7 +17046,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 71,
+      "rank": 70,
       "a": "StageActionDock",
       "b": "StagePanel",
       "jaccard": 0.6471,
@@ -17146,7 +17069,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 72,
+      "rank": 71,
       "a": "CompanionStageSkeleton",
       "b": "HostChartSkeleton",
       "jaccard": 0.625,
@@ -17171,7 +17094,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 73,
+      "rank": 72,
       "a": "ProfileTab",
       "b": "ProfileTabContent",
       "jaccard": 0.6167,
@@ -17194,7 +17117,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 74,
+      "rank": 73,
       "a": "HostAnalyticsInlineStat",
       "b": "StructureNumberField",
       "jaccard": 0.6,
@@ -17220,7 +17143,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 75,
+      "rank": 74,
       "a": "DashboardFocusLoadingCard",
       "b": "HostChartSkeleton",
       "jaccard": 0.5882,
@@ -17245,7 +17168,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 76,
+      "rank": 75,
       "a": "ActivityAttributeGoalChips",
       "b": "RevealCountdownChips",
       "jaccard": 0.6333,
@@ -17268,7 +17191,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 77,
+      "rank": 76,
       "a": "EventSuccessReportMetricsSkeleton",
       "b": "PaymentConfirmationLoadingScreen",
       "jaccard": 0.5588,
@@ -17291,7 +17214,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 78,
+      "rank": 77,
       "a": "EventSuccessSetupControlsSkeleton",
       "b": "HostEventRowsSkeleton",
       "jaccard": 0.5806,
@@ -17316,7 +17239,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 79,
+      "rank": 78,
       "a": "NoticeCard",
       "b": "UserAnalyticsEmptyState",
       "jaccard": 0.7391,
@@ -17340,7 +17263,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 80,
+      "rank": 79,
       "a": "PaperExpectationRow",
       "b": "PreviewLine",
       "jaccard": 0.7368,
@@ -17364,7 +17287,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 81,
+      "rank": 80,
       "a": "AttendeePromptPreview",
       "b": "PreviewLine",
       "jaccard": 0.7368,
@@ -17388,7 +17311,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 82,
+      "rank": 81,
       "a": "EventSuccessPromptCard",
       "b": "EventSuccessRecommendationTile",
       "jaccard": 0.8387,
@@ -17412,7 +17335,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 83,
+      "rank": 82,
       "a": "CalendarStatsHeader",
       "b": "CalendarStatsHeaderSkeleton",
       "jaccard": 0.65,
@@ -17435,7 +17358,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 84,
+      "rank": 83,
       "a": "ProfileCompatibility",
       "b": "ProfileFacts",
       "jaccard": 0.6098,
@@ -17458,7 +17381,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 85,
+      "rank": 84,
       "a": "DashboardLoadingHeader",
       "b": "HostSummarySkeleton",
       "jaccard": 0.8,
@@ -17484,7 +17407,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 86,
+      "rank": 85,
       "a": "GroupOverrideMemberEditor",
       "b": "RotationOverridePairEditor",
       "jaccard": 0.75,
@@ -17507,7 +17430,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 87,
+      "rank": 86,
       "a": "LiveStepContextCard",
       "b": "StagePromptCard",
       "jaccard": 0.6111,
@@ -17530,7 +17453,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 88,
+      "rank": 87,
       "a": "ReadOnlyHostedEventPolicyCard",
       "b": "ReadOnlyHostedEventScheduleCard",
       "jaccard": 0.4783,
@@ -17554,7 +17477,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 89,
+      "rank": 88,
       "a": "FirstHelloCheckInCard",
       "b": "SelfCheckInCard",
       "jaccard": 0.3131,
@@ -17578,7 +17501,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 90,
+      "rank": 89,
       "a": "EventSuccessPromptCard",
       "b": "UserAnalyticsEmptyState",
       "jaccard": 0.6667,
@@ -17602,7 +17525,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 91,
+      "rank": 90,
       "a": "EventPolicyLabSectionTitle",
       "b": "StageSectionLabel",
       "jaccard": 0.6667,
@@ -17628,7 +17551,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 92,
+      "rank": 91,
       "a": "EventPolicyLabSectionTitle",
       "b": "PreviewLine",
       "jaccard": 0.625,
@@ -17654,7 +17577,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 93,
+      "rank": 92,
       "a": "CompanionPrimaryActionSkeleton",
       "b": "DashboardFocusLoadingCard",
       "jaccard": 0.5556,
@@ -17677,7 +17600,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 94,
+      "rank": 93,
       "a": "EventPolicyLabScreen",
       "b": "EventSuccessEventPreviewLoadingScreen",
       "jaccard": 0.3333,
@@ -17701,7 +17624,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 95,
+      "rank": 94,
       "a": "HostEventManageRouteScreen",
       "b": "HostLoadingScreen",
       "jaccard": 0.2778,
@@ -17725,7 +17648,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 96,
+      "rank": 95,
       "a": "EventSuccessEventPreviewLoadingScreen",
       "b": "EventSuccessEventPreviewScreen",
       "jaccard": 0.2381,
@@ -17748,7 +17671,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 97,
+      "rank": 96,
       "a": "EventSuccessEventPreviewLoadingScreen",
       "b": "EventSuccessManualQaScreen",
       "jaccard": 0.1852,
@@ -17771,30 +17694,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 98,
-      "a": "HostEmptyState",
-      "b": "HostTodayEmptyEvents",
-      "jaccard": 0.5758,
-      "containment": 0.9048,
-      "score": 0.9048,
-      "smallWidgetMultisetJaccard": 0.6667,
-      "hamming": 24,
-      "flags": [],
-      "detectors": [
-        "structural"
-      ],
-      "signals": [
-        "structural"
-      ],
-      "nameStems": [],
-      "visualHamming": null,
-      "selectionSources": [
-        "top-score"
-      ],
-      "absorbCandidate": false
-    },
-    {
-      "rank": 99,
+      "rank": 97,
       "a": "CompanionPrimaryActionSkeleton",
       "b": "HostChartSkeleton",
       "jaccard": 0.75,
@@ -17820,7 +17720,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 100,
+      "rank": 98,
       "a": "MicroPodCard",
       "b": "RotationScheduleCard",
       "jaccard": 0.72,
@@ -17828,6 +17728,53 @@
       "score": 0.9,
       "smallWidgetMultisetJaccard": 0,
       "hamming": 18,
+      "flags": [],
+      "detectors": [
+        "structural"
+      ],
+      "signals": [
+        "structural"
+      ],
+      "nameStems": [],
+      "visualHamming": null,
+      "selectionSources": [
+        "top-score"
+      ],
+      "absorbCandidate": false
+    },
+    {
+      "rank": 99,
+      "a": "EventCtaStatusLeading",
+      "b": "UnsavedChangesPill",
+      "jaccard": 0.6923,
+      "containment": 0.9,
+      "score": 0.9,
+      "smallWidgetMultisetJaccard": 0.8462,
+      "hamming": 26,
+      "flags": [],
+      "detectors": [
+        "structural"
+      ],
+      "signals": [
+        "structural",
+        "small-widget"
+      ],
+      "nameStems": [],
+      "visualHamming": null,
+      "selectionSources": [
+        "top-score"
+      ],
+      "absorbCandidate": false
+    },
+    {
+      "rank": 100,
+      "a": "ActivityAttributeGoalChips",
+      "b": "RotationCadenceChips",
+      "jaccard": 0.5625,
+      "containment": 0.9,
+      "score": 0.9,
+      "smallWidgetMultisetJaccard": 0.6176,
+      "hamming": 31,
       "flags": [],
       "detectors": [
         "structural"
@@ -18146,6 +18093,29 @@
     },
     {
       "rank": 114,
+      "a": "HostClubsScaffold",
+      "b": "HostEventsScaffold",
+      "jaccard": 0.4128,
+      "containment": 0.6522,
+      "score": 0.6522,
+      "smallWidgetMultisetJaccard": 0,
+      "hamming": 32,
+      "flags": [],
+      "detectors": [
+        "name"
+      ],
+      "signals": [],
+      "nameStems": [
+        "HostScaffold"
+      ],
+      "visualHamming": null,
+      "selectionSources": [
+        "name-family"
+      ],
+      "absorbCandidate": false
+    },
+    {
+      "rank": 115,
       "a": "CelebrationIcon",
       "b": "PaperCelebrationIcon",
       "jaccard": 0.4091,
@@ -18168,7 +18138,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 115,
+      "rank": 116,
       "a": "ClubHostLoadingSkeleton",
       "b": "ClubStatsLoadingSkeleton",
       "jaccard": 0.3684,
@@ -18192,7 +18162,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 116,
+      "rank": 117,
       "a": "EditableHostedEventPolicyCard",
       "b": "ReadOnlyHostedEventPolicyCard",
       "jaccard": 0.1972,
@@ -18215,7 +18185,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 117,
+      "rank": 118,
       "a": "HostClubEditSection",
       "b": "HostSettingsSection",
       "jaccard": 0.4444,
@@ -18238,7 +18208,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 118,
+      "rank": 119,
       "a": "EventRecapLoadingBody",
       "b": "EventSuccessCompanionLoadingBody",
       "jaccard": 0.3871,
@@ -18262,7 +18232,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 119,
+      "rank": 120,
       "a": "ClubBasicsStep",
       "b": "ClubDetailsStep",
       "jaccard": 0.3171,
@@ -18285,7 +18255,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 120,
+      "rank": 121,
       "a": "GroupOverrideMemberEditor",
       "b": "GroupOverrideUnitEditor",
       "jaccard": 0.1778,
@@ -18308,7 +18278,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 121,
+      "rank": 122,
       "a": "ClubEventSuccessDefaultsStep",
       "b": "ClubHostDefaultsStep",
       "jaccard": 0.22,
@@ -18332,7 +18302,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 122,
+      "rank": 123,
       "a": "LiveAttendanceSummaryCard",
       "b": "PlaybookSummaryCard",
       "jaccard": 0.4118,
@@ -18347,29 +18317,6 @@
       "signals": [],
       "nameStems": [
         "SummaryCard"
-      ],
-      "visualHamming": null,
-      "selectionSources": [
-        "name-family"
-      ],
-      "absorbCandidate": false
-    },
-    {
-      "rank": 123,
-      "a": "HostClubsScaffold",
-      "b": "HostEventsScaffold",
-      "jaccard": 0.3469,
-      "containment": 0.5862,
-      "score": 0.5862,
-      "smallWidgetMultisetJaccard": 0,
-      "hamming": 34,
-      "flags": [],
-      "detectors": [
-        "name"
-      ],
-      "signals": [],
-      "nameStems": [
-        "HostScaffold"
       ],
       "visualHamming": null,
       "selectionSources": [
@@ -18966,6 +18913,29 @@
     },
     {
       "rank": 149,
+      "a": "EventActionCard",
+      "b": "HostEmptyActionCard",
+      "jaccard": 0.137,
+      "containment": 0.4545,
+      "score": 0.4545,
+      "smallWidgetMultisetJaccard": 0,
+      "hamming": 62,
+      "flags": [],
+      "detectors": [
+        "name"
+      ],
+      "signals": [],
+      "nameStems": [
+        "ActionCard"
+      ],
+      "visualHamming": null,
+      "selectionSources": [
+        "name-family"
+      ],
+      "absorbCandidate": false
+    },
+    {
+      "rank": 150,
       "a": "ClubDetailBody",
       "b": "ClubDetailLoadingBody",
       "jaccard": 0.1596,
@@ -18988,7 +18958,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 150,
+      "rank": 151,
       "a": "EventDetailHeroSkeleton",
       "b": "ProfileSurfaceHeroSkeleton",
       "jaccard": 0.2683,
@@ -19011,7 +18981,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 151,
+      "rank": 152,
       "a": "DashboardHeaderContent",
       "b": "ExploreBrowseHeaderContent",
       "jaccard": 0.2453,
@@ -19034,7 +19004,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 152,
+      "rank": 153,
       "a": "CompanionPaperScaffold",
       "b": "CompanionStageScaffold",
       "jaccard": 0.2667,
@@ -19057,7 +19027,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 153,
+      "rank": 154,
       "a": "AttendedEventTile",
       "b": "HostAnalyticsEventTile",
       "jaccard": 0.2556,
@@ -19082,7 +19052,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 154,
+      "rank": 155,
       "a": "EventSuccessPromptCard",
       "b": "StagePromptCard",
       "jaccard": 0.1429,
@@ -19105,7 +19075,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 155,
+      "rank": 156,
       "a": "EditHostedEventRouteScreen",
       "b": "EditHostedEventScreen",
       "jaccard": 0.0617,
@@ -19128,7 +19098,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 156,
+      "rank": 157,
       "a": "HostSettingsSection",
       "b": "SettingsSection",
       "jaccard": 0.1818,
@@ -19151,7 +19121,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 157,
+      "rank": 158,
       "a": "ExploreEventsEmptySliver",
       "b": "ExploreEventsLoadingSliver",
       "jaccard": 0.16,
@@ -19174,7 +19144,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 158,
+      "rank": 159,
       "a": "CustomQuestionFields",
       "b": "CustomQuestionnaireFields",
       "jaccard": 0.2353,
@@ -19197,7 +19167,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 159,
+      "rank": 160,
       "a": "PaymentCheckoutSheet",
       "b": "PaymentReceiptSheet",
       "jaccard": 0.1557,
@@ -19220,7 +19190,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 160,
+      "rank": 161,
       "a": "ClubContactSection",
       "b": "ClubHostSection",
       "jaccard": 0.2083,
@@ -19243,7 +19213,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 161,
+      "rank": 162,
       "a": "ProfileHeightStepperControls",
       "b": "ProfileReactionControls",
       "jaccard": 0.1379,
@@ -19266,7 +19236,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 162,
+      "rank": 163,
       "a": "BookingConflictEventRow",
       "b": "ExploreExternalEventRow",
       "jaccard": 0.2128,
@@ -19289,7 +19259,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 163,
+      "rank": 164,
       "a": "HostAnalyticsEventList",
       "b": "HostInviteLinksList",
       "jaccard": 0.1646,
@@ -19312,7 +19282,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 164,
+      "rank": 165,
       "a": "ReadOnlyHostedEventScheduleCard",
       "b": "RotationScheduleCard",
       "jaccard": 0.0833,
@@ -19337,7 +19307,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 165,
+      "rank": 166,
       "a": "ClubHostRow",
       "b": "HostTeamOwnerHostRow",
       "jaccard": 0.1728,
@@ -19360,7 +19330,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 166,
+      "rank": 167,
       "a": "HostTodayClubPill",
       "b": "HostTodayCountdownPill",
       "jaccard": 0.0984,
@@ -19383,7 +19353,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 167,
+      "rank": 168,
       "a": "HostAnalyticsMetricGrid",
       "b": "HostReportSignalGrid",
       "jaccard": 0.102,
@@ -19408,7 +19378,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 168,
+      "rank": 169,
       "a": "ClubDirectorySkeletonCard",
       "b": "ClubShareCard",
       "jaccard": 0.125,
@@ -19431,7 +19401,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 169,
+      "rank": 170,
       "a": "MicroPodCard",
       "b": "MicroPodsHostCard",
       "jaccard": 0.1321,
@@ -19454,7 +19424,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 170,
+      "rank": 171,
       "a": "EventDetailTicketSurface",
       "b": "EventSuccessSkeletonSurface",
       "jaccard": 0.0614,
@@ -19477,7 +19447,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 171,
+      "rank": 172,
       "a": "ExploreListEmptyState",
       "b": "ExploreScreenEmptyState",
       "jaccard": 0.1304,
@@ -19503,7 +19473,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 172,
+      "rank": 173,
       "a": "HostOrganizerHeader",
       "b": "HostTodayHeader",
       "jaccard": 0.1042,
@@ -19526,7 +19496,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 173,
+      "rank": 174,
       "a": "PaperProgressRail",
       "b": "QuestionProgressRail",
       "jaccard": 0.0857,
@@ -19549,7 +19519,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 174,
+      "rank": 175,
       "a": "ExploreBrowseHeaderContent",
       "b": "ExplorePeekRailContent",
       "jaccard": 0.1042,
@@ -19572,7 +19542,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 175,
+      "rank": 176,
       "a": "EventPolicyLabScreen",
       "b": "EventSuccessLabScreen",
       "jaccard": 0.1143,
@@ -19596,7 +19566,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 176,
+      "rank": 177,
       "a": "WingmanCandidateRow",
       "b": "WingmanRequestHostRow",
       "jaccard": 0.1538,
@@ -19619,7 +19589,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 177,
+      "rank": 178,
       "a": "RotationOverridePairEditor",
       "b": "RotationOverrideRoundEditor",
       "jaccard": 0.0816,
@@ -19642,7 +19612,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 178,
+      "rank": 179,
       "a": "HostAnalyticsMetricGridSkeleton",
       "b": "VibeGridSkeleton",
       "jaccard": 0.125,
@@ -19667,7 +19637,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 179,
+      "rank": 180,
       "a": "HostClubInsightsPane",
       "b": "HostClubPreviewPane",
       "jaccard": 0.0556,
@@ -19690,7 +19660,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 180,
+      "rank": 181,
       "a": "PresetReviewCard",
       "b": "ReviewCard",
       "jaccard": 0.1379,
@@ -19713,7 +19683,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 181,
+      "rank": 182,
       "a": "PaymentHistoryScreen",
       "b": "ReviewsHistoryScreen",
       "jaccard": 0.1273,
@@ -19736,7 +19706,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 182,
+      "rank": 183,
       "a": "CreateClubScreen",
       "b": "CreateEventScreen",
       "jaccard": 0.1309,
@@ -19759,7 +19729,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 183,
+      "rank": 184,
       "a": "PaymentConfirmationScreen",
       "b": "PaymentHistoryScreen",
       "jaccard": 0.1111,
@@ -19782,7 +19752,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 184,
+      "rank": 185,
       "a": "CatchesProfileReviewSkeleton",
       "b": "CatchesTopOverlaySkeleton",
       "jaccard": 0.0732,
@@ -19805,7 +19775,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 185,
+      "rank": 186,
       "a": "HostActionRow",
       "b": "SuvbotResetActionRow",
       "jaccard": 0.1222,
@@ -19830,7 +19800,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 186,
+      "rank": 187,
       "a": "PaperExpectationCard",
       "b": "PaperPrivacyCard",
       "jaccard": 0.122,
@@ -19853,7 +19823,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 187,
+      "rank": 188,
       "a": "ClubDetailScreen",
       "b": "EventDetailScreen",
       "jaccard": 0.0938,
@@ -19876,7 +19846,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 188,
+      "rank": 189,
       "a": "CalendarDateHeaderSkeleton",
       "b": "CalendarStatsHeaderSkeleton",
       "jaccard": 0.0769,
@@ -19900,7 +19870,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 189,
+      "rank": 190,
       "a": "ExploreCityPickerSheet",
       "b": "ExploreFilterSheet",
       "jaccard": 0.1146,
@@ -19923,7 +19893,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 190,
+      "rank": 191,
       "a": "AttendeeQaControls",
       "b": "ManualQaControls",
       "jaccard": 0.0909,
@@ -19946,7 +19916,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 191,
+      "rank": 192,
       "a": "PaymentConfirmationBodyController",
       "b": "PaymentPendingCheckoutController",
       "jaccard": 0.0588,
@@ -19969,7 +19939,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 192,
+      "rank": 193,
       "a": "HostEventRows",
       "b": "HostSettingsProfileRows",
       "jaccard": 0.0732,
@@ -19992,7 +19962,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 193,
+      "rank": 194,
       "a": "EventSuccessDefaultsPanel",
       "b": "EventSuccessHostPanel",
       "jaccard": 0.037,
@@ -20017,7 +19987,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 194,
+      "rank": 195,
       "a": "HostAnalyticsReportView",
       "b": "UserAnalyticsReportView",
       "jaccard": 0.0741,
@@ -20042,7 +20012,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 195,
+      "rank": 196,
       "a": "EventActionCardHeader",
       "b": "ShareCardHeader",
       "jaccard": 0.0682,
@@ -20065,7 +20035,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 196,
+      "rank": 197,
       "a": "ProfileInfoSkeletonSection",
       "b": "ProfilePhotosSkeletonSection",
       "jaccard": 0.0645,
@@ -20089,7 +20059,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 197,
+      "rank": 198,
       "a": "CreateEventScreen",
       "b": "EditHostedEventScreen",
       "jaccard": 0.063,
@@ -20112,7 +20082,7 @@
       "absorbCandidate": false
     },
     {
-      "rank": 198,
+      "rank": 199,
       "a": "DraftPickerSheet",
       "b": "ExploreCityPickerSheet",
       "jaccard": 0.068,
@@ -20135,14 +20105,14 @@
       "absorbCandidate": false
     },
     {
-      "rank": 199,
+      "rank": 200,
       "a": "HostProfileScreen",
       "b": "PublicProfileScreen",
-      "jaccard": 0.0654,
+      "jaccard": 0.0565,
       "containment": 0.1346,
       "score": 0.1346,
       "smallWidgetMultisetJaccard": 0,
-      "hamming": 54,
+      "hamming": 63,
       "flags": [],
       "detectors": [
         "name"
@@ -20150,31 +20120,6 @@
       "signals": [],
       "nameStems": [
         "ProfileScreen"
-      ],
-      "visualHamming": null,
-      "selectionSources": [
-        "name-family"
-      ],
-      "absorbCandidate": false
-    },
-    {
-      "rank": 200,
-      "a": "EventPolicyScenarioPicker",
-      "b": "EventSuccessTabPicker",
-      "jaccard": 0.0313,
-      "containment": 0.125,
-      "score": 0.125,
-      "smallWidgetMultisetJaccard": 0.0938,
-      "hamming": 57,
-      "flags": [
-        "cross-role"
-      ],
-      "detectors": [
-        "name"
-      ],
-      "signals": [],
-      "nameStems": [
-        "EventPicker"
       ],
       "visualHamming": null,
       "selectionSources": [
@@ -20246,6 +20191,7 @@
       "stemType": "outer",
       "members": [
         "HostClubProfileCard",
+        "HostEmptyActionCard",
         "HostEventsClubCard",
         "HostEventSummaryCard",
         "HostEventToolCard",
@@ -20260,7 +20206,7 @@
         "HostTodayDashboardCard",
         "HostTodayTaskCard"
       ],
-      "usageSum": 54,
+      "usageSum": 69,
       "scope": "mixed"
     },
     {
@@ -20307,26 +20253,7 @@
       "scope": "screen"
     },
     {
-      "id": "n006-empty-state",
-      "stem": "EmptyState",
-      "stemType": "final-two",
-      "members": [
-        "CatchEmptyState",
-        "CatchesHubEmptyState",
-        "ChatsEmptyState",
-        "ExploreEmptyState",
-        "ExploreListEmptyState",
-        "ExploreScreenEmptyState",
-        "HostEmptyState",
-        "HostSettingsClubsEmptyState",
-        "SwipeEmptyState",
-        "UserAnalyticsEmptyState"
-      ],
-      "usageSum": 89,
-      "scope": "mixed"
-    },
-    {
-      "id": "n007-loading-body",
+      "id": "n006-loading-body",
       "stem": "LoadingBody",
       "stemType": "final-two",
       "members": [
@@ -20342,6 +20269,24 @@
         "LaunchAccessLoadingBody"
       ],
       "usageSum": 28,
+      "scope": "mixed"
+    },
+    {
+      "id": "n007-empty-state",
+      "stem": "EmptyState",
+      "stemType": "final-two",
+      "members": [
+        "CatchEmptyState",
+        "CatchesHubEmptyState",
+        "ChatsEmptyState",
+        "ExploreEmptyState",
+        "ExploreListEmptyState",
+        "ExploreScreenEmptyState",
+        "HostSettingsClubsEmptyState",
+        "SwipeEmptyState",
+        "UserAnalyticsEmptyState"
+      ],
+      "usageSum": 84,
       "scope": "mixed"
     },
     {
@@ -21203,19 +21148,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n073-host-state",
-      "stem": "HostState",
-      "stemType": "outer",
-      "members": [
-        "HostEmptyState",
-        "HostProfileMissingState",
-        "HostSettingsClubsEmptyState"
-      ],
-      "usageSum": 10,
-      "scope": "screen"
-    },
-    {
-      "id": "n074-metric-grid",
+      "id": "n073-metric-grid",
       "stem": "MetricGrid",
       "stemType": "final-two",
       "members": [
@@ -21227,7 +21160,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n075-report-skeleton",
+      "id": "n074-report-skeleton",
       "stem": "ReportSkeleton",
       "stemType": "final-two",
       "members": [
@@ -21239,7 +21172,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n076-group-editor",
+      "id": "n075-group-editor",
       "stem": "GroupEditor",
       "stemType": "outer",
       "members": [
@@ -21251,7 +21184,7 @@
       "scope": "widget"
     },
     {
-      "id": "n077-host-editor",
+      "id": "n076-host-editor",
       "stem": "HostEditor",
       "stemType": "outer",
       "members": [
@@ -21263,7 +21196,7 @@
       "scope": "screen"
     },
     {
-      "id": "n078-host-row",
+      "id": "n077-host-row",
       "stem": "HostRow",
       "stemType": "final-two",
       "members": [
@@ -21275,7 +21208,7 @@
       "scope": "widget"
     },
     {
-      "id": "n079-host-sheet",
+      "id": "n078-host-sheet",
       "stem": "HostSheet",
       "stemType": "outer",
       "members": [
@@ -21287,7 +21220,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n080-paper-card",
+      "id": "n079-paper-card",
       "stem": "PaperCard",
       "stemType": "outer",
       "members": [
@@ -21299,7 +21232,7 @@
       "scope": "widget"
     },
     {
-      "id": "n081-reveal-row",
+      "id": "n080-reveal-row",
       "stem": "RevealRow",
       "stemType": "outer",
       "members": [
@@ -21311,7 +21244,7 @@
       "scope": "widget"
     },
     {
-      "id": "n082-tab-skeleton",
+      "id": "n081-tab-skeleton",
       "stem": "TabSkeleton",
       "stemType": "final-two",
       "members": [
@@ -21323,7 +21256,7 @@
       "scope": "screen"
     },
     {
-      "id": "n083-dashboard-card",
+      "id": "n082-dashboard-card",
       "stem": "DashboardCard",
       "stemType": "outer",
       "members": [
@@ -21335,7 +21268,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n084-event-header",
+      "id": "n083-event-header",
       "stem": "EventHeader",
       "stemType": "outer",
       "members": [
@@ -21347,7 +21280,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n085-event-line",
+      "id": "n084-event-line",
       "stem": "EventLine",
       "stemType": "outer",
       "members": [
@@ -21359,7 +21292,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n086-event-row",
+      "id": "n085-event-row",
       "stem": "EventRow",
       "stemType": "outer",
       "members": [
@@ -21371,7 +21304,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n087-rail-skeleton",
+      "id": "n086-rail-skeleton",
       "stem": "RailSkeleton",
       "stemType": "final-two",
       "members": [
@@ -21383,7 +21316,7 @@
       "scope": "widget"
     },
     {
-      "id": "n088-host-view",
+      "id": "n087-host-view",
       "stem": "HostView",
       "stemType": "outer",
       "members": [
@@ -21395,7 +21328,7 @@
       "scope": "screen"
     },
     {
-      "id": "n089-host-rows",
+      "id": "n088-host-rows",
       "stem": "HostRows",
       "stemType": "outer",
       "members": [
@@ -21407,7 +21340,7 @@
       "scope": "screen"
     },
     {
-      "id": "n090-saved-sliver",
+      "id": "n089-saved-sliver",
       "stem": "SavedSliver",
       "stemType": "outer",
       "members": [
@@ -21419,7 +21352,7 @@
       "scope": "screen"
     },
     {
-      "id": "n091-host-scaffold",
+      "id": "n090-host-scaffold",
       "stem": "HostScaffold",
       "stemType": "outer",
       "members": [
@@ -21431,7 +21364,7 @@
       "scope": "screen"
     },
     {
-      "id": "n092-loading-card",
+      "id": "n091-loading-card",
       "stem": "LoadingCard",
       "stemType": "final-two",
       "members": [
@@ -21443,7 +21376,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n093-catches-skeleton",
+      "id": "n092-catches-skeleton",
       "stem": "CatchesSkeleton",
       "stemType": "outer",
       "members": [
@@ -21455,7 +21388,7 @@
       "scope": "screen"
     },
     {
-      "id": "n094-state-view",
+      "id": "n093-state-view",
       "stem": "StateView",
       "stemType": "final-two",
       "members": [
@@ -21467,7 +21400,7 @@
       "scope": "screen"
     },
     {
-      "id": "n095-profile-photo",
+      "id": "n094-profile-photo",
       "stem": "ProfilePhoto",
       "stemType": "final-two",
       "members": [
@@ -21478,7 +21411,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n096-error-banner",
+      "id": "n095-error-banner",
       "stem": "ErrorBanner",
       "stemType": "final-two",
       "members": [
@@ -21489,7 +21422,7 @@
       "scope": "widget"
     },
     {
-      "id": "n097-event-screen",
+      "id": "n096-event-screen",
       "stem": "EventScreen",
       "stemType": "final-two",
       "members": [
@@ -21500,7 +21433,7 @@
       "scope": "screen"
     },
     {
-      "id": "n098-person-avatar",
+      "id": "n097-person-avatar",
       "stem": "PersonAvatar",
       "stemType": "final-two",
       "members": [
@@ -21511,7 +21444,7 @@
       "scope": "widget"
     },
     {
-      "id": "n099-club-screen",
+      "id": "n098-club-screen",
       "stem": "ClubScreen",
       "stemType": "final-two",
       "members": [
@@ -21522,7 +21455,7 @@
       "scope": "screen"
     },
     {
-      "id": "n100-mono-label",
+      "id": "n099-mono-label",
       "stem": "MonoLabel",
       "stemType": "final-two",
       "members": [
@@ -21533,7 +21466,7 @@
       "scope": "widget"
     },
     {
-      "id": "n101-icon-action",
+      "id": "n100-icon-action",
       "stem": "IconAction",
       "stemType": "final-two",
       "members": [
@@ -21544,7 +21477,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n102-history-screen",
+      "id": "n101-history-screen",
       "stem": "HistoryScreen",
       "stemType": "final-two",
       "members": [
@@ -21555,7 +21488,7 @@
       "scope": "screen"
     },
     {
-      "id": "n103-detail-screen",
+      "id": "n102-detail-screen",
       "stem": "DetailScreen",
       "stemType": "final-two",
       "members": [
@@ -21566,7 +21499,7 @@
       "scope": "screen"
     },
     {
-      "id": "n104-edit-screen",
+      "id": "n103-edit-screen",
       "stem": "EditScreen",
       "stemType": "outer",
       "members": [
@@ -21577,7 +21510,7 @@
       "scope": "screen"
     },
     {
-      "id": "n105-count-pill",
+      "id": "n104-count-pill",
       "stem": "CountPill",
       "stemType": "final-two",
       "members": [
@@ -21588,7 +21521,7 @@
       "scope": "widget"
     },
     {
-      "id": "n106-step-header",
+      "id": "n105-step-header",
       "stem": "StepHeader",
       "stemType": "final-two",
       "members": [
@@ -21596,6 +21529,17 @@
         "CreateEventStepHeader"
       ],
       "usageSum": 20,
+      "scope": "widget"
+    },
+    {
+      "id": "n106-action-card",
+      "stem": "ActionCard",
+      "stemType": "final-two",
+      "members": [
+        "EventActionCard",
+        "HostEmptyActionCard"
+      ],
+      "usageSum": 19,
       "scope": "widget"
     },
     {

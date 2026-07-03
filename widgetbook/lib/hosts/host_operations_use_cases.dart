@@ -24,6 +24,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_analytics_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
@@ -95,6 +96,7 @@ import 'package:catch_dating_app/hosts/presentation/payments/host_payment_accoun
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/catch_roster_board.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_club_tools.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_empty_action_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_tools.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
@@ -320,11 +322,6 @@ HostProfile _hostProfileVariant(HostProfileStatus status) {
 )
 @widgetbook.UseCase(
   name: 'Covered by host home route states',
-  type: HostTodayEmptyEvents,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host home route states',
   type: HostTodayEventHero,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
@@ -355,7 +352,7 @@ HostProfile _hostProfileVariant(HostProfileStatus status) {
 )
 @widgetbook.UseCase(
   name: 'Covered by host home route states',
-  type: HostEmptyState,
+  type: HostEmptyActionCard,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 @widgetbook.UseCase(
@@ -1151,9 +1148,16 @@ Widget _hostHomePreviewFor(String focus) {
   );
   final tasks = HostHomeTodayTaskData.forEvent(event);
   return switch (focus) {
-    'HostEmptyState' => const HostEmptyState(
+    'HostEmptyActionCard' => HostEmptyActionCard(
       title: 'No clubs yet',
       body: 'Create a club to start hosting events.',
+      actions: [
+        CatchButton(
+          label: 'Create club',
+          icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+          onPressed: () {},
+        ),
+      ],
     ),
     'HostSectionLabel' => const HostSectionLabel(label: 'TODAY'),
     'HostTodayAvatarDot' => Builder(
@@ -1210,11 +1214,6 @@ Widget _hostHomePreviewFor(String focus) {
       onCreateEvent: (_) {},
       onManageEvent: (_, _) {},
     ),
-    'HostTodayEmptyEvents' => HostTodayEmptyEvents(
-      club: club,
-      onCreateEvent: (_) {},
-      onViewEvents: () {},
-    ),
     'HostTodayEventHero' => HostTodayEventHero(event: event, onPressed: () {}),
     'HostTodayHeader' => HostTodayHeader(
       club: club,
@@ -1234,6 +1233,78 @@ Widget _hostHomePreviewFor(String focus) {
     ),
     _ => Text('No exact preview registered for $focus.'),
   };
+}
+
+@widgetbook.UseCase(
+  name: 'Action card states',
+  type: HostEmptyActionCard,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+Widget hostEmptyActionCardStates(BuildContext context) {
+  return _HostCatalog(
+    title: 'HostEmptyActionCard',
+    contractId: 'component.host.empty_action_card',
+    children: [
+      _StateCard(
+        label: 'single action',
+        child: _HostHomeSectionFrame(
+          child: HostEmptyActionCard(
+            title: 'Create your first club',
+            body:
+                'Create a club to publish events, manage attendees, and run Event Success.',
+            actions: [
+              CatchButton(
+                label: 'Create club',
+                icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+                onPressed: () {},
+              ),
+            ],
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'two actions',
+        child: _HostHomeSectionFrame(
+          child: HostEmptyActionCard(
+            title: 'No active events yet',
+            body:
+                'Create an event for ${HostOperationsFixtures.primaryClub.name} to start filling the host dashboard.',
+            actions: [
+              CatchButton(
+                label: 'New event',
+                icon: Icon(CatchIcons.addRounded, size: CatchIcon.sm),
+                onPressed: () {},
+              ),
+              CatchButton(
+                label: 'Events',
+                variant: CatchButtonVariant.secondary,
+                size: CatchButtonSize.sm,
+                onPressed: () {},
+              ),
+            ],
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'pending action',
+        child: _HostHomeSectionFrame(
+          child: HostEmptyActionCard(
+            title: 'No host profile yet',
+            body:
+                'Create a professional host identity before editing profile details.',
+            actions: [
+              CatchButton(
+                label: 'Create host profile',
+                icon: Icon(CatchIcons.businessOutlined, size: CatchIcon.md),
+                isLoading: true,
+                onPressed: null,
+              ),
+            ],
+          ),
+        ),
+      ),
+    ],
+  );
 }
 
 Widget _hostClubExactCatalog(BuildContext context, String focus) {
@@ -2389,39 +2460,6 @@ Widget hostProfileFieldStates(BuildContext context) {
           child: _HostProfileFieldsFrame(
             profile: _hostProfileVariant(HostProfileStatus.active),
             showStatus: false,
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Missing states',
-  type: HostProfileMissingState,
-  path: '[P2 host surfaces]/Host profile',
-)
-Widget hostProfileMissingStates(BuildContext context) {
-  return _HostCatalog(
-    title: 'HostProfileMissingState',
-    contractId: 'section.host.profile.missing_state',
-    children: [
-      _StateCard(
-        label: 'ready to create',
-        child: const _DeviceFrame(child: _HostProfileMissingFrame()),
-      ),
-      _StateCard(
-        label: 'create pending',
-        child: const _DeviceFrame(
-          child: _HostProfileMissingFrame(creating: true),
-        ),
-      ),
-      _StateCard(
-        label: 'text scale 2.0',
-        child: const _DeviceFrame(
-          child: _MediaOverride(
-            textScaler: TextScaler.linear(2),
-            child: _HostProfileMissingFrame(),
           ),
         ),
       ),
@@ -4592,11 +4630,11 @@ Widget hostStrictHostClubsScreenCatalogStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostEmptyState,
+  type: HostEmptyActionCard,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
-Widget hostStrictHostEmptyStateCatalogStates(BuildContext context) =>
-    _hostHomeExactCatalog(context, 'HostEmptyState');
+Widget hostStrictHostEmptyActionCardCatalogStates(BuildContext context) =>
+    _hostHomeExactCatalog(context, 'HostEmptyActionCard');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -5780,31 +5818,6 @@ class _HostProfileFieldsFrameState extends State<_HostProfileFieldsFrame> {
                   bioController: _bioController,
                 ),
               ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _HostProfileMissingFrame extends StatelessWidget {
-  const _HostProfileMissingFrame({this.creating = false});
-
-  final bool creating;
-
-  @override
-  Widget build(BuildContext context) {
-    return _ThemedHostPreview(
-      themeMode: ThemeMode.light,
-      child: Builder(
-        builder: (context) {
-          final t = CatchTokens.of(context);
-          return Scaffold(
-            backgroundColor: t.bg,
-            body: HostProfileMissingState(
-              creating: creating,
-              onCreateProfile: () {},
             ),
           );
         },
