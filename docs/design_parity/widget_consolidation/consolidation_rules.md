@@ -1,3 +1,11 @@
+---
+doc_id: widget_consolidation_rules
+version: 0.1.0
+updated: 2026-07-03
+owner: widget_consolidation
+status: active
+---
+
 # Widget Consolidation Rules
 
 Decision rules distilled from the first 34 reviewed clusters (see

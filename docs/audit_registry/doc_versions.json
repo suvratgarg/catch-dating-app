@@ -20,6 +20,13 @@
     "status": "active",
     "read_policy": "Use for widget-consolidation pipeline commands, spot-check receipts, generated counts, calibration notes, and known limitations before review-packet generation."
   },
+  "widget_consolidation_rules": {
+    "path": "docs/design_parity/widget_consolidation/consolidation_rules.md",
+    "version": "0.1.0",
+    "updated": "2026-07-03",
+    "status": "active",
+    "read_policy": "Read before triaging widget_similarity.json clusters or executing consolidation work orders: KEEP stop-losses (K1-K5), MERGE rules (R1-R4), drift rule (D1), scope limits, and the split between rule-triage (agent) and review-session judgment (naming, new-primitive API design, concept identity, visual trade-offs)."
+  },
   "architecture_pattern_adoption": {
     "path": "docs/audit_registry/architecture_pattern_adoption.json",
     "version": "1.5.25",
@@ -50,10 +57,10 @@
   },
   "agent_entrypoint": {
     "path": "AGENTS.md",
-    "version": "1.3.11",
+    "version": "1.4.0",
     "updated": "2026-07-03",
     "status": "active",
-    "read_policy": "Read first when an AI agent enters the repo; routes to owner docs, reference-pattern exhibits, context-pack generation, React component-governance scanner/registry obligations, parallel worktree delegation, readiness checks, and completion standards. React admin feature export boundary scanner obligations. Admin component registry scanner obligations. Admin Storybook preview coverage obligations."
+    "read_policy": "Read first when an AI agent enters the repo; routes to owner docs, reference-pattern exhibits, context-pack generation, React component-governance scanner/registry obligations, parallel worktree delegation, readiness checks, and completion standards. React admin feature export boundary scanner obligations. Admin component registry scanner obligations. Admin Storybook preview coverage obligations. Widget consolidation rule-triage and work-order routing."
   },
   "agent_operating_model": {
     "path": "docs/agent_operating_model.md",
