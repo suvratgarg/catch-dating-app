@@ -27,13 +27,13 @@ ledgers as the source of truth when counts differ:
 - Screen priority spread: 18 P1, 12 P2, and 5 P3 contracted screens.
 - Contracted screen states: 619.
 - Contracted screen sections: 241.
-- Screen registry migration gaps: 5 open, 26 blocked, and 108 closed. These are
+- Screen registry migration gaps: 4 open, 26 blocked, and 109 closed. These are
   product migration gaps in `design/screens/catch.screens.json`, not
   validation failures.
 - Contracted section states: 1,110.
 - Open screen-contract validation gaps: 0.
 - Design parity matrix: 12 feature groups, 36 screens, 621 matrix states, and
-  49 open matrix gaps across screen-state, lint-candidate, and preview-plan
+  48 open matrix gaps across screen-state, lint-candidate, and preview-plan
   queues.
 - Matrix state status spread: 567 captured, 13 implemented, 1 planned, and
   40 tested.
@@ -78,12 +78,11 @@ ledgers as the source of truth when counts differ:
   59.13 meanDelta, but remains above threshold because deterministic text
   rendering, bottom dock/app-shell treatment, and journey-step copy rhythm still
   diverge.
-- Public Profile now uses a deterministic Aanya portrait fixture plus shared
-  Sundowner 5K context for `public_profile_member`. The advisory baseline
-  improved from 40.49% mismatch / 44.89 meanDelta to 36.62% mismatch /
-  32.76 meanDelta, but remains above threshold because top-bar/status chrome,
-  profile-insight copy, confidence badge rhythm, and below-fold profile
-  sections still diverge.
+- Public Profile now uses a deterministic Aanya portrait fixture, shared
+  Sundowner 5K context, poppable route chrome, the `claude-phone-390x812`
+  capture device, and a refreshed Profile handoff reference for
+  `public_profile_member`. The advisory baseline is within threshold at
+  13.40% mismatch / 17.15 meanDelta, maxDelta 240, masked 221520.
 - Host Event Manage now matches all five registered Claude references within
   advisory thresholds after the Guests split, shared segmented control,
   compact setup action rows, cohort-waitlist full banner rule, and deterministic
@@ -677,7 +676,7 @@ from those ledgers rather than hand-editing counts.
 | P1 | `screen.host.inbox` | 23 | 8 | 1 | Blocked: variant references need canonical exports or product-backed data | `DS-HOST-INBOX-001` blocked | `HostInboxScreenState`, `ChatsListDisplayState`, typed retry intents, host-inquiry grouping policy, typed row route callbacks, Widgetbook states, and route captures now cover uid/matches loading, error/offline, empty, populated, unread, no-unread, host-specific search-empty copy, new inquiry, text-scale, reduced-motion, and light/dark. The populated-query reference baseline is within threshold against `host_inbox_queries` after the host broadcast card and reference-safe-area capture pass (`8.64%` mismatch, meanDelta `14.81`). Remaining duplicate/grouping, long-count, keyboard, and pixel-reference variants are blocked/reference-only until canonical variant exports or product-backed high-count/keyboard scenarios exist. |
 | P1 | `screen.matches.chat` | 23 | 8 | 2 | None | None | Shared `ChatRouteState`, `HostChatScreenState`, `ChatThreadLookupState`, `ChatReadMarkerController`, `ChatScrollCoordinator`, `ChatThreadActionController`, and `ChatRetryController` now own provider waves, lookup keys, read effects, scroll behavior, top-bar action execution, retry invalidation, and disabled composer copy for consumer Match Chat. Deterministic captures include keyboard-open multiline, send failure snackbar, report failure snackbar, and block confirmation. Populated-thread and new-match empty references are registered and compare within threshold after fixture and reference-safe-area alignment: populated `7.22%` / `8.50`, new-match empty `5.01%` / `5.46`. Continue only if design exports keyboard/share/report/block/dynamic-time panels. |
 | P1 | `screen.matches.list` | 15 | 6 | 1 | None | None | `HostInboxScreenState` and `ChatsListDisplayState` now live in `chats_list_screen_state.dart` and own visible row derivation, unread filtering, empty-state selection, search affordance, and display-error retry intents. `ChatsListCelebrationController` owns new-match celebration target selection and dialog execution, and `ChatsSearchHeaderController` owns search-open close policy while the route passes query value/callback into the header. No `ChatNewMatchesRail` symbol remains; new matches render through the shared row list with fresh treatment. The populated baseline is within advisory threshold against `matches_list_context` (`6.84%` mismatch, meanDelta `8.21`); continue only if design exports distinct search/filter/loading/empty panels or the interaction state becomes external. |
-| P1 | `screen.profile.public` | 17 | 6 | 1 | None | `DS-PROFILE-PUBLIC-002` | `PublicProfileScreenState` owns target-profile branches, initial fallback, viewer context projection, safety action availability, retry intent, and report/block mutation mode. Selected report reason, report pending overlay, report success snackbar, report failure snackbar, and block failure snackbar now have focused test or capture proof; continue visual parity for top chrome/insight copy/profile sections. |
+| P1 | `screen.profile.public` | 17 | 6 | 1 | None | None | `PublicProfileScreenState` owns target-profile branches, initial fallback, viewer context projection, safety action availability, retry intent, and report/block mutation mode. Selected report reason, report pending overlay, report success snackbar, report failure snackbar, and block failure snackbar now have focused test or capture proof. Public-profile reference parity is within threshold at `13.40%` mismatch / `17.15` meanDelta after refreshing the stale source export, matching poppable route chrome, and using the `claude-phone-390x812` capture device. |
 | P1 | `screen.profile.self` | 16 | 8 | 1 | None | `DS-PROFILE-SELF-002` | SelfProfileScreenState, SelfProfileEditTabState, SelfProfilePhotoActionController, and SelfProfileInlineEditPatchFactory now own the route, row descriptor, photo intent, patch seams, and settings navigation proof; continue only delete/reorder visual captures if distinct plus advisory pixel work. |
 | P2 | `screen.auth.phone_entry` | 8 | 4 | 1 | `auth-handoff` | `DS-AUTH-001` | Widgetbook and deterministic captures now cover phone entry, OTP cooldown, validation error, country picker, send/verify/resend pending and failure, text scale, reduced motion, and light/dark. Continue state-specific references and decide whether Auth still needs a production display-state adapter before larger refactors. |
 | P2 | `screen.calendar.home` | 10 | 5 | 0 | Blocked: no standalone Calendar Home source; only `CalendarPrimitive.html`/`DateRangePicker` | `DS-CALENDAR-004` blocked | CalendarHomeState and CalendarAgendaSectionState own summary/header/agenda/state adapters. Widgetbook and deterministic captures cover uid-missing signed-out fallback, planned events, loading, provider error, empty, club-name loading/error, expanded month, selected day, text-scale, reduced-motion, and paired light/dark states; reference export waits on a canonical Calendar Home source. |
@@ -1466,10 +1465,10 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
   - DP-PROFILE-SELF-002: Deterministic captures are now registered for loading, error, offline, unavailable, edit tab, preview tab, upload pending, upload failure, inline save pending/error drawers, text scale, reduced motion, and paired light/dark. Settings navigation proof is covered by `profile_widgets_test`. Remaining work is delete/reorder route captures if visually distinct and advisory pixel comparison.
   - DP-PROFILE-SELF-003: Closed by SelfProfileScreenState owning profile provider waves, preview projection, upload/save mutation modes, and retry intent; SelfProfileEditTabState owning photo-grid, prompt-slot, basics/about/running/lifestyle row descriptors; SelfProfilePhotoActionController owning photo editor/delete/reorder intents; and SelfProfileInlineEditPatchFactory owning inline edit patch creation.
   - DP-PROFILE-SELF-004: Closed by exported self-profile edit and preview references plus masks in `design/reference_screens/screen.profile.self`.
-- [ ] `profile.public` (14 state follow-ups, 2 open gaps)
+- [x] `profile.public` (14 state follow-ups, 0 open gaps)
   - tested: `report_mutation`, `shared_snackbar_feedback`
   - captured: `loading_without_initial_profile`, `loading_with_initial_profile`, `load_error`, `profile_unavailable`, `public_profile`, `viewer_context`, `report_sheet`, `block_confirmation`, `block_mutation`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
-  - DP-PROFILE-PUBLIC-002: Deterministic captures are now registered for loading, initial-profile fallback, error, offline, unavailable, own profile, shared-event context, pending overlay, report sheet, block confirmation, text scale, reduced motion, and paired light/dark. Selected report reason, report success snackbar, and block failure snackbar now have focused widget-test proof. Advisory comparison is wired and currently above threshold at 36.62% mismatch / 32.76 meanDelta; remaining work is visual parity for top chrome/insight copy/profile sections.
+  - DP-PROFILE-PUBLIC-002: Closed. Deterministic captures are now registered for loading, initial-profile fallback, error, offline, unavailable, own profile, shared-event context, pending overlay, report sheet, block confirmation, text scale, reduced motion, and paired light/dark. Selected report reason, report success snackbar, and block failure snackbar now have focused widget-test proof. The refreshed public-profile reference now compares within advisory threshold against `public_profile_member` at 13.40% mismatch / 17.15 meanDelta, maxDelta 240, masked 221520.
   - DP-PROFILE-PUBLIC-003: Closed by PublicProfileScreenState, which owns target-profile branches, initial-profile fallback, viewer context projection, safety action availability, retry intent, and report/block mutation mode.
   - DP-PROFILE-PUBLIC-004: Closed by exported public-profile reference plus masks in `design/reference_screens/screen.profile.public`.
 

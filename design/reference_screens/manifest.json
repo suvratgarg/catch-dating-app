@@ -181,17 +181,12 @@
         "kind": "claude",
         "id": "claude.profile-public",
         "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-profile/Profile.dc.html",
-        "exportedAt": "2026-06-22",
-        "exportTool": "Google Chrome headless screenshot + sips crop",
+        "exportedAt": "2026-07-03",
+        "exportTool": "tool/design/export_reference_screen.mjs",
+        "label": "Profile · other",
         "viewport": {
-          "width": 1340,
+          "width": 1320,
           "height": 920
-        },
-        "crop": {
-          "x": 54,
-          "y": 41,
-          "width": 390,
-          "height": 812
         }
       },
       "thresholds": {
@@ -199,7 +194,7 @@
         "maxMismatchRatio": 0.18,
         "maxMeanDelta": 18
       },
-      "notes": "Canonical public-profile Claude template reference for advisory comparison against public_profile_member light captures rendered on the design-phone device. 2026-06-25 public profile photo/context pass: above advisory threshold; mismatch 36.62%, meanDelta 32.76, maxDelta 226, masked 203190. Remaining divergence is concentrated in top-bar/status chrome, profile-insight copy, confidence badge rhythm, and below-fold profile sections."
+      "notes": "Canonical public-profile Claude template reference for advisory comparison against public_profile_member light captures rendered on the claude-phone-390x812 device. 2026-07-03 reference refresh: regenerated from the current Profile · other handoff panel with tool/design/export_reference_screen.mjs; the capture route now exercises a poppable route so top chrome matches the handoff. Remaining measured divergence is profile-insight copy, confidence badge rhythm, and below-fold profile sections."
     },
     {
       "id": "screen.profile.self.preview_tab_default",

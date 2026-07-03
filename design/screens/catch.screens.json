@@ -7413,7 +7413,7 @@
       "name": "Public Profile",
       "owner": "public_profile",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "ready",
       "routes": [
         {
           "id": "publicProfileScreen",
@@ -7485,7 +7485,7 @@
           "kind": "repo",
           "status": "available",
           "path": "design/reference_screens/manifest.json",
-          "notes": "Public-profile PNG reference plus masks is registered for advisory pixel comparison."
+          "notes": "Public-profile PNG reference is regenerated from the current Profile · other Claude panel, masked, registered, and within advisory threshold against public_profile_member on the claude-phone-390x812 capture device."
         }
       ],
       "captures": [
@@ -7628,7 +7628,7 @@
           "id": "public_profile",
           "kind": "populated",
           "status": "captured",
-          "source": "Loaded PublicProfile renders ProfileSurface in publicProfile mode with no Catches reaction affordances. The public_profile_member capture now uses a deterministic bundled portrait fixture and shared Sundowner 5K context for advisory reference comparison.",
+          "source": "Loaded PublicProfile renders ProfileSurface in publicProfile mode with no Catches reaction affordances. The public_profile_member capture uses a deterministic bundled portrait fixture, shared Sundowner 5K context, a poppable route stack, and the claude-phone-390x812 capture device for advisory reference comparison.",
           "captureIds": [
             "public_profile_member"
           ],
@@ -7636,7 +7636,7 @@
             "test/public_profile/public_profile_screen_test.dart",
             "test/swipes/profile_card_widget_test.dart"
           ],
-          "nextAction": "Advisory comparison improved from 40.49% mismatch / 44.89 meanDelta to 36.62% mismatch / 32.76 meanDelta. Remaining divergence is top-bar/status chrome, profile-insight copy, confidence badge rhythm, and below-fold profile sections.",
+          "nextAction": "Advisory comparison is within threshold after refreshing the stale reference from the current Profile · other handoff, using a poppable route capture, adding the claude-phone-390x812 capture device, and extending the hero-media mask: 13.40% mismatch / 17.15 meanDelta, maxDelta 240, masked 221520.",
           "previewIds": [
             "PublicProfileScreen/Route states"
           ]
@@ -7980,8 +7980,8 @@
         },
         {
           "id": "DS-PROFILE-PUBLIC-002",
-          "status": "open",
-          "nextAction": "Deterministic captures now cover loading, initial-profile fallback, error, offline, unavailable, own-profile context, shared-event context, pending overlay, report sheet, block confirmation, text scale, reduced motion, and paired light/dark. Focused widget tests now prove the selected report reason, report success snackbar, and block failure snackbar. Advisory comparison is wired and currently above threshold at 36.62% mismatch / 32.76 meanDelta; remaining work is visual parity for top chrome/insight copy/profile sections."
+          "status": "closed",
+          "nextAction": "Closed. Deterministic captures cover loading, initial-profile fallback, error, offline, unavailable, own-profile context, shared-event context, pending overlay, report sheet, block confirmation, text scale, reduced motion, and paired light/dark. Focused widget tests prove selected report reason, report success snackbar, and block failure snackbar. The refreshed public-profile reference now compares within advisory threshold against public_profile_member at 13.40% mismatch / 17.15 meanDelta, maxDelta 240, masked 221520."
         },
         {
           "id": "DS-PROFILE-PUBLIC-003",

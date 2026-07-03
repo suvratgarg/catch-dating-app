@@ -28,6 +28,12 @@ class CaptureDevice {
     size: Size(390, 812),
   );
 
+  static const claudePhone390 = CaptureDevice(
+    id: 'claude-phone-390x812',
+    size: Size(390, 812),
+    safeArea: EdgeInsets.only(top: 44, bottom: 32),
+  );
+
   static const iphone15 = CaptureDevice(id: 'iphone-15', size: Size(393, 852));
 
   static const iphone17Pro = CaptureDevice(
@@ -40,6 +46,7 @@ class CaptureDevice {
     reviewTall,
     reviewPhone,
     designPhone,
+    claudePhone390,
     iphone15,
     iphone17Pro,
   ];

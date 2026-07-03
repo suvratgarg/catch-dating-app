@@ -1950,7 +1950,26 @@ class _SelfProfileUploadFailureCaptureState
 Widget _publicProfileCapture({
   String uid = ProfileSurfaceFixtures.targetUid,
   PublicProfile? initialProfile,
-}) => PublicProfileScreen(uid: uid, initialProfile: initialProfile);
+}) => _poppableRouteCapture(
+  PublicProfileScreen(uid: uid, initialProfile: initialProfile),
+);
+
+Widget _poppableRouteCapture(Widget child) {
+  PageRoute<void> routeFor(Widget routeChild) {
+    return PageRouteBuilder<void>(
+      pageBuilder: (context, animation, secondaryAnimation) => routeChild,
+      transitionDuration: Duration.zero,
+      reverseTransitionDuration: Duration.zero,
+    );
+  }
+
+  return Navigator(
+    onGenerateInitialRoutes: (navigator, initialRoute) => [
+      routeFor(const SizedBox.shrink()),
+      routeFor(child),
+    ],
+  );
+}
 
 class _PublicProfileReportMutationCapture extends ConsumerStatefulWidget {
   const _PublicProfileReportMutationCapture({required this.mode});
@@ -13857,10 +13876,12 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         _publicProfileReferenceProfile.uid,
       ).overrideWith((ref) => Stream.value(_publicProfileReferenceProfile)),
     ],
-    builder: (context) => PublicProfileScreen(
-      uid: _publicProfileReferenceProfile.uid,
-      initialProfile: _publicProfileReferenceProfile,
-      sharedRunTitle: 'Sundowner 5K',
+    builder: (context) => _poppableRouteCapture(
+      PublicProfileScreen(
+        uid: _publicProfileReferenceProfile.uid,
+        initialProfile: _publicProfileReferenceProfile,
+        sharedRunTitle: 'Sundowner 5K',
+      ),
     ),
   ),
   ScreenCaptureEntry(

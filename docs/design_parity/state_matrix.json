@@ -4221,7 +4221,7 @@
               "id": "profile-public-reference",
               "kind": "external",
               "status": "available",
-              "notes": "Public-profile Claude reference is exported, masked, and registered for advisory pixel comparison.",
+              "notes": "Public-profile Claude reference is regenerated from the current Profile · other panel, masked, registered, and within advisory threshold against public_profile_member on the claude-phone-390x812 capture device.",
               "path": "design/reference_screens/manifest.json"
             }
           ],
@@ -4291,7 +4291,7 @@
                 "test/public_profile/public_profile_screen_test.dart",
                 "test/swipes/profile_card_widget_test.dart"
               ],
-              "notes": "Loaded PublicProfile renders ProfileSurface in publicProfile mode with no Catches reaction affordances. public_profile_member now uses deterministic Aanya persona data, a bundled portrait fixture, viewer context, and shared Sundowner 5K context. Advisory comparison improved from 40.49% mismatch / 44.89 meanDelta to 36.62% mismatch / 32.76 meanDelta; remaining divergence is top-bar/status chrome, profile-insight copy, confidence badge rhythm, and below-fold profile sections.",
+              "notes": "Loaded PublicProfile renders ProfileSurface in publicProfile mode with no Catches reaction affordances. public_profile_member now uses deterministic Aanya persona data, a bundled portrait fixture, viewer context, shared Sundowner 5K context, a poppable route stack, and the claude-phone-390x812 capture device. Advisory comparison is within threshold after refreshing the stale reference and hero-media mask: 13.40% mismatch / 17.15 meanDelta, maxDelta 240, masked 221520.",
               "previewIds": [
                 "PublicProfileScreen/Route states"
               ]
@@ -4437,8 +4437,8 @@
             },
             {
               "id": "DP-PROFILE-PUBLIC-002",
-              "status": "open",
-              "nextAction": "Deterministic captures are now registered for loading, initial-profile fallback, error, offline, unavailable, own profile, shared-event context, pending overlay, report sheet, block confirmation, text scale, reduced motion, and paired light/dark. Focused widget tests now prove the selected report reason, report success snackbar, and block failure snackbar. Advisory comparison is wired and currently above threshold at 36.62% mismatch / 32.76 meanDelta; remaining work is visual parity for top chrome/insight copy/profile sections."
+              "status": "closed",
+              "nextAction": "Closed. Deterministic captures are registered for loading, initial-profile fallback, error, offline, unavailable, own profile, shared-event context, pending overlay, report sheet, block confirmation, text scale, reduced motion, and paired light/dark. Focused widget tests prove selected report reason, report success snackbar, and block failure snackbar. The refreshed public-profile reference now compares within advisory threshold against public_profile_member at 13.40% mismatch / 17.15 meanDelta, maxDelta 240, masked 221520."
             },
             {
               "id": "DP-PROFILE-PUBLIC-003",
