@@ -14292,8 +14292,8 @@
       "openGaps": [
         {
           "id": "DS-HOST-INBOX-001",
-          "status": "open",
-          "nextAction": "Flutter captures now cover uid loading, matches loading, generic error, offline, empty, populated, unread-filter rows, no-unread empty, search active, search empty, new inquiry, text-scale, reduced-motion, and light/dark. Remaining capture work is only duplicate/grouping, long-count, keyboard, and pixel-reference variants if design requires them."
+          "status": "blocked",
+          "nextAction": "Blocked/reference-only until canonical Host Inbox variant exports or product-backed high-count/keyboard scenarios exist. Flutter captures already cover uid loading, matches loading, generic error, offline, empty, populated, unread-filter rows, no-unread empty, search active, search empty, new inquiry, text-scale, reduced-motion, and light/dark. Remaining duplicate/grouping, long-count, keyboard, and pixel-reference variants have no canonical source in the current Host Inbox handoff."
         },
         {
           "id": "DS-HOST-INBOX-002",
