@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
+import 'package:catch_dating_app/core/widgets/catch_scrim.dart';
 import 'package:flutter/material.dart';
 
 class CatchDetailHeroBackdrop extends StatelessWidget {
@@ -35,7 +36,7 @@ class CatchDetailHeroBackdrop extends StatelessWidget {
           )
         else
           const CatchDetailHeroFallback(),
-        if (showScrim) const CatchDetailHeroScrim(),
+        if (showScrim) const CatchScrim.detailHero(),
       ],
     );
   }
@@ -61,34 +62,6 @@ class CatchDetailHeroFallback extends StatelessWidget {
         ),
       ),
       child: const SizedBox.expand(),
-    );
-  }
-}
-
-class CatchDetailHeroScrim extends StatelessWidget {
-  const CatchDetailHeroScrim({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          stops: const [0.0, 0.45, 1.0],
-          colors: [
-            CatchTokens.editorialDark.withValues(
-              alpha: CatchOpacity.photoScrimLight,
-            ),
-            CatchTokens.editorialDark.withValues(
-              alpha: CatchOpacity.photoScrimMedium,
-            ),
-            CatchTokens.editorialDark.withValues(
-              alpha: CatchOpacity.onDarkMuted,
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

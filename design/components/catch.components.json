@@ -8584,11 +8584,13 @@
           },
           {
             "id": "catch.detail_media.scrim",
-            "symbol": "CatchDetailHeroScrim",
-            "file": "lib/core/widgets/catch_detail_hero_backdrop.dart",
-            "summary": "Direct detail-hero scrim renderer for media text protection.",
+            "symbol": "CatchScrim",
+            "file": "lib/core/widgets/catch_scrim.dart",
+            "summary": "Shared photo scrim renderer for detail heroes, photo frames, and profile hero tinting.",
             "states": [
-              "vertical-gradient"
+              "detail-hero",
+              "photo-frame",
+              "hero-tint"
             ]
           }
         ]

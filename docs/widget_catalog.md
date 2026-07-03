@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 2.5.546
-updated: 2026-07-02
+version: 2.5.547
+updated: 2026-07-03
 owner: recursive_audit_loop
 status: active
 ---
@@ -16,6 +16,12 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.547
+
+- Promoted the repeated detail-hero, club photo-frame, and profile hero
+  gradients into `CatchScrim` with named presets; retired the three local
+  scrim catalog entries.
 
 ### 2.5.546
 
@@ -265,7 +271,7 @@ a feature section here only when auditing that feature's widget surface.
 
 - Cataloged the public Club Discovery directory-card renderers
   (`DirectoryCard`, `DirectoryPhotoCard`, `DirectoryIdentityCard`,
-  `ClubPhotoMediaOverlay`, `ClubPhotoChrome`, `ClubPhotoScrim`,
+  `ClubPhotoMediaOverlay`, `ClubPhotoChrome`, `CatchScrim.photoFrame`,
   `ClubLogoCrest`, `ClubLogoFallback`, `ClubDirectoryFooter`,
   `ClubHostActionRow`, `MembershipTrailingController`,
   `MembershipTrailing`, and `ClubRule`) with exact Widgetbook coverage. The
@@ -5280,7 +5286,7 @@ Generated 2026-05-06.
 | `CatchJourneyStepNode` | `lib/core/widgets/catch_journey_steps.dart:100` | Direct journey-rail node renderer used by `CatchJourneySteps`. Keeps the circular node extent, surface fill, accent border, and stroke width reviewable without a private widget-returning helper. |
 | `CatchDetailHeroBackdrop` | `lib/core/widgets/catch_detail_hero_backdrop.dart:6` | Shared photo-or-branded-fallback backdrop for detail-page heroes. Used by club and event detail headers so no-photo states share the same dark branded gradient and scrim treatment. |
 | `CatchDetailHeroFallback` | `lib/core/widgets/catch_detail_hero_backdrop.dart:44` | Direct branded-gradient fallback renderer used when detail heroes have no usable image or image loading fails. Keeps the no-photo hero state reviewable without relying on a private widget-returning helper. |
-| `CatchDetailHeroScrim` | `lib/core/widgets/catch_detail_hero_backdrop.dart:68` | Direct vertical scrim renderer layered over detail hero media. Uses canonical photo-scrim opacity stops so image and fallback hero surfaces share the same text-protection overlay. |
+| `CatchScrim` | `lib/core/widgets/catch_scrim.dart:6` | Shared pointer-transparent photo scrim renderer. Named presets cover detail hero media, club/directory photo frames, and profile hero tinting so photo text-protection gradients stay centralized. |
 | `CatchMetricStrip` | `lib/core/widgets/catch_metric_strip.dart:21` | Canonical metric rail for compact value-over-label stats. Owns the surface, border, spacing, hairline dividers, mono value styling, optional unit styling, label truncation, and surface/color overrides so club and event detail stats cannot drift. Registered as formal component contract `catch.metric_strip`; Widgetbook contract states are the canonical review surface. |
 | `CatchMetricStripCell` | `lib/core/widgets/catch_metric_strip.dart:76` | Direct value-over-label metric cell renderer used by `CatchMetricStrip`. Keeps mono value/unit styling, label truncation, optional color overrides, and expanded-row behavior reviewable without private widget-returning helpers. |
 | `CatchMetricStripDivider` | `lib/core/widgets/catch_metric_strip.dart:141` | Direct metric-rail hairline divider renderer used between `CatchMetricStripCell` instances. Centralizes metric divider height, width, and optional color override. |
@@ -5616,9 +5622,8 @@ Generated 2026-05-06.
 | `CatchesHubContent` | `lib/swipes/presentation/swipe_hub_screen.dart:84` | Provider-free content body for the Catches hub: header, intro card for the featured adapter row, and active catch-window rows. Receives typed catch/recap callbacks from the route instead of pushing navigation itself. |
 | `CatchesHubHeader` | `lib/swipes/presentation/swipe_hub_screen.dart:153` | Header row for the Catches hub: "CATCHES" section header, "After the event" title, and heart icon treatment. |
 | `CatchesIntroCard` | `lib/swipes/presentation/swipe_hub_screen.dart:184` | Gradient hero card promoting the 24-hour catch window from `CatchesHubEventRow` display data: intro copy, countdown label, roster count, and "Start catching" CTA. The parent `CatchSurface` owns tap handling; the solid-white CTA is a non-interactive `CatchButtonVariant.light` display label so accessibility and color pairing stay correct. |
-| `ProfileHeroWidget` | `lib/swipes/presentation/profile_redesign/catch_profile_view.dart:123` | Dark editorial profile hero. Composes graded/fallback profile media, hero scrim, activity-colored kicker, display name/age, meta line, and optional overlay reaction controls. |
-| `ProfileHeroScrim` | `lib/swipes/presentation/profile_redesign/catch_profile_view.dart:209` | Non-interactive dark vertical gradient used over profile hero media so name/meta/reaction chrome remain legible. |
-| `ProfilePhoto` | `lib/swipes/presentation/profile_redesign/catch_profile_view.dart:237` | Profile media renderer. Shows a graded real photo when present, otherwise falls back to the activity artwork for the profile's kicker activity. |
+| `ProfileHeroWidget` | `lib/swipes/shared/profile_surface/catch_profile_view.dart:123` | Dark editorial profile hero. Composes graded/fallback profile media, `CatchScrim.heroTint`, activity-colored kicker, display name/age, meta line, and optional overlay reaction controls. |
+| `ProfilePhoto` | `lib/swipes/shared/profile_surface/catch_profile_view.dart:214` | Profile media renderer. Shows a graded real photo when present, otherwise falls back to the activity artwork for the profile's kicker activity. |
 | `ProfileSectionView` | `lib/swipes/presentation/profile_redesign/catch_profile_view.dart:266` | Public section dispatcher for `ProfileSection` display models. Routes compatibility, prompt, running, facts, and photo sections to their named renderers, and adds section reaction controls only when the parent Catches surface supplies `onReact`. |
 | `ProfileSectionKicker` | `lib/swipes/presentation/profile_redesign/catch_profile_view.dart:326` | Uppercase mono section label used by profile compatibility, prompt, running, and fact sections, with optional activity accent color. |
 | `ProfileCompatibility` | `lib/swipes/presentation/profile_redesign/catch_profile_view.dart:344` | Compatibility block for "why you might click" content. Renders checked reasons plus confidence badges from the pure `ProfileCompatibilitySection` display model. |
@@ -6047,12 +6052,11 @@ Generated 2026-05-06.
 | `DirectoryPhotoCard` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:40` | Image-backed Explore club directory card. Uses `CatchPolaroid` with real club imagery through `ClubPhotoMediaOverlay`, overlays `ClubPhotoChrome`, keeps the Archivo club identity band below the media, and renders tags plus hosted-by/action affordances without moving join mutation state into display-only card code. |
 | `DirectoryIdentityCard` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:82` | No-cover Explore club directory card. Uses `CatchPolaroid` with `ClubPolaroidArtwork`, the same `ClubPhotoChrome` overlay, metadata, tags, hosted-by context, and role-aware membership action row without generated initials. |
 | `ClubPhotoMediaOverlay` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:125` | Directory-card media slot that renders `ClubImage` in cover-first mode with the full-size fallback treatment expected by photo-backed club cards. |
-| `ClubPhotoChrome` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:136` | Directory-card media chrome. Layers the gradient scrim, logo crest, optional joined sash, and compact member seal over card media while using the deterministic `ClubCoverVisualPalette` accent. |
-| `ClubPhotoScrim` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:189` | Non-interactive vertical gradient overlay for directory-card media. Protects crest, sash, and member-seal legibility without taking gestures from the card. |
-| `ClubLogoCrest` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:217` | Circular club logo mark used by directory media chrome. Renders the club profile image when present, otherwise falls back to `ClubLogoFallback`, with caller-supplied palette, border, size, and elevation. |
-| `ClubLogoFallback` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:257` | Empty logo fallback used inside the accent-colored `ClubLogoCrest` shell when the club has no profile image or the network image fails. |
-| `ClubDirectoryFooter` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:266` | Directory-card footer stack for rating, host/action row, separator rule, and visible club tags. Keeps card metadata layout separate from the media and title band. |
-| `ClubRule` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:304` | Single-pixel directory-card separator used between host/action metadata and tag chips. |
+| `ClubPhotoChrome` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:136` | Directory-card media chrome. Layers `CatchScrim.photoFrame`, logo crest, optional joined sash, and compact member seal over card media while using the deterministic `ClubCoverVisualPalette` accent. |
+| `ClubLogoCrest` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:181` | Circular club logo mark used by directory media chrome. Renders the club profile image when present, otherwise falls back to `ClubLogoFallback`, with caller-supplied palette, border, size, and elevation. |
+| `ClubLogoFallback` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:221` | Empty logo fallback used inside the accent-colored `ClubLogoCrest` shell when the club has no profile image or the network image fails. |
+| `ClubDirectoryFooter` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:230` | Directory-card footer stack for rating, host/action row, separator rule, and visible club tags. Keeps card metadata layout separate from the media and title band. |
+| `ClubRule` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:268` | Single-pixel directory-card separator used between host/action metadata and tag chips. |
 | `ClubHostActionRow` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:313` | Directory-card hosted-by row. Reuses `ClubHostIdentityLine` and delegates joined/joinable trailing state to `MembershipTrailingController`. |
 | `MembershipTrailingController` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:372` | Directory-card membership action adapter. Hides redundant joined controls because the card sash carries that state, keys join mutation state by `clubId` so one pending Join button does not disable every visible club card, and routes signed-out users through the auth flow. |
 | `MembershipTrailing` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:417` | Provider-free directory-card join renderer. Shows the compact `CatchButton` for joinable clubs, disables it while the controller mutation is pending, and renders no redundant joined control when the sash already carries membership state. |

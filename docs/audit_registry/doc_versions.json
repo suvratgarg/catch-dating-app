@@ -219,8 +219,8 @@
   },
   "widget_catalog": {
     "path": "docs/widget_catalog.md",
-    "version": "2.5.490",
-    "updated": "2026-07-01",
+    "version": "2.5.547",
+    "updated": "2026-07-03",
     "status": "active",
     "read_policy": "Use as widget inventory and update it when widget APIs, ownership models, sliver/tab structures, reusable design-system roles, action-effect/state adapters, or provider-free section boundaries materially change."
   },

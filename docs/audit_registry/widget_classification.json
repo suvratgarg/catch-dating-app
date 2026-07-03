@@ -10,28 +10,28 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1174,
-    "widgetClasses": 1066,
+    "total": 1172,
+    "widgetClasses": 1064,
     "stateClasses": 108,
-    "publicClasses": 1066,
+    "publicClasses": 1064,
     "privateClasses": 108,
     "byRole": {
       "atom": 56,
       "composition": 314,
-      "feature-adapter": 332,
+      "feature-adapter": 330,
       "pattern": 16,
       "screen": 348,
       "widget-state": 108
     },
     "byDecision": {
       "keep-canonical-contract": 171,
-      "keep-public-cataloged": 851,
+      "keep-public-cataloged": 849,
       "keep-widget-state": 108,
       "review-catalog-coverage": 40,
       "review-promote-or-consolidate": 4
     },
     "byCatalogStatus": {
-      "cataloged": 753,
+      "cataloged": 751,
       "contracted": 171,
       "not-applicable": 108,
       "route-covered": 102,
@@ -1780,29 +1780,6 @@
       "flags": []
     },
     {
-      "name": "ClubPhotoScrim",
-      "file": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.clubs.club_photo_scrim",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
       "name": "ClubRule",
       "file": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
       "classKind": "widget",
@@ -3315,29 +3292,6 @@
       "publicApi": true,
       "catalogStatus": "contracted",
       "contractId": "catch.detail_media.fallback",
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-canonical-contract",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "CatchDetailHeroScrim",
-      "file": "lib/core/widgets/catch_detail_hero_backdrop.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.detail_media",
-      "publicApi": true,
-      "catalogStatus": "contracted",
-      "contractId": "catch.detail_media.scrim",
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
@@ -5129,6 +5083,29 @@
       "stateOwnership": "local-ui-only",
       "asyncOwnership": "none",
       "layoutOwnership": "internal-only",
+      "actionOwnership": "callbacks-only",
+      "decision": "keep-canonical-contract",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "CatchScrim",
+      "file": "lib/core/widgets/catch_scrim.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.detail_media",
+      "publicApi": true,
+      "catalogStatus": "contracted",
+      "contractId": "catch.detail_media.scrim",
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
       "decision": "keep-canonical-contract",
       "remediationOptions": [
@@ -25423,29 +25400,6 @@
       "visibility": "public",
       "role": "feature-adapter",
       "canonicalFamily": "feature.swipes.profile_facts",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "ProfileHeroScrim",
-      "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.swipes.profile_hero_scrim",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,

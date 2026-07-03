@@ -188,9 +188,24 @@ for CatchScrim under `widgetbook/lib/primitives/` showing the three presets
 over a sample photo/color block. Delete or repoint widgetbook use-cases typed
 to the three old names (gotcha 2).
 
-- [ ] primitive + migration + deletions
-- [ ] widgetbook use-case + regen
-- [ ] registries + checks + receipts
+- [x] primitive + migration + deletions
+- [x] widgetbook use-case + regen
+- [x] registries + checks + receipts
+
+Receipt: 2026-07-03 Codex WO-002 created `CatchScrim` with `detailHero`,
+`photoFrame`, and `heroTint` presets; migrated detail hero, club directory
+photo chrome, and profile hero callers; removed the three old local scrim
+classes and their stale Widgetbook use cases; repointed the formal
+`catch.detail_media.scrim` preview to `CatchScrim`; refreshed Widgetbook,
+catalog, component contract, classification, and similarity artifacts. Clean
+checks: `flutter analyze --no-fatal-infos lib` (192 existing infos, 0
+warnings/errors), component contract check, classification check (1172 entries,
+44 review items), similarity check (1064 widgets, 61 clusters, 9 absorb
+candidates), dedupe probes, widget cleanup scan, manifest-only, agent
+readiness, JSON parse, stale scrim symbol scan, and `git diff --check`.
+Existing blockers recorded in the receipt: Widgetbook analyzer remains at 66
+inherited issues, Widgetbook coverage remains at a 142 item queue, and
+Widgetbook contract refs remain blocked by unrelated HostOperations preview ids.
 
 ## WO-003 — Inline six empty-state wrappers (decision c009)
 
@@ -782,7 +797,10 @@ in `docs/audit_registry/widget_similarity.json` that has NO entry in
 
 ## Escalations
 
-(append design questions / blockers here; the review session picks them up)
+- WO-002: `CatchScrim.photoFrame` keeps using
+  `CatchOpacity.eventSuccessSubtleBorder` for its bottom-edge alpha to stay
+  pixel-faithful, but the token name is event-success-specific and should be
+  renamed or aliased by the owner in a token pass.
 
 ## Completed
 

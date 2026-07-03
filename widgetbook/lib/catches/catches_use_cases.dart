@@ -726,30 +726,6 @@ Widget profileHeroWidgetStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Hero scrim states',
-  type: ProfileHeroScrim,
-  path: '[P1 product surfaces]/Catches/Sections',
-)
-Widget profileHeroScrimStates(BuildContext context) {
-  return const _CatchesCatalog(
-    title: 'ProfileHeroScrim',
-    contractId: 'screen.catches.profile.hero_scrim',
-    children: [
-      _StateCard(
-        label: 'dark gradient',
-        child: _SectionFrame(
-          height: 280,
-          child: DecoratedBox(
-            decoration: BoxDecoration(color: Color(0xFF111111)),
-            child: ProfileHeroScrim(base: Color(0xFF111111)),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
   name: 'Photo states',
   type: ProfilePhoto,
   path: '[P1 product surfaces]/Catches/Sections',

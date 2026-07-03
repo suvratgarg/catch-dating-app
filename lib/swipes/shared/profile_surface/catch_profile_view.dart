@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
+import 'package:catch_dating_app/core/widgets/catch_scrim.dart';
 import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
@@ -153,7 +154,7 @@ class ProfileHeroWidget extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             ProfilePhoto(image: data.heroPhoto, activity: data.kickerActivity),
-            ProfileHeroScrim(base: dark.bg),
+            CatchScrim.heroTint(base: dark.bg),
             if (onReact != null && reaction != null)
               Positioned(
                 top: CatchSpacing.s4,
@@ -201,33 +202,6 @@ class ProfileHeroWidget extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class ProfileHeroScrim extends StatelessWidget {
-  const ProfileHeroScrim({super.key, required this.base});
-
-  final Color base;
-
-  @override
-  Widget build(BuildContext context) {
-    return IgnorePointer(
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: const [0.0, 0.45, 0.78, 1.0],
-            colors: [
-              base.withValues(alpha: CatchOpacity.profileHeroScrimTop),
-              base.withValues(alpha: CatchOpacity.none),
-              base.withValues(alpha: CatchOpacity.profileHeroScrimMid),
-              base.withValues(alpha: CatchOpacity.profileHeroScrimBottom),
-            ],
-          ),
         ),
       ),
     );

@@ -142,7 +142,7 @@ class ClubPhotoChrome extends StatelessWidget {
     return Stack(
       fit: StackFit.expand,
       children: [
-        const ClubPhotoScrim(),
+        const CatchScrim.photoFrame(),
         Positioned(
           top: CatchSpacing.s3,
           left: CatchSpacing.s3,
@@ -174,34 +174,6 @@ class ClubPhotoChrome extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class ClubPhotoScrim extends StatelessWidget {
-  const ClubPhotoScrim({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return IgnorePointer(
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: const [0.0, 0.48, 1.0],
-            colors: [
-              CatchTokens.editorialDark.withValues(
-                alpha: CatchOpacity.photoScrimLight,
-              ),
-              Colors.transparent,
-              CatchTokens.editorialDark.withValues(
-                alpha: CatchOpacity.eventSuccessSubtleBorder,
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

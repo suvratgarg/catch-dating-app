@@ -233,6 +233,84 @@ Known blockers / inherited debt:
   `unused_element_parameter` warning for `_HostManageRouteScope.themeMode` is
   gone.
 
+## 2026-07-03 WO-002 CatchScrim Primitive
+
+Scope:
+
+- New shared `CatchScrim` primitive with detail hero, photo-frame, and profile
+  hero tint presets.
+- Runtime migration for detail hero media, club directory photo chrome, and
+  profile hero media.
+- Widgetbook/component-contract repoint from the retired local scrim widgets.
+- Widget catalog and generated registry refresh.
+
+Commands run:
+
+- `node tool/agent/context_pack.mjs --task widget-consolidation-wo-002-catch-scrim --paths docs/design_parity/widget_consolidation/codex_worklog.md,docs/design_parity/widget_consolidation/decisions.json,lib/core/widgets/catch_scrim.dart,lib/core/widgets/catch_detail_hero_backdrop.dart,lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart,lib/swipes/shared/profile_surface/catch_profile_view.dart,widgetbook/lib/primitives,widgetbook/lib/clubs/club_detail_use_cases.dart,widgetbook/lib/catches/catches_use_cases.dart,docs/widget_catalog.md,docs/audit_registry/widget_consolidation_receipts.md`
+- `dart tool/audit_registry.dart refresh`
+- `dart format lib/core/widgets/catch_scrim.dart lib/core/widgets/catch_detail_hero_backdrop.dart lib/clubs/presentation/discovery/widgets/club_list_tile.dart lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart lib/swipes/shared/profile_surface/catch_profile_view.dart widgetbook/lib/catches/catches_use_cases.dart widgetbook/lib/clubs/club_detail_use_cases.dart widgetbook/lib/primitives/primitive_contract_use_cases.dart`
+- `(cd widgetbook && flutter pub get)`
+- `(cd widgetbook && dart run build_runner build --delete-conflicting-outputs)`
+- `node tool/design/generate_widget_classification.mjs`
+- `node tool/design/check_widget_classification.mjs`
+- `dart run tool/widget_dedupe/bin/extract_fingerprints.dart`
+- `node tool/design/build_widget_similarity.mjs`
+- `node tool/design/build_widget_similarity.mjs --check`
+- `node tool/design/check_widgetbook_coverage.mjs --check`
+- `env DART=/Users/suvratgarg/Development/flutter/bin/dart node tool/design/check_widget_dedupe_probes.mjs`
+- `node tool/design/check_component_contracts.mjs`
+- `node tool/design/check_widgetbook_contract_refs.mjs --check`
+- `flutter analyze --no-fatal-infos lib`
+- `(cd widgetbook && flutter analyze)`
+- `bash tool/widget_cleanup_scan.sh --summary`
+- `node tool/run.mjs check --manifest-only`
+- `node tool/agent/check_agent_readiness.mjs`
+- `git diff --check`
+- `rg -n "CatchDetailHeroScrim|ClubPhotoScrim|ProfileHeroScrim" lib widgetbook/lib docs/widget_catalog.md design/components/catch.components.json --glob '!*.g.dart'`
+
+Headline numbers:
+
+| metric | value |
+|---|---:|
+| widget classification entries | 1,172 |
+| classification review items | 44 |
+| private widget classes flagged | 0 |
+| widget fingerprints | 1,064 |
+| fingerprint failures | 0 |
+| similarity clusters | 61 |
+| ranked pairs | 200 |
+| name families | 233 |
+| absorb candidates | 9 |
+| root lib analyzer infos | 192 |
+| widget cleanup scan categories with findings | 0 |
+| component contracts | 59 |
+| agent readiness score | 100/100 |
+
+Spot checks:
+
+- Stale scrim symbol scan across active lib, Widgetbook source, component
+  contract, and widget catalog returned no matches for the retired symbols.
+- `widgetbook/lib/main.directories.g.dart` now exposes `CatchScrim` and no
+  longer exposes the three retired scrim use cases.
+- `design/components/catch.components.json` keeps
+  `catch.detail_media.scrim` but points it to `CatchScrim` with the
+  `detail-hero`, `photo-frame`, and `hero-tint` states.
+- `docs/widget_catalog.md` v2.5.547 records the `CatchScrim` promotion and the
+  club/profile catalog rows now refer to the named presets.
+
+Known blockers / inherited debt:
+
+- `node tool/design/check_widgetbook_coverage.mjs --check` still fails on the
+  existing catalog-or-replace decision queue: 142 public widgets need
+  decisions, with 0 stale decisions.
+- `(cd widgetbook && flutter analyze)` still fails on 66 existing Widgetbook
+  issues, mostly in `lib/hosts/host_operations_use_cases.dart`.
+- `node tool/design/check_widgetbook_contract_refs.mjs --check` still fails on
+  unrelated HostOperations preview ids.
+- `CatchScrim.photoFrame` preserves the existing
+  `CatchOpacity.eventSuccessSubtleBorder` bottom-edge alpha for visual parity;
+  the event-specific token name is tracked as a WO-002 escalation.
+
 Calibration note:
 
 The v0.1.0 SimHash threshold of 18 is void. The v0.2.0 registry recalibrates

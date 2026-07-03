@@ -980,29 +980,6 @@ Widget clubPhotoChromeStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Photo scrim states',
-  type: ClubPhotoScrim,
-  path: '[Club Discovery]/Atoms',
-)
-Widget clubPhotoScrimStates(BuildContext context) {
-  return _CatalogScreen(
-    title: 'ClubPhotoScrim',
-    catalogId: 'atom.club.photo_scrim',
-    children: const [
-      _StateCard(
-        label: 'gradient',
-        child: _ClubMediaFrame(
-          child: DecoratedBox(
-            decoration: BoxDecoration(color: CatchTokens.editorialDark),
-            child: ClubPhotoScrim(),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
   name: 'Logo crest states',
   type: ClubLogoCrest,
   path: '[Club Discovery]/Atoms',

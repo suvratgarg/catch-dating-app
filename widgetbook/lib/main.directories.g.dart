@@ -531,16 +531,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubPhotoScrim',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Photo scrim states',
-                builder: _widgetbook_workspace_clubs_club_detail_use_cases
-                    .clubPhotoScrimStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'ClubRatingPill',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -2160,17 +2150,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchDetailHeroScrim',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchDetailHeroScrimContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'CatchEventThumbnailActivityFallback',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -2222,6 +2201,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchNetworkImageFallbackContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchScrim',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchScrimContractStates,
               ),
             ],
           ),
@@ -4673,16 +4663,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Facts states',
                     builder: _widgetbook_workspace_catches_catches_use_cases
                         .profileFactsStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'ProfileHeroScrim',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Hero scrim states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
-                        .profileHeroScrimStates,
                   ),
                 ],
               ),
