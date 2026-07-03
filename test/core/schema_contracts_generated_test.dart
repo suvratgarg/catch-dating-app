@@ -175,15 +175,29 @@ void main() {
         'EventSafetyReportDocument',
         'SavedEventDocument',
         'SwipeDocument',
+        'ProfilePromptAnswer',
+        'PhotoPromptAnswer',
+        'ProfilePhoto',
+        'UploadedPhoto',
+        'ActivityPreferences',
         'CreateEventCallablePayload',
         'SubmitEventSuccessWingmanRequestCallablePayload',
         'CreateProfileDecisionClientWrite',
+        'CreateChatMessageClientWrite',
         'CreateSavedEventClientWrite',
+        'DeleteSavedEventClientWrite',
+        'MarkNotificationReadClientWrite',
+        'ResetMatchUnreadCountClientWrite',
       ]),
     );
     expect(
       schema_contracts.schemaContractsBySource.keys,
       containsAll(<String>[
+        'embedded/profile_prompt_answer.schema.json',
+        'embedded/photo_prompt_answer.schema.json',
+        'embedded/profile_photo.schema.json',
+        'embedded/uploaded_photo.schema.json',
+        'embedded/activity_preferences.schema.json',
         'firestore/users.schema.json',
         'firestore/events.schema.json',
         'firestore/external_events.schema.json',
@@ -198,7 +212,11 @@ void main() {
         'callables/submit_event_success_wingman_request_payload.schema.json',
         'firestore/swipes.schema.json',
         'client_writes/create_profile_decision.schema.json',
+        'client_writes/create_chat_message.schema.json',
         'client_writes/create_saved_event.schema.json',
+        'client_writes/delete_saved_event.schema.json',
+        'client_writes/mark_notification_read.schema.json',
+        'client_writes/reset_match_unread_count.schema.json',
       ]),
     );
   });
@@ -276,12 +294,66 @@ void main() {
         'invalid/swipe_doc_invalid_reaction_target.json',
       ),
       _SchemaFixtureCase.valid(
+        'ProfilePromptAnswer',
+        'valid/profile_prompt_answer.json',
+      ),
+      _SchemaFixtureCase.invalid(
+        'ProfilePromptAnswer',
+        'invalid/profile_prompt_answer_overlong.json',
+      ),
+      _SchemaFixtureCase.valid(
+        'PhotoPromptAnswer',
+        'valid/photo_prompt_answer.json',
+      ),
+      _SchemaFixtureCase.valid('ProfilePhoto', 'valid/profile_photo.json'),
+      _SchemaFixtureCase.invalid(
+        'ProfilePhoto',
+        'invalid/profile_photo_invalid_storage_path.json',
+      ),
+      _SchemaFixtureCase.valid('UploadedPhoto', 'valid/uploaded_photo.json'),
+      _SchemaFixtureCase.invalid(
+        'UploadedPhoto',
+        'invalid/uploaded_photo_invalid_position.json',
+      ),
+      _SchemaFixtureCase.valid(
+        'ActivityPreferences',
+        'valid/activity_preferences.json',
+      ),
+      _SchemaFixtureCase.invalid(
+        'ActivityPreferences',
+        'invalid/activity_preferences_invalid_version.json',
+      ),
+      _SchemaFixtureCase.valid(
         'CreateProfileDecisionClientWrite',
         'valid/create_profile_decision_client_write.json',
       ),
       _SchemaFixtureCase.valid(
+        'CreateChatMessageClientWrite',
+        'valid/create_chat_message_client_write.json',
+      ),
+      _SchemaFixtureCase.invalid(
+        'CreateChatMessageClientWrite',
+        'invalid/create_chat_message_empty_client_write.json',
+      ),
+      _SchemaFixtureCase.valid(
         'CreateSavedEventClientWrite',
         'valid/create_saved_event_client_write.json',
+      ),
+      _SchemaFixtureCase.valid(
+        'DeleteSavedEventClientWrite',
+        'valid/delete_saved_event_client_write.json',
+      ),
+      _SchemaFixtureCase.valid(
+        'MarkNotificationReadClientWrite',
+        'valid/mark_notification_read_client_write.json',
+      ),
+      _SchemaFixtureCase.valid(
+        'ResetMatchUnreadCountClientWrite',
+        'valid/reset_match_unread_count_client_write.json',
+      ),
+      _SchemaFixtureCase.invalid(
+        'ResetMatchUnreadCountClientWrite',
+        'invalid/reset_match_unread_count_multiple_users.json',
       ),
       _SchemaFixtureCase.invalid(
         'CreateEventReviewCallablePayload',
