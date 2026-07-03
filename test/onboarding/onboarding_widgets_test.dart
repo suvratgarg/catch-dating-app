@@ -17,6 +17,7 @@ import 'package:catch_dating_app/onboarding/presentation/onboarding_form_keys.da
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/gender_interest_page.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/gender_interest_page_state.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/instagram_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/instagram_page_state.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/name_dob_page.dart';
@@ -399,6 +400,85 @@ void main() {
   });
 
   group('GenderInterestPage', () {
+    test('state validates selections and creates submit intent', () {
+      final empty = OnboardingGenderInterestState.fromDraft(
+        gender: null,
+        interestedIn: const [],
+      );
+
+      expect(empty.selectedGender, isEmpty);
+      expect(empty.validateGender(null), 'Please select your gender');
+      expect(
+        empty.validateInterestedIn(null),
+        'Please select who you want to see',
+      );
+      expect(empty.submitIntent(), isNull);
+
+      final ready = OnboardingGenderInterestState.fromDraft(
+        gender: Gender.woman,
+        interestedIn: const [Gender.man],
+        isSaving: true,
+        saveErrorMessage: 'Could not save profile.',
+      );
+      expect(ready.selectedGender, {Gender.woman});
+      expect(ready.interestedIn, {Gender.man});
+      expect(ready.isSaving, isTrue);
+      expect(ready.hasSaveError, isTrue);
+      expect(ready.validateGender(null), isNull);
+      expect(ready.validateInterestedIn(null), isNull);
+      expect(ready.submitIntent()?.gender, Gender.woman);
+      expect(ready.submitIntent()?.interestedInGenders, [Gender.man]);
+    });
+
+    testWidgets('provider-free step forwards typed chip actions', (
+      tester,
+    ) async {
+      final formKey = GlobalKey<FormState>();
+      final state = OnboardingGenderInterestState.fromDraft(
+        gender: Gender.woman,
+        interestedIn: const [Gender.man],
+        saveErrorMessage: 'Could not save profile.',
+      );
+      Set<Gender>? nextGender;
+      Set<Gender>? nextInterestedIn;
+      var continueCount = 0;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: OnboardingGenderInterestStep(
+              formKey: formKey,
+              state: state,
+              callbacks: OnboardingGenderInterestCallbacks(
+                onGenderChanged: (next) => nextGender = next,
+                onInterestedInChanged: (next) => nextInterestedIn = next,
+                onContinue: () => continueCount += 1,
+              ),
+            ),
+          ),
+        ),
+      );
+      await pumpOnboardingUi(tester);
+
+      expect(find.text('Could not save profile.'), findsOneWidget);
+
+      await tester.tap(find.byKey(OnboardingFormKeys.genderChip(Gender.man)));
+      await tester.tap(
+        find.byKey(OnboardingFormKeys.interestedInChip(Gender.woman)),
+      );
+      await tester.tap(
+        find.byWidgetPredicate(
+          (widget) => widget is CatchButton && widget.label == 'Continue',
+        ),
+      );
+      await pumpOnboardingUi(tester);
+
+      expect(nextGender, {Gender.man});
+      expect(nextInterestedIn, {Gender.man, Gender.woman});
+      expect(continueCount, 1);
+    });
+
     testWidgets('validates required selections before continuing', (
       tester,
     ) async {

@@ -15963,6 +15963,14 @@
             "symbol": "GenderInterestPage"
           },
           {
+            "file": "lib/onboarding/presentation/pages/gender_interest_page_state.dart",
+            "symbol": "OnboardingGenderInterestState"
+          },
+          {
+            "file": "lib/onboarding/presentation/pages/gender_interest_page.dart",
+            "symbol": "OnboardingGenderInterestStep"
+          },
+          {
             "file": "lib/onboarding/presentation/pages/instagram_page.dart",
             "symbol": "InstagramPage"
           },
@@ -16215,7 +16223,7 @@
           "id": "gender_interest_step",
           "kind": "populated",
           "status": "captured",
-          "source": "GenderInterestPage collects identity and interest selections through OnboardingController.setGenderInterest and step navigation.",
+          "source": "GenderInterestPage owns the route/provider edge while OnboardingGenderInterestState and OnboardingGenderInterestStep own selected-chip display, validation copy, save pending/error display, typed submit intent, and typed chip callbacks.",
           "captureIds": [
             "onboarding_gender_interest",
             "onboarding_gender_interest_validation_error",
@@ -16224,7 +16232,7 @@
           "tests": [
             "test/onboarding/onboarding_widgets_test.dart"
           ],
-          "nextAction": "Deterministic route captures cover default, required-selection validation, and reduced-motion samples. Add partial/complete selection, long-option, and state-specific reference variants."
+          "nextAction": "Provider-free step adapter coverage now validates selected-chip display, required-selection validation, save error display, save pending flag, typed chip callbacks, and submit intent. Deterministic route captures cover default, required-selection validation, and reduced-motion samples. Add partial/complete selection, long-option, and state-specific reference variants."
         },
         {
           "id": "instagram_step",
@@ -16453,7 +16461,7 @@
               "file": "lib/onboarding/presentation/pages/name_dob_page.dart",
               "symbol": "NameDobPage"
             },
-            "currentOwner": "NameDobPage adapter over OnboardingNameDobState + OnboardingNameDobStep; InstagramPage adapter over OnboardingInstagramState + OnboardingInstagramStep; GenderInterestPage still page-owned",
+            "currentOwner": "NameDobPage adapter over OnboardingNameDobState + OnboardingNameDobStep; GenderInterestPage adapter over OnboardingGenderInterestState + OnboardingGenderInterestStep; InstagramPage adapter over OnboardingInstagramState + OnboardingInstagramStep",
             "targetOwner": "provider-free identity step sections",
             "dependencies": [
               "catch.field",
@@ -16468,7 +16476,7 @@
               "required_field_errors",
               "save_profile_mutation"
             ],
-            "migration": "Name/DOB field display data, date policy, validation, and submit intent now live in provider-free adapter state. Instagram optional-handle display seed and continue/skip intents now live in provider-free adapter state. Move remaining gender/interest display data, validation, and save modes into adapter state while preserving step-specific form widgets."
+            "migration": "Identity-step field display data, date policy, selected-chip display, validation, optional-handle normalization, save display state, and typed continue/skip/submit callbacks now live in provider-free adapter state."
           },
           {
             "id": "section.onboarding.photos_step",

@@ -462,6 +462,13 @@
           "lastReviewedPass": "2026-07-03-onboarding-name-dob-step-adapter"
         },
         {
+          "path": "lib/onboarding/presentation/pages/gender_interest_page_state.dart",
+          "role": "provider-free OnboardingGenderInterestState adapter for onboarding gender and interest selected-chip display, validation copy, save pending/error display, typed submit intent, and typed chip callbacks",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-onboarding-gender-interest-step-adapter"
+        },
+        {
           "path": "lib/onboarding/presentation/pages/instagram_page_state.dart",
           "role": "provider-free OnboardingInstagramState adapter for optional Instagram handle seed text, trimmed continue intent, skip intent, and field controller/callback seams",
           "providerFree": true,
