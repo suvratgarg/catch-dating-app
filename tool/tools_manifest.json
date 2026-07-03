@@ -2644,6 +2644,20 @@
       "role": "finder"
     },
     {
+      "id": "design:reference-screen-exporter",
+      "category": "design",
+      "path": "tool/design/export_reference_screen.mjs",
+      "command": "node tool/design/export_reference_screen.mjs",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Exports a single Claude Design data-screen-label panel to a reference PNG with explicit --write approval.",
+      "checks": [
+        "node --check tool/design/export_reference_screen.mjs",
+        "node tool/design/export_reference_screen.mjs --help"
+      ],
+      "role": "generator"
+    },
+    {
       "id": "design:onboarding-reference-exporter",
       "category": "design",
       "path": "tool/design/export_onboarding_references.mjs",
