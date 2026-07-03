@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-07-03T18:09:07.912Z",
+  "generatedAt": "2026-07-03T19:17:15.310Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
-    "useCases": 881,
-    "components": 856,
-    "stateCards": 1751,
+    "useCases": 883,
+    "components": 858,
+    "stateCards": 1755,
     "reviewCandidates": 36,
     "oversizedUseCases": 43,
     "multiUseCaseComponents": 24
@@ -16211,6 +16211,43 @@
       ]
     },
     {
+      "component": "CatchShareCardFooter",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[Core catalog]/Sheets and footers"
+      ],
+      "labels": [
+        "default",
+        "long trailing"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Catalog states",
+          "functionName": "catchShareCardFooterCatalogStates",
+          "file": "widgetbook/lib/primitives/core_catalog_use_cases.dart",
+          "path": "[Core catalog]/Sheets and footers",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "default",
+              "normalizedLabel": "default"
+            },
+            {
+              "label": "long trailing",
+              "normalizedLabel": "long trailing"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "CatchStatusDot",
       "useCaseCount": 1,
       "stateCardCount": 2,
@@ -19726,6 +19763,43 @@
       ]
     },
     {
+      "component": "HostPickerTile",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[P1 product surfaces]/Host operations/Controls"
+      ],
+      "labels": [
+        "placeholder",
+        "selected date"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Picker states",
+          "functionName": "hostPickerTileStates",
+          "file": "widgetbook/lib/hosts/host_operations_use_cases.dart",
+          "path": "[P1 product surfaces]/Host operations/Controls",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "selected date",
+              "normalizedLabel": "selected date"
+            },
+            {
+              "label": "placeholder",
+              "normalizedLabel": "placeholder"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "HostTeamHostActionDialog",
       "useCaseCount": 1,
       "stateCardCount": 2,
@@ -23105,6 +23179,38 @@
       ]
     },
     {
+      "component": "CatchIconAction",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[Core catalog]/Navigation"
+      ],
+      "labels": [
+        "default / plain / disabled"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Catalog states",
+          "functionName": "catchIconActionCatalogStates",
+          "file": "widgetbook/lib/primitives/core_catalog_use_cases.dart",
+          "path": "[Core catalog]/Navigation",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "default / plain / disabled",
+              "normalizedLabel": "default plain disabled"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "CatchInlineErrorState",
       "useCaseCount": 1,
       "stateCardCount": 1,
@@ -24155,38 +24261,6 @@
             {
               "label": "ticket hero wrapper",
               "normalizedLabel": "ticket hero wrapper"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "CatchTopBarIconAction",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[Core catalog]/Navigation"
-      ],
-      "labels": [
-        "default / plain / disabled"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Catalog states",
-          "functionName": "catchTopBarIconActionCatalogStates",
-          "file": "widgetbook/lib/primitives/core_catalog_use_cases.dart",
-          "path": "[Core catalog]/Navigation",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "default / plain / disabled",
-              "normalizedLabel": "default plain disabled"
             }
           ]
         }

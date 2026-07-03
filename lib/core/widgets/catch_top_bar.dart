@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_action_menu.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
@@ -13,6 +14,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 export 'package:catch_dating_app/core/widgets/catch_action_menu.dart';
+export 'package:catch_dating_app/core/widgets/catch_icon_action.dart';
 
 enum CatchTopBarLeading { auto, back, close, none }
 
@@ -253,7 +255,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
 
     final isClose = type == CatchTopBarLeading.close;
     final localizations = MaterialLocalizations.of(context);
-    return CatchTopBarIconAction(
+    return CatchIconAction(
       tooltip: isClose
           ? localizations.closeButtonTooltip
           : localizations.backButtonTooltip,
@@ -323,7 +325,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
       return _buildTopBarActionRow(widget.actions);
     }
     if (widget.actionIcon != null) {
-      return CatchTopBarIconAction(
+      return CatchIconAction(
         icon: widget.actionIcon!,
         tooltip: widget.actionLabel ?? 'Action',
         onPressed: widget.onAction,
@@ -705,44 +707,8 @@ class CatchTopBarMenuAction<T> extends StatelessWidget {
   }
 }
 
-class CatchTopBarIconAction extends StatelessWidget {
-  const CatchTopBarIconAction({
-    super.key,
-    required this.icon,
-    required this.tooltip,
-    this.onPressed,
-    this.background,
-    this.backgroundColor,
-    this.foregroundColor,
-    this.variant = CatchIconButtonVariant.bordered,
-    this.size,
-  });
-
-  final IconData icon;
-  final String tooltip;
-  final VoidCallback? onPressed;
-  final Color? background;
-  final Color? backgroundColor;
-  final Color? foregroundColor;
-  final CatchIconButtonVariant variant;
-  final double? size;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Tooltip(
-      message: tooltip,
-      child: CatchIconButton(
-        onTap: onPressed,
-        variant: variant,
-        background: backgroundColor ?? background,
-        size: size ?? CatchIconButton.navSize,
-        child: Icon(icon, size: CatchIcon.md, color: foregroundColor ?? t.ink),
-      ),
-    );
-  }
-}
+@Deprecated('Use CatchIconAction')
+typedef CatchTopBarIconAction = CatchIconAction;
 
 class CatchTopBarTextAction extends StatelessWidget {
   const CatchTopBarTextAction({

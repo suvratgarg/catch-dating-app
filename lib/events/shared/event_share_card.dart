@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
+import 'package:catch_dating_app/core/widgets/catch_share_card_footer.dart';
 import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
@@ -189,24 +190,8 @@ class EventShareCard extends StatelessWidget {
                         ],
                       ),
                       gapH14,
-                      Row(
-                        children: [
-                          Text(
-                            'CATCH',
-                            style: CatchTextStyles.kicker(
-                              context,
-                              color: t.ink,
-                            ),
-                          ),
-                          const Spacer(),
-                          Text(
-                            'Curated singles event',
-                            style: CatchTextStyles.labelS(
-                              context,
-                              color: t.ink2,
-                            ),
-                          ),
-                        ],
+                      const CatchShareCardFooter(
+                        trailing: 'Curated singles event',
                       ),
                     ],
                   ),

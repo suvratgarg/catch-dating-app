@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-03T18:08:53.422Z",
+  "generatedAt": "2026-07-03T19:17:49.109Z",
   "baseRef": "HEAD^",
   "baseStatus": "git-ref",
   "baseWarning": null,
@@ -24,11 +24,11 @@
   },
   "addedWidgets": [
     {
-      "name": "CatchAnalyticsMetricTile",
+      "name": "CatchIconAction",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "line": 31,
-      "file": "lib/core/widgets/catch_analytics_kit.dart",
+      "line": 6,
+      "file": "lib/core/widgets/catch_icon_action.dart",
       "widgetbookCovered": true,
       "catalogMentioned": true,
       "status": "covered",
@@ -36,23 +36,11 @@
       "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
     },
     {
-      "name": "CatchAnalyticsMetricGrid",
+      "name": "CatchShareCardFooter",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "line": 99,
-      "file": "lib/core/widgets/catch_analytics_kit.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "CatchAnalyticsSection",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 131,
-      "file": "lib/core/widgets/catch_analytics_kit.dart",
+      "line": 7,
+      "file": "lib/core/widgets/catch_share_card_footer.dart",
       "widgetbookCovered": true,
       "catalogMentioned": true,
       "status": "covered",
@@ -65,6 +53,18 @@
       "visibility": "public",
       "line": 28,
       "file": "lib/event_success/presentation/event_success_hero_surface.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "HostPickerTile",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 9,
+      "file": "lib/hosts/presentation/widgets/host_picker_tile.dart",
       "widgetbookCovered": true,
       "catalogMentioned": true,
       "status": "covered",

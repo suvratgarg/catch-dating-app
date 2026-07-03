@@ -2304,3 +2304,105 @@ Known blockers / inherited debt:
   fully covered at 147/147.
 - `node tool/design/check_widgetbook_contract_refs.mjs --check` still fails on
   inherited host preview-id drift for HostOperations home and host-team states.
+
+## 2026-07-04 - WO-020 escalation-queue batch A/B/C
+
+Scope:
+
+- Renamed `CatchTopBarIconAction` to `CatchIconAction`, moved the implementation
+  to `lib/core/widgets/catch_icon_action.dart`, exported it from
+  `catch_top_bar.dart`, and left a deprecated typedef for one release.
+- Migrated active app, Widgetbook, test, and UI-capture call sites to
+  `CatchIconAction`.
+- Absorbed `OverlayIconAction` from the swipe top overlay into
+  `CatchIconAction` with floating-control size/background; the overlay glyph
+  standardized from `CatchIcon.row` to `CatchIcon.md`.
+- Absorbed `HostOrganizerSectionHeader` into `CatchSectionHeader` and
+  `HostOrganizerMetricTile` into `CatchStatColumn`, removing both local
+  Host Operations classes and their direct Widgetbook entries.
+- Merged `EditHostedEventPickerTile` and `WhenStepPickerTile` into
+  feature-level `HostPickerTile`; empty strings now render the placeholder
+  state.
+- Added `CatchShareCardFooter` and replaced the repeated `CATCH` footer rows in
+  chat, club, and event visual share cards.
+- Reviewed `ExploreListEmptyState` and `ExploreScreenEmptyState`; recorded
+  keep-distinct because the list variant owns provider-backed clear actions
+  while the screen variant maps route-level empty state.
+- Replaced the raw `StagePrivacyLine` icon size `18` with `CatchIcon.md`.
+- Reviewed `HostOrganizerHeader` `CatchPersonAvatar(size: 64)` and left it raw:
+  the only exact 64px tokens are semantically unrelated chat/club tokens, so
+  this needs a future host-organizer avatar token instead of a misleading
+  substitution.
+- Added Widgetbook coverage for `CatchIconAction`, `CatchShareCardFooter`, and
+  `HostPickerTile`; regenerated Widgetbook directories and design registries.
+- Recorded the read-only WO-020 subagent result in
+  `docs/audit_registry/agent_metrics.jsonl`; the parent implemented and
+  verified the final patch.
+
+Commands:
+
+- `node tool/agent/context_pack.mjs --task widget-consolidation-wo-020-escalation-batch --paths docs/design_parity/widget_consolidation,docs/audit_registry/widget_similarity.json,docs/audit_registry/widget_classification.json,docs/audit_registry/widget_consolidation_receipts.md,docs/widget_catalog.md,lib/core/widgets/catch_top_bar.dart,lib/swipes/presentation/swipe_screen.dart,lib/hosts/presentation/host_operations_screen.dart,lib/hosts/presentation/edit_hosted_event_screen.dart,lib/event_management/widgets/when_step.dart,lib/chat/widgets/chat_share_card.dart,lib/clubs/widgets/club_share_card.dart,lib/events/widgets/event_share_card.dart,lib/explore,lib/event_success/presentation/companion_parts/event_success_companion_shared.dart,widgetbook/lib`
+- `dart format lib/core/widgets/catch_icon_action.dart lib/core/widgets/catch_share_card_footer.dart lib/core/widgets/catch_top_bar.dart lib/chats/presentation/widgets/chat_share_card.dart lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart lib/clubs/presentation/detail/widgets/club_share_card.dart lib/dashboard/presentation/dashboard_screen.dart lib/event_success/presentation/companion_parts/event_success_companion_feedback.dart lib/event_success/presentation/companion_parts/event_success_companion_shared.dart lib/event_success/presentation/event_success_companion_screen.dart lib/event_success/presentation/host_parts/event_success_host_overrides.dart lib/events/presentation/location_picker_screen.dart lib/events/presentation/widgets/event_detail_hero_app_bar.dart lib/events/presentation/widgets/map_overlay_controls.dart lib/events/shared/event_share_card.dart lib/hosts/presentation/edit_hosted_event_screen.dart lib/hosts/presentation/event_management/widgets/when_step.dart lib/hosts/presentation/host_account_screen.dart lib/hosts/presentation/host_operations_screen.dart lib/hosts/presentation/widgets/host_picker_tile.dart lib/swipes/presentation/event_recap_screen.dart lib/swipes/presentation/filters_screen.dart lib/swipes/presentation/swipe_screen.dart lib/user_profile/presentation/widgets/profile_sliver_header.dart test/core/catch_top_bar_test.dart test/ui_captures/catalog/screen_capture_catalog.dart widgetbook/lib/hosts/host_operations_use_cases.dart widgetbook/lib/primitives/core_catalog_use_cases.dart`
+- `dart run build_runner build --delete-conflicting-outputs` in `widgetbook/`
+- `rg -n "\\b(CatchTopBarIconAction|OverlayIconAction|HostOrganizerMetricTile|HostOrganizerSectionHeader|EditHostedEventPickerTile|WhenStepPickerTile)\\b" lib widgetbook/lib test docs --glob '*.dart' --glob '*.md' --glob '*.json'`
+- `dart analyze lib/core/widgets/catch_icon_action.dart lib/core/widgets/catch_share_card_footer.dart lib/hosts/presentation/widgets/host_picker_tile.dart`
+- `dart analyze lib/core/widgets/catch_icon_action.dart lib/core/widgets/catch_share_card_footer.dart lib/core/widgets/catch_top_bar.dart lib/swipes/presentation/swipe_screen.dart lib/hosts/presentation/host_operations_screen.dart lib/hosts/presentation/edit_hosted_event_screen.dart lib/hosts/presentation/event_management/widgets/when_step.dart lib/hosts/presentation/widgets/host_picker_tile.dart lib/chats/presentation/widgets/chat_share_card.dart lib/clubs/presentation/detail/widgets/club_share_card.dart lib/events/shared/event_share_card.dart`
+- `dart analyze lib/event_success/presentation/companion_parts/event_success_companion_shared.dart`
+- `dart analyze widgetbook/lib/primitives/core_catalog_use_cases.dart`
+- `dart analyze widgetbook/lib/primitives/core_catalog_use_cases.dart widgetbook/lib/hosts/host_operations_use_cases.dart`
+- `flutter test test/core/catch_top_bar_test.dart`
+- `npm run design:widgets:classify`
+- `npm run design:widgets:check`
+- `node tool/design/build_widget_similarity.mjs`
+- `node tool/design/build_widget_similarity.mjs --check`
+- `npm run design:widgets:new:check`
+- `npm run design:widgets:variants`
+- `npm run design:widgets:variants:check`
+- `node tool/design/check_widgetbook_coverage.mjs --check`
+- `node tool/design/check_widgetbook_contract_refs.mjs --check`
+- `dart tool/audit_registry.dart refresh`
+- `node tool/agent/record_delegation_outcome.mjs --task-id widget-consolidation-wo-020-readonly --mode explorer-readonly --status accepted-info-only --parent-review-outcome informational --base-sha f0f28656cdf85dd17e664e9fda1647b543299210 --elapsed-minutes 20 --checks-run "git status --short --branch" --checks-run "node tool/agent/check_agent_readiness.mjs" --notes "Read-only WO-020 consolidation review accepted as planning input; parent implemented, documented, regenerated registries, and owns final verification."`
+
+Verification:
+
+- Widgetbook build_runner completed and generated directories now expose
+  `CatchIconAction`, `CatchShareCardFooter`, and `HostPickerTile`.
+- Retired-symbol scan found no active Dart/Widgetbook/test references to the
+  absorbed classes; remaining old-name hits are the deliberate deprecated
+  typedef, historical ledgers, and regenerated registries before refresh.
+- New primitive analyzer reported no issues for `CatchIconAction`,
+  `CatchShareCardFooter`, and `HostPickerTile`.
+- Focused app analyzer for the changed production files reported no errors
+  after the `CatchSectionHeader` token lookup fix; remaining output is inherited
+  Host Operations info-level lint debt plus the pre-existing swipe skeleton
+  token-arithmetic warning.
+- `dart analyze lib/event_success/presentation/companion_parts/event_success_companion_shared.dart`
+  reported the inherited Event Success info-only baseline and no new errors for
+  the `StagePrivacyLine` token edit.
+- `flutter test test/core/catch_top_bar_test.dart` passed all 11 tests.
+- Widget classification check passed with 1,137 entries, 49 review items, and
+  0 private widget classes flagged.
+- Widget similarity check passed with 1,038 widgets, 50 clusters, 200 ranked
+  pairs, 222 name families, and 8 absorb candidates.
+- New-widget inventory check passed with 4 added public widget classes covered
+  by Widgetbook and `docs/widget_catalog.md`. Relative to `HEAD^`, the list is
+  `CatchIconAction`, `CatchShareCardFooter`, the already-landed moved
+  `EventSuccessDarkPill`, and `HostPickerTile`.
+- Widget variant inventory check passed with 883 use cases, 1,755 state cards,
+  and 36 review candidates.
+- Audit registry refresh completed with 3,178 file entries.
+
+Known blockers / inherited debt:
+
+- `dart analyze widgetbook/lib/primitives/core_catalog_use_cases.dart` still
+  reports the inherited raw-spacing/content-dimension warning baseline in that
+  large primitive catalog file.
+- `dart analyze widgetbook/lib/primitives/core_catalog_use_cases.dart widgetbook/lib/hosts/host_operations_use_cases.dart`
+  still fails on inherited HostOperations Widgetbook errors, including range
+  preset type drift, missing mutation preview helpers, missing route-state
+  functions, and stale named parameters.
+- `node tool/design/check_widgetbook_coverage.mjs --check` still fails on the
+  inherited 126-item decision queue; the changed `core/widgets` area is fully
+  covered at 148/148.
+- `node tool/design/check_widgetbook_contract_refs.mjs --check` still fails on
+  inherited HostOperations home and host-team preview-id drift.

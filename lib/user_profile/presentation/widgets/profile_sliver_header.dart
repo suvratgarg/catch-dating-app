@@ -30,32 +30,29 @@ class ProfileTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-  return Material(
-    color: t.bg,
-    child: Padding(
-      padding: CatchInsets.screenTitleBlock,
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              'Your profile',
-              style: CatchTextStyles.headline(context),
+    return Material(
+      color: t.bg,
+      child: Padding(
+        padding: CatchInsets.screenTitleBlock,
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                'Your profile',
+                style: CatchTextStyles.headline(context),
+              ),
             ),
-          ),
-          const SizedBox(width: CatchSpacing.s2),
-          const ProfileSettingsButton(),
-        ],
+            const SizedBox(width: CatchSpacing.s2),
+            const ProfileSettingsButton(),
+          ],
+        ),
       ),
-    ),
-  );
+    );
   }
 }
 
 class ProfileTabBar extends StatelessWidget {
-  const ProfileTabBar({
-    super.key,
-    required this.controller,
-  });
+  const ProfileTabBar({super.key, required this.controller});
 
   final TabController controller;
 
@@ -63,31 +60,31 @@ class ProfileTabBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-  return Material(
-    color: t.bg,
-    child: DecoratedBox(
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: t.line)),
-      ),
-      child: Padding(
-        padding: CatchInsets.screenControlRow,
-        child: AnimatedBuilder(
-          animation: controller.animation!,
-          builder: (context, _) {
-            return CatchOptionGroup<int>(
-              selected: controller.index,
-              onChanged: controller.animateTo,
-              options: const [
-                CatchOption(value: 0, label: 'Edit'),
-                CatchOption(value: 1, label: 'Preview'),
-                CatchOption(value: 2, label: 'Insights'),
-              ],
-            );
-          },
+    return Material(
+      color: t.bg,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          border: Border(bottom: BorderSide(color: t.line)),
+        ),
+        child: Padding(
+          padding: CatchInsets.screenControlRow,
+          child: AnimatedBuilder(
+            animation: controller.animation!,
+            builder: (context, _) {
+              return CatchOptionGroup<int>(
+                selected: controller.index,
+                onChanged: controller.animateTo,
+                options: const [
+                  CatchOption(value: 0, label: 'Edit'),
+                  CatchOption(value: 1, label: 'Preview'),
+                  CatchOption(value: 2, label: 'Insights'),
+                ],
+              );
+            },
+          ),
         ),
       ),
-    ),
-  );
+    );
   }
 }
 
@@ -96,7 +93,7 @@ class ProfileSettingsButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchTopBarIconAction(
+    return CatchIconAction(
       icon: CatchIcons.settingsOutlined,
       tooltip: 'Settings',
       onPressed: () => context.pushNamed(Routes.settingsScreen.name),

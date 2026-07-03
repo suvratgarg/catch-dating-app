@@ -373,7 +373,7 @@ class MapPickerSearchRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CatchTopBarIconAction(
+        CatchIconAction(
           icon: CatchIcons.arrowBackIosNewRounded,
           tooltip: MaterialLocalizations.of(context).backButtonTooltip,
           backgroundColor: t.surface.withValues(

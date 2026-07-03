@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
+import 'package:catch_dating_app/core/widgets/catch_share_card_footer.dart';
 import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
@@ -103,18 +104,9 @@ class ChatShareCard extends StatelessWidget {
               ),
             ),
             gapH14,
-            Row(
-              children: [
-                Text(
-                  'CATCH',
-                  style: CatchTextStyles.kicker(context, color: t.ink),
-                ),
-                const Spacer(),
-                Text(
-                  chatContextStampFor(event),
-                  style: CatchTextStyles.labelS(context, color: accent),
-                ),
-              ],
+            CatchShareCardFooter(
+              trailing: chatContextStampFor(event),
+              trailingColor: accent,
             ),
           ],
         ),

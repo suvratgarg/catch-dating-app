@@ -477,7 +477,7 @@ class GroupOverrideUnitEditor extends StatelessWidget {
                 ),
               ),
               gapW8,
-              CatchTopBarIconAction(
+              CatchIconAction(
                 size: CatchIconButton.defaultSize,
                 tooltip: 'Remove group',
                 icon: CatchIcons.deleteOutlineRounded,
@@ -549,7 +549,7 @@ class GroupOverrideMemberEditor extends StatelessWidget {
           ),
         ),
         gapW8,
-        CatchTopBarIconAction(
+        CatchIconAction(
           size: CatchIconButton.defaultSize,
           tooltip: 'Remove attendee',
           icon: CatchIcons.closeRounded,
@@ -1045,7 +1045,7 @@ class RotationOverridePairEditor extends StatelessWidget {
           ),
         ),
         gapW8,
-        CatchTopBarIconAction(
+        CatchIconAction(
           size: CatchIconButton.defaultSize,
           tooltip: 'Remove pair',
           icon: CatchIcons.deleteOutlineRounded,

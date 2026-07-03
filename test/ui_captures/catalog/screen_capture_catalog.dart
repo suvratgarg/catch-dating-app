@@ -1429,7 +1429,7 @@ class _FiltersContentCapture extends StatelessWidget {
       backgroundColor: t.bg,
       appBar: CatchTopBar(
         title: 'Filters',
-        leading: CatchTopBarIconAction(
+        leading: CatchIconAction(
           icon: CatchIcons.closeRounded,
           tooltip: 'Close filters',
           onPressed: _noopFiltersTap,

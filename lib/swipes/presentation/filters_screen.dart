@@ -117,7 +117,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
         backgroundColor: t.bg,
         appBar: CatchTopBar(
           title: 'Filters',
-          leading: CatchTopBarIconAction(
+          leading: CatchIconAction(
             icon: CatchIcons.closeRounded,
             tooltip: 'Close filters',
             onPressed: () => context.pop(),

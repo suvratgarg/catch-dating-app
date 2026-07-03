@@ -87,7 +87,7 @@ class ClubHeroAppBar extends StatelessWidget {
       ),
       leading: Padding(
         padding: _clubHeroLeadingPadding,
-        child: CatchTopBarIconAction(
+        child: CatchIconAction(
           icon: CatchIcons.arrowBackIosNewRounded,
           tooltip: 'Back',
           variant: CatchIconButtonVariant.float,
@@ -98,7 +98,7 @@ class ClubHeroAppBar extends StatelessWidget {
         Padding(
           padding: _clubHeroActionPadding,
           child: Builder(
-            builder: (buttonContext) => CatchTopBarIconAction(
+            builder: (buttonContext) => CatchIconAction(
               icon: CatchIcons.platformShare(
                 platform: Theme.of(context).platform,
               ),

@@ -58,7 +58,7 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
       backgroundColor: CatchTokens.of(context).bg,
       appBar: CatchTopBar(
         title: 'Event recap',
-        leading: CatchTopBarIconAction(
+        leading: CatchIconAction(
           icon: CatchIcons.closeRounded,
           tooltip: 'Close recap',
           onPressed: () => context.pop(),

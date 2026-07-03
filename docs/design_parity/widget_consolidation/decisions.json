@@ -1910,7 +1910,7 @@
       "rationale": "No exact K/R match: the bodies are near-identical host picker tiles, but they live in separate create/edit event surfaces and merging requires a shared host picker-tile contract, file ownership decision, and empty-string behavior standardization. REVIEW (claude, 2026-07-03): identical params AND bodies across two host screens; one shared hosts widget. Later form-controls pass may fold into CatchField.nav.",
       "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-03",
-      "status": "work-order WO-020",
+      "status": "implemented-WO-020",
       "canonicalSymbol": "HostPickerTile (feature-level)"
     },
     {
@@ -2021,7 +2021,7 @@
       "rationale": "No exact K/R match: OverlayIconAction is close to CatchTopBarIconAction, but preserving it requires a reviewed API decision for semantic wrapper ownership, floating-control background alpha, button extent, and row-sized icon support. REVIEW (claude, 2026-07-03): OverlayIconAction is the third tooltip+CatchIconButton wrapper; canonical params already cover its floating treatment. Also triggers the planned rename CatchTopBarIconAction -> CatchIconAction (used off top bars since slice 1). Icon size standardizes row -> md.",
       "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-03",
-      "status": "work-order WO-020",
+      "status": "implemented-WO-020",
       "canonicalSymbol": "CatchIconAction"
     },
     {
@@ -2112,7 +2112,7 @@
       "rationale": "K5 concept mismatch: CatchSectionHeader is a section title/subtitle/trailing primitive, while HostOrganizerSectionHeader is a mono-label row with optional neutral text action and host-organizer semantics. REVIEW (claude, 2026-07-03): CatchSectionHeader already covers it via titleStyle (monoLabel ink2) + trailing (CatchTextButton).",
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "work-order WO-020",
+      "status": "implemented-WO-020",
       "canonicalSymbol": "CatchSectionHeader"
     },
     {
@@ -2784,21 +2784,21 @@
     },
     {
       "clusterId": "ranked-pair: ExploreListEmptyState/ExploreScreenEmptyState",
-      "decision": "escalate",
+      "decision": "keep-distinct",
       "members": [
         {
           "name": "ExploreListEmptyState",
-          "action": "escalate"
+          "action": "keep"
         },
         {
           "name": "ExploreScreenEmptyState",
-          "action": "escalate"
+          "action": "keep"
         }
       ],
-      "rationale": "No exact K/R match: both dispatch Explore empty-state copy after ExploreEmptyState was inlined, but the list variant owns provider-backed clear actions while the screen variant consumes route-level empty state and callbacks. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 likely R2 inlines; conditional order in WO-020.",
-      "decidedBy": "codex-rule:no-exact",
+      "rationale": "No exact K/R match: both dispatch Explore empty-state copy after ExploreEmptyState was inlined, but the list variant owns provider-backed clear actions while the screen variant consumes route-level empty state and callbacks. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 likely R2 inlines; conditional order in WO-020. WO-020 REVIEW (codex, 2026-07-03): keep distinct; ExploreListEmptyState is a ConsumerWidget that clears exploreSearchQueryProvider/exploreFiltersProvider directly, while ExploreScreenEmptyState maps ExploreDiscoveryEmptyState.kind and receives route callbacks.",
+      "decidedBy": "codex-rule:no-exact -> codex",
       "date": "2026-07-03",
-      "status": "deferred-next-review-batch"
+      "status": "recorded-WO-020"
     },
     {
       "clusterId": "ranked-pair: EventCheckInCelebrationScreen/EventJoinedCelebrationScreen",
@@ -3191,10 +3191,10 @@
           "action": "keep"
         }
       ],
-      "rationale": "No exact K/R match: both are rich share cards, but club and event cards use different art systems, surface colors, metadata, and CTAs; a shared share-card contract needs review-session API design. REVIEW (claude, 2026-07-03): share-card frames with genuinely different bodies (v0.1 finding); extract the shared CATCH brand footer as CatchShareCardFooter instead (WO-020).",
+      "rationale": "No exact K/R match: both are rich share cards, but club and event cards use different art systems, surface colors, metadata, and CTAs; a shared share-card contract needs review-session API design. REVIEW (claude, 2026-07-03): share-card frames with genuinely different bodies (v0.1 finding); extract the shared CATCH brand footer as CatchShareCardFooter instead (WO-020). WO-020 implemented the footer extraction only.",
       "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-03",
-      "status": "work-order WO-020 (footer extraction only)"
+      "status": "implemented-WO-020 (footer extraction only)"
     },
     {
       "clusterId": "ranked-pair: HostClubEditorStateView/HostCreateEventRouteStateView",
@@ -3248,7 +3248,7 @@
       "rationale": "K5 concept mismatch: both are host metric tiles, but capacity tiles own management detail/suffix rows while organizer metrics are compact rail cells with different typography and surface ownership. REVIEW (claude, 2026-07-03): HostOrganizerMetricTile is another value+label stat (CatchStatColumn shape; uppercase label standardizes away, same as RunningStat). HostCapacityTile keeps (suffix+detail richer; stat-tile v2 candidate).",
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "work-order WO-020",
+      "status": "implemented-WO-020",
       "canonicalSymbol": "CatchStatColumn"
     },
     {
@@ -3408,7 +3408,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: stage cue lines are copyable conversation prompts while privacy lines are locked explanatory notices with stage-theme foreground treatment. REVIEW (claude, 2026-07-03): cue content card vs privacy note; different roles in the stage family. Drift: raw icon size: 18 (WO-020).",
+      "rationale": "K5 concept mismatch: stage cue lines are copyable conversation prompts while privacy lines are locked explanatory notices with stage-theme foreground treatment. REVIEW (claude, 2026-07-03): cue content card vs privacy note; different roles in the stage family. WO-020 drift fixed raw icon size 18 to CatchIcon.md, which is the exact 18.0 token.",
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
       "status": "recorded"
@@ -3984,10 +3984,10 @@
           "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: organizer identity headers and today-dashboard headers own different host contexts, actions, and information hierarchy. REVIEW (claude, 2026-07-03): different header compositions (organizer identity vs today greeting). Drift: raw CatchPersonAvatar(size: 64) -> tokenize (WO-020).",
+      "rationale": "K5 concept mismatch: organizer identity headers and today-dashboard headers own different host contexts, actions, and information hierarchy. REVIEW (claude, 2026-07-03): different header compositions (organizer identity vs today greeting). WO-020 token review: exact 64.0 layout tokens exist only for unrelated club/chat surfaces, so HostOrganizerHeader keeps the raw value until a semantic host organizer avatar token is added.",
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "recorded"
+      "status": "recorded-token-escalation-WO-020"
     },
     {
       "clusterId": "ranked-pair: PaperProgressRail/QuestionProgressRail",

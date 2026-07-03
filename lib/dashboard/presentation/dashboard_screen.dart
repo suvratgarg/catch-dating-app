@@ -116,7 +116,7 @@ class DashboardNotificationBellButton extends StatelessWidget {
         isLabelVisible: unreadCount > 0,
         label: badgeLabel,
         child: Align(
-          child: CatchTopBarIconAction(
+          child: CatchIconAction(
             icon: unreadCount > 0
                 ? CatchIcons.notificationsRounded
                 : CatchIcons.notificationsNoneRounded,

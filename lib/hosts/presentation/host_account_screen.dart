@@ -63,7 +63,7 @@ class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {
             showBackButton: false,
             border: true,
             actions: [
-              CatchTopBarIconAction(
+              CatchIconAction(
                 tooltip: 'Sign out',
                 icon: CatchIcons.logoutRounded,
                 onPressed: actions.canSignOut

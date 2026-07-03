@@ -73,7 +73,7 @@ PreferredSizeWidget _companionAppBar(BuildContext context) {
   return CatchTopBar(
     title: 'Event companion',
     border: true,
-    leading: CatchTopBarIconAction(
+    leading: CatchIconAction(
       tooltip: MaterialLocalizations.of(context).backButtonTooltip,
       icon: CatchIcons.arrowBackIosNewRounded,
       foregroundColor: canPop ? t.ink : t.ink3,

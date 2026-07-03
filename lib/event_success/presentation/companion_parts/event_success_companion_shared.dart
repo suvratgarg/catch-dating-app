@@ -1164,7 +1164,7 @@ class StagePrivacyLine extends StatelessWidget {
         children: [
           Icon(
             CatchIcons.lockOutlineRounded,
-            size: 18,
+            size: CatchIcon.md,
             color: stageTheme.foreground.withValues(
               alpha: CatchOpacity.eventSuccessProminent,
             ),

@@ -1393,6 +1393,16 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Navigation',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'CatchIconAction',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Catalog states',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .catchIconActionCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchPageDots',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -1419,16 +1429,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Catalog states',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
                     .catchStepProgressCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchTopBarIconAction',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchTopBarIconActionCatalogStates,
               ),
             ],
           ),
@@ -1589,6 +1589,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Catalog states',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
                     .catchDraggableSheetShellCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchShareCardFooter',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Catalog states',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .catchShareCardFooterCatalogStates,
               ),
             ],
           ),
@@ -7892,6 +7902,22 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_operations_use_cases
                             .hostSettingsRouteStates,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
+            name: 'Controls',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'HostPickerTile',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Picker states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostPickerTileStates,
                   ),
                 ],
               ),

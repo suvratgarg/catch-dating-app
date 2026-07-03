@@ -43,7 +43,7 @@ void main() {
           showBackButton: true,
           onBack: () => backTaps++,
           actions: [
-            CatchTopBarIconAction(
+            CatchIconAction(
               icon: CatchIcons.settingsOutlined,
               tooltip: 'Settings',
               onPressed: () => actionTaps++,

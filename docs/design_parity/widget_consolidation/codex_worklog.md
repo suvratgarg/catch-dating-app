@@ -1367,12 +1367,25 @@ class CatchAnalyticsSection extends StatelessWidget {
 8. Widgetbook for all changed/new types (gotcha 2) + regen + registries +
    receipts.
 
-- [ ] CatchIconAction rename + overlay absorb
-- [ ] section header + metric tile absorbs
-- [ ] HostPickerTile merge
-- [ ] CatchShareCardFooter extraction
-- [ ] explore empty-state conditional inlines
-- [ ] drift fixes + widgetbook + regen + receipts
+- [x] CatchIconAction rename + overlay absorb
+- [x] section header + metric tile absorbs
+- [x] HostPickerTile merge
+- [x] CatchShareCardFooter extraction
+- [x] explore empty-state conditional review
+- [x] drift fixes + widgetbook
+- [x] regen + registries + receipts
+
+Progress by Codex: moved `CatchTopBarIconAction` into
+`CatchIconAction`, left the one-release deprecated typedef, migrated active
+call sites, and absorbed `OverlayIconAction` into the shared action with
+floating-control sizing. `HostOrganizerSectionHeader` now composes
+`CatchSectionHeader`, `HostOrganizerMetricTile` composes `CatchStatColumn`, the
+create/edit event picker rows share `HostPickerTile`, and chat/club/event share
+cards share `CatchShareCardFooter`. `StagePrivacyLine` now uses
+`CatchIcon.md`; the 64px host organizer avatar stayed raw because the only
+exact 64px tokens are semantically unrelated chat/club tokens. The Explore
+empty-state pair stayed distinct after review because one is provider-aware and
+the other is route-state driven.
 
 ## Audit note (2026-07-03, claude): WO-015 sweep quality
 

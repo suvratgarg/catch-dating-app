@@ -77,7 +77,7 @@ class EventDetailHeroAppBar extends StatelessWidget {
       ),
       leading: Padding(
         padding: CatchInsets.iconChipContent,
-        child: CatchTopBarIconAction(
+        child: CatchIconAction(
           icon: CatchIcons.backArrow,
           tooltip: 'Back',
           backgroundColor: overlayScrim,
@@ -89,7 +89,7 @@ class EventDetailHeroAppBar extends StatelessWidget {
         Padding(
           padding: CatchInsets.iconChipContent,
           child: Builder(
-            builder: (buttonContext) => CatchTopBarIconAction(
+            builder: (buttonContext) => CatchIconAction(
               icon: CatchIcons.platformShare(
                 platform: Theme.of(context).platform,
               ),
@@ -108,7 +108,7 @@ class EventDetailHeroAppBar extends StatelessWidget {
               right: CatchSpacing.s2,
             ),
             child: Builder(
-              builder: (buttonContext) => CatchTopBarIconAction(
+              builder: (buttonContext) => CatchIconAction(
                 icon: CatchIcons.calendarAdd,
                 tooltip: 'Add to calendar',
                 backgroundColor: overlayScrim,
@@ -123,7 +123,7 @@ class EventDetailHeroAppBar extends StatelessWidget {
             bottom: CatchSpacing.s2,
             right: CatchSpacing.s2,
           ),
-          child: CatchTopBarIconAction(
+          child: CatchIconAction(
             icon: isSaved ? CatchIcons.saved : CatchIcons.savedOutlined,
             tooltip: isSaved ? 'Unsave event' : 'Save event',
             backgroundColor: overlayScrim,

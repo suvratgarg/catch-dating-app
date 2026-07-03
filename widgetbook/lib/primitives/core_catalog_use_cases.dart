@@ -53,6 +53,7 @@ import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_share_card_footer.dart';
 import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
@@ -761,7 +762,7 @@ Widget catchTopBarActionsCatalogStates(BuildContext context) {
           onBack: _noop,
           surface: true,
           actions: [
-            CatchTopBarIconAction(
+            CatchIconAction(
               icon: CatchIcons.savedOutlined,
               tooltip: 'Save',
               onPressed: _noop,
@@ -784,30 +785,30 @@ Widget catchTopBarActionsCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchTopBarIconAction,
+  type: CatchIconAction,
   path: '[Core catalog]/Navigation',
 )
-Widget catchTopBarIconActionCatalogStates(BuildContext context) {
+Widget catchIconActionCatalogStates(BuildContext context) {
   return _CatalogScreen(
-    title: 'CatchTopBarIconAction',
-    catalogId: 'core.widgets.catch_top_bar_icon_action',
+    title: 'CatchIconAction',
+    catalogId: 'core.widgets.catch_icon_action',
     children: [
       _StateCard(
         label: 'default / plain / disabled',
         child: _InlineWrap(
           children: [
-            CatchTopBarIconAction(
+            CatchIconAction(
               icon: CatchIcons.savedOutlined,
               tooltip: 'Save',
               onPressed: _noop,
             ),
-            CatchTopBarIconAction(
+            CatchIconAction(
               icon: CatchIcons.share,
               tooltip: 'Share',
               variant: CatchIconButtonVariant.plain,
               onPressed: _noop,
             ),
-            CatchTopBarIconAction(
+            CatchIconAction(
               icon: CatchIcons.moreHorizRounded,
               tooltip: 'Disabled',
               onPressed: null,
@@ -2699,6 +2700,30 @@ Widget catchShareCardSheetCatalogStates(BuildContext context) {
               ],
             ),
           ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: CatchShareCardFooter,
+  path: '[Core catalog]/Sheets and footers',
+)
+Widget catchShareCardFooterCatalogStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'CatchShareCardFooter',
+    catalogId: 'core.widgets.catch_share_card_footer',
+    children: const [
+      _StateCard(
+        label: 'default',
+        child: CatchShareCardFooter(trailing: 'Curated singles event'),
+      ),
+      _StateCard(
+        label: 'long trailing',
+        child: CatchShareCardFooter(
+          trailing: 'Hosted by The Longest Possible Club Collective',
         ),
       ),
     ],

@@ -1430,7 +1430,7 @@
       "simhash128": "e49cf9198ec2ec7fffa7c772e0f2dd3b",
       "tokenStreamLength": 36,
       "coarseTokenStreamLength": 36,
-      "usageCountRaw": 13,
+      "usageCountRaw": 12,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -2080,7 +2080,7 @@
       "simhash128": "ecbfce888ac3ec7dac67a4db946c9c1b",
       "tokenStreamLength": 52,
       "coarseTokenStreamLength": 52,
-      "usageCountRaw": 51,
+      "usageCountRaw": 50,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -2860,7 +2860,7 @@
       "simhash128": "4309e9ad657432ba144164b9644b80b0",
       "tokenStreamLength": 20,
       "coarseTokenStreamLength": 20,
-      "usageCountRaw": 22,
+      "usageCountRaw": 25,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -3068,7 +3068,7 @@
       "simhash128": "6067fb4ff4b13339b61aa516b521f325",
       "tokenStreamLength": 42,
       "coarseTokenStreamLength": 42,
-      "usageCountRaw": 26,
+      "usageCountRaw": 28,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -3198,7 +3198,7 @@
       "simhash128": "83f21e8f12765f0a8a0c34b23a91b1b8",
       "tokenStreamLength": 12,
       "coarseTokenStreamLength": 12,
-      "usageCountRaw": 19,
+      "usageCountRaw": 20,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -3250,7 +3250,7 @@
       "simhash128": "2fc815bf5a21947ae68c8902b7833b1b",
       "tokenStreamLength": 14,
       "coarseTokenStreamLength": 14,
-      "usageCountRaw": 26,
+      "usageCountRaw": 0,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -8840,7 +8840,7 @@
       "simhash128": "02a47b4f51a67c22534987f53552d3b0",
       "tokenStreamLength": 22,
       "coarseTokenStreamLength": 22,
-      "usageCountRaw": 3,
+      "usageCountRaw": 0,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -8879,7 +8879,7 @@
       "simhash128": "5ed5abeffbf7b99a369ba5b9fe5d888e",
       "tokenStreamLength": 19,
       "coarseTokenStreamLength": 19,
-      "usageCountRaw": 3,
+      "usageCountRaw": 0,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -20594,7 +20594,7 @@
         "HostRosterFilterHeader",
         "HostTodayHeader"
       ],
-      "usageSum": 11,
+      "usageSum": 8,
       "scope": "mixed"
     },
     {
@@ -20607,7 +20607,7 @@
         "HostCapacityTile",
         "HostOrganizerMetricTile"
       ],
-      "usageSum": 11,
+      "usageSum": 8,
       "scope": "screen"
     },
     {
@@ -20673,19 +20673,7 @@
       "scope": "screen"
     },
     {
-      "id": "n044-top-action",
-      "stem": "TopAction",
-      "stemType": "outer",
-      "members": [
-        "CatchTopBarIconAction",
-        "CatchTopBarMenuAction",
-        "CatchTopBarTextAction"
-      ],
-      "usageSum": 44,
-      "scope": "widget"
-    },
-    {
-      "id": "n045-section-header",
+      "id": "n044-section-header",
       "stem": "SectionHeader",
       "stemType": "final-two",
       "members": [
@@ -20697,7 +20685,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n046-dark-pill",
+      "id": "n045-dark-pill",
       "stem": "DarkPill",
       "stemType": "final-two",
       "members": [
@@ -20709,7 +20697,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n047-profile-screen",
+      "id": "n046-profile-screen",
       "stem": "ProfileScreen",
       "stemType": "final-two",
       "members": [
@@ -20721,7 +20709,7 @@
       "scope": "screen"
     },
     {
-      "id": "n048-payment-screen",
+      "id": "n047-payment-screen",
       "stem": "PaymentScreen",
       "stemType": "outer",
       "members": [
@@ -20733,7 +20721,7 @@
       "scope": "screen"
     },
     {
-      "id": "n049-meta-row",
+      "id": "n048-meta-row",
       "stem": "MetaRow",
       "stemType": "final-two",
       "members": [
@@ -20745,7 +20733,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n050-profile-value",
+      "id": "n049-profile-value",
       "stem": "ProfileValue",
       "stemType": "outer",
       "members": [
@@ -20757,7 +20745,7 @@
       "scope": "widget"
     },
     {
-      "id": "n051-home-screen",
+      "id": "n050-home-screen",
       "stem": "HomeScreen",
       "stemType": "final-two",
       "members": [
@@ -20769,7 +20757,7 @@
       "scope": "screen"
     },
     {
-      "id": "n052-screen-body",
+      "id": "n051-screen-body",
       "stem": "ScreenBody",
       "stemType": "final-two",
       "members": [
@@ -20779,6 +20767,18 @@
       ],
       "usageSum": 18,
       "scope": "mixed"
+    },
+    {
+      "id": "n052-top-action",
+      "stem": "TopAction",
+      "stemType": "outer",
+      "members": [
+        "CatchTopBarIconAction",
+        "CatchTopBarMenuAction",
+        "CatchTopBarTextAction"
+      ],
+      "usageSum": 18,
+      "scope": "widget"
     },
     {
       "id": "n053-create-picker",
@@ -21237,19 +21237,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n091-metric-tile",
-      "stem": "MetricTile",
-      "stemType": "final-two",
-      "members": [
-        "HostAnalyticsMetricTile",
-        "HostOrganizerMetricTile",
-        "UserAnalyticsMetricTile"
-      ],
-      "usageSum": 3,
-      "scope": "mixed"
-    },
-    {
-      "id": "n092-state-view",
+      "id": "n091-state-view",
       "stem": "StateView",
       "stemType": "final-two",
       "members": [
@@ -21259,6 +21247,18 @@
       ],
       "usageSum": 3,
       "scope": "screen"
+    },
+    {
+      "id": "n092-metric-tile",
+      "stem": "MetricTile",
+      "stemType": "final-two",
+      "members": [
+        "HostAnalyticsMetricTile",
+        "HostOrganizerMetricTile",
+        "UserAnalyticsMetricTile"
+      ],
+      "usageSum": 0,
+      "scope": "mixed"
     },
     {
       "id": "n093-profile-photo",
@@ -21327,18 +21327,7 @@
       "scope": "widget"
     },
     {
-      "id": "n099-icon-action",
-      "stem": "IconAction",
-      "stemType": "final-two",
-      "members": [
-        "CatchTopBarIconAction",
-        "OverlayIconAction"
-      ],
-      "usageSum": 26,
-      "scope": "mixed"
-    },
-    {
-      "id": "n100-history-screen",
+      "id": "n099-history-screen",
       "stem": "HistoryScreen",
       "stemType": "final-two",
       "members": [
@@ -21349,7 +21338,7 @@
       "scope": "screen"
     },
     {
-      "id": "n101-detail-screen",
+      "id": "n100-detail-screen",
       "stem": "DetailScreen",
       "stemType": "final-two",
       "members": [
@@ -21360,7 +21349,7 @@
       "scope": "screen"
     },
     {
-      "id": "n102-edit-screen",
+      "id": "n101-edit-screen",
       "stem": "EditScreen",
       "stemType": "outer",
       "members": [
@@ -21371,7 +21360,7 @@
       "scope": "screen"
     },
     {
-      "id": "n103-count-pill",
+      "id": "n102-count-pill",
       "stem": "CountPill",
       "stemType": "final-two",
       "members": [
@@ -21382,7 +21371,7 @@
       "scope": "widget"
     },
     {
-      "id": "n104-step-header",
+      "id": "n103-step-header",
       "stem": "StepHeader",
       "stemType": "final-two",
       "members": [
@@ -21393,7 +21382,7 @@
       "scope": "widget"
     },
     {
-      "id": "n105-action-card",
+      "id": "n104-action-card",
       "stem": "ActionCard",
       "stemType": "final-two",
       "members": [
@@ -21404,7 +21393,7 @@
       "scope": "widget"
     },
     {
-      "id": "n106-section-list",
+      "id": "n105-section-list",
       "stem": "SectionList",
       "stemType": "final-two",
       "members": [
@@ -21415,7 +21404,7 @@
       "scope": "widget"
     },
     {
-      "id": "n107-club-card",
+      "id": "n106-club-card",
       "stem": "ClubCard",
       "stemType": "final-two",
       "members": [
@@ -21426,7 +21415,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n108-profile-controls",
+      "id": "n107-profile-controls",
       "stem": "ProfileControls",
       "stemType": "outer",
       "members": [
@@ -21437,7 +21426,7 @@
       "scope": "widget"
     },
     {
-      "id": "n109-explore-label",
+      "id": "n108-explore-label",
       "stem": "ExploreLabel",
       "stemType": "outer",
       "members": [
@@ -21448,7 +21437,7 @@
       "scope": "widget"
     },
     {
-      "id": "n110-club-artwork",
+      "id": "n109-club-artwork",
       "stem": "ClubArtwork",
       "stemType": "outer",
       "members": [
@@ -21459,7 +21448,7 @@
       "scope": "widget"
     },
     {
-      "id": "n111-host-section",
+      "id": "n110-host-section",
       "stem": "HostSection",
       "stemType": "final-two",
       "members": [
@@ -21470,7 +21459,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n112-map-screen",
+      "id": "n111-map-screen",
       "stem": "MapScreen",
       "stemType": "final-two",
       "members": [
@@ -21481,7 +21470,7 @@
       "scope": "screen"
     },
     {
-      "id": "n113-app-bar",
+      "id": "n112-app-bar",
       "stem": "AppBar",
       "stemType": "final-two",
       "members": [
@@ -21492,7 +21481,7 @@
       "scope": "widget"
     },
     {
-      "id": "n114-dashboard-section",
+      "id": "n113-dashboard-section",
       "stem": "DashboardSection",
       "stemType": "outer",
       "members": [
@@ -21503,7 +21492,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n115-event-panel",
+      "id": "n114-event-panel",
       "stem": "EventPanel",
       "stemType": "outer",
       "members": [
@@ -21514,7 +21503,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n116-activity-section",
+      "id": "n115-activity-section",
       "stem": "ActivitySection",
       "stemType": "final-two",
       "members": [
@@ -21525,7 +21514,7 @@
       "scope": "widget"
     },
     {
-      "id": "n117-chip-value",
+      "id": "n116-chip-value",
       "stem": "ChipValue",
       "stemType": "final-two",
       "members": [
@@ -21536,7 +21525,7 @@
       "scope": "widget"
     },
     {
-      "id": "n118-person-layout",
+      "id": "n117-person-layout",
       "stem": "PersonLayout",
       "stemType": "outer",
       "members": [
@@ -21547,7 +21536,7 @@
       "scope": "widget"
     },
     {
-      "id": "n119-config-editor",
+      "id": "n118-config-editor",
       "stem": "ConfigEditor",
       "stemType": "final-two",
       "members": [
@@ -21558,7 +21547,7 @@
       "scope": "widget"
     },
     {
-      "id": "n120-detail-body",
+      "id": "n119-detail-body",
       "stem": "DetailBody",
       "stemType": "final-two",
       "members": [
@@ -21569,7 +21558,7 @@
       "scope": "widget"
     },
     {
-      "id": "n121-photo-picker",
+      "id": "n120-photo-picker",
       "stem": "PhotoPicker",
       "stemType": "final-two",
       "members": [
@@ -21580,7 +21569,7 @@
       "scope": "widget"
     },
     {
-      "id": "n122-photo-strip",
+      "id": "n121-photo-strip",
       "stem": "PhotoStrip",
       "stemType": "final-two",
       "members": [
@@ -21591,7 +21580,7 @@
       "scope": "widget"
     },
     {
-      "id": "n123-privacy-badge",
+      "id": "n122-privacy-badge",
       "stem": "PrivacyBadge",
       "stemType": "final-two",
       "members": [
@@ -21602,7 +21591,7 @@
       "scope": "widget"
     },
     {
-      "id": "n124-reviews-section",
+      "id": "n123-reviews-section",
       "stem": "ReviewsSection",
       "stemType": "final-two",
       "members": [
@@ -21613,7 +21602,7 @@
       "scope": "widget"
     },
     {
-      "id": "n125-club-tile",
+      "id": "n124-club-tile",
       "stem": "ClubTile",
       "stemType": "outer",
       "members": [
@@ -21624,7 +21613,7 @@
       "scope": "widget"
     },
     {
-      "id": "n126-defaults-step",
+      "id": "n125-defaults-step",
       "stem": "DefaultsStep",
       "stemType": "final-two",
       "members": [
@@ -21635,7 +21624,7 @@
       "scope": "widget"
     },
     {
-      "id": "n127-explore-content",
+      "id": "n126-explore-content",
       "stem": "ExploreContent",
       "stemType": "outer",
       "members": [
@@ -21646,7 +21635,7 @@
       "scope": "widget"
     },
     {
-      "id": "n128-field-row",
+      "id": "n127-field-row",
       "stem": "FieldRow",
       "stemType": "final-two",
       "members": [
@@ -21657,7 +21646,7 @@
       "scope": "widget"
     },
     {
-      "id": "n129-header-content",
+      "id": "n128-header-content",
       "stem": "HeaderContent",
       "stemType": "final-two",
       "members": [
@@ -21668,7 +21657,7 @@
       "scope": "widget"
     },
     {
-      "id": "n130-host-avatar",
+      "id": "n129-host-avatar",
       "stem": "HostAvatar",
       "stemType": "final-two",
       "members": [
@@ -21679,7 +21668,7 @@
       "scope": "widget"
     },
     {
-      "id": "n131-public-body",
+      "id": "n130-public-body",
       "stem": "PublicBody",
       "stemType": "outer",
       "members": [
@@ -21690,7 +21679,7 @@
       "scope": "screen"
     },
     {
-      "id": "n132-sheet-header",
+      "id": "n131-sheet-header",
       "stem": "SheetHeader",
       "stemType": "final-two",
       "members": [
@@ -21701,7 +21690,7 @@
       "scope": "widget"
     },
     {
-      "id": "n133-club-body",
+      "id": "n132-club-body",
       "stem": "ClubBody",
       "stemType": "outer",
       "members": [
@@ -21712,7 +21701,7 @@
       "scope": "widget"
     },
     {
-      "id": "n134-empty-content",
+      "id": "n133-empty-content",
       "stem": "EmptyContent",
       "stemType": "outer",
       "members": [
@@ -21723,7 +21712,7 @@
       "scope": "widget"
     },
     {
-      "id": "n135-event-tile",
+      "id": "n134-event-tile",
       "stem": "EventTile",
       "stemType": "final-two",
       "members": [
@@ -21734,7 +21723,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n136-explore-card",
+      "id": "n135-explore-card",
       "stem": "ExploreCard",
       "stemType": "outer",
       "members": [
@@ -21745,7 +21734,7 @@
       "scope": "widget"
     },
     {
-      "id": "n137-explore-sheet",
+      "id": "n136-explore-sheet",
       "stem": "ExploreSheet",
       "stemType": "outer",
       "members": [
@@ -21756,7 +21745,7 @@
       "scope": "widget"
     },
     {
-      "id": "n138-explore-sliver",
+      "id": "n137-explore-sliver",
       "stem": "ExploreSliver",
       "stemType": "outer",
       "members": [
@@ -21767,7 +21756,7 @@
       "scope": "widget"
     },
     {
-      "id": "n139-explore-state",
+      "id": "n138-explore-state",
       "stem": "ExploreState",
       "stemType": "outer",
       "members": [
@@ -21778,7 +21767,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n140-host-controller",
+      "id": "n139-host-controller",
       "stem": "HostController",
       "stemType": "outer",
       "members": [
@@ -21789,7 +21778,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n141-lab-screen",
+      "id": "n140-lab-screen",
       "stem": "LabScreen",
       "stemType": "final-two",
       "members": [
@@ -21800,7 +21789,7 @@
       "scope": "screen"
     },
     {
-      "id": "n142-range-editor",
+      "id": "n141-range-editor",
       "stem": "RangeEditor",
       "stemType": "final-two",
       "members": [
@@ -21811,7 +21800,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n143-review-card",
+      "id": "n142-review-card",
       "stem": "ReviewCard",
       "stemType": "final-two",
       "members": [
@@ -21822,7 +21811,7 @@
       "scope": "widget"
     },
     {
-      "id": "n144-app-shell",
+      "id": "n143-app-shell",
       "stem": "AppShell",
       "stemType": "final-two",
       "members": [
@@ -21833,7 +21822,7 @@
       "scope": "widget"
     },
     {
-      "id": "n145-async-loading",
+      "id": "n144-async-loading",
       "stem": "AsyncLoading",
       "stemType": "outer",
       "members": [
@@ -21844,7 +21833,7 @@
       "scope": "widget"
     },
     {
-      "id": "n146-chat-list",
+      "id": "n145-chat-list",
       "stem": "ChatList",
       "stemType": "outer",
       "members": [
@@ -21855,7 +21844,7 @@
       "scope": "widget"
     },
     {
-      "id": "n147-club-row",
+      "id": "n146-club-row",
       "stem": "ClubRow",
       "stemType": "outer",
       "members": [
@@ -21866,7 +21855,7 @@
       "scope": "widget"
     },
     {
-      "id": "n148-companion-scaffold",
+      "id": "n147-companion-scaffold",
       "stem": "CompanionScaffold",
       "stemType": "outer",
       "members": [
@@ -21877,7 +21866,7 @@
       "scope": "widget"
     },
     {
-      "id": "n149-cue-card",
+      "id": "n148-cue-card",
       "stem": "CueCard",
       "stemType": "final-two",
       "members": [
@@ -21888,7 +21877,7 @@
       "scope": "widget"
     },
     {
-      "id": "n150-dashboard-body",
+      "id": "n149-dashboard-body",
       "stem": "DashboardBody",
       "stemType": "outer",
       "members": [
@@ -21899,7 +21888,7 @@
       "scope": "widget"
     },
     {
-      "id": "n151-detail-row",
+      "id": "n150-detail-row",
       "stem": "DetailRow",
       "stemType": "final-two",
       "members": [
@@ -21910,7 +21899,7 @@
       "scope": "widget"
     },
     {
-      "id": "n152-details-step",
+      "id": "n151-details-step",
       "stem": "DetailsStep",
       "stemType": "final-two",
       "members": [
@@ -21921,7 +21910,7 @@
       "scope": "widget"
     },
     {
-      "id": "n153-enum-entry",
+      "id": "n152-enum-entry",
       "stem": "EnumEntry",
       "stemType": "final-two",
       "members": [
@@ -21932,7 +21921,7 @@
       "scope": "widget"
     },
     {
-      "id": "n154-header-skeleton",
+      "id": "n153-header-skeleton",
       "stem": "HeaderSkeleton",
       "stemType": "final-two",
       "members": [
@@ -21943,7 +21932,7 @@
       "scope": "screen"
     },
     {
-      "id": "n155-host-button",
+      "id": "n154-host-button",
       "stem": "HostButton",
       "stemType": "outer",
       "members": [
@@ -21954,7 +21943,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n156-host-pane",
+      "id": "n155-host-pane",
       "stem": "HostPane",
       "stemType": "outer",
       "members": [
@@ -21965,7 +21954,7 @@
       "scope": "screen"
     },
     {
-      "id": "n157-in-card",
+      "id": "n156-in-card",
       "stem": "InCard",
       "stemType": "final-two",
       "members": [
@@ -21976,7 +21965,7 @@
       "scope": "widget"
     },
     {
-      "id": "n158-micro-card",
+      "id": "n157-micro-card",
       "stem": "MicroCard",
       "stemType": "outer",
       "members": [
@@ -21987,7 +21976,7 @@
       "scope": "widget"
     },
     {
-      "id": "n159-ordered-tile",
+      "id": "n158-ordered-tile",
       "stem": "OrderedTile",
       "stemType": "outer",
       "members": [
@@ -21998,7 +21987,7 @@
       "scope": "widget"
     },
     {
-      "id": "n160-payment-sheet",
+      "id": "n159-payment-sheet",
       "stem": "PaymentSheet",
       "stemType": "outer",
       "members": [
@@ -22009,7 +21998,7 @@
       "scope": "screen"
     },
     {
-      "id": "n161-picker-sheet",
+      "id": "n160-picker-sheet",
       "stem": "PickerSheet",
       "stemType": "final-two",
       "members": [
@@ -22020,7 +22009,7 @@
       "scope": "widget"
     },
     {
-      "id": "n162-profile-button",
+      "id": "n161-profile-button",
       "stem": "ProfileButton",
       "stemType": "outer",
       "members": [
@@ -22031,7 +22020,7 @@
       "scope": "widget"
     },
     {
-      "id": "n163-report-view",
+      "id": "n162-report-view",
       "stem": "ReportView",
       "stemType": "final-two",
       "members": [
@@ -22042,7 +22031,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n164-rotation-slots",
+      "id": "n163-rotation-slots",
       "stem": "RotationSlots",
       "stemType": "final-two",
       "members": [
@@ -22053,7 +22042,7 @@
       "scope": "widget"
     },
     {
-      "id": "n165-row-skeleton",
+      "id": "n164-row-skeleton",
       "stem": "RowSkeleton",
       "stemType": "final-two",
       "members": [
@@ -22064,7 +22053,7 @@
       "scope": "widget"
     },
     {
-      "id": "n166-stage-card",
+      "id": "n165-stage-card",
       "stem": "StageCard",
       "stemType": "outer",
       "members": [
@@ -22075,7 +22064,7 @@
       "scope": "widget"
     },
     {
-      "id": "n167-calendar-header",
+      "id": "n166-calendar-header",
       "stem": "CalendarHeader",
       "stemType": "outer",
       "members": [
@@ -22086,7 +22075,7 @@
       "scope": "screen"
     },
     {
-      "id": "n168-event-picker",
+      "id": "n167-event-picker",
       "stem": "EventPicker",
       "stemType": "outer",
       "members": [
@@ -22097,7 +22086,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n169-history-list",
+      "id": "n168-history-list",
       "stem": "HistoryList",
       "stemType": "final-two",
       "members": [
@@ -22108,7 +22097,7 @@
       "scope": "screen"
     },
     {
-      "id": "n170-host-bar",
+      "id": "n169-host-bar",
       "stem": "HostBar",
       "stemType": "outer",
       "members": [
@@ -22119,7 +22108,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n171-host-summary",
+      "id": "n170-host-summary",
       "stem": "HostSummary",
       "stemType": "outer",
       "members": [
@@ -22130,7 +22119,7 @@
       "scope": "widget"
     },
     {
-      "id": "n172-is-going",
+      "id": "n171-is-going",
       "stem": "IsGoing",
       "stemType": "final-two",
       "members": [
@@ -22141,7 +22130,7 @@
       "scope": "widget"
     },
     {
-      "id": "n173-page-body",
+      "id": "n172-page-body",
       "stem": "PageBody",
       "stemType": "final-two",
       "members": [
@@ -22152,7 +22141,7 @@
       "scope": "widget"
     },
     {
-      "id": "n174-page-indicator",
+      "id": "n173-page-indicator",
       "stem": "PageIndicator",
       "stemType": "final-two",
       "members": [
@@ -22163,7 +22152,7 @@
       "scope": "widget"
     },
     {
-      "id": "n175-paper-row",
+      "id": "n174-paper-row",
       "stem": "PaperRow",
       "stemType": "outer",
       "members": [
@@ -22174,7 +22163,7 @@
       "scope": "widget"
     },
     {
-      "id": "n176-payment-body",
+      "id": "n175-payment-body",
       "stem": "PaymentBody",
       "stemType": "outer",
       "members": [
@@ -22185,7 +22174,7 @@
       "scope": "screen"
     },
     {
-      "id": "n177-policy-summary",
+      "id": "n176-policy-summary",
       "stem": "PolicySummary",
       "stemType": "final-two",
       "members": [
@@ -22196,7 +22185,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n178-prompt-card",
+      "id": "n177-prompt-card",
       "stem": "PromptCard",
       "stemType": "final-two",
       "members": [
@@ -22207,7 +22196,7 @@
       "scope": "widget"
     },
     {
-      "id": "n179-quality-panel",
+      "id": "n178-quality-panel",
       "stem": "QualityPanel",
       "stemType": "final-two",
       "members": [
@@ -22218,7 +22207,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n180-schedule-card",
+      "id": "n179-schedule-card",
       "stem": "ScheduleCard",
       "stemType": "final-two",
       "members": [
@@ -22229,7 +22218,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n181-settings-section",
+      "id": "n180-settings-section",
       "stem": "SettingsSection",
       "stemType": "final-two",
       "members": [
@@ -22240,7 +22229,7 @@
       "scope": "screen"
     },
     {
-      "id": "n182-skeleton-section",
+      "id": "n181-skeleton-section",
       "stem": "SkeletonSection",
       "stemType": "final-two",
       "members": [
@@ -22251,7 +22240,7 @@
       "scope": "widget"
     },
     {
-      "id": "n183-trend-panel",
+      "id": "n182-trend-panel",
       "stem": "TrendPanel",
       "stemType": "final-two",
       "members": [
@@ -22262,7 +22251,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n184-user-row",
+      "id": "n183-user-row",
       "stem": "UserRow",
       "stemType": "outer",
       "members": [
@@ -22273,7 +22262,7 @@
       "scope": "widget"
     },
     {
-      "id": "n185-celebration-icon",
+      "id": "n184-celebration-icon",
       "stem": "CelebrationIcon",
       "stemType": "final-two",
       "members": [
@@ -22284,7 +22273,7 @@
       "scope": "widget"
     },
     {
-      "id": "n186-club-list",
+      "id": "n185-club-list",
       "stem": "ClubList",
       "stemType": "outer",
       "members": [
@@ -22295,7 +22284,7 @@
       "scope": "widget"
     },
     {
-      "id": "n187-countdown-pill",
+      "id": "n186-countdown-pill",
       "stem": "CountdownPill",
       "stemType": "outer",
       "members": [
@@ -22306,7 +22295,7 @@
       "scope": "widget"
     },
     {
-      "id": "n188-custom-fields",
+      "id": "n187-custom-fields",
       "stem": "CustomFields",
       "stemType": "outer",
       "members": [
@@ -22317,7 +22306,7 @@
       "scope": "widget"
     },
     {
-      "id": "n189-details-card",
+      "id": "n188-details-card",
       "stem": "DetailsCard",
       "stemType": "final-two",
       "members": [
@@ -22328,7 +22317,7 @@
       "scope": "widget"
     },
     {
-      "id": "n190-event-rows",
+      "id": "n189-event-rows",
       "stem": "EventRows",
       "stemType": "outer",
       "members": [
@@ -22339,7 +22328,7 @@
       "scope": "screen"
     },
     {
-      "id": "n191-explore-lead",
+      "id": "n190-explore-lead",
       "stem": "ExploreLead",
       "stemType": "outer",
       "members": [
@@ -22350,7 +22339,7 @@
       "scope": "widget"
     },
     {
-      "id": "n192-history-skeleton",
+      "id": "n191-history-skeleton",
       "stem": "HistorySkeleton",
       "stemType": "final-two",
       "members": [
@@ -22361,7 +22350,7 @@
       "scope": "screen"
     },
     {
-      "id": "n193-host-pill",
+      "id": "n192-host-pill",
       "stem": "HostPill",
       "stemType": "outer",
       "members": [
@@ -22372,7 +22361,7 @@
       "scope": "screen"
     },
     {
-      "id": "n194-host-shell",
+      "id": "n193-host-shell",
       "stem": "HostShell",
       "stemType": "outer",
       "members": [
@@ -22383,7 +22372,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n195-override-sheet",
+      "id": "n194-override-sheet",
       "stem": "OverrideSheet",
       "stemType": "final-two",
       "members": [
@@ -22394,7 +22383,7 @@
       "scope": "widget"
     },
     {
-      "id": "n196-payment-skeleton",
+      "id": "n195-payment-skeleton",
       "stem": "PaymentSkeleton",
       "stemType": "outer",
       "members": [
@@ -22405,7 +22394,7 @@
       "scope": "screen"
     },
     {
-      "id": "n197-policy-card",
+      "id": "n196-policy-card",
       "stem": "PolicyCard",
       "stemType": "final-two",
       "members": [
@@ -22416,7 +22405,7 @@
       "scope": "screen"
     },
     {
-      "id": "n198-progress-rail",
+      "id": "n197-progress-rail",
       "stem": "ProgressRail",
       "stemType": "final-two",
       "members": [
@@ -22427,7 +22416,7 @@
       "scope": "widget"
     },
     {
-      "id": "n199-qa-controls",
+      "id": "n198-qa-controls",
       "stem": "QaControls",
       "stemType": "final-two",
       "members": [
@@ -22438,7 +22427,7 @@
       "scope": "screen"
     },
     {
-      "id": "n200-read-card",
+      "id": "n199-read-card",
       "stem": "ReadCard",
       "stemType": "outer",
       "members": [
@@ -22449,7 +22438,7 @@
       "scope": "screen"
     },
     {
-      "id": "n201-required-screen",
+      "id": "n200-required-screen",
       "stem": "RequiredScreen",
       "stemType": "final-two",
       "members": [
@@ -22460,7 +22449,7 @@
       "scope": "screen"
     },
     {
-      "id": "n202-rotation-editor",
+      "id": "n201-rotation-editor",
       "stem": "RotationEditor",
       "stemType": "outer",
       "members": [
@@ -22471,7 +22460,7 @@
       "scope": "widget"
     },
     {
-      "id": "n203-round-editor",
+      "id": "n202-round-editor",
       "stem": "RoundEditor",
       "stemType": "final-two",
       "members": [
@@ -22482,7 +22471,7 @@
       "scope": "widget"
     },
     {
-      "id": "n204-stage-line",
+      "id": "n203-stage-line",
       "stem": "StageLine",
       "stemType": "outer",
       "members": [
@@ -22493,7 +22482,7 @@
       "scope": "widget"
     },
     {
-      "id": "n205-tab-bar",
+      "id": "n204-tab-bar",
       "stem": "TabBar",
       "stemType": "final-two",
       "members": [
@@ -22504,7 +22493,7 @@
       "scope": "widget"
     },
     {
-      "id": "n206-toggle-row",
+      "id": "n205-toggle-row",
       "stem": "ToggleRow",
       "stemType": "final-two",
       "members": [
@@ -22515,7 +22504,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n207-wingman-row",
+      "id": "n206-wingman-row",
       "stem": "WingmanRow",
       "stemType": "outer",
       "members": [
@@ -22526,7 +22515,7 @@
       "scope": "widget"
     },
     {
-      "id": "n208-summary-line",
+      "id": "n207-summary-line",
       "stem": "SummaryLine",
       "stemType": "final-two",
       "members": [
@@ -22537,7 +22526,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n209-tile-skeleton",
+      "id": "n208-tile-skeleton",
       "stem": "TileSkeleton",
       "stemType": "final-two",
       "members": [
@@ -22548,7 +22537,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n210-card-header",
+      "id": "n209-card-header",
       "stem": "CardHeader",
       "stemType": "final-two",
       "members": [
@@ -22559,7 +22548,7 @@
       "scope": "widget"
     },
     {
-      "id": "n211-error-screen",
+      "id": "n210-error-screen",
       "stem": "ErrorScreen",
       "stemType": "final-two",
       "members": [
@@ -22570,7 +22559,7 @@
       "scope": "screen"
     },
     {
-      "id": "n212-event-cta",
+      "id": "n211-event-cta",
       "stem": "EventCta",
       "stemType": "outer",
       "members": [
@@ -22581,7 +22570,7 @@
       "scope": "widget"
     },
     {
-      "id": "n213-profile-view",
+      "id": "n212-profile-view",
       "stem": "ProfileView",
       "stemType": "outer",
       "members": [
@@ -22592,7 +22581,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n214-screen-loading",
+      "id": "n213-screen-loading",
       "stem": "ScreenLoading",
       "stemType": "final-two",
       "members": [
@@ -22603,7 +22592,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n215-grid-skeleton",
+      "id": "n214-grid-skeleton",
       "stem": "GridSkeleton",
       "stemType": "final-two",
       "members": [
@@ -22614,7 +22603,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n216-roster-cell",
+      "id": "n215-roster-cell",
       "stem": "RosterCell",
       "stemType": "outer",
       "members": [
@@ -22625,7 +22614,7 @@
       "scope": "widget"
     },
     {
-      "id": "n217-stat-skeleton",
+      "id": "n216-stat-skeleton",
       "stem": "StatSkeleton",
       "stemType": "final-two",
       "members": [
@@ -22636,7 +22625,7 @@
       "scope": "screen"
     },
     {
-      "id": "n218-analytics-section",
+      "id": "n217-analytics-section",
       "stem": "AnalyticsSection",
       "stemType": "final-two",
       "members": [
@@ -22647,7 +22636,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n219-companion-skeleton",
+      "id": "n218-companion-skeleton",
       "stem": "CompanionSkeleton",
       "stemType": "outer",
       "members": [
@@ -22656,6 +22645,17 @@
       ],
       "usageSum": 0,
       "scope": "screen"
+    },
+    {
+      "id": "n219-icon-action",
+      "stem": "IconAction",
+      "stemType": "final-two",
+      "members": [
+        "CatchTopBarIconAction",
+        "OverlayIconAction"
+      ],
+      "usageSum": 0,
+      "scope": "mixed"
     },
     {
       "id": "n220-picker-tile",

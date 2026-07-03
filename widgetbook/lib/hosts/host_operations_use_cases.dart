@@ -102,6 +102,7 @@ import 'package:catch_dating_app/hosts/presentation/widgets/host_event_tools.dar
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_payout_prompt.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_payout_prompt_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_picker_tile.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
@@ -576,6 +577,38 @@ Widget hostOperationsTopBarStates(BuildContext context) {
               title: 'Sea Face Social',
             ),
           ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Picker states',
+  type: HostPickerTile,
+  path: '[P1 product surfaces]/Host operations/Controls',
+)
+Widget hostPickerTileStates(BuildContext context) {
+  return _HostCatalog(
+    title: 'HostPickerTile',
+    contractId: 'control.host.picker_tile',
+    children: [
+      _StateCard(
+        label: 'selected date',
+        child: HostPickerTile(
+          icon: CatchIcons.calendarTodayOutlined,
+          value: 'Fri, Jul 3',
+          placeholder: 'Select a date',
+          onTap: () {},
+        ),
+      ),
+      _StateCard(
+        label: 'placeholder',
+        child: HostPickerTile(
+          icon: CatchIcons.scheduleOutlined,
+          value: '',
+          placeholder: 'Select start time',
+          onTap: () {},
         ),
       ),
     ],
@@ -1391,9 +1424,6 @@ Widget _hostClubPreviewFor(String focus) {
       activeEventCount: events.where((event) => !event.isCancelled).length,
     ),
     'HostOrganizerMetricRow' => HostOrganizerMetricRow(items: metricItems),
-    'HostOrganizerMetricTile' => HostOrganizerMetricTile(
-      item: metricItems.first,
-    ),
     'HostOrganizerPayoutPrompt' => HostOrganizerPayoutPrompt(
       state: const HostOrganizerPayoutPromptState.setupRequired(),
       onManagePayouts: () {},
@@ -1403,10 +1433,6 @@ Widget _hostClubPreviewFor(String focus) {
         uid: _hostUid,
         onManagePayouts: () {},
       ),
-    'HostOrganizerSectionHeader' => const HostOrganizerSectionHeader(
-      label: 'Team',
-      actionLabel: 'Manage',
-    ),
     'HostOrganizerTeamCard' => HostOrganizerTeamCard(
       profiles: team,
       currentUid: _hostUid,
@@ -1845,16 +1871,6 @@ String _hostComponentSlug(String name) {
 @widgetbook.UseCase(
   name: 'Covered by host clubs route states',
   type: HostOrganizerMetricRow,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostOrganizerMetricTile,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostOrganizerSectionHeader,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 @widgetbook.UseCase(

@@ -25,12 +25,10 @@ class MapOverlayControls extends StatelessWidget {
           children: [
             Row(
               children: [
-                CatchTopBarIconAction(
+                CatchIconAction(
                   icon: CatchIcons.arrowBackIosNewRounded,
                   tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-                  backgroundColor: CatchTokens.of(
-                    context,
-                  ).surface.withValues(
+                  backgroundColor: CatchTokens.of(context).surface.withValues(
                     alpha: CatchOpacity.mapOverlayChromeFill,
                   ),
                   onPressed: onBack ?? () => Navigator.of(context).maybePop(),

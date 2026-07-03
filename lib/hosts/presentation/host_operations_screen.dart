@@ -28,6 +28,7 @@ import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
@@ -1777,6 +1778,8 @@ class HostClubOrganizerOverview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
     return Column(
       key: const ValueKey('host-club-organizer-overview'),
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1826,10 +1829,18 @@ class HostClubOrganizerOverview extends StatelessWidget {
           ],
         ),
         gapH24,
-        HostOrganizerSectionHeader(
-          label: 'Team · ${club.displayHostProfiles.length}',
-          actionLabel: isOwner ? 'Manage' : null,
-          onAction: isOwner ? () => onSelectTab(HostClubTab.edit) : null,
+        CatchSectionHeader(
+          title: 'Team · ${club.displayHostProfiles.length}',
+          padding: EdgeInsets.zero,
+          titleStyle: CatchTextStyles.monoLabel(context, color: t.ink2),
+          trailing: isOwner
+              ? CatchTextButton(
+                  label: 'Manage',
+                  onPressed: () => onSelectTab(HostClubTab.edit),
+                  tone: CatchTextButtonTone.neutral,
+                  minimumSize: const Size(0, CatchSpacing.s8),
+                )
+              : null,
         ),
         gapH10,
         HostOrganizerTeamCard(
@@ -1837,10 +1848,16 @@ class HostClubOrganizerOverview extends StatelessWidget {
           currentUid: currentUid,
         ),
         gapH24,
-        HostOrganizerSectionHeader(
-          label: 'Trends · last 12 weeks',
-          actionLabel: 'See insights',
-          onAction: () => onSelectTab(HostClubTab.insights),
+        CatchSectionHeader(
+          title: 'Trends · last 12 weeks',
+          padding: EdgeInsets.zero,
+          titleStyle: CatchTextStyles.monoLabel(context, color: t.ink2),
+          trailing: CatchTextButton(
+            label: 'See insights',
+            onPressed: () => onSelectTab(HostClubTab.insights),
+            tone: CatchTextButtonTone.neutral,
+            minimumSize: const Size(0, CatchSpacing.s8),
+          ),
         ),
         gapH10,
         HostOrganizerTrendStrip(
@@ -1849,7 +1866,11 @@ class HostClubOrganizerOverview extends StatelessWidget {
           onTap: () => onSelectTab(HostClubTab.insights),
         ),
         gapH24,
-        const HostOrganizerSectionHeader(label: 'Manage'),
+        CatchSectionHeader(
+          title: 'Manage',
+          padding: EdgeInsets.zero,
+          titleStyle: CatchTextStyles.monoLabel(context, color: t.ink2),
+        ),
         gapH10,
         CatchSection.contained(
           children: [
@@ -1997,83 +2018,35 @@ class HostOrganizerMetricRow extends StatelessWidget {
         height: CatchLayout.hostOrganizerMetricRowHeight,
         child: Row(
           children: [
-            Expanded(child: HostOrganizerMetricTile(item: items[0])),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: CatchSpacing.s3,
+                ),
+                child: CatchStatColumn(
+                  value: items[0].value,
+                  label: items[0].label,
+                ),
+              ),
+            ),
             ColoredBox(
               color: t.line,
               child: const SizedBox(width: CatchStroke.hairline),
             ),
-            Expanded(child: HostOrganizerMetricTile(item: items[1])),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: CatchSpacing.s3,
+                ),
+                child: CatchStatColumn(
+                  value: items[1].value,
+                  label: items[1].label,
+                ),
+              ),
+            ),
           ],
         ),
       ),
-    );
-  }
-}
-
-class HostOrganizerMetricTile extends StatelessWidget {
-  const HostOrganizerMetricTile({super.key, required this.item});
-
-  final HostOrganizerMetricItem item;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s3),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            item.value,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.numericLarge(context, color: t.ink),
-          ),
-          gapH4,
-          Text(
-            item.label.toUpperCase(),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.monoLabelS(context, color: t.ink3),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class HostOrganizerSectionHeader extends StatelessWidget {
-  const HostOrganizerSectionHeader({
-    super.key,
-    required this.label,
-    this.actionLabel,
-    this.onAction,
-  });
-
-  final String label;
-  final String? actionLabel;
-  final VoidCallback? onAction;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Row(
-      children: [
-        Expanded(
-          child: Text(
-            label,
-            style: CatchTextStyles.monoLabel(context, color: t.ink2),
-          ),
-        ),
-        if (actionLabel != null)
-          CatchTextButton(
-            label: actionLabel!,
-            onPressed: onAction,
-            tone: CatchTextButtonTone.neutral,
-            minimumSize: const Size(0, CatchSpacing.s8),
-          ),
-      ],
     );
   }
 }

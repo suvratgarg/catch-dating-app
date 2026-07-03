@@ -17,7 +17,6 @@ import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
@@ -44,6 +43,7 @@ import 'package:catch_dating_app/hosts/presentation/host_event_edit_screen_state
 import 'package:catch_dating_app/hosts/presentation/host_event_edit_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/validators.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_picker_tile.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -410,7 +410,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
               if (screenState.scheduleLocked)
                 ReadOnlyHostedEventScheduleCard(event: widget.event)
               else ...[
-                EditHostedEventPickerTile(
+                HostPickerTile(
                   key: CreateEventFormKeys.datePicker,
                   icon: CatchIcons.calendarTodayOutlined,
                   value: scheduleFields.dateValue,
@@ -419,7 +419,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                       _handleIntent(const HostEventEditPickDateIntent()),
                 ),
                 gapH12,
-                EditHostedEventPickerTile(
+                HostPickerTile(
                   key: CreateEventFormKeys.timePicker,
                   icon: CatchIcons.scheduleOutlined,
                   value: scheduleFields.startTimeValue,
@@ -808,53 +808,6 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
           await Navigator.of(context).maybePop();
         }
       }),
-    );
-  }
-}
-
-class EditHostedEventPickerTile extends StatelessWidget {
-  const EditHostedEventPickerTile({
-    super.key,
-    required this.icon,
-    required this.value,
-    required this.placeholder,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String? value;
-  final String placeholder;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final displayValue = value;
-    final hasValue = displayValue != null && displayValue.isNotEmpty;
-    return CatchControlShell(
-      onTap: onTap,
-      tone: CatchControlTone.raised,
-      padding: CatchControlMetrics.contentPadding(CatchControlSize.md),
-      semanticButton: true,
-      child: Row(
-        children: [
-          Icon(icon, size: CatchIcon.control, color: t.ink2),
-          gapW12,
-          Expanded(
-            child: Text(
-              hasValue ? displayValue : placeholder,
-              style: hasValue
-                  ? CatchTextStyles.bodyLead(context)
-                  : CatchTextStyles.bodyLead(context, color: t.ink3),
-            ),
-          ),
-          Icon(
-            CatchIcons.chevronRightRounded,
-            size: CatchIcon.md,
-            color: t.ink3,
-          ),
-        ],
-      ),
     );
   }
 }

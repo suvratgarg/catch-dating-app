@@ -189,7 +189,7 @@ class RatingRow extends StatelessWidget {
           child: Text(label, style: CatchTextStyles.sectionTitle(context)),
         ),
         for (var i = 1; i <= 5; i++)
-          CatchTopBarIconAction(
+          CatchIconAction(
             size: CatchIconButton.defaultSize,
             tooltip: '$label $i',
             icon: i <= value
@@ -220,7 +220,7 @@ class CounterRow extends StatelessWidget {
             style: CatchTextStyles.sectionTitle(context),
           ),
         ),
-        CatchTopBarIconAction(
+        CatchIconAction(
           size: CatchIconButton.defaultSize,
           tooltip: 'Decrease people met',
           icon: CatchIcons.removeCircleOutlineRounded,
@@ -228,7 +228,7 @@ class CounterRow extends StatelessWidget {
           onPressed: value <= 0 ? null : () => onChanged(value - 1),
         ),
         Text('$value', style: CatchTextStyles.sectionTitle(context)),
-        CatchTopBarIconAction(
+        CatchIconAction(
           size: CatchIconButton.defaultSize,
           tooltip: 'Increase people met',
           icon: CatchIcons.addCircleOutlineRounded,
