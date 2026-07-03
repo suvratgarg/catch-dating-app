@@ -1304,6 +1304,41 @@ final _matchChatMatchRepository = _CaptureMatchRepository(
 final _matchChatConversationRepository = _CaptureConversationRepository(
   messagesByConversation: {_matchChatMatch.id: _matchChatMessages},
 );
+const _matchChatEmptyOtherProfile = PublicProfile(
+  uid: 'nyc_tara_reference_001',
+  name: 'Tara',
+  age: 28,
+  gender: Gender.woman,
+  city: 'Mumbai',
+  occupation: 'Producer',
+  company: 'Sunday Table',
+);
+final _matchChatEmptyEvent = buildEvent(
+  id: 'event-match-chat-empty',
+  clubId: 'club-match-chat-empty',
+  startTime: DateTime(2026, 6, 14, 17),
+  endTime: DateTime(2026, 6, 14, 18),
+  meetingPoint: 'Bandra Fort Amphitheatre',
+  startingPointLat: 19.0429,
+  startingPointLng: 72.8181,
+  locationDetails: 'Meet at the amphitheatre steps',
+  eventFormat: const EventFormatSnapshot(
+    activityKind: ActivityKind.socialRun,
+    interactionModel: EventInteractionModel.pacePods,
+    customActivityLabel: 'Sundowner 5K, Bandra',
+  ),
+  bookedCount: 16,
+  checkedInCount: 14,
+  capacityLimit: 24,
+  description: 'A relaxed evening 5K around Bandra with an easy social finish.',
+);
+final _matchChatEmptyMatch = Match(
+  id: 'match-chat-empty-reference',
+  user1Id: _matchChatViewerUid,
+  user2Id: _matchChatEmptyOtherProfile.uid,
+  eventIds: [_matchChatEmptyEvent.id],
+  createdAt: DateTime(2026, 6, 14, 18, 45),
+);
 
 final _captureNow = DateTime(2026, 5, 31, 9);
 const _captureViewerUid = 'runner-viewer';
@@ -4862,6 +4897,7 @@ List<Object> _matchChatProviderOverrides({
   Object? matchError,
   Event? event,
   bool includeEvent = true,
+  Iterable<PublicProfile> publicProfiles = const <PublicProfile>[],
   SuvbotRepository suvbotRepository =
       const MatchesChatFixtureSuvbotRepository(),
 }) {
@@ -4884,6 +4920,11 @@ List<Object> _matchChatProviderOverrides({
   final effectiveEvent = includeEvent
       ? event ?? MatchesChatSurfaceFixtures.event
       : null;
+  final effectiveEventId = effectiveMatch.eventIds.isEmpty
+      ? MatchesChatSurfaceFixtures.eventId
+      : effectiveMatch.eventIds.first;
+  final effectiveClubId =
+      effectiveEvent?.clubId ?? MatchesChatSurfaceFixtures.clubId;
 
   return [
     uidProvider.overrideWithValue(AsyncData<String?>(uid)),
@@ -4908,12 +4949,16 @@ List<Object> _matchChatProviderOverrides({
       (ref) => conversationRepository.watchMessages(conversationId: id),
     ),
     watchEventProvider(
-      MatchesChatSurfaceFixtures.eventId,
+      effectiveEventId,
     ).overrideWith((ref) => Stream<Event?>.value(effectiveEvent)),
-    watchClubProvider(MatchesChatSurfaceFixtures.clubId).overrideWith(
+    watchClubProvider(effectiveClubId).overrideWith(
       (ref) => Stream<Club?>.value(MatchesChatSurfaceFixtures.club),
     ),
     ..._matchesPublicProfileOverrides,
+    for (final profile in publicProfiles)
+      watchPublicProfileProvider(
+        profile.uid,
+      ).overrideWith((ref) => Stream<PublicProfile?>.value(profile)),
   ];
 }
 
@@ -13334,11 +13379,17 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['chatScreen'],
     device: CaptureDevice.iphone17Pro,
     providerOverrides: _matchChatProviderOverrides(
-      match: MatchesChatSurfaceFixtures.newMatch(),
+      match: _matchChatEmptyMatch,
       messages: const <ChatMessage>[],
+      event: _matchChatEmptyEvent,
+      publicProfiles: const <PublicProfile>[_matchChatEmptyOtherProfile],
     ),
-    builder: (context) =>
-        _matchChatCapture(match: MatchesChatSurfaceFixtures.newMatch()),
+    builder: (context) => _ReferenceChromeSafeArea(
+      child: _matchChatCapture(
+        match: _matchChatEmptyMatch,
+        initialProfile: _matchChatEmptyOtherProfile,
+      ),
+    ),
   ),
   ScreenCaptureEntry(
     id: 'match_chat_event_context_fallback',

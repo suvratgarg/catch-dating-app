@@ -3517,8 +3517,15 @@
               "id": "match-chat-reference",
               "kind": "external",
               "status": "available",
-              "notes": "Claude Messaging thread reference exported and registered for advisory pixel comparison. The populated-thread capture now compares within threshold after fixture and reference-safe-area alignment. Messaging.dc.html also contains a New match (empty) source panel that still needs export/registration; keyboard, share-card, report/block dialog, and dynamic-time variants are not present in the current handoff.",
+              "notes": "Claude Messaging thread and new-match empty references are exported, registered, and within advisory threshold after fixture and reference-safe-area alignment. Keyboard, share-card, report/block dialog, and dynamic-time variants are not present in the current handoff.",
               "path": "design/reference_screens/screen.matches.chat/thread.png"
+            },
+            {
+              "id": "match-chat-new-match-empty-reference",
+              "kind": "external",
+              "status": "available",
+              "notes": "Claude Messaging · New match (empty) panel exported with the generic data-screen-label reference exporter and registered for advisory pixel comparison against match_chat_empty_thread.",
+              "path": "design/reference_screens/screen.matches.chat/new_match_empty.png"
             }
           ],
           "states": [
@@ -3854,8 +3861,8 @@
             },
             {
               "id": "DP-MATCHES-CHAT-004",
-              "status": "open",
-              "nextAction": "Populated Messaging thread reference and masks are exported, registered, and within advisory threshold. Export and register the source-backed Messaging · New match (empty) panel from Messaging.dc.html, then compare it against match_chat_empty_thread. Keyboard-open, share-card, report/block dialog, and dynamic message-time references are blocked/reference-only until canonical source panels exist."
+              "status": "closed",
+              "nextAction": "Closed. Populated Messaging thread and Messaging · New match (empty) references and masks are exported, registered, and within advisory threshold: populated thread mismatch 7.22%, meanDelta 8.50, maxDelta 240, masked 199692; new-match empty mismatch 5.01%, meanDelta 5.46, maxDelta 240, masked 46812. Keyboard-open, share-card, report/block dialog, and dynamic message-time references remain reference-only until canonical source panels exist."
             }
           ]
         }

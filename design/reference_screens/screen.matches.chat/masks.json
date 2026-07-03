@@ -5,7 +5,7 @@
   "regions": [
     {
       "id": "status_bar",
-      "stateIds": ["populated_thread"],
+      "stateIds": ["populated_thread", "new_match_empty"],
       "rect": {
         "x": 0,
         "y": 0,
@@ -16,7 +16,7 @@
     },
     {
       "id": "profile_photo",
-      "stateIds": ["populated_thread"],
+      "stateIds": ["populated_thread", "new_match_empty"],
       "rect": {
         "x": 48,
         "y": 44,
@@ -38,7 +38,7 @@
     },
     {
       "id": "composer_keyboard_safe_area",
-      "stateIds": ["populated_thread"],
+      "stateIds": ["populated_thread", "new_match_empty"],
       "rect": {
         "x": 0,
         "y": 744,

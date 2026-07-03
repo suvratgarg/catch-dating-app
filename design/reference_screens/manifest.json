@@ -598,6 +598,40 @@
       "notes": "Canonical Claude Messaging thread reference for advisory comparison against match_chat_context light captures rendered on the design-phone device. 2026-06-25 non-host reference batch: above advisory threshold; mismatch 33.15%, meanDelta 52.85, maxDelta 240, masked 199692. 2026-07-03 Match Chat fixture and reference-safe-area alignment moved the fresh comparison within threshold at mismatch 7.22%, meanDelta 8.50, maxDelta 240, masked 199692."
     },
     {
+      "id": "screen.matches.chat.new_match_empty",
+      "screenId": "screen.matches.chat",
+      "stateId": "new_match_empty",
+      "captureId": "match_chat_empty_thread",
+      "theme": "light",
+      "textScale": 1,
+      "device": {
+        "id": "claude-phone-390x812",
+        "width": 390,
+        "height": 812,
+        "pixelRatio": 1
+      },
+      "referencePath": "design/reference_screens/screen.matches.chat/new_match_empty.png",
+      "maskPath": "design/reference_screens/screen.matches.chat/masks.json",
+      "source": {
+        "kind": "claude",
+        "id": "claude.match-chat",
+        "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-messaging/Messaging.dc.html",
+        "exportedAt": "2026-07-03",
+        "exportTool": "node tool/design/export_reference_screen.mjs --label \"Messaging · New match (empty)\"",
+        "viewport": {
+          "width": 1320,
+          "height": 920
+        },
+        "label": "Messaging · New match (empty)"
+      },
+      "thresholds": {
+        "perChannelDelta": 16,
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 18
+      },
+      "notes": "Canonical Claude Messaging new-match empty-thread reference for advisory comparison against match_chat_empty_thread light captures rendered on the design-phone device. 2026-07-03 export and capture fixture pass compares within threshold at mismatch 5.01%, meanDelta 5.46, maxDelta 240, masked 46812."
+    },
+    {
       "id": "screen.host.inbox.populated_queries",
       "screenId": "screen.host.inbox",
       "stateId": "populated_queries",
