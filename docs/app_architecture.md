@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.4.8
-updated: 2026-07-01
+version: 1.4.13
+updated: 2026-07-03
 owner: recursive_audit_loop
 status: active
 ---
@@ -1350,7 +1350,16 @@ The workflow is:
    - Include the pattern id, prototype path, adopter paths, and verification
      commands in the audit-registry pass receipt.
 
+Exhibit freshness is owned by this doc plus
+`docs/audit_registry/architecture_pattern_adoption.json`. Every exhibit block
+must carry an `exhibit-freshness` marker naming its tracker source and owner.
+`node tool/architecture/check_app_architecture_exhibits.mjs` checks those
+markers, verifies the tracker points back to the current doc anchor, and rejects
+known stale snippets from prior reference shapes.
+
 ### Exhibit ARCH-SCREEN-001: Feature Screen Boundary
+
+<!-- exhibit-freshness: ARCH-SCREEN-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
 
 Reference files:
 
@@ -1432,11 +1441,18 @@ Defined variant:
 Widget build(BuildContext context) {
   final vmAsync = ref.watch(eventDetailViewModelProvider(widget.eventId));
   final vm = vmAsync.asData?.value;
+  final isHostApp = AppConfig.appRole.isHost;
 
   if (vm != null) {
     final now = DateTime.now();
-    final isHostApp = AppConfig.appRole.isHost;
-    final showConsumerActions = !isHostApp && !vm.isHost;
+    final viewerIsHost = vm.isHost;
+    final sectionVisibility = eventDetailSectionVisibilityStateFrom(
+      event: vm.event,
+      participation: vm.participation,
+      isHostApp: isHostApp,
+      isHost: viewerIsHost,
+      now: now,
+    );
     final isSpotlightDark =
         widget.presentationMode == EventDetailPresentationMode.spotlightDark;
     final style = _eventDetailSurfaceStyle(
@@ -1448,16 +1464,32 @@ Widget build(BuildContext context) {
     );
     final share = ref.watch(externalShareControllerProvider);
     final calendar = ref.watch(eventCalendarControllerProvider);
-    final companionState = _eventDetailCompanionState(
-      ref,
-      event: vm.event,
+    final canOpenCompanion = eventDetailCanOpenCompanion(
       participation: vm.participation,
-      showConsumerActions: showConsumerActions,
+      showConsumerActions: sectionVisibility.showConsumerActions,
     );
-    final hostState = _eventDetailHostState(
-      ref.watch(fetchClubProvider(widget.clubId)),
+    final companionState = eventDetailCompanionStateFrom(
+      participation: vm.participation,
+      showConsumerActions: sectionVisibility.showConsumerActions,
+      planState: canOpenCompanion
+          ? _catchAsyncState(
+              ref.watch(watchEventSuccessPlanProvider(vm.event.id)),
+            )
+          : null,
+    );
+    final hostState = eventDetailHostStateFrom(
+      clubState: _catchAsyncState(ref.watch(fetchClubProvider(widget.clubId))),
       currentUid: vm.userProfile?.uid,
-      canMessageHost: showConsumerActions && vm.isAuthenticated,
+      canMessageHost:
+          sectionVisibility.showConsumerActions && vm.isAuthenticated,
+    );
+    final socialState = eventDetailSocialStateFrom(
+      event: vm.event,
+      userProfile: vm.userProfile,
+      isAuthenticated: vm.isAuthenticated,
+      renderAsHost: sectionVisibility.renderSocialAsHost,
+      participation: vm.participation,
+      now: now,
     );
 
     if (vm.isAuthenticated) {
@@ -1483,84 +1515,89 @@ Widget build(BuildContext context) {
       ),
     );
 
-    return Scaffold(
-      backgroundColor: style.pageBackground,
-      body: EventDetailBody(
-        event: vm.event,
-        userProfile: vm.userProfile,
-        clubId: widget.clubId,
-        reviews: vm.reviews,
-        isAuthenticated: vm.isAuthenticated,
-        isHost: vm.isHost,
-        isSaved: vm.isSaved,
-        participation: vm.participation,
-        savePending: saveMutation.isPending,
-        surfaceStyle: style,
-        onBack: () => Navigator.of(context).pop(),
-        onShare: shareEvent,
-        showAddToCalendar: _canAddEventToCalendar(
+    return CatchMutationErrorListener(
+      mutation: EventDetailController.toggleSavedEventMutation,
+      errorContext: AppErrorContext.event,
+      child: Scaffold(
+        backgroundColor: style.pageBackground,
+        body: EventDetailBody(
           event: vm.event,
-          participation: vm.participation,
-          isHost: vm.isHost || isHostApp,
-          now: now,
-        ),
-        onAddToCalendar: (buttonContext) =>
-            unawaited(_addEventToCalendar(buttonContext, vm.event, calendar)),
-        onToggleSaved: () => _toggleSavedEvent(
-          context,
-          ref,
-          event: vm.event,
-          clubId: widget.clubId,
           userProfile: vm.userProfile,
-          isAuthenticated: vm.isAuthenticated,
-          isSaved: vm.isSaved,
-        ),
-        companionState: companionState,
-        hostState: hostState,
-        onLocationTap: vm.event.hasExactStartingPoint
-            ? () => context.pushNamed(
-                Routes.eventLocationMapScreen.name,
-                pathParameters: {'eventId': vm.event.id},
-              )
-            : null,
-        onOpenCompanion: () => context.pushNamed(
-          Routes.eventSuccessCompanionScreen.name,
-          pathParameters: {'clubId': widget.clubId, 'eventId': vm.event.id},
-          extra: vm.event,
-        ),
-        onRetryCompanion: () =>
-            ref.invalidate(watchEventSuccessPlanProvider(vm.event.id)),
-        onViewClub: (clubId) => context.pushNamed(
-          Routes.clubDetailScreen.name,
-          pathParameters: {'clubId': clubId},
-        ),
-        onMessageHost: (clubId, hostUid) => unawaited(
-          _messageHost(context, ref, clubId: clubId, hostUid: hostUid),
-        ),
-        onRetryHosts: () => ref.invalidate(fetchClubProvider(widget.clubId)),
-        inviteCode: widget.inviteCode,
-        inviteLinkId: widget.inviteLinkId,
-        now: now,
-        presentationMode: widget.presentationMode,
-        heroTag: widget.heroTag,
-      ),
-      bottomNavigationBar: _eventDetailBottomNavigationBar(
-        event: vm.event,
-        userProfile: vm.userProfile,
-        clubId: widget.clubId,
-        isAuthenticated: vm.isAuthenticated,
-        participation: vm.participation,
-        inviteCode: widget.inviteCode,
-        inviteLinkId: widget.inviteLinkId,
-        now: now,
-        darkSurface: isSpotlightDark,
-        showConsumerActions: showConsumerActions,
-        onGuestBook: () => _openEventSignIn(
-          context,
           clubId: widget.clubId,
-          eventId: vm.event.id,
+          reviews: vm.reviews,
+          isAuthenticated: vm.isAuthenticated,
+          sectionVisibility: sectionVisibility,
+          isSaved: vm.isSaved,
+          participation: vm.participation,
+          savePending: saveMutation.isPending,
+          surfaceStyle: style,
+          onBack: () => Navigator.of(context).pop(),
+          onShare: shareEvent,
+          showAddToCalendar: _canAddEventToCalendar(
+            event: vm.event,
+            participation: vm.participation,
+            isHost: sectionVisibility.renderSocialAsHost,
+            now: now,
+          ),
+          onAddToCalendar: (buttonContext) =>
+              unawaited(_addEventToCalendar(buttonContext, vm.event, calendar)),
+          onToggleSaved: () => _toggleSavedEvent(
+            context,
+            ref,
+            event: vm.event,
+            clubId: widget.clubId,
+            userProfile: vm.userProfile,
+            isAuthenticated: vm.isAuthenticated,
+            isSaved: vm.isSaved,
+          ),
+          companionState: companionState,
+          hostState: hostState,
+          socialState: socialState,
+          onLocationTap: vm.event.hasExactStartingPoint
+              ? () => context.pushNamed(
+                  Routes.eventLocationMapScreen.name,
+                  pathParameters: {'eventId': vm.event.id},
+                )
+              : null,
+          onOpenCompanion: () => context.pushNamed(
+            Routes.eventSuccessCompanionScreen.name,
+            pathParameters: {'clubId': widget.clubId, 'eventId': vm.event.id},
+            extra: vm.event,
+          ),
+          onRetryCompanion: () =>
+              ref.invalidate(watchEventSuccessPlanProvider(vm.event.id)),
+          onViewClub: (clubId) => context.pushNamed(
+            Routes.clubDetailScreen.name,
+            pathParameters: {'clubId': clubId},
+          ),
+          onMessageHost: (clubId, hostUid) => unawaited(
+            _messageHost(context, ref, clubId: clubId, hostUid: hostUid),
+          ),
+          onRetryHosts: () => ref.invalidate(fetchClubProvider(widget.clubId)),
           inviteCode: widget.inviteCode,
           inviteLinkId: widget.inviteLinkId,
+          now: now,
+          presentationMode: widget.presentationMode,
+          heroTag: widget.heroTag,
+        ),
+        bottomNavigationBar: _eventDetailBottomNavigationBar(
+          event: vm.event,
+          userProfile: vm.userProfile,
+          clubId: widget.clubId,
+          isAuthenticated: vm.isAuthenticated,
+          participation: vm.participation,
+          inviteCode: widget.inviteCode,
+          inviteLinkId: widget.inviteLinkId,
+          now: now,
+          darkSurface: isSpotlightDark,
+          sectionVisibility: sectionVisibility,
+          onGuestBook: () => _openEventSignIn(
+            context,
+            clubId: widget.clubId,
+            eventId: vm.event.id,
+            inviteCode: widget.inviteCode,
+            inviteLinkId: widget.inviteLinkId,
+          ),
         ),
       ),
     );
@@ -1601,6 +1638,8 @@ Widget build(BuildContext context) {
 
 ### Exhibit ARCH-UI-STATE-001: Provider-Free Presentation State Model
 
+<!-- exhibit-freshness: ARCH-UI-STATE-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
+
 Reference files:
 
 - `lib/events/presentation/calendar/calendar_screen_state.dart`
@@ -1610,10 +1649,14 @@ Reference files:
 Use this pattern when a screen needs a provider-free display model that merges
 repository/domain data into UI-ready state. The screen may watch providers at the
 route edge, but widgets below the screen consume the presentation state object
-instead of reading repositories or recomputing product policy.
+instead of reading repositories or recomputing product policy. In this exhibit,
+`CalendarHomeState` owns the screen-level selected-date/header/view inputs and
+`CalendarEventSummary` owns the merged event list.
 
 This is a narrow state-boundary exhibit. The first full route/controller
 migration still needs its own reference exhibit before a broad rollout.
+`CalendarHomeState` is the reference route-edge state object; it composes the
+`CalendarEventSummary` adapter shown below.
 
 ```dart
 class CalendarEventSummary {

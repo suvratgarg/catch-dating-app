@@ -37,6 +37,36 @@
         "Docs index and doc_versions remain current for five broad passes"
       ]
     },
+    "EXHIBIT-FRESHNESS-001": {
+      "title": "Keep architecture exhibits fresh against their tracker anchors",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "app_architecture",
+        "version": "1.4.11"
+      },
+      "applies_to": [
+        "docs/app_architecture.md",
+        "docs/audit_registry/architecture_pattern_adoption.json",
+        "tool/architecture/check_app_architecture_exhibits.mjs"
+      ],
+      "instruction": "Every architecture reference exhibit must declare an exhibit-freshness marker, point to its tracker source, keep the tracker architectureExhibit anchor in sync, and remove stale code snippets when the reference implementation changes.",
+      "sunset_when": [
+        "Architecture exhibit blocks are generated from source markers or another stronger source-backed mechanism"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "audit:app-architecture-exhibits",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#reference-implementation-workflow"
+        }
+      ]
+    },
     "AGENT-HARNESS-001": {
       "title": "Use the agent harness for broad AI-assisted work",
       "status": "active",
