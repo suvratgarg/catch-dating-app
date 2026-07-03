@@ -15991,6 +15991,14 @@
             "symbol": "ProfilePromptsPage"
           },
           {
+            "file": "lib/onboarding/presentation/pages/profile_prompts_page_state.dart",
+            "symbol": "OnboardingProfilePromptsState"
+          },
+          {
+            "file": "lib/onboarding/presentation/pages/profile_prompts_page.dart",
+            "symbol": "OnboardingProfilePromptsStep"
+          },
+          {
             "file": "lib/onboarding/presentation/pages/running_prefs_page.dart",
             "symbol": "RunningPrefsPage"
           }
@@ -16267,14 +16275,14 @@
           "id": "prompts_step",
           "kind": "populated",
           "status": "captured",
-          "source": "ProfilePromptsPage collects prompt answers and adapts copy for profileCompletionOnly mode.",
+          "source": "ProfilePromptsPage owns the route/provider edge while OnboardingProfilePromptsState and OnboardingProfilePromptsStep own prompt selection normalization, available prompt options, answer projection, footer progress, completion gating, mutation error display, and typed callbacks.",
           "captureIds": [
             "onboarding_prompts_empty",
             "onboarding_prompts_partial",
             "onboarding_prompts_complete",
             "onboarding_prompts_long_answer"
           ],
-          "nextAction": "Deterministic route captures cover empty, partial, complete, and long-answer prompt states. Add validation-error coverage only if prompt validation becomes blocking, plus state-specific reference variants."
+          "nextAction": "Provider-free step adapter coverage now validates prompt progress, available prompt filtering, submit gating, error display, and continue callback. Deterministic route captures cover empty, partial, complete, and long-answer prompt states. Add validation-error coverage only if prompt validation becomes blocking, plus state-specific reference variants."
         },
         {
           "id": "running_prefs_step",
@@ -16515,7 +16523,7 @@
               "file": "lib/onboarding/presentation/pages/profile_prompts_page.dart",
               "symbol": "ProfilePromptsPage"
             },
-            "currentOwner": "ProfilePromptsPage",
+            "currentOwner": "ProfilePromptsPage adapter over OnboardingProfilePromptsState + OnboardingProfilePromptsStep",
             "targetOwner": "provider-free prompts step section",
             "dependencies": [
               "catch.field",
@@ -16526,7 +16534,7 @@
               "required_field_errors",
               "save_profile_mutation"
             ],
-            "migration": "Move prompt answers, validation, pending/error, and completion availability into adapter state."
+            "migration": "OnboardingProfilePromptsState owns prompt selection normalization, available prompt filtering, answer projection, footer progress, completion gating, pending/error display, and typed submit intent while ProfilePromptsPage retains provider reads, controller listeners, and completion mutation execution."
           },
           {
             "id": "section.onboarding.running_prefs_step",

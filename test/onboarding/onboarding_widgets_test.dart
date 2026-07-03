@@ -25,6 +25,7 @@ import 'package:catch_dating_app/onboarding/presentation/pages/name_dob_page_sta
 import 'package:catch_dating_app/onboarding/presentation/pages/photos_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/photos_page_state.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/profile_prompts_page.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/profile_prompts_page_state.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/running_prefs_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
 import 'package:catch_dating_app/routing/go_router.dart' as app_router;
@@ -842,6 +843,119 @@ void main() {
   });
 
   group('ProfilePromptsPage', () {
+    test(
+      'state derives prompt progress, available prompts, and submit intent',
+      () {
+        final answers = List<String>.generate(
+          maxProfilePromptAnswers,
+          (index) => 'Answer ${index + 1}',
+        );
+        final complete = OnboardingProfilePromptsState.fromSelections(
+          selectedPromptIds: defaultProfilePromptIds,
+          answerTexts: answers,
+          isCompleting: true,
+          completeErrorMessage: 'Could not save prompts.',
+        );
+
+        expect(complete.answeredCount, maxProfilePromptAnswers);
+        expect(complete.canContinue, isTrue);
+        expect(complete.canSubmit, isFalse);
+        expect(
+          complete.progressLabel,
+          '$maxProfilePromptAnswers / $maxProfilePromptAnswers prompts answered',
+        );
+        expect(complete.hasCompleteError, isTrue);
+        expect(
+          complete.availablePromptIds(1),
+          isNot(contains(complete.selectedPromptIdForSlot(0))),
+        );
+        expect(
+          complete.availablePromptIds(1),
+          contains(complete.selectedPromptIdForSlot(1)),
+        );
+        expect(
+          complete.submitIntent()?.prompts.map((prompt) => prompt.answer),
+          answers,
+        );
+
+        final partial = OnboardingProfilePromptsState.fromSelections(
+          selectedPromptIds: defaultProfilePromptIds,
+          answerTexts: const ['Only one answer'],
+        );
+        expect(partial.canContinue, isFalse);
+        expect(partial.submitIntent(), isNull);
+
+        final deduped = OnboardingProfilePromptsState.fromSelections(
+          selectedPromptIds: List<String>.filled(
+            maxProfilePromptAnswers,
+            defaultProfilePromptIds.first,
+          ),
+          answerTexts: const [],
+        );
+        expect(
+          deduped.selectedPromptIds.toSet(),
+          hasLength(maxProfilePromptAnswers),
+        );
+      },
+    );
+
+    testWidgets('provider-free step shows progress and forwards continue', (
+      tester,
+    ) async {
+      final controllers = OnboardingProfilePromptsTextControllers(
+        answers: [
+          for (var index = 0; index < maxProfilePromptAnswers; index += 1)
+            TextEditingController(text: 'Answer ${index + 1}'),
+        ],
+      );
+      for (final controller in controllers.answers) {
+        addTearDown(controller.dispose);
+      }
+      final state = OnboardingProfilePromptsState.fromSelections(
+        selectedPromptIds: defaultProfilePromptIds,
+        answerTexts: [
+          for (var index = 0; index < maxProfilePromptAnswers; index += 1)
+            'Answer ${index + 1}',
+        ],
+        completeErrorMessage: 'Could not save prompts.',
+      );
+      var continueCount = 0;
+      (int, String)? promptChange;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: OnboardingProfilePromptsStep(
+              state: state,
+              controllers: controllers,
+              callbacks: OnboardingProfilePromptsCallbacks(
+                onPromptChanged: (index, promptId) {
+                  promptChange = (index, promptId);
+                },
+                onContinue: () => continueCount += 1,
+              ),
+            ),
+          ),
+        ),
+      );
+      await pumpOnboardingUi(tester);
+
+      expect(
+        find.text(
+          '$maxProfilePromptAnswers / $maxProfilePromptAnswers prompts answered',
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('Could not save prompts.'), findsOneWidget);
+
+      await tester.tap(find.widgetWithText(CatchButton, 'Continue'));
+      await pumpOnboardingUi(tester);
+
+      expect(continueCount, 1);
+      expect(promptChange, isNull);
+    });
+
     testWidgets('explains prompts as part of catches completion', (
       tester,
     ) async {

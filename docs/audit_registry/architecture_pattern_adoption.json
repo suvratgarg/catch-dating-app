@@ -476,6 +476,13 @@
           "lastReviewedPass": "2026-07-03-onboarding-instagram-step-adapter"
         },
         {
+          "path": "lib/onboarding/presentation/pages/profile_prompts_page_state.dart",
+          "role": "provider-free OnboardingProfilePromptsState adapter for prompt selection normalization, available prompt options, answer projection, footer progress, completion gating, mutation error display, and typed prompt/continue callbacks",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-03-onboarding-profile-prompts-step-adapter"
+        },
+        {
           "path": "test/onboarding/onboarding_flow_state_test.dart",
           "role": "OnboardingFlowState and OnboardingTopBarState route-shell display-policy behavior coverage",
           "status": "aligned",

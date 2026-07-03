@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/profile_prompts_page_state.dart';
 import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
@@ -34,7 +35,7 @@ class _ProfilePromptsPageState extends ConsumerState<ProfilePromptsPage> {
   );
   late final List<String> _selectedPromptIds = List.generate(
     maxProfilePromptAnswers,
-    _defaultPromptIdForSlot,
+    OnboardingProfilePromptsState.defaultPromptIdForSlot,
   );
   @override
   void initState() {
@@ -66,131 +67,116 @@ class _ProfilePromptsPageState extends ConsumerState<ProfilePromptsPage> {
         ref.read(watchUserProfileProvider).asData?.value?.profilePrompts ??
         const <ProfilePromptAnswer>[];
     final seed = draftPrompts.isNotEmpty ? draftPrompts : profilePrompts;
-    final normalizedSeed = normalizeProfilePromptAnswers(seed);
-    for (final indexedPrompt in normalizedSeed.indexed) {
-      final index = indexedPrompt.$1;
-      if (index >= maxProfilePromptAnswers) break;
-      final prompt = indexedPrompt.$2;
-      _selectedPromptIds[index] = prompt.promptId;
-      _controllers[index].text = prompt.answer;
+    final state = OnboardingProfilePromptsState.fromPromptAnswers(
+      prompts: seed,
+    );
+    for (var index = 0; index < maxProfilePromptAnswers; index += 1) {
+      _selectedPromptIds[index] = state.selectedPromptIdForSlot(index);
+      _controllers[index].text = state.answerTextForSlot(index);
     }
-    _fillUnusedPromptDefaults();
   }
 
-  List<ProfilePromptAnswer> _answers() {
-    return normalizeProfilePromptAnswers(
-      Iterable<ProfilePromptAnswer>.generate(maxProfilePromptAnswers, (index) {
-        final definition = profilePromptDefinition(_selectedPromptIds[index]);
-        return profilePromptAnswerFor(
-          definition: definition,
-          answer: _controllers[index].text,
-        );
-      }),
+  OnboardingProfilePromptsState _stateFor({
+    required bool isCompleting,
+    String? completeErrorMessage,
+  }) {
+    return OnboardingProfilePromptsState.fromSelections(
+      selectedPromptIds: _selectedPromptIds,
+      answerTexts: [for (final controller in _controllers) controller.text],
+      isCompleting: isCompleting,
+      completeErrorMessage: completeErrorMessage,
     );
   }
 
   void _continue() {
-    final answers = _answers();
+    final intent = _stateFor(isCompleting: false).submitIntent();
+    if (intent == null) return;
     OnboardingController.completeMutation.run(ref, (tx) async {
       await tx
           .get(onboardingControllerProvider.notifier)
-          .completeSocialProfile(prompts: answers);
+          .completeSocialProfile(prompts: intent.prompts);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final answers = _answers();
-    final canContinue = answers.length == maxProfilePromptAnswers;
-    final answeredCount = answers.length;
     final mutation = ref.watch(OnboardingController.completeMutation);
+    final state = _stateFor(
+      isCompleting: mutation.isPending,
+      completeErrorMessage: mutation.hasError
+          ? mutationErrorMessage(mutation)
+          : null,
+    );
 
-    return OnboardingStepLayout(
-      footer: Row(
-        children: [
-          Expanded(
-            child: Text(
-              '$answeredCount / $maxProfilePromptAnswers prompts answered',
-              style: CatchTextStyles.monoLabel(context, color: t.ink3),
-            ),
-          ),
-          gapW12,
-          CatchButton(
-            label: 'Continue',
-            onPressed: canContinue && !mutation.isPending ? _continue : null,
-            isLoading: mutation.isPending,
-          ),
-        ],
+    return OnboardingProfilePromptsStep(
+      state: state,
+      controllers: OnboardingProfilePromptsTextControllers(
+        answers: _controllers,
       ),
-      children: [
-        for (var index = 0; index < maxProfilePromptAnswers; index += 1) ...[
-          PromptField(
-            definition: profilePromptDefinition(_selectedPromptIds[index]),
-            controller: _controllers[index],
-            availablePromptIds: _availablePromptIds(index),
-            selectedPromptId: _selectedPromptIds[index],
-            onPromptChanged: (promptId) => _selectPrompt(index, promptId),
-          ),
-          if (index < maxProfilePromptAnswers - 1) gapH12,
-        ],
-        if (mutation.hasError) ...[
-          gapH16,
-          CatchErrorBanner(message: mutationErrorMessage(mutation)),
-        ],
-      ],
+      callbacks: OnboardingProfilePromptsCallbacks(
+        onPromptChanged: _selectPrompt,
+        onContinue: _continue,
+      ),
     );
   }
 
   void _selectPrompt(int index, String promptId) {
     setState(() => _selectedPromptIds[index] = promptId);
   }
+}
 
-  List<String> _availablePromptIds(int index) {
-    final currentPromptId = _selectedPromptIds[index];
-    final usedPromptIds = {
-      for (final entry in _selectedPromptIds.indexed)
-        if (entry.$1 != index) entry.$2,
-    };
-    return [
-      if (!profilePromptCatalog.any(
-        (definition) => definition.id == currentPromptId,
-      ))
-        currentPromptId,
-      for (final definition in profilePromptCatalog)
-        if (!usedPromptIds.contains(definition.id) ||
-            definition.id == currentPromptId)
-          definition.id,
-    ];
-  }
+class OnboardingProfilePromptsStep extends StatelessWidget {
+  const OnboardingProfilePromptsStep({
+    super.key,
+    required this.state,
+    required this.controllers,
+    required this.callbacks,
+  });
 
-  void _fillUnusedPromptDefaults() {
-    final usedPromptIds = <String>{};
-    for (var index = 0; index < _selectedPromptIds.length; index += 1) {
-      final selected = _selectedPromptIds[index];
-      if (usedPromptIds.add(selected)) continue;
-      _selectedPromptIds[index] = _defaultPromptIdForSlot(index, usedPromptIds);
-      usedPromptIds.add(_selectedPromptIds[index]);
-    }
-  }
+  final OnboardingProfilePromptsState state;
+  final OnboardingProfilePromptsTextControllers controllers;
+  final OnboardingProfilePromptsCallbacks callbacks;
 
-  static String _defaultPromptIdForSlot(
-    int index, [
-    Set<String>? usedPromptIds,
-  ]) {
-    final used = usedPromptIds ?? const <String>{};
-    final defaultPromptId = index < defaultProfilePromptIds.length
-        ? defaultProfilePromptIds[index]
-        : null;
-    if (defaultPromptId != null && !used.contains(defaultPromptId)) {
-      return defaultPromptId;
-    }
-    return profilePromptCatalog
-        .firstWhere(
-          (definition) => !used.contains(definition.id),
-          orElse: () => profilePromptCatalog.first,
-        )
-        .id;
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return OnboardingStepLayout(
+      footer: Row(
+        children: [
+          Expanded(
+            child: Text(
+              state.progressLabel,
+              style: CatchTextStyles.monoLabel(context, color: t.ink3),
+            ),
+          ),
+          gapW12,
+          CatchButton(
+            label: 'Continue',
+            onPressed: state.canSubmit ? callbacks.onContinue : null,
+            isLoading: state.isCompleting,
+          ),
+        ],
+      ),
+      children: [
+        for (var index = 0; index < maxProfilePromptAnswers; index += 1) ...[
+          PromptField(
+            definition: state.definitionForSlot(index),
+            controller: controllers.answers[index],
+            availablePromptIds: state.availablePromptIds(index),
+            selectedPromptId: state.selectedPromptIdForSlot(index),
+            onPromptChanged: (promptId) {
+              callbacks.onPromptChanged(index, promptId);
+            },
+          ),
+          if (index < maxProfilePromptAnswers - 1) gapH12,
+        ],
+        if (state.hasCompleteError) ...[
+          gapH16,
+          CatchErrorBanner(message: state.completeErrorMessage!),
+        ],
+      ],
+    );
   }
 }
 
