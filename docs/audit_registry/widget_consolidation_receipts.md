@@ -1622,3 +1622,49 @@ Known blockers / inherited debt:
   HostOperations file that were not introduced by the WO-016 diff.
 - Coverage/contract-reference gates remain blocked by the existing 131-item
   catalog queue and unknown HostOperations preview IDs.
+
+## 2026-07-03 - WO-015 remaining current-cluster sweep
+
+Scope:
+
+- Rebuilt the remaining unresolved current-cluster set by member-set matching
+  after WO-016 regenerated similarity ids.
+- Logged 13 current-cluster outcomes in `decisions.json`.
+- Added the four review-needed escalation lines to the worklog and left K2/K4
+  keeps in the decision ledger only.
+- No production Dart, Widgetbook, generated registries, or visual output
+  changed.
+
+Commands:
+
+- `node tool/agent/context_pack.mjs --task widget-consolidation-wo-015-remaining-clusters --paths docs/design_parity/widget_consolidation/decisions.json,docs/design_parity/widget_consolidation/codex_worklog.md,docs/audit_registry/widget_consolidation_receipts.md,docs/design_parity/widget_consolidation/consolidation_rules.md,docs/audit_registry/widget_similarity.json`
+- `node -e '... member-set comparison for docs/audit_registry/widget_similarity.json vs docs/design_parity/widget_consolidation/decisions.json ...'`
+- `node -e '... fingerprint metadata dump for the 13 unresolved current clusters ...'`
+- `rg -n "class LiveStepContextCard|class StagePromptCard|LiveStepContextCard\\(|StagePromptCard\\(" lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart lib widgetbook/lib test --glob "*.dart"`
+- `rg -n "class StageActionDock|class StagePanel|class StageSoftBand|StageActionDock\\(|StagePanel\\(|StageSoftBand\\(" lib/event_success/presentation/companion_parts/event_success_companion_shared.dart lib widgetbook/lib test --glob "*.dart"`
+- `nl -ba lib/event_success/presentation/companion_parts/event_success_companion_shared.dart | sed -n '1200,1305p'`
+- `nl -ba lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart | sed -n '315,365p'`
+- `nl -ba lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart | sed -n '695,775p'`
+- `node -e 'JSON.parse(require("fs").readFileSync("docs/design_parity/widget_consolidation/decisions.json","utf8")); console.log("decisions JSON parsed successfully.");'`
+- `node -e '... verify missing current clusters by id or exact member set ...'`
+- `node -e '... count ranked-pair-only uncovered candidates after cluster decisions ...'`
+- `git diff --check`
+
+Headline numbers:
+
+| metric | value |
+|---|---:|
+| current clusters triaged | 13 |
+| K2 keeps recorded | 2 |
+| K4 keeps recorded | 7 |
+| K5 escalations recorded | 3 |
+| no-exact-match escalations recorded | 1 |
+| rule-authorized merges/deletions | 0 |
+| code changes | 0 |
+| missing current clusters after member-set check | 0 |
+| ranked-pair-only candidates still open | 147 |
+
+Known blockers / inherited debt:
+
+- WO-015 is not fully closed: ranked-pair-only candidates still need a separate
+  top-down pass. The current-cluster queue is clean by member-set matching.

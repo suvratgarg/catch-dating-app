@@ -1497,6 +1497,364 @@
       "decidedBy": "codex-rule:no-exact",
       "date": "2026-07-03",
       "status": "escalated-WO-015"
+    },
+    {
+      "clusterId": "c002-afterglow-beat-row",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "AfterglowBeatRow",
+          "action": "escalate"
+        },
+        {
+          "name": "CountdownCuePill",
+          "action": "escalate"
+        },
+        {
+          "name": "EmptyRosterMessage",
+          "action": "escalate"
+        },
+        {
+          "name": "EventSuccessPromptCard",
+          "action": "escalate"
+        },
+        {
+          "name": "EventSuccessRecommendationTile",
+          "action": "escalate"
+        },
+        {
+          "name": "HostFunnelSummary",
+          "action": "escalate"
+        },
+        {
+          "name": "HostReportSignalGrid",
+          "action": "escalate"
+        },
+        {
+          "name": "LiveAttendanceSummaryCard",
+          "action": "escalate"
+        },
+        {
+          "name": "LiveCheckInQrCard",
+          "action": "escalate"
+        },
+        {
+          "name": "NoticeCard",
+          "action": "escalate"
+        },
+        {
+          "name": "UserAnalyticsDataQualityRow",
+          "action": "escalate"
+        },
+        {
+          "name": "UserAnalyticsEmptyState",
+          "action": "escalate"
+        },
+        {
+          "name": "UserAnalyticsTipRow",
+          "action": "escalate"
+        },
+        {
+          "name": "WaitingRevealCue",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: the shared icon/text/surface skeleton spans companion beats, live host cards, setup notices, and user analytics rows with different typography, token roles, and data contracts.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015"
+    },
+    {
+      "clusterId": "c006-sliver-body",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "ProfileInsightsTabSliverBody",
+          "action": "keep"
+        },
+        {
+          "name": "ProfileTabSkeletonSliverBody",
+          "action": "keep"
+        },
+        {
+          "name": "ProfileTabSliverBody",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: the common code is the sliver padding/adapter/center/constrained shell, while the children are insights, skeleton, and profile content flows that would need child, spacing, and state knobs.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015"
+    },
+    {
+      "clusterId": "c007-attendee-prompt-preview",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "AttendeePromptPreview",
+          "action": "escalate"
+        },
+        {
+          "name": "DashboardSectionStateCard",
+          "action": "escalate"
+        },
+        {
+          "name": "FoundationLine",
+          "action": "escalate"
+        },
+        {
+          "name": "PaperExpectationRow",
+          "action": "escalate"
+        },
+        {
+          "name": "PaperPrivacyCard",
+          "action": "escalate"
+        },
+        {
+          "name": "PreviewLine",
+          "action": "escalate"
+        },
+        {
+          "name": "ProfileCompatibility",
+          "action": "escalate"
+        },
+        {
+          "name": "ProfileFacts",
+          "action": "escalate"
+        },
+        {
+          "name": "SafetyFooter",
+          "action": "escalate"
+        },
+        {
+          "name": "StagePrivacyLine",
+          "action": "escalate"
+        },
+        {
+          "name": "SwipeWindowBanner",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: these icon/text rows and cards carry setup, dashboard, paper-companion, profile, safety, and swipe-window semantics with different label/body/kicker and surface roles.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015"
+    },
+    {
+      "clusterId": "c008-stage-action-dock",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "StageActionDock",
+          "action": "escalate"
+        },
+        {
+          "name": "StagePanel",
+          "action": "escalate"
+        },
+        {
+          "name": "StageSoftBand",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "K5 concept mismatch: all three are child surfaces, but StagePanel is the animated ambient stage card, StageActionDock is the dark action surface, and StageSoftBand is the soft nested band with different token roles.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015"
+    },
+    {
+      "clusterId": "c014-skeleton",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "ClubHostLoadingSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "EventTypeBrowseSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "HostChartSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "HostSummarySkeleton",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: the overlap is generic skeleton surface/column/row scaffolding, but a shared widget would need chart, host summary, club host, and browse-grid knobs for distinct loading concepts.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015"
+    },
+    {
+      "clusterId": "c018-card",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "EventCompanionCard",
+          "action": "keep"
+        },
+        {
+          "name": "EventInviteLoopCard",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: both are event-detail CTA cards in one file, but unifying them would require event/share versus companion/open behavior, title/body, and button mapping knobs for two intent-carrying concepts.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015"
+    },
+    {
+      "clusterId": "c019-skeleton",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "EventDetailHintSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "EventDetailMechanismSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "EventDetailSocialSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "HostAnalyticsMetricGridSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "HostTabRailSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "ProfileSurfaceFactsSkeleton",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: the shared skeleton atoms are small row/column fragments, while reproducing all members would require count, axis, padding, row content, and feature-shell knobs.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015"
+    },
+    {
+      "clusterId": "c023-app-shell",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "AppShell",
+          "action": "keep"
+        },
+        {
+          "name": "HostAppShell",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K2 domain fork: the public app shell owns public navigation/guest auth affordances while HostAppShell owns host navigation; unifying would trade duplication for host/public conditional business logic.",
+      "decidedBy": "codex-rule:K2",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015"
+    },
+    {
+      "clusterId": "c026-event-success-skeleton-surface",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "EventSuccessSkeletonSurface",
+          "action": "keep"
+        },
+        {
+          "name": "ProfileSurfaceSectionSkeleton",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: both render skeleton section surfaces, but the event-success primitive owns title/text/trailing counts while the profile surface skeleton owns profile-line count and surface padding.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015"
+    },
+    {
+      "clusterId": "c031-activity-attribute-goal-chips",
+      "decision": "escalate",
+      "members": [
+        {
+          "name": "ActivityAttributeGoalChips",
+          "action": "escalate"
+        },
+        {
+          "name": "QuestionnaireBlock",
+          "action": "escalate"
+        },
+        {
+          "name": "RevealCountdownChips",
+          "action": "escalate"
+        },
+        {
+          "name": "RotationCadenceChips",
+          "action": "escalate"
+        }
+      ],
+      "rationale": "No exact K/R match: the shared CatchSelectChip/Wrap shape hides different multi-select, questionnaire, reveal countdown, and rotation-cadence APIs that need a feature-level chip-group design decision.",
+      "decidedBy": "codex-rule:no-exact",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015"
+    },
+    {
+      "clusterId": "c039-people-token-row",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "PeopleTokenRow",
+          "action": "keep"
+        },
+        {
+          "name": "VisiblePodAssignment",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: both use badge/wrap people tokens, but VisiblePodAssignment wraps assignment-state copy and shelling while PeopleTokenRow is a compact count/loading/profile token row.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015"
+    },
+    {
+      "clusterId": "c040-card",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "LiveStepContextCard",
+          "action": "keep"
+        },
+        {
+          "name": "StagePromptCard",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K4 churn threshold: the shared StagePanel/StageSectionLabel shell is small, and merging would need icon, label, title, body, and optional supporting-text knobs for two live-stage concepts.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015"
+    },
+    {
+      "clusterId": "c044-event-focus-rail",
+      "decision": "keep-distinct",
+      "members": [
+        {
+          "name": "EventFocusRail",
+          "action": "keep"
+        },
+        {
+          "name": "HostEventToolsCarousel",
+          "action": "keep"
+        }
+      ],
+      "rationale": "K2 domain fork: EventFocusRail is member dashboard event-focus navigation while HostEventToolsCarousel is host management tooling with different data and action contracts.",
+      "decidedBy": "codex-rule:K2",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015"
     }
   ]
 }

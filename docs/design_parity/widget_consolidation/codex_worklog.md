@@ -1040,6 +1040,17 @@ Progress by Codex: triaged eight small widget clusters. Kept `c028-panel` and
 `c035-reveal-host-copy` as no-exact-match design/API questions. No code was
 changed in this ledger-only batch.
 
+Progress by Codex: completed the remaining current-cluster sweep after WO-016
+regenerated similarity ids. Kept `c006-sliver-body`, `c014-skeleton`,
+`c018-card`, `c019-skeleton`, `c023-app-shell`,
+`c026-event-success-skeleton-surface`, `c039-people-token-row`, `c040-card`,
+and `c044-event-focus-rail` under K2/K4; escalated
+`c002-afterglow-beat-row`, `c007-attendee-prompt-preview`, and
+`c008-stage-action-dock` under K5; escalated
+`c031-activity-attribute-goal-chips` as no-exact-match feature API design. No
+code was changed in this ledger-only batch. Ranked-pair-only candidates remain
+for the next WO-015 pass.
+
 ## WO-016 — Review answers from the WO-001..014 audit
 
 1. **`CatchSkeletonRows.divided` flag** (answers the WO-006 skip): add
@@ -1156,6 +1167,31 @@ listed in the receipt.
   reveal host copy is dark live-reveal content while `StructureNumberField` is
   a setup form-field label/detail/child wrapper already kept distinct from
   stat/header concepts.
+- WO-015: `c002-afterglow-beat-row` members `AfterglowBeatRow`,
+  `CountdownCuePill`, `EmptyRosterMessage`, `EventSuccessPromptCard`,
+  `EventSuccessRecommendationTile`, `HostFunnelSummary`,
+  `HostReportSignalGrid`, `LiveAttendanceSummaryCard`, `LiveCheckInQrCard`,
+  `NoticeCard`, `UserAnalyticsDataQualityRow`, `UserAnalyticsEmptyState`,
+  `UserAnalyticsTipRow`, `WaitingRevealCue` — nearest rule: K5 concept
+  mismatch, blocked because the shared icon/text/surface skeleton spans
+  companion beats, live host cards, setup notices, and user analytics rows with
+  different typography, token roles, and data contracts.
+- WO-015: `c007-attendee-prompt-preview` members `AttendeePromptPreview`,
+  `DashboardSectionStateCard`, `FoundationLine`, `PaperExpectationRow`,
+  `PaperPrivacyCard`, `PreviewLine`, `ProfileCompatibility`, `ProfileFacts`,
+  `SafetyFooter`, `StagePrivacyLine`, `SwipeWindowBanner` — nearest rule: K5
+  concept mismatch, blocked because these rows and cards carry setup,
+  dashboard, paper-companion, profile, safety, and swipe-window semantics with
+  different label/body/kicker and surface roles.
+- WO-015: `c008-stage-action-dock` members `StageActionDock`, `StagePanel`,
+  `StageSoftBand` — nearest rule: K5 concept mismatch, blocked because the
+  child-surface shells represent the dark action dock, animated ambient stage
+  panel, and soft nested band with different token roles.
+- WO-015: `c031-activity-attribute-goal-chips` members
+  `ActivityAttributeGoalChips`, `QuestionnaireBlock`, `RevealCountdownChips`,
+  `RotationCadenceChips` — nearest rule: no exact K/R match, blocked because
+  the shared chip-wrap shape hides different multi-select, questionnaire,
+  reveal countdown, and rotation-cadence APIs that need feature-level design.
 
 ## Completed
 
