@@ -22,6 +22,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+part 'dashboard_empty_home_screen.dart';
+part 'dashboard_error_screen.dart';
+part 'dashboard_home_screen.dart';
+part 'dashboard_loading_screen.dart';
+
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
 
@@ -63,64 +68,6 @@ class DashboardScreen extends ConsumerWidget {
         notificationAction: NotificationsAction(uid: state.notificationUid!),
       ),
     };
-  }
-}
-
-class DashboardEmptyHomeScreen extends StatelessWidget {
-  const DashboardEmptyHomeScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Scaffold(
-      backgroundColor: t.bg,
-      body: SafeArea(
-        bottom: false,
-        child: Semantics(
-          label: 'Home',
-          child: const CustomScrollView(slivers: [DashboardEmptySliverBody()]),
-        ),
-      ),
-    );
-  }
-}
-
-class DashboardHomeScreen extends StatelessWidget {
-  const DashboardHomeScreen({
-    super.key,
-    required this.header,
-    required this.dashboardSliver,
-    this.notificationAction,
-  });
-
-  final DashboardHomeHeaderModel header;
-  final Widget dashboardSliver;
-  final Widget? notificationAction;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Scaffold(
-      backgroundColor: t.bg,
-      body: SafeArea(
-        bottom: false,
-        child: Semantics(
-          label: 'Home',
-          child: CustomScrollView(
-            slivers: [
-              ...DashboardSliverHeader(
-                eyebrow: header.eyebrow,
-                title: header.title,
-                actions: [?notificationAction],
-              ).buildSlivers(context),
-              dashboardSliver,
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }
 
@@ -174,46 +121,6 @@ class DashboardNotificationBellButton extends StatelessWidget {
             tooltip: 'Notifications',
             onPressed: onPressed,
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class DashboardLoadingScreen extends StatelessWidget {
-  const DashboardLoadingScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Scaffold(
-      backgroundColor: t.bg,
-      body: SafeArea(
-        bottom: false,
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(child: const DashboardLoadingHeader()),
-            SliverToBoxAdapter(
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth: CatchLayout.maxContentWidth,
-                  ),
-                  child: CatchSectionStack(
-                    padding: CatchInsets.pageBodyUnderHeader,
-                    gap: CatchSpacing.micro18,
-                    children: [
-                      const DashboardFocusLoadingCard(),
-                      const DashboardStrideLoadingCard(),
-                      const DashboardQuickActionsLoadingRow(),
-                      const DashboardRecommendedLoadingSection(),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
         ),
       ),
     );
@@ -359,35 +266,6 @@ class DashboardRecommendedLoadingSection extends StatelessWidget {
           height: CatchLayout.dashboardRecommendedEventSkeletonHeight,
         ),
       ],
-    );
-  }
-}
-
-class DashboardErrorScreen extends StatelessWidget {
-  const DashboardErrorScreen({
-    super.key,
-    required this.error,
-    required this.fallbackMessage,
-    required this.onRetry,
-  });
-
-  final Object error;
-  final String fallbackMessage;
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    if (error is AppException) {
-      return CatchErrorScaffold.fromError(
-        error,
-        context: AppErrorContext.dashboard,
-        onRetry: onRetry,
-      );
-    }
-    return CatchErrorScaffold(
-      title: 'Dashboard unavailable',
-      message: fallbackMessage,
-      onRetry: onRetry,
     );
   }
 }
