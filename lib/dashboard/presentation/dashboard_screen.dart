@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_count_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
@@ -107,7 +108,7 @@ class DashboardNotificationBellButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final badgeLabel = unreadCount > 99 ? '99+' : '$unreadCount';
+    final badgeLabel = catchCountLabel(unreadCount);
 
     return SizedBox.square(
       dimension: CatchLayout.eventInfoTileExtent,

@@ -1154,7 +1154,14 @@ Add a top-level `String catchCountLabel(int count)` in
 `catch_count_badge.dart`, use it in both, and sweep `lib/` for other
 `'99+'` clamps. No visual change.
 
-- [ ] formatter + two call sites + sweep + regen + receipts
+- [x] formatter + two call sites + sweep + regen + receipts
+
+Progress by Codex: added `catchCountLabel(int count)` in
+`catch_count_badge.dart`, switched `CatchCountBadge`,
+`CatchPersonUnreadCountPill`, and the swept `DashboardNotificationBellButton`
+clamp to the helper, ran the `99+` clamp sweep, refreshed the audit registry
+(no generated file changes), fixed the stale `CatchDetailHeroScrim` test
+reference to `CatchScrim`, and recorded the receipt.
 
 ---
 

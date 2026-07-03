@@ -2125,3 +2125,40 @@ Known blockers / inherited debt:
 
 - Analytics-kit unification is a review-session API-design item; Codex should
   not implement a shared host/user analytics kit without that decision.
+
+## 2026-07-03 - WO-017 shared count-label formatter
+
+Scope:
+
+- Added `catchCountLabel(int count)` in `lib/core/widgets/catch_count_badge.dart`.
+- Replaced the duplicated clamp in `CatchCountBadge` and
+  `CatchPersonUnreadCountPill`.
+- Swept production `lib/` and also replaced the same clamp in
+  `DashboardNotificationBellButton`.
+- Updated the stale primitive test reference from `CatchDetailHeroScrim` to
+  `CatchScrim` so the existing badge-clamp test file compiles.
+- No visual output changed.
+
+Commands:
+
+- `rg -n "99\\+|> 99|count > 99|unreadCount > 99|\\? '99\\+'" lib widgetbook/lib test --glob "*.dart"`
+- `dart format lib/core/widgets/catch_count_badge.dart lib/core/widgets/catch_person_row.dart lib/dashboard/presentation/dashboard_screen.dart`
+- `flutter analyze --no-fatal-infos lib/core/widgets/catch_count_badge.dart lib/core/widgets/catch_person_row.dart lib/dashboard/presentation/dashboard_screen.dart test/core/catch_primitives_test.dart`
+- `flutter test test/core/catch_primitives_test.dart --plain-name "CatchTabDock composes public button and icon renderers"`
+- `dart tool/audit_registry.dart refresh`
+
+Verification:
+
+- Focused Flutter analyzer reported no issues for the four touched Dart/test
+  files.
+- Focused primitive widget test passed.
+- Clamp sweep found no remaining production count-label clamps beyond the new
+  helper; remaining `99+` hits are expected test/Widgetbook literals or age
+  validation bounds.
+- Audit registry refresh completed with no generated file changes.
+
+Known blockers / inherited debt:
+
+- Full Widgetbook analyzer and coverage gates remain under the inherited
+  HostOperations queue; this helper-only edit did not change Widgetbook
+  coverage.

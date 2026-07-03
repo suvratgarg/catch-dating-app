@@ -48,6 +48,7 @@ import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_otp_code_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
+import 'package:catch_dating_app/core/widgets/catch_scrim.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_segmented_control.dart';
@@ -1362,7 +1363,7 @@ void main() {
     );
 
     expect(find.byType(CatchDetailHeroFallback), findsOneWidget);
-    expect(find.byType(CatchDetailHeroScrim), findsOneWidget);
+    expect(find.byType(CatchScrim), findsOneWidget);
 
     await tester.pumpWidget(
       _wrap(
@@ -1375,7 +1376,7 @@ void main() {
     );
 
     expect(find.byType(CatchDetailHeroFallback), findsOneWidget);
-    expect(find.byType(CatchDetailHeroScrim), findsNothing);
+    expect(find.byType(CatchScrim), findsNothing);
   });
 
   testWidgets('CatchEventThumbnail composes fallback and scrim renderers', (

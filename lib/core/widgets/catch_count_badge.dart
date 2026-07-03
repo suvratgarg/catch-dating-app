@@ -3,6 +3,8 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 
+String catchCountLabel(int count) => count > 99 ? '99+' : '$count';
+
 /// Overlays a count pill on [child]; renders [child] alone when count <= 0.
 class CatchCountBadge extends StatelessWidget {
   const CatchCountBadge({super.key, required this.count, required this.child});
@@ -15,7 +17,7 @@ class CatchCountBadge extends StatelessWidget {
     if (count <= 0) return child;
 
     final t = CatchTokens.of(context);
-    final label = count > 99 ? '99+' : '$count';
+    final label = catchCountLabel(count);
 
     return SizedBox(
       width: CatchLayout.appShellNavigationBadgeWidth,
