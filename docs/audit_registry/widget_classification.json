@@ -10,28 +10,28 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1152,
-    "widgetClasses": 1045,
+    "total": 1151,
+    "widgetClasses": 1044,
     "stateClasses": 107,
-    "publicClasses": 1045,
+    "publicClasses": 1044,
     "privateClasses": 107,
     "byRole": {
-      "atom": 56,
+      "atom": 57,
       "composition": 317,
-      "feature-adapter": 326,
+      "feature-adapter": 324,
       "pattern": 16,
       "screen": 330,
       "widget-state": 107
     },
     "byDecision": {
       "keep-canonical-contract": 171,
-      "keep-public-cataloged": 828,
+      "keep-public-cataloged": 826,
       "keep-widget-state": 107,
       "review-catalog-coverage": 38,
-      "review-promote-or-consolidate": 8
+      "review-promote-or-consolidate": 9
     },
     "byCatalogStatus": {
-      "cataloged": 741,
+      "cataloged": 740,
       "contracted": 171,
       "not-applicable": 107,
       "route-covered": 95,
@@ -2350,29 +2350,6 @@
       ]
     },
     {
-      "name": "AppShellNavigationBadge",
-      "file": "lib/core/presentation/app_shell.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.core.app_shell_navigation_badge",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
       "name": "AppShellNavigationBar",
       "file": "lib/core/presentation/app_shell.dart",
       "classKind": "widget",
@@ -3146,6 +3123,33 @@
         "mergeIntoCanonical"
       ],
       "flags": []
+    },
+    {
+      "name": "CatchCountBadge",
+      "file": "lib/core/widgets/catch_count_badge.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "atom",
+      "canonicalFamily": "catch.count_badge",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "tokens-and-primitives",
+      "stateOwnership": "local-ui-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "internal-only",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract"
+      ]
     },
     {
       "name": "CatchCountPill",
@@ -21912,29 +21916,6 @@
       "visibility": "public",
       "role": "feature-adapter",
       "canonicalFamily": "feature.image_uploads.photo_slot",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "PhotoSlotMainBadge",
-      "file": "lib/image_uploads/shared/photo_slot.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.image_uploads.photo_slot_main_badge",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,

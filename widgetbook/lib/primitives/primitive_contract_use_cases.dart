@@ -16,6 +16,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_corner_sash.dart';
+import 'package:catch_dating_app/core/widgets/catch_count_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
 import 'package:catch_dating_app/core/widgets/catch_detail_hero_backdrop.dart';
 import 'package:catch_dating_app/core/widgets/catch_distance_ring.dart';
@@ -118,6 +119,42 @@ Widget catchBadgeContractStates(BuildContext context) {
             icon: CatchIcons.infoOutlineRounded,
             borderColor: t.warning,
           ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchCountBadge,
+  path: '[Core primitives]/Status',
+)
+Widget catchCountBadgeContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'CatchCountBadge',
+    contractId: 'catch.badge.count_badge',
+    states: const ['hidden', 'count', 'overflow-count'],
+    children: [
+      _StateCard(
+        label: 'hidden',
+        child: CatchCountBadge(
+          count: 0,
+          child: Icon(CatchIcons.chatBubbleOutlineRounded),
+        ),
+      ),
+      _StateCard(
+        label: 'count',
+        child: CatchCountBadge(
+          count: 7,
+          child: Icon(CatchIcons.chatBubbleOutlineRounded),
+        ),
+      ),
+      _StateCard(
+        label: 'overflow-count',
+        child: CatchCountBadge(
+          count: 104,
+          child: Icon(CatchIcons.notificationsOutlined),
         ),
       ),
     ],

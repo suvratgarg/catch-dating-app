@@ -612,7 +612,9 @@ class MapPill extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchSurface(
       radius: CatchRadius.pill,
-      backgroundColor: CatchTokens.editorialLight.withValues(alpha: 0.93),
+      backgroundColor: CatchTokens.editorialLight.withValues(
+        alpha: CatchOpacity.overlayPillFill,
+      ),
       borderWidth: 0,
       padding: const EdgeInsets.symmetric(
         horizontal: CatchSpacing.s3,

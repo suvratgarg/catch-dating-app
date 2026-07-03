@@ -917,6 +917,9 @@ abstract final class CatchOpacity {
   /// Translucent fill for floating icon-button chrome over photos and maps.
   static const double iconButtonFloatFill = 0.90;
 
+  /// High-opacity fill for compact overlay pills on image/map surfaces.
+  static const double overlayPillFill = 0.93;
+
   /// High-opacity blur fill for the handoff bottom tab dock.
   static const double tabDockFill = 0.93;
 

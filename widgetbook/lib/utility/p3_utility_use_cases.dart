@@ -723,34 +723,6 @@ Widget photoSlotStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Main badge states',
-  type: PhotoSlotMainBadge,
-  path: '[P3 utility surfaces]/Image uploads',
-)
-Widget photoSlotMainBadgeStates(BuildContext context) {
-  return const _UtilityCatalog(
-    title: 'PhotoSlotMainBadge',
-    contractId: 'component.image_uploads.photo_slot_main_badge',
-    children: [
-      _StateCard(
-        label: 'main badge',
-        child: Align(
-          alignment: Alignment.centerLeft,
-          child: PhotoSlotMainBadge(label: 'MAIN'),
-        ),
-      ),
-      _StateCard(
-        label: 'cover badge',
-        child: Align(
-          alignment: Alignment.centerLeft,
-          child: PhotoSlotMainBadge(label: 'Cover'),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
   name: 'Striped placeholder states',
   type: StripedPhotoPlaceholder,
   path: '[P3 utility surfaces]/Image uploads',

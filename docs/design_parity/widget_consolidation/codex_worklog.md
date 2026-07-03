@@ -668,11 +668,28 @@ class CatchCountBadge extends StatelessWidget {
 6. widgetbook (new CatchCountBadge use-case under primitives; repoint/delete
    old-typed blocks) + regen + registries + receipts.
 
-- [ ] CatchCountBadge + migrations
-- [ ] tab dock delegation
-- [ ] recon report (count-pill triplication)
-- [ ] PhotoSlotMainBadge -> CatchBadge; MapPill token fix
-- [ ] regen + registries + receipts
+- [x] CatchCountBadge + migrations
+- [x] tab dock delegation
+- [x] recon report (count-pill triplication)
+- [x] PhotoSlotMainBadge -> CatchBadge; MapPill token fix
+- [x] regen + registries + receipts
+
+Completed by Codex: added `CatchCountBadge` as `catch.badge.count_badge`,
+migrated `AppShellNavigationBar` and `CatchTabDockIcon`, replaced
+`PhotoSlotMainBadge` with `CatchBadge`, moved the map overlay alpha to
+`CatchOpacity.overlayPillFill`, regenerated Widgetbook and widget registries,
+and recorded the receipt.
+
+Escalations / recon:
+
+- `CatchPersonUnreadCountPill` also clamps counts with `count > 99 ? '99+'`
+  and uses the primary/primaryInk badge recipe through `CatchBadge`; keep it as
+  a separate row-trailing unread-chat semantic primitive unless a later decision
+  explicitly folds person-row trailing badges into the count-badge family.
+- `CatchCountPill` is related but not the same contract: it accepts a
+  caller-supplied badge string, does not own the 99+ clamp, and uses an ink
+  overlay badge on a raised floating control rather than the primary anchored
+  navigation/icon overlay recipe.
 
 ## WO-010 — CatchConfirmDialog shell delegation
 

@@ -866,3 +866,84 @@ Open handoff items:
 - Phase D review packets and INDEX are still not implemented.
 - Phase E/F decision ledger, taxonomy census, helper-method ratchet, and
   similarity ratchet remain future slices.
+
+## 2026-07-03 — WO-009 CatchCountBadge + badge/pill cleanups
+
+Scope:
+
+- Added `CatchCountBadge` as the shared anchored count overlay primitive and
+  registered it under component contract `catch.badge.count_badge`.
+- Migrated `AppShellNavigationBar` and `CatchTabDockIcon` unread overlays to
+  `CatchCountBadge`.
+- Replaced `PhotoSlotMainBadge` with `CatchBadge` call sites and deleted the
+  local badge class.
+- Added `CatchOpacity.overlayPillFill` and routed `MapPill` through the token.
+
+Deleted public widget wrappers:
+
+- `AppShellNavigationBadge`
+- `PhotoSlotMainBadge`
+
+Commands:
+
+- `node tool/agent/context_pack.mjs --task widget-consolidation-wo-009 --paths lib/core/widgets/catch_count_badge.dart,lib/core/presentation/app_shell.dart,lib/core/widgets/catch_tab_dock.dart,lib/image_uploads/shared/photo_slot.dart,lib/events/presentation/widgets/event_detail_design_primitives.dart,widgetbook/lib/primitives/primitive_contract_use_cases.dart,widgetbook/lib/shell/app_shell_use_cases.dart,widgetbook/lib/utility/p3_utility_use_cases.dart,design/components/catch.components.json,docs/widget_catalog.md,docs/design_parity/widget_consolidation/codex_worklog.md,docs/audit_registry/widget_consolidation_receipts.md`
+- `dart format lib/core/widgets/catch_count_badge.dart lib/core/presentation/app_shell.dart lib/core/widgets/catch_tab_dock.dart lib/image_uploads/shared/photo_slot.dart lib/core/theme/catch_tokens.dart lib/events/presentation/widgets/event_detail_design_primitives.dart widgetbook/lib/shell/app_shell_use_cases.dart widgetbook/lib/utility/p3_utility_use_cases.dart widgetbook/lib/primitives/primitive_contract_use_cases.dart`
+- `flutter analyze --no-fatal-infos lib/core/widgets/catch_count_badge.dart lib/core/presentation/app_shell.dart lib/core/widgets/catch_tab_dock.dart lib/image_uploads/shared/photo_slot.dart lib/core/theme/catch_tokens.dart lib/events/presentation/widgets/event_detail_design_primitives.dart widgetbook/lib/shell/app_shell_use_cases.dart widgetbook/lib/utility/p3_utility_use_cases.dart widgetbook/lib/primitives/primitive_contract_use_cases.dart`
+- `rg -n "AppShellNavigationBadge|PhotoSlotMainBadge" lib widgetbook/lib --glob '!widgetbook/lib/main.directories.g.dart'`
+- `rg -n "withValues\\(alpha: 0\\.93\\)|alpha: 0\\.93" lib/events lib/core lib/image_uploads`
+- `dart run build_runner build --delete-conflicting-outputs` in `widgetbook/`
+- `node tool/design/generate_widget_classification.mjs`
+- `node tool/design/check_widget_classification.mjs`
+- `dart run tool/widget_dedupe/bin/extract_fingerprints.dart`
+- `node tool/design/build_widget_similarity.mjs`
+- `node tool/design/build_widget_similarity.mjs --check`
+- `node tool/design/check_widgetbook_coverage.mjs --check`
+- `DART=/Users/suvratgarg/Development/flutter/bin/dart node tool/design/check_widget_dedupe_probes.mjs`
+- `flutter analyze --no-fatal-infos lib`
+- `flutter analyze` in `widgetbook/`
+- `bash tool/widget_cleanup_scan.sh --summary`
+- `node tool/run.mjs check --manifest-only`
+- `node tool/design/check_widgetbook_contract_refs.mjs --check`
+- `node -e "for (const f of ['docs/audit_registry/widget_classification.json','docs/audit_registry/widget_similarity.json','docs/audit_registry/doc_versions.json']) JSON.parse(require('fs').readFileSync(f,'utf8')); console.log('json ok')"`
+
+Headline numbers:
+
+| metric | value |
+|---|---:|
+| widget classification entries | 1,151 |
+| classification review items | 47 |
+| private widget classes flagged | 0 |
+| widget fingerprints | 1,044 |
+| fingerprint failures | 0 |
+| similarity clusters | 55 |
+| ranked pairs | 200 |
+| name families | 224 |
+| absorb candidates | 8 |
+| Widgetbook coverage decision queue | 133 |
+| Widgetbook coverage stale decisions | 0 |
+| root lib analyzer infos | 192 |
+| Widgetbook analyzer issues | 65 |
+| widget cleanup scan categories with findings | 0 |
+
+Recon:
+
+- `CatchPersonUnreadCountPill` also clamps `99+` and uses a primary
+  `CatchBadge`, but it owns person-row unread semantics and remains distinct.
+- `CatchCountPill` accepts caller-supplied badge text, does not own clamping,
+  and uses an ink overlay badge on a raised floating control.
+
+Known blockers / inherited debt:
+
+- `node tool/design/check_widgetbook_coverage.mjs --check` still fails on the
+  existing catalog-or-replace decision queue: 133 public widgets need
+  decisions, with 0 stale decisions.
+- `(cd widgetbook && flutter analyze)` still fails on 65 existing Widgetbook
+  issues in `lib/hosts/host_operations_use_cases.dart`.
+- `node tool/design/check_widgetbook_contract_refs.mjs --check` now fails only
+  on unrelated HostOperations preview ids.
+- `dart run build_runner build --delete-conflicting-outputs` in `widgetbook/`
+  succeeds, but build_runner reports that the delete-conflicting option has
+  been removed and is ignored by the current builder.
+- The dedupe-probe script needed unsandboxed access because Flutter's Dart
+  wrapper attempted SDK cache writes outside the workspace before reporting
+  `Widget dedupe probes passed`.

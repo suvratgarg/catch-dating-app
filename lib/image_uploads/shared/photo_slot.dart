@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
@@ -126,7 +127,13 @@ class PhotoSlot extends StatelessWidget {
                   top: CatchSpacing.s2,
                   left: CatchSpacing.s2,
                   child: ExcludeSemantics(
-                    child: PhotoSlotMainBadge(label: mainBadgeLabel),
+                    child: CatchBadge(
+                      label: mainBadgeLabel,
+                      uppercase: true,
+                      backgroundColor: t.ink,
+                      foregroundColor: t.bg,
+                      borderColor: Colors.transparent,
+                    ),
                   ),
                 ),
               if (!isLoading && url != null)
@@ -253,32 +260,6 @@ class StripedPhotoPlaceholder extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
         ),
-      ),
-    );
-  }
-}
-
-class PhotoSlotMainBadge extends StatelessWidget {
-  const PhotoSlotMainBadge({super.key, required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return CatchSurface(
-      backgroundColor: t.ink,
-      radius: CatchRadius.pill,
-      borderWidth: 0,
-      padding: const EdgeInsets.symmetric(
-        horizontal: CatchSpacing.micro10,
-        vertical: CatchSpacing.s1,
-      ),
-      child: Text(
-        label.toUpperCase(),
-        style: CatchTextStyles.badge(context, color: t.bg),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
       ),
     );
   }

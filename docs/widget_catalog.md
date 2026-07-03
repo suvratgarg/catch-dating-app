@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.553
+version: 2.5.554
 updated: 2026-07-03
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,14 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.554
+
+- Added `CatchCountBadge` for anchored 99+ icon/navigation count overlays and
+  migrated the app shell and tab dock unread badges to it. Retired
+  `AppShellNavigationBadge` and `PhotoSlotMainBadge`, replaced the latter with
+  `CatchBadge`, and moved `MapPill`'s high-opacity fill to
+  `CatchOpacity.overlayPillFill`.
 
 ### 2.5.553
 
@@ -5273,8 +5281,7 @@ Generated 2026-05-06.
 | Widget | File | Purpose |
 |---|---|---|
 | `AppShellActiveTab` | `lib/core/presentation/app_shell_active_tab.dart:9` | Inherited lifecycle signal for indexed-stack tabs. Lets retained tab branches detect whether they are currently selected without coupling feature screens directly to `StatefulNavigationShell`. |
-| `AppShellNavigationBar` / `AppShellNavigationItem` | `lib/core/presentation/app_shell.dart:210` | Shared adaptive bottom-navigation primitive with stable key, destination-driven labels/icons, and unread badge handling. Consumer shell uses the default Home / Explore / Catches / Chats / Profile set; `HostAppShell` supplies Events / Clubs / Inbox / Account through the same native iOS `CupertinoTabBar` chrome and Material 3 `NavigationBar`-backed chrome elsewhere. |
-| `AppShellNavigationBadge` | `lib/core/presentation/app_shell.dart:333` | Shell unread badge. Reserves a fixed icon box and positions the pill inside it so Cupertino and Material bottom nav containers cannot clip the count. |
+| `AppShellNavigationBar` / `AppShellNavigationItem` | `lib/core/presentation/app_shell.dart:206` | Shared adaptive bottom-navigation primitive with stable key, destination-driven labels/icons, and unread badge handling delegated to `CatchCountBadge`. Consumer shell uses the default Home / Explore / Catches / Chats / Profile set; `HostAppShell` supplies Events / Clubs / Inbox / Account through the same native iOS `CupertinoTabBar` chrome and Material 3 `NavigationBar`-backed chrome elsewhere. |
 | `CatchStartupLoadingScreen` | `lib/core/widgets/catch_startup_loading_screen.dart:5` | Shared route/startup loading surface used during role, route, and force-update async resolution. |
 
 ---
@@ -5390,12 +5397,13 @@ Generated 2026-05-06.
 | `CatchActivityMapPin` | `lib/core/widgets/catch_activity_map_pin.dart:8` | Handoff map pin for activity-colored map marks. Resolves pigment through `ActivityPalette`, supports resting/selected sizing, optional selected flag text, and the subtle pin shadow used on map canvases. |
 | `CatchDistanceRing` | `lib/core/widgets/catch_distance_ring.dart:7` | Handoff map radius ring for static map canvases and previews. Renders a 170px default circular ink ring with 1.2px stroke and an optional tappable mono label pill anchored to the top edge. |
 | `CatchBadge` | `lib/core/widgets/catch_badge.dart:10` | Handoff `Badge` status pill used for spots-left indicators, distance/pace pills, event requirement chips, status labels, compact metadata, and action-column outcomes. Supports functional tones including `gold`, `size.action` 33px alignment, optional leading icons, optional uppercase labels, and activity-accent tinting. |
+| `CatchCountBadge` | `lib/core/widgets/catch_count_badge.dart:7` | Anchored 99+ count marker for icon and navigation glyph overlays. Renders the child alone when count is zero, reserves the shared app-shell badge box when active, and uses the primary/primaryInk pill recipe from the badge family. Registered as formal component contract `catch.badge.count_badge`; Widgetbook contract states cover hidden, count, and overflow-count. |
 | `CatchPrivacyBadge` | `lib/core/widgets/catch_privacy_badge.dart:10` | Quiet outlined handoff privacy pill for visibility hints. Supports `Private to you`, `Catch private`, and `Host can see` modes with lock/eye glyphs, transparent `CatchSurface` chrome, and the shared mono badge text role. Registered as formal component contract `catch.privacy_badge`; Widgetbook contract states are the canonical review surface for private-to-you, Catch-private, and host-visible modes. |
 | `CatchCornerSash` | `lib/core/widgets/catch_corner_sash.dart:10` | Single status sash for event/club hero cards when one dominant state should read before supporting metadata. Uses token palettes, optional icon, and asymmetric pill corners instead of competing chip clusters. |
 | `CatchCountPill` | `lib/core/widgets/catch_count_pill.dart:12` | Handoff CountPill control for floating Explore affordances. Renders a raised pill with optional icon, optional mono label, optional active-count badge, shared surface/border tokens, and explicit semantic labels. Use for map/list toggles and compact filter entry points instead of feature-local floating pill decorations. |
-| `CatchTabDock<T>` | `lib/core/widgets/catch_tab_dock.dart:26` | Handoff `TabDock`: typed bottom-navigation adapter backed by Flutter's Material 3 `NavigationBar` metrics, stable safe-area handling, selected glyphs, typed tab IDs, and optional per-tab `Badge.count` unread indicators. Used by non-iOS `AppShellNavigationBar`. |
+| `CatchTabDock<T>` | `lib/core/widgets/catch_tab_dock.dart:26` | Handoff `TabDock`: typed bottom-navigation adapter backed by Flutter's Material 3 `NavigationBar` metrics, stable safe-area handling, selected glyphs, typed tab IDs, and optional per-tab unread indicators through `CatchCountBadge`. Used by non-iOS `AppShellNavigationBar`. |
 | `CatchTabDockButton<T>` | `lib/core/widgets/catch_tab_dock.dart:87` | Direct per-tab button renderer used by `CatchTabDock`. Keeps selected semantics, typed item binding, tap handling, icon selection, uppercase mono label styling, and dock item padding reviewable without private widget-returning helpers. |
-| `CatchTabDockIcon` | `lib/core/widgets/catch_tab_dock.dart:142` | Direct dock icon renderer with optional unread badge. Centralizes dock glyph sizing, 99+ badge truncation, pill badge chrome, and icon/badge positioning. |
+| `CatchTabDockIcon` | `lib/core/widgets/catch_tab_dock.dart:142` | Direct dock icon renderer that centralizes dock glyph sizing and delegates unread badge overlay, 99+ truncation, and badge chrome to `CatchCountBadge`. |
 | `CatchMetaDotRow` | `lib/core/widgets/catch_meta_row.dart:13` | Inline dot-separated metadata row for event/club cards. Keeps icon/text entries and optional strong trailing meta in one line with ellipsis behavior, so cards can show time, place, distance, and status without bolting on multiple badges. |
 | `CatchMetaEntryFlow` | `lib/core/widgets/catch_meta_row.dart:61` | Direct dot-separated metadata flow renderer used by `CatchMetaDotRow`. Owns separator insertion, flexible entry wrapping, numeric-meta separator styling, and truncation constraints for inline card metadata. |
 | `CatchMetaEntryView` | `lib/core/widgets/catch_meta_row.dart:108` | Direct metadata entry renderer used by `CatchMetaDotRow` and `CatchMetaEntryFlow`. Centralizes optional icon, icon color override, text color override, strong trailing weight, and label ellipsis behavior. |
@@ -5965,9 +5973,8 @@ Generated 2026-05-06.
 | `ProfilePhotoEditorPreview` | `lib/image_uploads/presentation/profile_photo_editor_screen.dart:308` | Provider-free preview renderer for the profile-photo editor. Shows the loading skeleton, editable crop boundary, existing remote image, or empty add-photo state while the route owns pick/save/delete mutations and passes the repaint-boundary key explicitly for crop capture. |
 | `OrderedPhotoTile` | `lib/image_uploads/presentation/widgets/ordered_photo_picker.dart:155` | Single ordered media tile used by `OrderedPhotoPicker`. Renders local bytes or remote images with photo semantics, optional remove control, cover badge, and reorder handle while callers own reorder and persistence callbacks. |
 | `OrderedPhotoAddTile` | `lib/image_uploads/presentation/widgets/ordered_photo_picker.dart:282` | Add-photo affordance used by ordered media pickers. Preserves the stable add-action key, button semantics, tooltip copy, responsive label hiding in compact tiles, and shared `CatchSurface` chrome. |
-| `PhotoSlot` | `lib/image_uploads/presentation/widgets/photo_slot.dart:13` | Single keyed profile-photo slot. Renders through `CatchSurface`, grades filled photos with `GradedImage`, shows DS striped material for pending uploads, dashed hairline targets for empty slots, semantic labels/tooltips for add/edit/delete/uploading/unavailable states, optional prompt and main-label overlays, reorder target affordance, and blocked taps while inactive or loading. |
-| `StripedPhotoPlaceholder` | `lib/image_uploads/presentation/widgets/photo_slot.dart:235` | Pending-upload placeholder used by `PhotoSlot` before a local or remote image is available. Paints the raised background with subtle diagonal stripes and mono slot copy while semantics stay owned by the parent photo slot. |
-| `PhotoSlotMainBadge` | `lib/image_uploads/presentation/widgets/photo_slot.dart:261` | Compact pill badge used by `PhotoSlot` and ordered media pickers for leading/main/cover labels. Receives display copy explicitly, uppercases it, and renders through `CatchSurface` token chrome without owning upload or reorder state. |
+| `PhotoSlot` | `lib/image_uploads/shared/photo_slot.dart:14` | Single keyed profile-photo slot. Renders through `CatchSurface`, grades filled photos with `GradedImage`, shows DS striped material for pending uploads, dashed hairline targets for empty slots, semantic labels/tooltips for add/edit/delete/uploading/unavailable states, optional prompt and main-label overlays through `CatchBadge`, reorder target affordance, and blocked taps while inactive or loading. |
+| `StripedPhotoPlaceholder` | `lib/image_uploads/shared/photo_slot.dart:242` | Pending-upload placeholder used by `PhotoSlot` before a local or remote image is available. Paints the raised background with subtle diagonal stripes and mono slot copy while semantics stay owned by the parent photo slot. |
 
 ---
 
@@ -6151,7 +6158,7 @@ Generated 2026-05-06.
 | `TicketStubCell` | `lib/events/presentation/widgets/event_detail_design_primitives.dart:389` | Leaf ticket counter-foil cell used by `EventDetailTicketStubBand`. Receives public `TicketStubCellData`, renders mono label/value/detail text, optional trailing icon, and the perforated vertical divider state. |
 | `HairlineList` | `lib/events/presentation/widgets/event_detail_design_primitives.dart:463` | Minimal Event Detail list shell for hint/mechanism rows. It owns only the hairline dividers and delegates row bodies to an indexed builder, keeping section copy and icons outside the shell. |
 | `ItineraryRow` | `lib/events/presentation/widgets/event_detail_design_primitives.dart:506` | Leaf itinerary timeline row used by `EventDetailItinerary`. Receives public `ItineraryStep` display data plus accent/rail colors, renders the fixed time column, dot, connecting rail, title, and supporting detail. |
-| `MapPill` | `lib/events/presentation/widgets/event_detail_design_primitives.dart:604` | Compact translucent map label pill used inside `EventDetailMapCard` for location and pin-status labels, with caller-provided text color and ellipsis-safe mono labeling. |
+| `MapPill` | `lib/events/presentation/widgets/event_detail_design_primitives.dart:605` | Compact translucent map label pill used inside `EventDetailMapCard` for location and pin-status labels, with caller-provided text color, `CatchOpacity.overlayPillFill`, and ellipsis-safe mono labeling. |
 | `HostAvatar` | `lib/events/presentation/widgets/event_detail_design_primitives.dart:1126` | Event Detail host avatar leaf. Renders the activity gradient fallback and optional graded host photo while keeping the 46px circular host mark independent of the larger host card. |
 | `EventPhotoHeader` | `lib/events/presentation/widgets/event_photo_header.dart:5` | Visual-only standard event hero wrapper. Delegates rendering to `CatchEventThumbnail` so uploaded event photos lead when present and activity artwork remains the no-photo/failure fallback; exposes the stable event-photo Hero tag for standard photo-header transitions and intentionally does not duplicate event title, location, stats, or activity copy. |
 | `EventStatsGrid` | `lib/events/presentation/widgets/event_stats_grid.dart:7` | Event detail stats adapter. Converts event facts into `CatchMetricStrip` items so event stats share the same rail, dividers, value styling, and responsive truncation as club detail stats, with optional dark surface colors for spotlight detail. |

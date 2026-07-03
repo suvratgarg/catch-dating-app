@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.components.schema.json",
   "version": 1,
-  "updated": "2026-06-27",
+  "updated": "2026-07-03",
   "sourceOfTruth": {
     "behavior": "Flutter implementations in lib/core/widgets/catch_*.dart own runtime behavior, accessibility, layout, and state.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
@@ -113,6 +113,7 @@
           "CatchIcon.badge",
           "CatchIcon.sm",
           "CatchLayout.badgeActionHeight",
+          "CatchCountBadge",
           "CatchIconBadge",
           "CatchStatusDot",
           "CatchCornerSash"
@@ -142,6 +143,17 @@
               "hidden",
               "custom-colors"
             ]
+          },
+          {
+            "id": "catch.badge.count_badge",
+            "symbol": "CatchCountBadge",
+            "summary": "Anchored 99+ count marker that overlays a child icon or navigation glyph and hides when count is zero.",
+            "states": [
+              "hidden",
+              "count",
+              "overflow-count"
+            ],
+            "file": "lib/core/widgets/catch_count_badge.dart"
           },
           {
             "id": "catch.badge.status_dot",
