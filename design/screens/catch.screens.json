@@ -6917,7 +6917,7 @@
           "id": "profile_unavailable",
           "kind": "empty",
           "status": "captured",
-          "source": "AsyncData(null) renders _ProfileUnavailableBody with CatchEmptyState and onboarding/sign-in recovery copy.",
+          "source": "AsyncData(null) renders the SelfProfileTabBody unavailable branch with CatchEmptyState and onboarding/sign-in recovery copy.",
           "previewIds": [
             "ProfileScreen/Self route states"
           ],
@@ -7367,7 +7367,7 @@
             ],
             "flutter": {
               "file": "lib/user_profile/presentation/profile_screen.dart",
-              "symbol": "ProfileUnavailableBody"
+              "symbol": "SelfProfileTabBody"
             },
             "currentOwner": "ProfileScreen",
             "targetOwner": "provider-free empty/access section",

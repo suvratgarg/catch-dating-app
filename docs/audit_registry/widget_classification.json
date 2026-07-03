@@ -10,31 +10,31 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1172,
-    "widgetClasses": 1064,
+    "total": 1166,
+    "widgetClasses": 1058,
     "stateClasses": 108,
-    "publicClasses": 1064,
+    "publicClasses": 1058,
     "privateClasses": 108,
     "byRole": {
       "atom": 56,
       "composition": 314,
       "feature-adapter": 330,
       "pattern": 16,
-      "screen": 348,
+      "screen": 342,
       "widget-state": 108
     },
     "byDecision": {
       "keep-canonical-contract": 171,
-      "keep-public-cataloged": 849,
+      "keep-public-cataloged": 843,
       "keep-widget-state": 108,
       "review-catalog-coverage": 40,
       "review-promote-or-consolidate": 4
     },
     "byCatalogStatus": {
-      "cataloged": 751,
+      "cataloged": 748,
       "contracted": 171,
       "not-applicable": 108,
-      "route-covered": 102,
+      "route-covered": 99,
       "uncataloged": 40
     }
   },
@@ -13605,29 +13605,6 @@
       "flags": []
     },
     {
-      "name": "EventMapEmptyState",
-      "file": "lib/events/presentation/event_map_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.event_map_empty_state",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
       "name": "EventMapLoadingBody",
       "file": "lib/events/presentation/event_map_screen.dart",
       "classKind": "widget",
@@ -13635,29 +13612,6 @@
       "visibility": "public",
       "role": "screen",
       "canonicalFamily": "screen.event_map_loading_body",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "EventMapNoPinnedEventsState",
-      "file": "lib/events/presentation/event_map_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.event_map_no_pinned_events_state",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,
@@ -22403,29 +22357,6 @@
       "flags": []
     },
     {
-      "name": "LaunchAccessDisabledView",
-      "file": "lib/launch_access/presentation/launch_access_application_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.launch_access_disabled_view",
-      "publicApi": true,
-      "catalogStatus": "route-covered",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
       "name": "LaunchAccessLoadingBody",
       "file": "lib/launch_access/presentation/launch_access_application_screen.dart",
       "classKind": "widget",
@@ -22433,52 +22364,6 @@
       "visibility": "public",
       "role": "screen",
       "canonicalFamily": "screen.launch_access_loading_body",
-      "publicApi": true,
-      "catalogStatus": "route-covered",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "LaunchAccessSignedOutView",
-      "file": "lib/launch_access/presentation/launch_access_application_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.launch_access_signed_out_view",
-      "publicApi": true,
-      "catalogStatus": "route-covered",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "LaunchAccessStatusView",
-      "file": "lib/launch_access/presentation/launch_access_application_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.launch_access_status_view",
       "publicApi": true,
       "catalogStatus": "route-covered",
       "contractId": null,
@@ -26349,29 +26234,6 @@
       "canonicalFamily": "screen.profile_tab_scroll_view",
       "publicApi": true,
       "catalogStatus": "route-covered",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "ProfileUnavailableBody",
-      "file": "lib/user_profile/presentation/profile_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.profile_unavailable_body",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",

@@ -214,24 +214,6 @@ Widget profileScreenSelfTabBodyStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Profile unavailable body',
-  type: ProfileUnavailableBody,
-  path: '[P1 product surfaces]/Profiles/Sections',
-)
-Widget profileUnavailableBodyState(BuildContext context) {
-  return const _ProfileCatalog(
-    title: 'ProfileUnavailableBody',
-    contractId: 'screen.profile.self.unavailable_body',
-    children: [
-      _StateCard(
-        label: 'default',
-        child: _SectionFrame(height: 320, child: ProfileUnavailableBody()),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
   name: 'Insights sliver body states',
   type: ProfileInsightsTabSliverBody,
   path: '[P1 product surfaces]/Profiles/Sections',

@@ -3521,32 +3521,12 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'EventMapEmptyState',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Map empty states',
-                builder: _widgetbook_workspace_events_event_detail_use_cases
-                    .eventMapEmptyStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'EventMapLoadingBody',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Map loading',
                 builder: _widgetbook_workspace_events_event_detail_use_cases
                     .eventMapLoadingBodyState,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'EventMapNoPinnedEventsState',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Map no-pinned state',
-                builder: _widgetbook_workspace_events_event_detail_use_cases
-                    .eventMapNoPinnedEventsState,
               ),
             ],
           ),
@@ -9420,16 +9400,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Profile title',
                     builder: _widgetbook_workspace_profiles_profile_use_cases
                         .profileTitleStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'ProfileUnavailableBody',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Profile unavailable body',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
-                        .profileUnavailableBodyState,
                   ),
                 ],
               ),

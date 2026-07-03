@@ -218,16 +218,34 @@ use-case blocks typed to these names (gotcha 2; several live in
 `event_success_strict_coverage_use_cases.dart`-style generated files — check
 `rg -l` first).
 
-- [ ] `EventMapEmptyState`, `EventMapNoPinnedEventsState` — both defined and
+- [x] `EventMapEmptyState`, `EventMapNoPinnedEventsState` — both defined and
   used in `lib/events/presentation/event_map_screen.dart`.
-- [ ] `LaunchAccessDisabledView`, `LaunchAccessSignedOutView`,
+- [x] `LaunchAccessDisabledView`, `LaunchAccessSignedOutView`,
   `LaunchAccessStatusView` — `lib/launch_access/presentation/launch_access_application_screen.dart`.
   StatusView carries its conditionals inline:
   `icon: application.status.unlocksProfileCreation ? … : …` etc. — keep the
   exact expressions.
-- [ ] `ProfileUnavailableBody` — `lib/user_profile/presentation/profile_screen.dart`.
-- [ ] registries + checks + receipts. Expect `widget_classification.json`
+- [x] `ProfileUnavailableBody` — `lib/user_profile/presentation/profile_screen.dart`.
+- [x] registries + checks + receipts. Expect `widget_classification.json`
   total to drop by 6.
+
+Receipt: 2026-07-03 Codex WO-003 inlined all six
+`Center(child: CatchEmptyState(...))` wrappers at their single production call
+sites, removed the stale Widgetbook use cases typed to the retired event-map
+and profile wrapper symbols, updated the profile screen contract and widget
+catalog, and regenerated Widgetbook directories plus widget classification and
+similarity. Clean checks: `flutter analyze --no-fatal-infos lib` (192 existing
+infos, 0 warnings/errors), widget classification check (1166 entries, 44 review
+items, 0 private widget classes flagged), widget similarity check (1058
+widgets, 60 clusters, 9 absorb candidates), dedupe probes, screen contract
+check, widget cleanup scan, manifest-only, agent readiness, JSON parse, stale
+retired-symbol scan, and `git diff --check`. Existing blockers recorded in the
+receipt: Widgetbook analyzer remains blocked by inherited HostOperations issues
+(65), Widgetbook coverage remains at a 139 item queue with 0 stale decisions,
+and Widgetbook contract refs remain blocked by unrelated HostOperations preview
+ids. Note: the old call sites were `const` wrapper constructor calls, but the
+inlined `CatchIcons` expressions are not valid constant expressions, so the
+literal bodies intentionally cannot stay `const`.
 
 ## WO-004 — EventCtaStatusLeading (decision small-widget family)
 

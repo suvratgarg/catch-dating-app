@@ -35,12 +35,26 @@ class LaunchAccessApplicationScreen extends ConsumerWidget {
         child: Padding(
           padding: CatchInsets.contentHorizontal,
           child: !config.gateEnabled
-              ? const LaunchAccessDisabledView()
+              ? Center(
+                  child: CatchEmptyState(
+                    icon: CatchIcons.lockOpenRounded,
+                    title: 'Access gate is off',
+                    message:
+                        'Remote Config has not enabled launch access for this build.',
+                  ),
+                )
               : CatchAsyncValueView<String?>(
                   value: uidAsync,
                   data: (uid) {
                     if (uid == null || uid.isEmpty) {
-                      return const LaunchAccessSignedOutView();
+                      return Center(
+                        child: CatchEmptyState(
+                          icon: CatchIcons.phoneAndroidRounded,
+                          title: 'Verify your phone',
+                          message:
+                              'Phone verification is required before applying for access.',
+                        ),
+                      );
                     }
                     final applicationAsync = ref.watch(
                       watchLaunchAccessApplicationProvider(uid),
@@ -52,8 +66,16 @@ class LaunchAccessApplicationScreen extends ConsumerWidget {
                       data: (application) {
                         if (application != null &&
                             !application.status.canEditApplication) {
-                          return LaunchAccessStatusView(
-                            application: application,
+                          return Center(
+                            child: CatchEmptyState(
+                              icon: application.status.unlocksProfileCreation
+                                  ? CatchIcons.checkCircleOutlineRounded
+                                  : CatchIcons.hourglassTopRounded,
+                              title: application.status.label,
+                              message: application.status.unlocksProfileCreation
+                                  ? 'Access is approved. Profile creation can be unlocked once the router uses this gate.'
+                                  : 'Your application is saved for the next launch cohort.',
+                            ),
                           );
                         }
                         return LaunchAccessApplicationForm(
@@ -396,57 +418,6 @@ class _LaunchAccessApplicationFormState
             gapH32,
           ],
         ),
-      ),
-    );
-  }
-}
-
-class LaunchAccessStatusView extends StatelessWidget {
-  const LaunchAccessStatusView({super.key, required this.application});
-
-  final LaunchAccessApplication application;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: CatchEmptyState(
-        icon: application.status.unlocksProfileCreation
-            ? CatchIcons.checkCircleOutlineRounded
-            : CatchIcons.hourglassTopRounded,
-        title: application.status.label,
-        message: application.status.unlocksProfileCreation
-            ? 'Access is approved. Profile creation can be unlocked once the router uses this gate.'
-            : 'Your application is saved for the next launch cohort.',
-      ),
-    );
-  }
-}
-
-class LaunchAccessDisabledView extends StatelessWidget {
-  const LaunchAccessDisabledView({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: CatchEmptyState(
-        icon: CatchIcons.lockOpenRounded,
-        title: 'Access gate is off',
-        message: 'Remote Config has not enabled launch access for this build.',
-      ),
-    );
-  }
-}
-
-class LaunchAccessSignedOutView extends StatelessWidget {
-  const LaunchAccessSignedOutView({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: CatchEmptyState(
-        icon: CatchIcons.phoneAndroidRounded,
-        title: 'Verify your phone',
-        message: 'Phone verification is required before applying for access.',
       ),
     );
   }

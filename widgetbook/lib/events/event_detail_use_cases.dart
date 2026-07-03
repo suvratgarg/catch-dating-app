@@ -27,7 +27,6 @@ import 'package:catch_dating_app/events/data/event_participation_repository.dart
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/events/shared/event_check_in_celebration_screen.dart';
@@ -2200,37 +2199,6 @@ Widget eventMapViewStates(BuildContext context) {
       ),
     ],
   );
-}
-
-@widgetbook.UseCase(
-  name: 'Map empty states',
-  type: EventMapEmptyState,
-  path: '[Events]/Map',
-)
-Widget eventMapEmptyStates(BuildContext context) {
-  return const _CatalogScreen(
-    title: 'Event map empty states',
-    catalogId: 'screen.events.map.empty_states',
-    children: [
-      _StateCard(
-        label: 'no mapped events',
-        child: SizedBox(height: 220, child: EventMapEmptyState()),
-      ),
-      _StateCard(
-        label: 'no exact pins',
-        child: SizedBox(height: 220, child: EventMapNoPinnedEventsState()),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Map no-pinned state',
-  type: EventMapNoPinnedEventsState,
-  path: '[Events]/Map',
-)
-Widget eventMapNoPinnedEventsState(BuildContext context) {
-  return const SizedBox(height: 220, child: EventMapNoPinnedEventsState());
 }
 
 @widgetbook.UseCase(

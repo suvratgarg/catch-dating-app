@@ -311,6 +311,92 @@ Known blockers / inherited debt:
   `CatchOpacity.eventSuccessSubtleBorder` bottom-edge alpha for visual parity;
   the event-specific token name is tracked as a WO-002 escalation.
 
+## 2026-07-03 WO-003 Empty-State Wrapper Inlining
+
+Scope:
+
+- `EventMapEmptyState`, `EventMapNoPinnedEventsState`
+- `LaunchAccessDisabledView`, `LaunchAccessSignedOutView`,
+  `LaunchAccessStatusView`
+- `ProfileUnavailableBody`
+
+Commands:
+
+- `dart tool/audit_registry.dart refresh`
+- `node tool/agent/context_pack.mjs --task widget-consolidation-wo-003 --paths lib/events/presentation/event_map_screen.dart,lib/launch_access/presentation/launch_access_application_screen.dart,lib/user_profile/presentation/profile_screen.dart,docs/design_parity/widget_consolidation/codex_worklog.md,docs/design_parity/widget_consolidation/decisions.json`
+- `dart tool/audit_registry.dart docs --path widget`
+- `dart tool/audit_registry.dart rules --status active`
+- `rg -n "EventMapEmptyState|EventMapNoPinnedEventsState|LaunchAccessDisabledView|LaunchAccessSignedOutView|LaunchAccessStatusView|ProfileUnavailableBody" lib widgetbook docs design --glob '!**/*.g.dart'`
+- `dart format lib/events/presentation/event_map_screen.dart lib/launch_access/presentation/launch_access_application_screen.dart lib/user_profile/presentation/profile_screen.dart widgetbook/lib/events/event_detail_use_cases.dart widgetbook/lib/profiles/profile_use_cases.dart`
+- `flutter pub get` in `widgetbook/`
+- `dart run build_runner build --delete-conflicting-outputs` in `widgetbook/`
+- `node tool/design/generate_widget_classification.mjs`
+- `node tool/design/check_widget_classification.mjs`
+- `dart run tool/widget_dedupe/bin/extract_fingerprints.dart`
+- `node tool/design/build_widget_similarity.mjs`
+- `node tool/design/build_widget_similarity.mjs --check`
+- `node tool/design/check_widgetbook_coverage.mjs --check`
+- `env DART=/Users/suvratgarg/Development/flutter/bin/dart node tool/design/check_widget_dedupe_probes.mjs`
+- `flutter analyze --no-fatal-infos lib`
+- `flutter analyze` in `widgetbook/`
+- `bash tool/widget_cleanup_scan.sh --summary`
+- `node tool/run.mjs check --manifest-only`
+- `node tool/agent/check_agent_readiness.mjs`
+- `node tool/design/check_widgetbook_contract_refs.mjs --check`
+- `node tool/design/check_screen_contracts.mjs --check`
+- `node -e "const fs=require('fs'); JSON.parse(fs.readFileSync('design/screens/catch.screens.json','utf8')); console.log('design/screens/catch.screens.json parses')"`
+- `node -e "const fs=require('fs'); JSON.parse(fs.readFileSync('docs/audit_registry/doc_versions.json','utf8')); JSON.parse(fs.readFileSync('docs/audit_registry/widget_classification.json','utf8')); JSON.parse(fs.readFileSync('docs/audit_registry/widget_similarity.json','utf8')); console.log('json registries parse')"`
+- `git diff --check`
+
+Headline numbers:
+
+| metric | value |
+|---|---:|
+| widget classification entries | 1,166 |
+| classification review items | 44 |
+| private widget classes flagged | 0 |
+| widget fingerprints | 1,058 |
+| fingerprint failures | 0 |
+| similarity clusters | 60 |
+| ranked pairs | 200 |
+| name families | 231 |
+| absorb candidates | 9 |
+| root lib analyzer infos | 192 |
+| widget cleanup scan categories with findings | 0 |
+| screen contracts | 35 |
+| screen-contract sections | 241 |
+| agent readiness score | 100/100 |
+
+Spot checks:
+
+- Stale retired-symbol scan across active `lib`, `widgetbook/lib`,
+  `docs/widget_catalog.md`, and `design/screens/catch.screens.json` returned
+  no matches.
+- `widgetbook/lib/main.directories.g.dart` no longer exposes preview blocks
+  typed to `EventMapEmptyState`, `EventMapNoPinnedEventsState`, or
+  `ProfileUnavailableBody`; the route/state previews remain.
+- `docs/widget_catalog.md` v2.5.548 removes the six wrapper catalog entries
+  and keeps ownership on `EventMapView`, `LaunchAccessApplicationScreen`, and
+  `SelfProfileTabBody`.
+- `design/screens/catch.screens.json` now points the self-profile unavailable
+  section at `SelfProfileTabBody`, the branch that owns the inline empty state.
+- The old constructor calls were `const`, but the inlined `CatchIcons`
+  expressions are not valid constant expressions; the inline bodies therefore
+  intentionally cannot remain `const`.
+
+Known blockers / inherited debt:
+
+- `node tool/design/check_widgetbook_coverage.mjs --check` still fails on the
+  existing catalog-or-replace decision queue: 139 public widgets need
+  decisions, with 0 stale decisions.
+- `(cd widgetbook && flutter analyze)` still fails on 65 existing Widgetbook
+  issues in `lib/hosts/host_operations_use_cases.dart`.
+- `node tool/design/check_widgetbook_contract_refs.mjs --check` still fails on
+  unrelated HostOperations preview ids.
+- `dart run build_runner build --delete-conflicting-outputs` in `widgetbook/`
+  succeeds, but build_runner reports that the delete-conflicting option has
+  been removed and is ignored by the current builder.
+
 Calibration note:
 
 The v0.1.0 SimHash threshold of 18 is void. The v0.2.0 registry recalibrates
