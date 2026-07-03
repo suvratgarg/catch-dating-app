@@ -35,14 +35,17 @@ export function scanFile({relativePath, source}) {
   );
   if (uncoveredPendingLines.length === 0) return [];
 
-  return [
-    {
-      path: relativePath,
-      reason:
-        "build method reads mutation pending state but has no mutation error surface",
-      pendingLines: uncoveredPendingLines.slice(0, 8),
-    },
-  ];
+  return uncoveredPendingLines.map((pending) => ({
+    path: relativePath,
+    line: pending.line,
+    reason: `build method reads ${mutationLabel(
+      pending,
+    )} pending state but has no matching mutation error surface`,
+    variableName: pending.variableName,
+    mutationExpression: pending.mutationExpression,
+    text: pending.text,
+    pendingLines: [pending],
+  }));
 }
 
 function collectDartFiles(root) {
@@ -215,6 +218,10 @@ function isPendingCovered(pending, covered) {
   );
 }
 
+function mutationLabel(pending) {
+  return pending.variableName ?? pending.mutationExpression ?? "mutation";
+}
+
 function canonicalMutationExpression(expression) {
   return String(expression).replace(/\s+/gu, "").replace(/,+$/u, "");
 }
@@ -269,10 +276,11 @@ function printFindings(result) {
     `Mutation error surface check failed (${result.findings.length} finding(s)).`,
   );
   for (const finding of result.findings) {
-    console.error(`- ${finding.path}: ${finding.reason}`);
-    for (const pending of finding.pendingLines) {
-      console.error(`  L${pending.line}: ${pending.text}`);
-    }
+    const location = finding.line == null
+      ? finding.path
+      : `${finding.path}:${finding.line}`;
+    console.error(`- ${location}: ${finding.reason}`);
+    console.error(`  ${finding.text}`);
   }
 }
 

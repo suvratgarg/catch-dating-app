@@ -22,7 +22,12 @@ test("scanFile flags build methods that read mutation pending without errors", (
   });
 
   assert.equal(findings.length, 1);
-  assert.equal(findings[0].pendingLines.length, 1);
+  assert.equal(findings[0].line, 4);
+  assert.equal(findings[0].variableName, "save");
+  assert.equal(
+    findings[0].mutationExpression,
+    "EventDetailController.toggleSavedEventMutation",
+  );
 });
 
 test("scanFile allows pending mutations with an error surface", () => {
@@ -58,8 +63,36 @@ test("scanFile flags a second pending mutation without its own error surface", (
   });
 
   assert.equal(findings.length, 1);
-  assert.equal(findings[0].pendingLines.length, 1);
-  assert.equal(findings[0].pendingLines[0].line, 6);
+  assert.equal(findings[0].line, 6);
+  assert.equal(findings[0].variableName, "delete");
+});
+
+test("scanFile reports one finding per uncovered pending mutation", () => {
+  const findings = scanFile({
+    relativePath: "lib/events/presentation/event_detail_screen.dart",
+    source: [
+      "class EventDetailScreen extends ConsumerWidget {",
+      "  Widget build(BuildContext context, WidgetRef ref) {",
+      "    final Mutation<void> save = ref.watch(EventDetailController.saveMutation);",
+      "    final Mutation<void> delete = ref.watch(EventDetailController.deleteMutation);",
+      "    return Text(save.isPending || delete.isPending ? 'Working' : 'Ready');",
+      "  }",
+      "}",
+    ].join("\n"),
+  });
+
+  assert.equal(findings.length, 2);
+  assert.deepEqual(
+    findings.map((finding) => finding.variableName),
+    ["save", "delete"],
+  );
+  assert.deepEqual(
+    findings.map((finding) => finding.mutationExpression),
+    [
+      "EventDetailController.saveMutation",
+      "EventDetailController.deleteMutation",
+    ],
+  );
 });
 
 test("scanFile allows a listener for the matching pending mutation", () => {
