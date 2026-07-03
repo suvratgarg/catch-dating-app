@@ -62,5 +62,30 @@ void main() {
         'engineering',
       );
     });
+
+    test('treats canonical-source-blocked interaction variants as reference-only', () {
+      expect(
+        classifyScreenGapAction(
+          'Primary onboarding step references are exported and manifest-registered. '
+          'Continue only interaction-specific references and masks for keyboard, '
+          'date picker, photo picker/upload, prompt picker/copy variants, mutation '
+          'feedback, accessibility, and theme variants when canonical sources exist.',
+        ),
+        'reference-only',
+      );
+    });
+
+    test('treats explicit blocked reference-only gaps as reference-only', () {
+      expect(
+        classifyScreenGapAction(
+          'Blocked/reference-only until a canonical interaction source exists: '
+          'primary onboarding step references are exported and manifest-registered. '
+          'Remaining references and masks are interaction-specific keyboard, date '
+          'picker, photo picker/upload, prompt picker/copy variants, mutation '
+          'feedback, accessibility, and theme variants.',
+        ),
+        'reference-only',
+      );
+    });
   });
 }

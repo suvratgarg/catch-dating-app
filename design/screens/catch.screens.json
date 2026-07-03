@@ -16613,7 +16613,7 @@
         {
           "id": "DS-ONBOARDING-004",
           "status": "open",
-          "nextAction": "Primary onboarding step references are exported and manifest-registered for welcome, name/DOB, gender/interest, Instagram filled, photos count-met, prompts partial, and running preferences. Continue only interaction-specific references and masks for keyboard, date picker, photo picker/upload, prompt picker/copy variants, mutation feedback, accessibility, and theme variants when canonical sources exist."
+          "nextAction": "Blocked/reference-only until a canonical interaction source exists: primary onboarding step references are exported and manifest-registered for welcome, name/DOB, gender/interest, Instagram filled, photos count-met, prompts partial, and running preferences. Remaining references and masks are interaction-specific keyboard, date picker, photo picker/upload, prompt picker/copy variants, mutation feedback, accessibility, and theme variants."
         }
       ]
     },

@@ -523,7 +523,7 @@
             {
               "id": "DP-ONBOARDING-001",
               "status": "open",
-              "nextAction": "Primary onboarding step references are exported and manifest-registered. Continue interaction-specific references for keyboard, date picker, photo picker/upload, prompt picker/copy variants, mutation feedback, accessibility, and theme variants when canonical sources exist."
+              "nextAction": "Blocked/reference-only until a canonical interaction source exists: primary onboarding step references are exported and manifest-registered. Remaining references are interaction-specific keyboard, date picker, photo picker/upload, prompt picker/copy variants, mutation feedback, accessibility, and theme variants."
             },
             {
               "id": "DP-ONBOARDING-002",

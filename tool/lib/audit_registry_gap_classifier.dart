@@ -1,4 +1,8 @@
 String classifyScreenGapAction(String nextAction) {
+  final fullLowerAction = nextAction.toLowerCase();
+  if (fullLowerAction.contains('blocked/reference-only')) {
+    return 'reference-only';
+  }
   final lowerAction = _remainingActionText(nextAction).toLowerCase();
   final hasProductOnlySignal = _containsAny(lowerAction, const [
     'if contractual',
@@ -17,6 +21,8 @@ String classifyScreenGapAction(String nextAction) {
     'additional pixel-reference',
     'additional dynamic host data once canonical exports exist',
     'advisory comparison',
+    'canonical interaction sources exist',
+    'canonical sources exist',
     'compare ',
     'continue only',
     'design reference',
@@ -43,6 +49,11 @@ String classifyScreenGapAction(String nextAction) {
     'state-specific references',
     'visual parity',
   ]);
+  final isBlockedOnCanonicalSources = _containsAny(lowerAction, const [
+    'canonical interaction sources exist',
+    'canonical sources exist',
+    'canonical source exists',
+  ]);
   final hasStrongEngineeringSignal = _containsAny(lowerAction, const [
     'adapter',
     'backend',
@@ -64,6 +75,9 @@ String classifyScreenGapAction(String nextAction) {
   final hasWeakEngineeringSignal = _containsAny(lowerAction, const ['copy']);
 
   if (hasReferenceOnlySignal && !hasStrongEngineeringSignal) {
+    return 'reference-only';
+  }
+  if (hasReferenceOnlySignal && isBlockedOnCanonicalSources) {
     return 'reference-only';
   }
   if (hasReferenceOnlySignal && hasStrongEngineeringSignal) {
