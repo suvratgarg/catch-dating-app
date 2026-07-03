@@ -1336,3 +1336,38 @@ Known blockers / inherited debt:
 - The dedupe-probe script needed unsandboxed access because Flutter's Dart
   wrapper attempted SDK cache writes outside the workspace before reporting
   `Widget dedupe probes passed`.
+
+## 2026-07-03 — WO-015 current-id reconciliation and row escalation
+
+Scope:
+
+- Reconciled current similarity-registry ids for two already-decided concepts:
+  `c003-catch-meta-row` and `c033-event-cta-status-leading`.
+- Escalated `c044-row` (`ActivityTypeRow`, `MoreActivityTypesRow`) under K5.
+- No production Dart, Widgetbook, generated widget registries, or visual output
+  changed.
+
+Commands:
+
+- `node tool/agent/context_pack.mjs --task widget-consolidation-wo-015-row-triage --paths lib/explore/presentation/widgets/explore_event_type_browse_grid.dart,docs/design_parity/widget_consolidation/decisions.json,docs/design_parity/widget_consolidation/codex_worklog.md,docs/audit_registry/widget_consolidation_receipts.md,docs/widget_catalog.md,docs/design_parity/widget_consolidation/consolidation_rules.md`
+- `rg -n "class ActivityTypeRow|class MoreActivityTypesRow|ActivityTypeRow\\(|MoreActivityTypesRow\\(" lib/explore/presentation/widgets/explore_event_type_browse_grid.dart widgetbook/lib test -g '*.dart'`
+- `sed -n '150,330p' lib/explore/presentation/widgets/explore_event_type_browse_grid.dart`
+- `node - <<'NODE' ... JSON.parse(...) ... NODE`
+- `node tool/agent/check_agent_readiness.mjs`
+- `git diff --check`
+
+Headline numbers:
+
+| metric | value |
+|---|---:|
+| current cluster ids reconciled to existing owner decisions | 2 |
+| new K5 escalations recorded | 1 |
+| code changes | 0 |
+| rule-authorized merges/deletions | 0 |
+| undecided similarity clusters after this ledger pass | 40 |
+| agent readiness checks | 737/737 |
+
+Known blockers / inherited debt:
+
+- WO-015 remains open: 40 current similarity clusters still need rule-driven
+  decisions or review escalation by the simple cluster ledger check.

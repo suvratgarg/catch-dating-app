@@ -979,6 +979,12 @@ similarity registry and ledgered seven screen clusters as escalations in
 `c048-companion-primary-action-skeleton`, `c049-sliver-body`, and
 `c051-footer`. No code was changed in this ledger-only batch.
 
+Progress by Codex: reconciled current registry ids `c003-catch-meta-row` and
+`c033-event-cta-status-leading` to the existing owner decisions for
+`StageSectionLabel` and `UnsavedChangesPill`, then escalated `c044-row`
+(`ActivityTypeRow`, `MoreActivityTypesRow`) under K5. No code was changed in
+this ledger-only batch.
+
 ---
 
 ## Escalations
@@ -1017,6 +1023,11 @@ similarity registry and ledgered seven screen clusters as escalations in
   `HostClubEditFooter` — nearest rule: screen-scope limit, blocked because
   screen clusters embed route/provider or whole-state composition and require
   review.
+- WO-015: `c044-row` members `ActivityTypeRow`, `MoreActivityTypesRow` —
+  nearest rule: K5 concept mismatch, blocked because the two rows share an
+  outer tap-row shell but differ in selected filter semantics, title/count
+  treatment, overflow-expander semantics, kicker typography, and arrow
+  affordance.
 
 ## Completed
 

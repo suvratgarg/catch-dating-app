@@ -539,6 +539,42 @@
       "decidedBy": "codex-rule:scope-screen",
       "date": "2026-07-03",
       "status": "escalated-WO-015"
+    },
+    {
+      "clusterId": "c003-catch-meta-row",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "CatchMetaRow", "action": "keep"},
+        {"name": "StageSectionLabel", "action": "keep"}
+      ],
+      "rationale": "Current-registry id for the prior c006 owner decision: StageSectionLabel is an icon section title, not an icon+label meta row; folding it into CatchMetaRow would cross section-title and meta-row concepts.",
+      "decidedBy": "owner+claude-reconciled",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015"
+    },
+    {
+      "clusterId": "c033-event-cta-status-leading",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "EventCtaStatusLeading", "action": "keep"},
+        {"name": "UnsavedChangesPill", "action": "keep"}
+      ],
+      "rationale": "Current-registry id for the prior small-widget owner decision: UnsavedChangesPill is a warning-dot status indicator with distinct tokens, not an event-detail CTA leading icon+label.",
+      "decidedBy": "owner+claude-reconciled",
+      "date": "2026-07-03",
+      "status": "recorded-WO-015"
+    },
+    {
+      "clusterId": "c044-row",
+      "decision": "escalate",
+      "members": [
+        {"name": "ActivityTypeRow", "action": "escalate"},
+        {"name": "MoreActivityTypesRow", "action": "escalate"}
+      ],
+      "rationale": "K5 territory: both share the Semantics/InkWell/DecoratedBox/ConstrainedBox shell, but ActivityTypeRow's body is ActivityDot + titleL label + titleL count with selected semantics while MoreActivityTypesRow's body is kicker '+ n MORE TYPES' + forward arrow expand affordance.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-03",
+      "status": "escalated-WO-015"
     }
   ]
 }
