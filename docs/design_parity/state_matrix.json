@@ -305,11 +305,17 @@
             "onboarding_gender_interest",
             "onboarding_gender_interest_validation_error",
             "onboarding_instagram",
+            "onboarding_instagram_filled",
+            "onboarding_instagram_skipped",
             "onboarding_photos_gate",
             "onboarding_photos_one_photo_disabled",
             "onboarding_photos_count_met",
             "onboarding_photos_upload_pending",
+            "onboarding_photos_upload_failure",
             "onboarding_prompts_empty",
+            "onboarding_prompts_partial",
+            "onboarding_prompts_complete",
+            "onboarding_prompts_long_answer",
             "onboarding_running_prefs",
             "onboarding_save_profile_pending",
             "onboarding_save_profile_error",
@@ -317,6 +323,9 @@
             "onboarding_complete_run_prefs_error",
             "onboarding_saved_draft",
             "onboarding_name_dob_text_scale_2",
+            "onboarding_photos_text_scale_2",
+            "onboarding_prompts_text_scale_2",
+            "onboarding_running_prefs_text_scale_2",
             "onboarding_gender_interest_reduced_motion"
           ],
           "designRefs": [
@@ -339,7 +348,7 @@
               "tests": [
                 "test/onboarding/onboarding_widgets_test.dart"
               ],
-              "notes": "Onboarding welcome now has a manifest-registered design reference and deterministic capture. Primary step, validation-error, photo gate/upload-pending, save/complete mutation, text-scale, and reduced-motion captures exist; remaining work is upload-failure transition coverage, prompt variants, Instagram variants, and state-specific references."
+              "notes": "Onboarding welcome now has a manifest-registered design reference and deterministic capture. Primary step, validation-error, Instagram filled/skipped, photo gate/upload-pending/upload-failure, prompt partial/complete/long-answer, save/complete mutation, text-scale, and reduced-motion captures exist; remaining work is state-specific references."
             },
             {
               "id": "name_dob_step",
@@ -374,9 +383,11 @@
               "kind": "populated",
               "status": "captured",
               "captureIds": [
-                "onboarding_instagram"
+                "onboarding_instagram",
+                "onboarding_instagram_filled",
+                "onboarding_instagram_skipped"
               ],
-              "notes": "InstagramPage captures the optional verification handle as part of the onboarding profile draft; deterministic route capture covers the default empty handle state. Add filled, invalid-handle, skipped-handle, and state-specific reference variants."
+              "notes": "InstagramPage captures the optional verification handle as part of the onboarding profile draft; deterministic route captures cover default, filled, and skipped handle states. Add invalid-handle coverage only if Instagram validation is introduced, plus state-specific reference variants."
             },
             {
               "id": "photos_photo_gate",
@@ -386,21 +397,25 @@
                 "onboarding_photos_gate",
                 "onboarding_photos_one_photo_disabled",
                 "onboarding_photos_count_met",
-                "onboarding_photos_upload_pending"
+                "onboarding_photos_upload_pending",
+                "onboarding_photos_upload_failure"
               ],
               "tests": [
                 "test/onboarding/onboarding_widgets_test.dart"
               ],
-              "notes": "PhotosPage enforces the required photo gate before profile completion, adapts copy for profileCompletionOnly mode, and routes upload-failure feedback through the shared Catch snackbar helper; deterministic route captures cover the empty gate, one-photo disabled CTA, count-met CTA, and upload-pending disabled CTA. Add upload-failure transition coverage and state-specific reference variants."
+              "notes": "PhotosPage enforces the required photo gate before profile completion, adapts copy for profileCompletionOnly mode, and routes upload-failure feedback through the shared Catch snackbar helper; deterministic route captures cover the empty gate, one-photo disabled CTA, count-met CTA, upload-pending disabled CTA, and upload-failure snackbar, while the production upload-failure path is also covered by a focused widget test. Add state-specific reference variants."
             },
             {
               "id": "prompts_step",
               "kind": "populated",
               "status": "captured",
               "captureIds": [
-                "onboarding_prompts_empty"
+                "onboarding_prompts_empty",
+                "onboarding_prompts_partial",
+                "onboarding_prompts_complete",
+                "onboarding_prompts_long_answer"
               ],
-              "notes": "ProfilePromptsPage collects prompt answers and adapts copy for profileCompletionOnly mode; deterministic route capture covers empty prompts. Add partial, complete, validation-error, long-answer, and state-specific reference variants."
+              "notes": "ProfilePromptsPage collects prompt answers and adapts copy for profileCompletionOnly mode; deterministic route captures cover empty, partial, complete, and long-answer prompt states. Add validation-error coverage only if prompt validation becomes blocking, plus state-specific reference variants."
             },
             {
               "id": "running_prefs_step",
@@ -472,9 +487,12 @@
               "kind": "accessibility",
               "status": "captured",
               "captureIds": [
-                "onboarding_name_dob_text_scale_2"
+                "onboarding_name_dob_text_scale_2",
+                "onboarding_photos_text_scale_2",
+                "onboarding_prompts_text_scale_2",
+                "onboarding_running_prefs_text_scale_2"
               ],
-              "notes": "Name/DOB text-scale 2.0 capture covers route header, fields, and sticky footer. Add step-specific text-scale variants where layout diverges."
+              "notes": "Step-specific text-scale 2.0 captures cover name/DOB, photos, prompts, and running preferences layouts. Add more text-scale variants only where future layouts diverge from the captured step families."
             },
             {
               "id": "reduced_motion",
@@ -490,7 +508,7 @@
             {
               "id": "DP-ONBOARDING-001",
               "status": "open",
-              "nextAction": "Validation-error, photo disabled/count-met/upload-pending, and save/complete mutation pending/error captures now exist. Add upload-failure transition coverage, prompts partial/complete/long-answer variants, Instagram filled/invalid/skipped variants, and state-specific references for captured steps."
+              "nextAction": "Validation-error, Instagram filled/skipped, photo disabled/count-met/upload-pending/upload-failure, prompt partial/complete/long-answer, and save/complete mutation pending/error captures now exist. Add Instagram invalid-handle capture only if validation is introduced, and state-specific references for captured steps."
             },
             {
               "id": "DP-ONBOARDING-002",

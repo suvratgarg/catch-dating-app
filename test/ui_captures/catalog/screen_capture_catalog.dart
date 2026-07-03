@@ -56,10 +56,10 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/dashboard/data/dashboard_recommendations_repository.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_controller.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
-import 'package:catch_dating_app/dashboard/data/dashboard_recommendations_repository.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
@@ -6591,6 +6591,34 @@ final _onboardingCaptureProfileReadyPhotos = ProfileSurfaceFixtures.viewer
     );
 final _onboardingCaptureProfileNoPrompts = ProfileSurfaceFixtures.viewer
     .copyWith(profileComplete: false, profilePrompts: const []);
+final _onboardingCaptureProfilePartialPrompts = ProfileSurfaceFixtures.viewer
+    .copyWith(
+      profileComplete: false,
+      profilePrompts: _onboardingPromptAnswers(
+        'A low-pressure loop that ends with a table everyone can hear.',
+      ),
+    );
+final _onboardingCaptureProfileCompletePrompts = ProfileSurfaceFixtures.viewer
+    .copyWith(
+      profileComplete: false,
+      profilePrompts: _onboardingPromptAnswers(
+        'A golden-hour 5K, filter coffee, and no rushed exits.',
+        'Saturday starts outside, detours through a bookshop, and ends with chaat.',
+        'Tell me your favourite route and I will remember the coffee stop.',
+      ),
+    );
+final _onboardingCaptureProfileLongPrompts = ProfileSurfaceFixtures.viewer.copyWith(
+  profileComplete: false,
+  profilePrompts: _onboardingPromptAnswers(
+    'A small group run where everyone knows the route, nobody sprints the '
+        'first kilometer, and the table afterward has enough time for real '
+        'conversation.',
+    'I am happiest when Saturday starts outside, detours through a bookshop, '
+        'and ends with friends arguing over where the best chaat actually is.',
+    'The green flag is someone who can make an ordinary weekday plan feel '
+        'specific, calm, and worth showing up for.',
+  ),
+);
 final _onboardingCaptureDraft = OnboardingDraft(
   step: OnboardingStep.genderInterest.index,
   draftVersion: 2,
@@ -6604,11 +6632,29 @@ final _onboardingCaptureDraft = OnboardingDraft(
   profilePrompts: ProfileSurfaceFixtures.viewer.profilePrompts,
 );
 
+List<ProfilePromptAnswer> _onboardingPromptAnswers(
+  String first, [
+  String? second,
+  String? third,
+]) {
+  final answers = <String>[first, ?second, ?third];
+  return [
+    for (final entry in answers.indexed)
+      profilePromptAnswerFor(
+        definition: profilePromptDefinition(defaultProfilePromptIds[entry.$1]),
+        answer: entry.$2,
+      ),
+  ];
+}
+
 enum _OnboardingCaptureMode {
   routeDefault,
   genderInterest,
   instagram,
+  instagramFilled,
+  instagramSkipped,
   photos,
+  photosUploadFailure,
   saveProfilePending,
   saveProfileError,
   completeRunPrefsPending,
@@ -6643,6 +6689,7 @@ List<Object> _onboardingProviderOverrides({
   UserProfile? profile,
   OnboardingDraft? draft,
   Set<int> uploadLoadingIndices = const <int>{},
+  bool useRealPhotoUploadController = false,
 }) {
   final effectiveProfile = uid == null ? null : profile;
   return [
@@ -6664,10 +6711,24 @@ List<Object> _onboardingProviderOverrides({
     onboardingDraftRepositoryProvider.overrideWithValue(
       _CaptureOnboardingDraftRepository(draft),
     ),
-    photoUploadControllerProvider.overrideWithValue((
-      loadingIndices: uploadLoadingIndices,
-      uploadError: null,
-    )),
+    if (!useRealPhotoUploadController)
+      photoUploadControllerProvider.overrideWithValue((
+        loadingIndices: uploadLoadingIndices,
+        uploadError: null,
+      )),
+  ];
+}
+
+List<Object> _onboardingUploadFailureProviderOverrides() {
+  return [
+    ..._onboardingProviderOverrides(
+      profile: _onboardingCaptureProfileOnePhoto,
+      useRealPhotoUploadController: true,
+    ),
+    imageUploadRepositoryProvider.overrideWithValue(
+      _CaptureFailingImageUploadRepository(),
+    ),
+    errorLoggerProvider.overrideWithValue(_CaptureSilentErrorLogger()),
   ];
 }
 
@@ -6699,6 +6760,7 @@ class _OnboardingCaptureSeederState
     _seeded = true;
     OnboardingController.saveProfileMutation.reset(ref);
     OnboardingController.completeMutation.reset(ref);
+    PhotoUploadController.uploadPhotoMutation.reset(ref);
 
     final controller = ref.read(onboardingControllerProvider.notifier);
     switch (widget.mode) {
@@ -6716,6 +6778,24 @@ class _OnboardingCaptureSeederState
         );
         controller.goToStep(OnboardingStep.instagram);
         break;
+      case _OnboardingCaptureMode.instagramFilled:
+        _seedBookingIdentity(controller);
+        controller.setGenderInterest(
+          gender: Gender.woman,
+          interestedInGenders: const [Gender.man],
+        );
+        controller.setInstagramHandle('neharuns');
+        controller.goToStep(OnboardingStep.instagram);
+        break;
+      case _OnboardingCaptureMode.instagramSkipped:
+        _seedBookingIdentity(controller);
+        controller.setGenderInterest(
+          gender: Gender.woman,
+          interestedInGenders: const [Gender.man],
+        );
+        controller.setInstagramHandle(null);
+        controller.goToStep(OnboardingStep.instagram);
+        break;
       case _OnboardingCaptureMode.photos:
         _seedBookingIdentity(controller);
         controller.setGenderInterest(
@@ -6723,6 +6803,15 @@ class _OnboardingCaptureSeederState
           interestedInGenders: const [Gender.man],
         );
         controller.goToStep(OnboardingStep.photos);
+        break;
+      case _OnboardingCaptureMode.photosUploadFailure:
+        _seedBookingIdentity(controller);
+        controller.setGenderInterest(
+          gender: Gender.woman,
+          interestedInGenders: const [Gender.man],
+        );
+        controller.goToStep(OnboardingStep.photos);
+        _runAfterNextFrame(_runPhotoUploadFailure);
         break;
       case _OnboardingCaptureMode.saveProfilePending:
         _seedBookingIdentity(controller);
@@ -6806,6 +6895,18 @@ class _OnboardingCaptureSeederState
 
   void _runError(Mutation<void> mutation, Object error) {
     unawaited(mutation.run(ref, (_) async => throw error).catchError((_) {}));
+  }
+
+  void _runPhotoUploadFailure() {
+    unawaited(
+      PhotoUploadController.uploadPhotoMutation
+          .run(ref, (tx) async {
+            await tx
+                .get(photoUploadControllerProvider.notifier)
+                .pickAndUpload(1);
+          })
+          .catchError((_) {}),
+    );
   }
 
   @override
@@ -7348,6 +7449,22 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         const _OnboardingCapture(mode: _OnboardingCaptureMode.instagram),
   ),
   ScreenCaptureEntry(
+    id: 'onboarding_instagram_filled',
+    routeIds: const <String>['onboardingScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _onboardingProviderOverrides(),
+    builder: (context) =>
+        const _OnboardingCapture(mode: _OnboardingCaptureMode.instagramFilled),
+  ),
+  ScreenCaptureEntry(
+    id: 'onboarding_instagram_skipped',
+    routeIds: const <String>['onboardingScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _onboardingProviderOverrides(),
+    builder: (context) =>
+        const _OnboardingCapture(mode: _OnboardingCaptureMode.instagramSkipped),
+  ),
+  ScreenCaptureEntry(
     id: 'onboarding_photos_gate',
     routeIds: const <String>['onboardingScreen'],
     device: CaptureDevice.reviewPhone,
@@ -7394,11 +7511,48 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
   ),
   ScreenCaptureEntry(
+    id: 'onboarding_photos_upload_failure',
+    routeIds: const <String>['onboardingScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _onboardingUploadFailureProviderOverrides(),
+    builder: (context) => const _OnboardingCapture(
+      mode: _OnboardingCaptureMode.photosUploadFailure,
+      profileCompletionOnly: true,
+    ),
+  ),
+  ScreenCaptureEntry(
     id: 'onboarding_prompts_empty',
     routeIds: const <String>['onboardingScreen'],
     device: CaptureDevice.reviewPhone,
     providerOverrides: _onboardingProviderOverrides(
       profile: _onboardingCaptureProfileNoPrompts,
+    ),
+    builder: (context) => const _OnboardingCapture(profileCompletionOnly: true),
+  ),
+  ScreenCaptureEntry(
+    id: 'onboarding_prompts_partial',
+    routeIds: const <String>['onboardingScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _onboardingProviderOverrides(
+      profile: _onboardingCaptureProfilePartialPrompts,
+    ),
+    builder: (context) => const _OnboardingCapture(profileCompletionOnly: true),
+  ),
+  ScreenCaptureEntry(
+    id: 'onboarding_prompts_complete',
+    routeIds: const <String>['onboardingScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _onboardingProviderOverrides(
+      profile: _onboardingCaptureProfileCompletePrompts,
+    ),
+    builder: (context) => const _OnboardingCapture(profileCompletionOnly: true),
+  ),
+  ScreenCaptureEntry(
+    id: 'onboarding_prompts_long_answer',
+    routeIds: const <String>['onboardingScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _onboardingProviderOverrides(
+      profile: _onboardingCaptureProfileLongPrompts,
     ),
     builder: (context) => const _OnboardingCapture(profileCompletionOnly: true),
   ),
@@ -7470,6 +7624,39 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     textScale: 2,
     providerOverrides: _onboardingProviderOverrides(),
     builder: (context) => const _OnboardingCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'onboarding_photos_text_scale_2',
+    routeIds: const <String>['onboardingScreen'],
+    device: CaptureDevice.reviewPhone,
+    textScale: 2,
+    providerOverrides: _onboardingProviderOverrides(
+      profile: _onboardingCaptureProfileOnePhoto,
+    ),
+    builder: (context) => const _OnboardingCapture(
+      mode: _OnboardingCaptureMode.photos,
+      profileCompletionOnly: true,
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'onboarding_prompts_text_scale_2',
+    routeIds: const <String>['onboardingScreen'],
+    device: CaptureDevice.reviewPhone,
+    textScale: 2,
+    providerOverrides: _onboardingProviderOverrides(
+      profile: _onboardingCaptureProfileLongPrompts,
+    ),
+    builder: (context) => const _OnboardingCapture(profileCompletionOnly: true),
+  ),
+  ScreenCaptureEntry(
+    id: 'onboarding_running_prefs_text_scale_2',
+    routeIds: const <String>['onboardingScreen'],
+    device: CaptureDevice.reviewPhone,
+    textScale: 2,
+    providerOverrides: _onboardingProviderOverrides(
+      profile: ProfileSurfaceFixtures.viewer,
+    ),
+    builder: (context) => const _OnboardingCapture(runPreferencesOnly: true),
   ),
   ScreenCaptureEntry(
     id: 'onboarding_gender_interest_reduced_motion',

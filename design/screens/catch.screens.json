@@ -16056,6 +16056,16 @@
           "notes": "Route capture for the Instagram handle step seeded through OnboardingController."
         },
         {
+          "id": "onboarding_instagram_filled",
+          "status": "captured",
+          "notes": "Route capture for the Instagram handle step with a filled handle."
+        },
+        {
+          "id": "onboarding_instagram_skipped",
+          "status": "captured",
+          "notes": "Route capture for the Instagram handle step with a skipped/empty handle."
+        },
+        {
           "id": "onboarding_photos_gate",
           "status": "captured",
           "notes": "Profile-completion route capture for the empty photo gate."
@@ -16076,9 +16086,29 @@
           "notes": "Profile-completion photo gate capture with an upload in progress and disabled Continue hint."
         },
         {
+          "id": "onboarding_photos_upload_failure",
+          "status": "captured",
+          "notes": "Profile-completion photo gate capture with the production upload-failure snackbar visible."
+        },
+        {
           "id": "onboarding_prompts_empty",
           "status": "captured",
           "notes": "Profile-completion route capture for empty prompt answers."
+        },
+        {
+          "id": "onboarding_prompts_partial",
+          "status": "captured",
+          "notes": "Profile-completion route capture with one prompt answer seeded."
+        },
+        {
+          "id": "onboarding_prompts_complete",
+          "status": "captured",
+          "notes": "Profile-completion route capture with all prompt answers seeded."
+        },
+        {
+          "id": "onboarding_prompts_long_answer",
+          "status": "captured",
+          "notes": "Profile-completion route capture with long prompt answers seeded."
         },
         {
           "id": "onboarding_running_prefs",
@@ -16116,6 +16146,21 @@
           "notes": "Name/DOB route capture at text scale 2.0."
         },
         {
+          "id": "onboarding_photos_text_scale_2",
+          "status": "captured",
+          "notes": "Photos route capture at text scale 2.0."
+        },
+        {
+          "id": "onboarding_prompts_text_scale_2",
+          "status": "captured",
+          "notes": "Prompts route capture at text scale 2.0."
+        },
+        {
+          "id": "onboarding_running_prefs_text_scale_2",
+          "status": "captured",
+          "notes": "Running preferences route capture at text scale 2.0."
+        },
+        {
           "id": "onboarding_gender_interest_reduced_motion",
           "status": "captured",
           "notes": "Gender/interest route capture with animations disabled."
@@ -16133,7 +16178,7 @@
           "tests": [
             "test/onboarding/onboarding_widgets_test.dart"
           ],
-          "nextAction": "Onboarding welcome now has a manifest-registered design reference and deterministic capture. Primary step, validation-error, photo gate/upload-pending, save/complete mutation, text-scale, and reduced-motion captures exist; remaining work is upload-failure transition coverage, prompt variants, Instagram variants, and state-specific references."
+          "nextAction": "Onboarding welcome now has a manifest-registered design reference and deterministic capture. Primary step, validation-error, Instagram filled/skipped, photo gate/upload-pending/upload-failure, prompt partial/complete/long-answer, save/complete mutation, text-scale, and reduced-motion captures exist; remaining work is state-specific references."
         },
         {
           "id": "name_dob_step",
@@ -16171,9 +16216,11 @@
           "status": "captured",
           "source": "InstagramPage captures the optional verification handle as part of the onboarding profile draft.",
           "captureIds": [
-            "onboarding_instagram"
+            "onboarding_instagram",
+            "onboarding_instagram_filled",
+            "onboarding_instagram_skipped"
           ],
-          "nextAction": "Deterministic route capture covers the default empty handle state. Add filled, invalid-handle, skipped-handle, and state-specific reference variants."
+          "nextAction": "Deterministic route captures cover default, filled, and skipped handle states. Add invalid-handle coverage only if Instagram validation is introduced, plus state-specific reference variants."
         },
         {
           "id": "photos_photo_gate",
@@ -16184,12 +16231,13 @@
             "onboarding_photos_gate",
             "onboarding_photos_one_photo_disabled",
             "onboarding_photos_count_met",
-            "onboarding_photos_upload_pending"
+            "onboarding_photos_upload_pending",
+            "onboarding_photos_upload_failure"
           ],
           "tests": [
             "test/onboarding/onboarding_widgets_test.dart"
           ],
-          "nextAction": "Deterministic route captures cover the empty profile-completion gate, one-photo disabled CTA, count-met CTA, and upload-pending disabled CTA. Add upload-failure transition coverage and state-specific reference variants."
+          "nextAction": "Deterministic route captures cover the empty profile-completion gate, one-photo disabled CTA, count-met CTA, upload-pending disabled CTA, and upload-failure snackbar; the production upload-failure path is also covered by a focused widget test. Add state-specific reference variants."
         },
         {
           "id": "prompts_step",
@@ -16197,9 +16245,12 @@
           "status": "captured",
           "source": "ProfilePromptsPage collects prompt answers and adapts copy for profileCompletionOnly mode.",
           "captureIds": [
-            "onboarding_prompts_empty"
+            "onboarding_prompts_empty",
+            "onboarding_prompts_partial",
+            "onboarding_prompts_complete",
+            "onboarding_prompts_long_answer"
           ],
-          "nextAction": "Deterministic route capture covers empty prompts. Add partial, complete, validation-error, long-answer, and state-specific reference variants."
+          "nextAction": "Deterministic route captures cover empty, partial, complete, and long-answer prompt states. Add validation-error coverage only if prompt validation becomes blocking, plus state-specific reference variants."
         },
         {
           "id": "running_prefs_step",
@@ -16275,11 +16326,14 @@
           "id": "text_scale_2",
           "kind": "accessibility",
           "status": "captured",
-          "source": "Name/DOB text-scale 2.0 capture covers route header, fields, and sticky footer.",
+          "source": "Step-specific text-scale 2.0 captures cover name/DOB, photos, prompts, and running preferences layouts.",
           "captureIds": [
-            "onboarding_name_dob_text_scale_2"
+            "onboarding_name_dob_text_scale_2",
+            "onboarding_photos_text_scale_2",
+            "onboarding_prompts_text_scale_2",
+            "onboarding_running_prefs_text_scale_2"
           ],
-          "nextAction": "Add step-specific text-scale variants where layout diverges."
+          "nextAction": "Add more text-scale variants only where future layouts diverge from the captured step families."
         },
         {
           "id": "reduced_motion",
@@ -16486,14 +16540,14 @@
         },
         {
           "id": "DS-ONBOARDING-002",
-          "status": "open",
-          "nextAction": "Remaining deterministic capture work is upload-failure transition coverage, prompt partial/complete/long-answer variants, Instagram filled/invalid/skipped variants, and step-specific text-scale/reduced-motion variants where layout diverges."
+          "status": "closed",
+          "nextAction": "Closed by deterministic route captures for Instagram default/filled/skipped, photo disabled/count-met/upload-pending/upload-failure, prompt empty/partial/complete/long-answer, step-specific text-scale variants, and reduced-motion sample coverage; the production upload-failure path is also covered by a focused widget test. Add Instagram invalid-handle coverage only if validation is introduced; state-specific references remain under DS-ONBOARDING-004."
         },
-      {
-        "id": "DS-ONBOARDING-003",
-        "status": "open",
-        "nextAction": "Route-shell adapter landed: OnboardingFlowState now owns entry mode, current step, previous-step/back boundary, welcome/progress shell, and OnboardingTopBarState copy/progress with focused tests. Remaining adapter work is page-level draft display data, validation, photo gate state, mutation modes, and typed callbacks so capture seeders no longer need page-local side effects."
-      },
+        {
+          "id": "DS-ONBOARDING-003",
+          "status": "open",
+          "nextAction": "Route-shell adapter landed: OnboardingFlowState now owns entry mode, current step, previous-step/back boundary, welcome/progress shell, and OnboardingTopBarState copy/progress with focused tests. Remaining adapter work is page-level draft display data, validation, photo gate state, mutation modes, and typed callbacks so capture seeders no longer need page-local side effects."
+        },
         {
           "id": "DS-ONBOARDING-004",
           "status": "open",

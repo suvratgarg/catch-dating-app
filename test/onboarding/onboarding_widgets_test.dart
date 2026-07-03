@@ -1,9 +1,16 @@
+import 'dart:async';
+
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
+import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/exceptions/error_logger.dart';
+import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
+import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_form_keys.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
@@ -22,6 +29,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../events/events_test_helpers.dart';
 import 'onboarding_test_helpers.dart';
@@ -389,6 +397,43 @@ void main() {
         findsOneWidget,
       );
     });
+
+    testWidgets('surfaces upload failures from the photo upload controller', (
+      tester,
+    ) async {
+      final user = buildUser().copyWith(profilePhotos: const []);
+      final container = createOnboardingTestContainer(
+        overrides: [
+          uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
+          watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
+          userProfileRepositoryProvider.overrideWithValue(
+            FakeOnboardingUserProfileRepository(currentUser: user),
+          ),
+          imageUploadRepositoryProvider.overrideWithValue(
+            _FailingOnboardingImageUploadRepository(),
+          ),
+          errorLoggerProvider.overrideWithValue(_SilentOnboardingErrorLogger()),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await pumpOnboardingPage(
+        tester,
+        container: container,
+        child: const _OnboardingUploadFailureSeeder(),
+      );
+      await pumpOnboardingUi(tester);
+      await pumpOnboardingUi(tester);
+
+      expect(find.text('Upload failed. Please try again.'), findsOneWidget);
+      expect(
+        container
+            .read(photoUploadControllerProvider)
+            .loadingIndices
+            .contains(0),
+        isFalse,
+      );
+    });
   });
 
   group('ProfilePromptsPage', () {
@@ -537,4 +582,73 @@ final class _FakeAnalyticsReporter implements AnalyticsReporter {
 
   @override
   Future<void> setUserId(String? userId) async {}
+}
+
+class _OnboardingUploadFailureSeeder extends ConsumerStatefulWidget {
+  const _OnboardingUploadFailureSeeder();
+
+  @override
+  ConsumerState<_OnboardingUploadFailureSeeder> createState() =>
+      _OnboardingUploadFailureSeederState();
+}
+
+class _OnboardingUploadFailureSeederState
+    extends ConsumerState<_OnboardingUploadFailureSeeder> {
+  bool _started = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _started) return;
+      _started = true;
+      PhotoUploadController.uploadPhotoMutation.reset(ref);
+      unawaited(
+        PhotoUploadController.uploadPhotoMutation
+            .run(ref, (tx) async {
+              await tx
+                  .get(photoUploadControllerProvider.notifier)
+                  .pickAndUpload(0);
+            })
+            .catchError((_) {}),
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => const PhotosPage();
+}
+
+class _FailingOnboardingImageUploadRepository extends Fake
+    implements ImageUploadRepository {
+  @override
+  Future<XFile?> pickImage({
+    ImageUploadPurpose purpose = ImageUploadPurpose.profilePhoto,
+    int? imageQuality,
+  }) async {
+    return XFile('picked-onboarding-photo.jpg');
+  }
+
+  @override
+  Future<UploadedImage> uploadUserProfilePhoto({
+    required String uid,
+    required int index,
+    required XFile image,
+  }) async {
+    throw obviousOfflineException();
+  }
+}
+
+class _SilentOnboardingErrorLogger extends ErrorLogger {
+  _SilentOnboardingErrorLogger()
+    : super(crashReporter: null, shouldReportErrors: false);
+
+  @override
+  void log({
+    required LogLevel level,
+    required String message,
+    Object? error,
+    StackTrace? stackTrace,
+    Map<String, String>? context,
+  }) {}
 }
