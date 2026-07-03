@@ -1,0 +1,201 @@
+---
+doc_id: widget_consolidation_receipts
+version: 0.2.0
+updated: 2026-07-02
+owner: widget_consolidation
+status: active
+---
+
+# Widget Consolidation Receipts
+
+Receipts for the mechanical widget-consolidation pipeline. This file records
+commands, headline numbers, manual spot-checks, and known limitations. Review
+decisions belong in `docs/design_parity/widget_consolidation/`, not here.
+
+## 2026-07-02 Phase A/B Startup
+
+Scope:
+
+- Phase A extractor package under `tool/widget_dedupe/`.
+- Phase B similarity registry builder under `tool/design/build_widget_similarity.mjs`.
+- Seeded structural probes under `tool/widget_dedupe/fixtures/`.
+- Checked registry: `docs/audit_registry/widget_similarity.json`.
+
+Commands run:
+
+- `node tool/agent/context_pack.mjs --task widget-consolidation-pipeline-phase-ab --paths docs/plans/widget_consolidation_pipeline_spec.md,tool/design,tool/widget_dedupe,docs/audit_registry/widget_similarity.json,docs/audit_registry/widget_classification.json,design/components/catch.components.json`
+- `/Users/suvratgarg/development/flutter/bin/dart tool/audit_registry.dart refresh`
+- `/Users/suvratgarg/development/flutter/bin/dart analyze --no-fatal-warnings tool/widget_dedupe`
+- `/Users/suvratgarg/development/flutter/bin/dart test tool/widget_dedupe/test/fingerprint_extractor_test.dart`
+- `env DART=/Users/suvratgarg/development/flutter/bin/dart node tool/design/check_widget_dedupe_probes.mjs`
+- `node tool/design/generate_widget_classification.mjs`
+- `node tool/design/check_widget_classification.mjs`
+- `/Users/suvratgarg/development/flutter/bin/dart run tool/widget_dedupe/bin/extract_fingerprints.dart`
+- `node tool/design/build_widget_similarity.mjs`
+- `node tool/design/build_widget_similarity.mjs --check`
+- `node tool/run.mjs check --manifest-only`
+
+Headline numbers:
+
+| metric | value |
+|---|---:|
+| classification entries | 1,172 |
+| widget classes fingerprinted | 1,067 |
+| fingerprint failures | 0 |
+| token classes discovered from `lib/core/theme` | 35 |
+| skipped trivial widgets (`tokenStreamLength < 12`) | 196 |
+| exact shape clusters | 4 |
+| structural clusters | 7 |
+| related edges | 13 |
+| screen clusters | 3 |
+| absorb-candidate clusters | 1 |
+| calibrated strong SimHash hamming threshold | 18 |
+
+Usage-count spot check:
+
+| widget | registry count | `rg -w` lines | note |
+|---|---:|---:|---|
+| CatchSurface | 334 | 334 | matches |
+| CatchSkeleton | 273 | 273 | matches |
+| CatchField | 217 | 217 | matches |
+| CatchBadge | 202 | 202 | matches |
+| CatchButton | 177 | 177 | matches |
+| ProfilePhoto | 94 | 89 | multiple same-line matches explain the count/line delta |
+| CatchSection | 63 | 63 | matches |
+| CatchTopBar | 49 | 49 | matches |
+| CatchErrorBanner | 47 | 47 | matches |
+| CatchIconButton | 47 | 47 | matches |
+| CatchErrorState | 41 | 41 | matches |
+| CatchFormFieldLabel | 36 | 36 | matches |
+| CatchEmptyState | 35 | 35 | matches |
+| CatchSelectChip | 35 | 35 | matches |
+| HostClubsScreen | 33 | 33 | matches |
+| CatchBottomDock | 32 | 32 | matches |
+| CatchPersonAvatar | 29 | 29 | matches |
+| CreateClubScreen | 29 | 29 | matches |
+| CatchErrorScaffold | 25 | 25 | matches |
+| CatchInlineErrorState | 25 | 25 | matches |
+
+Known limitation:
+
+`WIDGET-CONSOLIDATION-001`: the four spec-listed name-visible families do not
+cross the structural related threshold in this first extractor:
+
+| family | best observed Jaccard | status |
+|---|---:|---|
+| `ChatShareCard` / `ClubShareCard` / `EventShareCard` | 0.1481 | not related |
+| `DarkPill` / `EventSuccessDarkPill` | 0.0870 | not related |
+| `CountdownBeatPill` / `CountdownCuePill` | 0.0980 | not related |
+| `DashboardFocusLoadingCard` / `DashboardStrideLoadingCard` / `ClubDirectorySkeletonCard` | 0.1538 | not related |
+
+Do not lower thresholds to force these into the registry. The next Phase B
+normalization pass should decide whether a second coarse skeleton signal is
+needed, or whether these examples are better handled by the visual detector in
+Phase C.
+
+Handoff note:
+
+- Phase C visual fingerprints, Phase D packets, and Phase E/F ratchets are not
+  implemented in this slice.
+- The classification registry was stale against the current checkout before this
+  pass; it was regenerated and `node tool/design/check_widget_classification.mjs`
+  passed before fingerprint generation.
+
+## 2026-07-02 Phase A/B v0.2 Detector Refresh
+
+Scope:
+
+- Dual fine/coarse fingerprint streams per spec v0.2.0.
+- Coarse 2-gram shingles for structural math.
+- Small-widget token-multiset detector for compact pills/badges.
+- Detector-ranked pair queue seeded from top structural/containment scores and
+  one representative pair per name family.
+- Ground-truth recall table regenerated in
+  `docs/audit_registry/widget_similarity.json`.
+
+Commands run:
+
+- `node tool/agent/context_pack.mjs --task widget-consolidation-v020-detectors --paths docs/plans/widget_consolidation_pipeline_spec.md,tool/widget_dedupe,tool/design/build_widget_similarity.mjs,tool/design/check_widget_dedupe_probes.mjs,docs/audit_registry/widget_similarity.json,docs/audit_registry/widget_consolidation_receipts.md,docs/audit_registry/widget_classification.json`
+- `/Users/suvratgarg/development/flutter/bin/dart tool/audit_registry.dart refresh`
+- `/Users/suvratgarg/development/flutter/bin/dart format tool/widget_dedupe`
+- `/Users/suvratgarg/development/flutter/bin/dart analyze --no-fatal-warnings tool/widget_dedupe`
+- `/Users/suvratgarg/development/flutter/bin/dart test tool/widget_dedupe/test/fingerprint_extractor_test.dart`
+- `node --check tool/design/build_widget_similarity.mjs`
+- `node --check tool/design/check_widget_dedupe_probes.mjs`
+- `env DART=/Users/suvratgarg/development/flutter/bin/dart node tool/design/check_widget_dedupe_probes.mjs`
+- `/Users/suvratgarg/development/flutter/bin/dart run tool/widget_dedupe/bin/extract_fingerprints.dart`
+- `node tool/design/build_widget_similarity.mjs`
+- `node tool/design/build_widget_similarity.mjs --check`
+
+Headline numbers:
+
+| metric | value |
+|---|---:|
+| widget classes fingerprinted | 1,067 |
+| fingerprint failures | 0 |
+| coarse stream | class-only design tokens, sorted argument labels |
+| shingle size | 2 |
+| skipped trivial widgets (`coarseTokenStreamLength < 8`) | 98 |
+| exact shape clusters | 11 |
+| structural clusters | 65 |
+| structural edges | 160 |
+| small-widget edges | 98 |
+| ranked pairs | 200 |
+| name families | 236 |
+| related cross-role edges | 77 |
+| screen clusters | 22 |
+| absorb-candidate clusters | 10 |
+| calibrated strong SimHash hamming threshold | 39 |
+
+Ranked-pair queue composition:
+
+| source | selected pair count |
+|---|---:|
+| `top-score` | 72 |
+| `name-family` | 135 |
+
+Counts can overlap because a pair may be selected by both sources.
+
+Ground-truth recall:
+
+| ground truth | expected detector(s) | observed detector(s) | status | registry example |
+|---|---|---|---|---|
+| `DarkPill` / `EventSuccessDarkPill` | small-widget structural + name | name, ranked-pair, small-widget, structural | pass | ranked pair 45, score 0.6667 |
+| `ChatShareCardSheet` / `CatchShareCardSheet` | ranked pairs | name, ranked-pair | pass | ranked pair 50, containment 0.6857 |
+| `ChatShareCard` / `ClubShareCard` / `EventShareCard` | name family | name, ranked-pair | pass | `ShareCard` family |
+| `CountdownBeatPill` / `CountdownCuePill` | name family | name, ranked-pair | pass | `CountdownPill` family |
+| `Dashboard*LoadingCard` / `ClubDirectorySkeletonCard` | name family + ranked pairs | name, ranked-pair | pass | `LoadingCard` family, ranked pair 144 |
+
+Calibration note:
+
+The v0.1.0 SimHash threshold of 18 is void. The v0.2.0 registry recalibrates
+against coarse 2-gram shingles and records `simhashHammingStrong: 39`.
+
+Top 10 structural clusters by registry rank:
+
+| rank | cluster | members |
+|---:|---|---|
+| 1 | `c001-error-state` | `CatchErrorState`, `CatchInlineErrorState` |
+| 2 | `c002-icon-action` | `CatchTopBarIconAction`, `FeedbackIconAction`, `HostOverrideIconAction` |
+| 3 | `c003-afterglow-beat-row` | `AfterglowBeatRow`, `CountdownCuePill`, `EmptyRosterMessage`, `EventSuccessPromptCard`, `EventSuccessRecommendationTile`, `HostFunnelSummary`, `HostReportSignalGrid`, `LiveAttendanceSummaryCard`, `LiveCheckInQrCard`, `NoticeCard`, `UserAnalyticsDataQualityRow`, `UserAnalyticsEmptyState`, `UserAnalyticsTipRow`, `WaitingRevealCue` |
+| 4 | `c004-catch-detail-hero-scrim` | `CatchDetailHeroScrim`, `CatchEventThumbnailScrimOverlay`, `ClubPhotoScrim`, `ProfileHeroScrim` |
+| 5 | `c005-layout` | `CatchPersonChatLayout`, `CatchPersonRosterLayout` |
+| 6 | `c006-club-share-meta-row` | `ClubShareMetaRow`, `EventShareMetaRow`, `StageSectionLabel` |
+| 7 | `c007-dialog` | `CatchConfirmDialog`, `CatchFormDialog` |
+| 8 | `c008-live-section-header` | `LiveSectionHeader`, `RevealHostCopy`, `RunningStat`, `SetupSectionTitle`, `StructureNumberField`, `UserAnalyticsInlineStat` |
+| 9 | `c009-event-map-empty-state` | `EventMapEmptyState`, `EventMapNoPinnedEventsState`, `LaunchAccessDisabledView`, `LaunchAccessSignedOutView`, `LaunchAccessStatusView`, `ProfileUnavailableBody` |
+| 10 | `c010-companion-peer-list-skeleton` | `CompanionPeerListSkeleton`, `EventSuccessLiveRosterSkeleton`, `EventSuccessReportMetricsSkeleton`, `EventSuccessSetupControlsSkeleton`, `PaymentConfirmationLoadingScreen`, `ReviewHistoryItemSkeleton` |
+
+Historical limitation status:
+
+`WIDGET-CONSOLIDATION-001` is superseded by the v0.2.0 detector model. The
+v0.1.0 miss remains useful evidence, but it is no longer an active blocker:
+the registry now records the expected recall table hits without lowering the
+structural thresholds.
+
+Open handoff items:
+
+- Phase C visual fingerprints are still not implemented.
+- Phase D review packets and INDEX are still not implemented.
+- Phase E/F decision ledger, taxonomy census, helper-method ratchet, and
+  similarity ratchet remain future slices.
