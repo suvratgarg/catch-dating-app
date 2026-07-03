@@ -98,6 +98,125 @@
       "status": "work-order WO-003"
     },
     {
+      "clusterId": "c001-error-state",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "CatchErrorState", "action": "keep"},
+        {"name": "CatchInlineErrorState", "action": "keep"}
+      ],
+      "rationale": "Already consolidated internally: both delegate to shared _CatchErrorSpec + CatchErrorBody. Two named entry points (full-screen vs inline) are intentional API ergonomics; merging is churn without UI improvement.",
+      "decidedBy": "claude",
+      "date": "2026-07-03",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "c005-layout",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "CatchPersonChatLayout", "action": "keep"},
+        {"name": "CatchPersonRosterLayout", "action": "keep", "note": "fix raw `size: 11` -> CatchIcon.micro (token drift vs chat layout)"}
+      ],
+      "rationale": "Intentional presentation variants over shared CatchPersonRowData (chat preview with unread emphasis vs roster meta). Merging with flags would be a conditional mess. Real finding is the raw icon size literal.",
+      "decidedBy": "claude",
+      "date": "2026-07-03",
+      "status": "work-order WO-005 (drift fix only)"
+    },
+    {
+      "clusterId": "ranked-pair: HostAnalyticsBar/UserAnalyticsBar (J=1.0)",
+      "decision": "merge-new-primitive",
+      "canonicalSymbol": "CatchAnalyticsBar",
+      "members": [
+        {"name": "HostAnalyticsBar", "action": "absorb"},
+        {"name": "UserAnalyticsBar", "action": "absorb"}
+      ],
+      "rationale": "Byte-identical fractional bar-fill across host/user analytics. Note the trend: MetricTile (0.73) and panel pairs suggest a full host/user analytics-kit dedupe pass later.",
+      "decidedBy": "claude",
+      "date": "2026-07-03",
+      "status": "work-order WO-005"
+    },
+    {
+      "clusterId": "ranked-pair: EventDetailSocialSkeleton/OptimisticSocialSkeleton (J=1.0)",
+      "decision": "delete",
+      "canonicalSymbol": "EventDetailSocialSkeleton",
+      "members": [
+        {"name": "EventDetailSocialSkeleton", "action": "keep"},
+        {"name": "OptimisticSocialSkeleton", "action": "delete"}
+      ],
+      "rationale": "Byte-identical 'Who's going' skeleton duplicated across two files of the same feature.",
+      "decidedBy": "claude",
+      "date": "2026-07-03",
+      "status": "work-order WO-006"
+    },
+    {
+      "clusterId": "c010/c011 skeleton rows family",
+      "decision": "merge-new-primitive",
+      "canonicalSymbol": "CatchSkeletonRows",
+      "members": [
+        {"name": "HostEventRowsSkeleton", "action": "absorb", "note": "leading: mediaTile"},
+        {"name": "HostRosterSkeleton", "action": "absorb", "note": "leading: avatar, titled"},
+        {"name": "HostSettingsRowsSkeleton", "action": "absorb", "note": "leading: icon"},
+        {"name": "CompanionPeerListSkeleton", "action": "absorb", "note": "leading: avatar, titled"},
+        {"name": "EventSuccessLiveRosterSkeleton", "action": "absorb", "note": "leading: avatar, titled"}
+      ],
+      "rationale": "Five compositions of the same 'surface + N (leading shape, text lines) rows [+ title]' pattern across three features. One core primitive with a leading-shape enum; standardized text-width jitter (exact per-row widths are skeleton noise).",
+      "decidedBy": "claude",
+      "date": "2026-07-03",
+      "status": "work-order WO-006"
+    },
+    {
+      "clusterId": "ranked-pair: DashboardQuickActionsLoadingRow/EventSuccessTabPickerSkeleton (J=1.0)",
+      "decision": "merge-new-primitive",
+      "canonicalSymbol": "CatchSkeletonBoxRow",
+      "members": [
+        {"name": "DashboardQuickActionsLoadingRow", "action": "absorb"},
+        {"name": "EventSuccessTabPickerSkeleton", "action": "absorb"}
+      ],
+      "rationale": "Both are 'row of N equal Expanded skeleton boxes with gap' (quick actions, tab pickers). Generic enough for the catch_skeleton.dart convenience family.",
+      "decidedBy": "claude",
+      "date": "2026-07-03",
+      "status": "work-order WO-006"
+    },
+    {
+      "clusterId": "ranked-pair: ClubTagLoadingSkeleton/GenderFilterSkeleton (J=1.0)",
+      "decision": "merge-new-primitive",
+      "canonicalSymbol": "CatchSkeletonChips",
+      "members": [
+        {"name": "ClubTagLoadingSkeleton", "action": "absorb"},
+        {"name": "GenderFilterSkeleton", "action": "absorb", "note": "height param stays: chips it stands in for are taller"}
+      ],
+      "rationale": "Same jittered chip-wrap skeleton with drifted heights (s8 vs s9) and meaningless width jitter differences; standardize jitter, parameterize height.",
+      "decidedBy": "claude",
+      "date": "2026-07-03",
+      "status": "work-order WO-006"
+    },
+    {
+      "clusterId": "ranked-pair: EventPreviewSectionSkeleton/EventSuccessSkeletonSurface (J=1.0)",
+      "decision": "merge-new-primitive",
+      "canonicalSymbol": "EventSuccessSkeletonSurface (feature-level)",
+      "members": [
+        {"name": "EventSuccessSkeletonSurface", "action": "keep", "note": "unify params to (titleWidth, textLines, trailingCount)"},
+        {"name": "EventPreviewSectionSkeleton", "action": "absorb"}
+      ],
+      "rationale": "Same titled-surface + text-block + trailing-boxes skeleton, both event_success. Stays feature-level (single-feature composition). Codex must diff bodies below the shared prefix and escalate if not isomorphic.",
+      "decidedBy": "claude",
+      "date": "2026-07-03",
+      "status": "work-order WO-006"
+    },
+    {
+      "clusterId": "ranked-pair: ChatShareCardSheet/CatchShareCardSheet (containment 0.69)",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchShareCardSheet",
+      "members": [
+        {"name": "ChatShareCardSheet", "action": "absorb"},
+        {"name": "ShareCardHeader", "action": "keep", "note": "chat card internals, not sheet"},
+        {"name": "ShareCardBubble", "action": "keep", "note": "chat card internals, not sheet"}
+      ],
+      "rationale": "ChatShareCardSheet hand-rolls capture/grabber/share-button that CatchShareCardSheet already provides (club/event share flows use it in production). Parameter mapping is one-to-one; chat keeps its card widget.",
+      "decidedBy": "claude",
+      "date": "2026-07-03",
+      "status": "work-order WO-007"
+    },
+    {
       "clusterId": "small-widget: AttendedLeading/BookedLeading/UnsavedChangesPill",
       "decision": "merge-new-primitive",
       "canonicalSymbol": "EventCtaStatusLeading (feature-level)",

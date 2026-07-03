@@ -235,6 +235,227 @@ old names (gotcha 2).
 
 - [ ] merge + call sites + widgetbook + registries + receipts
 
+## WO-005 — CatchAnalyticsBar + person-layout token fix
+
+1. Create `lib/core/widgets/catch_analytics_bar.dart`:
+
+```dart
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:flutter/material.dart';
+
+/// Bottom-anchored fractional fill bar for mini bar charts.
+///
+/// Renders value/maxValue as a filled column; zero values show a faint stub.
+class CatchAnalyticsBar extends StatelessWidget {
+  const CatchAnalyticsBar({
+    super.key,
+    required this.value,
+    required this.maxValue,
+  });
+
+  final num value;
+  final num maxValue;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final ratio = maxValue <= 0 ? 0.02 : (value / maxValue).clamp(0.06, 1);
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: FractionallySizedBox(
+        heightFactor: ratio.toDouble(),
+        child: CatchSurface(
+          radius: CatchRadius.xs,
+          borderWidth: 0,
+          backgroundColor: value <= 0 ? t.line2 : t.ink,
+          child: const SizedBox.expand(),
+        ),
+      ),
+    );
+  }
+}
+```
+
+(Body is verbatim from the two byte-identical originals — `HostAnalyticsBar` in
+`lib/hosts/presentation/host_operations_screen.dart`, `UserAnalyticsBar` in
+`lib/user_analytics/shared/user_analytics_panel.dart`. If `CatchRadius` needs
+an import in this file, mirror what catch_surface.dart consumers do.)
+
+2. Migrate all call sites (`rg -w` both names in lib + widgetbook), delete
+   both classes, handle widgetbook use-cases per gotcha 2, imports per
+   gotcha 1 (host_operations_screen is a plain library; check the user
+   analytics panel).
+3. **Token drift fix** (separate concern, same order): in
+   `lib/core/widgets/catch_person_row.dart`, `CatchPersonRosterLayout` uses
+   `size: 11` for the context-line icon where `CatchPersonChatLayout` uses
+   `size: CatchIcon.micro`. Change `11` → `CatchIcon.micro`.
+4. Registries + checks + receipts (gotchas 6–8).
+
+- [ ] primitive + migration + deletions
+- [ ] token drift fix
+- [ ] widgetbook + regen + registries + receipts
+
+## WO-006 — Skeleton composition kit
+
+New file `lib/core/widgets/catch_skeleton_layouts.dart` (keep
+`catch_skeleton.dart` as the shape primitives; this file is compositions).
+All three widgets below go in it.
+
+```dart
+enum CatchSkeletonRowLeading { mediaTile, avatar, icon }
+
+/// Surface with N skeleton list rows: leading shape + two text lines,
+/// optionally headed by a section-title line.
+class CatchSkeletonRows extends StatelessWidget {
+  const CatchSkeletonRows({
+    super.key,
+    this.leading = CatchSkeletonRowLeading.avatar,
+    this.count = 3,
+    this.titleWidth,
+  });
+
+  final CatchSkeletonRowLeading leading;
+  final int count;
+  /// Width of the leading section-title skeleton line; null = no title.
+  final double? titleWidth;
+  // build: CatchSurface(borderColor: t.line, padding: CatchInsets.content,
+  //   child: Column(crossAxisAlignment: start, children: [
+  //     if titleWidth != null: CatchSkeleton.text(width: titleWidth!), gapH14,
+  //     for i in 0..count: Row([
+  //       <leading>: mediaTile -> CatchSkeleton.box(width/height:
+  //         CatchLayout.skeletonMediaTileExtent, radius: CatchRadius.sm);
+  //         avatar -> CatchSkeleton.circle(size:
+  //         CatchLayout.skeletonAvatarCompactExtent);
+  //         icon -> CatchSkeleton.box(width/height: CatchIcon.md,
+  //         radius: CatchRadius.sm),
+  //       gapW12,
+  //       Expanded(Column(start, [
+  //         CatchSkeleton.text(width: i.isEven
+  //           ? CatchLayout.skeletonTextBodyLongWidth
+  //           : CatchLayout.skeletonTextSecondaryWidth),
+  //         gapH6,
+  //         CatchSkeleton.text(width: CatchLayout.skeletonTextDetailWidth),
+  //       ])),
+  //     ]), with gapH14 between rows (not after the last)
+  //   ]))
+}
+
+/// Row of [count] equal expanded skeleton boxes (tab pickers, action rows).
+class CatchSkeletonBoxRow extends StatelessWidget {
+  const CatchSkeletonBoxRow({
+    super.key,
+    this.count = 2,
+    required this.height,
+    this.radius = CatchRadius.md,
+    this.gap = CatchSpacing.s3,
+  });
+  // Row([for i: Expanded(CatchSkeleton.box(height: height, radius: radius)),
+  //      gap between siblings])
+}
+
+/// Jittered wrap of pill skeletons standing in for chip/tag rows.
+class CatchSkeletonChips extends StatelessWidget {
+  const CatchSkeletonChips({super.key, this.height = CatchSpacing.s9});
+  // Wrap(spacing/runSpacing: CatchSpacing.s2, children: three
+  //   CatchSkeleton.box(radius: CatchRadius.pill, height: height) with widths
+  //   CatchSpacing.s16 + s6 / s16 + s10 / s16 + s4)
+}
+```
+
+IMPORTANT — before migrating each old widget, read its FULL body and confirm
+it is only the pattern above (my review saw the first ~30 lines of each). If
+a body has extra trailing elements or diverging structure, do NOT force it —
+list it under Escalations and skip that member.
+
+Migration map (then delete old classes; gotchas 1, 2, 5, 6 — several live in
+part files / screen libraries):
+
+| old | new |
+|---|---|
+| `HostRosterSkeleton(count: n)` | `CatchSkeletonRows(count: n, titleWidth: CatchLayout.skeletonTextSectionWidth)` |
+| `CompanionPeerListSkeleton()` | `CatchSkeletonRows(titleWidth: CatchLayout.skeletonTextSectionWideWidth)` |
+| `EventSuccessLiveRosterSkeleton()` | `CatchSkeletonRows(titleWidth: CatchLayout.skeletonTextTitleWidth)` |
+| `HostEventRowsSkeleton(count: n)` | `CatchSkeletonRows(leading: CatchSkeletonRowLeading.mediaTile, count: n)` |
+| `HostSettingsRowsSkeleton(rowCount: n)` | `CatchSkeletonRows(leading: CatchSkeletonRowLeading.icon, count: n)` |
+| `DashboardQuickActionsLoadingRow()` | `CatchSkeletonBoxRow(height: CatchLayout.dashboardQuickActionSkeletonHeight, gap: CatchSpacing.s3)` |
+| `EventSuccessTabPickerSkeleton()` | `CatchSkeletonBoxRow(count: 3, height: CatchLayout.controlCompactMinHeight, radius: CatchRadius.sm, gap: CatchSpacing.s2)` |
+| `ClubTagLoadingSkeleton()` | `CatchSkeletonChips(height: CatchSpacing.s8)` |
+| `GenderFilterSkeleton()` | `CatchSkeletonChips()` |
+| `OptimisticSocialSkeleton()` | `EventDetailSocialSkeleton()` (byte-identical dupe; delete Optimistic, import `event_detail_loading_skeleton.dart` where needed) |
+
+Also (same order): unify `EventPreviewSectionSkeleton` into
+`EventSuccessSkeletonSurface` — both event_success, params unify to
+`(titleWidth, textLines, trailingCount)`. Move the surviving class to
+`lib/event_success/presentation/event_success_skeletons.dart` (new shared
+feature file; both current hosts are screen-specific). Diff both bodies
+first; escalate if the trailing sections differ structurally.
+
+Note on intentional visual change: per-row text-width jitter is standardized
+by `CatchSkeletonRows` — old widgets used slightly different width tokens per
+row. This is accepted (skeleton widths are noise, not design intent).
+
+Add one widgetbook use-case file for the three new compositions under
+`widgetbook/lib/primitives/` (one state each; avatar-titled, mediaTile,
+icon, box-row, chips).
+
+- [ ] catch_skeleton_layouts.dart + widgetbook entry
+- [ ] 10 migrations + deletions (bodies verified, escalations recorded)
+- [ ] event_success skeleton surface merge
+- [ ] regen + registries + receipts
+
+## WO-007 — Absorb ChatShareCardSheet into CatchShareCardSheet
+
+`lib/chats/presentation/widgets/chat_share_card.dart` hand-rolls the share
+sheet that `lib/core/widgets/catch_share_card_sheet.dart` provides (club and
+event share flows already use the core one).
+
+1. Rewrite `showChatShareCardSheet` to build the core sheet:
+
+```dart
+Future<void> showChatShareCardSheet(
+  BuildContext context, {
+  required List<ChatMessage> messages,
+  required String currentUid,
+  required Event? event,
+  required ExternalShareController share,
+}) {
+  return showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    useSafeArea: true,
+    builder: (_) => CatchShareCardSheet(
+      card: ChatShareCard(
+        messages: messages,
+        currentUid: currentUid,
+        event: event,
+      ),
+      share: share,
+      fileName: 'catch-chat-card.png',
+      buttonLabel: 'Share card',
+      footnote: 'Names, photos, and timestamps are hidden.',
+      subject: 'Catch chat card',
+      text: 'Shared from Catch.',
+      maxWidth: CatchLayout.chatShareCardWidth,
+      pixelRatio: CatchLayout.chatShareCardPixelRatio,
+    ),
+  );
+}
+```
+
+2. Delete `ChatShareCardSheet` + `_ChatShareCardSheetState`. KEEP
+   `ChatShareCard`, `ShareCardHeader`, `ShareCardBubble`,
+   `hasShareableChatMessages`, and the private message helpers.
+3. Check the core sheet renders the card inside its own width constraint the
+   same way the chat sheet did (`ConstrainedBox(maxWidth:)` vs the core
+   `maxWidth` param) — if the core sheet does NOT constrain card width via
+   `maxWidth`, escalate instead of hacking.
+4. Widgetbook: repoint/delete use-cases typed `ChatShareCardSheet` (gotcha 2);
+   keep `ChatShareCard` use-cases.
+5. Imports (chat file is a plain library), regen, registries, receipts.
+
+- [ ] rewrite + deletion + widgetbook + regen + receipts
+
 ---
 
 ## Escalations
