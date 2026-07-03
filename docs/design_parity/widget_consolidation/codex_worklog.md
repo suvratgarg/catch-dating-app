@@ -561,7 +561,24 @@ Future<void> showChatShareCardSheet(
    keep `ChatShareCard` use-cases.
 5. Imports (chat file is a plain library), regen, registries, receipts.
 
-- [ ] rewrite + deletion + widgetbook + regen + receipts
+- [x] rewrite + deletion + widgetbook + regen + receipts
+
+Receipt: 2026-07-03 Codex WO-007 rewired `showChatShareCardSheet` to
+`CatchShareCardSheet`, deleted `ChatShareCardSheet` and
+`_ChatShareCardSheetState`, kept `ChatShareCard`, `ShareCardHeader`,
+`ShareCardBubble`, `hasShareableChatMessages`, and private message helpers, and
+repointed the Widgetbook sheet state to `CatchShareCardSheet`. The core sheet
+already constrains the preview through `ConstrainedBox(maxWidth:
+widget.maxWidth)`, so no escalation was needed. Clean checks: focused analyzer,
+root `flutter analyze --no-fatal-infos lib` (192 existing infos, 0
+warnings/errors), widget classification (1156 entries, 46 review items, 0
+private widget classes flagged), widget similarity (1049 widgets, 59 clusters,
+9 absorb candidates), widget dedupe probes, widget cleanup scan, manifest-only,
+JSON parse, stale active-code scan, and `git diff --check`. Existing blockers:
+Widgetbook analyzer still has 65 inherited HostOperations issues, Widgetbook
+coverage still has a 134 item catalog-or-replace decision queue with 0 stale
+decisions, and Widgetbook contract refs still have inherited HostOperations
+preview-id drift.
 
 ## WO-008 — Inline four more empty-state wrappers + pattern recon
 

@@ -8561,6 +8561,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Components',
             children: [
               _widgetbook.WidgetbookComponent(
+                name: 'CatchShareCardSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Sheet states',
+                    builder:
+                        _widgetbook_workspace_matches_matches_chat_use_cases
+                            .chatShareCardSheetStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'ChatConversationsList',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -8601,17 +8612,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_matches_matches_chat_use_cases
                             .chatShareCardStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'ChatShareCardSheet',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Sheet states',
-                    builder:
-                        _widgetbook_workspace_matches_matches_chat_use_cases
-                            .chatShareCardSheetStates,
                   ),
                 ],
               ),

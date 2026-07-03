@@ -1,6 +1,4 @@
-import 'dart:async';
 import 'dart:math' as math;
-import 'dart:ui' as ui;
 
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_event_context_copy.dart';
@@ -9,15 +7,12 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_sheet_grabber.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
+import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 Future<void> showChatShareCardSheet(
   BuildContext context, {
@@ -30,129 +25,28 @@ Future<void> showChatShareCardSheet(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
-    builder: (_) => ChatShareCardSheet(
-      messages: messages,
-      currentUid: currentUid,
-      event: event,
+    builder: (_) => CatchShareCardSheet(
+      card: ChatShareCard(
+        messages: messages,
+        currentUid: currentUid,
+        event: event,
+      ),
       share: share,
+      fileName: 'catch-chat-card.png',
+      buttonLabel: 'Share card',
+      footnote: 'Names, photos, and timestamps are hidden.',
+      subject: 'Catch chat card',
+      text: 'Shared from Catch.',
+      // ignore: avoid_redundant_argument_values
+      maxWidth: CatchLayout.chatShareCardWidth,
+      // ignore: avoid_redundant_argument_values
+      pixelRatio: CatchLayout.chatShareCardPixelRatio,
     ),
   );
 }
 
 bool hasShareableChatMessages(List<ChatMessage> messages) {
   return messages.any((message) => _shareableText(message).isNotEmpty);
-}
-
-// Public for Widgetbook.
-class ChatShareCardSheet extends StatefulWidget {
-  const ChatShareCardSheet({
-    super.key,
-    required this.messages,
-    required this.currentUid,
-    required this.event,
-    required this.share,
-  });
-
-  final List<ChatMessage> messages;
-  final String currentUid;
-  final Event? event;
-  final ExternalShareController share;
-
-  @override
-  State<ChatShareCardSheet> createState() => _ChatShareCardSheetState();
-}
-
-class _ChatShareCardSheetState extends State<ChatShareCardSheet> {
-  final _captureKey = GlobalKey();
-  bool _sharing = false;
-
-  Future<void> _share(BuildContext buttonContext) async {
-    if (_sharing) return;
-    setState(() => _sharing = true);
-
-    try {
-      final box = buttonContext.findRenderObject() as RenderBox?;
-      final origin = box == null
-          ? null
-          : box.localToGlobal(Offset.zero) & box.size;
-      await WidgetsBinding.instance.endOfFrame;
-      if (!mounted) return;
-      final boundary =
-          _captureKey.currentContext?.findRenderObject()
-              as RenderRepaintBoundary?;
-      final image = await boundary?.toImage(
-        pixelRatio: CatchLayout.chatShareCardPixelRatio,
-      );
-      final byteData = await image?.toByteData(format: ui.ImageByteFormat.png);
-      image?.dispose();
-      final bytes = byteData?.buffer.asUint8List();
-      if (bytes == null) {
-        throw StateError('Chat share card did not render.');
-      }
-
-      await widget.share.sharePngFile(
-        pngBytes: bytes,
-        fileName: 'catch-chat-card.png',
-        subject: 'Catch chat card',
-        text: 'Shared from Catch.',
-        origin: origin,
-      );
-    } on Object {
-      if (!mounted) return;
-      showCatchSnackBar(context, 'Unable to share this card.');
-    } finally {
-      if (mounted) setState(() => _sharing = false);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Padding(
-      padding: CatchInsets.content.copyWith(
-        bottom: MediaQuery.viewInsetsOf(context).bottom + CatchSpacing.s4,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const CatchBottomSheetGrabber(),
-          gapH16,
-          RepaintBoundary(
-            key: _captureKey,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: CatchLayout.chatShareCardWidth,
-              ),
-              child: ChatShareCard(
-                messages: widget.messages,
-                currentUid: widget.currentUid,
-                event: widget.event,
-              ),
-            ),
-          ),
-          gapH12,
-          Text(
-            'Names, photos, and timestamps are hidden.',
-            textAlign: TextAlign.center,
-            style: CatchTextStyles.supporting(context, color: t.ink2),
-          ),
-          gapH16,
-          Builder(
-            builder: (buttonContext) => CatchButton(
-              label: 'Share card',
-              fullWidth: true,
-              isLoading: _sharing,
-              icon: Icon(
-                CatchIcons.platformShare(platform: Theme.of(context).platform),
-              ),
-              onPressed: () => unawaited(_share(buttonContext)),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 // Public for Widgetbook.

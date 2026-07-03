@@ -652,6 +652,93 @@ Known blockers / inherited debt:
   succeeds, but build_runner reports that the delete-conflicting option has
   been removed and is ignored by the current builder.
 
+## 2026-07-03 WO-007 Chat share sheet consolidation
+
+Scope:
+
+- `ChatShareCardSheet`
+- `_ChatShareCardSheetState`
+- `showChatShareCardSheet`
+- `ChatShareCard`
+- `ShareCardHeader`
+- `ShareCardBubble`
+- `CatchShareCardSheet`
+
+Commands:
+
+- `node tool/agent/context_pack.mjs --task widget-consolidation-wo-007 --paths lib/chats/presentation/widgets/chat_share_card.dart,lib/core/widgets/catch_share_card_sheet.dart,widgetbook/lib/chats,widgetbook/lib/main.directories.g.dart,docs/design_parity/widget_consolidation/codex_worklog.md,docs/design_parity/widget_consolidation/decisions.json,docs/widget_catalog.md,docs/audit_registry/widget_consolidation_receipts.md`
+- `dart format lib/chats/presentation/widgets/chat_share_card.dart widgetbook/lib/matches/matches_chat_use_cases.dart`
+- `flutter analyze --no-fatal-infos lib/chats/presentation/widgets/chat_share_card.dart widgetbook/lib/matches/matches_chat_use_cases.dart`
+- `flutter pub get` in `widgetbook/`
+- `dart run build_runner build --delete-conflicting-outputs` in `widgetbook/`
+- `node tool/design/generate_widget_classification.mjs`
+- `node tool/design/check_widget_classification.mjs`
+- `dart run tool/widget_dedupe/bin/extract_fingerprints.dart`
+- `node tool/design/build_widget_similarity.mjs`
+- `node tool/design/build_widget_similarity.mjs --check`
+- `node tool/design/check_widgetbook_coverage.mjs --check`
+- `DART=/Users/suvratgarg/Development/flutter/bin/dart node tool/design/check_widget_dedupe_probes.mjs`
+- `flutter analyze --no-fatal-infos lib`
+- `flutter analyze` in `widgetbook/`
+- `bash tool/widget_cleanup_scan.sh --summary`
+- `node tool/run.mjs check --manifest-only`
+- `node tool/design/check_widgetbook_contract_refs.mjs --check`
+- `node -e "const fs=require('fs'); for (const f of process.argv.slice(1)) JSON.parse(fs.readFileSync(f,'utf8')); console.log('JSON parse passed');" docs/audit_registry/widget_classification.json artifacts/widget_dedupe/fingerprints.json docs/audit_registry/widget_similarity.json docs/audit_registry/doc_versions.json docs/design_parity/widget_consolidation/decisions.json`
+- `rg -n "class ChatShareCardSheet|_ChatShareCardSheetState|type: ChatShareCardSheet|child: ChatShareCardSheet|title: 'ChatShareCardSheet'" lib widgetbook/lib --glob '!widgetbook/lib/main.directories.g.dart'`
+- `git diff --check`
+
+Headline numbers:
+
+| metric | value |
+|---|---:|
+| widget classification entries | 1,156 |
+| classification review items | 46 |
+| private widget classes flagged | 0 |
+| widget fingerprints | 1,049 |
+| fingerprint failures | 0 |
+| similarity clusters | 59 |
+| ranked pairs | 200 |
+| name families | 224 |
+| absorb candidates | 9 |
+| Widgetbook coverage decision queue | 134 |
+| Widgetbook coverage stale decisions | 0 |
+| root lib analyzer infos | 192 |
+| Widgetbook analyzer issues | 65 |
+| widget cleanup scan categories with findings | 0 |
+
+Spot checks:
+
+- `showChatShareCardSheet` now builds `CatchShareCardSheet` with a
+  `ChatShareCard` preview, chat file name, footnote, subject, text, max-width,
+  and pixel-ratio mapping.
+- `CatchShareCardSheet` already owns the preview width constraint through
+  `ConstrainedBox(maxWidth: widget.maxWidth)`, so no local sheet-shell
+  workaround was needed.
+- Active `lib` and `widgetbook/lib` code no longer define, type, or instantiate
+  `ChatShareCardSheet`; the only remaining references are historical
+  decision/worklog evidence.
+- Widgetbook keeps the chat card, header, and bubble review surfaces while the
+  sheet state is typed as `CatchShareCardSheet`.
+- `docs/widget_catalog.md` v2.5.552 removes the retired
+  `ChatShareCardSheet` row and keeps the remaining chat share-card internals
+  cataloged at their new line numbers.
+
+Known blockers / inherited debt:
+
+- `node tool/design/check_widgetbook_coverage.mjs --check` still fails on the
+  existing catalog-or-replace decision queue: 134 public widgets need
+  decisions, with 0 stale decisions.
+- `(cd widgetbook && flutter analyze)` still fails on 65 existing Widgetbook
+  issues in `lib/hosts/host_operations_use_cases.dart`.
+- `node tool/design/check_widgetbook_contract_refs.mjs --check` still fails on
+  unrelated HostOperations preview ids.
+- `dart run build_runner build --delete-conflicting-outputs` in `widgetbook/`
+  succeeds, but build_runner reports that the delete-conflicting option has
+  been removed and is ignored by the current builder.
+- The dedupe-probe script needed unsandboxed access because Flutter's Dart
+  wrapper attempted SDK cache writes outside the workspace before reporting
+  `Widget dedupe probes passed`.
+
 Calibration note:
 
 The v0.1.0 SimHash threshold of 18 is void. The v0.2.0 registry recalibrates
