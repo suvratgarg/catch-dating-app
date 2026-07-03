@@ -1500,22 +1500,17 @@ must not attempt it.
   the shared chip-wrap shape hides different multi-select, questionnaire,
   reveal countdown, and rotation-cadence APIs that need feature-level design.
 - WO-015 ranked-pair: `EditHostedEventPickerTile`, `WhenStepPickerTile` —
-  nearest rule: no exact K/R match, blocked because merging the near-identical
-  host picker tiles requires a shared host picker-tile contract, file ownership
-  decision, and empty-string behavior standardization across create/edit event
-  surfaces.
-- WO-015 ranked-pair: `DarkPill`, `EventSuccessDarkPill` — nearest rule: K5
-  concept mismatch, blocked because the former is a manual-QA accent-ink pill
-  while the latter is an Event Success editorial overlay primitive with an
-  optional foreground override and more than ten external usages.
+  resolved by WO-020 as `HostPickerTile`; the shared contract standardizes
+  empty strings to the placeholder state.
+- WO-015 ranked-pair: `DarkPill`, `EventSuccessDarkPill` — resolved by
+  WO-019; manual-QA dark pills now reuse `EventSuccessDarkPill`.
 - WO-015 ranked-pair: `CatchMetaRow`, `EventPolicyLabSectionTitle` — nearest
   rule: K5 concept mismatch, blocked because metadata rows and policy-lab
   section-title rows use different typography, trailing affordance, and icon
   sizing contracts.
-- WO-015 ranked-pair: `CatchTopBarIconAction`, `OverlayIconAction` — nearest
-  rule: no exact K/R match, blocked because absorbing the overlay action needs
-  reviewed core API support for semantic wrapper ownership, floating-control
-  background alpha, button extent, and row-sized icons.
+- WO-015 ranked-pair: `CatchTopBarIconAction`, `OverlayIconAction` —
+  resolved by WO-020 as `CatchIconAction`; the old top-bar name remains only as
+  a deprecated typedef.
 - WO-015 ranked-pair: `EventDetailBody`, `EventDetailOptimisticBody` —
   nearest rule: no exact K/R match, blocked because merging the optimistic
   fallback into the loaded detail body requires an event-detail state/action API
@@ -1528,8 +1523,8 @@ must not attempt it.
   nearest rule: no exact K/R match, blocked because absorbing veiled activity
   placeholders into the core avatar requires a reviewed avatar API decision.
 - WO-015 ranked-pair: `CatchSectionHeader`, `HostOrganizerSectionHeader` —
-  nearest rule: K5 concept mismatch, blocked because section title/subtitle
-  headers and host organizer mono-label/action rows carry different token roles.
+  resolved by WO-020; host organizer rows now compose `CatchSectionHeader` with
+  mono title styling and optional `CatchTextButton` trailing action.
 - WO-015 ranked-pair: `EventDetailPolicySummary`, `EventPolicySummary` —
   nearest rule: K5 concept mismatch, blocked because attendee-facing event
   policy copy and policy-lab scenario/debug policy rows are different surfaces.
@@ -1548,9 +1543,8 @@ must not attempt it.
 - WO-015 ranked-pair: `CatchScreenBody`, `PublicProfileScreenBody` — nearest
   rule: no exact K/R match, blocked because a generic padding/scroll shell and
   public-profile route-state dispatcher are not the same abstraction.
-- WO-015 ranked-pair: `CatchPrivacyBadge`, `PrivacyBadge` — nearest rule: K5
-  concept mismatch, blocked because the core uppercase privacy token badge and
-  Event Success audience-to-CatchBadge adapter use different visual contracts.
+- WO-015 ranked-pair: `CatchPrivacyBadge`, `PrivacyBadge` — resolved by
+  WO-019; the core badge owns the Event Success privacy vocabulary.
 - WO-015 ranked-pair: `CatchFieldRow`, `ProfileFieldRow` — nearest rule: no
   exact K/R match, blocked because the core row layout primitive and profile
   descriptor/editor dispatcher live at different abstraction levels.
@@ -1589,9 +1583,9 @@ must not attempt it.
   because host route-level screens are architecture decisions, not widget-shape
   merges.
 - WO-015 ranked-pair: `ExploreListEmptyState`, `ExploreScreenEmptyState` —
-  nearest rule: no exact K/R match, blocked because the list variant owns
-  provider-backed clear actions while the screen variant consumes route-level
-  empty state and callbacks.
+  resolved by WO-020 as keep-distinct; the list variant owns provider-backed
+  clear actions while the screen variant consumes route-level empty state and
+  callbacks.
 - WO-015 ranked-pair: `ProfileMultiEnumEntry`, `ProfileSingleEnumEntry` —
   nearest rule: no exact K/R match, blocked because single-choice and
   multi-choice profile enum entries have different selection, empty-affordance,
@@ -1610,24 +1604,25 @@ must not attempt it.
   `EventSuccessCompanionLoadingBody` — nearest rule: no exact K/R match,
   blocked because these are screen-level loading bodies with different route
   ownership.
-- WO-015 ranked-pair: `ClubShareCard`, `EventShareCard` — nearest rule: no
-  exact K/R match, blocked because a shared rich share-card contract needs
-  review-session API design for art system, metadata, and CTA differences.
+- WO-015 ranked-pair: `ClubShareCard`, `EventShareCard` — resolved by WO-020
+  for the shared footer only; card bodies stay distinct because art systems,
+  metadata, and CTA contracts differ.
 - WO-015 ranked-pair: `HostClubEditorStateView`,
   `HostCreateEventRouteStateView` — nearest rule: no exact K/R match, blocked
   because host route/editor state dispatchers are architecture decisions.
-- WO-015 ranked-pair: `HostCapacityTile`, `HostOrganizerMetricTile` — nearest
-  rule: K5 concept mismatch, blocked because host capacity tiles and organizer
-  metric rail cells use different typography, detail, and surface contracts.
+- WO-015 ranked-pair: `HostCapacityTile`, `HostOrganizerMetricTile` —
+  resolved by WO-020 for the organizer metric cell only:
+  `HostOrganizerMetricTile` now composes `CatchStatColumn`; `HostCapacityTile`
+  remains distinct.
 - WO-015 ranked-pair: `PaperCelebrationDetailRow`, `PaperExpectationRow` —
   nearest rule: K5 concept mismatch, blocked because paper celebration
   label/value facts and companion expectation rows are different row concepts.
 - WO-015 ranked-pair: `EventActionCardHeader`, `EventPolicyLabHeader` —
   nearest rule: K5 concept mismatch, blocked because compact action-card badge
   chrome and policy-lab screen hero headers are different concepts.
-- WO-015 ranked-pair: `StageCueLine`, `StagePrivacyLine` — nearest rule: K5
-  concept mismatch, blocked because copyable conversation cue rows and locked
-  privacy notices have different action, icon, and token roles.
+- WO-015 ranked-pair: `StageCueLine`, `StagePrivacyLine` — resolved by WO-020
+  as keep-distinct; the token drift on `StagePrivacyLine` was fixed to
+  `CatchIcon.md`.
 - WO-015 ranked-pair: `HostActionRow`, `HostEventSummaryRow` — nearest rule:
   K5 concept mismatch, blocked because host management action rows and
   icon-led event summary facts are different row concepts.
@@ -1665,10 +1660,10 @@ must not attempt it.
   `EventSuccessSkeletonSurface` — nearest rule: K5 concept mismatch, blocked
   because live ticket chrome and Event Success loading placeholders are
   different concepts.
-- WO-015 ranked-pair: `HostOrganizerHeader`, `HostTodayHeader` — nearest
-  rule: K5 concept mismatch, blocked because organizer identity headers and
-  today-dashboard headers have different host contexts and information
-  hierarchy.
+- WO-015 ranked-pair: `HostOrganizerHeader`, `HostTodayHeader` — resolved by
+  WO-020 as keep-distinct. The 64px organizer avatar remains raw pending a
+  semantic host-organizer avatar token because existing exact 64px tokens are
+  chat/club-specific.
 - WO-015 ranked-pair: `PaperProgressRail`, `QuestionProgressRail` — nearest
   rule: K5 concept mismatch, blocked because passive companion-step rails and
   interactive questionnaire rails have different behavior contracts.
