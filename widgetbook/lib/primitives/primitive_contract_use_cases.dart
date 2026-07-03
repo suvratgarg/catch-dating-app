@@ -2912,7 +2912,7 @@ Widget catchPrivacyBadgeContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'host-visible',
-        child: CatchPrivacyBadge(kind: CatchPrivacyBadgeKind.host),
+        child: CatchPrivacyBadge(kind: CatchPrivacyBadgeKind.hostCanSee),
       ),
     ],
   );

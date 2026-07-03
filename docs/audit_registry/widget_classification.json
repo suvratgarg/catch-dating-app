@@ -10,28 +10,28 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1142,
-    "widgetClasses": 1035,
+    "total": 1140,
+    "widgetClasses": 1033,
     "stateClasses": 107,
-    "publicClasses": 1035,
+    "publicClasses": 1033,
     "privateClasses": 107,
     "byRole": {
       "atom": 57,
       "composition": 318,
-      "feature-adapter": 322,
+      "feature-adapter": 321,
       "pattern": 16,
-      "screen": 322,
+      "screen": 321,
       "widget-state": 107
     },
     "byDecision": {
       "keep-canonical-contract": 173,
-      "keep-public-cataloged": 814,
+      "keep-public-cataloged": 812,
       "keep-widget-state": 107,
       "review-catalog-coverage": 37,
       "review-promote-or-consolidate": 11
     },
     "byCatalogStatus": {
-      "cataloged": 731,
+      "cataloged": 729,
       "contracted": 173,
       "not-applicable": 107,
       "route-covered": 94,
@@ -9217,29 +9217,6 @@
       "flags": []
     },
     {
-      "name": "PrivacyBadge",
-      "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.event_success.privacy_badge",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
       "name": "StageActionDock",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
       "classKind": "widget",
@@ -10114,29 +10091,6 @@
       "flags": []
     },
     {
-      "name": "EventSuccessDarkPill",
-      "file": "lib/event_success/presentation/event_success_feature_blocks.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.event_success.event_success_dark_pill",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
       "name": "EventSuccessHostSetupFlow",
       "file": "lib/event_success/presentation/event_success_feature_blocks.dart",
       "classKind": "widget",
@@ -10405,6 +10359,29 @@
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "EventSuccessDarkPill",
+      "file": "lib/event_success/presentation/event_success_hero_surface.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "feature-adapter",
+      "canonicalFamily": "feature.event_success.event_success_dark_pill",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "feature-display-models",
+      "stateOwnership": "feature-display-state",
+      "asyncOwnership": "display-state-only",
+      "layoutOwnership": "feature-section-layout",
+      "actionOwnership": "feature-callbacks",
       "decision": "keep-public-cataloged",
       "remediationOptions": [
         "keepPublicCataloged",
@@ -11018,29 +10995,6 @@
       "visibility": "public",
       "role": "screen",
       "canonicalFamily": "screen.control_label",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "DarkPill",
-      "file": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.dark_pill",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,

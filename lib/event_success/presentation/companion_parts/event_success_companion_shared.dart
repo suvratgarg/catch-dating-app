@@ -1680,35 +1680,6 @@ class CompanionStageContentTransition extends StatelessWidget {
   }
 }
 
-/// Who else can see this card's data. Surfaces a consistent badge across
-/// questionnaire, wingman, and feedback so the attendee can tell at a glance
-/// what they're putting on the record.
-enum _PrivacyAudience { privateToYou, hostCanSee, catchPrivate }
-
-class PrivacyBadge extends StatelessWidget {
-  const PrivacyBadge(this.audience);
-
-  final _PrivacyAudience audience;
-
-  @override
-  Widget build(BuildContext context) {
-    return switch (audience) {
-      _PrivacyAudience.privateToYou => CatchBadge(
-        label: 'Private to you',
-        icon: CatchIcons.lockOutlineRounded,
-      ),
-      _PrivacyAudience.hostCanSee => CatchBadge(
-        label: 'Host can see',
-        icon: CatchIcons.visibilityOutlined,
-      ),
-      _PrivacyAudience.catchPrivate => CatchBadge(
-        label: 'Catch private',
-        icon: CatchIcons.shieldOutlined,
-      ),
-    };
-  }
-}
-
 /// Gives the wrapped widget a kinetic press response: scale down on tap-down,
 /// brief glow flare, then a spring-back to rest. Drop-in replacement for
 /// InkWell-style affordances on the stage where Material's ink ripple feels

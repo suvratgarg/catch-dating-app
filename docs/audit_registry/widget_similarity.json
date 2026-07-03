@@ -1170,7 +1170,7 @@
       "simhash128": "bc14ff8f23fefb5b624dcdbb7339f3b5",
       "tokenStreamLength": 54,
       "coarseTokenStreamLength": 54,
-      "usageCountRaw": 200,
+      "usageCountRaw": 197,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -2678,7 +2678,7 @@
       "simhash128": "3880794c5729fa58b764ed4e60a4f1d5",
       "tokenStreamLength": 26,
       "coarseTokenStreamLength": 26,
-      "usageCountRaw": 5,
+      "usageCountRaw": 11,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -3133,7 +3133,7 @@
       "simhash128": "7dc9d929c8a5c9bf3e46c41ff06fdd21",
       "tokenStreamLength": 100,
       "coarseTokenStreamLength": 100,
-      "usageCountRaw": 323,
+      "usageCountRaw": 322,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": true
     },
@@ -4823,7 +4823,7 @@
       "simhash128": "527fbb4c5f5f633abf43edf572379ddc",
       "tokenStreamLength": 13,
       "coarseTokenStreamLength": 13,
-      "usageCountRaw": 3,
+      "usageCountRaw": 0,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -6643,7 +6643,7 @@
       "simhash128": "72bd3b0d52590b3bbf44e4f5be351bfc",
       "tokenStreamLength": 16,
       "coarseTokenStreamLength": 16,
-      "usageCountRaw": 14,
+      "usageCountRaw": 20,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -11193,7 +11193,7 @@
       "simhash128": "b941afc510e2aaac54a03bbe3932db0e",
       "tokenStreamLength": 15,
       "coarseTokenStreamLength": 15,
-      "usageCountRaw": 9,
+      "usageCountRaw": 0,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -14043,8 +14043,33 @@
       "scope": "widget"
     },
     {
-      "id": "c006-sliver-body",
+      "id": "c006-pill",
       "rank": 6,
+      "score": 22.5882,
+      "cohesion": 0.4706,
+      "absorbCandidate": false,
+      "nameSignal": "Pill",
+      "detectors": [
+        "structural",
+        "name"
+      ],
+      "members": [
+        "EventSharePill",
+        "EventSuccessDarkPill"
+      ],
+      "paramCompatibility": {
+        "min": 0.6667,
+        "mean": 0.6667
+      },
+      "structuralSignals": [
+        "small-widget"
+      ],
+      "visualBridges": [],
+      "scope": "widget"
+    },
+    {
+      "id": "c007-sliver-body",
+      "rank": 7,
       "score": 21.4502,
       "cohesion": 0.6309,
       "absorbCandidate": false,
@@ -14070,8 +14095,8 @@
       "scope": "widget"
     },
     {
-      "id": "c007-attendee-prompt-preview",
-      "rank": 7,
+      "id": "c008-attendee-prompt-preview",
+      "rank": 8,
       "score": 19.9953,
       "cohesion": 0.4081,
       "absorbCandidate": false,
@@ -14104,8 +14129,8 @@
       "scope": "widget"
     },
     {
-      "id": "c008-stage-action-dock",
-      "rank": 8,
+      "id": "c009-stage-action-dock",
+      "rank": 9,
       "score": 18.517,
       "cohesion": 0.4748,
       "absorbCandidate": false,
@@ -14130,8 +14155,8 @@
       "scope": "widget"
     },
     {
-      "id": "c009-choice-entry-editor",
-      "rank": 9,
+      "id": "c010-choice-entry-editor",
+      "rank": 10,
       "score": 17.25,
       "cohesion": 0.7188,
       "absorbCandidate": false,
@@ -14156,8 +14181,8 @@
       "scope": "widget"
     },
     {
-      "id": "c010-event-success-report-metrics-skeleton",
-      "rank": 10,
+      "id": "c011-event-success-report-metrics-skeleton",
+      "rank": 11,
       "score": 16.9426,
       "cohesion": 0.4983,
       "absorbCandidate": false,
@@ -14182,31 +14207,6 @@
       ],
       "visualBridges": [],
       "scope": "screen"
-    },
-    {
-      "id": "c011-pill",
-      "rank": 11,
-      "score": 16.9412,
-      "cohesion": 0.4706,
-      "absorbCandidate": false,
-      "nameSignal": "Pill",
-      "detectors": [
-        "structural",
-        "name"
-      ],
-      "members": [
-        "EventSharePill",
-        "EventSuccessDarkPill"
-      ],
-      "paramCompatibility": {
-        "min": 0.6667,
-        "mean": 0.6667
-      },
-      "structuralSignals": [
-        "small-widget"
-      ],
-      "visualBridges": [],
-      "scope": "widget"
     },
     {
       "id": "c012-host-card",
@@ -20368,7 +20368,7 @@
         "EventSuccessDarkPill",
         "EventSuccessMetricPill"
       ],
-      "usageSum": 45,
+      "usageSum": 51,
       "scope": "widget"
     },
     {
@@ -20705,7 +20705,7 @@
         "EventSuccessDarkPill",
         "ExploreDarkPill"
       ],
-      "usageSum": 23,
+      "usageSum": 26,
       "scope": "mixed"
     },
     {
@@ -21481,18 +21481,7 @@
       "scope": "screen"
     },
     {
-      "id": "n113-privacy-badge",
-      "stem": "PrivacyBadge",
-      "stemType": "final-two",
-      "members": [
-        "CatchPrivacyBadge",
-        "PrivacyBadge"
-      ],
-      "usageSum": 14,
-      "scope": "widget"
-    },
-    {
-      "id": "n114-app-bar",
+      "id": "n113-app-bar",
       "stem": "AppBar",
       "stemType": "final-two",
       "members": [
@@ -21503,7 +21492,7 @@
       "scope": "widget"
     },
     {
-      "id": "n115-dashboard-section",
+      "id": "n114-dashboard-section",
       "stem": "DashboardSection",
       "stemType": "outer",
       "members": [
@@ -21514,7 +21503,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n116-event-panel",
+      "id": "n115-event-panel",
       "stem": "EventPanel",
       "stemType": "outer",
       "members": [
@@ -21525,7 +21514,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n117-activity-section",
+      "id": "n116-activity-section",
       "stem": "ActivitySection",
       "stemType": "final-two",
       "members": [
@@ -21536,7 +21525,7 @@
       "scope": "widget"
     },
     {
-      "id": "n118-chip-value",
+      "id": "n117-chip-value",
       "stem": "ChipValue",
       "stemType": "final-two",
       "members": [
@@ -21547,7 +21536,7 @@
       "scope": "widget"
     },
     {
-      "id": "n119-person-layout",
+      "id": "n118-person-layout",
       "stem": "PersonLayout",
       "stemType": "outer",
       "members": [
@@ -21558,7 +21547,7 @@
       "scope": "widget"
     },
     {
-      "id": "n120-config-editor",
+      "id": "n119-config-editor",
       "stem": "ConfigEditor",
       "stemType": "final-two",
       "members": [
@@ -21569,7 +21558,7 @@
       "scope": "widget"
     },
     {
-      "id": "n121-detail-body",
+      "id": "n120-detail-body",
       "stem": "DetailBody",
       "stemType": "final-two",
       "members": [
@@ -21580,7 +21569,7 @@
       "scope": "widget"
     },
     {
-      "id": "n122-photo-picker",
+      "id": "n121-photo-picker",
       "stem": "PhotoPicker",
       "stemType": "final-two",
       "members": [
@@ -21591,12 +21580,23 @@
       "scope": "widget"
     },
     {
-      "id": "n123-photo-strip",
+      "id": "n122-photo-strip",
       "stem": "PhotoStrip",
       "stemType": "final-two",
       "members": [
         "ClubPhotoStrip",
         "EventDetailPhotoStrip"
+      ],
+      "usageSum": 11,
+      "scope": "widget"
+    },
+    {
+      "id": "n123-privacy-badge",
+      "stem": "PrivacyBadge",
+      "stemType": "final-two",
+      "members": [
+        "CatchPrivacyBadge",
+        "PrivacyBadge"
       ],
       "usageSum": 11,
       "scope": "widget"

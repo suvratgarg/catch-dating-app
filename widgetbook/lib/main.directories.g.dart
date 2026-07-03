@@ -5680,17 +5680,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'PrivacyBadge',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'PrivacyBadge',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictPrivacyBadge,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'PrivateAfterglowRecapCard',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -7152,17 +7141,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
                             .eventSuccessStrictControlLabel,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'DarkPill',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'DarkPill',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictDarkPill,
                   ),
                 ],
               ),

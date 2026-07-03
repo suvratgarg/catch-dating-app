@@ -534,13 +534,15 @@ class ManualQaHero extends StatelessWidget {
             spacing: CatchSpacing.s2,
             runSpacing: CatchSpacing.s2,
             children: [
-              DarkPill(label: '${data.roster.bookedCount} booked'),
-              DarkPill(label: '${data.roster.checkedInCount} checked in'),
-              DarkPill(
+              EventSuccessDarkPill(label: '${data.roster.bookedCount} booked'),
+              EventSuccessDarkPill(
+                label: '${data.roster.checkedInCount} checked in',
+              ),
+              EventSuccessDarkPill(
                 label:
                     '${data.plan.structureConfig.revealCountdownSeconds}s reveal',
               ),
-              DarkPill(
+              EventSuccessDarkPill(
                 label:
                     !data.plan.hasModule(
                       EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
@@ -920,31 +922,6 @@ class ControlLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(label, style: CatchTextStyles.labelL(context));
-  }
-}
-
-class DarkPill extends StatelessWidget {
-  const DarkPill({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return CatchSurface(
-      backgroundColor: t.accentInk.withValues(
-        alpha: CatchOpacity.manualQaPillFill,
-      ),
-      borderColor: t.accentInk.withValues(
-        alpha: CatchOpacity.manualQaPillBorder,
-      ),
-      radius: CatchRadius.pill,
-      padding: CatchInsets.compactControlContent,
-      child: Text(
-        label,
-        style: CatchTextStyles.labelL(context, color: t.accentInk),
-      ),
-    );
   }
 }
 

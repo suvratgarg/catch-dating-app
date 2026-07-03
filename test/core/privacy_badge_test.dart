@@ -17,7 +17,7 @@ void main() {
             children: [
               CatchPrivacyBadge(),
               CatchPrivacyBadge(kind: CatchPrivacyBadgeKind.catchPrivate),
-              CatchPrivacyBadge(kind: CatchPrivacyBadgeKind.host),
+              CatchPrivacyBadge(kind: CatchPrivacyBadgeKind.hostCanSee),
             ],
           ),
         ),
@@ -27,7 +27,8 @@ void main() {
     expect(find.text('PRIVATE TO YOU'), findsOneWidget);
     expect(find.text('CATCH PRIVATE'), findsOneWidget);
     expect(find.text('HOST CAN SEE'), findsOneWidget);
-    expect(find.byIcon(CatchIcons.lockOutlineRounded), findsNWidgets(2));
+    expect(find.byIcon(CatchIcons.lockOutlineRounded), findsOneWidget);
+    expect(find.byIcon(CatchIcons.shieldOutlined), findsOneWidget);
     expect(find.byIcon(CatchIcons.visibilityOutlined), findsOneWidget);
   });
 }

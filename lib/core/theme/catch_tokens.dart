@@ -1049,8 +1049,6 @@ abstract final class CatchOpacity {
   static const double arrivalCelebrationMidMultiplier = 0.85;
   static const double arrivalCelebrationLowMultiplier = 0.50;
   static const double manualQaHeroMeta = 0.86;
-  static const double manualQaPillFill = 0.14;
-  static const double manualQaPillBorder = 0.22;
   static const double hostDangerBorder = 0.45;
   static const double imageEditControlFill = 0.85;
   static const double revealAttendeePanelFill = 0.92;

@@ -2235,3 +2235,72 @@ Known blockers / inherited debt:
   covered at 147/147.
 - `node tool/design/check_widgetbook_contract_refs.mjs --check` still fails on
   inherited host preview-id drift for HostOperations home and host-team states.
+
+## 2026-07-03 - WO-019 pill and privacy badge consolidation
+
+Scope:
+
+- Moved `EventSuccessDarkPill` from `event_success_feature_blocks.dart` to
+  `event_success_hero_surface.dart` and migrated the manual-QA hero badges from
+  the local dark pill wrapper to the shared pill.
+- Deleted the manual-QA `DarkPill` wrapper and removed orphaned
+  `CatchOpacity.manualQaPillFill` / `manualQaPillBorder` tokens.
+- Extended `CatchPrivacyBadgeKind` to explicit `privateToYou`, `hostCanSee`,
+  and `catchPrivate` modes, with core labels/icons owning the companion privacy
+  vocabulary.
+- Migrated Event Success companion cards from the local `PrivacyBadge` wrapper
+  to `CatchPrivacyBadge`, then deleted `_PrivacyAudience` and `PrivacyBadge`.
+- Replaced the raw core privacy badge icon size with `CatchIcon.micro`.
+- Updated the core privacy badge Widgetbook contract, privacy badge widget
+  test, strict Event Success Widgetbook source, generated Widgetbook directory,
+  widget catalog, and generated design registries.
+
+Commands:
+
+- `node tool/agent/context_pack.mjs --task widget-consolidation-wo-019-pill-privacy --paths docs/design_parity/widget_consolidation,docs/audit_registry/widget_similarity.json,docs/audit_registry/widget_classification.json,docs/audit_registry/widget_consolidation_receipts.md,docs/widget_catalog.md,lib/core/widgets/catch_privacy_badge.dart,lib/core/widgets/catch_badge.dart,lib/core/theme/catch_tokens.dart,lib/event_success/presentation/companion_parts/event_success_companion_shared.dart,lib/event_success/presentation/event_success_manual_qa_screen.dart,widgetbook/lib/primitives`
+- `dart format lib/core/widgets/catch_privacy_badge.dart lib/event_success/presentation/event_success_companion_screen.dart lib/event_success/presentation/companion_parts/event_success_companion_afterglow.dart lib/event_success/presentation/companion_parts/event_success_companion_arrival_mission.dart lib/event_success/presentation/companion_parts/event_success_companion_feedback.dart lib/event_success/presentation/companion_parts/event_success_companion_questionnaire.dart lib/event_success/presentation/companion_parts/event_success_companion_shared.dart lib/event_success/presentation/companion_parts/event_success_companion_wingman.dart lib/event_success/presentation/event_success_feature_blocks.dart lib/event_success/presentation/event_success_hero_surface.dart lib/event_success/presentation/event_success_manual_qa_screen.dart widgetbook/lib/primitives/primitive_contract_use_cases.dart widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart test/core/privacy_badge_test.dart`
+- `dart run build_runner build --delete-conflicting-outputs` in `widgetbook/`
+- `rg -n "\\bDarkPill\\b|\\bPrivacyBadge\\b|eventSuccessStrictDarkPill|eventSuccessStrictPrivacyBadge|manualQaPill|_PrivacyAudience|CatchPrivacyBadgeKind\\.host\\b|CatchPrivacyBadgeKind\\.you\\b" lib widgetbook/lib test docs/widget_catalog.md --glob '*.dart' --glob '*.md'`
+- `flutter analyze --no-fatal-infos lib/core/widgets/catch_privacy_badge.dart lib/event_success/presentation/event_success_companion_screen.dart lib/event_success/presentation/event_success_feature_blocks.dart lib/event_success/presentation/event_success_hero_surface.dart lib/event_success/presentation/event_success_manual_qa_screen.dart test/core/privacy_badge_test.dart`
+- `flutter test test/core/privacy_badge_test.dart`
+- `dart analyze lib/core/widgets/catch_privacy_badge.dart lib/event_success/presentation/event_success_hero_surface.dart test/core/privacy_badge_test.dart`
+- `npm run design:widgets:classify`
+- `npm run design:widgets:check`
+- `node tool/design/build_widget_similarity.mjs`
+- `node tool/design/build_widget_similarity.mjs --check`
+- `npm run design:widgets:new:check`
+- `npm run design:widgets:variants`
+- `npm run design:widgets:variants:check`
+- `node tool/design/check_widgetbook_coverage.mjs --check`
+- `node tool/design/check_widgetbook_contract_refs.mjs --check`
+- `dart tool/audit_registry.dart refresh`
+
+Verification:
+
+- Clean focused analyzer subset for `CatchPrivacyBadge`,
+  `EventSuccessDarkPill`, and the privacy badge test reported no issues.
+- Focused Flutter analyzer with `--no-fatal-infos` completed; remaining output
+  was pre-existing Event Success `use_key_in_widget_constructors` and
+  `library_private_types_in_public_api` infos.
+- `flutter test test/core/privacy_badge_test.dart` passed.
+- Widgetbook build_runner completed; generated directories no longer expose the
+  retired `DarkPill` or local `PrivacyBadge` entries.
+- Retired-symbol scan across active Dart, Widgetbook source, test, and
+  `docs/widget_catalog.md` returned no matches.
+- Widget classification check passed with 1,140 entries, 48 review items, and
+  0 private widget classes flagged.
+- Widget similarity check passed with 1,038 widgets, 50 clusters, 200 ranked
+  pairs, 222 name families, and 8 absorb candidates.
+- New-widget inventory check passed with 4 added public widget classes covered
+  by Widgetbook and `docs/widget_catalog.md`; relative to the prior WO-018
+  baseline, WO-019 adds the moved `EventSuccessDarkPill` location.
+- Widget variant inventory check passed with 881 use cases, 1,751 state cards,
+  and 36 review candidates.
+
+Known blockers / inherited debt:
+
+- `node tool/design/check_widgetbook_coverage.mjs --check` still fails on the
+  inherited 131-item decision queue; the changed `core/widgets` area remains
+  fully covered at 147/147.
+- `node tool/design/check_widgetbook_contract_refs.mjs --check` still fails on
+  inherited host preview-id drift for HostOperations home and host-team states.

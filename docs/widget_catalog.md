@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.561
+version: 2.5.562
 updated: 2026-07-03
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.562
+
+- Merged the manual-QA dark pill wrapper into `EventSuccessDarkPill` and moved
+  the shared pill beside `EventSuccessHeroSurface`.
+- Folded Event Success companion privacy badges into `CatchPrivacyBadge` and
+  aligned the core privacy icon sizing to `CatchIcon.micro`.
 
 ### 2.5.561
 
@@ -2797,7 +2804,7 @@ a feature section here only when auditing that feature's widget surface.
 
 ### 2.5.219
 
-- Added `PrivacyBadge`, the Flutter port of the handoff privacy pill for
+- Added `CatchPrivacyBadge`, the Flutter port of the handoff privacy pill for
   `PRIVATE TO YOU`, `CATCH PRIVATE`, and `HOST CAN SEE` visibility hints. It
   uses shared surface, icon, spacing, and mono badge text primitives instead of
   local outlined-pill styling.
@@ -5446,7 +5453,7 @@ Generated 2026-05-06.
 | `CatchDistanceRing` | `lib/core/widgets/catch_distance_ring.dart:7` | Handoff map radius ring for static map canvases and previews. Renders a 170px default circular ink ring with 1.2px stroke and an optional tappable mono label pill anchored to the top edge. |
 | `CatchBadge` | `lib/core/widgets/catch_badge.dart:10` | Handoff `Badge` status pill used for spots-left indicators, distance/pace pills, event requirement chips, status labels, compact metadata, and action-column outcomes. Supports functional tones including `gold`, `size.action` 33px alignment, optional leading icons, optional uppercase labels, and activity-accent tinting. |
 | `CatchCountBadge` | `lib/core/widgets/catch_count_badge.dart:7` | Anchored 99+ count marker for icon and navigation glyph overlays. Renders the child alone when count is zero, reserves the shared app-shell badge box when active, and uses the primary/primaryInk pill recipe from the badge family. Registered as formal component contract `catch.badge.count_badge`; Widgetbook contract states cover hidden, count, and overflow-count. |
-| `CatchPrivacyBadge` | `lib/core/widgets/catch_privacy_badge.dart:10` | Quiet outlined handoff privacy pill for visibility hints. Supports `Private to you`, `Catch private`, and `Host can see` modes with lock/eye glyphs, transparent `CatchSurface` chrome, and the shared mono badge text role. Registered as formal component contract `catch.privacy_badge`; Widgetbook contract states are the canonical review surface for private-to-you, Catch-private, and host-visible modes. |
+| `CatchPrivacyBadge` | `lib/core/widgets/catch_privacy_badge.dart:10` | Quiet outlined handoff privacy pill for visibility hints. Supports `Private to you`, `Catch private`, and `Host can see` modes with lock/shield/eye glyphs, transparent `CatchSurface` chrome, and the shared mono badge text role. Registered as formal component contract `catch.privacy_badge`; Widgetbook contract states are the canonical review surface for private-to-you, Catch-private, and host-visible modes. |
 | `CatchCornerSash` | `lib/core/widgets/catch_corner_sash.dart:10` | Single status sash for event/club hero cards when one dominant state should read before supporting metadata. Uses token palettes, optional icon, and asymmetric pill corners instead of competing chip clusters. |
 | `CatchCountPill` | `lib/core/widgets/catch_count_pill.dart:12` | Handoff CountPill control for floating Explore affordances. Renders a raised pill with optional icon, optional mono label, optional active-count badge, shared surface/border tokens, and explicit semantic labels. Use for map/list toggles and compact filter entry points instead of feature-local floating pill decorations. |
 | `CatchTabDock<T>` | `lib/core/widgets/catch_tab_dock.dart:26` | Handoff `TabDock`: typed bottom-navigation adapter backed by Flutter's Material 3 `NavigationBar` metrics, stable safe-area handling, selected glyphs, typed tab IDs, and optional per-tab unread indicators through `CatchCountBadge`. Used by non-iOS `AppShellNavigationBar`. |
@@ -6346,7 +6353,7 @@ Generated 2026-05-06.
 | `_HostReportSignalGrid` | `lib/event_success/presentation/host_parts/event_success_host_report.dart:114` | Host report signal-quality summary using `EventSuccessMetricPill` and `CatchBadge` primitives for feedback response, assignment coverage, opt-outs, and wingman requests. |
 | `EventSuccessMetricPill` | `lib/event_success/presentation/event_success_feature_blocks.dart:865` | Shared percentage pill for event-success reports and lab/preview metrics. |
 | `EventSuccessRecommendationTile` | `lib/event_success/presentation/event_success_feature_blocks.dart:817` | Shared recommendation tile for post-event reports and the event-success lab coach sample. |
-| `EventSuccessDarkPill` | `lib/event_success/presentation/event_success_feature_blocks.dart:894` | Shared dark hero pill for event-success lab and contextual preview heroes. |
+| `EventSuccessDarkPill` | `lib/event_success/presentation/event_success_hero_surface.dart:28` | Shared dark hero pill for event-success lab, contextual preview heroes, and manual-QA hero metadata. |
 
 ---
 

@@ -526,20 +526,6 @@ Widget eventSuccessStrictPreviewLine(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "PrivacyBadge",
-  type: PrivacyBadge,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
-)
-Widget eventSuccessStrictPrivacyBadge(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.companion,
-    componentName: "PrivacyBadge",
-  );
-}
-
-@widgetbook.UseCase(
   name: "PrivateAfterglowRecapCard",
   type: PrivateAfterglowRecapCard,
   path:
@@ -2400,20 +2386,6 @@ Widget eventSuccessStrictControlLabel(BuildContext context) {
     context,
     surface: _EventSuccessStrictSurface.manualQa,
     componentName: "ControlLabel",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "DarkPill",
-  type: DarkPill,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Manual QA folded states",
-)
-Widget eventSuccessStrictDarkPill(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.manualQa,
-    componentName: "DarkPill",
   );
 }
 

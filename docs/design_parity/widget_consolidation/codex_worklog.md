@@ -1309,9 +1309,9 @@ class CatchAnalyticsSection extends StatelessWidget {
 4. Widgetbook: add the three new kinds to the CatchPrivacyBadge use-case;
    repoint/delete old-typed blocks (gotcha 2). regen + registries + receipts.
 
-- [ ] dark pill merge + token orphan check
-- [ ] privacy badge kinds + migration + micro-icon fix
-- [ ] widgetbook + regen + registries + receipts
+- [x] dark pill merge + token orphan check
+- [x] privacy badge kinds + migration + micro-icon fix
+- [x] widgetbook + regen + registries + receipts
 
 ## WO-020 — Escalation-queue resolutions (batch A/B/C)
 

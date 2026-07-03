@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-07-03T17:58:52.202Z",
+  "generatedAt": "2026-07-03T18:09:07.912Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
-    "useCases": 883,
-    "components": 858,
+    "useCases": 881,
+    "components": 856,
     "stateCards": 1751,
     "reviewCandidates": 36,
     "oversizedUseCases": 43,
@@ -30135,31 +30135,6 @@
       ]
     },
     {
-      "component": "DarkPill",
-      "useCaseCount": 1,
-      "stateCardCount": 0,
-      "paths": [
-        "[P1 product surfaces]/Event Success strict coverage/Manual QA folded states"
-      ],
-      "labels": [],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "DarkPill",
-          "functionName": "eventSuccessStrictDarkPill",
-          "file": "widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart",
-          "path": "[P1 product surfaces]/Event Success strict coverage/Manual QA folded states",
-          "stateCardCount": 0,
-          "stateCards": []
-        }
-      ]
-    },
-    {
       "component": "DateRail",
       "useCaseCount": 1,
       "stateCardCount": 0,
@@ -33829,31 +33804,6 @@
           "functionName": "priceLeadingState",
           "file": "widgetbook/lib/events/event_detail_use_cases.dart",
           "path": "[Event Detail]/Booking Dock",
-          "stateCardCount": 0,
-          "stateCards": []
-        }
-      ]
-    },
-    {
-      "component": "PrivacyBadge",
-      "useCaseCount": 1,
-      "stateCardCount": 0,
-      "paths": [
-        "[P1 product surfaces]/Event Success strict coverage/Companion folded states"
-      ],
-      "labels": [],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "PrivacyBadge",
-          "functionName": "eventSuccessStrictPrivacyBadge",
-          "file": "widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart",
-          "path": "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
           "stateCardCount": 0,
           "stateCards": []
         }

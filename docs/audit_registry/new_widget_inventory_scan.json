@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-03T17:58:43.016Z",
+  "generatedAt": "2026-07-03T18:08:53.422Z",
   "baseRef": "HEAD^",
   "baseStatus": "git-ref",
   "baseWarning": null,
@@ -10,14 +10,14 @@
     "policy": "New public widget classes need Widgetbook and widget catalog coverage. New private widget classes and Widget-returning helpers must be inlined/deleted, merged into an existing primitive, or promoted to public cataloged widgets."
   },
   "summary": {
-    "addedWidgetClasses": 3,
-    "addedPublicWidgetClasses": 3,
+    "addedWidgetClasses": 4,
+    "addedPublicWidgetClasses": 4,
     "addedPrivateWidgetClasses": 0,
     "addedWidgetReturningHelpers": 0,
-    "coveredNewWidgets": 3,
+    "coveredNewWidgets": 4,
     "unresolved": 0,
     "widgetsByStatus": {
-      "covered": 3
+      "covered": 4
     },
     "helpersByStatus": {},
     "issues": {}
@@ -53,6 +53,18 @@
       "visibility": "public",
       "line": 131,
       "file": "lib/core/widgets/catch_analytics_kit.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "EventSuccessDarkPill",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 28,
+      "file": "lib/event_success/presentation/event_success_hero_surface.dart",
       "widgetbookCovered": true,
       "catalogMentioned": true,
       "status": "covered",
