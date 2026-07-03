@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -5,6 +6,83 @@ import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:flutter/foundation.dart';
+
+enum HostEventEditRouteStatus { loading, error, notFound, unauthorized, ready }
+
+@immutable
+class HostEventEditState {
+  const HostEventEditState({
+    required this.status,
+    this.uid,
+    this.club,
+    this.event,
+    this.error,
+  });
+
+  factory HostEventEditState.resolve({
+    required CatchAsyncState<String?> uid,
+    required CatchAsyncState<Club?> club,
+    required CatchAsyncState<Event?> event,
+    Event? initialEvent,
+  }) {
+    final resolvedEvent = event.value ?? initialEvent;
+    if (uid.status == CatchAsyncStatus.loading ||
+        club.status == CatchAsyncStatus.loading ||
+        (event.status == CatchAsyncStatus.loading && resolvedEvent == null)) {
+      return const HostEventEditState(status: HostEventEditRouteStatus.loading);
+    }
+
+    final error = uid.error ?? club.error ?? event.error;
+    if (error != null) {
+      return HostEventEditState(
+        status: HostEventEditRouteStatus.error,
+        error: error,
+      );
+    }
+
+    final resolvedUid = uid.value;
+    final resolvedClub = club.value;
+    if (resolvedClub == null || resolvedEvent == null) {
+      return HostEventEditState(
+        status: HostEventEditRouteStatus.notFound,
+        uid: resolvedUid,
+        club: resolvedClub,
+        event: resolvedEvent,
+      );
+    }
+
+    if (resolvedUid == null || !resolvedClub.isHostedBy(resolvedUid)) {
+      return HostEventEditState(
+        status: HostEventEditRouteStatus.unauthorized,
+        uid: resolvedUid,
+        club: resolvedClub,
+        event: resolvedEvent,
+      );
+    }
+
+    return HostEventEditState(
+      status: HostEventEditRouteStatus.ready,
+      uid: resolvedUid,
+      club: resolvedClub,
+      event: resolvedEvent,
+    );
+  }
+
+  final HostEventEditRouteStatus status;
+  final String? uid;
+  final Club? club;
+  final Event? event;
+  final Object? error;
+
+  static bool eventCanEdit(Event event) =>
+      HostEventEditScreenState.eventCanEdit(event);
+
+  static bool eventScheduleLocked(Event event, DateTime now) =>
+      HostEventEditScreenState.eventScheduleLocked(event, now);
+
+  static bool eventPolicyLocked(Event event, DateTime now) =>
+      HostEventEditScreenState.eventPolicyLocked(event, now);
+}
 
 @immutable
 class HostEventEditScreenState {

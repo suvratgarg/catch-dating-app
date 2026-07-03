@@ -27,45 +27,45 @@ void main() {
 
     expect(
       HostEventEditState.resolve(
-        uid: const AsyncLoading<String?>(),
-        club: AsyncData(club),
-        event: AsyncData(event),
+        uid: const CatchAsyncState<String?>.loading(),
+        club: CatchAsyncState<Club?>.data(club),
+        event: CatchAsyncState<Event?>.data(event),
       ).status,
       HostEventEditRouteStatus.loading,
     );
 
     expect(
       HostEventEditState.resolve(
-        uid: const AsyncData<String?>('host-1'),
-        club: AsyncError<Club?>(StateError('Club failed'), StackTrace.empty),
-        event: AsyncData(event),
+        uid: const CatchAsyncState<String?>.data('host-1'),
+        club: CatchAsyncState<Club?>.error(StateError('Club failed')),
+        event: CatchAsyncState<Event?>.data(event),
       ).status,
       HostEventEditRouteStatus.error,
     );
 
     expect(
       HostEventEditState.resolve(
-        uid: const AsyncData<String?>('host-1'),
-        club: const AsyncData(null),
-        event: AsyncData(event),
+        uid: const CatchAsyncState<String?>.data('host-1'),
+        club: const CatchAsyncState<Club?>.data(null),
+        event: CatchAsyncState<Event?>.data(event),
       ).status,
       HostEventEditRouteStatus.notFound,
     );
 
     expect(
       HostEventEditState.resolve(
-        uid: const AsyncData<String?>('guest-1'),
-        club: AsyncData(club),
-        event: AsyncData(event),
+        uid: const CatchAsyncState<String?>.data('guest-1'),
+        club: CatchAsyncState<Club?>.data(club),
+        event: CatchAsyncState<Event?>.data(event),
       ).status,
       HostEventEditRouteStatus.unauthorized,
     );
 
     expect(
       HostEventEditState.resolve(
-        uid: const AsyncData<String?>('host-1'),
-        club: AsyncData(club),
-        event: AsyncData(event),
+        uid: const CatchAsyncState<String?>.data('host-1'),
+        club: CatchAsyncState<Club?>.data(club),
+        event: CatchAsyncState<Event?>.data(event),
       ).status,
       HostEventEditRouteStatus.ready,
     );

@@ -198,9 +198,9 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
     final eventAsync = ref.watch(watchEventProvider(eventId));
 
     final state = HostEventEditState.resolve(
-      uid: uidAsync,
-      club: clubAsync,
-      event: eventAsync,
+      uid: _catchAsyncState(uidAsync),
+      club: _catchAsyncState(clubAsync),
+      event: _catchAsyncState(eventAsync),
       initialEvent: initialEvent,
     );
 
@@ -235,81 +235,12 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
   }
 }
 
-enum HostEventEditRouteStatus { loading, error, notFound, unauthorized, ready }
-
-@immutable
-class HostEventEditState {
-  const HostEventEditState({
-    required this.status,
-    this.uid,
-    this.club,
-    this.event,
-    this.error,
-  });
-
-  final HostEventEditRouteStatus status;
-  final String? uid;
-  final Club? club;
-  final Event? event;
-  final Object? error;
-
-  factory HostEventEditState.resolve({
-    required AsyncValue<String?> uid,
-    required AsyncValue<Club?> club,
-    required AsyncValue<Event?> event,
-    Event? initialEvent,
-  }) {
-    final resolvedEvent = event.asData?.value ?? initialEvent;
-    if (uid.isLoading ||
-        club.isLoading ||
-        (event.isLoading && resolvedEvent == null)) {
-      return const HostEventEditState(status: HostEventEditRouteStatus.loading);
-    }
-
-    final error = uid.error ?? club.error ?? event.error;
-    if (error != null) {
-      return HostEventEditState(
-        status: HostEventEditRouteStatus.error,
-        error: error,
-      );
-    }
-
-    final resolvedUid = uid.asData?.value;
-    final resolvedClub = club.asData?.value;
-    if (resolvedClub == null || resolvedEvent == null) {
-      return HostEventEditState(
-        status: HostEventEditRouteStatus.notFound,
-        uid: resolvedUid,
-        club: resolvedClub,
-        event: resolvedEvent,
-      );
-    }
-
-    if (resolvedUid == null || !resolvedClub.isHostedBy(resolvedUid)) {
-      return HostEventEditState(
-        status: HostEventEditRouteStatus.unauthorized,
-        uid: resolvedUid,
-        club: resolvedClub,
-        event: resolvedEvent,
-      );
-    }
-
-    return HostEventEditState(
-      status: HostEventEditRouteStatus.ready,
-      uid: resolvedUid,
-      club: resolvedClub,
-      event: resolvedEvent,
-    );
-  }
-
-  static bool eventCanEdit(Event event) =>
-      HostEventEditScreenState.eventCanEdit(event);
-
-  static bool eventScheduleLocked(Event event, DateTime now) =>
-      HostEventEditScreenState.eventScheduleLocked(event, now);
-
-  static bool eventPolicyLocked(Event event, DateTime now) =>
-      HostEventEditScreenState.eventPolicyLocked(event, now);
+CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
+  return value.when(
+    data: CatchAsyncState<T>.data,
+    loading: () => const CatchAsyncState.loading(),
+    error: (error, stackTrace) => CatchAsyncState<T>.error(error),
+  );
 }
 
 class EditHostedEventScreen extends ConsumerStatefulWidget {
