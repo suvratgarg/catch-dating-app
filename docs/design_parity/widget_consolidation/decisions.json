@@ -217,6 +217,81 @@
       "status": "work-order WO-007"
     },
     {
+      "clusterId": "group/rotation family (c016, c028, c029, c030, c033, c044, c052 + VisibleGroupRotationSlots pairs)",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "GroupOverrideSheet", "action": "keep"},
+        {"name": "RotationOverrideSheet", "action": "keep"},
+        {"name": "GroupOverrideRoundEditor", "action": "keep"},
+        {"name": "RotationOverrideRoundEditor", "action": "keep"},
+        {"name": "GroupOverrideMemberEditor", "action": "keep"},
+        {"name": "RotationOverridePairEditor", "action": "keep"},
+        {"name": "MicroPodsHostCard", "action": "keep"},
+        {"name": "RotationsHostCard", "action": "keep"},
+        {"name": "MicroPodCard", "action": "keep"},
+        {"name": "RotationScheduleCard", "action": "keep"},
+        {"name": "GroupRotationSlotRow", "action": "keep"},
+        {"name": "RevealGroupSlotRow", "action": "keep"},
+        {"name": "VisibleGroupRotationSlots", "action": "keep"},
+        {"name": "VisibleRotationSlots", "action": "keep"}
+      ],
+      "rationale": "Domain fork, not UI drift: micro-pods vs guided-rotations carry parallel typed rounds (EventSuccessGroupOverrideRound vs RotationOverrideRound) and genuinely different business logic (opt-out semantics, intervals, fairness totals). Generic unification would trade duplication for conditional complexity. Both compose tokenized primitives already. Rule of three: revisit if a third assignment mode appears.",
+      "decidedBy": "claude",
+      "date": "2026-07-03",
+      "status": "recorded"
+    },
+    {
+      "clusterId": "c013-app-shell-navigation-badge",
+      "decision": "merge-new-primitive",
+      "canonicalSymbol": "CatchCountBadge",
+      "members": [
+        {"name": "AppShellNavigationBadge", "action": "absorb"},
+        {"name": "CatchTabDockIcon", "action": "keep", "note": "rewrite to delegate its badge overlay to CatchCountBadge"}
+      ],
+      "rationale": "CatchTabDockIcon copy-pastes the entire count-badge overlay (same layout tokens, same 99+ logic). Promote the overlay as CatchCountBadge(count, child); tab dock icon becomes a thin composition.",
+      "decidedBy": "claude",
+      "date": "2026-07-03",
+      "status": "work-order WO-009"
+    },
+    {
+      "clusterId": "c018-history-empty-state + c059-message",
+      "decision": "delete",
+      "members": [
+        {"name": "PaymentHistoryEmptyState", "action": "delete", "note": "inline"},
+        {"name": "ReviewsHistoryEmptyState", "action": "delete", "note": "inline"},
+        {"name": "CalendarMessage", "action": "delete", "note": "inline; keep its style-override set"},
+        {"name": "SavedEventsMessage", "action": "delete", "note": "inline; unify overrides to CalendarMessage's set (fixes eventInfoTileExtent icon-size token misuse)"}
+      ],
+      "rationale": "Thin CatchEmptyState wrappers (same policy as c009). CalendarMessage/SavedEventsMessage additionally drifted on typography overrides; standardize both surfaces on the calendar treatment. Recon task: count the CatchScreenBody+Center(CatchEmptyState) pattern repo-wide — if >=4, next batch designs a CatchEmptyState screen variant.",
+      "decidedBy": "claude",
+      "date": "2026-07-03",
+      "status": "work-order WO-008"
+    },
+    {
+      "clusterId": "c040-map-pill",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "MapPill", "action": "keep", "note": "tokenize raw 0.93 alpha as CatchOpacity.overlayPillFill"},
+        {"name": "PhotoSlotMainBadge", "action": "absorb", "note": "into existing CatchBadge via uppercase + ink/inverse styling"}
+      ],
+      "rationale": "Different concepts sharing a skeleton: MapPill is a translucent mono overlay pill for imagery (keep; fix raw alpha literal), PhotoSlotMainBadge is a status badge CatchBadge already covers.",
+      "decidedBy": "claude",
+      "date": "2026-07-03",
+      "status": "work-order WO-009"
+    },
+    {
+      "clusterId": "c006-dialog",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "CatchConfirmDialog", "action": "keep", "note": "rewrite internals to delegate shell to CatchFormDialog if shells are copy-pasted"},
+        {"name": "CatchFormDialog", "action": "keep"}
+      ],
+      "rationale": "Two entry points (confirm vs form) are good API ergonomics, same as the error-state pair. The overlay shell (Dialog + CatchSurface + title + actions row) must be shared internally, not duplicated — verify and delegate.",
+      "decidedBy": "claude",
+      "date": "2026-07-03",
+      "status": "work-order WO-010"
+    },
+    {
       "clusterId": "small-widget: AttendedLeading/BookedLeading/UnsavedChangesPill",
       "decision": "merge-new-primitive",
       "canonicalSymbol": "EventCtaStatusLeading (feature-level)",

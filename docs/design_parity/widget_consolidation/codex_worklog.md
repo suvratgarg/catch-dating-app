@@ -471,6 +471,90 @@ Future<void> showChatShareCardSheet(
 
 - [ ] rewrite + deletion + widgetbook + regen + receipts
 
+## WO-008 — Inline four more empty-state wrappers + pattern recon
+
+Same policy as WO-003 (thin `CatchEmptyState` wrappers; inline at call sites,
+delete class, widgetbook per gotcha 2, imports per gotcha 1):
+
+- [ ] `PaymentHistoryEmptyState` (`lib/payments/presentation/payment_history_screen.dart`)
+  and `ReviewsHistoryEmptyState` (`lib/reviews/presentation/reviews_history_screen.dart`)
+  — both are `CatchScreenBody(scrollable: false, child: Center(child:
+  CatchEmptyState(…)))`; inline with each call site's actual icon/title/message
+  arguments.
+- [ ] `CalendarMessage` (`lib/events/presentation/calendar/calendar_screen.dart`)
+  and `SavedEventsMessage` (`lib/events/presentation/saved_events_screen.dart`)
+  — inline, and use CalendarMessage's override set for BOTH surfaces:
+  `iconSize: CatchLayout.calendarEmptyIconSize, padding:
+  CatchInsets.contentSpacious, titleStyle: CatchTextStyles.titleL(context),
+  messageStyle: CatchTextStyles.proseM(context, color: t.ink2)` (keep each
+  site's own icon: calendar → `calendarMonthOutlined`, saved →
+  `bookmarkBorderRounded`). This intentionally replaces SavedEventsMessage's
+  `eventInfoTileExtent` icon size (token misuse) — accepted visual change.
+- [ ] **Recon (report only, no code)**: count occurrences of the pattern
+  `CatchScreenBody(… Center(child: CatchEmptyState(…)))` and of `Center(child:
+  CatchEmptyState(…))` inside `lib/` after the inlines land. Post both counts
+  under Escalations — if ≥4 screen-body cases, the next review batch designs a
+  `CatchEmptyState` screen variant.
+- [ ] regen + registries + receipts
+
+## WO-009 — CatchCountBadge + badge/pill cleanups
+
+1. New `lib/core/widgets/catch_count_badge.dart`: move the body of
+   `AppShellNavigationBadge` (in `lib/core/presentation/app_shell.dart`)
+   verbatim as:
+
+```dart
+/// Overlays a count pill on [child]; renders [child] alone when count <= 0.
+class CatchCountBadge extends StatelessWidget {
+  const CatchCountBadge({super.key, required this.count, required this.child});
+
+  final int count;
+  final Widget child;
+  // build: verbatim AppShellNavigationBadge body (99+ clamp, SizedBox +
+  // Stack + bottom-aligned child + positioned CatchSurface pill).
+}
+```
+
+   Migrate app-shell call sites, delete `AppShellNavigationBadge`.
+2. Rewrite `CatchTabDockIcon` (`lib/core/widgets/catch_tab_dock.dart`): build
+   the glyph `Icon(icon, size: CatchLayout.tabDockIconSize, color: color)` and
+   `return CatchCountBadge(count: badgeCount, child: glyph);` — delete its
+   copy-pasted overlay body. Pixel parity expected (same tokens).
+3. **Recon**: check whether `CatchCountPill` / `CatchPersonUnreadCountPill`
+   also implement the `> 99 ? '99+'` clamp + primary pill recipe. Report under
+   Escalations (possible third copy; do not merge without a decision).
+4. `PhotoSlotMainBadge` (`lib/image_uploads/shared/photo_slot.dart`) → replace
+   call sites with the existing `CatchBadge`: `CatchBadge(label: label,
+   uppercase: true, backgroundColor: t.ink, foregroundColor: t.bg)` — if
+   CatchBadgeTone has an ink/inverse tone that matches, prefer the tone over
+   raw color overrides. Minor padding delta vs the old `micro10/s1` insets is
+   accepted standardization. Delete the class.
+5. `MapPill` (`lib/events/presentation/widgets/event_detail_design_primitives.dart`):
+   add `CatchOpacity.overlayPillFill = 0.93` to the CatchOpacity token set
+   (follow the existing token file's ordering/doc style) and replace the raw
+   `0.93`. Widget stays.
+6. widgetbook (new CatchCountBadge use-case under primitives; repoint/delete
+   old-typed blocks) + regen + registries + receipts.
+
+- [ ] CatchCountBadge + migrations
+- [ ] tab dock delegation
+- [ ] recon report (count-pill triplication)
+- [ ] PhotoSlotMainBadge -> CatchBadge; MapPill token fix
+- [ ] regen + registries + receipts
+
+## WO-010 — CatchConfirmDialog shell delegation
+
+In `lib/core/widgets/catch_adaptive_dialog.dart`: `CatchFormDialog` renders
+the overlay shell (Dialog + CatchSurface overlay elevation + title + stacked
+actions row). Inspect `CatchConfirmDialog` (same file): if it duplicates that
+shell, rewrite its build to delegate — `return CatchFormDialog(title: …,
+child: <its message/content>, actions: <its actions>);` — keeping
+CatchConfirmDialog's public API unchanged. If the shells differ structurally
+(e.g. different insets, width, or action layout that is load-bearing), do NOT
+force it: record the diff under Escalations. Both classes stay public.
+
+- [ ] inspect + delegate (or escalate) + regen + receipts
+
 ---
 
 ## Escalations
