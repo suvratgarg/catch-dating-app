@@ -178,7 +178,7 @@
       "rationale": "All six are thin Center(child: CatchEmptyState(...)) content bindings around the existing primitive. Not components; catalogue noise. Inline at single call sites and delete.",
       "decidedBy": "owner+claude",
       "date": "2026-07-03",
-      "status": "work-order WO-003"
+      "status": "implemented-WO-003"
     },
     {
       "clusterId": "c001-error-state",
@@ -215,7 +215,7 @@
       "rationale": "Intentional presentation variants over shared CatchPersonRowData (chat preview with unread emphasis vs roster meta). Merging with flags would be a conditional mess. Real finding is the raw icon size literal.",
       "decidedBy": "claude",
       "date": "2026-07-03",
-      "status": "work-order WO-005 (drift fix only)"
+      "status": "implemented-WO-005 (drift fix only)"
     },
     {
       "clusterId": "ranked-pair: HostAnalyticsBar/UserAnalyticsBar (J=1.0)",
@@ -234,7 +234,7 @@
       "rationale": "Byte-identical fractional bar-fill across host/user analytics. Note the trend: MetricTile (0.73) and panel pairs suggest a full host/user analytics-kit dedupe pass later.",
       "decidedBy": "claude",
       "date": "2026-07-03",
-      "status": "work-order WO-005"
+      "status": "implemented-WO-005"
     },
     {
       "clusterId": "ranked-pair: EventDetailSocialSkeleton/OptimisticSocialSkeleton (J=1.0)",
@@ -253,7 +253,7 @@
       "rationale": "Byte-identical 'Who's going' skeleton duplicated across two files of the same feature.",
       "decidedBy": "claude",
       "date": "2026-07-03",
-      "status": "work-order WO-006"
+      "status": "implemented-WO-006"
     },
     {
       "clusterId": "c010/c011 skeleton rows family",
@@ -308,7 +308,7 @@
       "rationale": "Both are 'row of N equal Expanded skeleton boxes with gap' (quick actions, tab pickers). Generic enough for the catch_skeleton.dart convenience family.",
       "decidedBy": "claude",
       "date": "2026-07-03",
-      "status": "work-order WO-006"
+      "status": "implemented-WO-006"
     },
     {
       "clusterId": "ranked-pair: ClubTagLoadingSkeleton/GenderFilterSkeleton (J=1.0)",
@@ -328,7 +328,7 @@
       "rationale": "Same jittered chip-wrap skeleton with drifted heights (s8 vs s9) and meaningless width jitter differences; standardize jitter, parameterize height.",
       "decidedBy": "claude",
       "date": "2026-07-03",
-      "status": "work-order WO-006"
+      "status": "implemented-WO-006"
     },
     {
       "clusterId": "ranked-pair: EventPreviewSectionSkeleton/EventSuccessSkeletonSurface (J=1.0)",
@@ -348,7 +348,7 @@
       "rationale": "Same titled-surface + text-block + trailing-boxes skeleton, both event_success. Stays feature-level (single-feature composition). Codex must diff bodies below the shared prefix and escalate if not isomorphic.",
       "decidedBy": "claude",
       "date": "2026-07-03",
-      "status": "work-order WO-006"
+      "status": "implemented-WO-006"
     },
     {
       "clusterId": "ranked-pair: ChatShareCardSheet/CatchShareCardSheet (containment 0.69)",
@@ -373,7 +373,7 @@
       "rationale": "ChatShareCardSheet hand-rolls capture/grabber/share-button that CatchShareCardSheet already provides (club/event share flows use it in production). Parameter mapping is one-to-one; chat keeps its card widget.",
       "decidedBy": "claude",
       "date": "2026-07-03",
-      "status": "work-order WO-007"
+      "status": "implemented-WO-007"
     },
     {
       "clusterId": "group/rotation family (c016, c028, c029, c030, c033, c044, c052 + VisibleGroupRotationSlots pairs)",
@@ -459,7 +459,7 @@
       "rationale": "CatchTabDockIcon copy-pastes the entire count-badge overlay (same layout tokens, same 99+ logic). Promote the overlay as CatchCountBadge(count, child); tab dock icon becomes a thin composition.",
       "decidedBy": "claude",
       "date": "2026-07-03",
-      "status": "work-order WO-009"
+      "status": "implemented-WO-009"
     },
     {
       "clusterId": "c018-history-empty-state + c059-message",
@@ -489,7 +489,7 @@
       "rationale": "Thin CatchEmptyState wrappers (same policy as c009). CalendarMessage/SavedEventsMessage additionally drifted on typography overrides; standardize both surfaces on the calendar treatment. Recon task: count the CatchScreenBody+Center(CatchEmptyState) pattern repo-wide \u2014 if >=4, next batch designs a CatchEmptyState screen variant.",
       "decidedBy": "claude",
       "date": "2026-07-03",
-      "status": "work-order WO-008"
+      "status": "implemented-WO-008"
     },
     {
       "clusterId": "c040-map-pill",
@@ -509,7 +509,7 @@
       "rationale": "Different concepts sharing a skeleton: MapPill is a translucent mono overlay pill for imagery (keep; fix raw alpha literal), PhotoSlotMainBadge is a status badge CatchBadge already covers.",
       "decidedBy": "claude",
       "date": "2026-07-03",
-      "status": "work-order WO-009"
+      "status": "implemented-WO-009"
     },
     {
       "clusterId": "c006-dialog",
@@ -528,7 +528,7 @@
       "rationale": "Two entry points (confirm vs form) are good API ergonomics, same as the error-state pair. The overlay shell (Dialog + CatchSurface + title + actions row) must be shared internally, not duplicated \u2014 verify and delegate.",
       "decidedBy": "claude",
       "date": "2026-07-03",
-      "status": "work-order WO-010"
+      "status": "implemented-WO-010"
     },
     {
       "clusterId": "c014-tab-rail",
@@ -547,7 +547,7 @@
       "rationale": "Identical PreferredSizeWidget shells (48-height padded CatchOptionGroup) differing only in option enum. Generic core primitive; tokenizes the raw 48 as CatchLayout.tabRailHeight.",
       "decidedBy": "claude",
       "date": "2026-07-03",
-      "status": "work-order WO-011"
+      "status": "implemented-WO-011"
     },
     {
       "clusterId": "c019-host-empty-state",
@@ -571,7 +571,7 @@
       "rationale": "Same 'surface + sectionTitle + supporting body + CTA actions' empty card three times in hosts. Feature-level for now; promote to core if WO-008 recon shows the pattern is cross-feature.",
       "decidedBy": "claude",
       "date": "2026-07-03",
-      "status": "work-order WO-012"
+      "status": "implemented-WO-012"
     },
     {
       "clusterId": "c061-companion-error",
@@ -611,7 +611,7 @@
       "rationale": "Per-tab skeleton compositions; parameterizing would move the same jitter to call sites. Real finding: raw title-width literals (148/190/170/150) instead of CatchLayout.skeletonText* tokens \u2014 drift fix in WO-013.",
       "decidedBy": "claude",
       "date": "2026-07-03",
-      "status": "work-order WO-013 (token fix only)"
+      "status": "implemented-WO-013 (token fix only)"
     },
     {
       "clusterId": "c046-profile-tab + c043-dashboard-full + c057-home-screen",
@@ -664,7 +664,7 @@
       "rationale": "Same file, identical bodies except the media: argument (polaroid artwork vs photo overlay). Single widget; if call sites pick the variant from photo availability, fold that choice inside (mirroring ClubShareArtwork), else keep a media param.",
       "decidedBy": "claude",
       "date": "2026-07-03",
-      "status": "work-order WO-014"
+      "status": "implemented-WO-014"
     },
     {
       "clusterId": "c053-paper-ticket-detail",
@@ -684,7 +684,7 @@
       "rationale": "Serial is Detail with computed content; delegate internally, both APIs stay.",
       "decidedBy": "claude",
       "date": "2026-07-03",
-      "status": "work-order WO-014"
+      "status": "implemented-WO-014"
     },
     {
       "clusterId": "c041-celebration-details-card",
@@ -754,7 +754,7 @@
       "rationale": "The accent->ink diagonal gradient hero recipe (gradient + transparent border + contentRelaxed) is copy-pasted across three event_success screens. Extract the shell as a shared feature widget; each hero keeps its content.",
       "decidedBy": "claude",
       "date": "2026-07-03",
-      "status": "work-order WO-014"
+      "status": "implemented-WO-014"
     },
     {
       "clusterId": "c015-choice-entry-editor + c017-catch-option-group-item",
@@ -808,7 +808,7 @@
       "rationale": "Two content variants of the same CTA leading in the same file; parameterize icon+label. Not promoted to core: CTA-leading is an event-detail concept with 2 uses.",
       "decidedBy": "owner+claude",
       "date": "2026-07-03",
-      "status": "work-order WO-004"
+      "status": "implemented-WO-004"
     },
     {
       "clusterId": "c011-event-success-report-metrics-skeleton",
@@ -1891,7 +1891,7 @@
       "rationale": "K2 domain fork: the tiles share the same card skeleton, but they render parallel HostAnalyticsMetricCard/UserAnalyticsMetricCard data, status enums, status-copy rules, and user analytics copy helpers. AUDIT (claude, 2026-07-03): K2 misapplied \u2014 bodies are structurally parallel presentation over parallel view-model types (same surfaces, tokens, layout; only typed field access/metric keys differ). Re-opened for the host/user analytics-kit unification review. REVIEW (claude, 2026-07-03): identical layout/tokens over identical model shapes; kit takes display-ready CatchMetricCardData, features keep icon/format/copy mapping.",
       "decidedBy": "codex-rule:K2 -> claude",
       "date": "2026-07-03",
-      "status": "work-order WO-018",
+      "status": "implemented-WO-018",
       "canonicalSymbol": "CatchAnalyticsMetricTile"
     },
     {
@@ -1947,7 +1947,7 @@
       "rationale": "K2 domain fork: the grid skeleton is shared, but the members render parallel metric-card domains and tile types; the user grid also caps at six cards while the host grid renders the supplied host summary cards. AUDIT (claude, 2026-07-03): K2 misapplied \u2014 bodies are structurally parallel presentation over parallel view-model types (same surfaces, tokens, layout; only typed field access/metric keys differ). Re-opened for the host/user analytics-kit unification review. REVIEW (claude, 2026-07-03): identical 2-col Wrap grid; user .take(6) becomes maxItems param.",
       "decidedBy": "codex-rule:K2 -> claude",
       "date": "2026-07-03",
-      "status": "work-order WO-018",
+      "status": "implemented-WO-018",
       "canonicalSymbol": "CatchAnalyticsMetricGrid"
     },
     {
@@ -1966,7 +1966,7 @@
       "rationale": "K5 concept mismatch: both are dark pill shells, but DarkPill is a manual-QA accent-ink pill while EventSuccessDarkPill is a reused Event Success editorial overlay primitive with an optional foreground override and more than ten external usages. REVIEW (claude, 2026-07-03): same dark pill concept; manual-QA screen mimics the feature surface and must reuse its pill. Reveal tokens win; manualQaPill* opacity tokens become orphan candidates.",
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "work-order WO-019",
+      "status": "implemented-WO-019",
       "canonicalSymbol": "EventSuccessDarkPill"
     },
     {
@@ -2401,7 +2401,7 @@
       "rationale": "K5 concept mismatch: CatchPrivacyBadge is a core uppercase privacy token badge with transparent surface styling, while the Event Success PrivacyBadge maps a private audience enum to CatchBadge labels and icons. REVIEW (claude, 2026-07-03): privacy vocabulary is a trust surface \u2014 one component. Extend CatchPrivacyBadgeKind with privateToYou/hostCanSee/catchPrivate (labels/icons from the companion widget); companion standardizes to the core mono-pill treatment (intentional visual change). Also fix raw size: 11 -> CatchIcon.micro in the core badge.",
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "work-order WO-019",
+      "status": "implemented-WO-019",
       "canonicalSymbol": "CatchPrivacyBadge"
     },
     {
@@ -4546,7 +4546,7 @@
       "rationale": "Same label+gap+child section shell with drifted label typography (kicker ink3 vs labelL). Standardize on the kicker treatment (DS editorial section language); intentional visual change on the user side.",
       "decidedBy": "claude",
       "date": "2026-07-03",
-      "status": "work-order WO-018"
+      "status": "implemented-WO-018"
     }
   ]
 }
