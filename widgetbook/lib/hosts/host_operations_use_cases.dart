@@ -24,6 +24,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_analytics_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
@@ -809,7 +810,7 @@ Widget hostHomeEventSectionStates(BuildContext context) {
 )
 @widgetbook.UseCase(
   name: 'Skeleton states',
-  type: HostRosterSkeleton,
+  type: CatchSkeletonRows,
   path: '[P1 product surfaces]/Host operations/Components',
 )
 @widgetbook.UseCase(
@@ -850,7 +851,10 @@ Widget hostLoadingSkeletonCatalogStates(BuildContext context) {
           children: [
             HostAnalyticsReportSkeleton(),
             gapH12,
-            HostRosterSkeleton(count: 3),
+            CatchSkeletonRows(
+              count: 3,
+              titleWidth: CatchLayout.skeletonTextSectionWidth,
+            ),
             gapH12,
             HostInlineSkeletonIcon(),
           ],

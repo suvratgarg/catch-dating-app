@@ -481,10 +481,35 @@ Add one widgetbook use-case file for the three new compositions under
 `widgetbook/lib/primitives/` (one state each; avatar-titled, mediaTile,
 icon, box-row, chips).
 
-- [ ] catch_skeleton_layouts.dart + widgetbook entry
-- [ ] 10 migrations + deletions (bodies verified, escalations recorded)
-- [ ] event_success skeleton surface merge
-- [ ] regen + registries + receipts
+- [x] catch_skeleton_layouts.dart + widgetbook entry
+- [ ] 10 migrations + deletions (8 completed; 2 escalated below)
+- [x] event_success skeleton surface merge
+- [x] regen + registries + receipts
+
+Escalations:
+
+- `HostEventRowsSkeleton` and `HostSettingsRowsSkeleton` were not migrated to
+  `CatchSkeletonRows`: full-body review showed divider separators between
+  rows, while `CatchSkeletonRows` only models gap-separated rows. Per the order,
+  these members were skipped rather than forcing a structural visual change.
+
+Receipt: 2026-07-03 Codex WO-006 created `CatchSkeletonRows`,
+`CatchSkeletonBoxRow`, and `CatchSkeletonChips`, added their Widgetbook catalog
+states, absorbed `HostRosterSkeleton`, `CompanionPeerListSkeleton`,
+`EventSuccessLiveRosterSkeleton`, `DashboardQuickActionsLoadingRow`,
+`EventSuccessTabPickerSkeleton`, `ClubTagLoadingSkeleton`,
+`GenderFilterSkeleton`, and `OptimisticSocialSkeleton`, and moved the shared
+Event Success section surface into `event_success_skeletons.dart` with
+`trailingCount` API. Clean checks: widget classification check (1158 entries,
+46 review items, 0 private widget classes flagged), widget similarity check
+(1050 widgets, 59 clusters, 9 absorb candidates), widget dedupe probes, root
+`flutter analyze --no-fatal-infos lib` (192 existing infos, 0 warnings/errors),
+widget cleanup scan, manifest-only, JSON parse, agent readiness, and
+`git diff --check`. Existing blockers recorded in the receipt: Widgetbook
+analyzer still has 65 inherited HostOperations issues, Widgetbook coverage
+still has a 134 item catalog-or-replace decision queue with 0 stale decisions,
+and Widgetbook contract refs still have inherited HostOperations preview-id
+drift.
 
 ## WO-007 — Absorb ChatShareCardSheet into CatchShareCardSheet
 

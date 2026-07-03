@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 
@@ -42,7 +43,7 @@ class ClubDetailLoadingBody extends StatelessWidget {
                     ),
                     CatchSection.divided(
                       title: 'What we do',
-                      child: const ClubTagLoadingSkeleton(),
+                      child: const CatchSkeletonChips(height: CatchSpacing.s8),
                     ),
                     CatchSection.divided(
                       title: 'Upcoming',
@@ -190,35 +191,6 @@ class ClubTextLoadingSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchSkeleton.textBlock(lines: lines);
-  }
-}
-
-class ClubTagLoadingSkeleton extends StatelessWidget {
-  const ClubTagLoadingSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: CatchSpacing.s2,
-      runSpacing: CatchSpacing.s2,
-      children: [
-        CatchSkeleton.box(
-          width: CatchSpacing.s16 + CatchSpacing.s6,
-          height: CatchSpacing.s8,
-          radius: CatchRadius.pill,
-        ),
-        CatchSkeleton.box(
-          width: CatchSpacing.s16 + CatchSpacing.s10,
-          height: CatchSpacing.s8,
-          radius: CatchRadius.pill,
-        ),
-        CatchSkeleton.box(
-          width: CatchSpacing.s16 + CatchSpacing.s4,
-          height: CatchSpacing.s8,
-          radius: CatchRadius.pill,
-        ),
-      ],
-    );
   }
 }
 

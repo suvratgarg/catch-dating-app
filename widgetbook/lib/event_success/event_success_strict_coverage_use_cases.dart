@@ -22,6 +22,7 @@ import "package:catch_dating_app/event_success/presentation/event_success_live_r
 import "package:catch_dating_app/event_success/presentation/event_success_manual_qa_screen.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_questionnaire_config_editor.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_setup_body.dart";
+import "package:catch_dating_app/event_success/presentation/event_success_skeletons.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_structure_config_editor.dart";
 import "package:catch_dating_app/events/domain/event_participation_roster.dart";
 import "package:catch_dating_app/labs/design_fixtures/event_success_companion_fixtures.dart";
@@ -902,20 +903,6 @@ Widget eventSuccessStrictEventPreviewReportSkeleton(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "EventPreviewSectionSkeleton",
-  type: EventPreviewSectionSkeleton,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Event preview folded states",
-)
-Widget eventSuccessStrictEventPreviewSectionSkeleton(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.eventPreview,
-    componentName: "EventPreviewSectionSkeleton",
-  );
-}
-
-@widgetbook.UseCase(
   name: "EventPreviewSetupSkeleton",
   type: EventPreviewSetupSkeleton,
   path:
@@ -1316,20 +1303,6 @@ Widget eventSuccessStrictEventSuccessHostSectionSkeleton(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "EventSuccessLiveRosterSkeleton",
-  type: EventSuccessLiveRosterSkeleton,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictEventSuccessLiveRosterSkeleton(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.host,
-    componentName: "EventSuccessLiveRosterSkeleton",
-  );
-}
-
-@widgetbook.UseCase(
   name: "EventSuccessLiveTabSkeleton",
   type: EventSuccessLiveTabSkeleton,
   path:
@@ -1428,20 +1401,6 @@ Widget eventSuccessStrictEventSuccessTabPicker(BuildContext context) {
     context,
     surface: _EventSuccessStrictSurface.host,
     componentName: "EventSuccessTabPicker",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "EventSuccessTabPickerSkeleton",
-  type: EventSuccessTabPickerSkeleton,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictEventSuccessTabPickerSkeleton(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.host,
-    componentName: "EventSuccessTabPickerSkeleton",
   );
 }
 

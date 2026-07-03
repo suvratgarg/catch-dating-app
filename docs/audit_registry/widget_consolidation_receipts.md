@@ -557,6 +557,101 @@ Known blockers / inherited debt:
   succeeds, but build_runner reports that the delete-conflicting option has
   been removed and is ignored by the current builder.
 
+## 2026-07-03 WO-006 Skeleton composition primitives
+
+Scope:
+
+- `CatchSkeletonRows`
+- `CatchSkeletonBoxRow`
+- `CatchSkeletonChips`
+- `EventSuccessSkeletonSurface`
+- `HostRosterSkeleton`
+- `CompanionPeerListSkeleton`
+- `EventSuccessLiveRosterSkeleton`
+- `DashboardQuickActionsLoadingRow`
+- `EventSuccessTabPickerSkeleton`
+- `ClubTagLoadingSkeleton`
+- `GenderFilterSkeleton`
+- `OptimisticSocialSkeleton`
+- `EventPreviewSectionSkeleton`
+
+Commands:
+
+- `node tool/agent/context_pack.mjs --task widget-consolidation-wo-006 --paths lib/core/widgets/catch_skeleton_layouts.dart,lib/core/widgets/catch_skeleton.dart,lib/hosts/presentation/widgets/host_loading_skeletons.dart,lib/hosts/presentation/widgets/host_event_attendance_panel.dart,lib/hosts/presentation/host_account_screen.dart,lib/hosts/presentation/host_operations_screen.dart,lib/dashboard/presentation/dashboard_screen.dart,lib/dashboard/presentation/dashboard_loading_screen.dart,lib/event_success/presentation/event_success_host_screen.dart,lib/event_success/presentation/event_success_companion_screen.dart,lib/event_success/presentation/event_success_event_preview_loading_screen.dart,lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart,lib/swipes/presentation/filters_screen.dart,lib/events/presentation/widgets/event_detail_optimistic_body.dart,lib/events/presentation/widgets/event_detail_loading_skeleton.dart,widgetbook/lib/primitives,widgetbook/lib/hosts/host_operations_use_cases.dart,widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart,widgetbook/lib/events/event_detail_use_cases.dart,widgetbook/lib/clubs/club_detail_use_cases.dart,docs/design_parity/widget_consolidation/codex_worklog.md,docs/design_parity/widget_consolidation/decisions.json`
+- `dart format lib/core/widgets/catch_skeleton_layouts.dart lib/event_success/presentation/event_success_skeletons.dart lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart lib/dashboard/presentation/dashboard_loading_screen.dart lib/dashboard/presentation/dashboard_screen.dart lib/event_success/presentation/event_success_companion_screen.dart lib/event_success/presentation/event_success_event_preview_loading_screen.dart lib/event_success/presentation/event_success_host_screen.dart lib/events/presentation/widgets/event_detail_optimistic_body.dart lib/hosts/presentation/widgets/host_event_attendance_panel.dart lib/hosts/presentation/widgets/host_loading_skeletons.dart lib/swipes/presentation/filters_screen.dart widgetbook/lib/primitives/skeleton_layout_use_cases.dart widgetbook/lib/clubs/club_detail_use_cases.dart widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart widgetbook/lib/events/event_detail_use_cases.dart widgetbook/lib/hosts/host_operations_use_cases.dart widgetbook/lib/main.directories.g.dart`
+- `flutter pub get` in `widgetbook/`
+- `dart run build_runner build --delete-conflicting-outputs` in `widgetbook/`
+- `rg -n "HostRosterSkeleton|CompanionPeerListSkeleton|EventSuccessLiveRosterSkeleton|DashboardQuickActionsLoadingRow|EventSuccessTabPickerSkeleton|ClubTagLoadingSkeleton|GenderFilterSkeleton|OptimisticSocialSkeleton|EventPreviewSectionSkeleton|trailingChips|actionCount" lib widgetbook/lib --glob '!**/*.g.dart'`
+- `flutter analyze --no-fatal-infos lib/core/widgets/catch_skeleton_layouts.dart lib/event_success/presentation/event_success_skeletons.dart lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart lib/dashboard/presentation/dashboard_loading_screen.dart lib/dashboard/presentation/dashboard_screen.dart lib/event_success/presentation/event_success_companion_screen.dart lib/event_success/presentation/event_success_event_preview_loading_screen.dart lib/event_success/presentation/event_success_host_screen.dart lib/events/presentation/widgets/event_detail_optimistic_body.dart lib/hosts/presentation/widgets/host_event_attendance_panel.dart lib/hosts/presentation/widgets/host_loading_skeletons.dart lib/swipes/presentation/filters_screen.dart`
+- `flutter analyze --no-fatal-infos lib`
+- `flutter analyze` in `widgetbook/`
+- `node tool/design/generate_widget_classification.mjs`
+- `node tool/design/check_widget_classification.mjs`
+- `dart run tool/widget_dedupe/bin/extract_fingerprints.dart`
+- `node tool/design/build_widget_similarity.mjs`
+- `node tool/design/build_widget_similarity.mjs --check`
+- `node tool/design/check_widgetbook_coverage.mjs --check`
+- `env DART=/Users/suvratgarg/Development/flutter/bin/dart node tool/design/check_widget_dedupe_probes.mjs`
+- `bash tool/widget_cleanup_scan.sh --summary`
+- `node tool/run.mjs check --manifest-only`
+- `node tool/design/check_widgetbook_contract_refs.mjs --check`
+- `node -e "const fs=require('fs'); for (const f of process.argv.slice(1)) JSON.parse(fs.readFileSync(f,'utf8')); console.log('JSON parse passed');" docs/audit_registry/widget_classification.json artifacts/widget_dedupe/fingerprints.json docs/audit_registry/widget_similarity.json docs/audit_registry/doc_versions.json docs/design_parity/widget_consolidation/decisions.json`
+- `dart tool/audit_registry.dart refresh`
+- `node tool/agent/check_agent_readiness.mjs`
+- `git diff --check`
+
+Headline numbers:
+
+| metric | value |
+|---|---:|
+| widget classification entries | 1,158 |
+| classification review items | 46 |
+| private widget classes flagged | 0 |
+| widget fingerprints | 1,050 |
+| fingerprint failures | 0 |
+| similarity clusters | 59 |
+| ranked pairs | 200 |
+| name families | 225 |
+| absorb candidates | 9 |
+| Widgetbook coverage decision queue | 134 |
+| Widgetbook coverage stale decisions | 0 |
+| root lib analyzer infos | 192 |
+| Widgetbook analyzer issues | 65 |
+| widget cleanup scan categories with findings | 0 |
+| agent readiness score | 100/100 |
+
+Spot checks:
+
+- Active `lib` and `widgetbook/lib` references no longer contain the deleted
+  duplicate symbols or old `trailingChips` / `actionCount` API names.
+- `widgetbook/lib/main.directories.g.dart` now exposes
+  `CatchSkeletonRows`, `CatchSkeletonBoxRow`, and `CatchSkeletonChips` under
+  the core loading-composition catalog.
+- `HostEventAttendancePanel`, the Dashboard quick-action row, Event Success
+  tab/live/preview loading, Club Detail tags, Filters chips, and Event Detail
+  optimistic social loading now route through the shared skeleton compositions
+  where the full bodies were isomorphic.
+- `EventSuccessSkeletonSurface` moved to
+  `lib/event_success/presentation/event_success_skeletons.dart` with
+  `trailingCount`, so host and preview loading sections share one
+  feature-level surface without adding a core primitive.
+- `HostEventRowsSkeleton` and `HostSettingsRowsSkeleton` remain deliberately:
+  full-body review showed divider separators between rows, while
+  `CatchSkeletonRows` only models gap-separated rows.
+
+Known blockers / inherited debt:
+
+- `node tool/design/check_widgetbook_coverage.mjs --check` still fails on the
+  existing catalog-or-replace decision queue: 134 public widgets need
+  decisions, with 0 stale decisions.
+- `(cd widgetbook && flutter analyze)` still fails on 65 existing Widgetbook
+  issues in `lib/hosts/host_operations_use_cases.dart`.
+- `node tool/design/check_widgetbook_contract_refs.mjs --check` still fails on
+  unrelated HostOperations preview ids.
+- `dart run build_runner build --delete-conflicting-outputs` in `widgetbook/`
+  succeeds, but build_runner reports that the delete-conflicting option has
+  been removed and is ignored by the current builder.
+
 Calibration note:
 
 The v0.1.0 SimHash threshold of 18 is void. The v0.2.0 registry recalibrates

@@ -20,6 +20,7 @@ import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -130,7 +131,9 @@ class EventSuccessCompanionLoadingBody extends StatelessWidget {
               gapH16,
               CompanionPrimaryActionSkeleton(),
               gapH16,
-              CompanionPeerListSkeleton(),
+              CatchSkeletonRows(
+                titleWidth: CatchLayout.skeletonTextSectionWideWidth,
+              ),
             ],
           ),
         ),
@@ -205,56 +208,6 @@ class CompanionPrimaryActionSkeleton extends StatelessWidget {
             height: CatchLayout.controlMdMinHeight,
             radius: CatchRadius.sm,
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class CompanionPeerListSkeleton extends StatelessWidget {
-  const CompanionPeerListSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.content,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CatchSkeleton.text(width: CatchLayout.skeletonTextSectionWideWidth),
-          gapH14,
-          for (var i = 0; i < 3; i++) ...[
-            Row(
-              children: [
-                CatchSkeleton.circle(
-                  size: CatchLayout.skeletonAvatarCompactExtent,
-                ),
-                gapW12,
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CatchSkeleton.text(
-                        width: i == 1
-                            ? CatchLayout.skeletonTextBodyWidth
-                            : CatchLayout.skeletonTextBodyWideWidth,
-                      ),
-                      gapH6,
-                      CatchSkeleton.text(
-                        width: i == 2
-                            ? CatchLayout.skeletonTextCardTitleWidth
-                            : CatchLayout.skeletonTextDetailWidth,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            if (i < 2) gapH16,
-          ],
         ],
       ),
     );

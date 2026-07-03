@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_controller.dart';
@@ -281,7 +282,7 @@ class FiltersContentSkeleton extends StatelessWidget {
               FiltersSection(title: 'Age', child: AgeFilterSkeleton()),
               FiltersSection(
                 title: 'Interested in',
-                child: GenderFilterSkeleton(),
+                child: CatchSkeletonChips(),
               ),
             ],
           ),
@@ -331,35 +332,6 @@ class AgeFilterSkeleton extends StatelessWidget {
               ],
             ),
           ],
-        ),
-      ],
-    );
-  }
-}
-
-class GenderFilterSkeleton extends StatelessWidget {
-  const GenderFilterSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: CatchSpacing.s2,
-      runSpacing: CatchSpacing.s2,
-      children: [
-        CatchSkeleton.box(
-          width: CatchSpacing.s16 + CatchSpacing.s7,
-          height: CatchSpacing.s9,
-          radius: CatchRadius.pill,
-        ),
-        CatchSkeleton.box(
-          width: CatchSpacing.s16 + CatchSpacing.s10,
-          height: CatchSpacing.s9,
-          radius: CatchRadius.pill,
-        ),
-        CatchSkeleton.box(
-          width: CatchSpacing.s16 + CatchSpacing.s4,
-          height: CatchSpacing.s9,
-          radius: CatchRadius.pill,
         ),
       ],
     );

@@ -21,6 +21,7 @@ import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_status_dot.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -41,6 +42,7 @@ import 'package:catch_dating_app/event_success/presentation/event_success_host_s
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_setup_body.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_skeletons.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_check_in_qr_payload.dart';
@@ -620,33 +622,20 @@ class EventSuccessHostSectionSkeleton extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (showTabs) ...[const EventSuccessTabPickerSkeleton(), gapH16],
+        if (showTabs) ...[
+          const CatchSkeletonBoxRow(
+            count: 3,
+            height: CatchLayout.controlCompactMinHeight,
+            radius: CatchRadius.sm,
+            gap: CatchSpacing.s2,
+          ),
+          gapH16,
+        ],
         switch (initialTab) {
           EventSuccessHostTab.setup => const EventSuccessSetupTabSkeleton(),
           EventSuccessHostTab.live => const EventSuccessLiveTabSkeleton(),
           EventSuccessHostTab.report => const EventSuccessReportTabSkeleton(),
         },
-      ],
-    );
-  }
-}
-
-class EventSuccessTabPickerSkeleton extends StatelessWidget {
-  const EventSuccessTabPickerSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        for (var i = 0; i < 3; i++) ...[
-          Expanded(
-            child: CatchSkeleton.box(
-              height: CatchLayout.controlCompactMinHeight,
-              radius: CatchRadius.sm,
-            ),
-          ),
-          if (i < 2) gapW8,
-        ],
       ],
     );
   }
@@ -664,13 +653,13 @@ class EventSuccessSetupTabSkeleton extends StatelessWidget {
         EventSuccessSkeletonSurface(
           titleWidth: 170,
           textLines: 3,
-          trailingChips: 3,
+          trailingCount: 3,
         ),
         EventSuccessSetupControlsSkeleton(),
         EventSuccessSkeletonSurface(
           titleWidth: 150,
           textLines: 2,
-          trailingChips: 2,
+          trailingCount: 2,
         ),
       ],
     );
@@ -689,13 +678,13 @@ class EventSuccessLiveTabSkeleton extends StatelessWidget {
         EventSuccessSkeletonSurface(
           titleWidth: 148,
           textLines: 2,
-          trailingChips: 2,
+          trailingCount: 2,
         ),
-        EventSuccessLiveRosterSkeleton(),
+        CatchSkeletonRows(titleWidth: CatchLayout.skeletonTextTitleWidth),
         EventSuccessSkeletonSurface(
           titleWidth: 190,
           textLines: 3,
-          trailingChips: 0,
+          trailingCount: 0,
         ),
       ],
     );
@@ -715,60 +704,14 @@ class EventSuccessReportTabSkeleton extends StatelessWidget {
         EventSuccessSkeletonSurface(
           titleWidth: 180,
           textLines: 3,
-          trailingChips: 2,
+          trailingCount: 2,
         ),
         EventSuccessSkeletonSurface(
           titleWidth: 140,
           textLines: 2,
-          trailingChips: 0,
+          trailingCount: 0,
         ),
       ],
-    );
-  }
-}
-
-class EventSuccessSkeletonSurface extends StatelessWidget {
-  const EventSuccessSkeletonSurface({
-    super.key,
-    required this.titleWidth,
-    required this.textLines,
-    required this.trailingChips,
-  });
-
-  final double titleWidth;
-  final int textLines;
-  final int trailingChips;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.content,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CatchSkeleton.text(width: titleWidth),
-          gapH12,
-          CatchSkeleton.textBlock(lines: textLines),
-          if (trailingChips > 0) ...[
-            gapH16,
-            Wrap(
-              spacing: CatchSpacing.s2,
-              runSpacing: CatchSpacing.s2,
-              children: [
-                for (var i = 0; i < trailingChips; i++)
-                  CatchSkeleton.box(
-                    width: i == 0 ? 104 : 86,
-                    height: CatchLayout.badgeActionHeight,
-                    radius: CatchRadius.pill,
-                  ),
-              ],
-            ),
-          ],
-        ],
-      ),
     );
   }
 }
@@ -798,56 +741,6 @@ class EventSuccessSetupControlsSkeleton extends StatelessWidget {
               ],
             ),
             if (i < 3) gapH14,
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class EventSuccessLiveRosterSkeleton extends StatelessWidget {
-  const EventSuccessLiveRosterSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.content,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
-          gapH14,
-          for (var i = 0; i < 3; i++) ...[
-            Row(
-              children: [
-                CatchSkeleton.circle(
-                  size: CatchLayout.skeletonAvatarCompactExtent,
-                ),
-                gapW12,
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CatchSkeleton.text(
-                        width: i == 0
-                            ? CatchLayout.skeletonTextTertiaryWidth
-                            : CatchLayout.skeletonTextCompactWidth,
-                      ),
-                      gapH6,
-                      CatchSkeleton.text(
-                        width: i == 2
-                            ? CatchLayout.skeletonTextDetailWideWidth
-                            : CatchLayout.skeletonTextBodyLongWidth,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            if (i < 2) gapH16,
           ],
         ],
       ),

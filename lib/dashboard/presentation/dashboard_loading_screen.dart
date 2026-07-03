@@ -26,7 +26,9 @@ class DashboardLoadingScreen extends StatelessWidget {
                     children: [
                       DashboardFocusLoadingCard(),
                       DashboardStrideLoadingCard(),
-                      DashboardQuickActionsLoadingRow(),
+                      CatchSkeletonBoxRow(
+                        height: CatchLayout.dashboardQuickActionSkeletonHeight,
+                      ),
                       DashboardRecommendedLoadingSection(),
                     ],
                   ),

@@ -39,6 +39,8 @@ import 'package:widgetbook_workspace/primitives/core_catalog_use_cases.dart'
     as _widgetbook_workspace_primitives_core_catalog_use_cases;
 import 'package:widgetbook_workspace/primitives/primitive_contract_use_cases.dart'
     as _widgetbook_workspace_primitives_primitive_contract_use_cases;
+import 'package:widgetbook_workspace/primitives/skeleton_layout_use_cases.dart'
+    as _widgetbook_workspace_primitives_skeleton_layout_use_cases;
 import 'package:widgetbook_workspace/profiles/profile_use_cases.dart'
     as _widgetbook_workspace_profiles_profile_use_cases;
 import 'package:widgetbook_workspace/shell/app_shell_use_cases.dart'
@@ -171,6 +173,16 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Loading',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'CatchSkeletonChips',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Tag skeleton states',
+                builder: _widgetbook_workspace_clubs_club_detail_use_cases
+                    .clubTagLoadingSkeletonStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'ClubHeroLoadingSkeleton',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -227,16 +239,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Stats skeleton states',
                 builder: _widgetbook_workspace_clubs_club_detail_use_cases
                     .clubStatsLoadingSkeletonStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ClubTagLoadingSkeleton',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Tag skeleton states',
-                builder: _widgetbook_workspace_clubs_club_detail_use_cases
-                    .clubTagLoadingSkeletonStates,
               ),
             ],
           ),
@@ -1182,6 +1184,44 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Catalog states',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
                     .catchStartupLoadingScreenCatalogStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Loading compositions',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchSkeletonBoxRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Box row',
+                builder:
+                    _widgetbook_workspace_primitives_skeleton_layout_use_cases
+                        .catchSkeletonBoxRowCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchSkeletonChips',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Chips',
+                builder:
+                    _widgetbook_workspace_primitives_skeleton_layout_use_cases
+                        .catchSkeletonChipsCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchSkeletonRows',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Rows',
+                builder:
+                    _widgetbook_workspace_primitives_skeleton_layout_use_cases
+                        .catchSkeletonRowsCatalogStates,
               ),
             ],
           ),
@@ -3226,6 +3266,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'EventDetailSocialSkeleton',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Event detail social skeleton',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventDetailSocialSkeletonState,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'EventHypeAvatarStack',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3302,16 +3352,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Optimistic hosts skeleton',
                 builder: _widgetbook_workspace_events_event_detail_use_cases
                     .eventDetailOptimisticHostsSkeletonState,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'OptimisticSocialSkeleton',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Optimistic social skeleton',
-                builder: _widgetbook_workspace_events_event_detail_use_cases
-                    .eventDetailOptimisticSocialSkeletonState,
               ),
             ],
           ),
@@ -5905,17 +5945,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'EventPreviewSectionSkeleton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'EventPreviewSectionSkeleton',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictEventPreviewSectionSkeleton,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'EventPreviewSetupSkeleton',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -6234,17 +6263,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'EventSuccessLiveRosterSkeleton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'EventSuccessLiveRosterSkeleton',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictEventSuccessLiveRosterSkeleton,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'EventSuccessLiveTabSkeleton',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -6318,17 +6336,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
                             .eventSuccessStrictEventSuccessTabPicker,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'EventSuccessTabPickerSkeleton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'EventSuccessTabPickerSkeleton',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictEventSuccessTabPickerSkeleton,
                   ),
                 ],
               ),

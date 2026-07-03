@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
@@ -226,27 +227,6 @@ class DashboardStrideLoadingCard extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class DashboardQuickActionsLoadingRow extends StatelessWidget {
-  const DashboardQuickActionsLoadingRow({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        for (var i = 0; i < 2; i++) ...[
-          Expanded(
-            child: CatchSkeleton.box(
-              height: CatchLayout.dashboardQuickActionSkeletonHeight,
-              radius: CatchRadius.md,
-            ),
-          ),
-          if (i == 0) gapW12,
-        ],
-      ],
     );
   }
 }

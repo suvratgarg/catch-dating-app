@@ -235,58 +235,6 @@ class HostChartSkeleton extends StatelessWidget {
   }
 }
 
-class HostRosterSkeleton extends StatelessWidget {
-  const HostRosterSkeleton({super.key, this.count = 4});
-
-  final int count;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.content,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CatchSkeleton.text(width: CatchLayout.skeletonTextSectionWidth),
-          gapH14,
-          for (var i = 0; i < count; i++) ...[
-            Row(
-              children: [
-                CatchSkeleton.circle(
-                  size: CatchLayout.skeletonAvatarCompactExtent,
-                ),
-                gapW12,
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CatchSkeleton.text(
-                        width: i.isEven
-                            ? CatchLayout.skeletonTextSecondaryWidth
-                            : CatchLayout.skeletonTextDetailWideWidth,
-                      ),
-                      gapH6,
-                      CatchSkeleton.text(
-                        width: i == count - 1
-                            ? CatchLayout.skeletonTextBodyWidth
-                            : CatchLayout.skeletonTextBodyLongWidth,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            if (i < count - 1) gapH16,
-          ],
-        ],
-      ),
-    );
-  }
-}
-
 class HostInlineSkeletonIcon extends StatelessWidget {
   const HostInlineSkeletonIcon({super.key, this.size = CatchIcon.md});
 

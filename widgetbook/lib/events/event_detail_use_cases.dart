@@ -47,6 +47,7 @@ import 'package:catch_dating_app/events/presentation/widgets/event_detail_body.d
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_app_bar.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_loading_skeleton.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_optimistic_body.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_overview_section.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_social_section.dart';
@@ -640,14 +641,14 @@ Widget eventDetailOptimisticHostsSkeletonState(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Optimistic social skeleton',
-  type: OptimisticSocialSkeleton,
+  name: 'Event detail social skeleton',
+  type: EventDetailSocialSkeleton,
   path: '[Event Detail]/Sections',
 )
-Widget eventDetailOptimisticSocialSkeletonState(BuildContext context) {
+Widget eventDetailSocialSkeletonState(BuildContext context) {
   return const Padding(
     padding: CatchInsets.contentDense,
-    child: OptimisticSocialSkeleton(),
+    child: EventDetailSocialSkeleton(),
   );
 }
 

@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_app_bar.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_loading_skeleton.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_overview_section.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
@@ -84,7 +85,7 @@ class EventDetailOptimisticBody extends StatelessWidget {
                     : null,
               ),
               const OptimisticHostsSkeleton(),
-              const OptimisticSocialSkeleton(),
+              const EventDetailSocialSkeleton(),
             ],
           ),
         ],
@@ -130,27 +131,6 @@ class OptimisticHostsSkeleton extends StatelessWidget {
               ],
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class OptimisticSocialSkeleton extends StatelessWidget {
-  const OptimisticSocialSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchSection.divided(
-      title: "Who's going",
-      child: Row(
-        children: [
-          for (var index = 0; index < 4; index++) ...[
-            CatchSkeleton.circle(size: CatchIcon.avatarLg),
-            if (index < 3) gapW8,
-          ],
-          gapW16,
-          Expanded(child: CatchSkeleton.text()),
         ],
       ),
     );

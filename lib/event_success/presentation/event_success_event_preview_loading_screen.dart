@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_skeletons.dart';
 import 'package:flutter/material.dart';
 
 class EventSuccessEventPreviewLoadingScreen extends StatelessWidget {
@@ -124,10 +125,10 @@ class EventPreviewNotesSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const EventPreviewSectionSkeleton(
+    return const EventSuccessSkeletonSurface(
       titleWidth: 210,
       textLines: 3,
-      actionCount: 0,
+      trailingCount: 0,
     );
   }
 }
@@ -137,10 +138,10 @@ class EventPreviewSetupSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const EventPreviewSectionSkeleton(
+    return const EventSuccessSkeletonSurface(
       titleWidth: 150,
       textLines: 3,
-      actionCount: 3,
+      trailingCount: 3,
     );
   }
 }
@@ -150,10 +151,10 @@ class EventPreviewLiveSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const EventPreviewSectionSkeleton(
+    return const EventSuccessSkeletonSurface(
       titleWidth: 132,
       textLines: 2,
-      actionCount: 2,
+      trailingCount: 2,
     );
   }
 }
@@ -163,10 +164,10 @@ class EventPreviewCompanionSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const EventPreviewSectionSkeleton(
+    return const EventSuccessSkeletonSurface(
       titleWidth: 170,
       textLines: 3,
-      actionCount: 1,
+      trailingCount: 1,
     );
   }
 }
@@ -176,56 +177,10 @@ class EventPreviewReportSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const EventPreviewSectionSkeleton(
+    return const EventSuccessSkeletonSurface(
       titleWidth: 188,
       textLines: 2,
-      actionCount: 3,
-    );
-  }
-}
-
-class EventPreviewSectionSkeleton extends StatelessWidget {
-  const EventPreviewSectionSkeleton({
-    super.key,
-    required this.titleWidth,
-    required this.textLines,
-    required this.actionCount,
-  });
-
-  final double titleWidth;
-  final int textLines;
-  final int actionCount;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.content,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CatchSkeleton.text(width: titleWidth),
-          gapH12,
-          CatchSkeleton.textBlock(lines: textLines),
-          if (actionCount > 0) ...[
-            gapH16,
-            Wrap(
-              spacing: CatchSpacing.s2,
-              runSpacing: CatchSpacing.s2,
-              children: [
-                for (var i = 0; i < actionCount; i++)
-                  CatchSkeleton.box(
-                    width: i == 0 ? 112 : 86,
-                    height: CatchLayout.badgeActionHeight,
-                    radius: CatchRadius.pill,
-                  ),
-              ],
-            ),
-          ],
-        ],
-      ),
+      trailingCount: 3,
     );
   }
 }

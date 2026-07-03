@@ -14,6 +14,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -27,7 +28,6 @@ import 'package:catch_dating_app/hosts/presentation/host_event_booking_controlle
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/catch_roster_board.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -94,7 +94,10 @@ class _HostEventParticipantsPanelState
 
     return CatchAsyncValueView<AttendanceSheetViewModel?>(
       value: attendanceAsync,
-      loadingBuilder: (_) => const HostRosterSkeleton(),
+      loadingBuilder: (_) => const CatchSkeletonRows(
+        count: 4,
+        titleWidth: CatchLayout.skeletonTextSectionWidth,
+      ),
       errorBuilder: (_, error, _) => Padding(
         padding: CatchInsets.content,
         child: CatchInlineErrorState.fromError(
@@ -505,7 +508,10 @@ class _HostEventParticipantsListState extends State<HostEventParticipantsList> {
 
     final rows = switch (profileLookupState.status) {
       HostParticipantProfilesLookupStatus.ready => buildBoard(),
-      HostParticipantProfilesLookupStatus.loading => const HostRosterSkeleton(),
+      HostParticipantProfilesLookupStatus.loading => const CatchSkeletonRows(
+        count: 4,
+        titleWidth: CatchLayout.skeletonTextSectionWidth,
+      ),
       HostParticipantProfilesLookupStatus.error => Padding(
         padding: CatchInsets.content,
         child: CatchInlineErrorState.fromError(

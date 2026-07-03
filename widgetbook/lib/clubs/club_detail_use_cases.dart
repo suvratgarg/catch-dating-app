@@ -30,6 +30,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/shared/reviews_section.dart';
@@ -475,15 +476,18 @@ Widget clubTextLoadingSkeletonStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Tag skeleton states',
-  type: ClubTagLoadingSkeleton,
+  type: CatchSkeletonChips,
   path: '[Club Detail]/Loading',
 )
 Widget clubTagLoadingSkeletonStates(BuildContext context) {
   return const _CatalogScreen(
-    title: 'ClubTagLoadingSkeleton',
+    title: 'CatchSkeletonChips',
     catalogId: 'loading.club.detail.tags',
     children: [
-      _StateCard(label: 'three chips', child: ClubTagLoadingSkeleton()),
+      _StateCard(
+        label: 'three chips',
+        child: CatchSkeletonChips(height: CatchSpacing.s8),
+      ),
     ],
   );
 }
