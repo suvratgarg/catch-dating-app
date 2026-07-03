@@ -556,7 +556,7 @@
         "maxMismatchRatio": 0.18,
         "maxMeanDelta": 18
       },
-      "notes": "Canonical Claude Messaging inbox reference for advisory comparison against matches_list_context light captures rendered on the design-phone device. 2026-06-25 non-host reference batch: above advisory threshold; mismatch 11.84%, meanDelta 18.80, maxDelta 227, masked 77996."
+      "notes": "Canonical Claude Messaging inbox reference for advisory comparison against matches_list_context light captures rendered on the design-phone device. 2026-06-25 non-host reference batch: above advisory threshold; mismatch 11.84%, meanDelta 18.80, maxDelta 227, masked 77996. 2026-07-03 fresh design-phone comparison is within threshold at mismatch 6.84%, meanDelta 8.21, maxDelta 227, masked 77996."
     },
     {
       "id": "screen.matches.chat.populated_thread",

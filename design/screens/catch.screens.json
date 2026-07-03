@@ -5376,7 +5376,7 @@
           "id": "claude.matches-list",
           "kind": "claude",
           "status": "available",
-          "notes": "Messaging inbox reference exported to design/reference_screens/screen.matches.list/inbox.png and registered for advisory comparison.",
+          "notes": "Messaging inbox reference exported to design/reference_screens/screen.matches.list/inbox.png, registered, and within advisory threshold against matches_list_context. The current Messaging handoff has no separate Matches List search/filter/loading/empty reference panels.",
           "path": "/Users/suvratgarg/Downloads/Catch Design System (2)/templates/catch-messaging/Messaging.dc.html"
         }
       ],
@@ -5873,8 +5873,8 @@
         },
         {
           "id": "DS-MATCHES-LIST-002",
-          "status": "open",
-          "nextAction": "Deterministic list captures and a canonical Messaging inbox reference now cover the populated list baseline, and the advisory comparison against matches_list_context is within threshold at 7.28% mismatch / 8.86 meanDelta. HostInboxScreenState, ChatsListDisplayState, ChatsListCelebrationController, and ChatsSearchHeaderController own the code seams. Remaining work is only additional reference variants if design exports them; interaction-specific search/filter coverage waits unless search/filter state becomes external."
+          "status": "closed",
+          "nextAction": "Closed. Deterministic list captures and the canonical Messaging inbox reference cover the populated list baseline, and a fresh advisory comparison against matches_list_context is within threshold at 6.84% mismatch / 8.21 meanDelta, maxDelta 227, masked 77996. HostInboxScreenState, ChatsListDisplayState, ChatsListCelebrationController, and ChatsSearchHeaderController own the code seams. Additional search/filter/loading/empty reference variants are reference-only unless design exports distinct panels or the interaction state becomes external."
         },
         {
           "id": "DS-MATCHES-LIST-003",
