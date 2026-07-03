@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.566
+version: 2.5.567
 updated: 2026-07-04
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.567
+
+- Made `CoverStoryChrome` top-safe-area aware: `CatchCoverStory` still paints
+  its dark cover background through the status bar, but the injected
+  location/search chrome now sits below the device top inset and has regression
+  coverage in the Explore header test.
 
 ### 2.5.566
 
@@ -6120,7 +6127,7 @@ Generated 2026-05-06.
 | `ExploreScreen` | `lib/explore/presentation/explore_screen.dart:31` | Explore tab route. Owns the persistent sheet-over-map browse surface: `EventMapView` stays mounted behind a draggable sheet and receives its map view model from the same filtered event discovery feed used by the list. The Explore chrome/header/filter rail are part of the primary `CustomScrollView`, so the cover header scrolls away with the feed instead of sitting outside the scroll owner. The screen no longer wraps the scroll view in a top `SafeArea`; the Explore header owns top-inset padding so the hero/background can paint to the viewport edge while row content stays below the status area. The floating `Map` control uses shared `CatchCountPill` and appears only in this full/list state; after opening, users close or resize by dragging the handle. Programmatic map open lands on a higher detent just under the filter strip, fades the top lid/header/filter backgrounds transparent, and keeps the city/search/filter controls floating over the map while the sheet edge rounds and selected map pins render a full-width ticket card unless the selected pin is the feed's actual featured event, in which case the spotlight card remains. User drags use soft settling zones: releases near the shorter bottom extent, map detent, or full/list state animate into those anchors, while the middle range can rest naturally. The peek state renders only aggregate result summary copy. Selecting a map pin stores the selected event id and snaps to the map selected-card state. The screen also listens for map camera-center changes so nearby event ordering can remain spatial, and a distance-ring tap cycles the active distance filter. |
 | `ExploreBody` | `lib/explore/presentation/widgets/explore_body.dart:10` | Sliver-native data body for the Explore tab. Production `ExploreScreen` disables the old personal rail and directory stack, then composes the mixed `ExploreEventsSection` with the bottom-of-page `ExploreEventTypeBrowseGrid` without embedding a vertical `ListView` inside the parent `CustomScrollView`. Legacy callers can still opt into the joined-club rail or club directory through explicit flags. |
 | `ExploreEventsSection` | `lib/explore/presentation/widgets/explore_events_section.dart:132` | Mixed Explore discovery section. Watches the event discovery feed, accepts candidate clubs from `ExploreBody`, removes the feed's featured item from the body list, and renders a handoff result-count line from the remaining visible items (`1 PLAN` / `10 PLANS · JUN 11-17`), skipping that cue for club-only fallback content. It leads the default This week filter with a no-gap ticket strip only when there are at least five day-level `EventDateRailCard` recommendations. Weekly-strip events are excluded from the remaining mixed feed, which interleaves leftover compact event rows, an Instax-like club spotlight, and compact club rows. Event taps route to `Routes.eventDetailScreen`, club taps route to `Routes.clubDetailScreen`, club cards use shared club identity atoms, and event rows use `EventCapacityPresenter` for going/left copy. Skeleton/error/empty states still belong to the event discovery feed; debug builds can opt into non-tappable synthetic visual fill with `ENABLE_EXPLORE_SYNTHETIC_VISUAL_FILL`. |
-| `CoverStoryChrome` | `lib/explore/presentation/widgets/catch_cover_story.dart:134` | Top chrome row inside `CatchCoverStory`. Receives paper color plus the parent story display model, renders optional location scope and search affordance, and keeps change-location/search callbacks as injected side effects owned by the containing Explore header. |
+| `CoverStoryChrome` | `lib/explore/presentation/widgets/catch_cover_story.dart:134` | Top chrome row inside `CatchCoverStory`. Receives paper color plus the parent story display model, renders optional location scope and search affordance, keeps change-location/search callbacks as injected side effects owned by the containing Explore header, and offsets interactive controls by the top safe-area inset while the cover background remains full-bleed. |
 | `CoverStoryContent` | `lib/explore/presentation/widgets/catch_cover_story.dart:218` | Main copy/action block inside `CatchCoverStory`. Receives paper/accent colors plus the parent story display model, then renders kicker, headline, body, CTA, and one or two mono data lines while preserving CTA/data wrapping on narrow widths. |
 | `CatchCrossPathsCard` | `lib/explore/presentation/widgets/catch_cross_paths_card.dart:21` | Explore cross-paths person card. Renders the postcard invitation variant or compact photo-row variant from activity pigment, quote/name/meta copy, optional graded portrait, join CTA, and optional like action while keeping navigation/mutations outside the card. |
 | `CrossPathsSurface` | `lib/explore/presentation/widgets/catch_cross_paths_card.dart:193` | Shared Cross Paths card shell. Wraps caller content in tokenized `CatchSurface` chrome, border/radius, optional clipping, and card/raised shadow selection for postcard and photo-row variants. |

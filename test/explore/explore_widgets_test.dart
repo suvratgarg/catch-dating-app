@@ -643,27 +643,22 @@ void main() {
         clubId: club.id,
         meetingPoint: 'People Plaza',
       );
+      final item = ExploreEventItem(
+        event: event,
+        club: club,
+        availability: resolveViewerEventAvailability(
+          event: event,
+          userProfile: null,
+          now: DateTime.now(),
+        ),
+        status: EventTileStatus.open,
+      );
 
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
             exploreFeedViewModelProvider.overrideWithValue(
-              AsyncData(
-                ExploreFeedViewModel(
-                  items: [
-                    ExploreEventItem(
-                      event: event,
-                      club: club,
-                      availability: resolveViewerEventAvailability(
-                        event: event,
-                        userProfile: null,
-                        now: DateTime.now(),
-                      ),
-                      status: EventTileStatus.open,
-                    ),
-                  ],
-                ),
-              ),
+              AsyncData(ExploreFeedViewModel(items: [item])),
             ),
           ],
           child: MaterialApp(
@@ -672,7 +667,7 @@ void main() {
               data: const MediaQueryData(
                 padding: EdgeInsets.only(top: topInset),
               ),
-              child: Scaffold(body: _exploreCoverHeader()),
+              child: Scaffold(body: _exploreCoverHeader(featuredItem: item)),
             ),
           ),
         ),
@@ -684,6 +679,13 @@ void main() {
         tester.getSize(find.byType(ExploreDiscoveryCoverHeader)).height,
         greaterThan(topInset),
       );
+
+      final searchIcon = find.byIcon(CatchIcons.searchRounded);
+      expect(searchIcon, findsOneWidget);
+      final searchHitTargetTop =
+          tester.getCenter(searchIcon).dy -
+          CatchLayout.coverStorySearchExtent / 2;
+      expect(searchHitTargetTop, greaterThanOrEqualTo(topInset));
     });
 
     testWidgets('ExploreDiscoveryCoverHeader uses compact row without hero', (
