@@ -11,7 +11,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
-import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
+import 'package:catch_dating_app/dashboard/data/dashboard_recommendations_repository.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/notifications_list_state.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';

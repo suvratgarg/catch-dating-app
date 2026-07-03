@@ -59,7 +59,7 @@ import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_controller.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
-import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
+import 'package:catch_dating_app/dashboard/data/dashboard_recommendations_repository.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';

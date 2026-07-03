@@ -1,7 +1,7 @@
+export 'data/dashboard_recommendations_repository.dart'; // public-api: read-model data seam for dashboard recommendations
 export 'presentation/activity_controller.dart';
 export 'presentation/activity_screen.dart';
 export 'presentation/dashboard_full_view_model.dart';
-export 'presentation/dashboard_recommendations_provider.dart';
 export 'presentation/dashboard_screen.dart';
 export 'presentation/dashboard_stride_actions.dart';
 export 'presentation/notification_route_util.dart';

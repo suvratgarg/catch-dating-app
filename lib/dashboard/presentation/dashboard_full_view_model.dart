@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
+import 'package:catch_dating_app/dashboard/data/dashboard_recommendations_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_arrival_action.dart';
