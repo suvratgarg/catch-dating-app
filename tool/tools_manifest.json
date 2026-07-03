@@ -794,6 +794,32 @@
       ]
     },
     {
+      "id": "contracts:schema-fixtures",
+      "category": "contracts",
+      "path": "tool/contracts/check_schema_fixtures.mjs",
+      "command": "node tool/contracts/check_schema_fixtures.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates every contract fixture against its explicitly mapped generated JSON Schema.",
+      "checks": [
+        "node --check tool/contracts/check_schema_fixtures.mjs",
+        "node --test tool/contracts/check_schema_fixtures.test.mjs",
+        "node tool/contracts/check_schema_fixtures.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "SCHEMA-FIXTURE-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/contracts/check_schema_fixtures.test.mjs",
+        "contains": [
+          "fixture manifest maps every fixture exactly once",
+          "schema fixture check validates all current fixtures"
+        ]
+      }
+    },
+    {
       "id": "contracts:firestore-contract",
       "category": "contracts",
       "path": "tool/contracts/check_firestore_contract.mjs",

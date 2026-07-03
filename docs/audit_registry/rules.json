@@ -121,6 +121,36 @@
         "Code generation is enforced by CI or a repository-local dev daemon"
       ]
     },
+    "SCHEMA-FIXTURE-001": {
+      "title": "Contract fixtures stay schema-backed",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "audit_registry",
+        "version": "2.6.2"
+      },
+      "applies_to": [
+        "contracts/fixtures/**/*.json",
+        "tool/contracts/check_schema_fixtures.mjs",
+        "tool/contracts/generated/schema_contract_registry.mjs"
+      ],
+      "instruction": "Every JSON fixture under contracts/fixtures/valid or contracts/fixtures/invalid must be declared in tool/contracts/check_schema_fixtures.mjs and must validate with the expected pass/fail result against its generated JSON Schema.",
+      "sunset_when": [
+        "Fixture-schema mapping is generated from contract metadata or embedded fixture metadata"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "contracts:schema-fixtures",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/audit_registry/rules.json"
+        }
+      ]
+    },
     "FIRESTORE-RULES-TEST-001": {
       "title": "Run Firebase rules tests under the required emulators",
       "status": "active",
