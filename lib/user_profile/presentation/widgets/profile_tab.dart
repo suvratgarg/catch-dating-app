@@ -217,13 +217,11 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
             subtitle:
                 '${editState.completedPromptCount} of $maxProfilePromptAnswers answered',
             grouped: true,
-            fullBleedRows: true,
             children: prompts,
           ),
           ProfileInfoSection(
             title: 'About you',
             grouped: true,
-            fullBleedRows: true,
             children: [
               for (final row in editState.aboutSectionRows)
                 ProfileFieldRow(
@@ -238,7 +236,6 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
           ProfileInfoSection(
             title: 'Running',
             grouped: true,
-            fullBleedRows: true,
             children: [
               for (final row in editState.runningRows)
                 ProfileFieldRow(
@@ -253,7 +250,6 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
           ProfileInfoSection(
             title: 'Lifestyle',
             grouped: true,
-            fullBleedRows: true,
             children: [
               for (final row in editState.lifestyleRows)
                 ProfileFieldRow(

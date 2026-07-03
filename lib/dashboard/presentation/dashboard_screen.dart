@@ -110,20 +110,15 @@ class DashboardNotificationBellButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final badgeLabel = catchCountLabel(unreadCount);
 
-    return SizedBox.square(
-      dimension: CatchLayout.eventInfoTileExtent,
-      child: CatchIconBadge(
-        isLabelVisible: unreadCount > 0,
-        label: badgeLabel,
-        child: Align(
-          child: CatchIconAction(
-            icon: unreadCount > 0
-                ? CatchIcons.notificationsRounded
-                : CatchIcons.notificationsNoneRounded,
-            tooltip: 'Notifications',
-            onPressed: onPressed,
-          ),
-        ),
+    return CatchIconBadge(
+      isLabelVisible: unreadCount > 0,
+      label: badgeLabel,
+      child: CatchIconAction(
+        icon: unreadCount > 0
+            ? CatchIcons.notificationsRounded
+            : CatchIcons.notificationsNoneRounded,
+        tooltip: 'Notifications',
+        onPressed: onPressed,
       ),
     );
   }

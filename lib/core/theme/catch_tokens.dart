@@ -1764,7 +1764,7 @@ abstract final class CatchLayout {
   // CoverStory (design-system components/explore/CoverStory).
   static const double exploreDiscoveryCoverHeight = 316.0;
   static const double coverStoryGhostGlyphSize = 210.0;
-  static const double coverStorySearchExtent = 38.0;
+  static const double coverStorySearchExtent = iconButtonNavSize;
   static const double coverStoryGhostRightInset = 34.0;
   static const double coverStoryGhostBottomInset = 14.0;
   // "Your hosts" HostCard (design-system components/events/HostCard).

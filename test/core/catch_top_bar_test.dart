@@ -64,6 +64,34 @@ void main() {
     expect(actionTaps, 1);
   });
 
+  testWidgets('CatchIconAction uses the shared app-bar nav extent by default', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: Scaffold(
+          body: Center(
+            child: CatchIconAction(
+              icon: CatchIcons.settingsOutlined,
+              tooltip: 'Settings',
+              onPressed: () {},
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(
+      tester.getSize(find.byType(CatchIconButton)),
+      const Size.square(CatchIconButton.navSize),
+    );
+    expect(
+      tester.widget<Icon>(find.byIcon(CatchIcons.settingsOutlined)).size,
+      CatchIcon.md,
+    );
+  });
+
   testWidgets('CatchTopBar supports custom title widgets and text actions', (
     tester,
   ) async {
@@ -225,7 +253,7 @@ void main() {
     await tester.tap(find.byIcon(CatchIcons.search));
     await tester.pump();
 
-    expect(find.text('Clubs'), findsNothing);
+    expect(find.text('Clubs'), findsOneWidget);
     expect(
       find.byWidgetPredicate(
         (widget) =>
@@ -234,6 +262,7 @@ void main() {
       ),
       findsOneWidget,
     );
+    await tester.pump(CatchMotion.base);
     expect(find.byIcon(CatchIcons.clearCircle), findsOneWidget);
 
     await tester.tap(find.byIcon(CatchIcons.clearCircle));

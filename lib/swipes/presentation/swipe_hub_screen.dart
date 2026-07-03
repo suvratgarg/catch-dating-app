@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
@@ -174,6 +175,8 @@ class CatchesHubHeader extends StatelessWidget {
           iconColor: t.primary,
           backgroundColor: t.primarySoft,
           borderColor: t.primarySoft,
+          size: CatchIconButton.navSize,
+          iconSize: CatchIcon.md,
           radius: CatchRadius.pill,
         ),
       ],

@@ -204,6 +204,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
             leading: _buildLeading(context),
             title: _buildTitleBlock(context),
             searchOpen: _searchOpenEffective,
+            searchCollapsedExtent: widget.searchCollapsedExtent,
             search: _buildSearch,
             trailing: _buildTrailingActions(context),
           )
@@ -217,6 +218,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
             leading: _buildLeading(context),
             title: _buildTitleBlock(context),
             searchOpen: _searchOpenEffective,
+            searchCollapsedExtent: widget.searchCollapsedExtent,
             search: _buildSearch,
             trailing: _buildTrailingActions(context),
           ),
@@ -380,6 +382,7 @@ Widget _buildCompactTopBarFrame(
   required Widget? leading,
   required Widget title,
   required bool searchOpen,
+  required double searchCollapsedExtent,
   required Widget? Function(double maxWidth) search,
   required Widget? trailing,
 }) {
@@ -400,24 +403,18 @@ Widget _buildCompactTopBarFrame(
       builder: (context, constraints) => Row(
         children: [
           if (leading != null) ...[leading, gapW12],
-          if (searchOpen)
-            Expanded(
-              child: LayoutBuilder(
-                builder: (context, constraints) =>
-                    search(constraints.maxWidth) ?? const SizedBox.shrink(),
-              ),
-            )
-          else ...[
-            Expanded(
-              child: Align(alignment: Alignment.centerLeft, child: title),
-            ),
-            _buildTopBarTrailingEdge(
-              maxWidth:
-                  constraints.maxWidth * CatchLayout.topBarTrailingMaxRatio,
-              search: search(CatchIconButton.navSize),
+          Expanded(
+            child: _TopBarSearchLane(
+              alignment: Alignment.centerRight,
+              searchOpen: searchOpen,
+              searchCollapsedExtent: searchCollapsedExtent,
+              search: search,
               trailing: trailing,
+              title: Align(alignment: Alignment.centerLeft, child: title),
+              trailingMaxWidth:
+                  constraints.maxWidth * CatchLayout.topBarTrailingMaxRatio,
             ),
-          ],
+          ),
         ],
       ),
     ),
@@ -433,6 +430,7 @@ Widget _buildLargeTopBarFrame(
   required Widget? leading,
   required Widget title,
   required bool searchOpen,
+  required double searchCollapsedExtent,
   required Widget? Function(double maxWidth) search,
   required Widget? trailing,
 }) {
@@ -457,43 +455,100 @@ Widget _buildLargeTopBarFrame(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (leading != null) ...[leading, gapW12],
-          if (searchOpen)
-            Expanded(
-              child: LayoutBuilder(
-                builder: (context, constraints) =>
-                    search(constraints.maxWidth) ?? const SizedBox.shrink(),
-              ),
-            )
-          else ...[
-            Expanded(child: title),
-            _buildTopBarTrailingEdge(
-              maxWidth:
-                  constraints.maxWidth * CatchLayout.topBarTrailingMaxRatio,
-              search: search(CatchIconButton.navSize),
+          Expanded(
+            child: _TopBarSearchLane(
+              alignment: Alignment.topRight,
+              searchOpen: searchOpen,
+              searchCollapsedExtent: searchCollapsedExtent,
+              search: search,
               trailing: trailing,
+              title: title,
+              trailingMaxWidth:
+                  constraints.maxWidth * CatchLayout.topBarTrailingMaxRatio,
             ),
-          ],
+          ),
         ],
       ),
     ),
   );
 }
 
+class _TopBarSearchLane extends StatelessWidget {
+  const _TopBarSearchLane({
+    required this.alignment,
+    required this.searchOpen,
+    required this.searchCollapsedExtent,
+    required this.search,
+    required this.trailing,
+    required this.title,
+    required this.trailingMaxWidth,
+  });
+
+  final Alignment alignment;
+  final bool searchOpen;
+  final double searchCollapsedExtent;
+  final Widget? Function(double maxWidth) search;
+  final Widget? trailing;
+  final Widget title;
+  final double trailingMaxWidth;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final searchWidget = search(constraints.maxWidth);
+        if (searchWidget == null) {
+          return Row(
+            children: [
+              Expanded(child: title),
+              _buildTopBarTrailingEdge(
+                maxWidth: trailingMaxWidth,
+                trailing: trailing,
+              ),
+            ],
+          );
+        }
+
+        return Stack(
+          alignment: alignment,
+          children: [
+            IgnorePointer(
+              ignoring: searchOpen,
+              child: AnimatedOpacity(
+                opacity: searchOpen ? 0 : 1,
+                duration: CatchMotion.base,
+                curve: CatchMotion.standardCurve,
+                child: Row(
+                  children: [
+                    Expanded(child: title),
+                    _buildTopBarTrailingEdge(
+                      maxWidth: trailingMaxWidth,
+                      trailing: trailing,
+                    ),
+                    if (trailing != null) gapW4,
+                    SizedBox(width: searchCollapsedExtent),
+                  ],
+                ),
+              ),
+            ),
+            searchWidget,
+          ],
+        );
+      },
+    );
+  }
+}
+
 Widget _buildTopBarTrailingEdge({
   required double maxWidth,
-  required Widget? search,
   required Widget? trailing,
 }) {
-  if (search == null && trailing == null) return const SizedBox.shrink();
+  if (trailing == null) return const SizedBox.shrink();
   return ConstrainedBox(
     constraints: BoxConstraints(maxWidth: maxWidth),
     child: Row(
       mainAxisSize: MainAxisSize.min,
-      children: [
-        ?search,
-        if (search != null && trailing != null) gapW4,
-        if (trailing != null) Flexible(child: trailing),
-      ],
+      children: [Flexible(child: trailing)],
     ),
   );
 }

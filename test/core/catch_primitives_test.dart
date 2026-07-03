@@ -3120,6 +3120,9 @@ void main() {
       tester.widget<TextField>(find.byType(TextField)).controller!.text,
       'tempo',
     );
+    final textField = tester.widget<TextField>(find.byType(TextField));
+    expect(textField.decoration?.filled, isFalse);
+    expect(textField.decoration?.fillColor, Colors.transparent);
 
     await tester.tap(find.byType(TextField));
     await tester.pump();
@@ -3185,6 +3188,32 @@ void main() {
             builder: (context, setState) => SizedBox(
               width: 280,
               child: CatchSearchField(
+                key: searchFieldKey,
+                mode: CatchSearchFieldMode.expanding,
+                progress: 0.5,
+                maxWidth: 280,
+                value: query,
+                placeholder: 'Search clubs',
+                onChanged: (value) => setState(() => query = value),
+                onOpenSearch: () => opened = true,
+                onCloseSearch: () => closed = true,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.pump(CatchMotion.base);
+
+      expect(find.byType(TextField), findsOneWidget);
+
+      await tester.pumpWidget(
+        _wrap(
+          StatefulBuilder(
+            builder: (context, setState) => SizedBox(
+              width: 280,
+              child: CatchSearchField(
+                key: searchFieldKey,
                 mode: CatchSearchFieldMode.expanding,
                 progress: 1,
                 maxWidth: 280,

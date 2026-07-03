@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart' show CatchMotion;
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
@@ -681,6 +682,20 @@ void main() {
     expect(find.text('RUNNING'), findsOneWidget);
     expect(find.text('LIFESTYLE'), findsOneWidget);
     expect(_profileInfoTile(_perfectRunPromptTitle), findsOneWidget);
+  });
+
+  testWidgets('ProfileTab field rows honor fixed screen gutters', (
+    tester,
+  ) async {
+    final user = buildUser(name: 'Suvrat Garg');
+    await _pumpProfileTab(tester, user);
+
+    final displayNameTile = _profileInfoTile('Display name');
+    expect(displayNameTile, findsOneWidget);
+
+    final rowRect = tester.getRect(displayNameTile);
+    expect(rowRect.left, CatchSpacing.screenPx);
+    expect(rowRect.right, 390 - CatchSpacing.screenPx);
   });
 
   testWidgets(

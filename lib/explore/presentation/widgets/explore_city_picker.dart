@@ -3,7 +3,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_action.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:flutter/material.dart';
 
@@ -123,26 +123,11 @@ class CityTrigger extends StatelessWidget {
       );
     }
 
-    return Tooltip(
-      message: state.tooltipLabel,
-      child: Semantics(
-        button: true,
-        enabled: enabled,
-        label: state.semanticLabel,
-        child: CatchControlShell(
-          size: CatchControlSize.compact,
-          shape: CatchControlShape.pill,
-          tone: CatchControlTone.raised,
-          enabled: enabled,
-          focused: focused,
-          onTap: enabled ? onTap : null,
-          padding: EdgeInsets.zero,
-          child: SizedBox.square(
-            dimension: CatchControlMetrics.compactIconExtent,
-            child: Icon(state.icon, size: 22, color: enabled ? t.ink : t.ink3),
-          ),
-        ),
-      ),
+    return CatchIconAction(
+      icon: state.icon,
+      tooltip: state.semanticLabel,
+      foregroundColor: enabled ? effectiveForeground : t.ink3,
+      onPressed: enabled ? onTap : null,
     );
   }
 }

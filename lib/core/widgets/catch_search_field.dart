@@ -31,7 +31,7 @@ class CatchSearchField extends StatefulWidget {
     this.onOpenSearch,
     this.onCloseSearch,
     this.tooltip = 'Search',
-    this.collapsedExtent = CatchLayout.browseHeaderSearchExtent,
+    this.collapsedExtent = CatchIconButton.navSize,
   });
 
   final String value;
@@ -153,6 +153,8 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
                 cursorColor: t.primary,
                 decoration: InputDecoration(
                   isDense: true,
+                  filled: false,
+                  fillColor: Colors.transparent,
                   border: InputBorder.none,
                   enabledBorder: InputBorder.none,
                   focusedBorder: InputBorder.none,
@@ -243,53 +245,196 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
         widget.collapsedExtent +
         ((maxWidth - widget.collapsedExtent) * clampedProgress);
     final fieldOpacity = ((clampedProgress - 0.12) / 0.88).clamp(0.0, 1.0);
-    final showField = clampedProgress > 0.06;
+    final iconOpacity = (1 - (clampedProgress / 0.42)).clamp(0.0, 1.0);
+    final fieldInteractive = clampedProgress > 0.72;
+    final collapsedInteractive = clampedProgress < 0.08;
+    final radius = BorderRadius.circular(CatchRadius.pill);
+    if (fieldInteractive &&
+        widget.autofocus &&
+        widget.enabled &&
+        !_focusNode.hasFocus) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || !widget.enabled || _focusNode.hasFocus) return;
+        _focusNode.requestFocus();
+      });
+    }
 
     return Align(
       alignment: Alignment.centerRight,
+      widthFactor: 1,
+      heightFactor: 1,
       child: SizedBox(
         width: width,
         height: widget.collapsedExtent,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(CatchRadius.pill),
-          child: showField
-              ? Opacity(
-                  opacity: fieldOpacity,
-                  child: CatchSearchField(
-                    value: widget.value,
-                    onChanged: widget.onChanged,
-                    placeholder: widget.placeholder,
-                    autofocus: widget.autofocus,
-                    enabled: widget.enabled,
-                    textInputAction: widget.textInputAction,
-                    onSubmitted: widget.onSubmitted,
-                    onFocusChanged: widget.onFocusChanged,
-                    semanticLabel: widget.semanticLabel ?? widget.placeholder,
-                    emptyTrailingIcon: CatchIcons.close,
-                    emptyTrailingTooltip: 'Close search',
-                    onEmptyTrailingPressed:
-                        widget.onCloseSearch ?? widget.onEmptyTrailingPressed,
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: radius,
+          clipBehavior: Clip.antiAlias,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: t.surface,
+              borderRadius: radius,
+              border: Border.all(color: t.line2),
+            ),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                if (clampedProgress > 0)
+                  IgnorePointer(
+                    ignoring: !fieldInteractive,
+                    child: ExcludeSemantics(
+                      excluding: !fieldInteractive,
+                      child: Opacity(
+                        opacity: fieldOpacity,
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                            left: CatchSpacing.s3,
+                            right: CatchSpacing.s1,
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                CatchIcons.search,
+                                size: CatchLayout.searchFieldIconSize,
+                                color: t.ink3,
+                              ),
+                              const SizedBox(
+                                width: CatchLayout.searchFieldIconGap,
+                              ),
+                              Expanded(
+                                child: TextField(
+                                  controller: _controller,
+                                  focusNode: _focusNode,
+                                  autofocus: widget.autofocus,
+                                  enabled: widget.enabled,
+                                  textInputAction: widget.textInputAction,
+                                  onChanged: widget.onChanged,
+                                  onSubmitted: _handleSubmitted,
+                                  onTapOutside: (_) => _focusNode.unfocus(),
+                                  style: CatchTextStyles.bodyM(
+                                    context,
+                                    color: widget.enabled ? t.ink : t.ink3,
+                                  ),
+                                  cursorColor: t.primary,
+                                  decoration: InputDecoration(
+                                    isDense: true,
+                                    filled: false,
+                                    fillColor: Colors.transparent,
+                                    border: InputBorder.none,
+                                    enabledBorder: InputBorder.none,
+                                    focusedBorder: InputBorder.none,
+                                    disabledBorder: InputBorder.none,
+                                    contentPadding: EdgeInsets.zero,
+                                    hintText: widget.placeholder,
+                                    hintStyle: CatchTextStyles.bodyM(
+                                      context,
+                                      color: t.ink3,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              _ExpandingSearchTrailing(
+                                controller: _controller,
+                                enabled: widget.enabled,
+                                placeholder: widget.placeholder,
+                                emptyTrailingTooltip: 'Close search',
+                                onClear: _clear,
+                                onEmptyPressed:
+                                    widget.onCloseSearch ??
+                                    widget.onEmptyTrailingPressed,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                )
-              : Tooltip(
-                  message: widget.tooltip,
-                  child: Semantics(
-                    button: true,
-                    label: widget.semanticLabel ?? widget.tooltip,
-                    child: CatchIconButton(
-                      size: widget.collapsedExtent,
-                      onTap: widget.onOpenSearch,
-                      background: t.raised,
-                      child: Icon(
-                        CatchIcons.search,
-                        size: CatchIcon.control,
-                        color: t.ink,
+                IgnorePointer(
+                  ignoring: !collapsedInteractive,
+                  child: ExcludeSemantics(
+                    excluding: !collapsedInteractive,
+                    child: Opacity(
+                      opacity: iconOpacity,
+                      child: InkWell(
+                        onTap: widget.enabled ? widget.onOpenSearch : null,
+                        child: Tooltip(
+                          message: widget.tooltip,
+                          excludeFromSemantics: true,
+                          child: Semantics(
+                            button: true,
+                            enabled: widget.enabled,
+                            label: widget.semanticLabel ?? widget.tooltip,
+                            child: Center(
+                              child: Icon(
+                                CatchIcons.search,
+                                size: CatchIcon.md,
+                                color: t.ink,
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
+              ],
+            ),
+          ),
         ),
       ),
+    );
+  }
+}
+
+class _ExpandingSearchTrailing extends StatelessWidget {
+  const _ExpandingSearchTrailing({
+    required this.controller,
+    required this.enabled,
+    required this.placeholder,
+    required this.emptyTrailingTooltip,
+    required this.onClear,
+    required this.onEmptyPressed,
+  });
+
+  final TextEditingController controller;
+  final bool enabled;
+  final String placeholder;
+  final String emptyTrailingTooltip;
+  final VoidCallback onClear;
+  final VoidCallback? onEmptyPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return ValueListenableBuilder<TextEditingValue>(
+      valueListenable: controller,
+      builder: (context, value, _) {
+        final isEmpty = value.text.isEmpty;
+        final icon = isEmpty ? CatchIcons.close : CatchIcons.clearCircle;
+        final tooltip = isEmpty ? emptyTrailingTooltip : 'Clear $placeholder';
+        final onPressed = isEmpty ? onEmptyPressed : onClear;
+        if (isEmpty && onPressed == null) {
+          return const SizedBox(width: CatchLayout.searchFieldClearSize);
+        }
+
+        return SizedBox.square(
+          dimension: CatchLayout.searchFieldClearSize,
+          child: IconButton(
+            tooltip: tooltip,
+            padding: EdgeInsets.zero,
+            style: IconButton.styleFrom(
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            icon: Icon(
+              icon,
+              size: CatchLayout.searchFieldClearIconSize,
+              color: t.ink3,
+            ),
+            onPressed: enabled ? onPressed : null,
+          ),
+        );
+      },
     );
   }
 }

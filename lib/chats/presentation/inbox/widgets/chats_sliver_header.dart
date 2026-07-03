@@ -119,7 +119,6 @@ class _ChatsBrowseHeaderState extends State<ChatsBrowseHeader> {
             searchSemanticLabel: isHostApp
                 ? 'Search attendees'
                 : 'Search chats',
-            searchCollapsedExtent: CatchLayout.browseHeaderSearchExtent,
           ),
         ),
         if (widget.hostFilter != null)

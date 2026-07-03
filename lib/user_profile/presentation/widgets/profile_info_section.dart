@@ -1,12 +1,9 @@
-import 'dart:math' as math;
-
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart' show OverflowBoxFit;
 
 const profileTabBodyPadding = EdgeInsets.fromLTRB(
   CatchSpacing.s5,
@@ -49,8 +46,8 @@ class ProfileInfoSection extends StatelessWidget {
         tiles.add(
           Divider(
             height: 1,
-            indent: CatchSpacing.s8,
-            endIndent: CatchSpacing.s8,
+            indent: 0,
+            endIndent: 0,
             color: t.line.withValues(alpha: CatchOpacity.fieldRowDivider),
           ),
         );
@@ -118,16 +115,12 @@ class ProfileInfoRowFrame extends StatelessWidget {
         if (!constraints.hasBoundedWidth) return child;
 
         final mediaWidth = MediaQuery.sizeOf(context).width;
-        final targetWidth = math.min(
-          mediaWidth,
-          constraints.maxWidth + CatchSpacing.screenPx * 2,
-        );
+        final targetWidth = mediaWidth;
         if (targetWidth <= constraints.maxWidth) return child;
 
         return OverflowBox(
           minWidth: targetWidth,
           maxWidth: targetWidth,
-          fit: OverflowBoxFit.deferToChild,
           child: SizedBox(width: targetWidth, child: child),
         );
       },

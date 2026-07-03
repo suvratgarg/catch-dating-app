@@ -30,6 +30,7 @@ import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
@@ -756,6 +757,14 @@ void main() {
       expect(find.byType(CatchCoverStory), findsNothing);
       expect(_topLevelSearchField(), findsOneWidget);
       expect(find.byType(TextField), findsOneWidget);
+      expect(
+        tester.getSize(find.byType(ExploreCityPicker)).height,
+        CatchIconButton.navSize,
+      );
+      expect(
+        tester.getSize(_topLevelSearchField()).height,
+        CatchIconButton.navSize,
+      );
       expect(find.text(event.title), findsNothing);
     });
 
@@ -1336,7 +1345,7 @@ void main() {
       expect(_topLevelSearchField(), findsOneWidget);
       expect(
         tester.getSize(_topLevelSearchField()).width,
-        lessThanOrEqualTo(CatchLayout.browseHeaderSearchExtent),
+        lessThanOrEqualTo(CatchIconButton.navSize),
       );
       expect(find.byType(TextField), findsNothing);
 
@@ -1348,10 +1357,7 @@ void main() {
       await tester.pump(midSearchMorphFrame);
 
       final morphingSearchWidth = tester.getSize(_topLevelSearchField()).width;
-      expect(
-        morphingSearchWidth,
-        greaterThan(CatchLayout.browseHeaderSearchExtent),
-      );
+      expect(morphingSearchWidth, greaterThan(CatchIconButton.navSize));
 
       await _pumpClubUi(tester);
 
@@ -1359,7 +1365,7 @@ void main() {
       expect(expandedSearchWidth, greaterThanOrEqualTo(morphingSearchWidth));
       expect(
         tester.getSize(_topLevelSearchField()).height,
-        greaterThanOrEqualTo(CatchLayout.browseHeaderSearchExtent),
+        CatchIconButton.navSize,
       );
       expect(find.byIcon(CatchIcons.arrowBackRounded), findsNothing);
       expect(find.byIcon(CatchIcons.keyboardHideRounded), findsNothing);
@@ -1387,7 +1393,7 @@ void main() {
       expect(_topLevelSearchField(), findsOneWidget);
       expect(
         tester.getSize(_topLevelSearchField()).width,
-        lessThanOrEqualTo(CatchLayout.browseHeaderSearchExtent),
+        lessThanOrEqualTo(CatchIconButton.navSize),
       );
       expect(find.byType(TextField), findsNothing);
     });
@@ -2660,10 +2666,7 @@ void main() {
         final morphingSearchWidth = tester
             .getSize(_topLevelSearchField())
             .width;
-        expect(
-          morphingSearchWidth,
-          greaterThan(CatchLayout.browseHeaderSearchExtent),
-        );
+        expect(morphingSearchWidth, greaterThan(CatchIconButton.navSize));
 
         await _pumpClubUi(tester);
 
