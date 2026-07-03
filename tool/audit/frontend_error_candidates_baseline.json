@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "updated": "2026-07-02",
+  "scope": [
+    "lib",
+    "test"
+  ],
+  "maxCounts": {
+    "mustMigrate": 0,
+    "review": 7
+  },
+  "notes": "Temporary ratchet for reviewed frontend/local/plugin error candidates. Existing entries may disappear without failing the check; new unbaselined review or mustMigrate candidates fail.",
+  "allowedReviewCandidates": [
+    {
+      "rule": "bare_catch",
+      "path": "lib/chats/presentation/chat_thread_action_controller.dart",
+      "snippet": "} catch (_) {",
+      "maxOccurrences": 2
+    },
+    {
+      "rule": "named_catch",
+      "path": "lib/core/celebration/celebration_effects_controller.dart",
+      "snippet": "} catch (error) {"
+    },
+    {
+      "rule": "raw_error_print",
+      "path": "lib/core/celebration/celebration_effects_controller.dart",
+      "snippet": "debugPrint('CelebrationEffects: skipped ${asset ?? 'haptic'} ($error)');"
+    },
+    {
+      "rule": "bare_catch",
+      "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
+      "snippet": "} catch (_) {"
+    },
+    {
+      "rule": "bare_catch",
+      "path": "lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart",
+      "snippet": "} catch (_) {"
+    },
+    {
+      "rule": "named_catch",
+      "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
+      "snippet": "} catch (error) {"
+    }
+  ]
+}
