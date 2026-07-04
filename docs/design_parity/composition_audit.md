@@ -214,14 +214,15 @@ same Scaffold provided by the route screen for both branches. Delete
 `EventDetailOptimisticBody`; keep `EventDetailHostsSkeleton` as the shared
 hosts loading skeleton (rename landed in `fca49f467`).
 
-### E2. `EventCompanionCard` / `EventInviteLoopCard` are in-file twins `[codex]`
+### E2. `EventCompanionCard` / `EventInviteLoopCard` are in-file twins `[done f2ce30b49]`
 
 Same anatomy (surface → icon → title/body → full-width secondary button),
-~80 lines each in event_detail_body.dart. Parameterize into one
-`EventDetailCalloutCard({icon, title, body, actionLabel, actionIcon,
-onAction, borderColor?})`; the two call sites pass their copy. (Check the
-dashboard stride connect card against it in passing — if it matches, note it
-for a third-occurrence core promotion, don't do it now.)
+~80 lines each in event_detail_body.dart. Fixed in `f2ce30b49`: both local
+cards were collapsed into `EventDetailCalloutCard`, and the invite-loop and
+companion call sites now pass copy, icons, action behavior, surface style, and
+the invite light-surface border override into that single primitive. Dashboard
+stride connect card was not promoted in this pass; it remains a possible
+third-occurrence review point if another callout shape converges.
 
 ### E3. Spinner loading in companion/hosts sections `[done fca49f467]` (G2 approved)
 
