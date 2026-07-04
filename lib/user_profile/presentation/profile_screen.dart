@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_pager_focus_boundary.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';
@@ -117,8 +118,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
           child: NestedScrollView(
             controller: _outerScrollController,
             headerSliverBuilder: (context, innerBoxIsScrolled) {
-              final headerSlivers = ProfileSliverHeader(
-                controller: _tabController,
+              final headerSlivers = CatchSliverHeader(
+                title: const ProfileTitle(),
+                bottomHeight: CatchLayout.tabRailHeight,
+                bottom: ProfileTabBar(controller: _tabController),
               ).buildSlivers(context);
               final collapsibleSlivers = headerSlivers.take(
                 headerSlivers.length - 1,

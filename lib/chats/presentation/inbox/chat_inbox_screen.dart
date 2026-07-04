@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -47,15 +48,21 @@ class _ChatsListScreenState extends ConsumerState<ChatsListScreen> {
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            ...ChatsSliverHeader(
-              showSearchAction: screenState.showSearchAction,
-              searchValue: searchValue,
-              onSearchChanged: ref
-                  .read(chatSearchQueryProvider.notifier)
-                  .setQuery,
-              hostFilter: screenState.hostFilter,
-              hostUnreadCount: screenState.unreadThreadCount,
-              onHostFilterChanged: _handleHostFilterChanged,
+            ...CatchSliverHeader(
+              title: const SizedBox.shrink(),
+              bottomHeight: chatsBrowseHeaderHeight(
+                hasHostFilter: screenState.hostFilter != null,
+              ),
+              bottom: ChatsBrowseHeader(
+                showSearchAction: screenState.showSearchAction,
+                searchValue: searchValue,
+                onSearchChanged: ref
+                    .read(chatSearchQueryProvider.notifier)
+                    .setQuery,
+                hostFilter: screenState.hostFilter,
+                hostUnreadCount: screenState.unreadThreadCount,
+                onHostFilterChanged: _handleHostFilterChanged,
+              ),
             ).buildSlivers(context),
             ChatsList(
               hostFilter: screenState.hostFilter,

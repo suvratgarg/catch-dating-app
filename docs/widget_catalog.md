@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.578
+version: 2.5.579
 updated: 2026-07-05
 owner: recursive_audit_loop
 status: active
@@ -17,10 +17,20 @@ a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
 
+### 2.5.579
+
+- Removed the remaining feature-specific sliver-header pass-through wrappers for
+  Explore, Chats, and Profile. Routes, tests, Widgetbook, and capture fixtures
+  now compose `CatchSliverHeader` directly with feature-owned title/browse
+  content widgets.
+- Chats keeps only `ChatsBrowseHeader` plus the `chatsBrowseHeaderHeight`
+  helper for its optional host filter row. Profile's pinned tab height now uses
+  `CatchLayout.tabRailHeight` instead of a raw value.
+
 ### 2.5.578
 
 - Dashboard composition audit: deleted the widgetbook-only `DashboardFull`
-  shell and the pass-through `DashboardSliverHeader` subclass. Widgetbook now
+  shell and its pass-through sliver-header subclass. Widgetbook now
   exercises `DashboardHomeScreen` plus `DashboardFullSliverBody`; callers use
   `CatchSliverHeader(title: DashboardHeaderContent(...))` directly.
 - Replaced dashboard in-body loading copy cards with shared skeleton mimics.
@@ -4468,7 +4478,8 @@ a feature section here only when auditing that feature's widget surface.
   opens.
 - `ActivitySection` remains the reusable timeline body, but callers can hide
   the manual `Mark all read` action when the route owns automatic read state.
-- `DashboardSliverHeader` now exposes action slots instead of a pinned tab row.
+- The dashboard sliver title wrapper now exposes action slots instead of a
+  pinned tab row.
 
 ### 2.5.72
 
@@ -5287,8 +5298,8 @@ a feature section here only when auditing that feature's widget surface.
 ### 2.2.0
 
 - Dashboard full and empty states are now sliver-native.
-- Added `DashboardSliverHeader` to the inventory as the dashboard-specific
-  wrapper around the shared `CatchSliverHeader` contract.
+- Added a dashboard-specific wrapper around the shared `CatchSliverHeader`
+  contract.
 
 ### 2.1.0
 
@@ -5628,7 +5639,7 @@ Generated 2026-05-06.
 | `showCatchConfirmDialog` / `CatchConfirmDialog<T>` | `lib/core/widgets/catch_adaptive_dialog.dart:62` | Handoff confirm-dialog API and Material card primitive. Provides default Cancel/Confirm labels, optional danger-filled commit action, centered `CatchSurface` card, 46% ink scrim, 320px max width, and tokenized card padding. |
 | `CatchFormDialog` | `lib/core/widgets/catch_adaptive_dialog.dart:138` | Shared Catch modal shell for short form dialogs that need custom content plus tokenized dialog actions. Uses the same `CatchSurface`, scrim, max width, title role, and card padding as confirm dialogs; screens provide canonical inputs/actions such as `CatchField` and `CatchTextButton` rather than raw Material dialog chrome. |
 | `showCatchDatePicker` / `showCatchTimePicker` | `lib/core/widgets/catch_adaptive_picker.dart:7` | Shared platform-adaptive date/time picker helpers. iOS renders bottom-wheel `CupertinoDatePicker` sheets with Cancel/Done toolbar; Android/non-iOS platforms keep Flutter's Material calendar and clock pickers. |
-| `CatchSliverHeader` | `lib/core/widgets/catch_top_bar.dart:290` | Shared sliver header primitive. Builds a scroll-away title and optional pinned bottom row; the title translates upward as it collapses so sticky search/filter/tab rows do not visually cover it. Use `twoLineTitleHeight` for short title/subtitle headers, `wrappedTitleHeight` only when long titles need the extra space, and the shared search-row spacing constants before adding feature-local search/list gap math. Used by Run Clubs, Chats, and Profile. |
+| `CatchSliverHeader` | `lib/core/widgets/catch_top_bar.dart:290` | Shared sliver header primitive. Builds a scroll-away title and optional pinned bottom row; the title translates upward as it collapses so sticky search/filter/tab rows do not visually cover it. Use `twoLineTitleHeight` for short title/subtitle headers, `wrappedTitleHeight` only when long titles need the extra space, and the shared search-row spacing constants before adding feature-local search/list gap math. Feature routes compose this primitive directly with their title or browse-header content instead of subclassing or helper-wrapping it. |
 | `CatchTopBarMenuAction<T>` | `lib/core/widgets/catch_top_bar.dart:560` | Overflow menu action for `CatchTopBar`. Delegates to `CatchActionMenu`, so top-bar overflow actions open the shared handoff `CatchMenu` panel from an `IconBtn`. |
 | `CatchIconAction` | `lib/core/widgets/catch_icon_action.dart:6` | Icon-only action button for top bars and floating chrome. Renders a tooltip-wrapped `CatchIconButton`; defaults to `CatchIconButton.navSize`, the shared 40px app-bar back/action contract. Explicit `size` remains only for documented non-app-bar exceptions. `CatchTopBarIconAction` remains a deprecated typedef for one release. |
 | `CatchTopBarTextAction` | `lib/core/widgets/catch_top_bar.dart:632` | Text action button for `CatchTopBar` (e.g., "Save", "Done", "Mark all read"). Delegates to `CatchTextButton` inside the constrained top-bar trailing region so long labels ellipsize at compact width and large text scale. |
@@ -5825,7 +5836,7 @@ Generated 2026-05-06.
 | `HostClubsScreenState` | `lib/hosts/presentation/host_operations_screen.dart:350` | Host Clubs selected-club display seam. Resolves an optional initial club id, clamps selected indexes as club streams change, owns the selected `HostClubTab`, exposes title/switcher visibility, and centralizes owner/co-host role capability for the scaffold and deterministic captures. |
 | `HostOrganizerPayoutPromptState` | `lib/hosts/presentation/widgets/host_organizer_payout_prompt.dart:10` | Provider-free display state for the Host Clubs organizer payout callout. Represents hidden, loading, error, and setup-required branches before `HostOrganizerPayoutPrompt` renders copy/CTA without reading payment providers. |
 | `HostClubDetailScreenState` / `HostClubDetailRetryIntent` | `lib/clubs/presentation/detail/club_detail_screen.dart:255` | Host Club Detail route adapter over the shared club detail screen. Maps async loading/error/not-found branches, `initialClub` fallback, signed-in host ownership, public-preview mode, membership state, consumer dock suppression, and load-error retry intent typing before `ClubDetailScreen` composes the shared public profile body. The screen wires typed callbacks for retry, schedule route actions, host profile/message actions, contact launches, and share. |
-| `HostInboxScreenState` | `lib/chats/presentation/inbox/chat_inbox_screen.dart:74` | Host Inbox route adapter over the shared `ChatsListScreen`. Reads the uid/view-model/query/provider wave at the route edge, owns selected host filter, unread count, search-action visibility, and delegates loading/error/content/empty mapping to `ChatsListDisplayState` before the route composes `ChatsSliverHeader` and `ChatsList`. Host/consumer chat route callbacks are owned by `ChatsListScreen`; duplicate host-inquiry grouping is covered by the shared match collapse policy. |
+| `HostInboxScreenState` | `lib/chats/presentation/inbox/chat_inbox_screen.dart:74` | Host Inbox route adapter over the shared `ChatsListScreen`. Reads the uid/view-model/query/provider wave at the route edge, owns selected host filter, unread count, search-action visibility, and delegates loading/error/content/empty mapping to `ChatsListDisplayState` before the route composes `CatchSliverHeader`, `ChatsBrowseHeader`, and `ChatsList`. Host/consumer chat route callbacks are owned by `ChatsListScreen`; duplicate host-inquiry grouping is covered by the shared match collapse policy. |
 | `ChatsListDisplayState` / `ChatsListRetryIntent` | `lib/chats/presentation/inbox/widgets/chats_list.dart:95` | Shared chat-list body adapter. Converts `AsyncValue<ChatsListViewModel>` into loading, error, content, or explicit empty states; applies Host Inbox unread filtering; selects no-threads, no-search-results, or no-unread empty copy; and attaches a typed reload intent to display errors before `ChatsList` renders shared sliver sections. |
 | `ChatRouteState` / `ChatRouteStateArgs` | `lib/chats/presentation/chat_route_state.dart:93` | Host/consumer chat route provider seam. Performs the route-level uid, match, message, host-inquiry club, public-profile, event, Suvbot action, mutation-pending, and share-controller watches once, then returns the composed lookup state, `HostChatScreenState`, public-profile async state, event, messages, pending flags, and visibility booleans that `ChatScreen` renders, including whether a consumer match can expose the embedded Chat/Profile tab shell. |
 | `HostChatScreenState` / `HostChatRetryIntent` / `HostChatActionIntent` | `lib/chats/presentation/host_chat_screen_state.dart:9` | Provider-free Host Chat decision seam over the shared `ChatScreen`. Centralizes host inquiry identity, typed profile/share/safety action availability, route/message/Suvbot retry intents, report/block pending action disabling, action intent policy, safety target copy, message peer name, and composer disabled reason before `ChatRouteState` passes render-ready state to `ChatScreen`. Match-stream errors become `HostChatRouteError` with `HostChatRetryIntent.reloadMatch`, while message-list and Suvbot-control errors expose typed retry targets. `ChatScreen` renders the canonical `CatchTopBar.identity` for single-pane host/Suvbot states, switches regular match chats to a `CatchTopBarTabBar` Chat/Profile shell, and owns the `CatchTopBarMenuAction` wiring. |
@@ -5992,7 +6003,7 @@ Generated 2026-05-06.
 | Widget | File | Purpose |
 |---|---|---|
 | `ChatsListScreen` | `lib/chats/presentation/inbox/chat_inbox_screen.dart:16` | "Chats" / Host "Inbox" tab shell registered as `screen.host.inbox` for the host route. Builds `HostInboxScreenState` from uid, `ChatsListViewModel`, search query, and host filter state; owns typed host/consumer chat route callbacks plus the route-scoped host broadcast review sheet; then renders the pinned composable browse header and chat body from explicit display state. |
-| `ChatsBrowseHeader` | `lib/chats/presentation/inbox/widgets/chats_sliver_header.dart:34` | Stateful chats browse-header adapter that removes the old count badge, composes pinned title/search chrome through `CatchTopBar`, binds `chatSearchQueryProvider`, and renders the host inbox `All` / `Unread · n` option row when supplied. It owns provider and filter wiring only; reusable top-bar/search visuals stay in the canonical primitive. |
+| `ChatsBrowseHeader` | `lib/chats/presentation/inbox/widgets/chats_sliver_header.dart:14` | Stateful chats browse-header content for the bottom slot of `CatchSliverHeader`. Composes pinned title/search chrome through `CatchTopBar`, owns only local search-open focus state, receives query/filter values from the route, and renders the host inbox `All` / `Unread · n` option row when supplied. Reusable top-bar/search visuals stay in the canonical primitive; `chatsBrowseHeaderHeight` calculates the matching pinned extent for the optional filter row. |
 
 ### ConsumerWidget
 
@@ -6006,7 +6017,7 @@ Generated 2026-05-06.
 | `CatchPersonUnreadCountPill` | `lib/core/widgets/catch_person_row.dart:279` | Shared unread badge renderer for chat-preview row trailing states. |
 | `CatchPersonNewMatchDot` | `lib/core/widgets/catch_person_row.dart:302` | Shared new-match dot renderer for chat-preview row trailing states. |
 | `CatchPersonRosterLayout` | `lib/core/widgets/catch_person_row.dart:321` | Shared roster body renderer used by `CatchPersonRow`. |
-| `ChatSearchField` | `lib/matches/presentation/widgets/chat_search_field.dart:6` | Chats query adapter over `CatchSearchField` for standalone chat search placements. `ChatsSliverHeader` binds `chatSearchQueryProvider` directly through the shared `CatchSearchField` expanding mode primitive. |
+| `ChatSearchField` | `lib/matches/presentation/widgets/chat_search_field.dart:6` | Chats query adapter over `CatchSearchField` for standalone chat search placements. The Chats inbox route binds `chatSearchQueryProvider` into `ChatsBrowseHeader` through the shared `CatchTopBar` search mode. |
 | `ChatConversationsList` | `lib/chats/presentation/inbox/widgets/chat_conversations_list.dart:8` | Headerless, provider/router-free `SliverList` of chat previews driven by `ChatsListViewModel`. Renders contiguous on-surface `CatchPersonRow` rows with row dividers instead of spacing between card surfaces; callers decide whether the input list includes new matches, conversations, or both and supply the row-selection callback. |
 
 ### StatelessWidget
@@ -6017,7 +6028,6 @@ Generated 2026-05-06.
 | `ChatsListBody` | `lib/chats/presentation/inbox/widgets/chats_list_body.dart:10` | Body wrapper for the chats list. Folds `viewModel.newMatches` and `viewModel.conversations` into one contiguous row list, renders `HostInboxBroadcastCard` as the host populated-state lead-in, keeps the consumer `CONVERSATIONS` section label, and delegates row rendering plus parent-supplied callbacks to `ChatConversationsList` without rendering the old new-match rail. |
 | `HostInboxBroadcastCard` | `lib/chats/presentation/inbox/widgets/chats_list_body.dart:72` | Provider-free dark host broadcast lead-in card for populated Host Inbox states. Shows the broadcast affordance, attendee-count copy, short template hint, and a parent-owned tap callback so route-level send/review behavior stays outside the row-list primitive. |
 | `HostBroadcastComposerSheet` | `lib/chats/presentation/inbox/chat_inbox_screen.dart:136` | Route-scoped Host Inbox broadcast review sheet. Shows the disabled future-send action plus template preview rows with tokenized `CatchSurface` composition while actual broadcast sending remains unconnected and owned outside the shared list body. |
-| `ChatsSliverHeader` | `lib/chats/presentation/inbox/widgets/chats_sliver_header.dart:12` | Chats-specific pinned sliver header. It expands its fixed bottom height for the host `OptionGroup`, delegates title/search chrome to `ChatsBrowseHeader` and `CatchTopBar`, and keeps query state in `chatSearchQueryProvider`. |
 | `ChatsListSkeleton` | `lib/chats/presentation/inbox/widgets/chats_list.dart:205` | Sliver-native loading body for the inbox list. Preserves the section label and contiguous `CatchPersonRow` skeleton geometry so loading states do not collapse to a spinner or card stack. |
 | `ChatPersonRowSkeleton` | `lib/chats/presentation/inbox/widgets/chats_list.dart:249` | Loading atom for a single inbox row. Mirrors `CatchPersonRow` avatar, title, preview, timestamp, unread-pill, optional divider, and host square-avatar geometry for both consumer matches and host inquiries. |
 
@@ -6105,7 +6115,7 @@ Generated 2026-05-06.
 | `ProfileTabScrollView` | `lib/user_profile/presentation/profile_screen.dart:250` | Shared tab scroll wrapper used by `SelfProfileTabBody`. Installs `CatchPagerFocusBoundary`, starts each tab with the `NestedScrollView` overlap injector, and then appends the tab slivers. |
 | `ProfileInsightsTabSliverBody` | `lib/user_profile/presentation/widgets/profile_insights_tab.dart:7` | Sliver-native Profile Insights body. Applies `CatchInsets.formEditBodyRelaxed` and the max-width constraint before embedding `UserAnalyticsPanel`, leaving analytics provider loading/error/empty/report ownership inside the panel. |
 | `PreviewTab` | `lib/user_profile/presentation/widgets/preview_tab.dart:5` | Preview tab showing how the user's profile looks to others by rendering the shared handoff `ProfileSurface`, with owner-provided scroll controller, physics, bottom padding, and leading-overscroll callback when mounted inside ProfileScreen. |
-| `ProfileTitle` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:24` | Self-profile scroll-away title row. Renders the `Your profile` heading, screen-title spacing, page background, and settings action while the surrounding `ProfileSliverHeader` owns sliver placement. |
+| `ProfileTitle` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:10` | Self-profile scroll-away title content for `CatchSliverHeader.title`. Renders the `Your profile` heading, screen-title spacing, page background, and settings action while `ProfileScreen` owns direct sliver placement. |
 | `ProfileTabBar` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:51` | Self-profile pinned tab selector. Receives the route-owned 3-tab `TabController` and maps Edit, Preview, and Insights to the shared `CatchOptionGroup` with bottom hairline chrome. |
 | `ProfileSettingsButton` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:84` | Self-profile settings icon action. Uses the default app-bar `CatchIconAction` with the settings glyph and routes to `screen.settings.account` through the surrounding `GoRouter` context. |
 | `ProfilePhotosSection` | `lib/user_profile/presentation/widgets/profile_tab.dart:553` | Edit Profile Photos section. Receives `SelfProfilePhotoGridState`, renders the divided Photos heading/count, and delegates slot tap, delete, and reorder behavior to parent callbacks while `PhotoGrid` owns slot layout. |
@@ -6746,7 +6756,7 @@ implementing it.
 | `FieldLabel` | Thin create-event wrapper around `CatchFormFieldLabel(large: true)`. | Delete only if call sites stay clearer with direct `CatchFormFieldLabel`; otherwise keep as a create-event semantic wrapper. |
 | `_DashboardLoadingScreen`, route-level loading scaffolds | Several screens still create a full-screen loading scaffold by hand. | Consider `CatchLoadingScreen` only if another pass touches two or more route-level loading screens together. |
 | `_DashboardMessageScreen`, route-level error/message scaffolds | Message screens are similar but not identical. | Consider `CatchMessageScreen` with optional title/body/action if repeated route-level message screens continue to grow. |
-| `ChatsSliverHeader`, `ExploreSliverHeader` | Feature-specific pinned browse headers still share some title/search structure. | Parameterize a shared browse-sliver wrapper only if a third feature needs the same title/search/action pattern. |
+| `ExploreBrowseHeaderContent`, `ChatsBrowseHeader` | Feature browse-header content still shares some title/search/action structure through `CatchTopBar`. | Keep them as content adapters unless a future pass proves a shared browse-header content API is clearer than passing feature state directly into `CatchSliverHeader`. |
 | `ProfileInfoChip` | Swipe profile chip overlaps conceptually with `CatchChip`, but has overlay styling needs. | Extend `CatchChip` only if overlay-style info chips recur outside swipes. |
 
 ### Watch, Do Not Force

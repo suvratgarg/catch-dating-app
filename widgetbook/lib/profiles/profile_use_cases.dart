@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/labs/design_fixtures/profile_surface_fixtures.dart';
@@ -1928,8 +1929,10 @@ class _SelfProfileTabBodyPreviewState extends State<_SelfProfileTabBodyPreview>
   Widget build(BuildContext context) {
     return NestedScrollView(
       headerSliverBuilder: (context, innerBoxIsScrolled) {
-        final headerSlivers = ProfileSliverHeader(
-          controller: _tabController,
+        final headerSlivers = CatchSliverHeader(
+          title: const ProfileTitle(),
+          bottomHeight: CatchLayout.tabRailHeight,
+          bottom: ProfileTabBar(controller: _tabController),
         ).buildSlivers(context);
         final collapsibleSlivers = headerSlivers.take(headerSlivers.length - 1);
         final pinnedSliver = headerSlivers.last;
@@ -2081,7 +2084,11 @@ class _ProfileHeaderPreviewState extends State<_ProfileHeaderPreview>
   Widget build(BuildContext context) {
     return CustomScrollView(
       slivers: [
-        ...ProfileSliverHeader(controller: _controller).buildSlivers(context),
+        ...CatchSliverHeader(
+          title: const ProfileTitle(),
+          bottomHeight: CatchLayout.tabRailHeight,
+          bottom: ProfileTabBar(controller: _controller),
+        ).buildSlivers(context),
         const SliverFillRemaining(
           hasScrollBody: false,
           child: Center(child: Text('Header review body')),

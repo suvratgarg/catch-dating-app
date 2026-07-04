@@ -8,22 +8,6 @@ import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class ProfileSliverHeader {
-  const ProfileSliverHeader({required this.controller});
-
-  final TabController controller;
-
-  List<Widget> buildSlivers(BuildContext context) {
-    final header = CatchSliverHeader(
-      title: const ProfileTitle(),
-      bottomHeight: 48,
-      bottom: ProfileTabBar(controller: controller),
-    );
-
-    return header.buildSlivers(context);
-  }
-}
-
 class ProfileTitle extends StatelessWidget {
   const ProfileTitle({super.key});
 

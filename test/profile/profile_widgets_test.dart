@@ -8,7 +8,7 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart'
-    show CatchMotion, CatchStroke;
+    show CatchLayout, CatchMotion, CatchStroke;
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
@@ -17,6 +17,7 @@ import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
@@ -1828,8 +1829,10 @@ class _ProfileHeaderHarnessState extends State<_ProfileHeaderHarness>
         bottom: false,
         child: CustomScrollView(
           slivers: [
-            ...ProfileSliverHeader(
-              controller: _controller,
+            ...CatchSliverHeader(
+              title: const ProfileTitle(),
+              bottomHeight: CatchLayout.tabRailHeight,
+              bottom: ProfileTabBar(controller: _controller),
             ).buildSlivers(context),
             SliverList.builder(
               itemCount: 30,

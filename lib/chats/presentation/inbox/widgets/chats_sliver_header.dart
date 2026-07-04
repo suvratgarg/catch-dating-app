@@ -11,29 +11,8 @@ import 'package:flutter/material.dart';
 const double _chatsBrowseHeaderHeight = CatchLayout.browseHeaderHeight;
 const double _hostInboxFilterHeight = CatchLayout.tabRailHeight;
 
-class ChatsSliverHeader extends CatchSliverHeader {
-  ChatsSliverHeader({
-    bool showSearchAction = true,
-    String searchValue = '',
-    ValueChanged<String>? onSearchChanged,
-    HostInboxFilter? hostFilter,
-    int hostUnreadCount = 0,
-    ValueChanged<HostInboxFilter>? onHostFilterChanged,
-  }) : super(
-         title: const SizedBox.shrink(),
-         bottomHeight:
-             _chatsBrowseHeaderHeight +
-             (hostFilter == null ? 0 : _hostInboxFilterHeight),
-         bottom: ChatsBrowseHeader(
-           showSearchAction: showSearchAction,
-           searchValue: searchValue,
-           onSearchChanged: onSearchChanged,
-           hostFilter: hostFilter,
-           hostUnreadCount: hostUnreadCount,
-           onHostFilterChanged: onHostFilterChanged,
-         ),
-       );
-}
+double chatsBrowseHeaderHeight({required bool hasHostFilter}) =>
+    _chatsBrowseHeaderHeight + (hasHostFilter ? _hostInboxFilterHeight : 0);
 
 class ChatsBrowseHeader extends StatefulWidget {
   const ChatsBrowseHeader({

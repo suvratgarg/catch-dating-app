@@ -32,6 +32,7 @@ import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/labs/design_fixtures/matches_chat_surface_fixtures.dart';
@@ -2023,10 +2024,17 @@ class _HostUnreadOnlyInbox extends StatelessWidget {
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            ...ChatsSliverHeader(
-              hostFilter: HostInboxFilter.unread,
-              hostUnreadCount: 0,
-              onHostFilterChanged: (_) {},
+            ...CatchSliverHeader(
+              title: const SizedBox.shrink(),
+              bottomHeight: chatsBrowseHeaderHeight(hasHostFilter: true),
+              bottom: ChatsBrowseHeader(
+                showSearchAction: true,
+                searchValue: '',
+                onSearchChanged: null,
+                hostFilter: HostInboxFilter.unread,
+                hostUnreadCount: 0,
+                onHostFilterChanged: (_) {},
+              ),
             ).buildSlivers(context),
             const ChatsList(hostFilter: HostInboxFilter.unread),
           ],

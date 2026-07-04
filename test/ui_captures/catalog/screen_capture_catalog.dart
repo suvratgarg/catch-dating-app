@@ -4911,9 +4911,17 @@ class _HostUnreadOnlyInboxCapture extends StatelessWidget {
         body: SafeArea(
           child: CustomScrollView(
             slivers: [
-              ...ChatsSliverHeader(
-                hostFilter: HostInboxFilter.unread,
-                onHostFilterChanged: (_) {},
+              ...CatchSliverHeader(
+                title: const SizedBox.shrink(),
+                bottomHeight: chatsBrowseHeaderHeight(hasHostFilter: true),
+                bottom: ChatsBrowseHeader(
+                  showSearchAction: true,
+                  searchValue: '',
+                  onSearchChanged: null,
+                  hostFilter: HostInboxFilter.unread,
+                  hostUnreadCount: 0,
+                  onHostFilterChanged: (_) {},
+                ),
               ).buildSlivers(context),
               const ChatsList(hostFilter: HostInboxFilter.unread),
             ],

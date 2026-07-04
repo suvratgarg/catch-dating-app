@@ -36,6 +36,7 @@ import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/external_event.dart';
@@ -1311,11 +1312,15 @@ void main() {
               body: Builder(
                 builder: (context) => CustomScrollView(
                   slivers: [
-                    ...ExploreSliverHeader(
-                      query: container.read(exploreSearchQueryProvider),
-                      onQueryChanged: (value) => container
-                          .read(exploreSearchQueryProvider.notifier)
-                          .setQuery(value),
+                    ...CatchSliverHeader(
+                      title: const SizedBox.shrink(),
+                      bottomHeight: CatchLayout.browseHeaderHeight,
+                      bottom: ExploreBrowseHeaderContent(
+                        query: container.read(exploreSearchQueryProvider),
+                        onQueryChanged: (value) => container
+                            .read(exploreSearchQueryProvider.notifier)
+                            .setQuery(value),
+                      ),
                     ).buildSlivers(context),
                     const SliverToBoxAdapter(child: SizedBox(height: 700)),
                   ],
@@ -1484,7 +1489,11 @@ void main() {
             builder: (_, _) => Scaffold(
               body: Builder(
                 builder: (context) => CustomScrollView(
-                  slivers: ExploreSliverHeader().buildSlivers(context),
+                  slivers: const CatchSliverHeader(
+                    title: SizedBox.shrink(),
+                    bottomHeight: CatchLayout.browseHeaderHeight,
+                    bottom: ExploreBrowseHeaderContent(),
+                  ).buildSlivers(context),
                 ),
               ),
             ),

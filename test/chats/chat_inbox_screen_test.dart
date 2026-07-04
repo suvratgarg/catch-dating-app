@@ -18,6 +18,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
@@ -360,11 +361,21 @@ void main() {
               builder: (context, ref, child) {
                 return CustomScrollView(
                   slivers: [
-                    ...ChatsSliverHeader(
-                      searchValue: ref.watch(chatSearchQueryProvider),
-                      onSearchChanged: ref
-                          .read(chatSearchQueryProvider.notifier)
-                          .setQuery,
+                    ...CatchSliverHeader(
+                      title: const SizedBox.shrink(),
+                      bottomHeight: chatsBrowseHeaderHeight(
+                        hasHostFilter: false,
+                      ),
+                      bottom: ChatsBrowseHeader(
+                        showSearchAction: true,
+                        searchValue: ref.watch(chatSearchQueryProvider),
+                        onSearchChanged: ref
+                            .read(chatSearchQueryProvider.notifier)
+                            .setQuery,
+                        hostFilter: null,
+                        hostUnreadCount: 0,
+                        onHostFilterChanged: null,
+                      ),
                     ).buildSlivers(context),
                     const SliverToBoxAdapter(child: SizedBox(height: 700)),
                   ],
