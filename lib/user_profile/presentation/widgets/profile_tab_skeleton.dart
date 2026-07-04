@@ -2,12 +2,13 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart'
     show
         CatchAspectRatio,
-        CatchIcon,
         CatchLayout,
         CatchOpacity,
         CatchRadius,
         CatchStroke,
         CatchTokens;
+import 'package:catch_dating_app/core/widgets/catch_field.dart'
+    show CatchFieldRow;
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
@@ -111,8 +112,8 @@ class ProfileInfoSkeletonSection extends StatelessWidget {
                   final t = CatchTokens.of(context);
                   return Divider(
                     height: 1,
-                    indent: CatchSpacing.s8,
-                    endIndent: CatchSpacing.s8,
+                    indent: CatchFieldRow.textLaneInset,
+                    endIndent: 0,
                     color: t.line.withValues(
                       alpha: CatchOpacity.fieldRowDivider,
                     ),
@@ -139,12 +140,12 @@ class ProfileInfoSkeletonTile extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: CatchStroke.hairline),
             child: CatchSkeleton.box(
-              width: CatchIcon.control,
-              height: CatchIcon.control,
+              width: CatchFieldRow.leadingSlotIconSize,
+              height: CatchFieldRow.leadingSlotIconSize,
               radius: CatchRadius.pill,
             ),
           ),
-          gapW12,
+          const SizedBox(width: CatchFieldRow.leadingSlotGap),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

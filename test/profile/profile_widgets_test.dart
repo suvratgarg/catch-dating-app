@@ -7,7 +7,8 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart' show CatchMotion;
+import 'package:catch_dating_app/core/theme/catch_tokens.dart'
+    show CatchMotion, CatchStroke;
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
@@ -696,6 +697,29 @@ void main() {
     final rowRect = tester.getRect(displayNameTile);
     expect(rowRect.left, CatchSpacing.screenPx);
     expect(rowRect.right, 390 - CatchSpacing.screenPx);
+
+    // Flush contract: within the fixed gutter the row content spans the full
+    // section width — the leading icon starts on the row's leading edge.
+    final leadingIcon = find
+        .descendant(of: displayNameTile, matching: find.byType(Icon))
+        .first;
+    expect(tester.getRect(leadingIcon).left, rowRect.left);
+
+    // Every section divider aligns to the field text lane (derived from the
+    // leading-slot metrics) and terminates on the row's trailing edge.
+    final dividers = find.byWidgetPredicate(
+      (widget) =>
+          widget is ColoredBox &&
+          widget.child is SizedBox &&
+          (widget.child as SizedBox).height == CatchStroke.hairline,
+    );
+    expect(dividers, findsWidgets);
+    for (final element in dividers.evaluate()) {
+      final box = element.renderObject! as RenderBox;
+      final dividerRect = box.localToGlobal(Offset.zero) & box.size;
+      expect(dividerRect.left - rowRect.left, CatchFieldRow.textLaneInset);
+      expect(dividerRect.right, rowRect.right);
+    }
   });
 
   testWidgets(

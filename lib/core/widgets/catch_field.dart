@@ -767,10 +767,10 @@ class _CatchFieldState extends State<CatchField> {
         if (widget.divider && !_active)
           Positioned(
             top: 0,
-            left: _hasLeadingSlot
-                ? CatchLayout.settingsRowDividerIconInset
-                : CatchSpacing.s4,
-            right: CatchSpacing.s4,
+            left:
+                _rowPadding.left +
+                (_hasLeadingSlot ? CatchFieldRow.textLaneInset : 0),
+            right: _rowPadding.right,
             child: ColoredBox(
               color: t.line,
               child: const SizedBox(height: CatchStroke.hairline),
@@ -842,7 +842,7 @@ class _CatchFieldState extends State<CatchField> {
     if (widget.icon != null) {
       return Icon(
         widget.icon,
-        size: CatchIcon.md,
+        size: CatchFieldRow.leadingSlotIconSize,
         color:
             widget.iconColor ?? (_focused ? t.ink : _toneColor(t, muted: true)),
       );
@@ -852,7 +852,7 @@ class _CatchFieldState extends State<CatchField> {
       return IconTheme(
         data: IconThemeData(
           color: _hasError ? t.danger : t.ink2,
-          size: CatchIcon.md,
+          size: CatchFieldRow.leadingSlotIconSize,
         ),
         child: widget.prefixIcon!,
       );
@@ -866,7 +866,7 @@ class _CatchFieldState extends State<CatchField> {
     return IconTheme(
       data: IconThemeData(
         color: widget.enabled ? t.ink2 : t.ink3,
-        size: CatchIcon.md,
+        size: CatchFieldRow.leadingSlotIconSize,
       ),
       child: widget.prefixIcon!,
     );
@@ -1810,8 +1810,14 @@ class _CatchFieldState extends State<CatchField> {
   }
 
   EdgeInsets get _rowPadding {
+    final flush = CatchFieldInsetScope.flushOf(context);
     if (_compactTextEntry) {
-      return const EdgeInsets.symmetric(horizontal: CatchSpacing.s1);
+      return flush
+          ? EdgeInsets.zero
+          : const EdgeInsets.symmetric(horizontal: CatchSpacing.s1);
+    }
+    if (flush) {
+      return const EdgeInsets.symmetric(vertical: CatchSpacing.micro14);
     }
     return const EdgeInsets.fromLTRB(
       CatchSpacing.s4,
@@ -1841,6 +1847,34 @@ Duration _catchFieldMotionDuration(BuildContext context) {
   return disableAnimations == true ? Duration.zero : CatchMotion.fast;
 }
 
+/// Ambient contract for who owns a field row's horizontal gutter.
+///
+/// By default a [CatchField] row insets itself horizontally so it can sit
+/// directly on a background or inside an unpadded surface. A container that
+/// owns the horizontal gutter itself (e.g. [CatchSection.divided]) publishes
+/// `flush: true`, and every field row below it drops its own horizontal
+/// inset so content, trailing affordances, and container-drawn dividers all
+/// share the container's edges.
+class CatchFieldInsetScope extends InheritedWidget {
+  const CatchFieldInsetScope({
+    super.key,
+    required this.flush,
+    required super.child,
+  });
+
+  final bool flush;
+
+  static bool flushOf(BuildContext context) =>
+      context
+          .dependOnInheritedWidgetOfExactType<CatchFieldInsetScope>()
+          ?.flush ??
+      false;
+
+  @override
+  bool updateShouldNotify(CatchFieldInsetScope oldWidget) =>
+      flush != oldWidget.flush;
+}
+
 class CatchFieldRow extends StatelessWidget {
   const CatchFieldRow.standard({
     super.key,
@@ -1851,7 +1885,7 @@ class CatchFieldRow extends StatelessWidget {
     this.constraints = const BoxConstraints(),
     this.padding = _defaultPadding,
   }) : leadingTopPadding = CatchSpacing.micro2,
-       leadingGap = CatchSpacing.s3,
+       leadingGap = leadingSlotGap,
        trailingGap = CatchSpacing.s2;
 
   const CatchFieldRow.add({
@@ -1866,8 +1900,20 @@ class CatchFieldRow extends StatelessWidget {
          vertical: CatchSpacing.micro14,
        ),
        leadingTopPadding = 0,
-       leadingGap = CatchSpacing.s3,
+       leadingGap = leadingSlotGap,
        trailingGap = CatchSpacing.s2;
+
+  /// Render size of icons in the leading slot.
+  static const double leadingSlotIconSize = CatchIcon.md;
+
+  /// Gap between the leading slot and the content lane.
+  static const double leadingSlotGap = CatchSpacing.s3;
+
+  /// Horizontal distance from the row's padded edge to where the content
+  /// lane starts when a leading slot is present. Containers that draw
+  /// text-lane-aligned dividers derive their indent from this instead of
+  /// hardcoding it, so resizing the leading icon moves the dividers too.
+  static const double textLaneInset = leadingSlotIconSize + leadingSlotGap;
 
   static const _defaultPadding = EdgeInsets.fromLTRB(
     CatchSpacing.s4,
@@ -1892,22 +1938,36 @@ class CatchFieldRow extends StatelessWidget {
       constraints: constraints,
       child: Padding(
         padding: padding,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (leading != null) ...[
-              Padding(
-                padding: EdgeInsets.only(top: leadingTopPadding),
-                child: leading,
-              ),
-              SizedBox(width: leadingGap),
-            ],
-            Expanded(child: content),
-            if (trailing != null) ...[
-              SizedBox(width: trailingGap),
-              Flexible(child: trailing!),
-            ],
-          ],
+        child: LayoutBuilder(
+          builder: (context, rowConstraints) {
+            // The trailing slot is intrinsic so trailing affordances pin to
+            // the row's trailing edge; the content lane owns all remaining
+            // width. Capping the slot at half the row keeps long trailing
+            // values from starving the content lane on narrow rows.
+            final trailingMaxWidth = rowConstraints.hasBoundedWidth
+                ? rowConstraints.maxWidth / 2
+                : double.infinity;
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (leading != null) ...[
+                  Padding(
+                    padding: EdgeInsets.only(top: leadingTopPadding),
+                    child: leading,
+                  ),
+                  SizedBox(width: leadingGap),
+                ],
+                Expanded(child: content),
+                if (trailing != null) ...[
+                  SizedBox(width: trailingGap),
+                  ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: trailingMaxWidth),
+                    child: trailing,
+                  ),
+                ],
+              ],
+            );
+          },
         ),
       ),
     );

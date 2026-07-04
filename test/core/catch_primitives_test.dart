@@ -585,6 +585,110 @@ void main() {
     expect(valueRight, lessThanOrEqualTo(fieldRight));
   });
 
+  testWidgets('CatchField row keeps its own horizontal gutter by default', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        SizedBox(
+          width: 360,
+          child: CatchField.read(
+            title: 'Notifications',
+            valueText: 'On',
+            icon: CatchIcons.helpOutline,
+          ),
+        ),
+      ),
+    );
+
+    final fieldRect = tester.getRect(find.byType(CatchField));
+    final iconRect = tester.getRect(find.byIcon(CatchIcons.helpOutline));
+    final labelLeft = tester.getTopLeft(find.text('Notifications')).dx;
+    final valueRight = tester.getTopRight(find.text('On')).dx;
+
+    expect(iconRect.left - fieldRect.left, CatchSpacing.s4);
+    expect(
+      labelLeft - fieldRect.left,
+      CatchSpacing.s4 + CatchFieldRow.textLaneInset,
+    );
+    expect(fieldRect.right - valueRight, CatchSpacing.s4);
+  });
+
+  testWidgets('CatchFieldInsetScope flush hands the gutter to the container', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        SizedBox(
+          width: 360,
+          child: CatchFieldInsetScope(
+            flush: true,
+            child: CatchField.read(
+              title: 'Notifications',
+              valueText: 'On',
+              icon: CatchIcons.helpOutline,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final fieldRect = tester.getRect(find.byType(CatchField));
+    final iconRect = tester.getRect(find.byIcon(CatchIcons.helpOutline));
+    final labelLeft = tester.getTopLeft(find.text('Notifications')).dx;
+    final valueRight = tester.getTopRight(find.text('On')).dx;
+
+    expect(iconRect.left, fieldRect.left);
+    expect(labelLeft - fieldRect.left, CatchFieldRow.textLaneInset);
+    expect(valueRight, fieldRect.right);
+  });
+
+  testWidgets(
+    'CatchSection.divided renders field rows flush with lane-aligned dividers',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          SizedBox(
+            width: 360,
+            child: CatchSection.divided(
+              title: 'Details',
+              dividerIndent: CatchFieldRow.textLaneInset,
+              children: [
+                CatchField.read(
+                  title: 'First',
+                  valueText: 'A',
+                  icon: CatchIcons.helpOutline,
+                ),
+                CatchField.read(
+                  title: 'Second',
+                  valueText: 'B',
+                  icon: CatchIcons.schedule,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final sectionRect = tester.getRect(find.byType(CatchSection));
+      final firstIconRect = tester.getRect(
+        find.byIcon(CatchIcons.helpOutline),
+      );
+      expect(firstIconRect.left, sectionRect.left);
+
+      final dividerRect = tester.getRect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is ColoredBox &&
+              widget.child is SizedBox &&
+              (widget.child as SizedBox).height == CatchStroke.hairline,
+        ),
+      );
+      expect(dividerRect.left - sectionRect.left, CatchFieldRow.textLaneInset);
+      expect(dividerRect.right, sectionRect.right);
+    },
+  );
+
   testWidgets('CatchToggle emits the next value on tap', (tester) async {
     bool? nextValue;
 

@@ -2,6 +2,8 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart'
+    show CatchFieldInsetScope;
 import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
@@ -217,6 +219,8 @@ class CatchSection extends StatelessWidget {
     this.first = false,
     this._variant = _CatchSectionVariant.divided,
     this.dividerColor,
+    this.dividerIndent = 0,
+    this.internalDividerColor,
     this.titleColor,
     this.bodyGap = CatchSpacing.s3,
     this.padding,
@@ -242,6 +246,8 @@ class CatchSection extends StatelessWidget {
     bool lead = false,
     bool first = false,
     Color? dividerColor,
+    double dividerIndent = 0,
+    Color? internalDividerColor,
     Color? titleColor,
     double bodyGap = CatchSpacing.s3,
     bool showInternalDividers = true,
@@ -256,6 +262,8 @@ class CatchSection extends StatelessWidget {
          first: first,
          variant: _CatchSectionVariant.divided,
          dividerColor: dividerColor,
+         dividerIndent: dividerIndent,
+         internalDividerColor: internalDividerColor,
          titleColor: titleColor,
          bodyGap: bodyGap,
          showInternalDividers: showInternalDividers,
@@ -330,6 +338,8 @@ class CatchSection extends StatelessWidget {
   final bool first;
   final _CatchSectionVariant _variant;
   final Color? dividerColor;
+  final double dividerIndent;
+  final Color? internalDividerColor;
   final Color? titleColor;
   final double bodyGap;
   final EdgeInsetsGeometry? padding;
@@ -368,7 +378,10 @@ class CatchSection extends StatelessWidget {
           ),
           SizedBox(height: bodyGap),
         ],
-        _body(context, t),
+        // Divided sections own the horizontal gutter: field rows inside
+        // render flush so content, trailing affordances, and the section's
+        // dividers share the same edges.
+        CatchFieldInsetScope(flush: true, child: _body(context, t)),
       ],
     );
 
@@ -495,11 +508,19 @@ class CatchSection extends StatelessWidget {
           if (i == 0 || !showInternalDividers)
             sectionChildren[i]
           else
-            DecoratedBox(
-              decoration: BoxDecoration(
-                border: Border(top: BorderSide(color: t.line)),
-              ),
-              child: sectionChildren[i],
+            Stack(
+              children: [
+                sectionChildren[i],
+                Positioned(
+                  top: 0,
+                  left: dividerIndent,
+                  right: 0,
+                  child: ColoredBox(
+                    color: internalDividerColor ?? t.line,
+                    child: const SizedBox(height: CatchStroke.hairline),
+                  ),
+                ),
+              ],
             ),
       ],
     );

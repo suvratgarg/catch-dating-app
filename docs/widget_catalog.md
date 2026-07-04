@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.569
+version: 2.5.570
 updated: 2026-07-04
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,32 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.570
+
+- `CatchFieldRow`'s trailing slot is now intrinsic and pins to the row's
+  trailing edge. It was `Flexible`, which split the free space 50/50 with the
+  content lane and stranded the unused half as dead space at the row's right
+  edge — the source of mid-row chevrons and compressed label lanes. A
+  half-row width cap on the slot keeps long trailing values from starving the
+  content lane on narrow rows.
+- New `CatchFieldInsetScope` inset-ownership contract: a field row self-insets
+  `CatchSpacing.s4` horizontally by default (rows sitting on bare backgrounds
+  or unpadded surfaces), and a container that owns the horizontal gutter
+  publishes `flush: true` so rows drop that inset. `CatchSection.divided`
+  publishes the scope, so field rows inside any divided section run
+  edge-to-edge within the section gutter.
+- `CatchSection.divided` gains `dividerIndent` and `internalDividerColor`.
+  `ProfileInfoSection` now routes grouped dividers through the section with
+  `dividerIndent: CatchFieldRow.textLaneInset` instead of hand-rolled
+  full-width `Divider`s. `textLaneInset` derives from the new
+  `CatchFieldRow.leadingSlotIconSize` + `leadingSlotGap` metrics (the leading
+  slot renders from the same constants), so resizing leading icons moves
+  text-lane-aligned dividers automatically — no hardcoded divider indents.
+- `CatchField`'s internal `divider:` chrome and the Profile Edit skeleton
+  mimic (`ProfileInfoSkeletonTile`, section skeleton dividers) derive from the
+  same row metrics instead of `CatchLayout.settingsRowDividerIconInset` /
+  `CatchSpacing.s8` approximations.
 
 ### 2.5.569
 

@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart'
+    show CatchFieldRow;
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
@@ -37,12 +39,32 @@ class ProfileInfoSection extends StatelessWidget {
     }
 
     final t = CatchTokens.of(context);
-    final tiles = <Widget>[];
-    for (var i = 0; i < children.length; i++) {
-      tiles.add(
-        ProfileInfoRowFrame(fullBleed: fullBleedRows, child: children[i]),
+    final frames = <Widget>[
+      for (final child in children)
+        ProfileInfoRowFrame(fullBleed: fullBleedRows, child: child),
+    ];
+
+    if (grouped && title != null) {
+      // The section owns the gutter and the dividers: rows render flush via
+      // CatchSection.divided's inset scope, and dividers align to the field
+      // text lane (derived from the leading-slot metrics, not hardcoded).
+      return CatchSection.divided(
+        title: title,
+        count: subtitle,
+        first: first,
+        bodyGap: CatchSpacing.micro10,
+        dividerIndent: CatchFieldRow.textLaneInset,
+        internalDividerColor: t.line.withValues(
+          alpha: CatchOpacity.fieldRowDivider,
+        ),
+        children: frames,
       );
-      if (grouped && i < children.length - 1) {
+    }
+
+    final tiles = <Widget>[];
+    for (var i = 0; i < frames.length; i++) {
+      tiles.add(frames[i]);
+      if (grouped && i < frames.length - 1) {
         tiles.add(
           Divider(
             height: 1,
@@ -58,15 +80,6 @@ class ProfileInfoSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: tiles,
     );
-    if (grouped && title != null) {
-      return CatchSection.divided(
-        title: title,
-        count: subtitle,
-        first: first,
-        bodyGap: CatchSpacing.micro10,
-        child: tileList,
-      );
-    }
 
     final body = grouped
         ? CatchSurface(
