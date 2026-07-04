@@ -485,7 +485,10 @@ class CatchSection extends StatelessWidget {
       boxShadow: boxShadow,
       focused: focused,
       hasError: hasError,
-      child: _sectionContent(context, t, contained: true),
+      child: CatchFieldInsetScope(
+        flush: true,
+        child: _sectionContent(context, t, contained: true),
+      ),
     );
   }
 

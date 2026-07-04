@@ -2241,6 +2241,41 @@ void main() {
     );
   });
 
+  testWidgets(
+    'CatchSection contained renders field rows flush to card padding',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+        SizedBox(
+          width: 360,
+          child: CatchSection.contained(
+            child: CatchField.read(
+                title: 'Notifications',
+                valueText: 'On',
+                icon: CatchIcons.helpOutline,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final surfaceRect = tester.getRect(find.byType(CatchSurface));
+      final iconRect = tester.getRect(find.byIcon(CatchIcons.helpOutline));
+      final labelLeft = tester.getTopLeft(find.text('Notifications')).dx;
+      final valueRight = tester.getTopRight(find.text('On')).dx;
+
+      expect(iconRect.left, closeTo(surfaceRect.left + CatchSpacing.s4, 0.1));
+      expect(
+        labelLeft,
+        closeTo(
+          surfaceRect.left + CatchSpacing.s4 + CatchFieldRow.textLaneInset,
+          0.1,
+        ),
+      );
+      expect(valueRight, closeTo(surfaceRect.right - CatchSpacing.s4, 0.1));
+    },
+  );
+
   testWidgets('CatchSection contained error owns the danger state', (
     tester,
   ) async {
