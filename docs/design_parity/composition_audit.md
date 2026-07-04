@@ -139,6 +139,166 @@ mimic (skeleton mimics must track the widget they imitate).
 
 ---
 
-## Screens 2+ — pending
+## The detail-screen grammar (target for Event Detail + Club Detail)
+
+Both detail screens should be built from the same five-layer grammar, with
+feature-owned content in layers 2 and 4 only:
+
+1. **Route screen** — state dispatch (loading / error / content). Both are
+   fine today.
+2. **Hero app bar** — pinned SliverAppBar with a feature-owned hero surface
+   (event = ticket, club = polaroid module). Stays feature-specific.
+3. **Identity band** — the entity's key facts directly under the hero
+   (event = ticket-stub band, club = next-run banner + metric strip).
+4. **Sections** — ONE `CatchDetailSliverSectionList`, every section a
+   `CatchSection` with the kicker title voice, skeleton loading states.
+5. **Bottom dock** — `CatchBottomDock` variants.
+
+Cross-cutting decisions (made in this review):
+
+- **G1. One section-title voice: the CatchSection kicker.** Event detail is
+  uniform; club detail mixes three systems (kicker sections, `titleL`
+  'Schedule', `titleL` 'Reviews' via ClubReviewsSection). Standardize on the
+  kicker `[confirm]` — visible change on club Schedule/Reviews headings.
+- **G2. Section loading = skeletons, never spinners or copy.** Event
+  detail's companion/hosts loading states use centered
+  `CatchLoadingIndicator`; replace with skeleton rows (host skeleton already
+  exists in the optimistic body). Same doctrine as Dashboard D3.
+- **G3. Surface style becomes an ambient scope.** `EventDetailSurfaceStyle`
+  is threaded through ~96 references, with cards like `EventDetailHostCard`
+  taking seven separate color slots. Introduce an InheritedWidget scope
+  (working name `EventDetailSurfaceScope`; propose the final name for
+  review) that sections/cards resolve implicitly; constructors keep optional
+  overrides but the per-call-site plumbing disappears. This also makes a
+  future club spotlight/dark mode nearly free.
+- **G4. One body per screen.** Parallel shells (optimistic body, see E1)
+  merge into the real body with injected actions and loading section states.
+
+---
+
+## Screen 2 — Event Detail (audited 2026-07-05)
+
+Files: `lib/events/presentation/event_detail_screen.dart`,
+`widgets/event_detail_*.dart`. Overall: the DS-blessed slice — sliver
+architecture, section list, ticket identity, and dock are all right. The
+issues are one parallel shell, in-file twins, spinner loading, and the style
+plumbing (G2/G3).
+
+### E1. `EventDetailOptimisticBody` is a second full shell — merge `[codex after G2]`
+
+It rebuilds Scaffold + hero + stub band + section list + overview with
+hard-coded disabled actions, and swaps to `EventDetailBody` when the view
+model resolves — two assemblies of one screen that must be kept in sync by
+hand. Decision (resolves the consolidation escalation on this pair): once
+section loading is skeleton-based (G2), the optimistic render IS
+`EventDetailBody` with `hostState`/`socialState` in loading, guest-mode
+callbacks injected (save → auth redirect, share/calendar hidden), and the
+same Scaffold provided by the route screen for both branches. Delete
+`EventDetailOptimisticBody`; keep `OptimisticHostsSkeleton` as the shared
+hosts loading skeleton (renamed to `EventDetailHostsSkeleton`).
+
+### E2. `EventCompanionCard` / `EventInviteLoopCard` are in-file twins `[codex]`
+
+Same anatomy (surface → icon → title/body → full-width secondary button),
+~80 lines each in event_detail_body.dart. Parameterize into one
+`EventDetailCalloutCard({icon, title, body, actionLabel, actionIcon,
+onAction, borderColor?})`; the two call sites pass their copy. (Check the
+dashboard stride connect card against it in passing — if it matches, note it
+for a third-occurrence core promotion, don't do it now.)
+
+### E3. Spinner loading in companion/hosts sections `[codex after G2 confirm]`
+
+`EventCompanionEntry.loading` and `EventDetailHostsSection.loading` render
+`Center(CatchLoadingIndicator())`. Replace with skeletons: hosts uses the E1
+skeleton; companion gets a one-surface skeleton mimic of its callout card.
+
+### E4. `LegacyEventHeroSurface` `[codex]`
+
+`event_detail_hero_app_bar.dart:172` — anything named Legacy in the blessed
+slice needs a verdict. Check usages: if only non-ticket presentation modes
+use it and those modes still ship, keep but rename to what it actually is
+(e.g. `EventPhotoHeroSurface`); if unreachable, delete.
+
+### E5. Positive calibration
+
+Hero → ticket-stub band → `CatchDetailSliverSectionList` → CatchBottomDock
+CTA is the reference composition. Section-state dispatchers
+(hidden/loading/error/content) per section are the right pattern; only their
+loading rendering (E3) is off-language.
+
+---
+
+## Screen 3 — Club Detail (audited 2026-07-05)
+
+Files: `lib/clubs/presentation/detail/**`. Overall: the content and IA are
+good (hero → next-run banner → metric strip → sections → schedule →
+reviews), but the screen predates the detail grammar: it hand-rolls the
+section scaffolding the core already owns, mixes title systems, and carries
+typography drift.
+
+### C1. Adopt `CatchDetailSliverSectionList` `[codex]`
+
+`ClubDetailBody` hand-assembles `SliverPadding(fromLTRB(detailScreen*
+tokens))` + nested `CatchSectionStack` + a local `sectionGap` SizedBox + two
+more hand-padded slivers for schedule/reviews — three gutter mechanisms for
+one screen, plus two file-local padding consts
+(`_clubDetailSectionStackPadding`). Restructure to match event detail: one
+`CatchDetailSliverSectionList` for the box sections (banner, metric strip,
+About → Get in touch, reviews); the schedule's `EventAgendaSliverList` is a
+true sliver and stays a sibling sliver, but its title and paddings come from
+the same tokens/primitives as everything else (see C2).
+
+### C2. Section-title unification (G1 applied) `[confirm]`
+
+'Schedule' (`ClubScheduleSection`, bare `Text(titleL)`) and 'Reviews'
+(`ClubReviewsSection` via titleL header) move to the CatchSection kicker
+voice used by the other five sections on this screen. For the schedule this
+means a sliver-compatible section header built from the same kicker
+primitive (`CatchSection` title chrome), not a bespoke Text.
+
+### C3. `ClubNextRunBanner` raw control + typography drift `[codex]`
+
+Hand-rolls `Material + InkWell + Ink(BoxDecoration)` — replace with
+`CatchSurface(onTap:, backgroundColor: activity.soft, radius: md)`. Its
+label applies `.copyWith(fontWeight: w700)` to `monoLabelS`; the About
+section likewise applies `.copyWith(fontWeight: w400)` to `bodyLead`. Both
+are off-token faux weights: use the existing text style whose weight matches
+(check `CatchTextStyles` for a strong mono label and a reading-body style);
+if none exists, escalate with a proposed style name — do not keep copyWith
+weights.
+
+### C4. `CatchClubDock` — wrong shell, wrong name `[codex]`
+
+341 lines hand-rolling its own SafeArea/ColoredBox dock shell while the
+event side rides `CatchBottomDock.cta`. Rebuild on `CatchBottomDock` (keep
+DockCount/DockBell content). LEXICON: `Catch*` is reserved for core
+primitives; this is a clubs feature widget — rename to `ClubDetailDock`
+(with the usual deprecated typedef for one release if usages are wide).
+
+### C5. Schedule empty state over-tuning `[codex]`
+
+`ClubScheduleSection`'s `CatchEmptyState` hand-tunes six knobs including raw
+`iconContainerSize: 44`. Use the empty-state defaults; if the inline layout
+genuinely needs a smaller container, use the nearest token and keep at most
+the `layout:` knob. Raw 44 must not survive.
+
+### C6. IA polish `[confirm]`
+
+'Get in touch' (contact rows) currently sits between Hosts and Schedule.
+It is footer-type content — propose moving it below Reviews as the last
+section, so the mid-page flow reads About → What we do → Photos → Hosts →
+Schedule → Reviews → Get in touch. Pure reorder, no widget changes.
+
+### C7. Positive calibration
+
+The next-run banner above the metric strip is a strong identity band —
+better than anything event detail has for "when do I show up next"; keep
+it. `ClubActivitySection`'s primary/secondary tag split is genuine OWNS
+logic. The metric strip (members/rating/reviews/est.) is the right data at
+the right altitude.
+
+---
+
+## Screens 4+ — pending
 
 Next: Explore. Audits append here, one section per screen, same format.
