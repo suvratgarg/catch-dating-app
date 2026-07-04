@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.573
+version: 2.5.574
 updated: 2026-07-04
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.574
+
+- Routed `SettingsSection` and `HostSettingsSection` through
+  `CatchSection.divided` so settings-style rows now inherit the shared
+  `CatchFieldInsetScope.flush` contract, use `CatchFieldRow.textLaneInset` for
+  section dividers, and no longer depend on settings-only divider chrome.
 
 ### 2.5.573
 
@@ -5799,8 +5806,8 @@ Generated 2026-05-06.
 | `CatchRosterTable` | `lib/hosts/presentation/widgets/catch_roster_board.dart:416` | Handoff `RosterTable` shell for host roster boards. Owns the hairline table surface, mono three-column header, fixed row proportions matching `CatchRosterRow`, row composition, and built-in empty state. Registered as formal component contract `catch.roster_table`; Widgetbook contract states are the canonical review surface for populated, empty, partial-column, and long-copy tables. |
 | `HostClubManagementPanel` | `lib/hosts/presentation/widgets/host_club_tools.dart:15` | Reusable combined host-club tools panel for surfaces that intentionally need Add event, Edit club, and upcoming booked/waitlist/base-revenue stats in one section. Public `ClubDetailBody` no longer embeds this panel; Host app tab surfaces own those actions. |
 | `HostStatChip` | `lib/hosts/presentation/widgets/host_club_tools.dart:161` | Single reusable host stat chip used by the consolidated club host management panel and host event management stats. |
-| `HostSettingsSection` | `lib/hosts/presentation/host_operations_screen.dart:449` | Shared host settings section wrapper for Account and Host Clubs row groups. Owns section kicker, top divider spacing, and row grouping while callers supply provider-free `CatchField` children. |
-| `HostSettingsProfileSection` | `lib/hosts/presentation/host_operations_screen.dart:483` | Provider-free profile summary section for `screen.host.settings`. Renders loading, error, missing, create-pending, club-backed fallback, loaded, edit, preview, and status rows from explicit `HostSettingsProfileState` plus create/edit/retry callbacks. |
+| `HostSettingsSection` | `lib/hosts/presentation/host_account_screen.dart:173` | Shared host settings section wrapper for Account and Host Clubs row groups. Delegates row grouping to `CatchSection.divided`, so provider-free `CatchField` children inherit the shared flush inset contract and dividers align to `CatchFieldRow.textLaneInset`. |
+| `HostSettingsProfileSection` | `lib/hosts/presentation/host_account_screen.dart:200` | Provider-free profile summary section for `screen.host.settings`. Renders loading, error, missing, create-pending, club-backed fallback, loaded, edit, preview, and status rows from explicit `HostSettingsProfileState` plus create/edit/retry callbacks. |
 | `HostSettingsClubsSection` | `lib/hosts/presentation/host_operations_screen.dart:609` | Provider-free hosted-clubs section for `screen.host.settings`. Renders loading, error, empty, edit-mode, and preview-mode club rows from `HostSettingsClubsState`, retry callback, and route callback so Widgetbook can cover section states without Riverpod reads. |
 | `HostProfileForm` | `lib/hosts/presentation/host_operations_screen.dart:962` | Provider-free professional profile form for `screen.host.profile`. Renders status-aware profile fields and the save action from explicit controllers, save state, profile status, and callback so Widgetbook can cover active/pending/suspended, validation, pending, text-scale, reduced-motion, and theme states without live providers. |
 | `HostProfileFields` | `lib/hosts/presentation/host_operations_screen.dart:1014` | Shared host professional profile field stack for the full-screen Host Profile route and Host Settings editor sheet. It owns display name validation and status label rendering while keeping persistence and controller ownership outside the field section. |
@@ -6591,10 +6598,10 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `_SettingsSection` | `lib/safety/presentation/settings_screen.dart:529` | Private Settings template section helper. Injects the first-row/no-divider and subsequent-row/inset-divider contract into `CatchField` rows, draws section hairlines directly on the page surface, and optionally renders a footer for account or blocked-account state content. |
-| `_AccountProfileStatus` | `lib/safety/presentation/settings_screen.dart:570` | Provider-free account-section footer that renders profile provider error/missing copy from `SettingsProfileState` while leaving loaded/loading rows to `CatchField` values. |
-| `_BlockedAccountsSection` | `lib/safety/presentation/settings_screen.dart:604` | Provider-free Privacy & safety footer listing blocked accounts under the handoff `Blocked users` row. Uses `_BlockedAccountsSkeleton` for row-shaped loading, `CatchEmptyState` for the empty state, `CatchInlineErrorState` for retryable errors, and renders `_BlockedAccountTile` rows from `SettingsBlockedAccountsState`. |
-| `_BlockedAccountTile` | `lib/safety/presentation/settings_screen.dart:671` | Single provider-free blocked account row. Renders a `CatchPersonRow` from `SettingsBlockedAccountRow` display data and delegates the semantic unblock action back to the route callback. |
+| `SettingsSection` | `lib/safety/presentation/settings_screen.dart:482` | Settings template section helper that delegates row grouping to `CatchSection.divided`, so `CatchField` children inherit the shared flush inset contract and dividers align to `CatchFieldRow.textLaneInset`. Optional footers remain outside the divided row body for account and blocked-account state content. |
+| `AccountProfileStatus` | `lib/safety/presentation/settings_screen.dart:522` | Provider-free account-section footer that renders profile provider error/missing copy from `SettingsProfileState` while leaving loaded/loading rows to `CatchField` values. |
+| `BlockedAccountsSection` | `lib/safety/presentation/settings_screen.dart:560` | Provider-free Privacy & safety footer listing blocked accounts under the handoff `Blocked users` row. Uses `_BlockedAccountsSkeleton` for row-shaped loading, `CatchEmptyState` for the empty state, `CatchInlineErrorState` for retryable errors, and renders `BlockedAccountTile` rows from `SettingsBlockedAccountsState`. |
+| `BlockedAccountTile` | `lib/safety/presentation/settings_screen.dart:683` | Single provider-free blocked account row. Renders a `CatchPersonRow` from `SettingsBlockedAccountRow` display data and delegates the semantic unblock action back to the route callback. |
 | `SettingsKeys` | `lib/safety/presentation/settings_keys.dart:3` | Stable semantic keys for account action rows, settings switches, delete-account row, and blocked-user unblock buttons. |
 | `showConfirmDangerDialog` | `lib/core/widgets/confirm_danger_dialog.dart:4` | Shared destructive confirmation dialog helper used by safety/account actions such as block and delete-account confirmations. Delegates to `showCatchAdaptiveDialog` so iOS gets Cupertino alert chrome and Android/non-iOS platforms keep Material alert chrome. |
 | `showBlockUserDialog` | `lib/core/widgets/block_user_dialog.dart:4` | Safety-specific block confirmation helper. Supplies block copy and delegates to `showConfirmDangerDialog`, so public profile and chat block actions share the handoff confirm-card composition and platform-adaptive destructive action behavior. |

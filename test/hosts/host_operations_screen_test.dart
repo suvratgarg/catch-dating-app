@@ -359,6 +359,37 @@ void main() {
     expect(find.text('Sign in required'), findsNothing);
   });
 
+  testWidgets('HostSettingsSection rows align to the section text lane', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: const Scaffold(
+          body: HostSettingsSection(
+            label: 'Profile',
+            first: true,
+            children: [
+              CatchField.nav(
+                title: 'Display name',
+                valueText: 'Suvrat',
+                icon: Icons.person_outline,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    final sectionLeft = tester.getTopLeft(find.text('PROFILE')).dx;
+    final rowTextLeft = tester.getTopLeft(find.text('Display name')).dx;
+
+    expect(
+      rowTextLeft - sectionLeft,
+      moreOrLessEquals(CatchFieldRow.textLaneInset, epsilon: 0.5),
+    );
+  });
+
   testWidgets('Host profile route shows loading while uid resolves', (
     tester,
   ) async {
@@ -630,7 +661,7 @@ void main() {
     await tester.tap(find.text('Set up payouts'));
     await pumpFeatureUi(tester);
 
-    expect(find.text('Identity'), findsOneWidget);
+    expect(find.text('IDENTITY'), findsOneWidget);
   });
 
   testWidgets('Host clubs owns profile management without event CTAs', (
@@ -677,23 +708,23 @@ void main() {
     expect(find.text('Preview'), findsWidgets);
     expect(find.byTooltip('Switch club'), findsOneWidget);
     expect(find.byTooltip('Create club'), findsNothing);
-    expect(find.text('Identity'), findsOneWidget);
+    expect(find.text('IDENTITY'), findsOneWidget);
     expect(find.text('Club name'), findsOneWidget);
     expect(find.text('City'), findsOneWidget);
     expect(find.text('Area / neighbourhood'), findsOneWidget);
     expect(find.text('Description'), findsOneWidget);
-    expect(find.text('Contact'), findsOneWidget);
+    expect(find.text('CONTACT'), findsOneWidget);
     expect(find.text('Instagram'), findsOneWidget);
     expect(find.text('@sundayseafacecrew'), findsOneWidget);
-    expect(find.text('Event defaults'), findsOneWidget);
+    expect(find.text('EVENT DEFAULTS'), findsOneWidget);
     expect(find.text('Default activity'), findsOneWidget);
     expect(find.text('Admission'), findsOneWidget);
     expect(find.text('Age range'), findsOneWidget);
     expect(find.text('Cancellation policy'), findsOneWidget);
-    expect(find.text('Public profile'), findsOneWidget);
+    expect(find.text('PUBLIC PROFILE'), findsOneWidget);
     expect(find.text('Preview club page'), findsOneWidget);
-    expect(find.text('Payouts'), findsWidgets);
-    expect(find.text('Host team'), findsWidgets);
+    expect(find.text('PAYOUTS'), findsWidgets);
+    expect(find.text('HOST TEAM'), findsWidgets);
     expect(find.byTooltip('Add host'), findsOneWidget);
     expect(find.text('Add event'), findsNothing);
     expect(find.text('View club'), findsNothing);

@@ -184,22 +184,15 @@ class HostSettingsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Padding(
-      padding: EdgeInsets.only(top: first ? 0 : CatchSpacing.s2),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (!first) ...[
-            Divider(color: t.line, height: 1, thickness: 1),
-            gapH18,
-          ],
-          Text(label, style: CatchTextStyles.kicker(context, color: t.ink2)),
-          gapH10,
-          ...children,
-        ],
-      ),
+    return CatchSection.divided(
+      title: label,
+      first: first,
+      bodyGap: CatchSpacing.micro10,
+      dividerIndent: CatchFieldRow.textLaneInset,
+      internalDividerColor: CatchTokens.of(
+        context,
+      ).line.withValues(alpha: CatchOpacity.fieldRowDivider),
+      children: children,
     );
   }
 }
@@ -301,7 +294,6 @@ class HostSettingsProfileRows extends StatelessWidget {
                   ? profile.roleTitle!.trim()
                   : 'Add role title',
               icon: CatchIcons.cardMembershipOutlined,
-              divider: true,
               onTap: canEdit ? onEditProfile : null,
               showChevron: canEdit,
             ),
@@ -309,7 +301,6 @@ class HostSettingsProfileRows extends StatelessWidget {
               title: 'Status',
               valueText: hostProfileStatusLabel(profile.status),
               icon: CatchIcons.checkCircleOutlineRounded,
-              divider: true,
               showChevron: false,
             ),
           ],

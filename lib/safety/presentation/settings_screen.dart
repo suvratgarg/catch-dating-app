@@ -497,44 +497,24 @@ class SettingsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final topPadding = hideTitle ? CatchSpacing.s3 : 18.0;
+    final section = CatchSection.divided(
+      title: hideTitle ? null : title,
+      first: first,
+      bodyGap: CatchSpacing.micro10,
+      dividerIndent: CatchFieldRow.textLaneInset,
+      internalDividerColor: CatchTokens.of(
+        context,
+      ).line.withValues(alpha: CatchOpacity.fieldRowDivider),
+      children: children,
+    );
+
+    if (footer == null) {
+      return section;
+    }
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (!first) ...[
-          gapH8,
-          ColoredBox(
-            color: t.line,
-            child: const SizedBox(height: CatchStroke.hairline),
-          ),
-          SizedBox(height: topPadding),
-        ],
-        if (!hideTitle) ...[
-          Text(
-            title.toUpperCase(),
-            style: CatchTextStyles.kicker(context, color: t.ink2),
-          ),
-          gapH10,
-        ],
-        for (var i = 0; i < children.length; i++) ...[
-          if (i > 0)
-            Padding(
-              padding: const EdgeInsets.only(
-                left: CatchLayout.settingsRowDividerIconInset,
-              ),
-              child: ColoredBox(
-                color: t.line.withValues(
-                  alpha: CatchOpacity.profileInfoDivider,
-                ),
-                child: const SizedBox(height: CatchStroke.hairline),
-              ),
-            ),
-          children[i],
-        ],
-        ?footer,
-      ],
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [section, footer!],
     );
   }
 }
