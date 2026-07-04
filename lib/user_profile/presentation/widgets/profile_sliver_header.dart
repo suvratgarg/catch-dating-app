@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
@@ -58,32 +59,20 @@ class ProfileTabBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Material(
-      color: t.bg,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          border: Border(bottom: BorderSide(color: t.line)),
-        ),
-        child: Padding(
-          padding: CatchInsets.screenControlRow,
-          child: AnimatedBuilder(
-            animation: controller.animation!,
-            builder: (context, _) {
-              return CatchOptionGroup<int>(
-                selected: controller.index,
-                onChanged: controller.animateTo,
-                options: const [
-                  CatchOption(value: 0, label: 'Edit'),
-                  CatchOption(value: 1, label: 'Preview'),
-                  CatchOption(value: 2, label: 'Insights'),
-                ],
-              );
-            },
-          ),
-        ),
-      ),
+    return AnimatedBuilder(
+      animation: controller.animation!,
+      builder: (context, _) {
+        return CatchTabRail<int>(
+          selected: controller.index,
+          selectionPosition: controller.animation!.value,
+          onChanged: controller.animateTo,
+          options: const [
+            CatchOption(value: 0, label: 'Edit'),
+            CatchOption(value: 1, label: 'Preview'),
+            CatchOption(value: 2, label: 'Insights'),
+          ],
+        );
+      },
     );
   }
 }

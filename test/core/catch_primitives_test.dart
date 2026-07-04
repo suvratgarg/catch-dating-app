@@ -60,6 +60,7 @@ import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_dock.dart';
+import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -1082,6 +1083,67 @@ void main() {
     await tester.tap(find.text('Saved'));
     await tester.pump();
     expect(selected, 'saved');
+  });
+
+  testWidgets('CatchOptionGroup keeps option labels on a stable axis', (
+    tester,
+  ) async {
+    var selected = 'first';
+
+    await tester.pumpWidget(
+      _wrap(
+        StatefulBuilder(
+          builder: (context, setState) => CatchOptionGroup<String>(
+            selected: selected,
+            onChanged: (value) => setState(() => selected = value),
+            options: const [
+              CatchOption(value: 'first', label: 'First'),
+              CatchOption(value: 'second', label: 'Second'),
+            ],
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(
+      tester.getTopLeft(find.text('First')).dy,
+      closeTo(tester.getTopLeft(find.text('Second')).dy, 0.1),
+    );
+
+    await tester.tap(find.text('Second'));
+    await tester.pump(CatchMotion.fast);
+
+    expect(
+      tester.getTopLeft(find.text('First')).dy,
+      closeTo(tester.getTopLeft(find.text('Second')).dy, 0.1),
+    );
+  });
+
+  testWidgets('CatchTabRail aligns trailing actions with option labels', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        CatchTabRail<String>(
+          selected: 'all',
+          options: const [
+            CatchOption(value: 'all', label: 'All'),
+            CatchOption(value: 'saved', label: 'Saved'),
+          ],
+          trailing: SizedBox.square(
+            dimension: CatchLayout.iconButtonNavSize,
+            child: Icon(CatchIcons.tuneRounded),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final labelCenter = tester.getCenter(find.text('All'));
+    final iconCenter = tester.getCenter(find.byIcon(CatchIcons.tuneRounded));
+
+    expect((labelCenter.dy - iconCenter.dy).abs(), lessThan(8));
   });
 
   testWidgets('CatchOptionGroupItem renders mono uppercase label and tap', (

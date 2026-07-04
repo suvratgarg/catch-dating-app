@@ -2999,6 +2999,11 @@ void main() {
       expect(find.byIcon(CatchIcons.tuneRounded), findsOneWidget);
       expect(find.text('Filters'), findsNothing);
       expect(find.text('1'), findsOneWidget);
+
+      final iconCenter = tester.getCenter(find.byIcon(CatchIcons.tuneRounded));
+      final badgeCenter = tester.getCenter(find.text('1'));
+      expect(badgeCenter.dx, greaterThan(iconCenter.dx));
+      expect(badgeCenter.dy, lessThan(iconCenter.dy));
     });
 
     testWidgets('ExploreScreen map pill opens the map route', (tester) async {
