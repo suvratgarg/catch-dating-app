@@ -61,7 +61,7 @@ and the empty state are composed well. The full state carries one dead
 parallel shell, one inheritance wrapper, one loading-language inconsistency,
 and a systemic rail-defaults problem that extends beyond this screen.
 
-### D1. `DashboardFull` is a dead parallel screen shell — delete `[codex]`
+### D1. `DashboardFull` is a dead parallel screen shell — delete `[done 83b7b146b]`
 
 `widgets/dashboard_full.dart` defines `DashboardFull`, which rebuilds the
 entire screen shell (Scaffold + SafeArea + CustomScrollView + sliver header
@@ -79,7 +79,7 @@ parallel one). Its `greeting`/`dayCity` statics are thin forwards to
 `dashboardGreeting`/`dashboardDayCity` — repoint any callers to those
 functions directly.
 
-### D2. `DashboardSliverHeader` is subclass-as-configuration — inline `[codex]`
+### D2. `DashboardSliverHeader` is subclass-as-configuration — inline `[done 83b7b146b]`
 
 `widgets/dashboard_sliver_header.dart`: the class only pre-fills
 `CatchSliverHeader(title: DashboardHeaderContent(...))` via `super`. That is
@@ -89,7 +89,7 @@ a PASS-THROUGH by inheritance. Fix: delete the subclass; at both call sites
 .buildSlivers(context)` directly. `DashboardHeaderContent` stays (OWNS the
 dashboard title-block chrome; the K5 keep vs Explore's header stands).
 
-### D3. Section-loading language is inconsistent — standardize on skeletons `[codex]` (approved 2026-07-05 via G2)
+### D3. Section-loading language is inconsistent — standardize on skeletons `[done 83b7b146b]` (approved 2026-07-05 via G2)
 
 The same dashboard sections have two loading treatments:
 
@@ -108,7 +108,7 @@ error path joins them if it does not already. `DashboardSectionStateCard`
 then has zero users and is deleted, along with its widgetbook block.
 Visible change: brief text flashes become skeletons on section refresh.
 
-### D4. Rail primitives NEUTRALIZE their context — fix the contract `[codex]` (approved 2026-07-05)
+### D4. Rail primitives NEUTRALIZE their context — fix the contract `[done 83b7b146b]` (approved 2026-07-05)
 
 `CatchHorizontalRail` and `ClubAvatarRail` default to `showDivider: true` +
 their own header/list gutters (`s5`, which is also the screen gutter). Every
@@ -127,7 +127,12 @@ use (generalizing `CatchFieldInsetScope`; propose the generalized name in
 the receipt for review). Either way the 12 zeroings disappear; record the
 inventory count and chosen branch in the receipt.
 
-### D5. Skeleton drift in `FollowedClubsRailSkeleton` `[codex]`
+Receipt: chose the default-flip branch. The scanner now reports 3 production
+rail calls, 1 full-bleed opt-in, and 0 high/medium legacy zeroing findings.
+`design:rail-contracts` is manifest-owned and bound back to
+`DESIGN-PRIMITIVES-001`, `SCREEN-GUTTER-001`, and `UI-LINT-001`.
+
+### D5. Skeleton drift in `FollowedClubsRailSkeleton` `[done 83b7b146b]`
 
 `dashboard_full.dart:389`: `CatchSkeleton.circle(size: 64)` — raw 64 where
 `CatchLayout.avatarIdentityExtent` (64.0) now exists; use it. While there,
