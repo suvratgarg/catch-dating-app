@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart'
     show
         CatchAspectRatio,
+        CatchInsets,
         CatchLayout,
         CatchOpacity,
         CatchRadius,
@@ -13,7 +14,6 @@ import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/profile_info_section.dart';
 import 'package:flutter/material.dart';
 
 class ProfileTabSkeletonSliverBody extends StatelessWidget {
@@ -22,7 +22,7 @@ class ProfileTabSkeletonSliverBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverPadding(
-      padding: profileTabBodyPadding,
+      padding: CatchInsets.formEditBodyRelaxed,
       sliver: SliverToBoxAdapter(
         child: Center(
           child: ConstrainedBox(

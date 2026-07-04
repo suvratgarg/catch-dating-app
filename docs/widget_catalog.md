@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.571
+version: 2.5.572
 updated: 2026-07-04
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,24 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.572
+
+- Notifications day groups now compose through `CatchSection.divided` instead
+  of hand-rolled kicker/hairline/spacing chrome. This gives notification rows
+  the same `CatchFieldInsetScope.flush` contract as Profile Edit: the screen
+  body owns the page gutter, the section owns row/divider edges, and individual
+  `CatchField` rows no longer add a second 16 px self-inset.
+- Profile Edit, Profile Insights, and Profile Edit skeleton bodies now use the
+  semantic `CatchInsets.formEditBodyRelaxed` inset directly. The feature-local
+  `profileTabBodyPadding` constant, `fullBleedRows` parameter, and
+  `ProfileInfoRowFrame` full-bleed wrapper were deleted because every live
+  profile info section is a titled divided section.
+- `tool/check_catch_ui_lints.sh` now has a narrow page-gutter guard for
+  presentation constants named like screen/body/page padding that rebuild the
+  app gutter from `CatchSpacing.s5` or `CatchSpacing.screenPx`; route bodies
+  should spell those through `CatchInsets.pageBody*`, `CatchInsets.form*`, or
+  `CatchScreenBody`.
 
 ### 2.5.571
 
@@ -79,9 +97,10 @@ a feature section here only when auditing that feature's widget surface.
   the pill chrome. `CatchTopBar` keeps one persistent search lane mounted while
   title/trailing chrome fades underneath, so app-bar search morphs instead of
   remounting across collapsed/expanded branches.
-- Reined in Profile Edit fields to the standard `profileTabBodyPadding`
-  screen gutter instead of full-bleed row framing; grouped row dividers now
-  span the section width inside that fixed gutter.
+- Reined in Profile Edit fields to the standard screen gutter instead of
+  full-bleed row framing; grouped row dividers now span the section width
+  inside that fixed gutter. This was later routed through
+  `CatchInsets.formEditBodyRelaxed`.
 
 ### 2.5.567
 
@@ -5054,10 +5073,10 @@ a feature section here only when auditing that feature's widget surface.
 
 ### 2.5.7
 
-- Profile Edit and Preview tabs now share `profileTabBodyPadding`: 20 px
-  horizontal, 8 px top, and 32 px bottom. Preview applies that inset inside its
-  filled body so the card gap is persistent when its internal scroll returns to
-  the top.
+- Profile Edit and Preview tabs now share the same profile tab body padding:
+  20 px horizontal, 8 px top, and 32 px bottom. Preview applies that inset
+  inside its filled body so the card gap is persistent when its internal scroll
+  returns to the top.
 
 ### 2.5.6
 
@@ -5693,10 +5712,9 @@ Generated 2026-05-06.
 | `_DashboardLoadingScreen` | `lib/dashboard/presentation/dashboard_screen.dart:220` | Loading scaffold for Home while profile/booked-run data resolves. |
 | `_DashboardErrorScreen` | `lib/dashboard/presentation/dashboard_screen.dart:229` | Branded error scaffold for Home profile/booked-run load failures. |
 | `DashboardSectionStateCard` | `lib/dashboard/presentation/widgets/dashboard_section_state_card.dart:9` | Inline loading/error card for dashboard sections such as recommendations and weekly activity. Renders shared skeleton or message copy in a compact `CatchSurface` so section-level empty/loading states stay visually consistent. |
-| `NotificationDayGroups` | `lib/dashboard/presentation/widgets/activity_section.dart:133` | Notifications screen day-group wrapper. Matches the handoff's tight Activity composition with first group flush, later groups separated by an 8px offset, top hairline, 18px inset, uppercase kicker, then grouped notification rows. |
+| `NotificationDayGroups` | `lib/dashboard/presentation/widgets/activity_section.dart:133` | Notifications screen day-group wrapper. Routes each day bucket through `CatchSection.divided`, so the Activity screen body owns the page gutter, the section owns the kicker/hairline/divider rhythm, and notification `CatchField` rows render flush inside the section instead of adding their own horizontal row inset. |
 | `NotificationRowSkeleton` | `lib/dashboard/presentation/widgets/activity_section.dart:206` | Loading row placeholder for activity notifications. Reserves icon, title/time, and two-line body skeletons, with optional inset divider matching the loaded notification row stack. |
-| `NotificationRow` | `lib/dashboard/presentation/widgets/activity_section.dart:158` | Handoff-style row for backend-owned activity notifications. It exposes the design contract (`type`, `title`, `time`, `body`, `unread`, `divider`, optional tap), renders on-surface with a type-colored glyph, optional inset divider, relative time, unread title/time color, and optional route navigation with branded failure feedback from the parent group, and deliberately does not render card fills, badges, or icon chips. |
-| `NotificationGroupWidget` | `lib/dashboard/presentation/widgets/activity_section.dart:314` | Small adapter that renders a group of `NotificationRowDisplay` entries and injects row dividers after the first item. Optional route callbacks let the Activity route own navigation while Widgetbook can render display rows provider-free. |
+| `NotificationRow` | `lib/dashboard/presentation/widgets/activity_section.dart:237` | Handoff-style row for backend-owned activity notifications. It exposes the design contract (`type`, `title`, `time`, `body`, `unread`, optional tap), renders on-surface with a type-colored glyph, relative time, unread title/time color, and optional route navigation with branded failure feedback from the parent day group; day-group dividers now come from `CatchSection.divided` rather than from the row itself. |
 
 ---
 
@@ -5977,15 +5995,15 @@ Generated 2026-05-06.
 | Widget | File | Purpose |
 |---|---|---|
 | `ProfileScreen` | `lib/user_profile/presentation/profile_screen.dart:25` | Profile tab destination. Gates screen-owned streams while the retained tab branch is inactive, owns the route-level top safe area, uses `NestedScrollView` for a scroll-away "Your profile" title plus a pinned handoff `CatchOptionGroup` Edit/Preview row, keeps native `TabBarView` paging for smooth horizontal tab swipes, and composes route branches through `SelfProfileTabBody`. Owns the `TabController` locally because tab selection is route UI state; `initialTabIndex` exists for deterministic Preview route captures while production keeps the Edit default. Preview renders full-bleed below the option row, with the shared `ProfileSurface` owning the inner body gutter. |
-| `ProfileTab` | `lib/user_profile/presentation/widgets/profile_tab.dart:19` | Standalone signed-in edit tab content. Wraps the edit form in a `ListView` for isolated/non-sliver usage and renders the handoff sections Photos, Prompts, About you, Running, and Lifestyle through `CatchSection`/`ProfileInfoSection` on-surface groups. Profile Edit field rows honor `profileTabBodyPadding` so fields and dividers run end-to-end inside the standard screen gutter; full-bleed treatment is reserved for media/preview surfaces, not form rows. Simple text rows, including Display name, Email, Instagram, Job title, and Company, render as direct editable `CatchField.input` rows through `ProfileDirectTextEntryField`; they do not open inline disclosure drawers. `Display name` is the first editable About field and is the only public-facing profile name. Onboarding identity fields such as date of birth and gender are readonly, and last name is not shown publicly. Profile prompt rows use catalog-backed pickers that hide prompt IDs already selected in other rows. Optional/profile-detail fields, including Instagram, remain editable. Running is always visible and owns pace, distances, reasons, and favorite run times. Discovery-only preferences such as interested-in genders and match age range live in Filters, not Edit Profile. Optional single-choice edit sheets open unselected when the underlying field is empty. |
+| `ProfileTab` | `lib/user_profile/presentation/widgets/profile_tab.dart:19` | Standalone signed-in edit tab content. Wraps the edit form in a `ListView` for isolated/non-sliver usage and renders the handoff sections Photos, Prompts, About you, Running, and Lifestyle through `CatchSection`/`ProfileInfoSection` on-surface groups. Profile Edit field rows honor `CatchInsets.formEditBodyRelaxed` so fields and dividers run end-to-end inside the standard screen gutter; form rows do not own full-bleed chrome. Simple text rows, including Display name, Email, Instagram, Job title, and Company, render as direct editable `CatchField.input` rows through `ProfileDirectTextEntryField`; they do not open inline disclosure drawers. `Display name` is the first editable About field and is the only public-facing profile name. Onboarding identity fields such as date of birth and gender are readonly, and last name is not shown publicly. Profile prompt rows use catalog-backed pickers that hide prompt IDs already selected in other rows. Optional/profile-detail fields, including Instagram, remain editable. Running is always visible and owns pace, distances, reasons, and favorite run times. Discovery-only preferences such as interested-in genders and match age range live in Filters, not Edit Profile. Optional single-choice edit sheets open unselected when the underlying field is empty. |
 | `ProfileTabContent` | `lib/user_profile/presentation/widgets/profile_tab.dart:41` | Shared provider-free Profile Edit body used by both the standalone `ProfileTab` list and sliver-native `ProfileTabSliverBody`. It owns the handoff section ordering and receives the scroll/content wrapper as a builder so route and isolated review contexts stay canonical without duplicate adapters. |
 | `ProfileFieldRow` | `lib/user_profile/presentation/widgets/profile_tab.dart:248` | Public descriptor-backed renderer for Edit Profile field rows. Maps `SelfProfileFieldRowDescriptor` variants to the canonical read-only, direct text, height, single-choice, multi-choice, and range row primitives while the parent route owns only expansion state and save/cancel collapse callbacks. Widgetbook covers mixed descriptor rows directly so future descriptor variants do not reintroduce private widget-returning helpers. |
 | `ProfileDirectTextEntry` | `lib/user_profile/presentation/widgets/profile_tab.dart:354` | Public Profile Edit direct-text descriptor adapter. Normalizes descriptor defaults for current value/current field value and delegates rendering, validation, save behavior, keyboard/autofill, and patch conversion to `ProfileDirectTextEntryField` so simple text rows remain cataloged without private wrapper drift. |
 | `ProfileSingleEnumEntry<T>` | `lib/user_profile/presentation/widgets/profile_tab.dart:402` | Public Profile Edit single-choice enum descriptor adapter. Converts typed `Labelled` values, optional empty state, expansion state, and save/cancel callbacks into `ProfileInlineSingleChoiceEntryEditor` so optional single-select rows such as Education and Looking for stay cataloged without private helper drift. |
 | `ProfileMultiEnumEntry<T>` | `lib/user_profile/presentation/widgets/profile_tab.dart:451` | Public Profile Edit multi-choice enum descriptor adapter. Converts selected typed `Labelled` values, placeholder/add-affordance state, expansion state, and latest-profile patch callbacks into `ProfileInlineMultiChoiceEntryEditor` so Languages and running preference rows stay reviewable as first-class widgets. |
 | `ProfilePromptEntry` | `lib/user_profile/presentation/widgets/profile_tab.dart:509` | Public Profile Edit prompt-slot adapter. Converts `SelfProfilePromptSlotState` into `ProfileInlinePromptEntryEditor` inputs, including prompt title, placeholder, selected prompt id, duplicate-filtered prompt ids, expansion state, and save/cancel callbacks supplied by `ProfileTabContent`. |
-| `ProfileTabSliverBody` | `lib/user_profile/presentation/widgets/profile_tab.dart:69` | Sliver-native profile edit body. Reuses the same handoff sections as `ProfileTab` but contributes a padded sliver adapter for parent `CustomScrollView` usage. Uses `profileTabBodyPadding` for the edit body; Preview is full-bleed and no longer shares this inset. |
-| `ProfileTabSkeletonSliverBody` | `lib/user_profile/presentation/widgets/profile_tab.dart:92` | Sliver-native Edit-tab loading skeleton. Reuses `profileTabBodyPadding`, `CatchSection`, the 3x2 profile-photo grid geometry, and profile info-row spacing to mimic Photos, Profile strength, Prompts, About you, Running, and Lifestyle while the signed-in profile stream resolves. |
+| `ProfileTabSliverBody` | `lib/user_profile/presentation/widgets/profile_tab.dart:69` | Sliver-native profile edit body. Reuses the same handoff sections as `ProfileTab` but contributes a padded sliver adapter for parent `CustomScrollView` usage. Uses `CatchInsets.formEditBodyRelaxed` for the edit body; Preview is full-bleed and does not share this inset. |
+| `ProfileTabSkeletonSliverBody` | `lib/user_profile/presentation/widgets/profile_tab.dart:92` | Sliver-native Edit-tab loading skeleton. Reuses `CatchInsets.formEditBodyRelaxed`, `CatchSection`, the 3x2 profile-photo grid geometry, and profile info-row spacing to mimic Photos, Profile strength, Prompts, About you, Running, and Lifestyle while the signed-in profile stream resolves. |
 
 ### ConsumerStatefulWidget
 
@@ -6005,14 +6023,13 @@ Generated 2026-05-06.
 | `UserAnalyticsTipRow` | `lib/user_analytics/shared/user_analytics_panel.dart:416` | Single coaching-tip row. Resolves copy from `UserAnalyticsCopy`, then renders the sparkle icon, title, and supporting body without provider access. |
 | `SelfProfileTabBody` | `lib/user_profile/presentation/profile_screen.dart:161` | Provider-free self-profile branch renderer for loading, error, unavailable, and ready states inside `ProfileScreen`'s `NestedScrollView.body`. Receives the route-owned `TabController`, preview scroll controller, preview bridge callbacks, and retry callback explicitly. Loading preserves the tab shell with Edit skeleton, Preview skeleton, and Insights body; unavailable renders the canonical profile `CatchEmptyState` inline; ready renders Edit, Preview, and Insights through sliver-aware tab scroll views. Widgetbook mounts it inside a `NestedScrollView` preview so the `SliverOverlapInjector` contract is exercised. |
 | `ProfileTabScrollView` | `lib/user_profile/presentation/profile_screen.dart:250` | Shared tab scroll wrapper used by `SelfProfileTabBody`. Installs `CatchPagerFocusBoundary`, starts each tab with the `NestedScrollView` overlap injector, and then appends the tab slivers. |
-| `ProfileInsightsTabSliverBody` | `lib/user_profile/presentation/widgets/profile_insights_tab.dart:7` | Sliver-native Profile Insights body. Applies the canonical profile tab padding and max-width constraint before embedding `UserAnalyticsPanel`, leaving analytics provider loading/error/empty/report ownership inside the panel. |
+| `ProfileInsightsTabSliverBody` | `lib/user_profile/presentation/widgets/profile_insights_tab.dart:7` | Sliver-native Profile Insights body. Applies `CatchInsets.formEditBodyRelaxed` and the max-width constraint before embedding `UserAnalyticsPanel`, leaving analytics provider loading/error/empty/report ownership inside the panel. |
 | `PreviewTab` | `lib/user_profile/presentation/widgets/preview_tab.dart:5` | Preview tab showing how the user's profile looks to others by rendering the shared handoff `ProfileSurface`, with owner-provided scroll controller, physics, bottom padding, and leading-overscroll callback when mounted inside ProfileScreen. |
 | `ProfileTitle` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:24` | Self-profile scroll-away title row. Renders the `Your profile` heading, screen-title spacing, page background, and settings action while the surrounding `ProfileSliverHeader` owns sliver placement. |
 | `ProfileTabBar` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:51` | Self-profile pinned tab selector. Receives the route-owned 3-tab `TabController` and maps Edit, Preview, and Insights to the shared `CatchOptionGroup` with bottom hairline chrome. |
 | `ProfileSettingsButton` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:84` | Self-profile settings icon action. Uses the default app-bar `CatchIconAction` with the settings glyph and routes to `screen.settings.account` through the surrounding `GoRouter` context. |
 | `ProfilePhotosSection` | `lib/user_profile/presentation/widgets/profile_tab.dart:553` | Edit Profile Photos section. Receives `SelfProfilePhotoGridState`, renders the divided Photos heading/count, and delegates slot tap, delete, and reorder behavior to parent callbacks while `PhotoGrid` owns slot layout. |
-| `ProfileInfoSection` | `lib/user_profile/presentation/widgets/profile_info_section.dart:18` | Provider-free Edit Profile section renderer. Owns grouped/ungrouped section chrome, optional heading/count copy, and full-width-in-gutter dividers while callers pass concrete field rows and section metadata explicitly. Normal Profile Edit rows should stay inside `profileTabBodyPadding`; use `fullBleedRows` only as a deliberate exception for non-form row chrome. |
-| `ProfileInfoRowFrame` | `lib/user_profile/presentation/widgets/profile_info_section.dart:102` | Optional full-bleed row wrapper for exceptional profile row chrome. It stretches a row to the viewport edge when a parent explicitly needs full-width highlights, but Profile Edit form fields do not opt into it because their contract is fixed screen gutters. |
+| `ProfileInfoSection` | `lib/user_profile/presentation/widgets/profile_info_section.dart:8` | Provider-free Edit Profile section renderer. It is a thin profile adapter over `CatchSection.divided`: callers supply a required title, optional count copy, and concrete field rows; the section owns full-width-in-gutter dividers and publishes the shared flush row contract. |
 | `ProfilePhotosSkeletonSection` | `lib/user_profile/presentation/widgets/profile_tab_skeleton.dart:60` | Edit Profile loading photo section. Reuses `CatchSection.divided`, the production maximum profile-photo count, and the 3-column portrait grid geometry so the Photos section reserves the same slot rhythm while uploads/profile data resolve. |
 | `ProfileInfoSkeletonSection` | `lib/user_profile/presentation/widgets/profile_tab_skeleton.dart:89` | Edit Profile loading info section. Receives title and row count from `ProfileTabSkeletonSliverBody`, renders section chrome through `CatchSection.divided`, and inserts the same muted dividers between `ProfileInfoSkeletonTile` rows as the ready profile sections. |
 | `ProfileInfoSkeletonTile` | `lib/user_profile/presentation/widgets/profile_tab_skeleton.dart:129` | Single Edit Profile loading row placeholder. Preserves the profile field-row icon, two-line text, and trailing affordance geometry with tokenized `CatchSkeleton` blocks. |

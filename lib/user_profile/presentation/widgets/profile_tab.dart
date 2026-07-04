@@ -46,7 +46,7 @@ class ProfileTab extends ConsumerWidget {
       builder: (context, children) => ListView(
         key: scrollViewKey,
         physics: physics,
-        padding: profileTabBodyPadding,
+        padding: CatchInsets.formEditBodyRelaxed,
         children: [
           Center(
             child: ConstrainedBox(
@@ -84,7 +84,7 @@ class ProfileTabSliverBody extends ConsumerWidget {
       user: user,
       uploadState: uploadState,
       builder: (context, children) => SliverPadding(
-        padding: profileTabBodyPadding,
+        padding: CatchInsets.formEditBodyRelaxed,
         sliver: SliverToBoxAdapter(
           child: Center(
             child: ConstrainedBox(
@@ -216,12 +216,10 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
             title: 'Prompts',
             subtitle:
                 '${editState.completedPromptCount} of $maxProfilePromptAnswers answered',
-            grouped: true,
             children: prompts,
           ),
           ProfileInfoSection(
             title: 'About you',
-            grouped: true,
             children: [
               for (final row in editState.aboutSectionRows)
                 ProfileFieldRow(
@@ -235,7 +233,6 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
           ),
           ProfileInfoSection(
             title: 'Running',
-            grouped: true,
             children: [
               for (final row in editState.runningRows)
                 ProfileFieldRow(
@@ -249,7 +246,6 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
           ),
           ProfileInfoSection(
             title: 'Lifestyle',
-            grouped: true,
             children: [
               for (final row in editState.lifestyleRows)
                 ProfileFieldRow(

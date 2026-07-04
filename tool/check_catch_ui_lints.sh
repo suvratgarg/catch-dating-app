@@ -267,6 +267,21 @@ if [[ $probe_status -ne 0 || "$probe_output" == *"catch_"* ]]; then
   exit 1
 fi
 
+screen_gutter_output="$(
+  rg -n -U \
+    '(?s)const\s+[A-Za-z0-9_]*(?:Body|Page|Screen)[A-Za-z0-9_]*Padding\s*=\s*EdgeInsets\.fromLTRB\(\s*CatchSpacing\.(?:s5|screenPx),.*?CatchSpacing\.(?:s5|screenPx),' \
+    lib \
+    --glob '**/presentation/**/*.dart' \
+    2>/dev/null || true
+)"
+
+if [[ -n "$screen_gutter_output" ]]; then
+  echo "catch_screen_gutter_uses_semantic_insets found presentation screen/body padding constants that rebuild the page gutter." >&2
+  echo "Use CatchInsets.pageBody* / CatchInsets.form* roles or CatchScreenBody instead of feature-local page gutter constants." >&2
+  echo "$screen_gutter_output" >&2
+  exit 1
+fi
+
 run_analyze_probe "mutation pending per-mutation violation" <<'DART'
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';

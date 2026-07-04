@@ -8,6 +8,7 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -644,6 +645,22 @@ void main() {
       expect(find.text('Upcoming events'), findsNothing);
       expect(find.text('Recent updates'), findsNothing);
       expect(find.text('Catch'), findsNothing);
+
+      final todayField = find
+          .ancestor(
+            of: find.text(today.title),
+            matching: find.byType(CatchField),
+          )
+          .first;
+      final fieldRect = tester.getRect(todayField);
+      final leadingIcon = find
+          .descendant(of: todayField, matching: find.byType(Icon))
+          .first;
+      final viewWidth =
+          tester.view.physicalSize.width / tester.view.devicePixelRatio;
+      expect(fieldRect.left, CatchSpacing.screenPx);
+      expect(fieldRect.right, viewWidth - CatchSpacing.screenPx);
+      expect(tester.getRect(leadingIcon).left, fieldRect.left);
     });
   });
 
