@@ -322,7 +322,7 @@ Four features wrap `CatchSliverHeader` construction in a do-nothing layer:
 `DashboardSliverHeader`, `ExploreSliverHeader`, `ChatsSliverHeader` (all
 `extends CatchSliverHeader` pre-filling `super(title: ...)`), and
 `ProfileSliverHeader` (a non-widget helper class whose `buildSlivers` just
-constructs one). **Fix all four the same way `[codex]`**: delete the
+constructs one). **Fix all four the same way `[done 33597504f]`**: delete the
 wrapper, construct `CatchSliverHeader(title: <FeatureHeaderContent>, ...)`
 directly at the call sites. The feature `*HeaderContent` widgets stay. While
 in ProfileSliverHeader, its raw `bottomHeight: 48` becomes the nearest
@@ -431,7 +431,8 @@ stops inspecting copy.
 
 `ChatConversationsList` is the model CONFIGURES layer: rich, meaningful
 mapping onto `CatchPersonRow` with chat-role tokens, no chrome of its own.
-`ChatsSliverHeader` is handled by the cross-screen sliver-header finding.
+The Chats sliver-header wrapper is handled by the cross-screen sliver-header
+finding.
 
 ---
 
@@ -442,7 +443,7 @@ Files: `lib/user_profile/presentation/profile_screen.dart`,
 gutter/section work and is the flush-contract reference; the shell holds
 the remaining items.
 
-### P1. `ProfileSliverHeader` wrapper + raw 48 `[codex]`
+### P1. `ProfileSliverHeader` wrapper + raw 48 `[done 33597504f]`
 
 Covered by the cross-screen sliver-header finding (it is the helper-class
 variant); the raw `bottomHeight: 48` goes to a token in the same change.
