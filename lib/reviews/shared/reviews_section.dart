@@ -89,6 +89,7 @@ class EventReviewsSection extends StatelessWidget {
           currentUid: currentUid,
           showAllAction: reviews.length > 3,
           compactEmptyState: true,
+          showHeader: false,
           emptyMessage: 'Reviews appear after attendees complete the event.',
           onEditReview: canWriteEventReview
               ? (review) => showWriteReviewSheet(
@@ -137,6 +138,7 @@ class ReviewsPreviewSection extends StatelessWidget {
     this.maxVisibleReviews = 3,
     this.showAllAction = false,
     this.compactEmptyState = false,
+    this.showHeader = true,
     this.emptyMessage,
     this.onEditReview,
     this.onRespondToReview,
@@ -147,6 +149,7 @@ class ReviewsPreviewSection extends StatelessWidget {
   final int maxVisibleReviews;
   final bool showAllAction;
   final bool compactEmptyState;
+  final bool showHeader;
   final String? emptyMessage;
   final ValueChanged<Review>? onEditReview;
   final ValueChanged<Review>? onRespondToReview;
@@ -196,25 +199,25 @@ class ReviewsPreviewSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ── Header ──────────────────────────────────────────────────────────
-        Row(
-          children: [
-            Expanded(
-              child: Text('Reviews', style: CatchTextStyles.titleL(context)),
-            ),
-            if (avgRating != null) ...[
-              StarRating(rating: avgRating.round(), size: 14),
-              gapW4,
-              Text(
-                '${avgRating.toStringAsFixed(1)} · ${reviews.length}',
-                style: CatchTextStyles.supporting(context, color: t.ink2),
+        if (showHeader) ...[
+          Row(
+            children: [
+              Expanded(
+                child: Text('Reviews', style: CatchTextStyles.titleL(context)),
               ),
+              if (avgRating != null) ...[
+                StarRating(rating: avgRating.round(), size: 14),
+                gapW4,
+                Text(
+                  '${avgRating.toStringAsFixed(1)} · ${reviews.length}',
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                ),
+              ],
             ],
-          ],
-        ),
-        gapH12,
+          ),
+          gapH12,
+        ],
 
-        // ── Review list ──────────────────────────────────────────────────────
         if (reviews.isEmpty)
           CatchEmptyState(
             icon: CatchIcons.rateReviewOutlined,

@@ -16,7 +16,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
@@ -144,31 +144,25 @@ class HostTeamManagementSection extends ConsumerWidget {
       showCatchSnackBar(context, confirmation.successMessage);
     }
 
-    return CatchSurface(
+    return CatchSection.contained(
+      title: 'Host team',
       borderColor: t.line,
+      elevation: CatchSurfaceElevation.none,
       padding: CatchInsets.tileContentCompact,
+      trailing: Tooltip(
+        message: 'Add host',
+        child: CatchIconButton(
+          onTap: actionPending ? null : () => unawaited(showAddHostSheet()),
+          child: Icon(
+            CatchIcons.personAddAlt1Rounded,
+            size: CatchIcon.md,
+            color: actionPending ? t.ink3 : t.ink,
+          ),
+        ),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              const Expanded(child: CatchSectionHeader(title: 'Host team')),
-              Tooltip(
-                message: 'Add host',
-                child: CatchIconButton(
-                  onTap: actionPending
-                      ? null
-                      : () => unawaited(showAddHostSheet()),
-                  child: Icon(
-                    CatchIcons.personAddAlt1Rounded,
-                    size: CatchIcon.md,
-                    color: actionPending ? t.ink3 : t.ink,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          gapH12,
           if (actionError != null) ...[
             CatchErrorBanner(
               message: mutationErrorMessage(

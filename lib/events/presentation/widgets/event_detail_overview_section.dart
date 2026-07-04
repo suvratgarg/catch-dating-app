@@ -186,31 +186,23 @@ class WhatToExpectSection extends StatelessWidget {
     final t = CatchTokens.of(context);
     final items = _expectationItems(event);
 
-    return CatchSurface(
+    return CatchSection.contained(
+      title: 'What to expect',
+      titleColor: surfaceStyle?.headingColor,
       padding: CatchInsets.tileContentCompact,
-      radius: CatchRadius.md,
+      bodyGap: CatchLayout.detailScreenInlineRowGap,
       backgroundColor: surfaceStyle?.surfaceBackground,
       borderColor: surfaceStyle?.borderColor ?? t.line,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      elevation: CatchSurfaceElevation.none,
+      child: CatchSectionList(
+        gap: CatchLayout.detailScreenInlineRowGap,
         children: [
-          Text(
-            'What to expect',
-            style: CatchTextStyles.sectionTitle(
-              context,
-              color: surfaceStyle?.headingColor,
-            ),
-          ),
-          const SizedBox(height: CatchLayout.detailScreenInlineRowGap),
-          for (final item in items) ...[
+          for (final item in items)
             EventDetailPolicySummaryLine(
               icon: item.icon,
               title: item.title,
               body: item.body,
             ),
-            if (item != items.last)
-              const SizedBox(height: CatchLayout.detailScreenInlineRowGap),
-          ],
         ],
       ),
     );
@@ -233,29 +225,23 @@ class EventDetailPolicySummary extends StatelessWidget {
     final policy = event.effectiveEventPolicy;
     final cancellation = policy.cancellationPolicy;
 
-    return CatchSurface(
+    return CatchSection.contained(
+      title: 'Booking policy',
+      titleColor: surfaceStyle?.headingColor,
       padding: CatchInsets.tileContentCompact,
-      radius: CatchRadius.md,
+      bodyGap: CatchLayout.detailScreenInlineRowGap,
       backgroundColor: surfaceStyle?.surfaceBackground,
       borderColor: surfaceStyle?.borderColor ?? t.line,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      elevation: CatchSurfaceElevation.none,
+      child: CatchSectionList(
+        gap: CatchLayout.detailScreenInlineRowGap,
         children: [
-          Text(
-            'Booking policy',
-            style: CatchTextStyles.sectionTitle(
-              context,
-              color: surfaceStyle?.headingColor,
-            ),
-          ),
-          const SizedBox(height: CatchLayout.detailScreenInlineRowGap),
           EventDetailPolicySummaryLine(
             icon: CatchIcons.groupOutlined,
             title: _admissionTitle(policy.admissionPolicy),
             body: _admissionSummary(policy.admissionPolicy),
           ),
-          if (policy.usesDemandPricing) ...[
-            const SizedBox(height: CatchLayout.detailScreenInlineRowGap),
+          if (policy.usesDemandPricing)
             EventDetailPolicySummaryLine(
               icon: CatchIcons.trendingUpRounded,
               title: 'Demand pricing',
@@ -264,14 +250,11 @@ class EventDetailPolicySummary extends StatelessWidget {
                 currencyCode: event.currency,
               ),
             ),
-          ],
-          const SizedBox(height: CatchLayout.detailScreenInlineRowGap),
           EventDetailPolicySummaryLine(
             icon: CatchIcons.receiptLongOutlined,
             title: '${cancellation.title} cancellation',
             body: cancellation.attendeeSummary,
           ),
-          const SizedBox(height: CatchLayout.detailScreenInlineRowGap),
           EventDetailPolicySummaryLine(
             icon: CatchIcons.verifiedUserOutlined,
             title: policy.settlementPolicy.title,

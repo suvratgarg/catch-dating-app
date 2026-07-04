@@ -2494,18 +2494,14 @@ class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
           ],
         ),
         if (isOwner) ...[
-          CatchSection.fieldRows(
-            title: 'Payouts',
-            children: [HostPaymentAccountControllerCard(club: club)],
+          CatchSection.divided(
+            child: HostPaymentAccountControllerCard(club: club),
           ),
-          CatchSection.fieldRows(
-            title: 'Host team',
-            children: [
-              HostTeamManagementSection(
-                club: club,
-                currentUid: widget.currentUid,
-              ),
-            ],
+          CatchSection.divided(
+            child: HostTeamManagementSection(
+              club: club,
+              currentUid: widget.currentUid,
+            ),
           ),
         ],
       ],

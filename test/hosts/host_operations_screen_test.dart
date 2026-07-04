@@ -724,8 +724,8 @@ void main() {
     expect(find.text('Cancellation policy'), findsOneWidget);
     expect(find.text('PUBLIC PROFILE'), findsOneWidget);
     expect(find.text('Preview club page'), findsOneWidget);
-    expect(find.text('PAYOUTS'), findsWidgets);
-    expect(find.text('HOST TEAM'), findsWidgets);
+    expect(find.text('Payouts'), findsWidgets);
+    expect(find.text('Host team'), findsWidgets);
     expect(find.byTooltip('Add host'), findsOneWidget);
     expect(find.text('Add event'), findsNothing);
     expect(find.text('View club'), findsNothing);

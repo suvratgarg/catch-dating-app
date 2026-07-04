@@ -531,7 +531,7 @@
         "lib/**/presentation/**",
         "lib/core/widgets/**"
       ],
-      "instruction": "Before creating local card, sheet, empty-state, rail, row, badge, skeleton, or section UI, check docs/widget_catalog.md and the existing Catch* primitives under lib/core/widgets for an owner. Do not duplicate an existing primitive shell; extend the primitive or propose a variant through catalog review.",
+      "instruction": "Before creating local card, sheet, empty-state, rail, row, badge, skeleton, or section UI, check docs/widget_catalog.md and the existing Catch* primitives under lib/core/widgets for an owner. Do not duplicate an existing primitive shell; extend the primitive or propose a variant through catalog review. Section titles have one owner: top-level groups route through CatchSection, contained card titles route through CatchSection.contained or a documented content primitive, and nested shared widgets must expose a content-only mode instead of repeating the parent section title.",
       "sunset_when": [
         "Widget catalog shows no repeated local shells outside intentional feature-specific UI"
       ],
@@ -543,6 +543,11 @@
       "enforcement": [
         {
           "tool": "design:section-dividers",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/widget_catalog.md"
+        },
+        {
+          "tool": "design:section-headers",
           "stage": "scanner-gate",
           "docAnchor": "docs/widget_catalog.md"
         },
@@ -760,6 +765,11 @@
         },
         {
           "tool": "design:section-dividers",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
+        },
+        {
+          "tool": "design:section-headers",
           "stage": "scanner-gate",
           "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
         }

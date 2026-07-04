@@ -228,6 +228,11 @@ class CatchSection extends StatelessWidget {
     this.titleColor,
     this.bodyGap = CatchSpacing.s3,
     this.padding,
+    this.backgroundColor,
+    this.borderColor,
+    this.tone = CatchSurfaceTone.surface,
+    this.elevation = CatchSurfaceElevation.card,
+    this.boxShadow,
     this.showInternalDividers = true,
     this.footer,
     this.focused = false,
@@ -322,6 +327,11 @@ class CatchSection extends StatelessWidget {
     Color? titleColor,
     double bodyGap = CatchSpacing.s3,
     EdgeInsetsGeometry? padding,
+    Color? backgroundColor,
+    Color? borderColor,
+    CatchSurfaceTone tone = CatchSurfaceTone.surface,
+    CatchSurfaceElevation elevation = CatchSurfaceElevation.card,
+    List<BoxShadow>? boxShadow,
     bool showInternalDividers = true,
     bool focused = false,
     bool hasError = false,
@@ -337,6 +347,11 @@ class CatchSection extends StatelessWidget {
          titleColor: titleColor,
          bodyGap: bodyGap,
          padding: padding,
+         backgroundColor: backgroundColor,
+         borderColor: borderColor,
+         tone: tone,
+         elevation: elevation,
+         boxShadow: boxShadow,
          showInternalDividers: showInternalDividers,
          focused: focused,
          hasError: hasError,
@@ -386,6 +401,11 @@ class CatchSection extends StatelessWidget {
   final Color? titleColor;
   final double bodyGap;
   final EdgeInsetsGeometry? padding;
+  final Color? backgroundColor;
+  final Color? borderColor;
+  final CatchSurfaceTone tone;
+  final CatchSurfaceElevation elevation;
+  final List<BoxShadow>? boxShadow;
   final bool showInternalDividers;
   final Widget? footer;
   final bool focused;
@@ -458,6 +478,11 @@ class CatchSection extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchSectionFocusSurface(
       padding: padding ?? const EdgeInsets.all(CatchSpacing.s4),
+      backgroundColor: backgroundColor,
+      borderColor: borderColor,
+      tone: tone,
+      elevation: elevation,
+      boxShadow: boxShadow,
       focused: focused,
       hasError: hasError,
       child: _sectionContent(context, t, contained: true),
@@ -582,12 +607,22 @@ class CatchSectionFocusSurface extends StatefulWidget {
     super.key,
     required this.child,
     required this.padding,
+    this.backgroundColor,
+    this.borderColor,
+    this.tone = CatchSurfaceTone.surface,
+    this.elevation = CatchSurfaceElevation.card,
+    this.boxShadow,
     required this.focused,
     required this.hasError,
   });
 
   final Widget child;
   final EdgeInsetsGeometry padding;
+  final Color? backgroundColor;
+  final Color? borderColor;
+  final CatchSurfaceTone tone;
+  final CatchSurfaceElevation elevation;
+  final List<BoxShadow>? boxShadow;
   final bool focused;
   final bool hasError;
 
@@ -611,16 +646,20 @@ class _CatchSectionFocusSurfaceState extends State<CatchSectionFocusSurface> {
         if (_descendantFocused == focused) return;
         setState(() => _descendantFocused = focused);
       },
-      child: CatchSurface.card(
+      child: CatchSurface(
         padding: widget.padding,
+        radius: CatchRadius.md,
+        tone: widget.tone,
+        elevation: widget.elevation,
+        backgroundColor: widget.backgroundColor,
         borderColor: widget.hasError
             ? t.danger
             : effectiveFocused
             ? t.primary
-            : null,
+            : widget.borderColor,
         boxShadow: effectiveFocused && !widget.hasError
             ? CatchElevation.focusRing(t)
-            : null,
+            : widget.boxShadow,
         child: widget.child,
       ),
     );

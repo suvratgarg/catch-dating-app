@@ -1154,9 +1154,9 @@ void main() {
         ],
       );
 
-      await _scrollEventDetailUntilVisible(tester, find.text('Reviews'));
+      await _scrollEventDetailUntilVisible(tester, find.text('REVIEWS'));
 
-      expect(find.text('Reviews'), findsOneWidget);
+      expect(find.text('REVIEWS'), findsOneWidget);
       expect(find.text('Write a review'), findsNothing);
       expect(find.text('Edit your review'), findsNothing);
     });
