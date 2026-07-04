@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_map_pin.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
@@ -59,7 +60,7 @@ class EventDetailTicketStubBand extends StatelessWidget {
                     ],
                   ),
                 ),
-                Divider(color: t.line, height: 1, thickness: 1),
+                const CatchDivider.section(),
               ],
             ),
             Positioned.fill(
@@ -475,16 +476,10 @@ class HairlineList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     return Column(
       children: [
         for (var index = 0; index < itemCount; index++) ...[
-          if (index > 0)
-            Divider(
-              color: dividerColor ?? t.line,
-              height: CatchLayout.eventDetailHairlineDividerHeight,
-              thickness: 1,
-            ),
+          if (index > 0) CatchDivider.fieldRow(indent: 0, color: dividerColor),
           itemBuilder(context, index),
         ],
       ],

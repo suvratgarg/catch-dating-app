@@ -58,6 +58,39 @@ test("keeps raw Divider inventory visible in presentation files", () => {
   assert.equal(findings[0].level, "medium");
 });
 
+test("classifies loading skeleton dividers as low visual geometry", () => {
+  const findings = scanSourceForSectionDividers({
+    relativePath:
+      "lib/events/presentation/widgets/event_detail_loading_skeleton.dart",
+    source:
+      "Widget build(BuildContext context) => VerticalDivider(color: t.line, width: 1);",
+  });
+
+  assert.equal(findings.length, 1);
+  assert.equal(findings[0].level, "low");
+  assert.match(findings[0].reason, /loading skeleton/u);
+});
+
+test("classifies dark hero divider token as low editorial chrome", () => {
+  const findings = scanSourceForSectionDividers({
+    relativePath: "lib/hosts/presentation/host_operations_screen.dart",
+    source: [
+      "Widget build(BuildContext context) {",
+      "  return Divider(",
+      "    height: CatchStroke.hairline,",
+      "    color: CatchTokens.editorialLight.withValues(",
+      "      alpha: CatchOpacity.darkHeroDivider,",
+      "    ),",
+      "  );",
+      "}",
+    ].join("\n"),
+  });
+
+  assert.equal(findings.length, 1);
+  assert.equal(findings[0].level, "low");
+  assert.match(findings[0].reason, /dark editorial hero/u);
+});
+
 test("flags thin feature wrappers around CatchSection field rows", () => {
   const findings = scanSourceForSectionDividers({
     relativePath: "lib/user_profile/presentation/widgets/profile_info_section.dart",

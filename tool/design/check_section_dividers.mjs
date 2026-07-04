@@ -144,6 +144,28 @@ function classifyThinSectionWrapper({relativePath, className, line, expression})
 
 function classifyRawDivider({relativePath, source, line, start, expression}) {
   const context = surroundingLines(source, line, {before: 6, after: 3});
+  if (isSkeletonFile(relativePath)) {
+    return {
+      path: relativePath,
+      line,
+      level: "low",
+      rule: "SECTION-DIVIDER-001",
+      reason:
+        "Raw Divider appears in a loading skeleton; treat as visual skeleton geometry unless it becomes live row or section chrome.",
+      expression: compactWhitespace(expression),
+    };
+  }
+  if (/CatchOpacity\.darkHeroDivider/u.test(expression)) {
+    return {
+      path: relativePath,
+      line,
+      level: "low",
+      rule: "SECTION-DIVIDER-001",
+      reason:
+        "Raw Divider uses the dark editorial hero divider token; keep as overlay chrome unless this becomes a standard row or section separator.",
+      expression: compactWhitespace(expression),
+    };
+  }
   if (/CatchOpacity\.(?:profileInfoDivider|subtleBorder)/u.test(expression)) {
     return {
       path: relativePath,
@@ -178,6 +200,10 @@ function classifyRawDivider({relativePath, source, line, start, expression}) {
       "Raw Divider inventory; verify this is decorative/header chrome rather than a row or CatchSection divider.",
     expression: compactWhitespace(expression),
   };
+}
+
+function isSkeletonFile(relativePath) {
+  return /(?:^|[/_])skeleton(?:s)?(?:_|\.|\/)/u.test(relativePath);
 }
 
 function classifyHairlineBox({relativePath, line, expression}) {

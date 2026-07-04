@@ -17,6 +17,7 @@ import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
@@ -1238,7 +1239,7 @@ class ReadOnlyHostedEventPolicyRow extends StatelessWidget {
             ),
           ],
         ),
-        if (showDivider) ...[gapH10, Divider(color: t.line, height: 1), gapH10],
+        if (showDivider) ...[gapH10, const CatchDivider.section(), gapH10],
       ],
     );
   }

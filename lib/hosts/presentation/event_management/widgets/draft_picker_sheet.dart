@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
@@ -172,12 +173,7 @@ class _DraftPickerSheetState extends State<DraftPickerSheet> {
                   child: Column(
                     children: [
                       for (var index = 0; index < _drafts.length; index++) ...[
-                        if (index > 0)
-                          Divider(
-                            color: CatchTokens.of(context).line,
-                            height: 1,
-                            thickness: 1,
-                          ),
+                        if (index > 0) const CatchDivider.fieldRow(indent: 0),
                         DraftCard(
                           draft: _drafts[index],
                           isDeleting: _deletingDraftId == _drafts[index].id,

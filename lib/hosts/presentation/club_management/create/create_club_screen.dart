@@ -1077,7 +1077,7 @@ class HostClubEditSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Divider(color: t.line, height: 1, thickness: 1),
+          const CatchDivider.section(),
           gapH18,
           Text(label, style: CatchTextStyles.kicker(context, color: t.ink2)),
           if (subtitle != null) ...[

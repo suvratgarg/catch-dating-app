@@ -13,6 +13,7 @@ import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
@@ -1424,7 +1425,7 @@ class HostEventActionsSection extends StatelessWidget {
           style: CatchTextStyles.monoLabel(context, color: t.ink2),
         ),
         gapH10,
-        Divider(color: t.line, height: 1),
+        const CatchDivider.section(),
         if (actionError != null) ...[
           gapH12,
           CatchErrorBanner.fromError(
@@ -1561,7 +1562,7 @@ class HostActionRow extends StatelessWidget {
               ),
             ),
             if (showDivider)
-              Divider(color: t.line, height: 1, indent: CatchSpacing.s8),
+              const CatchDivider.fieldRow(indent: CatchSpacing.s8),
           ],
         ),
       ),
@@ -1685,7 +1686,11 @@ class HostEventSummaryRow extends StatelessWidget {
             );
           },
         ),
-        if (showDivider) ...[gapH12, Divider(color: t.line, height: 1), gapH12],
+        if (showDivider) ...[
+          gapH12,
+          const CatchDivider.fieldRow(indent: 0),
+          gapH12,
+        ],
       ],
     );
   }

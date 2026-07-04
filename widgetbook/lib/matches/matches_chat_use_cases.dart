@@ -28,6 +28,7 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
@@ -2457,7 +2458,7 @@ class _SuvbotResetActionRowsFrame extends StatelessWidget {
                           onTap: () {},
                         ),
                         if (index != actions.length - 1)
-                          Divider(height: 1, color: t.line),
+                          const CatchDivider.fieldRow(indent: 0),
                       ],
                     ],
                   ),

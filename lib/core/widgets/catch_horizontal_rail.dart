@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
 import 'package:flutter/material.dart';
 
@@ -53,12 +54,9 @@ class CatchHorizontalRail extends StatelessWidget {
         ),
         _buildRail(context),
         if (showDivider)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s5),
-            child: Divider(
-              color: CatchTokens.of(context).line,
-              height: CatchLayout.horizontalRailDividerHeight,
-            ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: CatchSpacing.s5),
+            child: CatchDivider.section(),
           ),
       ],
     );

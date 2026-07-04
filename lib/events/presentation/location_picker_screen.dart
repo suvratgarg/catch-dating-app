@@ -453,7 +453,8 @@ class PlaceSearchPanel extends StatelessWidget {
                 shrinkWrap: true,
                 padding: EdgeInsets.zero,
                 itemCount: suggestions.length,
-                separatorBuilder: (_, _) => Divider(height: 1, color: t.line),
+                separatorBuilder: (_, _) =>
+                    const CatchDivider.fieldRow(indent: 0),
                 itemBuilder: (context, index) {
                   final suggestion = suggestions[index];
                   return PlaceSuggestionRow(

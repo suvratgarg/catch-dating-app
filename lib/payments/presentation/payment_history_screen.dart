@@ -108,7 +108,7 @@ class PaymentHistoryList extends StatelessWidget {
           constraints: const BoxConstraints(
             maxWidth: CatchLayout.maxContentWidth,
           ),
-          child: Divider(color: CatchTokens.of(context).line, height: 1),
+          child: const CatchDivider.fieldRow(indent: 0),
         ),
       ),
       itemBuilder: (context, index) => Center(
@@ -136,7 +136,7 @@ class PaymentHistorySkeleton extends StatelessWidget {
           constraints: const BoxConstraints(
             maxWidth: CatchLayout.maxContentWidth,
           ),
-          child: Divider(color: CatchTokens.of(context).line, height: 1),
+          child: const CatchDivider.fieldRow(indent: 0),
         ),
       ),
       itemBuilder: (context, _) => Center(
@@ -360,7 +360,7 @@ class PaymentReceiptSheet extends StatelessWidget {
                 ],
               ),
               gapH20,
-              Divider(color: t.line, height: 1),
+              const CatchDivider.section(),
               gapH20,
               CatchField.read(title: 'Payment ID', body: payment.paymentId),
               gapH12,
@@ -378,7 +378,7 @@ class PaymentReceiptSheet extends StatelessWidget {
               ],
               if (payment.signUpFailed) ...[
                 gapH20,
-                Divider(color: t.line, height: 1),
+                const CatchDivider.section(),
                 gapH16,
                 SizedBox(
                   width: double.infinity,

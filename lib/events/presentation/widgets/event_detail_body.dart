@@ -145,7 +145,7 @@ class EventDetailBody extends StatelessWidget {
                 onShare: onShare,
                 surfaceStyle: style,
               ),
-            Divider(color: style.dividerColor, height: 1),
+            CatchDivider.section(color: style.dividerColor),
             EventDetailHostsSection(
               event: event,
               state: hostState,

@@ -250,7 +250,7 @@ Widget profileScreenSelfSectionStates(BuildContext context) {
           child: Column(
             children: const [
               Expanded(child: _ProfileHeaderPreview(initialIndex: 0)),
-              Divider(height: 1),
+              CatchDivider.section(),
               Expanded(child: _ProfileHeaderPreview(initialIndex: 1)),
             ],
           ),

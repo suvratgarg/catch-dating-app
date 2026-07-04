@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -280,7 +281,10 @@ class PaperCelebrationScaffold extends StatelessWidget {
                         child: CatchIconButton(
                           background: t.primarySoft,
                           onTap: screen.onClose,
-                          child: Icon(CatchIcons.closeRounded, color: t.primary),
+                          child: Icon(
+                            CatchIcons.closeRounded,
+                            color: t.primary,
+                          ),
                         ),
                       ),
                       gapH20,
@@ -327,7 +331,10 @@ class PaperCelebrationScaffold extends StatelessWidget {
                       Text(
                         screen.note!,
                         textAlign: TextAlign.center,
-                        style: CatchTextStyles.supporting(context, color: t.ink3),
+                        style: CatchTextStyles.supporting(
+                          context,
+                          color: t.ink3,
+                        ),
                       ),
                     ],
                     for (final child in screen.supplementalChildren) ...[
@@ -411,7 +418,7 @@ class PaperCelebrationDetailsCard extends StatelessWidget {
             for (final entry in details.indexed) ...[
               PaperCelebrationDetailRow(detail: entry.$2),
               if (entry.$1 != details.length - 1)
-                Divider(color: t.line.withValues(alpha: 0.18), height: 1),
+                const CatchDivider.fieldRow(indent: 0),
             ],
           ],
         ),
@@ -498,9 +505,14 @@ class CelebrationDetailsCard extends StatelessWidget {
             for (final entry in details.indexed) ...[
               CelebrationDetailRow(detail: entry.$2),
               if (entry.$1 != details.length - 1)
-                Divider(
-                  color: _celebrationInk.withValues(alpha: 0.20),
-                  height: CatchSpacing.s4,
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: CatchSpacing.s2,
+                  ),
+                  child: CatchDivider.fieldRow(
+                    indent: 0,
+                    color: _celebrationInk.withValues(alpha: 0.20),
+                  ),
                 ),
             ],
           ],
@@ -540,7 +552,10 @@ class CelebrationDetailRow extends StatelessWidget {
               gapH3,
               Text(
                 detail.value,
-                style: CatchTextStyles.bodyLead(context, color: _celebrationInk),
+                style: CatchTextStyles.bodyLead(
+                  context,
+                  color: _celebrationInk,
+                ),
               ),
             ],
           ),
