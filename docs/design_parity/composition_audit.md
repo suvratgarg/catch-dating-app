@@ -311,6 +311,174 @@ the right altitude.
 
 ---
 
-## Screens 4+ — pending
+## Cross-screen finding — sliver-header wrappers (supersedes D2's scope)
 
-Next: Explore. Audits append here, one section per screen, same format.
+Four features wrap `CatchSliverHeader` construction in a do-nothing layer:
+`DashboardSliverHeader`, `ExploreSliverHeader`, `ChatsSliverHeader` (all
+`extends CatchSliverHeader` pre-filling `super(title: ...)`), and
+`ProfileSliverHeader` (a non-widget helper class whose `buildSlivers` just
+constructs one). **Fix all four the same way `[codex]`**: delete the
+wrapper, construct `CatchSliverHeader(title: <FeatureHeaderContent>, ...)`
+directly at the call sites. The feature `*HeaderContent` widgets stay. While
+in ProfileSliverHeader, its raw `bottomHeight: 48` becomes the nearest
+CatchLayout token (escalate per D1 if none is exact).
+
+Watch item (no action yet): the hand-rolled screen-title blocks —
+`DashboardHeaderContent`, `ExploreBrowseHeaderContent`, `CatchesHubHeader`,
+`ProfileTitle` — are now a four-occurrence pattern (eyebrow/kicker +
+headline + trailing action). A core screen-title-block primitive is a
+naming-lexicon-ratification candidate; do not force it in this pass.
+
+---
+
+## Screen 4 — Explore (audited 2026-07-05)
+
+Files: `lib/explore/presentation/explore_screen.dart`, `widgets/*`. Overall:
+the sliver-function pattern (`buildExploreBodySlivers`) is the right answer
+to Flutter's nested-sliver constraints and the feed composition is sound;
+the debt is two wrappers and a parallel surface system.
+
+### X1. `ExploreBody` — self-documented compatibility wrapper `[codex]`
+
+Its own doc comment says it exists "for call sites that still expect one
+sliver." One production caller remains (`explore_list.dart:63`) plus
+widgetbook. Migrate that caller to spread `buildExploreBodySlivers(...)`
+(moving the `CatchMutationErrorListener` to wrap the enclosing scroll view),
+repoint widgetbook, delete the class.
+
+### X2. `ExploreChrome` — 16-parameter pass-through `[codex]`
+
+Forwards every one of its 16 params to exactly two children
+(`ExploreDiscoveryCoverHeader`, `ExploreFilterRail`) with zero logic. Inline
+the two children as two `SliverToBoxAdapter`s in `ExploreScreen`, delete the
+class.
+
+### X3. `CrossPathsSurface` + `CatchSurfaceShadow` — parallel surface system `[codex]`
+
+`catch_cross_paths_card.dart` defines its own surface widget AND its own
+elevation enum (`CatchSurfaceShadow { card, raised }`) — a feature-local
+duplicate of `CatchSurfaceElevation { …, card, raised, … }`. Replace
+`CrossPathsSurface` usages with `CatchSurface` + the matching elevation
+role; delete both the widget and the enum. If any visual delta beyond
+shadow-token rounding appears, stop and record it in the receipt instead of
+forcing.
+
+### X4. Lexicon notes (ratification input, no code now)
+
+`CatchCoverStory` and `CatchCrossPathsCard` are feature widgets on the core
+`Catch*` prefix — but CoverStory's doc claims design-system handoff lineage
+(`components/explore/CoverStory`), so the prefix rule needs a ratified
+carve-out or a rename. Also `Catches*` (the feature noun) colliding with
+`Catch*` (the core prefix) makes prefix-based scanning noisy — note for the
+lexicon.
+
+### X5. Positive calibration
+
+`buildExploreBodySlivers` as a function returning a flat sliver list —
+documented against nested-group pathologies — is the correct pattern; do
+not widget-ify it. The synthetic visual fill is debug-gated and harmless.
+
+---
+
+## Screen 5 — Catches Hub (audited 2026-07-05)
+
+File: `lib/swipes/presentation/swipe_hub_screen.dart`. Overall: clean state
+dispatch and token usage; findings are title-voice drift.
+
+### H1. 'Open catch windows' hand-rolled section header `[codex]`
+
+`CatchesHubContent` builds `Row(Text('Open catch windows', titleL), Text
+('$count', mono))` by hand while the same screen uses `CatchSectionHeader`
+above it. Replace with the section primitive that owns a title + count
+(`CatchSectionHeader` with its count/trailing slot, or `CatchSection`'s
+kicker+count chrome — match whichever the G1 voice dictates for in-body
+list headers). The manual `for (...) gapH12` interleave below it becomes
+`CatchSectionList(gap: CatchSpacing.s3, ...)`.
+
+### H2. `PillStat` — lexicon note
+
+Another `Pill`-named widget to sweep into the ratified pill definition; no
+code now.
+
+### H3. Positive calibration
+
+`CatchesHubStateView` dispatch, the intro card, and the empty state are
+composed correctly; `CatchesHubHeader` is covered by the cross-screen
+title-block watch item.
+
+---
+
+## Screen 6 — Chats Inbox (audited 2026-07-05)
+
+Files: `lib/chats/presentation/inbox/**`. Overall: the cleanest feature in
+the audit — small files, primitives used directly.
+
+### T1. `ChatsEmptyState` decides host copy by comparing a default string `[codex]`
+
+`isHostApp && title == 'No catches yet'` substitutes host copy only when the
+title still equals the guest default — a string-sentinel that silently
+breaks the moment the default copy is edited. Replace with an explicit
+variant: a `ChatsEmptyState.hostInbox()` named constructor (or an enum
+role) chosen by the caller that knows `AppConfig.appRole`; the build method
+stops inspecting copy.
+
+### T2. Positive calibration
+
+`ChatConversationsList` is the model CONFIGURES layer: rich, meaningful
+mapping onto `CatchPersonRow` with chat-role tokens, no chrome of its own.
+`ChatsSliverHeader` is handled by the cross-screen sliver-header finding.
+
+---
+
+## Screen 7 — Profile (audited 2026-07-05)
+
+Files: `lib/user_profile/presentation/profile_screen.dart`,
+`widgets/profile_sliver_header.dart`. The edit tab was rebuilt during the
+gutter/section work and is the flush-contract reference; the shell holds
+the remaining items.
+
+### P1. `ProfileSliverHeader` wrapper + raw 48 `[codex]`
+
+Covered by the cross-screen sliver-header finding (it is the helper-class
+variant); the raw `bottomHeight: 48` goes to a token in the same change.
+
+### P2. Positive calibration
+
+The NestedScrollView + overlap-absorber tab architecture is correct and
+`ProfileTabScrollView` earns its place (per-tab scroll wiring).
+`ProfileTabBar` staying distinct from `CatchTopBarTabBar` was already
+ratified in the consolidation ledger.
+
+---
+
+## Screen 8 — Host Operations (audited 2026-07-05, structural pass)
+
+File: `lib/hosts/presentation/host_operations_screen.dart` — **54 classes,
+~4,500 lines, three route screens** (HostProfileScreen, HostEventsScaffold,
+HostClubsScaffold) plus the today-dashboard, organizer, insights, and
+analytics surfaces in one file. Widget-level composition inside it is
+largely sound after the WO-018/020/021 absorptions (spot-checked: the
+organizer metric grid/row chain, team card/row, analytics panels).
+
+### O1. Split the module `[codex]`
+
+This is a module, not a screen file. Split by surface into
+`lib/hosts/presentation/host_operations/` (e.g. `host_profile_screen.dart`,
+`host_events_scaffold.dart`, `host_clubs_scaffold.dart`,
+`host_today/*.dart`, `host_organizer/*.dart`, `host_insights/*.dart`,
+`host_analytics/*.dart`) with pure file moves — no widget changes, imports
+and part-file wiring only, tests/widgetbook repointed. Do this as its own
+commit so review diffs stay readable.
+
+### O2. `HostSectionLabel` is dead — delete `[codex]`
+
+Zero constructions anywhere (WO-018 marked it delete-if-orphaned; the
+orphaning happened, the deletion did not). Remove the class and any
+widgetbook block.
+
+---
+
+## Screens 9+ — pending
+
+Remaining candidates: Event Success companion/host surfaces, Calendar,
+Saved Events, Payments/Reviews history. Audits append here, same format.
