@@ -37,8 +37,17 @@ to `[done <commit>]` as it lands, following the standard workflow
 passes.jsonl when contracts change, widgetbook kept current, sequential
 Flutter runs).
 
-Screen queue (working order): Dashboard ✅ → Explore → Event Detail →
-Catches/Swipe Hub → Chats/Inbox → Profile → Club Detail → Host Operations.
+Standing doctrine (owner-approved 2026-07-05):
+
+- **Widgetbook exercises real screens and shells, never parallel ones.**
+  Parallel widgetbook-only assemblies are how dead shells like
+  `DashboardFull` survive and drift. Use-cases compose the production
+  screen/body widgets with fixture state. Scanner candidate once the
+  current parallel shells are gone: flag widgetbook-only constructors of
+  `*Screen`/`*Body`-suffixed widgets that duplicate a production shell.
+
+Screen queue (working order): Dashboard ✅ → Event Detail ✅ → Club Detail ✅
+→ Explore → Catches/Swipe Hub → Chats/Inbox → Profile → Host Operations.
 
 ---
 
@@ -99,7 +108,7 @@ error path joins them if it does not already. `DashboardSectionStateCard`
 then has zero users and is deleted, along with its widgetbook block.
 Visible change: brief text flashes become skeletons on section refresh.
 
-### D4. Rail primitives NEUTRALIZE their context — fix the contract `[confirm]`
+### D4. Rail primitives NEUTRALIZE their context — fix the contract `[codex]` (approved 2026-07-05)
 
 `CatchHorizontalRail` and `ClubAvatarRail` default to `showDivider: true` +
 their own header/list gutters (`s5`, which is also the screen gutter). Every
@@ -109,13 +118,14 @@ section-embedded consumer must zero all three:
 12 knob-zeroings to make the primitive behave. Same disease as the field-row
 inset before the flush contract.
 
-Fix (pending confirm of direction): inventory rail call sites that RELY on
-the gutter/divider defaults (expected: full-bleed screen placements only).
-If ≤3, flip the defaults — rails render chrome-less by default and
+Fix (approved; direction decided by inventory): count rail call sites that
+RELY on the gutter/divider defaults (expected: full-bleed screen placements
+only). If ≤3, flip the defaults — rails render chrome-less by default and
 full-bleed callers opt in with one `fullBleed: true`-style knob; if more,
 make the rails consult the same container-owns-gutter scope the field rows
 use (generalizing `CatchFieldInsetScope`; propose the generalized name in
-the receipt for review). Either way the 12 zeroings disappear.
+the receipt for review). Either way the 12 zeroings disappear; record the
+inventory count and chosen branch in the receipt.
 
 ### D5. Skeleton drift in `FollowedClubsRailSkeleton` `[codex]`
 
