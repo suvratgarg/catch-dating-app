@@ -194,7 +194,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  SettingsSection(
+                  CatchSection.fieldRows(
                     first: true,
                     title: 'Account',
                     footer: AccountProfileStatus(
@@ -245,7 +245,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ),
                   if (AppConfig.enableEventPolicyLab ||
                       AppConfig.enableEventSuccessPreview) ...[
-                    SettingsSection(
+                    CatchSection.fieldRows(
                       title: 'Development',
                       children: [
                         if (AppConfig.enableEventPolicyLab)
@@ -281,7 +281,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ],
                     ),
                   ],
-                  SettingsSection(
+                  CatchSection.fieldRows(
                     title: 'Notifications',
                     children: [
                       CatchField.toggle(
@@ -359,7 +359,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                     ],
                   ),
-                  SettingsSection(
+                  CatchSection.fieldRows(
                     title: 'Privacy & safety',
                     footer: BlockedAccountsSection(
                       state: state.blockedAccounts,
@@ -414,7 +414,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                     ],
                   ),
-                  SettingsSection(
+                  CatchSection.fieldRows(
                     title: 'About',
                     children: [
                       CatchField.nav(
@@ -440,9 +440,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                     ],
                   ),
-                  SettingsSection(
-                    title: '',
-                    hideTitle: true,
+                  CatchSection.fieldRows(
                     children: [
                       CatchField.nav(
                         key: SettingsKeys.signOutRow,
@@ -475,43 +473,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
         ),
       ),
-    );
-  }
-}
-
-class SettingsSection extends StatelessWidget {
-  const SettingsSection({
-    super.key,
-    required this.title,
-    required this.children,
-    this.first = false,
-    this.hideTitle = false,
-    this.footer,
-  });
-
-  final String title;
-  final List<Widget> children;
-  final bool first;
-  final bool hideTitle;
-  final Widget? footer;
-
-  @override
-  Widget build(BuildContext context) {
-    final section = CatchSection.divided(
-      title: hideTitle ? null : title,
-      first: first,
-      bodyGap: CatchSpacing.micro10,
-      dividerIndent: CatchFieldRow.textLaneInset,
-      children: children,
-    );
-
-    if (footer == null) {
-      return section;
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [section, footer!],
     );
   }
 }

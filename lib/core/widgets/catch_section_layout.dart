@@ -229,6 +229,7 @@ class CatchSection extends StatelessWidget {
     this.bodyGap = CatchSpacing.s3,
     this.padding,
     this.showInternalDividers = true,
+    this.footer,
     this.focused = false,
     this.hasError = false,
     this.children,
@@ -273,6 +274,41 @@ class CatchSection extends StatelessWidget {
          titleColor: titleColor,
          bodyGap: bodyGap,
          showInternalDividers: showInternalDividers,
+         children: children,
+         child: child,
+       );
+
+  const CatchSection.fieldRows({
+    Key? key,
+    String? title,
+    Object? count,
+    ActivityKind? activityKind,
+    bool lead = false,
+    bool first = false,
+    Widget? footer,
+    Color? dividerColor,
+    CatchDividerRole dividerRole = CatchDividerRole.section,
+    Color? titleColor,
+    double bodyGap = CatchSpacing.micro10,
+    bool showInternalDividers = true,
+    List<Widget>? children,
+    Widget? child,
+  }) : this._(
+         key: key,
+         title: title,
+         count: count,
+         activityKind: activityKind,
+         lead: lead,
+         first: first,
+         variant: _CatchSectionVariant.divided,
+         dividerColor: dividerColor,
+         dividerIndent: CatchLayout.fieldRowTextLaneInset,
+         dividerRole: dividerRole,
+         internalDividerRole: CatchDividerRole.fieldRow,
+         titleColor: titleColor,
+         bodyGap: bodyGap,
+         showInternalDividers: showInternalDividers,
+         footer: footer,
          children: children,
          child: child,
        );
@@ -351,6 +387,7 @@ class CatchSection extends StatelessWidget {
   final double bodyGap;
   final EdgeInsetsGeometry? padding;
   final bool showInternalDividers;
+  final Widget? footer;
   final bool focused;
   final bool hasError;
   final List<Widget>? children;
@@ -358,11 +395,16 @@ class CatchSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return switch (_variant) {
+    final section = switch (_variant) {
       _CatchSectionVariant.divided => _buildDivided(context),
       _CatchSectionVariant.contained => _buildContained(context),
       _CatchSectionVariant.plain => _buildPlain(context),
     };
+    if (footer == null) return section;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [section, footer!],
+    );
   }
 
   Widget _buildDivided(BuildContext context) {

@@ -2368,8 +2368,8 @@ class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
           owner: isOwner,
         ),
         gapH24,
-        HostSettingsSection(
-          label: 'Identity',
+        CatchSection.fieldRows(
+          title: 'Identity',
           first: true,
           children: [
             _textEntry(
@@ -2425,8 +2425,8 @@ class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
             ),
           ],
         ),
-        HostSettingsSection(
-          label: 'Contact',
+        CatchSection.fieldRows(
+          title: 'Contact',
           children: [
             _textEntry(
               club: club,
@@ -2473,8 +2473,8 @@ class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
             ),
           ],
         ),
-        HostSettingsSection(
-          label: 'Event defaults',
+        CatchSection.fieldRows(
+          title: 'Event defaults',
           children: [
             _activityDefaultEntry(club),
             _admissionDefaultEntry(club),
@@ -2482,8 +2482,8 @@ class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
             _cancellationDefaultEntry(club),
           ],
         ),
-        HostSettingsSection(
-          label: 'Public profile',
+        CatchSection.fieldRows(
+          title: 'Public profile',
           children: [
             CatchField.nav(
               title: 'Preview club page',
@@ -2494,12 +2494,12 @@ class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {
           ],
         ),
         if (isOwner) ...[
-          HostSettingsSection(
-            label: 'Payouts',
+          CatchSection.fieldRows(
+            title: 'Payouts',
             children: [HostPaymentAccountControllerCard(club: club)],
           ),
-          HostSettingsSection(
-            label: 'Host team',
+          CatchSection.fieldRows(
+            title: 'Host team',
             children: [
               HostTeamManagementSection(
                 club: club,

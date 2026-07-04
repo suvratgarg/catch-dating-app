@@ -1,16 +1,16 @@
 {
-  "generatedAt": "2026-07-03T20:51:35.076Z",
+  "generatedAt": "2026-07-04T13:58:03.439Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
-    "useCases": 870,
-    "components": 845,
+    "useCases": 869,
+    "components": 842,
     "stateCards": 1745,
-    "reviewCandidates": 36,
+    "reviewCandidates": 38,
     "oversizedUseCases": 43,
-    "multiUseCaseComponents": 24
+    "multiUseCaseComponents": 26
   },
   "reviewCandidates": [
     {
@@ -1505,6 +1505,113 @@
       ]
     },
     {
+      "component": "CatchSection",
+      "useCaseCount": 2,
+      "stateCardCount": 13,
+      "paths": [
+        "[Core primitives]/Sections",
+        "[P1 product surfaces]/Profiles/Sections"
+      ],
+      "labels": [
+        "contained-error",
+        "contained-focused",
+        "contained-section",
+        "count and first section",
+        "divided-section",
+        "field-list",
+        "footer slot",
+        "lead-accent",
+        "long-copy",
+        "mixed-modes",
+        "plain-section",
+        "running section",
+        "single-field"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "large-state-matrix",
+          "split-across-use-cases"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": [
+          "catchSectionContractStates"
+        ]
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchSectionContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Sections",
+          "stateCardCount": 10,
+          "stateCards": [
+            {
+              "label": "contained-section",
+              "normalizedLabel": "contained section"
+            },
+            {
+              "label": "contained-focused",
+              "normalizedLabel": "contained focused"
+            },
+            {
+              "label": "contained-error",
+              "normalizedLabel": "contained error"
+            },
+            {
+              "label": "mixed-modes",
+              "normalizedLabel": "mixed modes"
+            },
+            {
+              "label": "single-field",
+              "normalizedLabel": "single field"
+            },
+            {
+              "label": "divided-section",
+              "normalizedLabel": "divided section"
+            },
+            {
+              "label": "field-list",
+              "normalizedLabel": "field list"
+            },
+            {
+              "label": "long-copy",
+              "normalizedLabel": "long copy"
+            },
+            {
+              "label": "lead-accent",
+              "normalizedLabel": "lead accent"
+            },
+            {
+              "label": "plain-section",
+              "normalizedLabel": "plain section"
+            }
+          ]
+        },
+        {
+          "name": "Field row section states",
+          "functionName": "profileFieldRowSectionStates",
+          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
+          "path": "[P1 product surfaces]/Profiles/Sections",
+          "stateCardCount": 3,
+          "stateCards": [
+            {
+              "label": "running section",
+              "normalizedLabel": "running section"
+            },
+            {
+              "label": "count and first section",
+              "normalizedLabel": "count and first section"
+            },
+            {
+              "label": "footer slot",
+              "normalizedLabel": "footer slot"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "HostEventsScaffold",
       "useCaseCount": 1,
       "stateCardCount": 13,
@@ -2341,7 +2448,7 @@
       ]
     },
     {
-      "component": "HostSettingsSection",
+      "component": "HostSettingsProfileRows",
       "useCaseCount": 1,
       "stateCardCount": 11,
       "paths": [
@@ -3624,6 +3731,80 @@
             {
               "label": "event title missing",
               "normalizedLabel": "event title missing"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "NotificationRow",
+      "useCaseCount": 2,
+      "stateCardCount": 7,
+      "paths": [
+        "[Core primitives]/Product composites",
+        "[P1 product surfaces]/Dashboard activity"
+      ],
+      "labels": [
+        "divider",
+        "long-copy",
+        "mixed read state",
+        "non-navigable",
+        "read",
+        "unread",
+        "with-body"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "split-across-use-cases"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "notificationRowContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Product composites",
+          "stateCardCount": 6,
+          "stateCards": [
+            {
+              "label": "unread",
+              "normalizedLabel": "unread"
+            },
+            {
+              "label": "read",
+              "normalizedLabel": "read"
+            },
+            {
+              "label": "with-body",
+              "normalizedLabel": "with body"
+            },
+            {
+              "label": "divider",
+              "normalizedLabel": "divider"
+            },
+            {
+              "label": "non-navigable",
+              "normalizedLabel": "non navigable"
+            },
+            {
+              "label": "long-copy",
+              "normalizedLabel": "long copy"
+            }
+          ]
+        },
+        {
+          "name": "Row states",
+          "functionName": "dashboardNotificationRowReviewStates",
+          "file": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
+          "path": "[P1 product surfaces]/Dashboard activity",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "mixed read state",
+              "normalizedLabel": "mixed read state"
             }
           ]
         }
@@ -5123,6 +5304,113 @@
       ]
     },
     {
+      "component": "CatchSection",
+      "useCaseCount": 2,
+      "stateCardCount": 13,
+      "paths": [
+        "[Core primitives]/Sections",
+        "[P1 product surfaces]/Profiles/Sections"
+      ],
+      "labels": [
+        "contained-error",
+        "contained-focused",
+        "contained-section",
+        "count and first section",
+        "divided-section",
+        "field-list",
+        "footer slot",
+        "lead-accent",
+        "long-copy",
+        "mixed-modes",
+        "plain-section",
+        "running section",
+        "single-field"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "large-state-matrix",
+          "split-across-use-cases"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": [
+          "catchSectionContractStates"
+        ]
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchSectionContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Sections",
+          "stateCardCount": 10,
+          "stateCards": [
+            {
+              "label": "contained-section",
+              "normalizedLabel": "contained section"
+            },
+            {
+              "label": "contained-focused",
+              "normalizedLabel": "contained focused"
+            },
+            {
+              "label": "contained-error",
+              "normalizedLabel": "contained error"
+            },
+            {
+              "label": "mixed-modes",
+              "normalizedLabel": "mixed modes"
+            },
+            {
+              "label": "single-field",
+              "normalizedLabel": "single field"
+            },
+            {
+              "label": "divided-section",
+              "normalizedLabel": "divided section"
+            },
+            {
+              "label": "field-list",
+              "normalizedLabel": "field list"
+            },
+            {
+              "label": "long-copy",
+              "normalizedLabel": "long copy"
+            },
+            {
+              "label": "lead-accent",
+              "normalizedLabel": "lead accent"
+            },
+            {
+              "label": "plain-section",
+              "normalizedLabel": "plain section"
+            }
+          ]
+        },
+        {
+          "name": "Field row section states",
+          "functionName": "profileFieldRowSectionStates",
+          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
+          "path": "[P1 product surfaces]/Profiles/Sections",
+          "stateCardCount": 3,
+          "stateCards": [
+            {
+              "label": "running section",
+              "normalizedLabel": "running section"
+            },
+            {
+              "label": "count and first section",
+              "normalizedLabel": "count and first section"
+            },
+            {
+              "label": "footer slot",
+              "normalizedLabel": "footer slot"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "HostEventsScaffold",
       "useCaseCount": 1,
       "stateCardCount": 13,
@@ -5959,7 +6247,7 @@
       ]
     },
     {
-      "component": "HostSettingsSection",
+      "component": "HostSettingsProfileRows",
       "useCaseCount": 1,
       "stateCardCount": 11,
       "paths": [
@@ -7248,81 +7536,74 @@
       ]
     },
     {
-      "component": "CatchSection",
-      "useCaseCount": 1,
-      "stateCardCount": 10,
+      "component": "NotificationRow",
+      "useCaseCount": 2,
+      "stateCardCount": 7,
       "paths": [
-        "[Core primitives]/Sections"
+        "[Core primitives]/Product composites",
+        "[P1 product surfaces]/Dashboard activity"
       ],
       "labels": [
-        "contained-error",
-        "contained-focused",
-        "contained-section",
-        "divided-section",
-        "field-list",
-        "lead-accent",
+        "divider",
         "long-copy",
-        "mixed-modes",
-        "plain-section",
-        "single-field"
+        "mixed read state",
+        "non-navigable",
+        "read",
+        "unread",
+        "with-body"
       ],
       "review": {
-        "needsReview": false,
+        "needsReview": true,
         "reasons": [
-          "canonical-contract-matrix"
+          "split-across-use-cases"
         ],
         "duplicateLabels": [],
-        "oversizedUseCases": [
-          "catchSectionContractStates"
-        ]
+        "oversizedUseCases": []
       },
       "useCases": [
         {
           "name": "Contract states",
-          "functionName": "catchSectionContractStates",
+          "functionName": "notificationRowContractStates",
           "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
-          "path": "[Core primitives]/Sections",
-          "stateCardCount": 10,
+          "path": "[Core primitives]/Product composites",
+          "stateCardCount": 6,
           "stateCards": [
             {
-              "label": "contained-section",
-              "normalizedLabel": "contained section"
+              "label": "unread",
+              "normalizedLabel": "unread"
             },
             {
-              "label": "contained-focused",
-              "normalizedLabel": "contained focused"
+              "label": "read",
+              "normalizedLabel": "read"
             },
             {
-              "label": "contained-error",
-              "normalizedLabel": "contained error"
+              "label": "with-body",
+              "normalizedLabel": "with body"
             },
             {
-              "label": "mixed-modes",
-              "normalizedLabel": "mixed modes"
+              "label": "divider",
+              "normalizedLabel": "divider"
             },
             {
-              "label": "single-field",
-              "normalizedLabel": "single field"
-            },
-            {
-              "label": "divided-section",
-              "normalizedLabel": "divided section"
-            },
-            {
-              "label": "field-list",
-              "normalizedLabel": "field list"
+              "label": "non-navigable",
+              "normalizedLabel": "non navigable"
             },
             {
               "label": "long-copy",
               "normalizedLabel": "long copy"
-            },
+            }
+          ]
+        },
+        {
+          "name": "Row states",
+          "functionName": "dashboardNotificationRowReviewStates",
+          "file": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
+          "path": "[P1 product surfaces]/Dashboard activity",
+          "stateCardCount": 1,
+          "stateCards": [
             {
-              "label": "lead-accent",
-              "normalizedLabel": "lead accent"
-            },
-            {
-              "label": "plain-section",
-              "normalizedLabel": "plain section"
+              "label": "mixed read state",
+              "normalizedLabel": "mixed read state"
             }
           ]
         }
@@ -9158,63 +9439,6 @@
             {
               "label": "text scale 2.0",
               "normalizedLabel": "text scale 2 0"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "NotificationRow",
-      "useCaseCount": 1,
-      "stateCardCount": 6,
-      "paths": [
-        "[Core primitives]/Product composites"
-      ],
-      "labels": [
-        "divider",
-        "long-copy",
-        "non-navigable",
-        "read",
-        "unread",
-        "with-body"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Contract states",
-          "functionName": "notificationRowContractStates",
-          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
-          "path": "[Core primitives]/Product composites",
-          "stateCardCount": 6,
-          "stateCards": [
-            {
-              "label": "unread",
-              "normalizedLabel": "unread"
-            },
-            {
-              "label": "read",
-              "normalizedLabel": "read"
-            },
-            {
-              "label": "with-body",
-              "normalizedLabel": "with body"
-            },
-            {
-              "label": "divider",
-              "normalizedLabel": "divider"
-            },
-            {
-              "label": "non-navigable",
-              "normalizedLabel": "non navigable"
-            },
-            {
-              "label": "long-copy",
-              "normalizedLabel": "long copy"
             }
           ]
         }
@@ -20439,43 +20663,6 @@
       ]
     },
     {
-      "component": "ProfileInfoSection",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[P1 product surfaces]/Profiles/Sections"
-      ],
-      "labels": [
-        "grouped section",
-        "ungrouped section"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Info section states",
-          "functionName": "profileInfoSectionStates",
-          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
-          "path": "[P1 product surfaces]/Profiles/Sections",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "grouped section",
-              "normalizedLabel": "grouped section"
-            },
-            {
-              "label": "ungrouped section",
-              "normalizedLabel": "ungrouped section"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "ProfileInfoSkeletonSection",
       "useCaseCount": 1,
       "stateCardCount": 2,
@@ -26711,38 +26898,6 @@
       ]
     },
     {
-      "component": "NotificationGroupWidget",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[P1 product surfaces]/Dashboard activity"
-      ],
-      "labels": [
-        "mixed read state"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Grouped row content",
-          "functionName": "dashboardNotificationGroupWidgetReview",
-          "file": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
-          "path": "[P1 product surfaces]/Dashboard activity",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "mixed read state",
-              "normalizedLabel": "mixed read state"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "OnboardingTopBar",
       "useCaseCount": 1,
       "stateCardCount": 1,
@@ -27473,38 +27628,6 @@
             {
               "label": "short and long labels",
               "normalizedLabel": "short and long labels"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "ProfileInfoRowFrame",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[P1 product surfaces]/Profiles/Sections"
-      ],
-      "labels": [
-        "standard and full bleed"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Info row frame states",
-          "functionName": "profileInfoRowFrameStates",
-          "file": "widgetbook/lib/profiles/profile_use_cases.dart",
-          "path": "[P1 product surfaces]/Profiles/Sections",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "standard and full bleed",
-              "normalizedLabel": "standard and full bleed"
             }
           ]
         }

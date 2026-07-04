@@ -9,11 +9,14 @@ const rawDividerPattern = /\b(?:Divider|VerticalDivider)\s*\(/gu;
 const rawHairlineBoxPattern =
   /ColoredBox\s*\([\s\S]{0,220}CatchStroke\.hairline/gu;
 const sectionCallPattern = /\bCatchSection\.divided\s*\(/gu;
+const thinSectionWrapperPattern =
+  /\bclass\s+([A-Za-z_]\w*)\s+extends\s+StatelessWidget\s*\{/gu;
 const allowedRawDividerFiles = new Set([
   "lib/core/widgets/catch_divider.dart",
   "lib/core/widgets/catch_section_layout.dart",
   "lib/core/widgets/event_ticket_surface.dart",
 ]);
+const wrapperAllowedPathPrefixes = ["lib/core/widgets/"];
 
 const isCliEntrypoint =
   process.argv[1] != null &&
@@ -66,6 +69,24 @@ export function scanSourceForSectionDividers({relativePath, source}) {
     }
   }
 
+  thinSectionWrapperPattern.lastIndex = 0;
+  for (const match of maskedSource.matchAll(thinSectionWrapperPattern)) {
+    const start = match.index ?? 0;
+    const className = match[1];
+    const openBrace = maskedSource.indexOf("{", start);
+    const end = findBalancedBlock(maskedSource, openBrace, "{", "}");
+    if (end == null) continue;
+    const expression = source.slice(start, end + 1);
+    const finding = classifyThinSectionWrapper({
+      relativePath,
+      className,
+      source,
+      line: lineForOffset(source, start),
+      expression,
+    });
+    if (finding != null) findings.push(finding);
+  }
+
   rawDividerPattern.lastIndex = 0;
   for (const match of maskedSource.matchAll(rawDividerPattern)) {
     const start = match.index ?? 0;
@@ -96,6 +117,29 @@ export function scanSourceForSectionDividers({relativePath, source}) {
   }
 
   return findings.filter(Boolean);
+}
+
+function classifyThinSectionWrapper({relativePath, className, line, expression}) {
+  if (wrapperAllowedPathPrefixes.some((prefix) => relativePath.startsWith(prefix))) {
+    return null;
+  }
+  if (!className.endsWith("Section")) return null;
+  if (!/\bCatchSection\.(?:divided|fieldRows)\s*\(/u.test(expression)) {
+    return null;
+  }
+  if (!/\bfinal\s+List<Widget>\??\s+children\s*;/u.test(expression)) {
+    return null;
+  }
+  if (!/\bchildren\s*:\s*children\b/u.test(expression)) return null;
+  return {
+    path: relativePath,
+    line,
+    level: "high",
+    rule: "SECTION-WRAPPER-001",
+    reason:
+      "Feature-local section wrapper only forwards children into CatchSection; call CatchSection.fieldRows/divided directly or move the missing behavior into CatchSection.",
+    expression: `${className} -> ${compactWhitespace(firstReturnOrAssignment(expression))}`,
+  };
 }
 
 function classifyRawDivider({relativePath, source, line, start, expression}) {
@@ -305,17 +349,28 @@ function compactWhitespace(value) {
 }
 
 function findBalancedClose(source, openParenIndex) {
-  if (openParenIndex < 0) return null;
+  return findBalancedBlock(source, openParenIndex, "(", ")");
+}
+
+function findBalancedBlock(source, openIndex, openChar, closeChar) {
+  if (openIndex < 0) return null;
   let depth = 0;
-  for (let index = openParenIndex; index < source.length; index += 1) {
+  for (let index = openIndex; index < source.length; index += 1) {
     const char = source[index];
-    if (char === "(") depth += 1;
-    if (char === ")") {
+    if (char === openChar) depth += 1;
+    if (char === closeChar) {
       depth -= 1;
       if (depth === 0) return index;
     }
   }
   return null;
+}
+
+function firstReturnOrAssignment(source) {
+  const returnMatch = source.match(/\breturn\s+CatchSection\.(?:divided|fieldRows)\s*\([\s\S]{0,240}/u);
+  if (returnMatch != null) return returnMatch[0];
+  const assignmentMatch = source.match(/=\s*CatchSection\.(?:divided|fieldRows)\s*\([\s\S]{0,240}/u);
+  return assignmentMatch?.[0] ?? source.slice(0, 240);
 }
 
 function maskDartCommentsAndStrings(source) {

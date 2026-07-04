@@ -1945,11 +1945,6 @@ Widget hostTeamHostActionDialogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Covered by host settings route states',
-  type: HostSettingsSection,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host settings route states',
   type: HostSettingsProfileRows,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )

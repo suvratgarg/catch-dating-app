@@ -170,30 +170,6 @@ class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {
   }
 }
 
-class HostSettingsSection extends StatelessWidget {
-  const HostSettingsSection({
-    super.key,
-    required this.label,
-    required this.children,
-    this.first = false,
-  });
-
-  final String label;
-  final List<Widget> children;
-  final bool first;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchSection.divided(
-      title: label,
-      first: first,
-      bodyGap: CatchSpacing.micro10,
-      dividerIndent: CatchFieldRow.textLaneInset,
-      children: children,
-    );
-  }
-}
-
 class HostSettingsProfileSection extends StatelessWidget {
   const HostSettingsProfileSection({
     super.key,
@@ -224,8 +200,8 @@ class HostSettingsProfileSection extends StatelessWidget {
         context: AppErrorContext.profile,
         onRetry: onRetry,
       ),
-      HostSettingsProfileMissing() => HostSettingsSection(
-        label: 'Profile',
+      HostSettingsProfileMissing() => CatchSection.fieldRows(
+        title: 'Profile',
         first: true,
         children: [
           CatchField.nav(
@@ -274,8 +250,8 @@ class HostSettingsProfileRows extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        HostSettingsSection(
-          label: 'Profile',
+        CatchSection.fieldRows(
+          title: 'Profile',
           first: true,
           children: [
             CatchField.nav(
@@ -302,8 +278,8 @@ class HostSettingsProfileRows extends StatelessWidget {
             ),
           ],
         ),
-        HostSettingsSection(
-          label: 'Bio',
+        CatchSection.fieldRows(
+          title: 'Bio',
           children: [
             CatchField.nav(
               title: 'About you as a host',
@@ -339,8 +315,8 @@ class HostSettingsClubsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return HostSettingsSection(
-      label: 'Clubs you host',
+    return CatchSection.fieldRows(
+      title: 'Clubs you host',
       children: [
         switch (state) {
           HostSettingsClubsLoading() => const CatchSkeletonRows(

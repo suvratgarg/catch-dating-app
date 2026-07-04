@@ -4975,12 +4975,12 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'NotificationGroupWidget',
+            name: 'NotificationRow',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Grouped row content',
+                name: 'Row states',
                 builder: _widgetbook_workspace_dashboard_dashboard_use_cases
-                    .dashboardNotificationGroupWidgetReview,
+                    .dashboardNotificationRowReviewStates,
               ),
             ],
           ),
@@ -7777,7 +7777,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostSettingsSection',
+                name: 'HostSettingsProfileRows',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Covered by host settings route states',
@@ -9074,6 +9074,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Sections',
             children: [
               _widgetbook.WidgetbookComponent(
+                name: 'CatchSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Field row section states',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .profileFieldRowSectionStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'PreviewTab',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -9100,26 +9110,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Field row states',
                     builder: _widgetbook_workspace_profiles_profile_use_cases
                         .profileFieldRowStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'ProfileInfoRowFrame',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Info row frame states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
-                        .profileInfoRowFrameStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'ProfileInfoSection',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Info section states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
-                        .profileInfoSectionStates,
                   ),
                 ],
               ),

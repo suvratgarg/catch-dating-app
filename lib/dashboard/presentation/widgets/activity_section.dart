@@ -148,11 +148,10 @@ class NotificationDayGroups extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         for (final groupEntry in groups.indexed)
-          CatchSection.divided(
+          CatchSection.fieldRows(
             title: groupEntry.$2.label,
             first: groupEntry.$1 == 0,
             bodyGap: CatchSpacing.s2,
-            dividerIndent: CatchFieldRow.textLaneInset,
             children: [
               for (final row in groupEntry.$2.rows)
                 NotificationRow(

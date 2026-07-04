@@ -502,20 +502,31 @@ Widget dashboardNotificationDayGroupsReview(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Grouped row content',
-  type: NotificationGroupWidget,
+  name: 'Row states',
+  type: NotificationRow,
   path: '[P1 product surfaces]/Dashboard activity',
 )
-Widget dashboardNotificationGroupWidgetReview(BuildContext context) {
+Widget dashboardNotificationRowReviewStates(BuildContext context) {
   final rows = _notificationDayGroups().first.rows;
   return _DashboardCatalog(
-    title: 'NotificationGroupWidget',
-    contractId: 'dashboard.activity.notification_group',
+    title: 'NotificationRow',
+    contractId: 'dashboard.activity.notification_row',
     children: [
       _StateCard(
         label: 'mixed read state',
         child: _DashboardPrimitiveFrame(
-          child: NotificationGroupWidget(rows: rows),
+          child: Column(
+            children: [
+              for (final row in rows)
+                NotificationRow(
+                  type: row.type,
+                  title: row.title,
+                  time: row.timeLabel,
+                  body: row.subtitle,
+                  unread: row.isUnread,
+                ),
+            ],
+          ),
         ),
       ),
     ],

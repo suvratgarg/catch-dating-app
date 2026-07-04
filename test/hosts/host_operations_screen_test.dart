@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/data/host_profile_repository.dart';
@@ -359,15 +360,15 @@ void main() {
     expect(find.text('Sign in required'), findsNothing);
   });
 
-  testWidgets('HostSettingsSection rows align to the section text lane', (
+  testWidgets('CatchSection.fieldRows rows align to the section text lane', (
     tester,
   ) async {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
         home: const Scaffold(
-          body: HostSettingsSection(
-            label: 'Profile',
+          body: CatchSection.fieldRows(
+            title: 'Profile',
             first: true,
             children: [
               CatchField.nav(

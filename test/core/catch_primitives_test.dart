@@ -644,15 +644,14 @@ void main() {
   });
 
   testWidgets(
-    'CatchSection.divided renders field rows flush with lane-aligned dividers',
+    'CatchSection.fieldRows renders rows flush with lane-aligned dividers',
     (tester) async {
       await tester.pumpWidget(
         _wrap(
           SizedBox(
             width: 360,
-            child: CatchSection.divided(
+            child: CatchSection.fieldRows(
               title: 'Details',
-              dividerIndent: CatchFieldRow.textLaneInset,
               children: [
                 CatchField.read(
                   title: 'First',

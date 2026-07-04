@@ -17,7 +17,6 @@ import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_edit_tab_state.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_photo_intent_factory.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/profile_info_section.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -212,13 +211,13 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
               );
             },
           ),
-          ProfileInfoSection(
+          CatchSection.fieldRows(
             title: 'Prompts',
-            subtitle:
+            count:
                 '${editState.completedPromptCount} of $maxProfilePromptAnswers answered',
             children: prompts,
           ),
-          ProfileInfoSection(
+          CatchSection.fieldRows(
             title: 'About you',
             children: [
               for (final row in editState.aboutSectionRows)
@@ -231,7 +230,7 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
                 ),
             ],
           ),
-          ProfileInfoSection(
+          CatchSection.fieldRows(
             title: 'Running',
             children: [
               for (final row in editState.runningRows)
@@ -244,7 +243,7 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
                 ),
             ],
           ),
-          ProfileInfoSection(
+          CatchSection.fieldRows(
             title: 'Lifestyle',
             children: [
               for (final row in editState.lifestyleRows)

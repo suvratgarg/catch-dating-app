@@ -92,17 +92,12 @@ class ProfileInfoSkeletonSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSection.divided(
+    return CatchSection.fieldRows(
       title: title,
-      bodyGap: CatchSpacing.micro10,
-      child: Column(
-        children: [
-          for (var index = 0; index < rows; index++) ...[
-            const ProfileInfoSkeletonTile(),
-            if (index < rows - 1) const CatchDivider.fieldRow(),
-          ],
-        ],
-      ),
+      children: [
+        for (var index = 0; index < rows; index++)
+          const ProfileInfoSkeletonTile(),
+      ],
     );
   }
 }

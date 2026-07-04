@@ -58,6 +58,30 @@ test("keeps raw Divider inventory visible in presentation files", () => {
   assert.equal(findings[0].level, "medium");
 });
 
+test("flags thin feature wrappers around CatchSection field rows", () => {
+  const findings = scanSourceForSectionDividers({
+    relativePath: "lib/user_profile/presentation/widgets/profile_info_section.dart",
+    source: [
+      "class ProfileInfoSection extends StatelessWidget {",
+      "  const ProfileInfoSection({super.key, required this.title, required this.children});",
+      "  final String title;",
+      "  final List<Widget> children;",
+      "  @override",
+      "  Widget build(BuildContext context) {",
+      "    return CatchSection.fieldRows(",
+      "      title: title,",
+      "      children: children,",
+      "    );",
+      "  }",
+      "}",
+    ].join("\n"),
+  });
+
+  assert.equal(findings.length, 1);
+  assert.equal(findings[0].level, "high");
+  assert.equal(findings[0].rule, "SECTION-WRAPPER-001");
+});
+
 test("scanSectionDividers covers lib, test, and widgetbook sources", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-section-dividers-"));
   writeFile(

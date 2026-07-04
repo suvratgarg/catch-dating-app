@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.575
+version: 2.5.576
 updated: 2026-07-04
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,21 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.576
+
+- Added `CatchSection.fieldRows` as the canonical field-row section contract.
+  It centralizes the `micro10` row-body gap, text-lane internal divider indent,
+  `fieldRow` divider role, flush `CatchField` inset scope, and optional footer
+  slot formerly repeated by feature-local section wrappers.
+- Deleted the profile, settings, and host field-row section wrappers. Profile
+  Edit, Settings, Host Settings, Host club editing, notification day groups, and
+  Profile Edit skeletons now call `CatchSection.fieldRows` directly unless a
+  feature component owns real state or layout behavior.
+- Extended `tool/design/check_section_dividers.mjs` to fail on thin
+  feature-local `*Section` wrappers that only forward `children` into
+  `CatchSection.divided`/`CatchSection.fieldRows`; missing section behavior
+  should move into `CatchSection`, not another adapter.
 
 ### 2.5.575
 
@@ -35,7 +50,7 @@ a feature section here only when auditing that feature's widget surface.
 
 ### 2.5.574
 
-- Routed `SettingsSection` and `HostSettingsSection` through
+- Routed the settings and host settings row groups through
   `CatchSection.divided` so settings-style rows now inherit the shared
   `CatchFieldInsetScope.flush` contract, use `CatchFieldRow.textLaneInset` for
   section dividers, and no longer depend on settings-only divider chrome.
@@ -57,10 +72,9 @@ a feature section here only when auditing that feature's widget surface.
   body owns the page gutter, the section owns row/divider edges, and individual
   `CatchField` rows no longer add a second 16 px self-inset.
 - Profile Edit, Profile Insights, and Profile Edit skeleton bodies now use the
-  semantic `CatchInsets.formEditBodyRelaxed` inset directly. The feature-local
-  `profileTabBodyPadding` constant, `fullBleedRows` parameter, and
-  `ProfileInfoRowFrame` full-bleed wrapper were deleted because every live
-  profile info section is a titled divided section.
+  semantic `CatchInsets.formEditBodyRelaxed` inset directly. Feature-local edit
+  body padding/full-bleed row adapters were deleted because every live profile
+  info section is a titled divided section.
 - `tool/check_catch_ui_lints.sh` now has a narrow page-gutter guard for
   presentation constants named like screen/body/page padding that rebuild the
   app gutter from `CatchSpacing.s5` or `CatchSpacing.screenPx`; route bodies
@@ -96,9 +110,9 @@ a feature section here only when auditing that feature's widget surface.
   publishes `flush: true` so rows drop that inset. `CatchSection.divided`
   publishes the scope, so field rows inside any divided section run
   edge-to-edge within the section gutter.
-- `CatchSection.divided` gained `dividerIndent` so `ProfileInfoSection` could
-  route grouped dividers through the section with
-  `dividerIndent: CatchFieldRow.textLaneInset` instead of hand-rolled
+- `CatchSection.divided` gained `dividerIndent` so grouped field-row dividers
+  could route through the section with `dividerIndent:
+  CatchFieldRow.textLaneInset` instead of hand-rolled
   full-width `Divider`s. `textLaneInset` derives from the leading-slot metrics
   (the leading slot renders from the same constants), so resizing leading icons
   moves text-lane-aligned dividers automatically — no hardcoded divider
@@ -1225,10 +1239,11 @@ a feature section here only when auditing that feature's widget surface.
 ### 2.5.431
 
 - Consolidated the section system around `CatchSection`. The section primitive
-  now owns divided hairline groups, contained rounded groups, and plain titled
-  blocks through `CatchSection.divided`, `CatchSection.contained`, and
-  `CatchSection.plain`, while fields remain the information atom and surfaces
-  remain low-level chrome. The former field-group,
+  now owns field-row hairline groups, divided hairline groups, contained rounded
+  groups, and plain titled blocks through `CatchSection.fieldRows`,
+  `CatchSection.divided`, `CatchSection.contained`, and `CatchSection.plain`,
+  while fields remain the information atom and surfaces remain low-level chrome.
+  The former field-group,
   design-section, and section-surface APIs are no longer part of the inventory.
 
 ### 2.5.430
@@ -2048,7 +2063,7 @@ a feature section here only when auditing that feature's widget surface.
   `HostProfileController` and navigation/sign-out side effects remain
   route-owned. It composes `HostSettingsProfileSection`,
   `HostSettingsClubsSection`, shared `CatchTabRail` tabs, and
-  `HostSettingsSection` rows. Widgetbook now exposes
+  core `CatchSection.fieldRows` row groups. Widgetbook now exposes
   `HostAccountScreen/Route states`,
   `HostSettingsProfileSection/Profile summary states`,
   `HostSettingsClubsSection/Clubs states`, and the shared
@@ -5668,8 +5683,8 @@ Generated 2026-05-06.
 | `CatchGradedImage` / `CatchGrade` | `lib/core/widgets/catch_graded_image.dart:21` | Non-destructive display-time photo grade. Applies the shared brightness-aware matte duotone through color filters at render time, leaving uploaded images untouched while keeping mixed UGC and generated activity art inside one editorial visual family. Split-tone colors are alpha-aware: multiply and screen tints are derived by lerping from each blend mode's no-op color so low-alpha token values do not wash light-mode photos to white in deterministic captures. |
 | `CatchNetworkImage` | `lib/core/widgets/catch_network_image.dart:19` | Canonical remote/bundled image primitive. Keeps the existing decode-size capped `Image.network` path for remote photos, renders `assets/` and `packages/` paths through `Image.asset` for deterministic fixture/capture use, and preserves caller-owned framing, fitting, semantics, loading, and branded fallback behavior. |
 | `CatchNetworkImageFallback` | `lib/core/widgets/catch_network_image.dart:92` | Direct branded image fallback renderer used by `CatchNetworkImage` when remote or bundled image loading fails and callers do not provide a custom error builder. |
-| `CatchPageBody` / `CatchScreenBody` / `CatchSectionStack` / `CatchSectionList` / `CatchSection` / `CatchDetailSliverSectionList` | `lib/core/widgets/catch_section_layout.dart:9` | Semantic body and section composition primitives. `CatchScreenBody` maps the handoff scrolling body with `screenPx` gutter, `pt`/`pb` overrides, full-bleed gutter opt-out, and optional non-scroll mode; `CatchSectionStack` maps the handoff `SectionStack` gutter and defaults to no inserted section gap; `CatchSection` is the canonical information-grouping primitive with named constructors for divided hairline groups, contained rounded groups, and plain titled blocks, plus optional count/trailing content and optional lead activity accent; `CatchDetailSliverSectionList` provides sliver-native page gutters with the same section-owned rhythm by default. `CatchSection`, `CatchScreenBody`, and `CatchSectionStack` are registered as formal component contracts (`catch.section`, `catch.screen_body`, `catch.section_stack`); Widgetbook exposes contract states for section, scrolling/non-scroll body modes, and stack rhythm. |
-| `CatchDivider` | `lib/core/widgets/catch_divider.dart:6` | Semantic hairline divider primitive for section and field-row/list separators. Use `CatchDivider.section` for full-strength section chrome and `CatchDivider.fieldRow` for muted text-lane row dividers; `CatchSection.divided`, `CatchField.divider`, `CatchPersonRow.divider`, and row-shaped skeletons route through these roles so color, width, and text-lane measurement stay centralized. |
+| `CatchPageBody` / `CatchScreenBody` / `CatchSectionStack` / `CatchSectionList` / `CatchSection` / `CatchDetailSliverSectionList` | `lib/core/widgets/catch_section_layout.dart:9` | Semantic body and section composition primitives. `CatchScreenBody` maps the handoff scrolling body with `screenPx` gutter, `pt`/`pb` overrides, full-bleed gutter opt-out, and optional non-scroll mode; `CatchSectionStack` maps the handoff `SectionStack` gutter and defaults to no inserted section gap; `CatchSection` is the canonical information-grouping primitive with named constructors for field-row hairline groups, divided hairline groups, contained rounded groups, and plain titled blocks, plus optional count/trailing content, optional lead activity accent, and an optional footer slot for field-row sections; `CatchDetailSliverSectionList` provides sliver-native page gutters with the same section-owned rhythm by default. `CatchSection`, `CatchScreenBody`, and `CatchSectionStack` are registered as formal component contracts (`catch.section`, `catch.screen_body`, `catch.section_stack`); Widgetbook exposes contract states for section, scrolling/non-scroll body modes, and stack rhythm. |
+| `CatchDivider` | `lib/core/widgets/catch_divider.dart:6` | Semantic hairline divider primitive for section and field-row/list separators. Use `CatchDivider.section` for full-strength section chrome and `CatchDivider.fieldRow` for muted text-lane row dividers; `CatchSection.fieldRows`, `CatchSection.divided`, `CatchField.divider`, `CatchPersonRow.divider`, and row-shaped skeletons route through these roles so color, width, and text-lane measurement stay centralized. |
 | `CatchSectionFocusSurface` | `lib/core/widgets/catch_section_layout.dart:509` | Public `catch.section` member for contained-section focus and error chrome. It wraps `CatchSurface.card`, watches descendant focus, and applies the section focus ring or danger border while `CatchSection.contained` remains the product-facing API. |
 | `EventActivityVisualSpec` / `EventActivityBackdrop` | `lib/core/widgets/event_activity_visuals.dart:17` | Mutable presentation schema for `ActivityKind` imagery. Centralizes activity label, icon, gradient palette, pattern, and browse-order choices so Explore cards, spotlight cards, thumbnails, browse tiles, and event detail headers do not fork color decisions. |
 | `EventTicketPerforatedDivider` / `EventTicketShapeClipper` | `lib/core/widgets/event_ticket_surface.dart:10` | Shared event-ticket shape primitives. The divider and clipper own horizontal perforation, ticket notch constants, and ticket shape geometry used by ticket cards, spotlight cards, date-rail cards, and ticket-mode event detail headers; full-card Hero flights now call `catchHeroSurface` directly instead of routing through a widget alias. |
@@ -5746,9 +5761,9 @@ Generated 2026-05-06.
 | `_DashboardLoadingScreen` | `lib/dashboard/presentation/dashboard_screen.dart:220` | Loading scaffold for Home while profile/booked-run data resolves. |
 | `_DashboardErrorScreen` | `lib/dashboard/presentation/dashboard_screen.dart:229` | Branded error scaffold for Home profile/booked-run load failures. |
 | `DashboardSectionStateCard` | `lib/dashboard/presentation/widgets/dashboard_section_state_card.dart:9` | Inline loading/error card for dashboard sections such as recommendations and weekly activity. Renders shared skeleton or message copy in a compact `CatchSurface` so section-level empty/loading states stay visually consistent. |
-| `NotificationDayGroups` | `lib/dashboard/presentation/widgets/activity_section.dart:133` | Notifications screen day-group wrapper. Routes each day bucket through `CatchSection.divided`, so the Activity screen body owns the page gutter, the section owns the kicker/hairline/divider rhythm, and notification `CatchField` rows render flush inside the section instead of adding their own horizontal row inset. |
+| `NotificationDayGroups` | `lib/dashboard/presentation/widgets/activity_section.dart:133` | Notifications screen day-group wrapper. Routes each day bucket through `CatchSection.fieldRows`, so the Activity screen body owns the page gutter, the section owns the kicker/hairline/divider rhythm, and notification `CatchField` rows render flush inside the section instead of adding their own horizontal row inset. |
 | `NotificationRowSkeleton` | `lib/dashboard/presentation/widgets/activity_section.dart:206` | Loading row placeholder for activity notifications. Reserves icon, title/time, and two-line body skeletons, with optional inset divider matching the loaded notification row stack. |
-| `NotificationRow` | `lib/dashboard/presentation/widgets/activity_section.dart:237` | Handoff-style row for backend-owned activity notifications. It exposes the design contract (`type`, `title`, `time`, `body`, `unread`, optional tap), renders on-surface with a type-colored glyph, relative time, unread title/time color, and optional route navigation with branded failure feedback from the parent day group; day-group dividers now come from `CatchSection.divided` rather than from the row itself. |
+| `NotificationRow` | `lib/dashboard/presentation/widgets/activity_section.dart:237` | Handoff-style row for backend-owned activity notifications. It exposes the design contract (`type`, `title`, `time`, `body`, `unread`, optional tap), renders on-surface with a type-colored glyph, relative time, unread title/time color, and optional route navigation with branded failure feedback from the parent day group; day-group dividers now come from `CatchSection.fieldRows` rather than from the row itself. |
 
 ---
 
@@ -5824,7 +5839,6 @@ Generated 2026-05-06.
 | `CatchRosterTable` | `lib/hosts/presentation/widgets/catch_roster_board.dart:416` | Handoff `RosterTable` shell for host roster boards. Owns the hairline table surface, mono three-column header, fixed row proportions matching `CatchRosterRow`, row composition, and built-in empty state. Registered as formal component contract `catch.roster_table`; Widgetbook contract states are the canonical review surface for populated, empty, partial-column, and long-copy tables. |
 | `HostClubManagementPanel` | `lib/hosts/presentation/widgets/host_club_tools.dart:15` | Reusable combined host-club tools panel for surfaces that intentionally need Add event, Edit club, and upcoming booked/waitlist/base-revenue stats in one section. Public `ClubDetailBody` no longer embeds this panel; Host app tab surfaces own those actions. |
 | `HostStatChip` | `lib/hosts/presentation/widgets/host_club_tools.dart:161` | Single reusable host stat chip used by the consolidated club host management panel and host event management stats. |
-| `HostSettingsSection` | `lib/hosts/presentation/host_account_screen.dart:173` | Shared host settings section wrapper for Account and Host Clubs row groups. Delegates row grouping to `CatchSection.divided`, so provider-free `CatchField` children inherit the shared flush inset contract and dividers align to `CatchFieldRow.textLaneInset`. |
 | `HostSettingsProfileSection` | `lib/hosts/presentation/host_account_screen.dart:200` | Provider-free profile summary section for `screen.host.settings`. Renders loading, error, missing, create-pending, club-backed fallback, loaded, edit, preview, and status rows from explicit `HostSettingsProfileState` plus create/edit/retry callbacks. |
 | `HostSettingsClubsSection` | `lib/hosts/presentation/host_operations_screen.dart:609` | Provider-free hosted-clubs section for `screen.host.settings`. Renders loading, error, empty, edit-mode, and preview-mode club rows from `HostSettingsClubsState`, retry callback, and route callback so Widgetbook can cover section states without Riverpod reads. |
 | `HostProfileForm` | `lib/hosts/presentation/host_operations_screen.dart:962` | Provider-free professional profile form for `screen.host.profile`. Renders status-aware profile fields and the save action from explicit controllers, save state, profile status, and callback so Widgetbook can cover active/pending/suspended, validation, pending, text-scale, reduced-motion, and theme states without live providers. |
@@ -6029,7 +6043,7 @@ Generated 2026-05-06.
 | Widget | File | Purpose |
 |---|---|---|
 | `ProfileScreen` | `lib/user_profile/presentation/profile_screen.dart:25` | Profile tab destination. Gates screen-owned streams while the retained tab branch is inactive, owns the route-level top safe area, uses `NestedScrollView` for a scroll-away "Your profile" title plus a pinned handoff `CatchOptionGroup` Edit/Preview row, keeps native `TabBarView` paging for smooth horizontal tab swipes, and composes route branches through `SelfProfileTabBody`. Owns the `TabController` locally because tab selection is route UI state; `initialTabIndex` exists for deterministic Preview route captures while production keeps the Edit default. Preview renders full-bleed below the option row, with the shared `ProfileSurface` owning the inner body gutter. |
-| `ProfileTab` | `lib/user_profile/presentation/widgets/profile_tab.dart:19` | Standalone signed-in edit tab content. Wraps the edit form in a `ListView` for isolated/non-sliver usage and renders the handoff sections Photos, Prompts, About you, Running, and Lifestyle through `CatchSection`/`ProfileInfoSection` on-surface groups. Profile Edit field rows honor `CatchInsets.formEditBodyRelaxed` so fields and dividers run end-to-end inside the standard screen gutter; form rows do not own full-bleed chrome. Simple text rows, including Display name, Email, Instagram, Job title, and Company, render as direct editable `CatchField.input` rows through `ProfileDirectTextEntryField`; they do not open inline disclosure drawers. `Display name` is the first editable About field and is the only public-facing profile name. Onboarding identity fields such as date of birth and gender are readonly, and last name is not shown publicly. Profile prompt rows use catalog-backed pickers that hide prompt IDs already selected in other rows. Optional/profile-detail fields, including Instagram, remain editable. Running is always visible and owns pace, distances, reasons, and favorite run times. Discovery-only preferences such as interested-in genders and match age range live in Filters, not Edit Profile. Optional single-choice edit sheets open unselected when the underlying field is empty. |
+| `ProfileTab` | `lib/user_profile/presentation/widgets/profile_tab.dart:19` | Standalone signed-in edit tab content. Wraps the edit form in a `ListView` for isolated/non-sliver usage and renders the handoff sections Photos, Prompts, About you, Running, and Lifestyle through core `CatchSection` groups. Profile Edit field rows honor `CatchInsets.formEditBodyRelaxed` so fields and dividers run end-to-end inside the standard screen gutter; form rows do not own full-bleed chrome. Simple text rows, including Display name, Email, Instagram, Job title, and Company, render as direct editable `CatchField.input` rows through `ProfileDirectTextEntryField`; they do not open inline disclosure drawers. `Display name` is the first editable About field and is the only public-facing profile name. Onboarding identity fields such as date of birth and gender are readonly, and last name is not shown publicly. Profile prompt rows use catalog-backed pickers that hide prompt IDs already selected in other rows. Optional/profile-detail fields, including Instagram, remain editable. Running is always visible and owns pace, distances, reasons, and favorite run times. Discovery-only preferences such as interested-in genders and match age range live in Filters, not Edit Profile. Optional single-choice edit sheets open unselected when the underlying field is empty. |
 | `ProfileTabContent` | `lib/user_profile/presentation/widgets/profile_tab.dart:41` | Shared provider-free Profile Edit body used by both the standalone `ProfileTab` list and sliver-native `ProfileTabSliverBody`. It owns the handoff section ordering and receives the scroll/content wrapper as a builder so route and isolated review contexts stay canonical without duplicate adapters. |
 | `ProfileFieldRow` | `lib/user_profile/presentation/widgets/profile_tab.dart:248` | Public descriptor-backed renderer for Edit Profile field rows. Maps `SelfProfileFieldRowDescriptor` variants to the canonical read-only, direct text, height, single-choice, multi-choice, and range row primitives while the parent route owns only expansion state and save/cancel collapse callbacks. Widgetbook covers mixed descriptor rows directly so future descriptor variants do not reintroduce private widget-returning helpers. |
 | `ProfileDirectTextEntry` | `lib/user_profile/presentation/widgets/profile_tab.dart:354` | Public Profile Edit direct-text descriptor adapter. Normalizes descriptor defaults for current value/current field value and delegates rendering, validation, save behavior, keyboard/autofill, and patch conversion to `ProfileDirectTextEntryField` so simple text rows remain cataloged without private wrapper drift. |
@@ -6063,9 +6077,8 @@ Generated 2026-05-06.
 | `ProfileTabBar` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:51` | Self-profile pinned tab selector. Receives the route-owned 3-tab `TabController` and maps Edit, Preview, and Insights to the shared `CatchOptionGroup` with bottom hairline chrome. |
 | `ProfileSettingsButton` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:84` | Self-profile settings icon action. Uses the default app-bar `CatchIconAction` with the settings glyph and routes to `screen.settings.account` through the surrounding `GoRouter` context. |
 | `ProfilePhotosSection` | `lib/user_profile/presentation/widgets/profile_tab.dart:553` | Edit Profile Photos section. Receives `SelfProfilePhotoGridState`, renders the divided Photos heading/count, and delegates slot tap, delete, and reorder behavior to parent callbacks while `PhotoGrid` owns slot layout. |
-| `ProfileInfoSection` | `lib/user_profile/presentation/widgets/profile_info_section.dart:8` | Provider-free Edit Profile section renderer. It is a thin profile adapter over `CatchSection.divided`: callers supply a required title, optional count copy, and concrete field rows; the section owns full-width-in-gutter dividers and publishes the shared flush row contract. |
 | `ProfilePhotosSkeletonSection` | `lib/user_profile/presentation/widgets/profile_tab_skeleton.dart:60` | Edit Profile loading photo section. Reuses `CatchSection.divided`, the production maximum profile-photo count, and the 3-column portrait grid geometry so the Photos section reserves the same slot rhythm while uploads/profile data resolve. |
-| `ProfileInfoSkeletonSection` | `lib/user_profile/presentation/widgets/profile_tab_skeleton.dart:89` | Edit Profile loading info section. Receives title and row count from `ProfileTabSkeletonSliverBody`, renders section chrome through `CatchSection.divided`, and inserts the same muted dividers between `ProfileInfoSkeletonTile` rows as the ready profile sections. |
+| `ProfileInfoSkeletonSection` | `lib/user_profile/presentation/widgets/profile_tab_skeleton.dart:89` | Edit Profile loading info section. Receives title and row count from `ProfileTabSkeletonSliverBody`, renders section chrome through `CatchSection.fieldRows`, and inserts the same muted dividers between `ProfileInfoSkeletonTile` rows as the ready profile sections. |
 | `ProfileInfoSkeletonTile` | `lib/user_profile/presentation/widgets/profile_tab_skeleton.dart:129` | Single Edit Profile loading row placeholder. Preserves the profile field-row icon, two-line text, and trailing affordance geometry with tokenized `CatchSkeleton` blocks. |
 | `ProfileSingleChipValue<T>` | `lib/user_profile/presentation/widgets/inline_editor_choice.dart:311` | Display/editing value renderer for nullable single-choice profile chips. Shows the collapsed value as text, the empty add affordance when editing without a value, or the selected active chip with optional deselect behavior. |
 | `ProfileMultiChipValue<T>` | `lib/user_profile/presentation/widgets/inline_editor_choice.dart:362` | Display/editing value renderer for multi-choice profile chips. Shows collapsed comma-separated text outside edit mode, an empty add affordance for no selection, or selected active chips with check icons while editing. |
@@ -6616,7 +6629,6 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `SettingsSection` | `lib/safety/presentation/settings_screen.dart:482` | Settings template section helper that delegates row grouping to `CatchSection.divided`, so `CatchField` children inherit the shared flush inset contract and dividers align to `CatchFieldRow.textLaneInset`. Optional footers remain outside the divided row body for account and blocked-account state content. |
 | `AccountProfileStatus` | `lib/safety/presentation/settings_screen.dart:522` | Provider-free account-section footer that renders profile provider error/missing copy from `SettingsProfileState` while leaving loaded/loading rows to `CatchField` values. |
 | `BlockedAccountsSection` | `lib/safety/presentation/settings_screen.dart:560` | Provider-free Privacy & safety footer listing blocked accounts under the handoff `Blocked users` row. Uses `_BlockedAccountsSkeleton` for row-shaped loading, `CatchEmptyState` for the empty state, `CatchInlineErrorState` for retryable errors, and renders `BlockedAccountTile` rows from `SettingsBlockedAccountsState`. |
 | `BlockedAccountTile` | `lib/safety/presentation/settings_screen.dart:683` | Single provider-free blocked account row. Renders a `CatchPersonRow` from `SettingsBlockedAccountRow` display data and delegates the semantic unblock action back to the route callback. |
