@@ -2685,6 +2685,32 @@
       "role": "finder"
     },
     {
+      "id": "design:screen-gutters",
+      "category": "design",
+      "path": "tool/design/check_screen_gutters.mjs",
+      "command": "node tool/design/check_screen_gutters.mjs --summary",
+      "safety": "local",
+      "status": "active",
+      "description": "Reports advisory EdgeInsets inventory and likely hand-rolled screen gutter candidates across presentation and contracted screen implementation files.",
+      "checks": [
+        "node --check tool/design/check_screen_gutters.mjs",
+        "node --test tool/design/check_screen_gutters.test.mjs",
+        "node tool/design/check_screen_gutters.mjs --summary --max 25"
+      ],
+      "role": "finder",
+      "rules": [
+        "SCREEN-GUTTER-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/check_screen_gutters.test.mjs",
+        "contains": [
+          "flags the known-bad horizontal screen gutter fixture",
+          "covers presentation widgets, not only screen files"
+        ]
+      }
+    },
+    {
       "id": "design:reference-screens",
       "category": "design",
       "path": "tool/design/check_reference_screens.mjs",

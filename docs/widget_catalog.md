@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.572
+version: 2.5.573
 updated: 2026-07-04
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,15 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.573
+
+- Added `tool/design/check_screen_gutters.mjs`, a broad advisory inventory for
+  `EdgeInsets` across `lib/**/presentation/**/*.dart` plus contracted screen
+  implementation files. It separates high-confidence horizontal
+  `CatchSpacing.screenPx`/`CatchSpacing.s5` gutter candidates from lower
+  confidence local spacing so manual UI review can start from full evidence,
+  not only a narrow regression guard.
 
 ### 2.5.572
 

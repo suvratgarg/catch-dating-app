@@ -750,6 +750,42 @@
         }
       ]
     },
+    "SCREEN-GUTTER-001": {
+      "title": "Screen gutters use semantic body and section ownership",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "widget_catalog",
+        "version": "2.5.573"
+      },
+      "applies_to": [
+        "lib/**/presentation/**",
+        "design/screens/**",
+        "docs/design_parity/**",
+        "tool/design/check_screen_gutters.mjs"
+      ],
+      "instruction": "Screen, page, and body horizontal gutters should be owned by CatchInsets roles, CatchScreenBody, CatchSectionStack, CatchSection, CatchDetailSliverSectionList, or another documented layout primitive. Raw EdgeInsets rebuilt from CatchSpacing.screenPx/s5 in presentation code is a review candidate unless it is clearly component-local geometry.",
+      "sunset_when": [
+        "High-confidence screen-gutter candidates reach zero or are cataloged as accepted local geometry",
+        "Deterministic cases graduate into analyzer diagnostics or a failing ratchet"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "design:screen-gutters",
+          "stage": "scanner-ratchet",
+          "docAnchor": "docs/design_parity/README.md#source-files"
+        },
+        {
+          "stage": "manual",
+          "docAnchor": "docs/widget_catalog.md#rule-changelog"
+        }
+      ]
+    },
     "RESPONSIVE-LAYOUT-001": {
       "title": "Avoid hardcoded widget dimensions for content-sized UI",
       "status": "active",
