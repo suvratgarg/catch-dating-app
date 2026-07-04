@@ -163,11 +163,9 @@ class ExploreCityPickerSheet extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  CatchSpacing.s5,
-                  CatchSpacing.s3,
-                  CatchSpacing.s5,
-                  CatchSpacing.s2,
+                padding: CatchInsets.pageBody.copyWith(
+                  top: CatchSpacing.s3,
+                  bottom: CatchSpacing.s2,
                 ),
                 child: Row(
                   children: [

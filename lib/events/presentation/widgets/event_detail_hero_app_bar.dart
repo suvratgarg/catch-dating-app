@@ -287,11 +287,9 @@ class EventDetailTicketSurface extends StatelessWidget {
                   CatchSpacing.s4,
                   CatchSpacing.s3,
                 )
-              : const EdgeInsets.fromLTRB(
-                  CatchSpacing.s5,
-                  CatchSpacing.s4,
-                  CatchSpacing.s5,
-                  CatchSpacing.s5,
+              : CatchInsets.pageBody.copyWith(
+                  top: CatchSpacing.s4,
+                  bottom: CatchSpacing.s5,
                 );
           final bodyWidth = constraints.maxWidth > bodyPadding.horizontal
               ? constraints.maxWidth - bodyPadding.horizontal

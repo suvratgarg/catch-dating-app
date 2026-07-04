@@ -144,11 +144,9 @@ class CompanionPaperScaffold extends StatelessWidget {
       backgroundColor: t.bg,
       bottomNavigationBar: showSelfCheckIn
           ? SafeArea(
-              minimum: const EdgeInsets.fromLTRB(
-                CatchSpacing.screenPx,
-                CatchSpacing.s2,
-                CatchSpacing.screenPx,
-                CatchSpacing.s3,
+              minimum: CatchInsets.pageBody.copyWith(
+                top: CatchSpacing.s2,
+                bottom: CatchSpacing.s3,
               ),
               child: PaperSelfCheckInBar(
                 event: event,
@@ -169,11 +167,9 @@ class CompanionPaperScaffold extends StatelessWidget {
                     maxWidth: CatchLayout.maxContentWidth,
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      CatchSpacing.screenPx,
-                      CatchSpacing.s2,
-                      CatchSpacing.screenPx,
-                      CatchSpacing.s8,
+                    padding: CatchInsets.pageBody.copyWith(
+                      top: CatchSpacing.s2,
+                      bottom: CatchSpacing.s8,
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,

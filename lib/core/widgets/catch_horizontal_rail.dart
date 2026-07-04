@@ -21,7 +21,9 @@ class CatchHorizontalRail extends StatelessWidget {
     this.height = CatchLayout.horizontalRailHeight,
     this.spacing = CatchSpacing.s3,
     this.headerPadding = _defaultHeaderPadding,
-    this.listPadding = const EdgeInsets.symmetric(horizontal: CatchSpacing.s5),
+    this.listPadding = const EdgeInsets.symmetric(
+      horizontal: CatchSpacing.screenPx,
+    ),
   });
 
   final String title;
@@ -35,9 +37,9 @@ class CatchHorizontalRail extends StatelessWidget {
   final EdgeInsetsGeometry listPadding;
 
   static const _defaultHeaderPadding = EdgeInsets.fromLTRB(
-    CatchSpacing.s5,
+    CatchSpacing.screenPx,
     CatchSpacing.micro14,
-    CatchSpacing.s5,
+    CatchSpacing.screenPx,
     CatchSpacing.s2,
   );
 
@@ -55,7 +57,7 @@ class CatchHorizontalRail extends StatelessWidget {
         _buildRail(context),
         if (showDivider)
           const Padding(
-            padding: EdgeInsets.symmetric(horizontal: CatchSpacing.s5),
+            padding: EdgeInsets.symmetric(horizontal: CatchSpacing.screenPx),
             child: CatchDivider.section(),
           ),
       ],

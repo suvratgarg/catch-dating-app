@@ -650,6 +650,7 @@ class _CatchSectionFocusSurfaceState extends State<CatchSectionFocusSurface> {
         setState(() => _descendantFocused = focused);
       },
       child: CatchSurface(
+        role: CatchSurfaceRole.card,
         padding: widget.padding,
         radius: CatchRadius.md,
         tone: widget.tone,

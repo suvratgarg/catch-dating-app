@@ -1497,7 +1497,7 @@ void main() {
         400,
         scrollable: findPrimaryScrollable(),
       );
-      expect(find.text('Host can see'), findsOneWidget);
+      expect(find.text('HOST CAN SEE'), findsOneWidget);
       expect(find.text('Rhea'), findsOneWidget);
 
       await tester.scrollUntilVisible(

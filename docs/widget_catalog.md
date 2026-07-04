@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 2.5.576
-updated: 2026-07-04
+version: 2.5.577
+updated: 2026-07-05
 owner: recursive_audit_loop
 status: active
 ---
@@ -16,6 +16,25 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.577
+
+- Extended the flush row contract to `CatchSection.contained`: contained
+  cards now publish `CatchFieldInsetScope.flush` inside the focus surface, so
+  `CatchField` rows align to the card-owned `s4` content gutter instead of
+  adding a second field self-inset.
+- Burned down all high-confidence `design:screen-gutters` findings by routing
+  presentation-level app gutters through `CatchInsets.pageBody`/role
+  derivations. Core rail/section widgets now spell owned screen gutters as
+  `CatchSpacing.screenPx`, and `CatchFieldTrailing.valueText` uses
+  `CatchLayout.fieldTrailingValueMaxWidth`.
+- Migrated remaining standard row/block separators through `CatchDivider`.
+  `design:section-dividers` now has zero high or medium findings; remaining
+  low inventory is decorative/skeleton/editorial geometry or core
+  implementation.
+- Extended `design:section-headers` with low-severity inventory for
+  `showHeader`/`showTitle` widget flags so section-title wrapper
+  proliferation is visible before it becomes another cleanup pass.
 
 ### 2.5.576
 

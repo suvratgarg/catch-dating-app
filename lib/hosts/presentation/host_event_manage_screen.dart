@@ -188,11 +188,9 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(sectionPickerHeight),
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(
-              CatchSpacing.s5,
-              CatchSpacing.s0,
-              CatchSpacing.s5,
-              CatchSpacing.s2,
+            padding: CatchInsets.pageBody.copyWith(
+              top: CatchSpacing.s0,
+              bottom: CatchSpacing.s2,
             ),
             child: HostManageSectionPicker(
               selectedSection: screenState.selectedSection,

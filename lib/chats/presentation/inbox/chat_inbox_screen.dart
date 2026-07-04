@@ -115,11 +115,9 @@ class HostBroadcastComposerSheet extends StatelessWidget {
         child: CatchSurface(
           backgroundColor: t.surface,
           borderColor: t.line,
-          padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.s5,
-            CatchSpacing.s4,
-            CatchSpacing.s5,
-            CatchSpacing.s5,
+          padding: CatchInsets.pageBody.copyWith(
+            top: CatchSpacing.s4,
+            bottom: CatchSpacing.s5,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,

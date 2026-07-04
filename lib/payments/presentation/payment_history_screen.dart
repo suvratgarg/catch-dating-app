@@ -332,11 +332,9 @@ class PaymentReceiptSheet extends StatelessWidget {
       child: SingleChildScrollView(
         child: CatchBottomSheetScaffold(
           title: eventTitle,
-          padding: EdgeInsets.fromLTRB(
-            CatchSpacing.s5,
-            CatchSpacing.s3,
-            CatchSpacing.s5,
-            CatchSpacing.s5 + bottomPadding,
+          padding: CatchInsets.pageBody.copyWith(
+            top: CatchSpacing.s3,
+            bottom: CatchSpacing.s5 + bottomPadding,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,

@@ -154,11 +154,9 @@ class _ExploreDiscoveryCoverHeaderState
       return ColoredBox(
         color: t.bg,
         child: Padding(
-          padding: EdgeInsets.fromLTRB(
-            CatchSpacing.s5,
-            topInset + CatchSpacing.s6,
-            CatchSpacing.s5,
-            CatchSpacing.s4,
+          padding: CatchInsets.pageBody.copyWith(
+            top: topInset + CatchSpacing.s6,
+            bottom: CatchSpacing.s4,
           ),
           child: CatchTopBar(
             leading: ExploreCityPicker(

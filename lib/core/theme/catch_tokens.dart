@@ -1638,9 +1638,9 @@ abstract final class CatchLayout {
   static const double statStripLabelFontSize = 9.0;
   static const double fieldRowVerticalPadding = 13.0;
   static const double fieldActionBarWrapBreakpoint = 220.0;
-  static const double fieldRowTextLaneInset =
-      CatchIcon.md + CatchSpacing.s3;
+  static const double fieldRowTextLaneInset = CatchIcon.md + CatchSpacing.s3;
   static const double fieldRowDividerIconInset = fieldRowTextLaneInset;
+  static const double fieldTrailingValueMaxWidth = 160.0;
   static const double searchFieldIconSize = 15.0;
   static const double searchFieldIconGap = 10.0;
   static const double searchFieldClearSize = 32.0;

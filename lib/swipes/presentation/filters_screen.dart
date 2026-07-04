@@ -194,11 +194,9 @@ class FiltersContent extends StatelessWidget {
       children: [
         Expanded(
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(
-              CatchSpacing.s5,
-              CatchSpacing.s2,
-              CatchSpacing.s5,
-              CatchSpacing.s5,
+            padding: CatchInsets.pageBody.copyWith(
+              top: CatchSpacing.s2,
+              bottom: CatchSpacing.s5,
             ),
             children: [
               FiltersSection(
@@ -244,11 +242,9 @@ class FiltersContent extends StatelessWidget {
         ),
         CatchBottomDock(
           includeSafeArea: false,
-          padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.s5,
-            CatchSpacing.s3,
-            CatchSpacing.s5,
-            CatchSpacing.s5,
+          padding: CatchInsets.pageBody.copyWith(
+            top: CatchSpacing.s3,
+            bottom: CatchSpacing.s5,
           ),
           child: CatchButton(
             key: SwipeKeys.applyFiltersButton,
@@ -272,11 +268,9 @@ class FiltersContentSkeleton extends StatelessWidget {
       children: [
         Expanded(
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(
-              CatchSpacing.s5,
-              CatchSpacing.s2,
-              CatchSpacing.s5,
-              CatchSpacing.s5,
+            padding: CatchInsets.pageBody.copyWith(
+              top: CatchSpacing.s2,
+              bottom: CatchSpacing.s5,
             ),
             children: const [
               FiltersSection(title: 'Age', child: AgeFilterSkeleton()),
@@ -289,11 +283,9 @@ class FiltersContentSkeleton extends StatelessWidget {
         ),
         CatchBottomDock(
           includeSafeArea: false,
-          padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.s5,
-            CatchSpacing.s3,
-            CatchSpacing.s5,
-            CatchSpacing.s5,
+          padding: CatchInsets.pageBody.copyWith(
+            top: CatchSpacing.s3,
+            bottom: CatchSpacing.s5,
           ),
           child: CatchSkeleton.box(
             width: double.infinity,

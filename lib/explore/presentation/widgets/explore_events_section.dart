@@ -19,11 +19,9 @@ export 'package:catch_dating_app/explore/presentation/widgets/explore_event_rows
 export 'package:catch_dating_app/explore/presentation/widgets/explore_event_support_widgets.dart';
 export 'package:catch_dating_app/explore/presentation/widgets/explore_events_status_slivers.dart';
 
-const EdgeInsets _exploreEventsErrorPadding = EdgeInsets.fromLTRB(
-  CatchSpacing.s5,
-  CatchSpacing.s3,
-  CatchSpacing.s5,
-  CatchSpacing.s3,
+final EdgeInsets _exploreEventsErrorPadding = CatchInsets.pageBody.copyWith(
+  top: CatchSpacing.s3,
+  bottom: CatchSpacing.s3,
 );
 
 /// Builds the Explore feed slivers: a mixed event/club discovery stream.
@@ -197,25 +195,19 @@ List<Widget> _exploreContentSlivers(
   if (sectionState.isEmpty) {
     return const [SliverToBoxAdapter(child: SizedBox.shrink())];
   }
-  final resultCountPadding = EdgeInsets.fromLTRB(
-    CatchSpacing.s5,
-    pinnedDayHeaders ? CatchSpacing.s4 : CatchSpacing.s3,
-    CatchSpacing.s5,
-    CatchSpacing.s1,
+  final resultCountPadding = CatchInsets.pageBody.copyWith(
+    top: pinnedDayHeaders ? CatchSpacing.s4 : CatchSpacing.s3,
+    bottom: CatchSpacing.s1,
   );
-  final thisWeekPadding = EdgeInsets.fromLTRB(
-    CatchSpacing.s5,
-    CatchSpacing.s3,
-    CatchSpacing.s5,
-    sectionState.cards.isEmpty ? CatchSpacing.s4 : CatchSpacing.s2,
+  final thisWeekPadding = CatchInsets.pageBody.copyWith(
+    top: CatchSpacing.s3,
+    bottom: sectionState.cards.isEmpty ? CatchSpacing.s4 : CatchSpacing.s2,
   );
-  final feedListPadding = EdgeInsets.fromLTRB(
-    CatchSpacing.s5,
-    sectionState.thisWeekItems.isEmpty
+  final feedListPadding = CatchInsets.pageBody.copyWith(
+    top: sectionState.thisWeekItems.isEmpty
         ? (pinnedDayHeaders ? CatchSpacing.s4 : CatchSpacing.s3)
         : CatchSpacing.s4,
-    CatchSpacing.s5,
-    CatchSpacing.s2,
+    bottom: CatchSpacing.s2,
   );
 
   return [

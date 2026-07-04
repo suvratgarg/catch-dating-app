@@ -62,21 +62,16 @@ part 'host_parts/event_success_host_report.dart';
 part 'host_parts/event_success_host_setup.dart';
 part 'host_parts/event_success_host_shared.dart';
 
-const EdgeInsets _hostTabPickerPadding = EdgeInsets.fromLTRB(
-  CatchSpacing.s5,
-  CatchSpacing.s4,
-  CatchSpacing.s5,
-  CatchSpacing.s2,
+final EdgeInsets _hostTabPickerPadding = CatchInsets.pageBody.copyWith(
+  top: CatchSpacing.s4,
+  bottom: CatchSpacing.s2,
 );
 const EdgeInsets _hostLaunchIssueGap = EdgeInsets.only(bottom: CatchSpacing.s1);
 const EdgeInsets _hostWingmanRequestGap = EdgeInsets.only(
   bottom: CatchSpacing.s2,
 );
-const EdgeInsets _hostWingmanRequestNotePadding = EdgeInsets.only(
-  left: CatchSpacing.s5,
-  right: CatchSpacing.s5,
-  bottom: CatchSpacing.s2,
-);
+final EdgeInsets _hostWingmanRequestNotePadding = CatchInsets.pageHorizontal
+    .copyWith(bottom: CatchSpacing.s2);
 
 MutationState<void>? _firstHostRosterMutationError(
   MutationState<void> Function(Mutation<void> mutation) watchMutation, {

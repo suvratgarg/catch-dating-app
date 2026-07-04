@@ -18,14 +18,9 @@ class DashboardEmptySliverBody extends StatelessWidget {
               constraints: const BoxConstraints(
                 maxWidth: CatchLayout.maxContentWidth,
               ),
-              child: const CatchSectionStack(
-                padding: EdgeInsets.fromLTRB(
-                  CatchSpacing.s5,
-                  CatchSpacing.s5,
-                  CatchSpacing.s5,
-                  CatchSpacing.screenPb,
-                ),
-                children: [
+              child: CatchSectionStack(
+                padding: CatchInsets.pageBody.copyWith(top: CatchSpacing.s5),
+                children: const [
                   CatchSection.divided(
                     title: 'How Catch works',
                     first: true,

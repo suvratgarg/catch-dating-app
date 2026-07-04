@@ -111,11 +111,9 @@ class CatchCoverStory extends StatelessWidget {
               children: [
                 if (hasChrome) CoverStoryChrome(paper: paper, story: this),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    CatchSpacing.s5,
-                    CatchSpacing.s11,
-                    CatchSpacing.s5,
-                    CatchSpacing.s6,
+                  padding: CatchInsets.pageBody.copyWith(
+                    top: CatchSpacing.s11,
+                    bottom: CatchSpacing.s6,
                   ),
                   child: CoverStoryContent(
                     paper: paper,
@@ -143,11 +141,9 @@ class CoverStoryChrome extends StatelessWidget {
     final topInset = MediaQuery.paddingOf(context).top;
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(
-        CatchSpacing.s5,
-        topInset + CatchSpacing.s3,
-        CatchSpacing.s5,
-        CatchSpacing.s0,
+      padding: CatchInsets.pageBody.copyWith(
+        top: topInset + CatchSpacing.s3,
+        bottom: CatchSpacing.s0,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

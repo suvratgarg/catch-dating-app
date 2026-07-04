@@ -31,11 +31,9 @@ class EmptyHeroCard extends StatelessWidget {
           children: [
             const Positioned.fill(child: CustomPaint(painter: _HeroLineWash())),
             Padding(
-              padding: const EdgeInsets.fromLTRB(
-                CatchSpacing.s5,
-                CatchSpacing.s12,
-                CatchSpacing.s5,
-                CatchSpacing.s5,
+              padding: CatchInsets.pageBody.copyWith(
+                top: CatchSpacing.s12,
+                bottom: CatchSpacing.s5,
               ),
               child: content,
             ),

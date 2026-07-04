@@ -557,7 +557,10 @@ void main() {
     final valueLeft = tester.getTopLeft(find.text('Contact us')).dx;
 
     expect(valueText.textAlign, TextAlign.right);
-    expect(valueBox.width, lessThanOrEqualTo(160));
+    expect(
+      valueBox.width,
+      lessThanOrEqualTo(CatchLayout.fieldTrailingValueMaxWidth),
+    );
     expect(valueLeft, greaterThan(labelRight));
   });
 
@@ -2246,10 +2249,10 @@ void main() {
     (tester) async {
       await tester.pumpWidget(
         _wrap(
-        SizedBox(
-          width: 360,
-          child: CatchSection.contained(
-            child: CatchField.read(
+          SizedBox(
+            width: 360,
+            child: CatchSection.contained(
+              child: CatchField.read(
                 title: 'Notifications',
                 valueText: 'On',
                 icon: CatchIcons.helpOutline,
@@ -3698,7 +3701,7 @@ void main() {
     expect(find.text('Owner club'), findsOneWidget);
     expect(find.text('OWNER'), findsOneWidget);
     expect(find.byIcon(CatchIcons.check), findsOneWidget);
-    expect(find.byType(Divider), findsOneWidget);
+    expect(find.byType(CatchDivider), findsOneWidget);
     expect(find.byType(CatchMenuRow<String>), findsNWidgets(2));
 
     await tester.tap(find.text('Delete club'));

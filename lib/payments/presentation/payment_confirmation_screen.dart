@@ -204,7 +204,10 @@ class PaymentCheckoutEventBackdrop extends StatelessWidget {
               ),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(CatchSpacing.s5),
+              padding: CatchInsets.pageBody.copyWith(
+                top: CatchSpacing.s5,
+                bottom: CatchSpacing.s5,
+              ),
               child: Align(
                 alignment: Alignment.bottomLeft,
                 child: Text(
@@ -218,11 +221,9 @@ class PaymentCheckoutEventBackdrop extends StatelessWidget {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.s5,
-            CatchSpacing.s4,
-            CatchSpacing.s5,
-            0,
+          padding: CatchInsets.pageBody.copyWith(
+            top: CatchSpacing.s4,
+            bottom: 0,
           ),
           child: Text(
             '${event.longDateLabel} · ${event.timeRangeLabel} · '
@@ -280,11 +281,9 @@ class PaymentCheckoutSheet extends StatelessWidget {
         top: Radius.circular(CatchRadius.heroCard),
       ),
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s5,
-        CatchSpacing.s3,
-        CatchSpacing.s5,
-        CatchSpacing.s6,
+      padding: CatchInsets.pageBody.copyWith(
+        top: CatchSpacing.s3,
+        bottom: CatchSpacing.s6,
       ),
       child: ConstrainedBox(
         constraints: const BoxConstraints(

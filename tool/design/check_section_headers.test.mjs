@@ -140,6 +140,54 @@ test("scanSectionHeaders covers lib, test, and widgetbook sources", () => {
   assert.equal(result.counts.medium, 1);
 });
 
+test("inventories showHeader and showTitle widget flags as low advisory findings", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-section-headers-"));
+  writeFile(
+    root,
+    "lib/events/presentation/widgets/first_section.dart",
+    [
+      "class FirstSection extends StatelessWidget {",
+      "  const FirstSection({super.key, this.showHeader = true});",
+      "  final bool showHeader;",
+      "  Widget build(context) => const SizedBox.shrink();",
+      "}",
+    ].join("\n"),
+  );
+  writeFile(
+    root,
+    "lib/events/presentation/widgets/second_section.dart",
+    [
+      "class SecondSection extends StatelessWidget {",
+      "  const SecondSection({super.key, this.showTitle = true});",
+      "  final bool showTitle;",
+      "  Widget build(context) => const SizedBox.shrink();",
+      "}",
+    ].join("\n"),
+  );
+  writeFile(
+    root,
+    "lib/events/presentation/widgets/third_section.dart",
+    [
+      "class ThirdSection extends StatelessWidget {",
+      "  const ThirdSection({super.key, this.showHeader = true});",
+      "  final bool showHeader;",
+      "  Widget build(context) => const SizedBox.shrink();",
+      "}",
+    ].join("\n"),
+  );
+
+  const result = scanSectionHeaders({root});
+
+  assert.equal(result.headerFlagInventory.count, 3);
+  assert.equal(result.counts.low, 3);
+  assert.deepEqual(
+    result.headerFlagInventory.widgets.map((widget) => widget.className),
+    ["FirstSection", "SecondSection", "ThirdSection"],
+  );
+  assert.equal(result.counts.high, 0);
+  assert.equal(result.counts.medium, 0);
+});
+
 function scanSectionHeadersFromFixture(source) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-section-headers-"));
   writeFile(root, "lib/events/presentation/widgets/event_detail.dart", source);

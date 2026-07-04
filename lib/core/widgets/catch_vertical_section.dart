@@ -15,7 +15,7 @@ import 'package:flutter/material.dart';
 ///   SliverList.separated(
 ///     itemCount: itemCount,
 ///     itemBuilder: (_, i) => Padding(
-///       padding: EdgeInsets.symmetric(horizontal: CatchSpacing.s5),
+///       padding: EdgeInsets.symmetric(horizontal: CatchSpacing.screenPx),
 ///       child: itemBuilder(context, i),
 ///     ),
 ///     separatorBuilder: (_, _) => SizedBox(height: spacing),
@@ -37,9 +37,9 @@ class CatchVerticalSection extends StatelessWidget {
   final double spacing;
 
   static const _headerPadding = EdgeInsets.fromLTRB(
-    CatchSpacing.s5,
+    CatchSpacing.screenPx,
     CatchSpacing.micro14,
-    CatchSpacing.s5,
+    CatchSpacing.screenPx,
     CatchSpacing.s2,
   );
 
@@ -55,7 +55,9 @@ class CatchVerticalSection extends StatelessWidget {
           padding: _headerPadding,
         ),
         ListView.separated(
-          padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s5),
+          padding: const EdgeInsets.symmetric(
+            horizontal: CatchSpacing.screenPx,
+          ),
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: itemCount,

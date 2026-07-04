@@ -1980,7 +1980,9 @@ class CatchFieldTrailing extends StatelessWidget {
       builder: (context) {
         final t = CatchTokens.of(context);
         return ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 160),
+          constraints: const BoxConstraints(
+            maxWidth: CatchLayout.fieldTrailingValueMaxWidth,
+          ),
           child: Text(
             text,
             textAlign: TextAlign.right,

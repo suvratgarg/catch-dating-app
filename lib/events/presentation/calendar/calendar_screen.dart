@@ -625,11 +625,9 @@ class CalendarStatsHeader extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s5,
-        CatchSpacing.micro2,
-        CatchSpacing.s5,
-        CatchSpacing.s3,
+      padding: CatchInsets.pageBody.copyWith(
+        top: CatchSpacing.micro2,
+        bottom: CatchSpacing.s3,
       ),
       child: Center(
         child: ConstrainedBox(
@@ -684,11 +682,9 @@ class CalendarStatsHeaderSkeleton extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s5,
-        CatchSpacing.micro2,
-        CatchSpacing.s5,
-        CatchSpacing.s3,
+      padding: CatchInsets.pageBody.copyWith(
+        top: CatchSpacing.micro2,
+        bottom: CatchSpacing.s3,
       ),
       child: Center(
         child: ConstrainedBox(

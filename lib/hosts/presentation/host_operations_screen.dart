@@ -478,12 +478,7 @@ class _HostEventsScaffoldState extends State<HostEventsScaffold> {
         body: SafeArea(
           bottom: false,
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(
-              CatchSpacing.screenPx,
-              CatchSpacing.s12,
-              CatchSpacing.screenPx,
-              CatchSpacing.screenPb,
-            ),
+            padding: CatchInsets.pageBody.copyWith(top: CatchSpacing.s12),
             children: [
               if (selectedClub == null)
                 HostEmptyActionCard(
@@ -686,12 +681,7 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold> {
         bottom: false,
         child: ListView(
           padding: organizerMode
-              ? const EdgeInsets.fromLTRB(
-                  CatchSpacing.screenPx,
-                  CatchSpacing.s12,
-                  CatchSpacing.screenPx,
-                  CatchSpacing.screenPb,
-                )
+              ? CatchInsets.pageBody.copyWith(top: CatchSpacing.s12)
               : CatchInsets.pageBodyUnderHeader,
           children: [
             if (selectedClub == null)

@@ -25,11 +25,9 @@ const double _ticketRailCardWidth = CatchLayout.exploreTicketRailCardWidth;
 const double _ticketRailHeight = CatchLayout.exploreTicketRailHeight;
 const double _ticketRailCardSpacing = CatchSpacing.s3;
 const double _mapAreaScopeThresholdMeters = 25000;
-const EdgeInsets _mapSheetLeadPadding = EdgeInsets.fromLTRB(
-  CatchSpacing.s5,
-  CatchSpacing.micro2,
-  CatchSpacing.s5,
-  CatchSpacing.s4,
+final EdgeInsets _mapSheetLeadPadding = CatchInsets.pageBody.copyWith(
+  top: CatchSpacing.micro2,
+  bottom: CatchSpacing.s4,
 );
 
 enum ExploreMapSheetLeadMode { collapsedSummary, selectedEvent, nearbyRail }
@@ -67,9 +65,9 @@ List<Widget> buildExploreMapSheetLeadSlivers({
                 )
               : const PeekRailSkeleton(),
         AsyncError(:final error) => Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: CatchSpacing.s5,
-            vertical: CatchSpacing.s3,
+          padding: CatchInsets.pageBody.copyWith(
+            top: CatchSpacing.s3,
+            bottom: CatchSpacing.s3,
           ),
           child: CatchInlineErrorState.fromError(
             error,

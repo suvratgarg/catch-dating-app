@@ -16,6 +16,7 @@ const sectionHeaderPattern =
 const kickerPattern =
   /\bCatchKicker\s*\([\s\S]{0,260}?\blabel\s*:\s*(["'])([^"'\n]{2,96})\1/gu;
 const classInstantiationPattern = /\b([A-Z][A-Za-z0-9_]*)\s*\(/gu;
+const headerFlagFieldPattern = /\bfinal\s+bool\s+(showHeader|showTitle)\s*;/gu;
 
 const primitiveImplementationPrefixes = ["lib/core/widgets/"];
 
@@ -42,6 +43,7 @@ export function scanSectionHeaders({root = repoRoot} = {}) {
   }
 
   const propagatedHeaders = buildPropagatedHeaderMap(classMap);
+  const headerFlagInventory = collectHeaderFlagInventory(classMap);
 
   for (const [relativePath, source] of sources) {
     findings.push(
@@ -53,12 +55,17 @@ export function scanSectionHeaders({root = repoRoot} = {}) {
       }),
     );
   }
+  findings.push(...headerFlagInventory.findings);
 
   findings.sort(compareFindings);
   return {
     filesScanned: sources.size,
     findings,
     counts: summarize(findings),
+    headerFlagInventory: {
+      count: headerFlagInventory.widgets.length,
+      widgets: headerFlagInventory.widgets,
+    },
   };
 }
 
@@ -237,6 +244,73 @@ function collectHeaderLiterals(source) {
   return uniqueHeaders(headers);
 }
 
+function collectHeaderFlagInventory(classMap) {
+  const widgets = [];
+  const findings = [];
+
+  for (const info of classMap.values()) {
+    const flags = collectDeclaredHeaderFlags(info);
+    if (flags.length === 0) continue;
+
+    widgets.push({
+      className: info.className,
+      path: info.relativePath,
+      line: info.line,
+      flags,
+    });
+    findings.push({
+      path: info.relativePath,
+      line: info.line,
+      level: "low",
+      rule: "SECTION-HEADER-002",
+      reason:
+        "Widget exposes a showHeader/showTitle content-only flag; keep an eye on whether this should become an extracted content-only child.",
+      expression: `${info.className} declares ${flags.join(", ")}`,
+    });
+  }
+
+  widgets.sort(
+    (a, b) =>
+      a.path.localeCompare(b.path) ||
+      a.line - b.line ||
+      a.className.localeCompare(b.className),
+  );
+  findings.sort(compareFindings);
+  return {widgets, findings};
+}
+
+function collectDeclaredHeaderFlags(info) {
+  const flags = new Set();
+  headerFlagFieldPattern.lastIndex = 0;
+  for (const match of info.source.matchAll(headerFlagFieldPattern)) {
+    const flagName = match[1];
+    if (constructorDeclaresParameter(info, flagName)) {
+      flags.add(flagName);
+    }
+  }
+  return [...flags].sort();
+}
+
+function constructorDeclaresParameter(info, flagName) {
+  const pattern = new RegExp(`\\b(?:const\\s+)?${info.className}\\s*\\(`, "gu");
+  const commentStripped = stripDartCommentsPreserveLength(info.source);
+  pattern.lastIndex = 0;
+  for (const match of commentStripped.matchAll(pattern)) {
+    const start = match.index ?? 0;
+    const openParen = commentStripped.indexOf("(", start);
+    const end = findBalancedClose(commentStripped, openParen);
+    if (end == null) continue;
+    const constructorSource = info.source.slice(start, end + 1);
+    if (
+      new RegExp(`\\bthis\\.${flagName}\\b`, "u").test(constructorSource) ||
+      new RegExp(`\\bbool\\s+${flagName}\\b`, "u").test(constructorSource)
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
 function extractTopLevelStringArgument(expression, name) {
   const openParen = expression.indexOf("(");
   const closeParen = expression.lastIndexOf(")");
@@ -364,11 +438,31 @@ function runCli() {
 }
 
 function printSummary(result, {maxRows, includeLow}) {
+  const headerFlagInventory = result.headerFlagInventory ?? {
+    count: 0,
+    widgets: [],
+  };
   console.log("Section header ownership advisory:");
   console.log(`Files scanned: ${result.filesScanned}`);
   console.log(`High-confidence duplicate headers: ${result.counts.high}`);
   console.log(`Medium section/card review candidates: ${result.counts.medium}`);
   console.log(`Low inventory items: ${result.counts.low}`);
+  console.log(`Header flag widget classes: ${headerFlagInventory.count}`);
+  for (const item of headerFlagInventory.widgets.slice(0, maxRows)) {
+    console.log(
+      `  - ${item.className} (${item.flags.join(", ")}) ${item.path}:${item.line}`,
+    );
+  }
+  if (headerFlagInventory.count > maxRows) {
+    console.log(
+      `  ... ${headerFlagInventory.count - maxRows} more header flag widgets omitted by --max`,
+    );
+  }
+  if (headerFlagInventory.count >= 3) {
+    console.log(
+      "Advisory: showHeader/showTitle flags have reached 3+ widgets; consider extracting content-only children before adding more.",
+    );
+  }
 
   const rows = result.findings
     .filter((finding) => includeLow || finding.level !== "low")
