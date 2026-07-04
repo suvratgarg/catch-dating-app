@@ -178,9 +178,9 @@ Cross-cutting decisions (made in this review):
   Schedule/Reviews headings.
 - **G2. Section loading = skeletons, never spinners or copy
   (owner-approved 2026-07-05).** Event
-  detail's companion/hosts loading states use centered
-  `CatchLoadingIndicator`; replace with skeleton rows (host skeleton already
-  exists in the optimistic body). Same doctrine as Dashboard D3.
+  detail's companion/hosts loading states used centered
+  `CatchLoadingIndicator`; fixed in `fca49f467` with shared skeleton rows.
+  Same doctrine as Dashboard D3.
 - **G3. Surface style becomes an ambient scope.** `EventDetailSurfaceStyle`
   is threaded through ~96 references, with cards like `EventDetailHostCard`
   taking seven separate color slots. Introduce an InheritedWidget scope
@@ -211,8 +211,8 @@ section loading is skeleton-based (G2), the optimistic render IS
 `EventDetailBody` with `hostState`/`socialState` in loading, guest-mode
 callbacks injected (save → auth redirect, share/calendar hidden), and the
 same Scaffold provided by the route screen for both branches. Delete
-`EventDetailOptimisticBody`; keep `OptimisticHostsSkeleton` as the shared
-hosts loading skeleton (renamed to `EventDetailHostsSkeleton`).
+`EventDetailOptimisticBody`; keep `EventDetailHostsSkeleton` as the shared
+hosts loading skeleton (rename landed in `fca49f467`).
 
 ### E2. `EventCompanionCard` / `EventInviteLoopCard` are in-file twins `[codex]`
 
@@ -223,11 +223,12 @@ onAction, borderColor?})`; the two call sites pass their copy. (Check the
 dashboard stride connect card against it in passing — if it matches, note it
 for a third-occurrence core promotion, don't do it now.)
 
-### E3. Spinner loading in companion/hosts sections `[codex]` (G2 approved)
+### E3. Spinner loading in companion/hosts sections `[done fca49f467]` (G2 approved)
 
-`EventCompanionEntry.loading` and `EventDetailHostsSection.loading` render
-`Center(CatchLoadingIndicator())`. Replace with skeletons: hosts uses the E1
-skeleton; companion gets a one-surface skeleton mimic of its callout card.
+`EventCompanionEntry.loading` and `EventDetailHostsSection.loading` rendered
+`Center(CatchLoadingIndicator())`. They now use content-shaped skeletons:
+hosts uses `EventDetailHostsSkeleton`, and companion uses
+`EventDetailCompanionSkeleton`.
 
 ### E4. `LegacyEventHeroSurface` `[codex]`
 
