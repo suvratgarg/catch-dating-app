@@ -2711,6 +2711,34 @@
       }
     },
     {
+      "id": "design:section-dividers",
+      "category": "design",
+      "path": "tool/design/check_section_dividers.mjs",
+      "command": "node tool/design/check_section_dividers.mjs --summary",
+      "safety": "local",
+      "status": "active",
+      "description": "Reports raw Divider inventory and high-confidence CatchSection row-divider misuse so row and section hairlines route through CatchDivider roles.",
+      "checks": [
+        "node --check tool/design/check_section_dividers.mjs",
+        "node --test tool/design/check_section_dividers.test.mjs",
+        "node tool/design/check_section_dividers.mjs --summary --max 25 --fail-on high"
+      ],
+      "role": "finder",
+      "rules": [
+        "DESIGN-PRIMITIVES-001",
+        "DESIGN-TOKENS-001",
+        "UI-LINT-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/check_section_dividers.test.mjs",
+        "contains": [
+          "flags caller-owned internalDividerColor on divided sections",
+          "flags raw dividers using old row divider opacities"
+        ]
+      }
+    },
+    {
       "id": "design:reference-screens",
       "category": "design",
       "path": "tool/design/check_reference_screens.mjs",

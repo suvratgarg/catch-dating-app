@@ -671,9 +671,7 @@ void main() {
       );
 
       final sectionRect = tester.getRect(find.byType(CatchSection));
-      final firstIconRect = tester.getRect(
-        find.byIcon(CatchIcons.helpOutline),
-      );
+      final firstIconRect = tester.getRect(find.byIcon(CatchIcons.helpOutline));
       expect(firstIconRect.left, sectionRect.left);
 
       final dividerRect = tester.getRect(
@@ -686,6 +684,21 @@ void main() {
       );
       expect(dividerRect.left - sectionRect.left, CatchFieldRow.textLaneInset);
       expect(dividerRect.right, sectionRect.right);
+
+      final dividerBox = tester.widget<ColoredBox>(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is ColoredBox &&
+              widget.child is SizedBox &&
+              (widget.child as SizedBox).height == CatchStroke.hairline,
+        ),
+      );
+      expect(
+        dividerBox.color,
+        CatchTokens.sunsetLight.line.withValues(
+          alpha: CatchOpacity.fieldRowDivider,
+        ),
+      );
     },
   );
 

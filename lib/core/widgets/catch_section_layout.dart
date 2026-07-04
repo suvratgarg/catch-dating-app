@@ -2,11 +2,14 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart'
     show CatchFieldInsetScope;
 import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
+
+export 'package:catch_dating_app/core/widgets/catch_divider.dart';
 
 /// Standard page body padding wrapper for non-sliver content.
 ///
@@ -220,7 +223,8 @@ class CatchSection extends StatelessWidget {
     this._variant = _CatchSectionVariant.divided,
     this.dividerColor,
     this.dividerIndent = 0,
-    this.internalDividerColor,
+    this.dividerRole = CatchDividerRole.section,
+    this.internalDividerRole = CatchDividerRole.fieldRow,
     this.titleColor,
     this.bodyGap = CatchSpacing.s3,
     this.padding,
@@ -247,7 +251,8 @@ class CatchSection extends StatelessWidget {
     bool first = false,
     Color? dividerColor,
     double dividerIndent = 0,
-    Color? internalDividerColor,
+    CatchDividerRole dividerRole = CatchDividerRole.section,
+    CatchDividerRole internalDividerRole = CatchDividerRole.fieldRow,
     Color? titleColor,
     double bodyGap = CatchSpacing.s3,
     bool showInternalDividers = true,
@@ -263,7 +268,8 @@ class CatchSection extends StatelessWidget {
          variant: _CatchSectionVariant.divided,
          dividerColor: dividerColor,
          dividerIndent: dividerIndent,
-         internalDividerColor: internalDividerColor,
+         dividerRole: dividerRole,
+         internalDividerRole: internalDividerRole,
          titleColor: titleColor,
          bodyGap: bodyGap,
          showInternalDividers: showInternalDividers,
@@ -339,7 +345,8 @@ class CatchSection extends StatelessWidget {
   final _CatchSectionVariant _variant;
   final Color? dividerColor;
   final double dividerIndent;
-  final Color? internalDividerColor;
+  final CatchDividerRole dividerRole;
+  final CatchDividerRole internalDividerRole;
   final Color? titleColor;
   final double bodyGap;
   final EdgeInsetsGeometry? padding;
@@ -391,7 +398,11 @@ class CatchSection extends StatelessWidget {
       padding: const EdgeInsets.only(top: CatchSpacing.s6),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          border: Border(top: BorderSide(color: dividerColor ?? t.line)),
+          border: Border(
+            top: BorderSide(
+              color: dividerColor ?? CatchDivider.colorFor(t, dividerRole),
+            ),
+          ),
         ),
         child: Padding(
           padding: const EdgeInsets.only(top: CatchSpacing.s6),
@@ -515,10 +526,7 @@ class CatchSection extends StatelessWidget {
                   top: 0,
                   left: dividerIndent,
                   right: 0,
-                  child: ColoredBox(
-                    color: internalDividerColor ?? t.line,
-                    child: const SizedBox(height: CatchStroke.hairline),
-                  ),
+                  child: CatchDivider(role: internalDividerRole),
                 ),
               ],
             ),

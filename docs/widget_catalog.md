@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.574
+version: 2.5.575
 updated: 2026-07-04
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,22 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.575
+
+- Added `CatchDivider` as the semantic hairline leaf for section separators and
+  field-row/list dividers. `CatchSection.divided` now defaults internal
+  dividers to the `fieldRow` role, while inter-section dividers keep the
+  `section` role, and no longer exposes a caller-owned
+  `internalDividerColor` escape hatch. `CatchField.divider`,
+  `CatchPersonRow.divider`, row-shaped skeletons, Settings blocked-account
+  rows, Notifications skeleton rows, and host/chats row skeleton separators now
+  route through the shared divider role instead of local
+  `Divider`/`ColoredBox` recipes.
+- Added `tool/design/check_section_dividers.mjs`, which fails on
+  high-confidence old section-row divider misuse (`internalDividerColor` on
+  `CatchSection.divided`, old row-divider opacities) and reports remaining raw
+  `Divider` uses as review inventory.
 
 ### 2.5.574
 
@@ -80,13 +96,14 @@ a feature section here only when auditing that feature's widget surface.
   publishes `flush: true` so rows drop that inset. `CatchSection.divided`
   publishes the scope, so field rows inside any divided section run
   edge-to-edge within the section gutter.
-- `CatchSection.divided` gains `dividerIndent` and `internalDividerColor`.
-  `ProfileInfoSection` now routes grouped dividers through the section with
+- `CatchSection.divided` gained `dividerIndent` so `ProfileInfoSection` could
+  route grouped dividers through the section with
   `dividerIndent: CatchFieldRow.textLaneInset` instead of hand-rolled
-  full-width `Divider`s. `textLaneInset` derives from the new
-  `CatchFieldRow.leadingSlotIconSize` + `leadingSlotGap` metrics (the leading
-  slot renders from the same constants), so resizing leading icons moves
-  text-lane-aligned dividers automatically — no hardcoded divider indents.
+  full-width `Divider`s. `textLaneInset` derives from the leading-slot metrics
+  (the leading slot renders from the same constants), so resizing leading icons
+  moves text-lane-aligned dividers automatically — no hardcoded divider
+  indents. Divider color is now owned by `CatchDivider` roles instead of a
+  per-section `internalDividerColor` override.
 - `CatchField`'s internal `divider:` chrome and the Profile Edit skeleton
   mimic (`ProfileInfoSkeletonTile`, section skeleton dividers) derive from the
   same row metrics instead of `CatchLayout.settingsRowDividerIconInset` /
@@ -5652,6 +5669,7 @@ Generated 2026-05-06.
 | `CatchNetworkImage` | `lib/core/widgets/catch_network_image.dart:19` | Canonical remote/bundled image primitive. Keeps the existing decode-size capped `Image.network` path for remote photos, renders `assets/` and `packages/` paths through `Image.asset` for deterministic fixture/capture use, and preserves caller-owned framing, fitting, semantics, loading, and branded fallback behavior. |
 | `CatchNetworkImageFallback` | `lib/core/widgets/catch_network_image.dart:92` | Direct branded image fallback renderer used by `CatchNetworkImage` when remote or bundled image loading fails and callers do not provide a custom error builder. |
 | `CatchPageBody` / `CatchScreenBody` / `CatchSectionStack` / `CatchSectionList` / `CatchSection` / `CatchDetailSliverSectionList` | `lib/core/widgets/catch_section_layout.dart:9` | Semantic body and section composition primitives. `CatchScreenBody` maps the handoff scrolling body with `screenPx` gutter, `pt`/`pb` overrides, full-bleed gutter opt-out, and optional non-scroll mode; `CatchSectionStack` maps the handoff `SectionStack` gutter and defaults to no inserted section gap; `CatchSection` is the canonical information-grouping primitive with named constructors for divided hairline groups, contained rounded groups, and plain titled blocks, plus optional count/trailing content and optional lead activity accent; `CatchDetailSliverSectionList` provides sliver-native page gutters with the same section-owned rhythm by default. `CatchSection`, `CatchScreenBody`, and `CatchSectionStack` are registered as formal component contracts (`catch.section`, `catch.screen_body`, `catch.section_stack`); Widgetbook exposes contract states for section, scrolling/non-scroll body modes, and stack rhythm. |
+| `CatchDivider` | `lib/core/widgets/catch_divider.dart:6` | Semantic hairline divider primitive for section and field-row/list separators. Use `CatchDivider.section` for full-strength section chrome and `CatchDivider.fieldRow` for muted text-lane row dividers; `CatchSection.divided`, `CatchField.divider`, `CatchPersonRow.divider`, and row-shaped skeletons route through these roles so color, width, and text-lane measurement stay centralized. |
 | `CatchSectionFocusSurface` | `lib/core/widgets/catch_section_layout.dart:509` | Public `catch.section` member for contained-section focus and error chrome. It wraps `CatchSurface.card`, watches descendant focus, and applies the section focus ring or danger border while `CatchSection.contained` remains the product-facing API. |
 | `EventActivityVisualSpec` / `EventActivityBackdrop` | `lib/core/widgets/event_activity_visuals.dart:17` | Mutable presentation schema for `ActivityKind` imagery. Centralizes activity label, icon, gradient palette, pattern, and browse-order choices so Explore cards, spotlight cards, thumbnails, browse tiles, and event detail headers do not fork color decisions. |
 | `EventTicketPerforatedDivider` / `EventTicketShapeClipper` | `lib/core/widgets/event_ticket_surface.dart:10` | Shared event-ticket shape primitives. The divider and clipper own horizontal perforation, ticket notch constants, and ticket shape geometry used by ticket cards, spotlight cards, date-rail cards, and ticket-mode event detail headers; full-card Hero flights now call `catchHeroSurface` directly instead of routing through a widget alias. |

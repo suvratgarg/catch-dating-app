@@ -1638,8 +1638,9 @@ abstract final class CatchLayout {
   static const double statStripLabelFontSize = 9.0;
   static const double fieldRowVerticalPadding = 13.0;
   static const double fieldActionBarWrapBreakpoint = 220.0;
-  static const double fieldRowDividerIconInset =
-      CatchIcon.control + CatchSpacing.s3;
+  static const double fieldRowTextLaneInset =
+      CatchIcon.md + CatchSpacing.s3;
+  static const double fieldRowDividerIconInset = fieldRowTextLaneInset;
   static const double searchFieldIconSize = 15.0;
   static const double searchFieldIconGap = 10.0;
   static const double searchFieldClearSize = 32.0;
@@ -1667,8 +1668,7 @@ abstract final class CatchLayout {
       CatchSpacing.micro10 + CatchStroke.hairline;
   static const double settingsRowVerticalPadding =
       CatchSpacing.s3 + CatchStroke.hairline;
-  static const double settingsRowDividerIconInset =
-      CatchIcon.row + CatchSpacing.s3;
+  static const double settingsRowDividerIconInset = fieldRowTextLaneInset;
   static const double settingsRowChevronIconSize = CatchIcon.xs;
   static const double clubProfileImagePickerExtent = 120.0;
   static const double clubCoverThumbnailExtent = 64.0;

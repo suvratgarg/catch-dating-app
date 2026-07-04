@@ -32,6 +32,7 @@ function runGate() {
     "node tool/design/check_screen_coverage.mjs --advisory",
     "node tool/design/check_screen_contract_hygiene.mjs --summary",
     "node tool/design/check_screen_gutters.mjs --summary",
+    "node tool/design/check_section_dividers.mjs --summary",
   ];
 
   for (const commandLine of blocking) {

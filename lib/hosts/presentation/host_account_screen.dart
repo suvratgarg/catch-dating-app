@@ -189,9 +189,6 @@ class HostSettingsSection extends StatelessWidget {
       first: first,
       bodyGap: CatchSpacing.micro10,
       dividerIndent: CatchFieldRow.textLaneInset,
-      internalDividerColor: CatchTokens.of(
-        context,
-      ).line.withValues(alpha: CatchOpacity.fieldRowDivider),
       children: children,
     );
   }

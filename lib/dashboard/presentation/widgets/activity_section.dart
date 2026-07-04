@@ -201,7 +201,6 @@ class NotificationRowSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final row = Padding(
       padding: CatchInsets.contentVerticalMedium,
       child: Row(
@@ -238,14 +237,11 @@ class NotificationRowSkeleton extends StatelessWidget {
     return Stack(
       children: [
         if (divider)
-          Positioned(
+          const Positioned(
             top: 0,
-            left: CatchIcon.md + CatchSpacing.s3,
+            left: 0,
             right: 0,
-            child: Divider(
-              height: 1,
-              color: t.line.withValues(alpha: CatchOpacity.subtleBorder),
-            ),
+            child: CatchDivider.fieldRow(),
           ),
         row,
       ],

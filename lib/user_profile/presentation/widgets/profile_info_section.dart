@@ -24,7 +24,6 @@ class ProfileInfoSection extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    final t = CatchTokens.of(context);
     // The section owns the gutter and the dividers: rows render flush via
     // CatchSection.divided's inset scope, and dividers align to the field
     // text lane (derived from the leading-slot metrics, not hardcoded).
@@ -34,9 +33,6 @@ class ProfileInfoSection extends StatelessWidget {
       first: first,
       bodyGap: CatchSpacing.micro10,
       dividerIndent: CatchFieldRow.textLaneInset,
-      internalDividerColor: t.line.withValues(
-        alpha: CatchOpacity.fieldRowDivider,
-      ),
       children: children,
     );
   }

@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
+import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
@@ -773,7 +774,7 @@ class _CatchFieldState extends State<CatchField> {
                 (_hasLeadingSlot ? CatchFieldRow.textLaneInset : 0),
             right: _rowPadding.right,
             child: ColoredBox(
-              color: t.line,
+              color: CatchDivider.colorFor(t, CatchDividerRole.fieldRow),
               child: const SizedBox(height: CatchStroke.hairline),
             ),
           ),
@@ -1879,7 +1880,7 @@ class CatchFieldRow extends StatelessWidget {
   /// lane starts when a leading slot is present. Containers that draw
   /// text-lane-aligned dividers derive their indent from this instead of
   /// hardcoding it, so resizing the leading icon moves the dividers too.
-  static const double textLaneInset = leadingSlotIconSize + leadingSlotGap;
+  static const double textLaneInset = CatchLayout.fieldRowTextLaneInset;
 
   static const _defaultPadding = EdgeInsets.fromLTRB(
     CatchSpacing.s4,

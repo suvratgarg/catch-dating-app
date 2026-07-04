@@ -542,6 +542,11 @@
       ],
       "enforcement": [
         {
+          "tool": "design:section-dividers",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/widget_catalog.md"
+        },
+        {
           "stage": "manual",
           "docAnchor": "docs/audit_registry/rules.json"
         }
@@ -685,6 +690,11 @@
       ],
       "enforcement": [
         {
+          "tool": "design:section-dividers",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/widget_catalog.md"
+        },
+        {
           "tool": "scanner:ui-local-constant-wrappers",
           "stage": "analyzer-warning",
           "docAnchor": "docs/app_architecture.md#token-tier-model"
@@ -746,6 +756,11 @@
         {
           "tool": "scanner:ui-local-constant-wrappers",
           "stage": "analyzer-warning",
+          "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
+        },
+        {
+          "tool": "design:section-dividers",
+          "stage": "scanner-gate",
           "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
         }
       ]

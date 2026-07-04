@@ -2115,14 +2115,11 @@ class HostOrganizerTeamRow extends StatelessWidget {
     return Stack(
       children: [
         if (divider)
-          Positioned(
+          const Positioned(
             top: 0,
             left: CatchLayout.hostOrganizerTeamDividerInset,
             right: 0,
-            child: ColoredBox(
-              color: t.line.withValues(alpha: CatchOpacity.fieldRowDivider),
-              child: const SizedBox(height: CatchStroke.hairline),
-            ),
+            child: CatchDivider(),
           ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s3),
@@ -3219,7 +3216,7 @@ class HostAnalyticsEventTile extends StatelessWidget {
     final t = CatchTokens.of(context);
     return Column(
       children: [
-        if (divider) Divider(height: 1, color: t.line),
+        if (divider) const CatchDivider(),
         CatchSurface(
           tone: CatchSurfaceTone.transparent,
           borderWidth: 0,

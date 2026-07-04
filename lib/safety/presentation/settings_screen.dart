@@ -502,9 +502,6 @@ class SettingsSection extends StatelessWidget {
       first: first,
       bodyGap: CatchSpacing.micro10,
       dividerIndent: CatchFieldRow.textLaneInset,
-      internalDividerColor: CatchTokens.of(
-        context,
-      ).line.withValues(alpha: CatchOpacity.fieldRowDivider),
       children: children,
     );
 
@@ -578,10 +575,7 @@ class BlockedAccountsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        ColoredBox(
-          color: t.line.withValues(alpha: CatchOpacity.profileInfoDivider),
-          child: const SizedBox(height: CatchStroke.hairline),
-        ),
+        const CatchDivider(),
         switch (state.status) {
           SettingsBlockedAccountsStatus.loading =>
             const BlockedAccountsSkeleton(),
@@ -606,15 +600,13 @@ class BlockedAccountsSection extends StatelessWidget {
           ),
           SettingsBlockedAccountsStatus.content => Column(
             children: [
-              for (var i = 0; i < state.rows.length; i++) ...[
+              for (var i = 0; i < state.rows.length; i++)
                 BlockedAccountTile(
                   row: state.rows[i],
+                  divider: i > 0,
                   unblocking: unblocking,
                   onUnblock: onUnblock,
                 ),
-                if (i < state.rows.length - 1)
-                  Divider(color: t.line, height: 1),
-              ],
             ],
           ),
         },
@@ -665,14 +657,7 @@ class BlockedAccountsSkeleton extends StatelessWidget {
                 ),
               ],
             ),
-            if (index < 2) ...[
-              gapH12,
-              ColoredBox(
-                color: CatchTokens.of(context).line,
-                child: const SizedBox(height: CatchStroke.hairline),
-              ),
-              gapH12,
-            ],
+            if (index < 2) ...[gapH12, const CatchDivider(), gapH12],
           ],
         ],
       ),
@@ -684,11 +669,13 @@ class BlockedAccountTile extends StatelessWidget {
   const BlockedAccountTile({
     super.key,
     required this.row,
+    required this.divider,
     required this.unblocking,
     required this.onUnblock,
   });
 
   final SettingsBlockedAccountRow row;
+  final bool divider;
   final bool unblocking;
   final ValueChanged<String> onUnblock;
 
@@ -701,6 +688,7 @@ class BlockedAccountTile extends StatelessWidget {
         metaLine: row.metaLine,
         seed: row.seed,
       ),
+      divider: divider,
       trailing: CatchButton(
         key: SettingsKeys.unblockButton(row.uid),
         label: 'Unblock',

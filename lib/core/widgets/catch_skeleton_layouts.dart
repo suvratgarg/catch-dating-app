@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
@@ -60,10 +61,7 @@ class CatchSkeletonRows extends StatelessWidget {
             if (i < count - 1)
               if (divided) ...[
                 gapH14,
-                SizedBox(
-                  width: double.infinity,
-                  child: Divider(color: t.line, height: 1, thickness: 1),
-                ),
+                const SizedBox(width: double.infinity, child: CatchDivider()),
                 gapH14,
               ] else
                 gapH14,

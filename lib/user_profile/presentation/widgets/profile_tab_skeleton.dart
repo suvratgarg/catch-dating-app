@@ -1,13 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart'
-    show
-        CatchAspectRatio,
-        CatchInsets,
-        CatchLayout,
-        CatchOpacity,
-        CatchRadius,
-        CatchStroke,
-        CatchTokens;
+    show CatchAspectRatio, CatchInsets, CatchLayout, CatchRadius, CatchStroke;
 import 'package:catch_dating_app/core/widgets/catch_field.dart'
     show CatchFieldRow;
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -106,20 +99,7 @@ class ProfileInfoSkeletonSection extends StatelessWidget {
         children: [
           for (var index = 0; index < rows; index++) ...[
             const ProfileInfoSkeletonTile(),
-            if (index < rows - 1)
-              Builder(
-                builder: (context) {
-                  final t = CatchTokens.of(context);
-                  return Divider(
-                    height: 1,
-                    indent: CatchFieldRow.textLaneInset,
-                    endIndent: 0,
-                    color: t.line.withValues(
-                      alpha: CatchOpacity.fieldRowDivider,
-                    ),
-                  );
-                },
-              ),
+            if (index < rows - 1) const CatchDivider.fieldRow(),
           ],
         ],
       ),
