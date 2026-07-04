@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-07-04T22:51:15.063886+00:00",
+  "generated_at": "2026-07-04T23:09:00.800610+00:00",
   "repo_root": "/Users/suvratgarg/Development/catch-dating-app/catch_dating_app",
   "total_files_scanned": 736,
-  "total_definitions": 3740,
+  "total_definitions": 3739,
   "file_manifest": [
     {
       "file": "lib/activity/domain/activity_taxonomy.dart",
@@ -2021,8 +2021,8 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_body.dart",
-      "line_count": 429,
-      "definition_count": 8
+      "line_count": 394,
+      "definition_count": 7
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_cta.dart",
@@ -21022,43 +21022,33 @@
       "signature": "class EventDetailBody extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "ad658d020700a946"
+      "body_hash": "de9af78ab5181b64"
     },
     {
-      "name": "EventInviteLoopCard",
+      "name": "EventDetailCalloutCard",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_body.dart",
-      "line": 172,
-      "signature": "class EventInviteLoopCard extends StatelessWidget {",
+      "line": 184,
+      "signature": "class EventDetailCalloutCard extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "ca225ba2fffb60e0"
+      "body_hash": "f0d6b02fb6dc9edc"
     },
     {
       "name": "EventCompanionEntry",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_body.dart",
-      "line": 239,
+      "line": 256,
       "signature": "class EventCompanionEntry extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "c94695abfb45433d"
-    },
-    {
-      "name": "EventCompanionCard",
-      "kind": "class",
-      "file": "lib/events/presentation/widgets/event_detail_body.dart",
-      "line": 273,
-      "signature": "class EventCompanionCard extends StatelessWidget {",
-      "superclass": "StatelessWidget",
-      "is_widget": true,
-      "body_hash": "8abd3c6b0d848848"
+      "body_hash": "76e5e454f12520d6"
     },
     {
       "name": "GuestBookCta",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_body.dart",
-      "line": 331,
+      "line": 296,
       "signature": "class GuestBookCta extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -21068,7 +21058,7 @@
       "name": "EventDetailHostsSection",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_body.dart",
-      "line": 367,
+      "line": 332,
       "signature": "class EventDetailHostsSection extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,

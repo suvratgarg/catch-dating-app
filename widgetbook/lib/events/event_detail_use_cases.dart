@@ -1722,23 +1722,75 @@ Widget eventDetailCompanionEntryStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Invite loop card',
-  type: EventInviteLoopCard,
+  name: 'Callout card states',
+  type: EventDetailCalloutCard,
   path: '[Event Detail]/Sections',
 )
-Widget eventDetailInviteLoopCardStates(BuildContext context) {
+Widget eventDetailCalloutCardStates(BuildContext context) {
   return _CatalogScreen(
-    title: 'EventInviteLoopCard',
-    catalogId: 'section.event.invite_loop_card',
+    title: 'EventDetailCalloutCard',
+    catalogId: 'section.event.callout_card',
     children: [
       _StateCard(
-        label: 'light surface',
+        label: 'invite loop / light surface',
         child: _DeviceFrame(
           child: Padding(
             padding: CatchInsets.content,
-            child: EventInviteLoopCard(
-              event: _event,
-              onShare: _noopContext,
+            child: EventDetailCalloutCard(
+              leadingIcon: CatchIcons.platformShare(
+                platform: Theme.of(context).platform,
+              ),
+              title: 'Bring someone into the room',
+              body:
+                  'Your spot is booked. Invite a friend who would make this event better.',
+              actionLabel: 'Invite a friend',
+              actionIcon: CatchIcons.sendRounded,
+              onAction: _noopContext,
+              surfaceStyle: EventDetailSurfaceStyle.light(
+                CatchTokens.of(context),
+              ),
+              borderColor: CatchTokens.of(
+                context,
+              ).primary.withValues(alpha: CatchOpacity.eventDetailLightBorder),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'invite loop / ticket surface',
+        child: _DeviceFrame(
+          child: Padding(
+            padding: CatchInsets.content,
+            child: EventDetailCalloutCard(
+              leadingIcon: CatchIcons.platformShare(
+                platform: Theme.of(context).platform,
+              ),
+              title: 'Bring someone into the room',
+              body:
+                  'Your spot is booked. Invite a friend who would make this event better.',
+              actionLabel: 'Invite a friend',
+              actionIcon: CatchIcons.sendRounded,
+              onAction: _noopContext,
+              surfaceStyle: EventDetailSurfaceStyle.dark(
+                CatchTokens.of(context),
+              ),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'companion / light surface',
+        child: _DeviceFrame(
+          child: Padding(
+            padding: CatchInsets.content,
+            child: EventDetailCalloutCard(
+              leadingIcon: CatchIcons.autoAwesomeOutlined,
+              title: 'Event companion',
+              body:
+                  'Check in, see your social prompt, and handle private follow-up after the event.',
+              actionLabel: 'Open companion',
+              actionIcon: CatchIcons.phoneIphoneRounded,
+              onAction: _noopContext,
               surfaceStyle: EventDetailSurfaceStyle.light(
                 CatchTokens.of(context),
               ),
@@ -1747,58 +1799,21 @@ Widget eventDetailInviteLoopCardStates(BuildContext context) {
         ),
       ),
       _StateCard(
-        label: 'ticket surface',
+        label: 'companion / ticket surface',
         child: _DeviceFrame(
           child: Padding(
             padding: CatchInsets.content,
-            child: EventInviteLoopCard(
-              event: _event,
-              onShare: _noopContext,
+            child: EventDetailCalloutCard(
+              leadingIcon: CatchIcons.autoAwesomeOutlined,
+              title: 'Event companion',
+              body:
+                  'Check in, see your social prompt, and handle private follow-up after the event.',
+              actionLabel: 'Open companion',
+              actionIcon: CatchIcons.phoneIphoneRounded,
+              onAction: _noopContext,
               surfaceStyle: EventDetailSurfaceStyle.dark(
                 CatchTokens.of(context),
               ),
-            ),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Companion card',
-  type: EventCompanionCard,
-  path: '[Event Detail]/Sections',
-)
-Widget eventDetailCompanionCardStates(BuildContext context) {
-  return _CatalogScreen(
-    title: 'EventCompanionCard',
-    catalogId: 'section.event.companion_card',
-    children: [
-      _StateCard(
-        label: 'light surface',
-        child: _DeviceFrame(
-          child: Padding(
-            padding: CatchInsets.content,
-            child: EventCompanionCard(
-              surfaceStyle: EventDetailSurfaceStyle.light(
-                CatchTokens.of(context),
-              ),
-              onOpen: _noop,
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'ticket surface',
-        child: _DeviceFrame(
-          child: Padding(
-            padding: CatchInsets.content,
-            child: EventCompanionCard(
-              surfaceStyle: EventDetailSurfaceStyle.dark(
-                CatchTokens.of(context),
-              ),
-              onOpen: _noop,
             ),
           ),
         ),

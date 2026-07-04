@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-07-04T22:48:16.165Z",
+  "generatedAt": "2026-07-04T23:08:58.051Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
-    "useCases": 871,
-    "components": 844,
+    "useCases": 870,
+    "components": 843,
     "stateCards": 1748,
     "reviewCandidates": 38,
     "oversizedUseCases": 43,
@@ -12020,6 +12020,53 @@
       ]
     },
     {
+      "component": "EventDetailCalloutCard",
+      "useCaseCount": 1,
+      "stateCardCount": 4,
+      "paths": [
+        "[Event Detail]/Sections"
+      ],
+      "labels": [
+        "companion / light surface",
+        "companion / ticket surface",
+        "invite loop / light surface",
+        "invite loop / ticket surface"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Callout card states",
+          "functionName": "eventDetailCalloutCardStates",
+          "file": "widgetbook/lib/events/event_detail_use_cases.dart",
+          "path": "[Event Detail]/Sections",
+          "stateCardCount": 4,
+          "stateCards": [
+            {
+              "label": "invite loop / light surface",
+              "normalizedLabel": "invite loop light surface"
+            },
+            {
+              "label": "invite loop / ticket surface",
+              "normalizedLabel": "invite loop ticket surface"
+            },
+            {
+              "label": "companion / light surface",
+              "normalizedLabel": "companion light surface"
+            },
+            {
+              "label": "companion / ticket surface",
+              "normalizedLabel": "companion ticket surface"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "EventDetailHostsSection",
       "useCaseCount": 1,
       "stateCardCount": 4,
@@ -18517,43 +18564,6 @@
       ]
     },
     {
-      "component": "EventCompanionCard",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[Event Detail]/Sections"
-      ],
-      "labels": [
-        "light surface",
-        "ticket surface"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Companion card",
-          "functionName": "eventDetailCompanionCardStates",
-          "file": "widgetbook/lib/events/event_detail_use_cases.dart",
-          "path": "[Event Detail]/Sections",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "light surface",
-              "normalizedLabel": "light surface"
-            },
-            {
-              "label": "ticket surface",
-              "normalizedLabel": "ticket surface"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "EventDetailCompanionSkeleton",
       "useCaseCount": 1,
       "stateCardCount": 2,
@@ -18844,43 +18854,6 @@
             {
               "label": "check-in pending",
               "normalizedLabel": "check in pending"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "EventInviteLoopCard",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[Event Detail]/Sections"
-      ],
-      "labels": [
-        "light surface",
-        "ticket surface"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Invite loop card",
-          "functionName": "eventDetailInviteLoopCardStates",
-          "file": "widgetbook/lib/events/event_detail_use_cases.dart",
-          "path": "[Event Detail]/Sections",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "light surface",
-              "normalizedLabel": "light surface"
-            },
-            {
-              "label": "ticket surface",
-              "normalizedLabel": "ticket surface"
             }
           ]
         }

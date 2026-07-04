@@ -140,10 +140,22 @@ class EventDetailBody extends StatelessWidget {
               onRetry: onRetryCompanion,
             ),
             if (sectionVisibility.showInviteLoop)
-              EventInviteLoopCard(
-                event: event,
-                onShare: onShare,
+              EventDetailCalloutCard(
+                leadingIcon: CatchIcons.platformShare(
+                  platform: Theme.of(context).platform,
+                ),
+                title: 'Bring someone into the room',
+                body:
+                    'Your spot is booked. Invite a friend who would make this event better.',
+                actionLabel: 'Invite a friend',
+                actionIcon: CatchIcons.sendRounded,
+                onAction: onShare,
                 surfaceStyle: style,
+                borderColor: style.isDark
+                    ? style.borderColor
+                    : CatchTokens.of(context).primary.withValues(
+                        alpha: CatchOpacity.eventDetailLightBorder,
+                      ),
               ),
             CatchDivider.section(color: style.dividerColor),
             EventDetailHostsSection(
@@ -169,41 +181,46 @@ class EventDetailBody extends StatelessWidget {
   }
 }
 
-class EventInviteLoopCard extends StatelessWidget {
-  const EventInviteLoopCard({
+class EventDetailCalloutCard extends StatelessWidget {
+  const EventDetailCalloutCard({
     super.key,
-    required this.event,
-    required this.onShare,
+    required this.leadingIcon,
+    required this.title,
+    required this.body,
+    required this.actionLabel,
+    required this.actionIcon,
+    required this.onAction,
     required this.surfaceStyle,
+    this.borderColor,
   });
 
-  final Event event;
-  final ValueChanged<BuildContext> onShare;
+  final IconData leadingIcon;
+  final String title;
+  final String body;
+  final String actionLabel;
+  final IconData actionIcon;
+  final ValueChanged<BuildContext> onAction;
   final EventDetailSurfaceStyle surfaceStyle;
+  final Color? borderColor;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return CatchSurface(
       backgroundColor: surfaceStyle.surfaceBackground,
-      borderColor: surfaceStyle.isDark
-          ? surfaceStyle.borderColor
-          : t.primary.withValues(alpha: CatchOpacity.eventDetailLightBorder),
+      borderColor: borderColor ?? surfaceStyle.borderColor,
       padding: CatchInsets.tileContentCompact,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            CatchIcons.platformShare(platform: Theme.of(context).platform),
-            color: t.primary,
-          ),
+          Icon(leadingIcon, color: t.primary),
           gapW12,
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Bring someone into the room',
+                  title,
                   style: CatchTextStyles.sectionTitle(
                     context,
                     color: surfaceStyle.headingColor,
@@ -211,7 +228,7 @@ class EventInviteLoopCard extends StatelessWidget {
                 ),
                 gapH4,
                 Text(
-                  'Your spot is booked. Invite a friend who would make this event better.',
+                  body,
                   style: CatchTextStyles.supporting(
                     context,
                     color: surfaceStyle.bodyColor,
@@ -220,10 +237,10 @@ class EventInviteLoopCard extends StatelessWidget {
                 gapH12,
                 Builder(
                   builder: (buttonContext) => CatchButton(
-                    label: 'Invite a friend',
+                    label: actionLabel,
                     variant: CatchButtonVariant.secondary,
-                    icon: Icon(CatchIcons.sendRounded),
-                    onPressed: () => onShare(buttonContext),
+                    icon: Icon(actionIcon),
+                    onPressed: () => onAction(buttonContext),
                     fullWidth: true,
                   ),
                 ),
@@ -262,69 +279,17 @@ class EventCompanionEntry extends StatelessWidget {
         onRetry: onRetry,
         compact: true,
       ),
-      EventDetailCompanionStatus.available => EventCompanionCard(
+      EventDetailCompanionStatus.available => EventDetailCalloutCard(
+        leadingIcon: CatchIcons.autoAwesomeOutlined,
+        title: 'Event companion',
+        body:
+            'Check in, see your social prompt, and handle private follow-up after the event.',
+        actionLabel: 'Open companion',
+        actionIcon: CatchIcons.phoneIphoneRounded,
+        onAction: (_) => onOpen(),
         surfaceStyle: surfaceStyle,
-        onOpen: onOpen,
       ),
     };
-  }
-}
-
-class EventCompanionCard extends StatelessWidget {
-  const EventCompanionCard({
-    super.key,
-    required this.surfaceStyle,
-    required this.onOpen,
-  });
-
-  final EventDetailSurfaceStyle surfaceStyle;
-  final VoidCallback onOpen;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return CatchSurface(
-      backgroundColor: surfaceStyle.surfaceBackground,
-      borderColor: surfaceStyle.borderColor,
-      padding: CatchInsets.tileContentCompact,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(CatchIcons.autoAwesomeOutlined, color: t.primary),
-          gapW12,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Event companion',
-                  style: CatchTextStyles.sectionTitle(
-                    context,
-                    color: surfaceStyle.headingColor,
-                  ),
-                ),
-                gapH4,
-                Text(
-                  'Check in, see your social prompt, and handle private follow-up after the event.',
-                  style: CatchTextStyles.supporting(
-                    context,
-                    color: surfaceStyle.bodyColor,
-                  ),
-                ),
-                gapH12,
-                CatchButton(
-                  label: 'Open companion',
-                  variant: CatchButtonVariant.secondary,
-                  icon: Icon(CatchIcons.phoneIphoneRounded),
-                  onPressed: onOpen,
-                  fullWidth: true,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }
 

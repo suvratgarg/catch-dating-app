@@ -3187,16 +3187,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'EventCompanionCard',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Companion card',
-                builder: _widgetbook_workspace_events_event_detail_use_cases
-                    .eventDetailCompanionCardStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'EventCompanionEntry',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3223,6 +3213,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Prompt states',
                 builder: _widgetbook_workspace_events_event_detail_use_cases
                     .eventDetailPromptBodyStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventDetailCalloutCard',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Callout card states',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventDetailCalloutCardStates,
               ),
             ],
           ),
@@ -3323,16 +3323,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Hype avatars',
                 builder: _widgetbook_workspace_events_event_detail_use_cases
                     .eventHypeAvatarStackState,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'EventInviteLoopCard',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Invite loop card',
-                builder: _widgetbook_workspace_events_event_detail_use_cases
-                    .eventDetailInviteLoopCardStates,
               ),
             ],
           ),

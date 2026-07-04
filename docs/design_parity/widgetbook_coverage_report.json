@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-07-04T22:51:12.639Z",
+  "generatedAt": "2026-07-04T23:08:57.925Z",
   "decisionLedgerPath": "docs/design_parity/widgetbook_widget_decisions.json",
-  "total": 986,
+  "total": 985,
   "stats": {
-    "PUBLIC_ALREADY_CATALOGED_NAME_MATCH": 864,
+    "PUBLIC_ALREADY_CATALOGED_NAME_MATCH": 863,
     "PUBLIC_NEEDS_CATALOG_OR_REPLACE": 120,
     "PRIVATE_NEEDS_RENAME_OR_REPLACE": 2
   },
@@ -44,8 +44,8 @@
     },
     {
       "area": "events",
-      "total": 118,
-      "publicAlreadyCataloged": 102,
+      "total": 117,
+      "publicAlreadyCataloged": 101,
       "privateNameMatchNeedsDecision": 0,
       "privateNeedsRenameOrReplace": 0,
       "publicNeedsCatalogOrReplace": 16,
@@ -7616,12 +7616,12 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_body.dart",
-      "line": 172,
-      "name": "EventInviteLoopCard",
+      "line": 184,
+      "name": "EventDetailCalloutCard",
       "base": "StatelessWidget",
       "area": "events",
       "visibility": "public",
-      "publicName": "EventInviteLoopCard",
+      "publicName": "EventDetailCalloutCard",
       "exactNameMatched": true,
       "publicNameMatched": true,
       "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
@@ -7630,7 +7630,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_body.dart",
-      "line": 239,
+      "line": 256,
       "name": "EventCompanionEntry",
       "base": "StatelessWidget",
       "area": "events",
@@ -7644,21 +7644,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_body.dart",
-      "line": 273,
-      "name": "EventCompanionCard",
-      "base": "StatelessWidget",
-      "area": "events",
-      "visibility": "public",
-      "publicName": "EventCompanionCard",
-      "exactNameMatched": true,
-      "publicNameMatched": true,
-      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
-      "decision": null,
-      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
-    },
-    {
-      "file": "lib/events/presentation/widgets/event_detail_body.dart",
-      "line": 331,
+      "line": 296,
       "name": "GuestBookCta",
       "base": "StatelessWidget",
       "area": "events",
@@ -7672,7 +7658,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_body.dart",
-      "line": 367,
+      "line": 332,
       "name": "EventDetailHostsSection",
       "base": "StatelessWidget",
       "area": "events",

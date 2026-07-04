@@ -226,6 +226,45 @@ void main() {
     });
   });
 
+  group('EventDetailCalloutCard', () {
+    testWidgets('renders configured copy and forwards button context', (
+      tester,
+    ) async {
+      BuildContext? actionContext;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => EventDetailCalloutCard(
+                leadingIcon: CatchIcons.autoAwesomeOutlined,
+                title: 'Event companion',
+                body: 'Use the companion after the event.',
+                actionLabel: 'Open companion',
+                actionIcon: CatchIcons.phoneIphoneRounded,
+                onAction: (context) {
+                  actionContext = context;
+                },
+                surfaceStyle: EventDetailSurfaceStyle.light(
+                  CatchTokens.of(context),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Event companion'), findsOneWidget);
+      expect(find.text('Use the companion after the event.'), findsOneWidget);
+
+      await tester.tap(find.text('Open companion'));
+      await tester.pump();
+
+      expect(actionContext, isNotNull);
+    });
+  });
+
   group('EventDetailPhotoStrip', () {
     testWidgets('renders canonical three-tile strip with placeholders', (
       tester,

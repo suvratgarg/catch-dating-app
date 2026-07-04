@@ -10,14 +10,14 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1118,
-    "widgetClasses": 1010,
+    "total": 1117,
+    "widgetClasses": 1009,
     "stateClasses": 108,
-    "publicClasses": 1008,
+    "publicClasses": 1007,
     "privateClasses": 110,
     "byRole": {
       "atom": 57,
-      "composition": 322,
+      "composition": 321,
       "feature-adapter": 315,
       "pattern": 16,
       "screen": 300,
@@ -25,14 +25,14 @@
     },
     "byDecision": {
       "keep-canonical-contract": 171,
-      "keep-public-cataloged": 784,
+      "keep-public-cataloged": 783,
       "keep-widget-state": 108,
       "review-catalog-coverage": 38,
       "review-promote-or-consolidate": 15,
       "review-promote-or-inline": 2
     },
     "byCatalogStatus": {
-      "cataloged": 717,
+      "cataloged": 716,
       "contracted": 171,
       "not-applicable": 108,
       "route-covered": 81,
@@ -13797,29 +13797,6 @@
       "flags": []
     },
     {
-      "name": "EventCompanionCard",
-      "file": "lib/events/presentation/widgets/event_detail_body.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.event_companion_card",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
       "name": "EventCompanionEntry",
       "file": "lib/events/presentation/widgets/event_detail_body.dart",
       "classKind": "widget",
@@ -13866,6 +13843,29 @@
       "flags": []
     },
     {
+      "name": "EventDetailCalloutCard",
+      "file": "lib/events/presentation/widgets/event_detail_body.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.event_detail_callout_card",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
       "name": "EventDetailHostsSection",
       "file": "lib/events/presentation/widgets/event_detail_body.dart",
       "classKind": "widget",
@@ -13882,29 +13882,6 @@
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
       "decision": "keep-canonical-contract",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "EventInviteLoopCard",
-      "file": "lib/events/presentation/widgets/event_detail_body.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.event_invite_loop_card",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
       "remediationOptions": [
         "keepPublicCataloged",
         "mergeIntoCanonical"
