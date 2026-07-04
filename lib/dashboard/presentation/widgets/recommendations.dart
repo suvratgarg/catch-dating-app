@@ -23,11 +23,8 @@ class Recommendations extends StatelessWidget {
             recommendation: recommendations[i],
             width: cardWidth,
           ),
-          showDivider: false,
           height: null,
           spacing: CatchLayout.recommendationRailGap,
-          headerPadding: EdgeInsets.zero,
-          listPadding: EdgeInsets.zero,
         );
       },
     );

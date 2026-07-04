@@ -14,6 +14,7 @@ import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_empty.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_loading_widgets.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_sliver_header.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -193,55 +194,6 @@ class DashboardFocusLoadingCard extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class DashboardStrideLoadingCard extends StatelessWidget {
-  const DashboardStrideLoadingCard({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.content,
-      child: Row(
-        children: [
-          CatchSkeleton.circle(size: CatchLayout.skeletonMediaTileExtent),
-          gapW14,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CatchSkeleton.text(width: CatchLayout.skeletonTextWideWidth),
-                gapH8,
-                CatchSkeleton.textBlock(lines: 2),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class DashboardRecommendedLoadingSection extends StatelessWidget {
-  const DashboardRecommendedLoadingSection({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CatchSkeleton.text(width: CatchLayout.skeletonTextSectionWidth),
-        gapH12,
-        const CatchSkeletonList(
-          count: 2,
-          height: CatchLayout.dashboardRecommendedEventSkeletonHeight,
-        ),
-      ],
     );
   }
 }

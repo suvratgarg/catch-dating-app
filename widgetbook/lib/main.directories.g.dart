@@ -5010,16 +5010,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'DashboardFull',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Full home',
-                builder: _widgetbook_workspace_dashboard_dashboard_use_cases
-                    .dashboardFullReview,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'DashboardFullSliverBody',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -5036,6 +5026,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Header content',
                 builder: _widgetbook_workspace_dashboard_dashboard_use_cases
                     .dashboardHeaderContentReview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'DashboardHomeScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Full home',
+                builder: _widgetbook_workspace_dashboard_dashboard_use_cases
+                    .dashboardFullReview,
               ),
             ],
           ),
@@ -5135,12 +5135,22 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'DashboardSectionStateCard',
+            name: 'DashboardRecommendedLoadingSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Review states',
+                name: 'Recommendations loading skeleton',
                 builder: _widgetbook_workspace_dashboard_dashboard_use_cases
-                    .dashboardSectionStateCardReviewStates,
+                    .dashboardRecommendedLoadingSectionReview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'DashboardStrideLoadingCard',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Stride loading skeleton',
+                builder: _widgetbook_workspace_dashboard_dashboard_use_cases
+                    .dashboardStrideLoadingCardReview,
               ),
             ],
           ),

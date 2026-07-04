@@ -17,31 +17,30 @@ class CatchHorizontalRail extends StatelessWidget {
     required this.itemCount,
     required this.itemBuilder,
     this.trailing,
-    this.showDivider = true,
+    this.fullBleed = false,
+    bool? showDivider,
     this.height = CatchLayout.horizontalRailHeight,
     this.spacing = CatchSpacing.s3,
-    this.headerPadding = _defaultHeaderPadding,
-    this.listPadding = const EdgeInsets.symmetric(
-      horizontal: CatchSpacing.screenPx,
-    ),
-  });
+    EdgeInsets? headerPadding,
+    EdgeInsetsGeometry? listPadding,
+  }) : showDivider = showDivider ?? fullBleed,
+       headerPadding =
+           headerPadding ??
+           (fullBleed ? CatchInsets.sectionHeader : EdgeInsets.zero),
+       listPadding =
+           listPadding ??
+           (fullBleed ? CatchInsets.pageHorizontal : EdgeInsets.zero);
 
   final String title;
   final int itemCount;
   final IndexedWidgetBuilder itemBuilder;
   final Widget? trailing;
+  final bool fullBleed;
   final bool showDivider;
   final double? height;
   final double spacing;
   final EdgeInsets headerPadding;
   final EdgeInsetsGeometry listPadding;
-
-  static const _defaultHeaderPadding = EdgeInsets.fromLTRB(
-    CatchSpacing.screenPx,
-    CatchSpacing.micro14,
-    CatchSpacing.screenPx,
-    CatchSpacing.s2,
-  );
 
   @override
   Widget build(BuildContext context) {

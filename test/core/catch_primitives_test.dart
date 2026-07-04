@@ -33,6 +33,7 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_framework_error_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
+import 'package:catch_dating_app/core/widgets/catch_horizontal_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_journey_steps.dart';
 import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
@@ -1783,6 +1784,67 @@ void main() {
     expect(stack.padding, CatchInsets.pageBody);
     expect(find.byType(Divider), findsNothing);
     expect(find.text('SECOND'), findsOneWidget);
+  });
+
+  testWidgets('CatchHorizontalRail is embedded and chromeless by default', (
+    tester,
+  ) async {
+    const railKey = ValueKey('embedded-rail');
+
+    await tester.pumpWidget(
+      _wrap(
+        SizedBox(
+          key: railKey,
+          width: 360,
+          child: CatchHorizontalRail(
+            title: 'Recommended',
+            itemCount: 1,
+            itemBuilder: (context, index) =>
+                const SizedBox(width: 48, height: 48, child: Text('Item 1')),
+          ),
+        ),
+      ),
+    );
+
+    final railLeft = tester.getTopLeft(find.byKey(railKey)).dx;
+
+    expect(tester.getTopLeft(find.text('Recommended')).dx, railLeft);
+    expect(tester.getTopLeft(find.text('Item 1')).dx, railLeft);
+    expect(find.byType(CatchDivider), findsNothing);
+  });
+
+  testWidgets('CatchHorizontalRail fullBleed owns rail gutters and divider', (
+    tester,
+  ) async {
+    const railKey = ValueKey('full-bleed-rail');
+
+    await tester.pumpWidget(
+      _wrap(
+        SizedBox(
+          key: railKey,
+          width: 360,
+          child: CatchHorizontalRail(
+            title: 'Recommended',
+            itemCount: 1,
+            fullBleed: true,
+            itemBuilder: (context, index) =>
+                const SizedBox(width: 48, height: 48, child: Text('Item 1')),
+          ),
+        ),
+      ),
+    );
+
+    final railLeft = tester.getTopLeft(find.byKey(railKey)).dx;
+
+    expect(
+      tester.getTopLeft(find.text('Recommended')).dx - railLeft,
+      CatchSpacing.screenPx,
+    );
+    expect(
+      tester.getTopLeft(find.text('Item 1')).dx - railLeft,
+      CatchSpacing.screenPx,
+    );
+    expect(find.byType(CatchDivider), findsOneWidget);
   });
 
   testWidgets('CatchScreenBody owns the scrolling page gutter', (tester) async {

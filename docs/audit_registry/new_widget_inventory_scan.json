@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-03T20:52:33.195Z",
+  "generatedAt": "2026-07-04T21:59:59.107Z",
   "baseRef": "HEAD^",
   "baseStatus": "git-ref",
   "baseWarning": null,
@@ -10,16 +10,43 @@
     "policy": "New public widget classes need Widgetbook and widget catalog coverage. New private widget classes and Widget-returning helpers must be inlined/deleted, merged into an existing primitive, or promoted to public cataloged widgets."
   },
   "summary": {
-    "addedWidgetClasses": 0,
-    "addedPublicWidgetClasses": 0,
+    "addedWidgetClasses": 2,
+    "addedPublicWidgetClasses": 2,
     "addedPrivateWidgetClasses": 0,
     "addedWidgetReturningHelpers": 0,
-    "coveredNewWidgets": 0,
+    "coveredNewWidgets": 2,
     "unresolved": 0,
-    "widgetsByStatus": {},
+    "widgetsByStatus": {
+      "covered": 2
+    },
     "helpersByStatus": {},
     "issues": {}
   },
-  "addedWidgets": [],
+  "addedWidgets": [
+    {
+      "name": "DashboardStrideLoadingCard",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 7,
+      "file": "lib/dashboard/presentation/widgets/dashboard_loading_widgets.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "DashboardRecommendedLoadingSection",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 37,
+      "file": "lib/dashboard/presentation/widgets/dashboard_loading_widgets.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    }
+  ],
   "addedWidgetHelpers": []
 }

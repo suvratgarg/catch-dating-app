@@ -547,6 +547,11 @@
           "docAnchor": "docs/widget_catalog.md"
         },
         {
+          "tool": "design:rail-contracts",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/widget_catalog.md#rule-changelog"
+        },
+        {
           "tool": "design:section-headers",
           "stage": "scanner-gate",
           "docAnchor": "docs/widget_catalog.md"
@@ -774,6 +779,11 @@
           "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
         },
         {
+          "tool": "design:rail-contracts",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
+        },
+        {
           "tool": "design:section-headers",
           "stage": "scanner-gate",
           "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
@@ -814,6 +824,11 @@
           "tool": "design:screen-gutters",
           "stage": "scanner-ratchet",
           "docAnchor": "docs/design_parity/README.md#source-files"
+        },
+        {
+          "tool": "design:rail-contracts",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/widget_catalog.md#rule-changelog"
         },
         {
           "stage": "manual",
@@ -2055,6 +2070,6 @@
       ]
     }
   },
-  "version": "2.7.8",
-  "updated": "2026-07-03"
+    "version": "2.7.11",
+    "updated": "2026-07-05"
 }

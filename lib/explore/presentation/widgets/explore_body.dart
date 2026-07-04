@@ -115,7 +115,9 @@ List<Widget> buildExploreBodySlivers({
     if (includeJoinedClubsRail &&
         viewModel != null &&
         viewModel.joinedClubs.isNotEmpty)
-      SliverToBoxAdapter(child: ClubAvatarRail(clubs: viewModel.joinedClubs)),
+      SliverToBoxAdapter(
+        child: ClubAvatarRail(clubs: viewModel.joinedClubs, fullBleed: true),
+      ),
     ...buildExploreEventsSlivers(
       feedAsync,
       filters: filters,

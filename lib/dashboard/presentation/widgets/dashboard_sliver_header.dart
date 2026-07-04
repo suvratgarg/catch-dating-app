@@ -1,16 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:flutter/material.dart';
-
-class DashboardSliverHeader extends CatchSliverHeader {
-  DashboardSliverHeader({
-    required String eyebrow,
-    required String title,
-    List<Widget> actions = const <Widget>[],
-  }) : super(title: DashboardHeaderContent(eyebrow: eyebrow, title: title, actions: actions));
-}
 
 class DashboardHeaderContent extends StatelessWidget {
   const DashboardHeaderContent({

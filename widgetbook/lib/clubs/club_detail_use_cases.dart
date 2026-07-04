@@ -623,7 +623,7 @@ Widget clubAvatarRailStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'joined clubs',
-        child: ClubAvatarRail(clubs: [_club, _minimalClub], showDivider: false),
+        child: ClubAvatarRail(clubs: [_club, _minimalClub]),
       ),
     ],
   );

@@ -8,7 +8,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_section_state_card.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_loading_widgets.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
 import 'package:flutter/material.dart';
 
@@ -51,10 +51,7 @@ class DashboardStrideSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (section.isLoading) {
-      return DashboardSectionStateCard(
-        message: section.message ?? 'Loading your weekly running activity...',
-        isLoading: true,
-      );
+      return const DashboardStrideLoadingCard();
     }
     final error = section.error;
     if (error != null) {
@@ -171,29 +168,29 @@ class StrideCard extends StatelessWidget {
               child: Wrap(
                 spacing: CatchSpacing.s2,
                 runSpacing: CatchSpacing.s2,
-              children: [
-                if (onConnect != null)
-                  _buildStrideActionButton(
-                    icon: CatchIcons.favoriteOutlineRounded,
-                    label: isConnecting
-                        ? 'Connecting...'
-                        : 'Connect ${snapshot.platformLabel}',
-                    onPressed: isConnecting ? null : onConnect,
-                    isBusy: isConnecting,
-                  ),
-                if (onInstallHealthConnect != null)
-                  _buildStrideActionButton(
-                    icon: CatchIcons.downloadRounded,
-                    label: isInstallingHealthConnect
-                        ? 'Opening...'
-                        : 'Install Health Connect',
-                    onPressed: isInstallingHealthConnect
-                        ? null
-                        : onInstallHealthConnect,
-                    isBusy: isInstallingHealthConnect,
-                  ),
-              ],
-            ),
+                children: [
+                  if (onConnect != null)
+                    _buildStrideActionButton(
+                      icon: CatchIcons.favoriteOutlineRounded,
+                      label: isConnecting
+                          ? 'Connecting...'
+                          : 'Connect ${snapshot.platformLabel}',
+                      onPressed: isConnecting ? null : onConnect,
+                      isBusy: isConnecting,
+                    ),
+                  if (onInstallHealthConnect != null)
+                    _buildStrideActionButton(
+                      icon: CatchIcons.downloadRounded,
+                      label: isInstallingHealthConnect
+                          ? 'Opening...'
+                          : 'Install Health Connect',
+                      onPressed: isInstallingHealthConnect
+                          ? null
+                          : onInstallHealthConnect,
+                      isBusy: isInstallingHealthConnect,
+                    ),
+                ],
+              ),
             ),
           ],
         ],

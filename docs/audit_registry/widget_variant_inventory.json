@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-07-04T13:58:03.439Z",
+  "generatedAt": "2026-07-04T21:50:11.392Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
-    "useCases": 869,
-    "components": 842,
-    "stateCards": 1745,
+    "useCases": 870,
+    "components": 843,
+    "stateCards": 1746,
     "reviewCandidates": 38,
     "oversizedUseCases": 43,
     "multiUseCaseComponents": 26
@@ -16260,6 +16260,43 @@
       ]
     },
     {
+      "component": "CatchHorizontalRail",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[Core catalog]/Sections"
+      ],
+      "labels": [
+        "embedded rail",
+        "full-bleed rail"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Catalog states",
+          "functionName": "catchHorizontalRailCatalogStates",
+          "file": "widgetbook/lib/primitives/core_catalog_use_cases.dart",
+          "path": "[Core catalog]/Sections",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "embedded rail",
+              "normalizedLabel": "embedded rail"
+            },
+            {
+              "label": "full-bleed rail",
+              "normalizedLabel": "full bleed rail"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "CatchMetaRow",
       "useCaseCount": 1,
       "stateCardCount": 2,
@@ -18067,43 +18104,6 @@
             {
               "label": "disabled",
               "normalizedLabel": "disabled"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "DashboardSectionStateCard",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[P1 product surfaces]/Dashboard primitives"
-      ],
-      "labels": [
-        "loading",
-        "message"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Review states",
-          "functionName": "dashboardSectionStateCardReviewStates",
-          "file": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
-          "path": "[P1 product surfaces]/Dashboard primitives",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "loading",
-              "normalizedLabel": "loading"
-            },
-            {
-              "label": "message",
-              "normalizedLabel": "message"
             }
           ]
         }
@@ -23154,38 +23154,6 @@
       ]
     },
     {
-      "component": "CatchHorizontalRail",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[Core catalog]/Sections"
-      ],
-      "labels": [
-        "rail"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Catalog states",
-          "functionName": "catchHorizontalRailCatalogStates",
-          "file": "widgetbook/lib/primitives/core_catalog_use_cases.dart",
-          "path": "[Core catalog]/Sections",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "rail",
-              "normalizedLabel": "rail"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "CatchIconAction",
       "useCaseCount": 1,
       "stateCardCount": 1,
@@ -25458,7 +25426,39 @@
       ]
     },
     {
-      "component": "DashboardFull",
+      "component": "DashboardFullSliverBody",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[P1 product surfaces]/Dashboard home"
+      ],
+      "labels": [
+        "body content"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Full sliver body",
+          "functionName": "dashboardFullSliverBodyReview",
+          "file": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
+          "path": "[P1 product surfaces]/Dashboard home",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "body content",
+              "normalizedLabel": "body content"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "DashboardHomeScreen",
       "useCaseCount": 1,
       "stateCardCount": 1,
       "paths": [
@@ -25490,14 +25490,14 @@
       ]
     },
     {
-      "component": "DashboardFullSliverBody",
+      "component": "DashboardRecommendedLoadingSection",
       "useCaseCount": 1,
       "stateCardCount": 1,
       "paths": [
-        "[P1 product surfaces]/Dashboard home"
+        "[P1 product surfaces]/Dashboard primitives"
       ],
       "labels": [
-        "body content"
+        "loading"
       ],
       "review": {
         "needsReview": false,
@@ -25507,15 +25507,47 @@
       },
       "useCases": [
         {
-          "name": "Full sliver body",
-          "functionName": "dashboardFullSliverBodyReview",
+          "name": "Recommendations loading skeleton",
+          "functionName": "dashboardRecommendedLoadingSectionReview",
           "file": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
-          "path": "[P1 product surfaces]/Dashboard home",
+          "path": "[P1 product surfaces]/Dashboard primitives",
           "stateCardCount": 1,
           "stateCards": [
             {
-              "label": "body content",
-              "normalizedLabel": "body content"
+              "label": "loading",
+              "normalizedLabel": "loading"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "DashboardStrideLoadingCard",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[P1 product surfaces]/Dashboard primitives"
+      ],
+      "labels": [
+        "loading"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Stride loading skeleton",
+          "functionName": "dashboardStrideLoadingCardReview",
+          "file": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
+          "path": "[P1 product surfaces]/Dashboard primitives",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "loading",
+              "normalizedLabel": "loading"
             }
           ]
         }

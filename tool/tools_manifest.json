@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-07-03",
+  "updated": "2026-07-05",
   "tools": [
     {
       "id": "tool:runner",
@@ -2764,6 +2764,35 @@
           "flags a CatchSection title duplicated by a nested component header",
           "honors explicit showHeader false on nested preview components",
           "flags titled feature-local surface sections for review"
+        ]
+      }
+    },
+    {
+      "id": "design:rail-contracts",
+      "category": "design",
+      "path": "tool/design/check_rail_contracts.mjs",
+      "command": "node tool/design/check_rail_contracts.mjs --summary",
+      "safety": "local",
+      "status": "active",
+      "description": "Reports rail callers that manually zero divider/header/list chrome instead of using embedded defaults or fullBleed opt-in.",
+      "checks": [
+        "node --check tool/design/check_rail_contracts.mjs",
+        "node --test tool/design/check_rail_contracts.test.mjs",
+        "node tool/design/check_rail_contracts.mjs --summary --max 25 --fail-on high"
+      ],
+      "role": "finder",
+      "rules": [
+        "DESIGN-PRIMITIVES-001",
+        "SCREEN-GUTTER-001",
+        "UI-LINT-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/check_rail_contracts.test.mjs",
+        "contains": [
+          "flags old rail chrome zeroing in production code",
+          "allows embedded rail defaults",
+          "allows full-bleed rail opt-in"
         ]
       }
     },

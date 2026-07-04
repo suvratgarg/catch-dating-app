@@ -9,7 +9,7 @@ export 'presentation/notifications_list_state.dart'; // public-api: provider-fre
 export 'presentation/widgets/activity_section.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/dashboard_empty.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/dashboard_full.dart'; // public-api: shared presentation component used outside this feature
-export 'presentation/widgets/dashboard_section_state_card.dart'; // public-api: shared presentation component used outside this feature
+export 'presentation/widgets/dashboard_loading_widgets.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/dashboard_sliver_header.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/empty_hero_card.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/event_focus_rail.dart'; // public-api: shared presentation component used outside this feature

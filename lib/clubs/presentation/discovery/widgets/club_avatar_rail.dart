@@ -8,12 +8,14 @@ class ClubAvatarRail extends StatelessWidget {
   const ClubAvatarRail({
     super.key,
     required this.clubs,
+    this.fullBleed = false,
     this.headerPadding,
     this.listPadding,
-    this.showDivider = true,
-  });
+    bool? showDivider,
+  }) : showDivider = showDivider ?? fullBleed;
 
   final List<Club> clubs;
+  final bool fullBleed;
   final EdgeInsets? headerPadding;
   final EdgeInsetsGeometry? listPadding;
   final bool showDivider;
@@ -24,9 +26,10 @@ class ClubAvatarRail extends StatelessWidget {
       title: 'Your clubs',
       height: null,
       spacing: CatchSpacing.micro14,
+      fullBleed: fullBleed,
       showDivider: showDivider,
-      headerPadding: headerPadding ?? CatchInsets.sectionHeader,
-      listPadding: listPadding ?? CatchInsets.pageHorizontal,
+      headerPadding: headerPadding,
+      listPadding: listPadding,
       itemCount: clubs.length,
       itemBuilder: (context, index) {
         final club = clubs[index];

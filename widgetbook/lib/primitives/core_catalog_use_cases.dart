@@ -2715,10 +2715,22 @@ Widget catchHorizontalRailCatalogStates(BuildContext context) {
     catalogId: 'core.widgets.catch_horizontal_rail',
     children: [
       _StateCard(
-        label: 'rail',
+        label: 'embedded rail',
         child: CatchHorizontalRail(
           title: 'Recommended',
           itemCount: 4,
+          height: 128,
+          itemBuilder: (context, index) =>
+              CatchSurface.card(width: 136, child: Text('Card ${index + 1}')),
+          trailing: CatchButton(label: 'More', onPressed: _noop),
+        ),
+      ),
+      _StateCard(
+        label: 'full-bleed rail',
+        child: CatchHorizontalRail(
+          title: 'Recommended',
+          itemCount: 4,
+          fullBleed: true,
           height: 128,
           itemBuilder: (context, index) =>
               CatchSurface.card(width: 136, child: Text('Card ${index + 1}')),

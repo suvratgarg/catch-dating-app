@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-07-04T13:47:44.711605+00:00",
+  "generated_at": "2026-07-04T21:56:07.718768+00:00",
   "repo_root": "/Users/suvratgarg/Development/catch-dating-app/catch_dating_app",
   "total_files_scanned": 736,
-  "total_definitions": 3744,
+  "total_definitions": 3742,
   "file_manifest": [
     {
       "file": "lib/activity/domain/activity_taxonomy.dart",
@@ -161,7 +161,7 @@
     },
     {
       "file": "lib/chats/presentation/inbox/chat_inbox_screen.dart",
-      "line_count": 200,
+      "line_count": 198,
       "definition_count": 3
     },
     {
@@ -206,12 +206,12 @@
     },
     {
       "file": "lib/chats/presentation/inbox/widgets/chats_list_body.dart",
-      "line_count": 144,
+      "line_count": 142,
       "definition_count": 2
     },
     {
       "file": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
-      "line_count": 164,
+      "line_count": 156,
       "definition_count": 5
     },
     {
@@ -346,7 +346,7 @@
     },
     {
       "file": "lib/clubs/presentation/detail/widgets/club_contact_section.dart",
-      "line_count": 68,
+      "line_count": 65,
       "definition_count": 4
     },
     {
@@ -386,7 +386,7 @@
     },
     {
       "file": "lib/clubs/presentation/discovery/widgets/club_avatar_rail.dart",
-      "line_count": 42,
+      "line_count": 45,
       "definition_count": 1
     },
     {
@@ -476,7 +476,7 @@
     },
     {
       "file": "lib/core/celebration/catch_celebration_screen.dart",
-      "line_count": 587,
+      "line_count": 602,
       "definition_count": 16
     },
     {
@@ -696,7 +696,7 @@
     },
     {
       "file": "lib/core/widgets/catch_adaptive_picker.dart",
-      "line_count": 177,
+      "line_count": 178,
       "definition_count": 4
     },
     {
@@ -721,7 +721,7 @@
     },
     {
       "file": "lib/core/widgets/catch_bottom_dock.dart",
-      "line_count": 212,
+      "line_count": 213,
       "definition_count": 3
     },
     {
@@ -831,7 +831,7 @@
     },
     {
       "file": "lib/core/widgets/catch_field.dart",
-      "line_count": 2095,
+      "line_count": 2097,
       "definition_count": 12
     },
     {
@@ -856,7 +856,7 @@
     },
     {
       "file": "lib/core/widgets/catch_horizontal_rail.dart",
-      "line_count": 102,
+      "line_count": 101,
       "definition_count": 1
     },
     {
@@ -891,7 +891,7 @@
     },
     {
       "file": "lib/core/widgets/catch_menu.dart",
-      "line_count": 160,
+      "line_count": 156,
       "definition_count": 3
     },
     {
@@ -941,8 +941,8 @@
     },
     {
       "file": "lib/core/widgets/catch_option_group.dart",
-      "line_count": 149,
-      "definition_count": 4
+      "line_count": 308,
+      "definition_count": 5
     },
     {
       "file": "lib/core/widgets/catch_otp_code_field.dart",
@@ -1001,7 +1001,7 @@
     },
     {
       "file": "lib/core/widgets/catch_section_layout.dart",
-      "line_count": 690,
+      "line_count": 733,
       "definition_count": 12
     },
     {
@@ -1076,7 +1076,7 @@
     },
     {
       "file": "lib/core/widgets/catch_tab_rail.dart",
-      "line_count": 45,
+      "line_count": 62,
       "definition_count": 1
     },
     {
@@ -1096,7 +1096,7 @@
     },
     {
       "file": "lib/core/widgets/catch_vertical_section.dart",
-      "line_count": 69,
+      "line_count": 71,
       "definition_count": 1
     },
     {
@@ -1176,7 +1176,7 @@
     },
     {
       "file": "lib/dashboard/presentation/dashboard_home_screen.dart",
-      "line_count": 40,
+      "line_count": 42,
       "definition_count": 1
     },
     {
@@ -1186,8 +1186,8 @@
     },
     {
       "file": "lib/dashboard/presentation/dashboard_screen.dart",
-      "line_count": 248,
-      "definition_count": 7
+      "line_count": 200,
+      "definition_count": 5
     },
     {
       "file": "lib/dashboard/presentation/dashboard_stride_actions_controller.dart",
@@ -1216,27 +1216,27 @@
     },
     {
       "file": "lib/dashboard/presentation/widgets/dashboard_empty.dart",
-      "line_count": 63,
+      "line_count": 58,
       "definition_count": 2
     },
     {
       "file": "lib/dashboard/presentation/widgets/dashboard_full.dart",
-      "line_count": 401,
-      "definition_count": 4
+      "line_count": 334,
+      "definition_count": 3
     },
     {
-      "file": "lib/dashboard/presentation/widgets/dashboard_section_state_card.dart",
-      "line_count": 52,
-      "definition_count": 1
-    },
-    {
-      "file": "lib/dashboard/presentation/widgets/dashboard_sliver_header.dart",
-      "line_count": 71,
+      "file": "lib/dashboard/presentation/widgets/dashboard_loading_widgets.dart",
+      "line_count": 55,
       "definition_count": 2
     },
     {
+      "file": "lib/dashboard/presentation/widgets/dashboard_sliver_header.dart",
+      "line_count": 62,
+      "definition_count": 1
+    },
+    {
       "file": "lib/dashboard/presentation/widgets/empty_hero_card.dart",
-      "line_count": 141,
+      "line_count": 139,
       "definition_count": 3
     },
     {
@@ -1251,12 +1251,12 @@
     },
     {
       "file": "lib/dashboard/presentation/widgets/recommendations.dart",
-      "line_count": 36,
+      "line_count": 33,
       "definition_count": 1
     },
     {
       "file": "lib/dashboard/presentation/widgets/stride_card.dart",
-      "line_count": 291,
+      "line_count": 288,
       "definition_count": 5
     },
     {
@@ -1351,7 +1351,7 @@
     },
     {
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line_count": 928,
+      "line_count": 929,
       "definition_count": 29
     },
     {
@@ -1596,7 +1596,7 @@
     },
     {
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line_count": 2151,
+      "line_count": 2147,
       "definition_count": 52
     },
     {
@@ -1656,7 +1656,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line_count": 1142,
+      "line_count": 1137,
       "definition_count": 19
     },
     {
@@ -1666,7 +1666,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line_count": 731,
+      "line_count": 729,
       "definition_count": 20
     },
     {
@@ -1926,7 +1926,7 @@
     },
     {
       "file": "lib/events/presentation/calendar/calendar_screen.dart",
-      "line_count": 906,
+      "line_count": 902,
       "definition_count": 23
     },
     {
@@ -2001,7 +2001,7 @@
     },
     {
       "file": "lib/events/presentation/location_picker_screen.dart",
-      "line_count": 623,
+      "line_count": 624,
       "definition_count": 13
     },
     {
@@ -2016,7 +2016,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/booking_conflict_sheet.dart",
-      "line_count": 234,
+      "line_count": 232,
       "definition_count": 4
     },
     {
@@ -2031,12 +2031,12 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line_count": 1143,
+      "line_count": 1138,
       "definition_count": 29
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
-      "line_count": 493,
+      "line_count": 491,
       "definition_count": 8
     },
     {
@@ -2051,7 +2051,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_overview_section.dart",
-      "line_count": 449,
+      "line_count": 432,
       "definition_count": 14
     },
     {
@@ -2226,7 +2226,7 @@
     },
     {
       "file": "lib/explore/presentation/explore_map_screen.dart",
-      "line_count": 123,
+      "line_count": 126,
       "definition_count": 2
     },
     {
@@ -2246,7 +2246,7 @@
     },
     {
       "file": "lib/explore/presentation/widgets/catch_cover_story.dart",
-      "line_count": 352,
+      "line_count": 348,
       "definition_count": 4
     },
     {
@@ -2256,12 +2256,12 @@
     },
     {
       "file": "lib/explore/presentation/widgets/explore_body.dart",
-      "line_count": 165,
+      "line_count": 167,
       "definition_count": 2
     },
     {
       "file": "lib/explore/presentation/widgets/explore_city_picker.dart",
-      "line_count": 273,
+      "line_count": 271,
       "definition_count": 6
     },
     {
@@ -2286,7 +2286,7 @@
     },
     {
       "file": "lib/explore/presentation/widgets/explore_events_section.dart",
-      "line_count": 278,
+      "line_count": 270,
       "definition_count": 4
     },
     {
@@ -2296,12 +2296,12 @@
     },
     {
       "file": "lib/explore/presentation/widgets/explore_filter_rail.dart",
-      "line_count": 320,
+      "line_count": 296,
       "definition_count": 4
     },
     {
       "file": "lib/explore/presentation/widgets/explore_header.dart",
-      "line_count": 204,
+      "line_count": 202,
       "definition_count": 5
     },
     {
@@ -2311,7 +2311,7 @@
     },
     {
       "file": "lib/explore/presentation/widgets/explore_peek_rail.dart",
-      "line_count": 642,
+      "line_count": 640,
       "definition_count": 23
     },
     {
@@ -2531,7 +2531,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line_count": 1354,
+      "line_count": 1355,
       "definition_count": 17
     },
     {
@@ -2621,7 +2621,7 @@
     },
     {
       "file": "lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart",
-      "line_count": 280,
+      "line_count": 276,
       "definition_count": 10
     },
     {
@@ -2696,7 +2696,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line_count": 1693,
+      "line_count": 1696,
       "definition_count": 20
     },
     {
@@ -2726,7 +2726,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line_count": 4171,
+      "line_count": 4157,
       "definition_count": 96
     },
     {
@@ -2816,7 +2816,7 @@
     },
     {
       "file": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-      "line_count": 456,
+      "line_count": 450,
       "definition_count": 11
     },
     {
@@ -3076,7 +3076,7 @@
     },
     {
       "file": "lib/onboarding/presentation/pages/photos_page.dart",
-      "line_count": 156,
+      "line_count": 157,
       "definition_count": 2
     },
     {
@@ -3176,7 +3176,7 @@
     },
     {
       "file": "lib/payments/presentation/payment_confirmation_screen.dart",
-      "line_count": 607,
+      "line_count": 606,
       "definition_count": 11
     },
     {
@@ -3186,7 +3186,7 @@
     },
     {
       "file": "lib/payments/presentation/payment_history_screen.dart",
-      "line_count": 459,
+      "line_count": 457,
       "definition_count": 7
     },
     {
@@ -3306,7 +3306,7 @@
     },
     {
       "file": "lib/reviews/shared/reviews_section.dart",
-      "line_count": 513,
+      "line_count": 516,
       "definition_count": 8
     },
     {
@@ -3366,7 +3366,7 @@
     },
     {
       "file": "lib/safety/presentation/settings_screen.dart",
-      "line_count": 665,
+      "line_count": 664,
       "definition_count": 6
     },
     {
@@ -3436,7 +3436,7 @@
     },
     {
       "file": "lib/swipes/presentation/filters_screen.dart",
-      "line_count": 378,
+      "line_count": 370,
       "definition_count": 7
     },
     {
@@ -3486,7 +3486,7 @@
     },
     {
       "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "line_count": 582,
+      "line_count": 580,
       "definition_count": 12
     },
     {
@@ -3511,7 +3511,7 @@
     },
     {
       "file": "lib/swipes/shared/profile_surface/profile_surface.dart",
-      "line_count": 360,
+      "line_count": 358,
       "definition_count": 13
     },
     {
@@ -3666,7 +3666,7 @@
     },
     {
       "file": "lib/user_profile/presentation/widgets/profile_sliver_header.dart",
-      "line_count": 103,
+      "line_count": 92,
       "definition_count": 4
     },
     {
@@ -3681,7 +3681,7 @@
     },
     {
       "file": "lib/user_profile/user_profile.dart",
-      "line_count": 32,
+      "line_count": 31,
       "definition_count": 0
     }
   ],
@@ -4478,7 +4478,7 @@
       "signature": "class HostBroadcastComposerSheet extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "68df7e827f0be33a"
+      "body_hash": "bce0763377f42bd6"
     },
     {
       "name": "ChatsListCelebrationController",
@@ -4702,13 +4702,13 @@
       "signature": "class ChatsListBody extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "a6bafb205201943d"
+      "body_hash": "22a539bfa88fa676"
     },
     {
       "name": "HostInboxBroadcastCard",
       "kind": "class",
       "file": "lib/chats/presentation/inbox/widgets/chats_list_body.dart",
-      "line": 72,
+      "line": 70,
       "signature": "class HostInboxBroadcastCard extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -4718,7 +4718,7 @@
       "name": "_chatsBrowseHeaderHeight",
       "kind": "constant",
       "file": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
-      "line": 10,
+      "line": 11,
       "signature": "const double _chatsBrowseHeaderHeight = CatchLayout.browseHeaderHeight;",
       "body_hash": "7edac3278e6c9dca"
     },
@@ -4726,15 +4726,15 @@
       "name": "_hostInboxFilterHeight",
       "kind": "constant",
       "file": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
-      "line": 11,
-      "signature": "const double _hostInboxFilterHeight = CatchSpacing.s11;",
-      "body_hash": "91fe6123fda1d6e1"
+      "line": 12,
+      "signature": "const double _hostInboxFilterHeight = CatchLayout.tabRailHeight;",
+      "body_hash": "52d3a9e5a33f7953"
     },
     {
       "name": "ChatsSliverHeader",
       "kind": "class",
       "file": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
-      "line": 13,
+      "line": 14,
       "signature": "class ChatsSliverHeader extends CatchSliverHeader {",
       "superclass": "CatchSliverHeader",
       "is_widget": false,
@@ -4744,7 +4744,7 @@
       "name": "ChatsBrowseHeader",
       "kind": "class",
       "file": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
-      "line": 37,
+      "line": 38,
       "signature": "class ChatsBrowseHeader extends StatefulWidget {",
       "superclass": "StatefulWidget",
       "is_widget": true,
@@ -4754,11 +4754,11 @@
       "name": "_ChatsBrowseHeaderState",
       "kind": "class",
       "file": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
-      "line": 59,
+      "line": 60,
       "signature": "class _ChatsBrowseHeaderState extends State<ChatsBrowseHeader> {",
       "superclass": "State<ChatsBrowseHeader>",
       "is_widget": false,
-      "body_hash": "7fe0ab91bb2e66cb"
+      "body_hash": "00f87b8ed4769e35"
     },
     {
       "name": "SuvbotController",
@@ -4988,7 +4988,7 @@
       "name": "SuvbotActionCallback",
       "kind": "typedef",
       "file": "lib/chats/presentation/widgets/suvbot_action_bar.dart",
-      "line": 18,
+      "line": 19,
       "signature": "typedef SuvbotActionCallback = Future<void> Function(SuvbotActionItem action);",
       "body_hash": "aa67aaf1d2c15c93"
     },
@@ -4996,7 +4996,7 @@
       "name": "SuvbotTextActionCallback",
       "kind": "typedef",
       "file": "lib/chats/presentation/widgets/suvbot_action_bar.dart",
-      "line": 19,
+      "line": 20,
       "signature": "typedef SuvbotTextActionCallback =",
       "body_hash": "d039afb114a805fd"
     },
@@ -5004,7 +5004,7 @@
       "name": "Function",
       "kind": "function",
       "file": "lib/chats/presentation/widgets/suvbot_action_bar.dart",
-      "line": 20,
+      "line": 21,
       "signature": "Future<void> Function(SuvbotActionItem action, String text);",
       "return_type": "Future<void>",
       "body_hash": "b1519e6255636fef"
@@ -5013,7 +5013,7 @@
       "name": "_demoActionSheetPadding",
       "kind": "constant",
       "file": "lib/chats/presentation/widgets/suvbot_action_bar.dart",
-      "line": 22,
+      "line": 23,
       "signature": "const EdgeInsets _demoActionSheetPadding = EdgeInsets.fromLTRB(",
       "body_hash": "9d73c906eed0ed7f"
     },
@@ -5021,7 +5021,7 @@
       "name": "SuvbotActionBar",
       "kind": "class",
       "file": "lib/chats/presentation/widgets/suvbot_action_bar.dart",
-      "line": 29,
+      "line": 30,
       "signature": "class SuvbotActionBar extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -5031,10 +5031,10 @@
       "name": "_showResetSheet",
       "kind": "function",
       "file": "lib/chats/presentation/widgets/suvbot_action_bar.dart",
-      "line": 275,
+      "line": 276,
       "signature": "Future<void> _showResetSheet(",
       "return_type": "Future<void>",
-      "body_hash": "8106fb3f7ea261f1"
+      "body_hash": "b73d675c23499864"
     },
     {
       "name": "SuvbotResetActionRow",
@@ -5580,7 +5580,7 @@
       "name": "ClubContactActionHandler",
       "kind": "typedef",
       "file": "lib/clubs/presentation/detail/widgets/club_contact_section.dart",
-      "line": 12,
+      "line": 11,
       "signature": "typedef ClubContactActionHandler =",
       "body_hash": "1c7bc3efefc2659d"
     },
@@ -5588,7 +5588,7 @@
       "name": "Function",
       "kind": "function",
       "file": "lib/clubs/presentation/detail/widgets/club_contact_section.dart",
-      "line": 13,
+      "line": 12,
       "signature": "Future<void> Function(ClubContactAction action);",
       "return_type": "Future<void>",
       "body_hash": "1ecc27dfb2432e4d"
@@ -5597,17 +5597,17 @@
       "name": "ClubContactSection",
       "kind": "class",
       "file": "lib/clubs/presentation/detail/widgets/club_contact_section.dart",
-      "line": 15,
+      "line": 14,
       "signature": "class ClubContactSection extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "2f56bb0a74ef8a20"
+      "body_hash": "6c99efcc05fa3a87"
     },
     {
       "name": "_contactActionIcon",
       "kind": "function",
       "file": "lib/clubs/presentation/detail/widgets/club_contact_section.dart",
-      "line": 61,
+      "line": 58,
       "signature": "IconData _contactActionIcon(ClubContactActionKind kind) {",
       "return_type": "IconData",
       "body_hash": "2829451960296f3b"
@@ -5804,16 +5804,16 @@
       "kind": "constant",
       "file": "lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart",
       "line": 23,
-      "signature": "const EdgeInsets _clubHeroLeadingPadding = EdgeInsets.only(",
-      "body_hash": "a0229eb04e86d270"
+      "signature": "final EdgeInsets _clubHeroLeadingPadding = CatchInsets.pageHorizontal.copyWith(",
+      "body_hash": "dcc5412cbef9db79"
     },
     {
       "name": "_clubHeroActionPadding",
       "kind": "constant",
       "file": "lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart",
       "line": 28,
-      "signature": "const EdgeInsets _clubHeroActionPadding = EdgeInsets.only(",
-      "body_hash": "df2ed1ed7b2b20c6"
+      "signature": "final EdgeInsets _clubHeroActionPadding = CatchInsets.pageHorizontal.copyWith(",
+      "body_hash": "c90ed7139754c9a5"
     },
     {
       "name": "ClubHeroAppBar",
@@ -6010,7 +6010,7 @@
       "signature": "class ClubAvatarRail extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "ef798e9534ef52d7"
+      "body_hash": "98facc7c0a9872ee"
     },
     {
       "name": "buildClubDirectorySlivers",
@@ -6965,7 +6965,7 @@
       "name": "_celebrationInk",
       "kind": "constant",
       "file": "lib/core/celebration/catch_celebration_screen.dart",
-      "line": 13,
+      "line": 14,
       "signature": "const _celebrationInk = CatchCelebrationColors.ink;",
       "body_hash": "3439dcd0b5f409cc"
     },
@@ -6973,7 +6973,7 @@
       "name": "_celebrationCream",
       "kind": "constant",
       "file": "lib/core/celebration/catch_celebration_screen.dart",
-      "line": 14,
+      "line": 15,
       "signature": "const _celebrationCream = CatchCelebrationColors.cream;",
       "body_hash": "b0a10dc200a6f7fe"
     },
@@ -6981,7 +6981,7 @@
       "name": "_celebrationActionInk",
       "kind": "constant",
       "file": "lib/core/celebration/catch_celebration_screen.dart",
-      "line": 15,
+      "line": 16,
       "signature": "const _celebrationActionInk = CatchCelebrationColors.actionInk;",
       "body_hash": "658da613b4335823"
     },
@@ -6989,7 +6989,7 @@
       "name": "CatchCelebrationAppearance",
       "kind": "enum",
       "file": "lib/core/celebration/catch_celebration_screen.dart",
-      "line": 17,
+      "line": 18,
       "signature": "enum CatchCelebrationAppearance { immersive, paper }",
       "body_hash": "c1ce1c729c9a061f"
     },
@@ -6997,7 +6997,7 @@
       "name": "CelebrationDetail",
       "kind": "class",
       "file": "lib/core/celebration/catch_celebration_screen.dart",
-      "line": 19,
+      "line": 20,
       "signature": "class CelebrationDetail {",
       "is_widget": false,
       "body_hash": "3c0e527f1487d2f7"
@@ -7006,7 +7006,7 @@
       "name": "CelebrationAction",
       "kind": "class",
       "file": "lib/core/celebration/catch_celebration_screen.dart",
-      "line": 31,
+      "line": 32,
       "signature": "class CelebrationAction {",
       "is_widget": false,
       "body_hash": "5bb5ebc3e1144efc"
@@ -7015,7 +7015,7 @@
       "name": "CatchCelebrationScreen",
       "kind": "class",
       "file": "lib/core/celebration/catch_celebration_screen.dart",
-      "line": 47,
+      "line": 48,
       "signature": "class CatchCelebrationScreen extends ConsumerStatefulWidget {",
       "superclass": "ConsumerStatefulWidget",
       "is_widget": true,
@@ -7025,7 +7025,7 @@
       "name": "_CatchCelebrationScreenState",
       "kind": "class",
       "file": "lib/core/celebration/catch_celebration_screen.dart",
-      "line": 90,
+      "line": 91,
       "signature": "class _CatchCelebrationScreenState",
       "is_widget": false,
       "body_hash": "6b10e33d15405e91"
@@ -7034,17 +7034,17 @@
       "name": "PaperCelebrationScaffold",
       "kind": "class",
       "file": "lib/core/celebration/catch_celebration_screen.dart",
-      "line": 244,
+      "line": 245,
       "signature": "class PaperCelebrationScaffold extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "44b84cb8fc2770b4"
+      "body_hash": "18063777e4c8c827"
     },
     {
       "name": "PaperCelebrationIcon",
       "kind": "class",
       "file": "lib/core/celebration/catch_celebration_screen.dart",
-      "line": 374,
+      "line": 381,
       "signature": "class PaperCelebrationIcon extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -7054,17 +7054,17 @@
       "name": "PaperCelebrationDetailsCard",
       "kind": "class",
       "file": "lib/core/celebration/catch_celebration_screen.dart",
-      "line": 392,
+      "line": 399,
       "signature": "class PaperCelebrationDetailsCard extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "0927fc774b458329"
+      "body_hash": "26dd3da8cf7f7519"
     },
     {
       "name": "PaperCelebrationDetailRow",
       "kind": "class",
       "file": "lib/core/celebration/catch_celebration_screen.dart",
-      "line": 423,
+      "line": 430,
       "signature": "class PaperCelebrationDetailRow extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -7074,7 +7074,7 @@
       "name": "CelebrationIcon",
       "kind": "class",
       "file": "lib/core/celebration/catch_celebration_screen.dart",
-      "line": 461,
+      "line": 468,
       "signature": "class CelebrationIcon extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -7084,27 +7084,27 @@
       "name": "CelebrationDetailsCard",
       "kind": "class",
       "file": "lib/core/celebration/catch_celebration_screen.dart",
-      "line": 481,
+      "line": 488,
       "signature": "class CelebrationDetailsCard extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "045a80c616ed7650"
+      "body_hash": "438dc56c76e88bb8"
     },
     {
       "name": "CelebrationDetailRow",
       "kind": "class",
       "file": "lib/core/celebration/catch_celebration_screen.dart",
-      "line": 513,
+      "line": 525,
       "signature": "class CelebrationDetailRow extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "bfdf4bdba6d32244"
+      "body_hash": "710659ba73170ca4"
     },
     {
       "name": "CelebrationNote",
       "kind": "class",
       "file": "lib/core/celebration/catch_celebration_screen.dart",
-      "line": 553,
+      "line": 568,
       "signature": "class CelebrationNote extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -8662,7 +8662,7 @@
       "line": 1482,
       "signature": "abstract final class CatchLayout {",
       "is_widget": false,
-      "body_hash": "b9e998561107a0bc"
+      "body_hash": "a8afc92e62245d93"
     },
     {
       "name": "CatchAspectRatio",
@@ -8892,7 +8892,7 @@
       "name": "showCatchDatePicker",
       "kind": "function",
       "file": "lib/core/widgets/catch_adaptive_picker.dart",
-      "line": 7,
+      "line": 8,
       "signature": "Future<DateTime?> showCatchDatePicker({",
       "return_type": "Future<DateTime?>",
       "body_hash": "705f7692e7464ece"
@@ -8901,7 +8901,7 @@
       "name": "showCatchTimePicker",
       "kind": "function",
       "file": "lib/core/widgets/catch_adaptive_picker.dart",
-      "line": 50,
+      "line": 51,
       "signature": "Future<TimeOfDay?> showCatchTimePicker({",
       "return_type": "Future<TimeOfDay?>",
       "body_hash": "73a7e1286104c1a9"
@@ -8910,7 +8910,7 @@
       "name": "_clampDate",
       "kind": "function",
       "file": "lib/core/widgets/catch_adaptive_picker.dart",
-      "line": 96,
+      "line": 97,
       "signature": "DateTime _clampDate(DateTime date, DateTime minimumDate, DateTime maximumDate) {",
       "return_type": "DateTime",
       "body_hash": "a7edd70e386d2c16"
@@ -8919,10 +8919,10 @@
       "name": "_buildCupertinoPickerSheet",
       "kind": "function",
       "file": "lib/core/widgets/catch_adaptive_picker.dart",
-      "line": 103,
+      "line": 104,
       "signature": "Widget _buildCupertinoPickerSheet(",
       "return_type": "Widget",
-      "body_hash": "3fe6f74bb1a189a1"
+      "body_hash": "f7873322742c799f"
     },
     {
       "name": "CatchAnalyticsBar",
@@ -9149,7 +9149,7 @@
       "name": "CatchBottomDockVariant",
       "kind": "enum",
       "file": "lib/core/widgets/catch_bottom_dock.dart",
-      "line": 8,
+      "line": 9,
       "signature": "enum CatchBottomDockVariant { custom, cta }",
       "body_hash": "1220cec32587659d"
     },
@@ -9157,7 +9157,7 @@
       "name": "CatchBottomDock",
       "kind": "class",
       "file": "lib/core/widgets/catch_bottom_dock.dart",
-      "line": 12,
+      "line": 13,
       "signature": "class CatchBottomDock extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -9167,11 +9167,11 @@
       "name": "CatchBottomDockCta",
       "kind": "class",
       "file": "lib/core/widgets/catch_bottom_dock.dart",
-      "line": 102,
+      "line": 103,
       "signature": "class CatchBottomDockCta extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "5bbad4db342a5e67"
+      "body_hash": "7608b4f7003815c3"
     },
     {
       "name": "CatchBottomSheetScaffold",
@@ -9897,7 +9897,7 @@
       "signature": "class CatchFieldTrailing extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "6102cbb5a5efe533"
+      "body_hash": "bff8705eab58fd24"
     },
     {
       "name": "CatchFormFieldLabel",
@@ -10008,11 +10008,11 @@
       "name": "CatchHorizontalRail",
       "kind": "class",
       "file": "lib/core/widgets/catch_horizontal_rail.dart",
-      "line": 12,
+      "line": 13,
       "signature": "class CatchHorizontalRail extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "ab9defefcc44472d"
+      "body_hash": "adbd8a06908a130a"
     },
     {
       "name": "CatchIconAction",
@@ -10122,7 +10122,7 @@
       "name": "CatchMenuItem",
       "kind": "class",
       "file": "lib/core/widgets/catch_menu.dart",
-      "line": 7,
+      "line": 8,
       "signature": "class CatchMenuItem<T> {",
       "is_widget": false,
       "body_hash": "43b4004c1497f878"
@@ -10131,17 +10131,17 @@
       "name": "CatchMenu",
       "kind": "class",
       "file": "lib/core/widgets/catch_menu.dart",
-      "line": 30,
+      "line": 31,
       "signature": "class CatchMenu<T> extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "4c09f3eb9ed7e5cf"
+      "body_hash": "c99f86225902c097"
     },
     {
       "name": "CatchMenuRow",
       "kind": "class",
       "file": "lib/core/widgets/catch_menu.dart",
-      "line": 71,
+      "line": 67,
       "signature": "class CatchMenuRow<T> extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -10438,20 +10438,30 @@
       "kind": "class",
       "file": "lib/core/widgets/catch_option_group.dart",
       "line": 16,
-      "signature": "class CatchOptionGroup<T> extends StatelessWidget {",
-      "superclass": "StatelessWidget",
+      "signature": "class CatchOptionGroup<T> extends StatefulWidget {",
+      "superclass": "StatefulWidget",
       "is_widget": true,
-      "body_hash": "e0fcd15373c2ec24"
+      "body_hash": "a6fc0a719af79f5d"
+    },
+    {
+      "name": "_CatchOptionGroupState",
+      "kind": "class",
+      "file": "lib/core/widgets/catch_option_group.dart",
+      "line": 51,
+      "signature": "class _CatchOptionGroupState<T> extends State<CatchOptionGroup<T>> {",
+      "superclass": "State",
+      "is_widget": false,
+      "body_hash": "e647634c5877ef15"
     },
     {
       "name": "CatchOptionGroupItem",
       "kind": "class",
       "file": "lib/core/widgets/catch_option_group.dart",
-      "line": 84,
+      "line": 231,
       "signature": "class CatchOptionGroupItem<T> extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "16747d7769b51804"
+      "body_hash": "d26732ed5c7cf3ff"
     },
     {
       "name": "CatchCodeInput",
@@ -10889,33 +10899,33 @@
       "signature": "class CatchSection extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "9cf47b484dc9adff"
+      "body_hash": "a387ef81c863c0c3"
     },
     {
       "name": "CatchSectionFocusSurface",
       "kind": "class",
       "file": "lib/core/widgets/catch_section_layout.dart",
-      "line": 580,
+      "line": 608,
       "signature": "class CatchSectionFocusSurface extends StatefulWidget {",
       "superclass": "StatefulWidget",
       "is_widget": true,
-      "body_hash": "614dd757efe18fa5"
+      "body_hash": "bda033e08b080dd7"
     },
     {
       "name": "_CatchSectionFocusSurfaceState",
       "kind": "class",
       "file": "lib/core/widgets/catch_section_layout.dart",
-      "line": 599,
+      "line": 637,
       "signature": "class _CatchSectionFocusSurfaceState extends State<CatchSectionFocusSurface> {",
       "superclass": "State<CatchSectionFocusSurface>",
       "is_widget": false,
-      "body_hash": "42ee563091e8f97b"
+      "body_hash": "8f73095de410a4b0"
     },
     {
       "name": "_buildCatchSectionKicker",
       "kind": "function",
       "file": "lib/core/widgets/catch_section_layout.dart",
-      "line": 630,
+      "line": 673,
       "signature": "Widget _buildCatchSectionKicker(",
       "return_type": "Widget",
       "body_hash": "ae09589318ea2067"
@@ -10924,7 +10934,7 @@
       "name": "CatchDetailSliverSectionList",
       "kind": "class",
       "file": "lib/core/widgets/catch_section_layout.dart",
-      "line": 659,
+      "line": 702,
       "signature": "class CatchDetailSliverSectionList extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -11259,7 +11269,7 @@
       "signature": "class CatchTabRail<T> extends StatelessWidget implements PreferredSizeWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "e4a46a2659acbb31"
+      "body_hash": "8300abdbf6e8e3c7"
     },
     {
       "name": "CatchTextButtonTone",
@@ -11485,7 +11495,7 @@
       "signature": "class CatchVerticalSection extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "7b6a58733a67e949"
+      "body_hash": "929563e6c13ab864"
     },
     {
       "name": "showConfirmDangerDialog",
@@ -12160,7 +12170,7 @@
       "signature": "class DashboardHomeScreen extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "b1abde8405add2b0"
+      "body_hash": "db1f35d052f352f5"
     },
     {
       "name": "DashboardLoadingScreen",
@@ -12176,7 +12186,7 @@
       "name": "DashboardScreen",
       "kind": "class",
       "file": "lib/dashboard/presentation/dashboard_screen.dart",
-      "line": 32,
+      "line": 33,
       "signature": "class DashboardScreen extends ConsumerWidget {",
       "superclass": "ConsumerWidget",
       "is_widget": true,
@@ -12186,7 +12196,7 @@
       "name": "NotificationsAction",
       "kind": "class",
       "file": "lib/dashboard/presentation/dashboard_screen.dart",
-      "line": 76,
+      "line": 77,
       "signature": "class NotificationsAction extends ConsumerWidget {",
       "superclass": "ConsumerWidget",
       "is_widget": true,
@@ -12196,7 +12206,7 @@
       "name": "DashboardNotificationBellButton",
       "kind": "class",
       "file": "lib/dashboard/presentation/dashboard_screen.dart",
-      "line": 99,
+      "line": 100,
       "signature": "class DashboardNotificationBellButton extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -12206,7 +12216,7 @@
       "name": "DashboardLoadingHeader",
       "kind": "class",
       "file": "lib/dashboard/presentation/dashboard_screen.dart",
-      "line": 127,
+      "line": 128,
       "signature": "class DashboardLoadingHeader extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -12216,31 +12226,11 @@
       "name": "DashboardFocusLoadingCard",
       "kind": "class",
       "file": "lib/dashboard/presentation/dashboard_screen.dart",
-      "line": 158,
+      "line": 159,
       "signature": "class DashboardFocusLoadingCard extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
       "body_hash": "6742db5c30eb4b0b"
-    },
-    {
-      "name": "DashboardStrideLoadingCard",
-      "kind": "class",
-      "file": "lib/dashboard/presentation/dashboard_screen.dart",
-      "line": 200,
-      "signature": "class DashboardStrideLoadingCard extends StatelessWidget {",
-      "superclass": "StatelessWidget",
-      "is_widget": true,
-      "body_hash": "56e554350639c13b"
-    },
-    {
-      "name": "DashboardRecommendedLoadingSection",
-      "kind": "class",
-      "file": "lib/dashboard/presentation/dashboard_screen.dart",
-      "line": 230,
-      "signature": "class DashboardRecommendedLoadingSection extends StatelessWidget {",
-      "superclass": "StatelessWidget",
-      "is_widget": true,
-      "body_hash": "1c4c9adc9adb1de9"
     },
     {
       "name": "DashboardStrideActions",
@@ -12487,31 +12477,21 @@
       "signature": "class DashboardEmptySliverBody extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "116dc44a4de196ad"
+      "body_hash": "701f7e3a117e4caa"
     },
     {
       "name": "_howCatchWorksSteps",
       "kind": "constant",
       "file": "lib/dashboard/presentation/widgets/dashboard_empty.dart",
-      "line": 45,
+      "line": 40,
       "signature": "const List<CatchJourneyStep> _howCatchWorksSteps = [",
       "body_hash": "2786d07449f79861"
-    },
-    {
-      "name": "DashboardFull",
-      "kind": "class",
-      "file": "lib/dashboard/presentation/widgets/dashboard_full.dart",
-      "line": 39,
-      "signature": "class DashboardFull extends ConsumerWidget {",
-      "superclass": "ConsumerWidget",
-      "is_widget": true,
-      "body_hash": "0b564aab828ffbbd"
     },
     {
       "name": "DashboardFullSliverBody",
       "kind": "class",
       "file": "lib/dashboard/presentation/widgets/dashboard_full.dart",
-      "line": 95,
+      "line": 38,
       "signature": "class DashboardFullSliverBody extends ConsumerStatefulWidget {",
       "superclass": "ConsumerStatefulWidget",
       "is_widget": true,
@@ -12521,46 +12501,46 @@
       "name": "_DashboardFullSliverBodyState",
       "kind": "class",
       "file": "lib/dashboard/presentation/widgets/dashboard_full.dart",
-      "line": 112,
+      "line": 55,
       "signature": "class _DashboardFullSliverBodyState",
       "is_widget": false,
-      "body_hash": "86e9e07845b98b03"
+      "body_hash": "2975c8d43886d271"
     },
     {
       "name": "FollowedClubsRailSkeleton",
       "kind": "class",
       "file": "lib/dashboard/presentation/widgets/dashboard_full.dart",
-      "line": 372,
+      "line": 305,
       "signature": "class FollowedClubsRailSkeleton extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "7fd277e4ceab474d"
+      "body_hash": "967d27e524329690"
     },
     {
-      "name": "DashboardSectionStateCard",
+      "name": "DashboardStrideLoadingCard",
       "kind": "class",
-      "file": "lib/dashboard/presentation/widgets/dashboard_section_state_card.dart",
-      "line": 9,
-      "signature": "class DashboardSectionStateCard extends StatelessWidget {",
+      "file": "lib/dashboard/presentation/widgets/dashboard_loading_widgets.dart",
+      "line": 7,
+      "signature": "class DashboardStrideLoadingCard extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "af0c13cc7c46dc85"
+      "body_hash": "56e554350639c13b"
     },
     {
-      "name": "DashboardSliverHeader",
+      "name": "DashboardRecommendedLoadingSection",
       "kind": "class",
-      "file": "lib/dashboard/presentation/widgets/dashboard_sliver_header.dart",
-      "line": 7,
-      "signature": "class DashboardSliverHeader extends CatchSliverHeader {",
-      "superclass": "CatchSliverHeader",
-      "is_widget": false,
-      "body_hash": "275b336c4d7aa710"
+      "file": "lib/dashboard/presentation/widgets/dashboard_loading_widgets.dart",
+      "line": 37,
+      "signature": "class DashboardRecommendedLoadingSection extends StatelessWidget {",
+      "superclass": "StatelessWidget",
+      "is_widget": true,
+      "body_hash": "1c4c9adc9adb1de9"
     },
     {
       "name": "DashboardHeaderContent",
       "kind": "class",
       "file": "lib/dashboard/presentation/widgets/dashboard_sliver_header.dart",
-      "line": 15,
+      "line": 6,
       "signature": "class DashboardHeaderContent extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -12574,13 +12554,13 @@
       "signature": "class EmptyHeroCard extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "f40baa9d219799af"
+      "body_hash": "373ed4ce58abf824"
     },
     {
       "name": "EmptyHeroContent",
       "kind": "class",
       "file": "lib/dashboard/presentation/widgets/empty_hero_card.dart",
-      "line": 57,
+      "line": 55,
       "signature": "class EmptyHeroContent extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -12590,7 +12570,7 @@
       "name": "_HeroLineWash",
       "kind": "class",
       "file": "lib/dashboard/presentation/widgets/empty_hero_card.dart",
-      "line": 121,
+      "line": 119,
       "signature": "class _HeroLineWash extends CustomPainter {",
       "superclass": "CustomPainter",
       "is_widget": false,
@@ -12712,7 +12692,7 @@
       "signature": "class Recommendations extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "120ee4c9aab86e7a"
+      "body_hash": "dd73aa5fa9c87562"
     },
     {
       "name": "DashboardStrideSectionActions",
@@ -12740,13 +12720,13 @@
       "signature": "class DashboardStrideSection extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "dcdd12484072a00a"
+      "body_hash": "d5eb81bab3ab2cd2"
     },
     {
       "name": "StrideCard",
       "kind": "class",
       "file": "lib/dashboard/presentation/widgets/stride_card.dart",
-      "line": 82,
+      "line": 79,
       "signature": "class StrideCard extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -12756,7 +12736,7 @@
       "name": "StrideBarColumn",
       "kind": "class",
       "file": "lib/dashboard/presentation/widgets/stride_card.dart",
-      "line": 242,
+      "line": 239,
       "signature": "class StrideBarColumn extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -13241,7 +13221,7 @@
       "name": "EventPolicyLabKeys",
       "kind": "class",
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 17,
+      "line": 18,
       "signature": "abstract final class EventPolicyLabKeys {",
       "is_widget": false,
       "body_hash": "274dacfd6585590d"
@@ -13250,7 +13230,7 @@
       "name": "EventPolicyLabScreen",
       "kind": "class",
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 29,
+      "line": 30,
       "signature": "class EventPolicyLabScreen extends StatefulWidget {",
       "superclass": "StatefulWidget",
       "is_widget": true,
@@ -13260,7 +13240,7 @@
       "name": "_EventPolicyLabScreenState",
       "kind": "class",
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 38,
+      "line": 39,
       "signature": "class _EventPolicyLabScreenState extends State<EventPolicyLabScreen> {",
       "superclass": "State<EventPolicyLabScreen>",
       "is_widget": false,
@@ -13270,7 +13250,7 @@
       "name": "EventPolicyLabHeader",
       "kind": "class",
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 93,
+      "line": 94,
       "signature": "class EventPolicyLabHeader extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -13280,7 +13260,7 @@
       "name": "EventPolicyScenarioPicker",
       "kind": "class",
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 208,
+      "line": 209,
       "signature": "class EventPolicyScenarioPicker extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -13290,7 +13270,7 @@
       "name": "EventPolicyScenarioCard",
       "kind": "class",
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 257,
+      "line": 258,
       "signature": "class EventPolicyScenarioCard extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -13300,7 +13280,7 @@
       "name": "EventPolicySummary",
       "kind": "class",
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 310,
+      "line": 311,
       "signature": "class EventPolicySummary extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -13310,7 +13290,7 @@
       "name": "EventPolicyResultRows",
       "kind": "class",
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 447,
+      "line": 448,
       "signature": "class EventPolicyResultRows extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -13320,7 +13300,7 @@
       "name": "EventPolicyResultRow",
       "kind": "class",
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 479,
+      "line": 480,
       "signature": "class EventPolicyResultRow extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -13330,7 +13310,7 @@
       "name": "EventPolicyCancellationRows",
       "kind": "class",
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 555,
+      "line": 556,
       "signature": "class EventPolicyCancellationRows extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -13340,7 +13320,7 @@
       "name": "EventPolicyCancellationRow",
       "kind": "class",
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 589,
+      "line": 590,
       "signature": "class EventPolicyCancellationRow extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -13350,7 +13330,7 @@
       "name": "EventPolicyDebugOutput",
       "kind": "class",
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 669,
+      "line": 670,
       "signature": "class EventPolicyDebugOutput extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -13360,7 +13340,7 @@
       "name": "EventPolicyLabSectionTitle",
       "kind": "class",
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 705,
+      "line": 706,
       "signature": "class EventPolicyLabSectionTitle extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -13370,7 +13350,7 @@
       "name": "EventPolicySummaryLine",
       "kind": "class",
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 737,
+      "line": 738,
       "signature": "class EventPolicySummaryLine extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -13380,17 +13360,17 @@
       "name": "EventPolicyDividerLine",
       "kind": "class",
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 778,
+      "line": 779,
       "signature": "class EventPolicyDividerLine extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "4e35937a6c98130b"
+      "body_hash": "4f680231bb81c2e6"
     },
     {
       "name": "_formatIcon",
       "kind": "function",
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 792,
+      "line": 793,
       "signature": "IconData _formatIcon(EventAdmissionFormat format) {",
       "return_type": "IconData",
       "body_hash": "1162cd31ba2b73d9"
@@ -13399,7 +13379,7 @@
       "name": "_decisionTone",
       "kind": "function",
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 803,
+      "line": 804,
       "signature": "CatchBadgeTone _decisionTone(EventAdmissionDecisionType type) {",
       "return_type": "CatchBadgeTone",
       "body_hash": "374c0fb560097581"
@@ -13408,7 +13388,7 @@
       "name": "_formatAdmissionFormat",
       "kind": "function",
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 815,
+      "line": 816,
       "signature": "String _formatAdmissionFormat(EventAdmissionFormat format) {",
       "return_type": "String",
       "body_hash": "ae916e74101a4831"
@@ -13417,7 +13397,7 @@
       "name": "_formatWaitlist",
       "kind": "function",
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 826,
+      "line": 827,
       "signature": "String _formatWaitlist(EventWaitlistMode mode) {",
       "return_type": "String",
       "body_hash": "0a18ab988b114b9e"
@@ -13426,7 +13406,7 @@
       "name": "_formatOutOfRatio",
       "kind": "function",
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 835,
+      "line": 836,
       "signature": "String _formatOutOfRatio(EventOutOfRatioCohortPolicy policy) {",
       "return_type": "String",
       "body_hash": "cecd4fdf4fa07ed4"
@@ -13435,7 +13415,7 @@
       "name": "_formatDecision",
       "kind": "function",
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 844,
+      "line": 845,
       "signature": "String _formatDecision(EventAdmissionDecisionType type) {",
       "return_type": "String",
       "body_hash": "57c998669a170f50"
@@ -13444,7 +13424,7 @@
       "name": "_formatReason",
       "kind": "function",
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 856,
+      "line": 857,
       "signature": "String _formatReason(EventAdmissionDecisionReason reason) {",
       "return_type": "String",
       "body_hash": "7b86dbe2cfa79c96"
@@ -13453,7 +13433,7 @@
       "name": "_formatCancellationActor",
       "kind": "function",
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 875,
+      "line": 876,
       "signature": "String _formatCancellationActor(EventCancellationActor actor) {",
       "return_type": "String",
       "body_hash": "fc6eec66c9dd67d0"
@@ -13462,7 +13442,7 @@
       "name": "_formatCancellationRemedy",
       "kind": "function",
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 883,
+      "line": 884,
       "signature": "String _formatCancellationRemedy(EventCancellationRemedy remedy) {",
       "return_type": "String",
       "body_hash": "986a4efa0b9ede3d"
@@ -13471,7 +13451,7 @@
       "name": "_cancellationTone",
       "kind": "function",
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 893,
+      "line": 894,
       "signature": "CatchBadgeTone _cancellationTone(EventCancellationRemedy remedy) {",
       "return_type": "CatchBadgeTone",
       "body_hash": "b30988cf3b0d42a1"
@@ -13480,7 +13460,7 @@
       "name": "_formatCohortCaps",
       "kind": "function",
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 904,
+      "line": 905,
       "signature": "String _formatCohortCaps(Map<String, int> caps) {",
       "return_type": "String",
       "body_hash": "314963c13b7a82f2"
@@ -13489,7 +13469,7 @@
       "name": "_formatCohortId",
       "kind": "function",
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 910,
+      "line": 911,
       "signature": "String _formatCohortId(String cohortId) {",
       "return_type": "String",
       "body_hash": "887db32ff4d853c1"
@@ -13498,7 +13478,7 @@
       "name": "_formatPaise",
       "kind": "function",
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 920,
+      "line": 921,
       "signature": "String _formatPaise(int paise) {",
       "return_type": "String",
       "body_hash": "6d32617d0d44959e"
@@ -13507,7 +13487,7 @@
       "name": "_formatSignedPaise",
       "kind": "function",
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 924,
+      "line": 925,
       "signature": "String _formatSignedPaise(int paise) {",
       "return_type": "String",
       "body_hash": "128ea080b1ef2e18"
@@ -15424,13 +15404,13 @@
       "signature": "class CompanionPaperScaffold extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "3f81b110b0d76049"
+      "body_hash": "e5497a3ce7ad496e"
     },
     {
       "name": "PaperCompanionNav",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 208,
+      "line": 204,
       "signature": "class PaperCompanionNav extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -15440,7 +15420,7 @@
       "name": "PaperProgressRail",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 262,
+      "line": 258,
       "signature": "class PaperProgressRail extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -15450,7 +15430,7 @@
       "name": "PaperCompanionTicket",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 291,
+      "line": 287,
       "signature": "class PaperCompanionTicket extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -15460,7 +15440,7 @@
       "name": "PaperTicketHeader",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 384,
+      "line": 380,
       "signature": "class PaperTicketHeader extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -15470,7 +15450,7 @@
       "name": "_PaperTicketHeaderPainter",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 447,
+      "line": 443,
       "signature": "class _PaperTicketHeaderPainter extends CustomPainter {",
       "superclass": "CustomPainter",
       "is_widget": false,
@@ -15480,7 +15460,7 @@
       "name": "PaperTicketDetail",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 482,
+      "line": 478,
       "signature": "class PaperTicketDetail extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -15490,7 +15470,7 @@
       "name": "PaperTicketPerforation",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 512,
+      "line": 508,
       "signature": "class PaperTicketPerforation extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -15500,7 +15480,7 @@
       "name": "_PaperTicketPerforationPainter",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 527,
+      "line": 523,
       "signature": "class _PaperTicketPerforationPainter extends CustomPainter {",
       "superclass": "CustomPainter",
       "is_widget": false,
@@ -15510,7 +15490,7 @@
       "name": "PaperTicketSerial",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 553,
+      "line": 549,
       "signature": "class PaperTicketSerial extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -15520,7 +15500,7 @@
       "name": "PaperBarcode",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 571,
+      "line": 567,
       "signature": "class PaperBarcode extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -15530,7 +15510,7 @@
       "name": "_PaperBarcodePainter",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 585,
+      "line": 581,
       "signature": "class _PaperBarcodePainter extends CustomPainter {",
       "superclass": "CustomPainter",
       "is_widget": false,
@@ -15540,7 +15520,7 @@
       "name": "PaperExpectationCard",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 609,
+      "line": 605,
       "signature": "class PaperExpectationCard extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -15550,7 +15530,7 @@
       "name": "PaperExpectationRow",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 656,
+      "line": 652,
       "signature": "class PaperExpectationRow extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -15560,7 +15540,7 @@
       "name": "PaperPrivacyCard",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 680,
+      "line": 676,
       "signature": "class PaperPrivacyCard extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -15570,7 +15550,7 @@
       "name": "PaperSelfCheckInBar",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 714,
+      "line": 710,
       "signature": "class PaperSelfCheckInBar extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -15580,7 +15560,7 @@
       "name": "_PaperExpectationItem",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 740,
+      "line": 736,
       "signature": "class _PaperExpectationItem {",
       "is_widget": false,
       "body_hash": "413f28e86e1f3db6"
@@ -15589,7 +15569,7 @@
       "name": "_paperExpectationItems",
       "kind": "function",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 747,
+      "line": 743,
       "signature": "List<_PaperExpectationItem> _paperExpectationItems({",
       "return_type": "List<_PaperExpectationItem>",
       "body_hash": "cc3c9b7a921c50cb"
@@ -15598,7 +15578,7 @@
       "name": "_paperTicketTime",
       "kind": "function",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 797,
+      "line": 793,
       "signature": "String _paperTicketTime(Event event) {",
       "return_type": "String",
       "body_hash": "86f8235e00febf29"
@@ -15607,7 +15587,7 @@
       "name": "_paperTicketCode",
       "kind": "function",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 803,
+      "line": 799,
       "signature": "String _paperTicketCode(Event event) {",
       "return_type": "String",
       "body_hash": "a9e12f34ea40ce2f"
@@ -15616,7 +15596,7 @@
       "name": "CompanionMomentStage",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 811,
+      "line": 807,
       "signature": "class CompanionMomentStage extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -15626,7 +15606,7 @@
       "name": "StageNav",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 936,
+      "line": 932,
       "signature": "class StageNav extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -15636,7 +15616,7 @@
       "name": "CompanionHero",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 989,
+      "line": 985,
       "signature": "class CompanionHero extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -15646,7 +15626,7 @@
       "name": "StageGlyph",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1063,
+      "line": 1059,
       "signature": "class StageGlyph extends StatefulWidget {",
       "superclass": "StatefulWidget",
       "is_widget": true,
@@ -15656,7 +15636,7 @@
       "name": "_StageGlyphState",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1073,
+      "line": 1069,
       "signature": "class _StageGlyphState extends State<StageGlyph> with TickerProviderStateMixin {",
       "superclass": "State<StageGlyph>",
       "is_widget": false,
@@ -15666,7 +15646,7 @@
       "name": "StagePrivacyLine",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1145,
+      "line": 1141,
       "signature": "class StagePrivacyLine extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -15676,7 +15656,7 @@
       "name": "CompanionMomentStageContent",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1190,
+      "line": 1186,
       "signature": "class CompanionMomentStageContent extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -15686,7 +15666,7 @@
       "name": "StagePanel",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1212,
+      "line": 1208,
       "signature": "class StagePanel extends StatefulWidget {",
       "superclass": "StatefulWidget",
       "is_widget": true,
@@ -15696,7 +15676,7 @@
       "name": "_StagePanelState",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1221,
+      "line": 1217,
       "signature": "class _StagePanelState extends State<StagePanel>",
       "superclass": "State<StagePanel>",
       "is_widget": false,
@@ -15706,7 +15686,7 @@
       "name": "StageActionDock",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1265,
+      "line": 1261,
       "signature": "class StageActionDock extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -15716,7 +15696,7 @@
       "name": "StageSoftBand",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1284,
+      "line": 1280,
       "signature": "class StageSoftBand extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -15726,7 +15706,7 @@
       "name": "_CompanionStageTheme",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1300,
+      "line": 1296,
       "signature": "class _CompanionStageTheme {",
       "is_widget": false,
       "body_hash": "2920394a64d7ae80"
@@ -15735,7 +15715,7 @@
       "name": "_StageMotif",
       "kind": "enum",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1425,
+      "line": 1421,
       "signature": "enum _StageMotif { path, gate, spark, rhythm, orbit, reveal, signal, afterglow }",
       "body_hash": "e134532698af93c0"
     },
@@ -15743,7 +15723,7 @@
       "name": "AnimatedStageMotifBackground",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1431,
+      "line": 1427,
       "signature": "class AnimatedStageMotifBackground extends StatefulWidget {",
       "superclass": "StatefulWidget",
       "is_widget": true,
@@ -15753,7 +15733,7 @@
       "name": "_AnimatedStageMotifBackgroundState",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1447,
+      "line": 1443,
       "signature": "class _AnimatedStageMotifBackgroundState",
       "is_widget": false,
       "body_hash": "511941cf87f61624"
@@ -15762,7 +15742,7 @@
       "name": "_StageMotifPainter",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1487,
+      "line": 1483,
       "signature": "class _StageMotifPainter extends CustomPainter {",
       "superclass": "CustomPainter",
       "is_widget": false,
@@ -15772,7 +15752,7 @@
       "name": "_heroBadgeLabel",
       "kind": "function",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1634,
+      "line": 1630,
       "signature": "String _heroBadgeLabel({",
       "return_type": "String",
       "body_hash": "ac912c49d81d491c"
@@ -15781,7 +15761,7 @@
       "name": "CompanionStageContentTransition",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1645,
+      "line": 1641,
       "signature": "class CompanionStageContentTransition extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -15791,7 +15771,7 @@
       "name": "StageBouncyPress",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1687,
+      "line": 1683,
       "signature": "class StageBouncyPress extends StatefulWidget {",
       "superclass": "StatefulWidget",
       "is_widget": true,
@@ -15801,7 +15781,7 @@
       "name": "_StageBouncyPressState",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1710,
+      "line": 1706,
       "signature": "class _StageBouncyPressState extends State<StageBouncyPress>",
       "superclass": "State<StageBouncyPress>",
       "is_widget": false,
@@ -15811,7 +15791,7 @@
       "name": "StageBouncyChip",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1806,
+      "line": 1802,
       "signature": "class StageBouncyChip extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -15821,7 +15801,7 @@
       "name": "LiveArrivalRing",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1852,
+      "line": 1848,
       "signature": "class LiveArrivalRing extends StatefulWidget {",
       "superclass": "StatefulWidget",
       "is_widget": true,
@@ -15831,7 +15811,7 @@
       "name": "_LiveArrivalRingState",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1865,
+      "line": 1861,
       "signature": "class _LiveArrivalRingState extends State<LiveArrivalRing>",
       "superclass": "State<LiveArrivalRing>",
       "is_widget": false,
@@ -15841,7 +15821,7 @@
       "name": "ArrivalRingCard",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1915,
+      "line": 1911,
       "signature": "class ArrivalRingCard extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -15851,7 +15831,7 @@
       "name": "LiveOthersInRoomLine",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1983,
+      "line": 1979,
       "signature": "class LiveOthersInRoomLine extends StatefulWidget {",
       "superclass": "StatefulWidget",
       "is_widget": true,
@@ -15861,7 +15841,7 @@
       "name": "_LiveOthersInRoomLineState",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1992,
+      "line": 1988,
       "signature": "class _LiveOthersInRoomLineState extends State<LiveOthersInRoomLine>",
       "superclass": "State<LiveOthersInRoomLine>",
       "is_widget": false,
@@ -15871,7 +15851,7 @@
       "name": "_ArrivalRingPainter",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 2069,
+      "line": 2065,
       "signature": "class _ArrivalRingPainter extends CustomPainter {",
       "superclass": "CustomPainter",
       "is_widget": false,
@@ -15881,7 +15861,7 @@
       "name": "NoCompanionActionsCard",
       "kind": "class",
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 2118,
+      "line": 2114,
       "signature": "class NoCompanionActionsCard extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -16543,14 +16523,14 @@
       "kind": "constant",
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
       "line": 65,
-      "signature": "const EdgeInsets _hostTabPickerPadding = EdgeInsets.fromLTRB(",
-      "body_hash": "336d05e2a6df3e2b"
+      "signature": "final EdgeInsets _hostTabPickerPadding = CatchInsets.pageBody.copyWith(",
+      "body_hash": "f7d9bc70edfed841"
     },
     {
       "name": "_hostLaunchIssueGap",
       "kind": "constant",
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line": 71,
+      "line": 69,
       "signature": "const EdgeInsets _hostLaunchIssueGap = EdgeInsets.only(bottom: CatchSpacing.s1);",
       "body_hash": "cd67ff4cfc46e348"
     },
@@ -16558,7 +16538,7 @@
       "name": "_hostWingmanRequestGap",
       "kind": "constant",
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line": 72,
+      "line": 70,
       "signature": "const EdgeInsets _hostWingmanRequestGap = EdgeInsets.only(",
       "body_hash": "9a89e49a0c7ae87f"
     },
@@ -16566,15 +16546,15 @@
       "name": "_hostWingmanRequestNotePadding",
       "kind": "constant",
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line": 75,
-      "signature": "const EdgeInsets _hostWingmanRequestNotePadding = EdgeInsets.only(",
-      "body_hash": "eb0c7a270d3c4efa"
+      "line": 73,
+      "signature": "final EdgeInsets _hostWingmanRequestNotePadding = CatchInsets.pageHorizontal",
+      "body_hash": "32a3bee1eda60d1e"
     },
     {
       "name": "Function",
       "kind": "function",
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line": 82,
+      "line": 77,
       "signature": "MutationState<void> Function(Mutation<void> mutation) watchMutation, {",
       "return_type": "MutationState<void>",
       "body_hash": "915d8a7d77f7f627"
@@ -16583,7 +16563,7 @@
       "name": "_nullableMutationError",
       "kind": "function",
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line": 136,
+      "line": 131,
       "signature": "Object? _nullableMutationError(MutationState<dynamic>? state) {",
       "return_type": "Object?",
       "body_hash": "b9d96249d43d7c56"
@@ -16592,7 +16572,7 @@
       "name": "_mutationError",
       "kind": "function",
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line": 140,
+      "line": 135,
       "signature": "Object? _mutationError(MutationState<dynamic> state) {",
       "return_type": "Object?",
       "body_hash": "107a48dc69d99592"
@@ -16601,7 +16581,7 @@
       "name": "EventSuccessHostSection",
       "kind": "class",
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line": 144,
+      "line": 139,
       "signature": "class EventSuccessHostSection extends ConsumerStatefulWidget {",
       "superclass": "ConsumerStatefulWidget",
       "is_widget": true,
@@ -16611,7 +16591,7 @@
       "name": "_EventSuccessHostSectionState",
       "kind": "class",
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line": 167,
+      "line": 162,
       "signature": "class _EventSuccessHostSectionState",
       "is_widget": false,
       "body_hash": "cfee213b602e1b85"
@@ -16620,7 +16600,7 @@
       "name": "_eventSuccessHostRetryContext",
       "kind": "function",
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line": 593,
+      "line": 588,
       "signature": "AppErrorContext _eventSuccessHostRetryContext(",
       "return_type": "AppErrorContext",
       "body_hash": "61e871dccd7bf4fe"
@@ -16629,7 +16609,7 @@
       "name": "EventSuccessHostSectionSkeleton",
       "kind": "class",
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line": 610,
+      "line": 605,
       "signature": "class EventSuccessHostSectionSkeleton extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -16639,7 +16619,7 @@
       "name": "EventSuccessSetupTabSkeleton",
       "kind": "class",
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line": 644,
+      "line": 639,
       "signature": "class EventSuccessSetupTabSkeleton extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -16649,7 +16629,7 @@
       "name": "EventSuccessLiveTabSkeleton",
       "kind": "class",
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line": 669,
+      "line": 664,
       "signature": "class EventSuccessLiveTabSkeleton extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -16659,7 +16639,7 @@
       "name": "EventSuccessReportTabSkeleton",
       "kind": "class",
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line": 694,
+      "line": 689,
       "signature": "class EventSuccessReportTabSkeleton extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -16669,7 +16649,7 @@
       "name": "EventSuccessSetupControlsSkeleton",
       "kind": "class",
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line": 719,
+      "line": 714,
       "signature": "class EventSuccessSetupControlsSkeleton extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -16679,7 +16659,7 @@
       "name": "EventSuccessReportMetricsSkeleton",
       "kind": "class",
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line": 751,
+      "line": 746,
       "signature": "class EventSuccessReportMetricsSkeleton extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -16689,7 +16669,7 @@
       "name": "EventSuccessHostPanel",
       "kind": "class",
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line": 793,
+      "line": 788,
       "signature": "class EventSuccessHostPanel extends StatefulWidget {",
       "superclass": "StatefulWidget",
       "is_widget": true,
@@ -16699,7 +16679,7 @@
       "name": "_EventSuccessHostPanelState",
       "kind": "class",
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line": 878,
+      "line": 873,
       "signature": "class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {",
       "superclass": "State<EventSuccessHostPanel>",
       "is_widget": false,
@@ -16709,7 +16689,7 @@
       "name": "EventSuccessHostFixtureActions",
       "kind": "class",
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line": 1112,
+      "line": 1107,
       "signature": "class EventSuccessHostFixtureActions {",
       "is_widget": false,
       "body_hash": "34f8d79e8f744fc8"
@@ -16829,14 +16809,14 @@
       "kind": "constant",
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
       "line": 23,
-      "signature": "const EdgeInsets _labSectionPadding = EdgeInsets.fromLTRB(",
-      "body_hash": "0a9d2cffa962bb1c"
+      "signature": "final EdgeInsets _labSectionPadding = CatchInsets.pageBody.copyWith(",
+      "body_hash": "d231eb42f395bc34"
     },
     {
       "name": "EventSuccessLabScreen",
       "kind": "class",
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 35,
+      "line": 33,
       "signature": "class EventSuccessLabScreen extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -16846,7 +16826,7 @@
       "name": "LabHero",
       "kind": "class",
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 115,
+      "line": 113,
       "signature": "class LabHero extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -16856,7 +16836,7 @@
       "name": "PromiseGrid",
       "kind": "class",
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 186,
+      "line": 184,
       "signature": "class PromiseGrid extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -16866,7 +16846,7 @@
       "name": "PromiseCard",
       "kind": "class",
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 239,
+      "line": 237,
       "signature": "class PromiseCard extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -16876,7 +16856,7 @@
       "name": "PlaybookCard",
       "kind": "class",
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 270,
+      "line": 268,
       "signature": "class PlaybookCard extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -16886,7 +16866,7 @@
       "name": "CapacityRow",
       "kind": "class",
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 334,
+      "line": 332,
       "signature": "class CapacityRow extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -16896,7 +16876,7 @@
       "name": "RunOfShow",
       "kind": "class",
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 374,
+      "line": 372,
       "signature": "class RunOfShow extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -16906,7 +16886,7 @@
       "name": "ModuleGrid",
       "kind": "class",
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 445,
+      "line": 443,
       "signature": "class ModuleGrid extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -16916,7 +16896,7 @@
       "name": "LayerHeader",
       "kind": "class",
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 484,
+      "line": 482,
       "signature": "class LayerHeader extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -16926,7 +16906,7 @@
       "name": "ModuleCard",
       "kind": "class",
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 509,
+      "line": 507,
       "signature": "class ModuleCard extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -16936,7 +16916,7 @@
       "name": "CoachPanel",
       "kind": "class",
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 563,
+      "line": 561,
       "signature": "class CoachPanel extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -16946,7 +16926,7 @@
       "name": "NotesList",
       "kind": "class",
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 639,
+      "line": 637,
       "signature": "class NotesList extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -16956,7 +16936,7 @@
       "name": "Section",
       "kind": "class",
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 675,
+      "line": 673,
       "signature": "class Section extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -16966,7 +16946,7 @@
       "name": "_activityIcon",
       "kind": "function",
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 704,
+      "line": 702,
       "signature": "IconData _activityIcon(ActivityKind type) => switch (type) {",
       "return_type": "IconData",
       "body_hash": "49646549e21d7a25"
@@ -16975,7 +16955,7 @@
       "name": "_priorityIcon",
       "kind": "function",
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 723,
+      "line": 721,
       "signature": "IconData _priorityIcon(EventRecommendationPriority priority) =>",
       "return_type": "IconData",
       "body_hash": "bc4528eb8ba18cab"
@@ -20071,23 +20051,23 @@
       "signature": "class CalendarStatsHeader extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "648ea610335ece49"
+      "body_hash": "ab900b0b562d4287"
     },
     {
       "name": "CalendarStatsHeaderSkeleton",
       "kind": "class",
       "file": "lib/events/presentation/calendar/calendar_screen.dart",
-      "line": 679,
+      "line": 677,
       "signature": "class CalendarStatsHeaderSkeleton extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "2a9cf60d126e14b7"
+      "body_hash": "b0f75272e3157a26"
     },
     {
       "name": "CalendarStatSkeleton",
       "kind": "class",
       "file": "lib/events/presentation/calendar/calendar_screen.dart",
-      "line": 718,
+      "line": 714,
       "signature": "class CalendarStatSkeleton extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -20097,7 +20077,7 @@
       "name": "CalendarWeekStrip",
       "kind": "class",
       "file": "lib/events/presentation/calendar/calendar_screen.dart",
-      "line": 734,
+      "line": 730,
       "signature": "class CalendarWeekStrip extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -20107,7 +20087,7 @@
       "name": "CalendarMonthGrid",
       "kind": "class",
       "file": "lib/events/presentation/calendar/calendar_screen.dart",
-      "line": 778,
+      "line": 774,
       "signature": "class CalendarMonthGrid extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -20117,7 +20097,7 @@
       "name": "CalendarStatDivider",
       "kind": "class",
       "file": "lib/events/presentation/calendar/calendar_screen.dart",
-      "line": 856,
+      "line": 852,
       "signature": "class CalendarStatDivider extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -20127,7 +20107,7 @@
       "name": "_monthName",
       "kind": "function",
       "file": "lib/events/presentation/calendar/calendar_screen.dart",
-      "line": 875,
+      "line": 871,
       "signature": "String _monthName(int month) {",
       "return_type": "String",
       "body_hash": "0b9f08bd2489f916"
@@ -20136,7 +20116,7 @@
       "name": "_calendarWeekDayKey",
       "kind": "function",
       "file": "lib/events/presentation/calendar/calendar_screen.dart",
-      "line": 892,
+      "line": 888,
       "signature": "Key _calendarWeekDayKey(DateTime date) {",
       "return_type": "Key",
       "body_hash": "568b3655bb85cd89"
@@ -20145,7 +20125,7 @@
       "name": "_calendarMonthDayKey",
       "kind": "function",
       "file": "lib/events/presentation/calendar/calendar_screen.dart",
-      "line": 896,
+      "line": 892,
       "signature": "Key _calendarMonthDayKey(DateTime date) {",
       "return_type": "Key",
       "body_hash": "7a64c128bea65d12"
@@ -20154,7 +20134,7 @@
       "name": "_dateKey",
       "kind": "function",
       "file": "lib/events/presentation/calendar/calendar_screen.dart",
-      "line": 900,
+      "line": 896,
       "signature": "String _dateKey(DateTime date) {",
       "return_type": "String",
       "body_hash": "87a88aa983fd1cb4"
@@ -20889,13 +20869,13 @@
       "signature": "class PlaceSearchPanel extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "d2efc07aee4af9b9"
+      "body_hash": "d9ced13f167831ef"
     },
     {
       "name": "PlaceSuggestionRow",
       "kind": "class",
       "file": "lib/events/presentation/location_picker_screen.dart",
-      "line": 473,
+      "line": 474,
       "signature": "class PlaceSuggestionRow extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -20905,7 +20885,7 @@
       "name": "SelectedPointPanel",
       "kind": "class",
       "file": "lib/events/presentation/location_picker_screen.dart",
-      "line": 543,
+      "line": 544,
       "signature": "class SelectedPointPanel extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -21006,13 +20986,13 @@
       "signature": "class BookingConflictSheet extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "4de7763646dfec98"
+      "body_hash": "dd06f429f0c48b82"
     },
     {
       "name": "BookingConflictEventRow",
       "kind": "class",
       "file": "lib/events/presentation/widgets/booking_conflict_sheet.dart",
-      "line": 151,
+      "line": 149,
       "signature": "class BookingConflictEventRow extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -21043,7 +21023,7 @@
       "signature": "class EventDetailBody extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "ab54c47ead643708"
+      "body_hash": "ad658d020700a946"
     },
     {
       "name": "EventInviteLoopCard",
@@ -21158,17 +21138,17 @@
       "name": "EventDetailTicketStubBand",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 22,
+      "line": 23,
       "signature": "class EventDetailTicketStubBand extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "9c93d5ca920f84da"
+      "body_hash": "8ded66a999bb9dcf"
     },
     {
       "name": "EventDetailHintList",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 81,
+      "line": 82,
       "signature": "class EventDetailHintList extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -21178,7 +21158,7 @@
       "name": "EventDetailItinerary",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 129,
+      "line": 130,
       "signature": "class EventDetailItinerary extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -21188,7 +21168,7 @@
       "name": "EventDetailMapCard",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 166,
+      "line": 167,
       "signature": "class EventDetailMapCard extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -21198,7 +21178,7 @@
       "name": "EventDetailMechanismList",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 251,
+      "line": 252,
       "signature": "class EventDetailMechanismList extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -21208,7 +21188,7 @@
       "name": "_photoStripTileCount",
       "kind": "constant",
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 282,
+      "line": 283,
       "signature": "const _photoStripTileCount = 3;",
       "body_hash": "c94804918e3b6d74"
     },
@@ -21216,7 +21196,7 @@
       "name": "EventDetailPhotoStrip",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 284,
+      "line": 285,
       "signature": "class EventDetailPhotoStrip extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -21226,7 +21206,7 @@
       "name": "EventDetailPhotoStripTile",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 333,
+      "line": 334,
       "signature": "class EventDetailPhotoStripTile extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -21236,7 +21216,7 @@
       "name": "TicketStubCellData",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 376,
+      "line": 377,
       "signature": "class TicketStubCellData {",
       "is_widget": false,
       "body_hash": "9a2df553773c5640"
@@ -21245,7 +21225,7 @@
       "name": "TicketStubCell",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 390,
+      "line": 391,
       "signature": "class TicketStubCell extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -21255,17 +21235,17 @@
       "name": "HairlineList",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 464,
+      "line": 465,
       "signature": "class HairlineList extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "b44659bbb749ef87"
+      "body_hash": "08ba7279fd68c064"
     },
     {
       "name": "ItineraryStep",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 495,
+      "line": 490,
       "signature": "class ItineraryStep {",
       "is_widget": false,
       "body_hash": "69e8687a63d1140e"
@@ -21274,7 +21254,7 @@
       "name": "ItineraryRow",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 507,
+      "line": 502,
       "signature": "class ItineraryRow extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -21284,7 +21264,7 @@
       "name": "MapPill",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 605,
+      "line": 600,
       "signature": "class MapPill extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -21294,7 +21274,7 @@
       "name": "_MechanismRow",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 633,
+      "line": 628,
       "signature": "class _MechanismRow {",
       "is_widget": false,
       "body_hash": "3473ba397e476f22"
@@ -21303,7 +21283,7 @@
       "name": "_TicketStubNotchPainter",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 645,
+      "line": 640,
       "signature": "class _TicketStubNotchPainter extends CustomPainter {",
       "superclass": "CustomPainter",
       "is_widget": false,
@@ -21313,7 +21293,7 @@
       "name": "_VerticalDashedPainter",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 663,
+      "line": 658,
       "signature": "class _VerticalDashedPainter extends CustomPainter {",
       "superclass": "CustomPainter",
       "is_widget": false,
@@ -21323,7 +21303,7 @@
       "name": "_MapGridPainter",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 686,
+      "line": 681,
       "signature": "class _MapGridPainter extends CustomPainter {",
       "superclass": "CustomPainter",
       "is_widget": false,
@@ -21333,7 +21313,7 @@
       "name": "_ticketStubCells",
       "kind": "function",
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 736,
+      "line": 731,
       "signature": "List<TicketStubCellData> _ticketStubCells(Event event) {",
       "return_type": "List<TicketStubCellData>",
       "body_hash": "5a65e1f1725a06dc"
@@ -21342,7 +21322,7 @@
       "name": "_hintsFor",
       "kind": "function",
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 760,
+      "line": 755,
       "signature": "List<String> _hintsFor(Event event) {",
       "return_type": "List<String>",
       "body_hash": "44e27bd14f2b5135"
@@ -21351,7 +21331,7 @@
       "name": "_itineraryFor",
       "kind": "function",
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 770,
+      "line": 765,
       "signature": "List<ItineraryStep> _itineraryFor(Event event) {",
       "return_type": "List<ItineraryStep>",
       "body_hash": "c0138537ddd0fdfa"
@@ -21360,7 +21340,7 @@
       "name": "_mechanismsFor",
       "kind": "function",
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 792,
+      "line": 787,
       "signature": "List<_MechanismRow> _mechanismsFor(Event event) {",
       "return_type": "List<_MechanismRow>",
       "body_hash": "3e59867bde93066b"
@@ -21369,7 +21349,7 @@
       "name": "_interactionHint",
       "kind": "function",
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 825,
+      "line": 820,
       "signature": "String _interactionHint(EventInteractionModel model) {",
       "return_type": "String",
       "body_hash": "669effaecabacf14"
@@ -21378,7 +21358,7 @@
       "name": "_activityPlanDetail",
       "kind": "function",
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 844,
+      "line": 839,
       "signature": "String _activityPlanDetail(Event event) {",
       "return_type": "String",
       "body_hash": "e54afcef53994401"
@@ -21387,7 +21367,7 @@
       "name": "_levelLabelFor",
       "kind": "function",
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 863,
+      "line": 858,
       "signature": "String _levelLabelFor(ActivityKind activityKind) {",
       "return_type": "String",
       "body_hash": "a08c0187585fdd03"
@@ -21396,7 +21376,7 @@
       "name": "_admissionTitle",
       "kind": "function",
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 884,
+      "line": 879,
       "signature": "String _admissionTitle(EventAdmissionPolicy policy) {",
       "return_type": "String",
       "body_hash": "48cc19e6e801815d"
@@ -21405,7 +21385,7 @@
       "name": "_admissionSummary",
       "kind": "function",
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 895,
+      "line": 890,
       "signature": "String _admissionSummary(EventAdmissionPolicy policy) {",
       "return_type": "String",
       "body_hash": "5f94736259337e28"
@@ -21414,7 +21394,7 @@
       "name": "EventDetailHostCard",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 916,
+      "line": 911,
       "signature": "class EventDetailHostCard extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -21424,7 +21404,7 @@
       "name": "HostAvatar",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 1115,
+      "line": 1110,
       "signature": "class HostAvatar extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -21477,13 +21457,13 @@
       "signature": "class EventDetailTicketSurface extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "f913a08a97f673b6"
+      "body_hash": "b8cf085245643879"
     },
     {
       "name": "HeroActivityBadge",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
-      "line": 412,
+      "line": 410,
       "signature": "class HeroActivityBadge extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -21493,7 +21473,7 @@
       "name": "HeroTimeChip",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
-      "line": 446,
+      "line": 444,
       "signature": "class HeroTimeChip extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -21503,7 +21483,7 @@
       "name": "_heroSubtitle",
       "kind": "function",
       "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
-      "line": 484,
+      "line": 482,
       "signature": "String _heroSubtitle(Event event) {",
       "return_type": "String",
       "body_hash": "8389ed2a06b2ab83"
@@ -21684,23 +21664,23 @@
       "signature": "class WhatToExpectSection extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "5697815131f54a1c"
+      "body_hash": "7ef54e24edbf38a4"
     },
     {
       "name": "EventDetailPolicySummary",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_overview_section.dart",
-      "line": 220,
+      "line": 212,
       "signature": "class EventDetailPolicySummary extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "12f5e3abd870efa4"
+      "body_hash": "cb1dfc703001ffa8"
     },
     {
       "name": "EventDetailPolicySummaryLine",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_overview_section.dart",
-      "line": 286,
+      "line": 269,
       "signature": "class EventDetailPolicySummaryLine extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -21710,7 +21690,7 @@
       "name": "_expectationItems",
       "kind": "function",
       "file": "lib/events/presentation/widgets/event_detail_overview_section.dart",
-      "line": 310,
+      "line": 293,
       "signature": "List<_ExpectationItem> _expectationItems(Event event) {",
       "return_type": "List<_ExpectationItem>",
       "body_hash": "5ade0d18da846cfd"
@@ -21719,7 +21699,7 @@
       "name": "_activityExpectationIcon",
       "kind": "function",
       "file": "lib/events/presentation/widgets/event_detail_overview_section.dart",
-      "line": 359,
+      "line": 342,
       "signature": "IconData _activityExpectationIcon(Event event) {",
       "return_type": "IconData",
       "body_hash": "9c0d3488d5f71928"
@@ -21728,7 +21708,7 @@
       "name": "_activityExpectationTitle",
       "kind": "function",
       "file": "lib/events/presentation/widgets/event_detail_overview_section.dart",
-      "line": 365,
+      "line": 348,
       "signature": "String _activityExpectationTitle(Event event) {",
       "return_type": "String",
       "body_hash": "7c728c31345363e9"
@@ -21737,7 +21717,7 @@
       "name": "_activityExpectationBody",
       "kind": "function",
       "file": "lib/events/presentation/widgets/event_detail_overview_section.dart",
-      "line": 372,
+      "line": 355,
       "signature": "String _activityExpectationBody(Event event) {",
       "return_type": "String",
       "body_hash": "7c56550863d0a381"
@@ -21746,7 +21726,7 @@
       "name": "_ExpectationItem",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_overview_section.dart",
-      "line": 391,
+      "line": 374,
       "signature": "class _ExpectationItem {",
       "is_widget": false,
       "body_hash": "72c04a52afd22b3c"
@@ -21755,7 +21735,7 @@
       "name": "_admissionTitle",
       "kind": "function",
       "file": "lib/events/presentation/widgets/event_detail_overview_section.dart",
-      "line": 403,
+      "line": 386,
       "signature": "String _admissionTitle(EventAdmissionPolicy policy) {",
       "return_type": "String",
       "body_hash": "13ff623993a1aaf0"
@@ -21764,7 +21744,7 @@
       "name": "_admissionSummary",
       "kind": "function",
       "file": "lib/events/presentation/widgets/event_detail_overview_section.dart",
-      "line": 414,
+      "line": 397,
       "signature": "String _admissionSummary(EventAdmissionPolicy policy) {",
       "return_type": "String",
       "body_hash": "f0fcbf5217bcfd94"
@@ -21773,7 +21753,7 @@
       "name": "_dynamicPricingSummary",
       "kind": "function",
       "file": "lib/events/presentation/widgets/event_detail_overview_section.dart",
-      "line": 431,
+      "line": 414,
       "signature": "String _dynamicPricingSummary(",
       "return_type": "String",
       "body_hash": "25506825738c1479"
@@ -23310,13 +23290,13 @@
       "signature": "class ExploreMapScreen extends ConsumerWidget {",
       "superclass": "ConsumerWidget",
       "is_widget": true,
-      "body_hash": "e63220ab9fd4c7c4"
+      "body_hash": "7342fc165ef5075c"
     },
     {
       "name": "exploreMapViewModelFromFeed",
       "kind": "function",
       "file": "lib/explore/presentation/explore_map_screen.dart",
-      "line": 103,
+      "line": 106,
       "signature": "EventMapViewModel exploreMapViewModelFromFeed(ExploreFeedViewModel feed) {",
       "return_type": "EventMapViewModel",
       "body_hash": "26dbf34e60983c18"
@@ -24071,23 +24051,23 @@
       "signature": "class CatchCoverStory extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "95a3398dfcdcb500"
+      "body_hash": "c4f03b1470375452"
     },
     {
       "name": "CoverStoryChrome",
       "kind": "class",
       "file": "lib/explore/presentation/widgets/catch_cover_story.dart",
-      "line": 135,
+      "line": 133,
       "signature": "class CoverStoryChrome extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "f46e4ee89a5bafe0"
+      "body_hash": "ba146d5248e1a3e2"
     },
     {
       "name": "CoverStoryContent",
       "kind": "class",
       "file": "lib/explore/presentation/widgets/catch_cover_story.dart",
-      "line": 221,
+      "line": 217,
       "signature": "class CoverStoryContent extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -24097,7 +24077,7 @@
       "name": "_DiagonalScrimPainter",
       "kind": "class",
       "file": "lib/explore/presentation/widgets/catch_cover_story.dart",
-      "line": 328,
+      "line": 324,
       "signature": "class _DiagonalScrimPainter extends CustomPainter {",
       "superclass": "CustomPainter",
       "is_widget": false,
@@ -24186,7 +24166,7 @@
       "line": 89,
       "signature": "List<Widget> buildExploreBodySlivers({",
       "return_type": "List<Widget>",
-      "body_hash": "108fe2bb0f7fd5e0"
+      "body_hash": "3288aac1d336ecd3"
     },
     {
       "name": "ExploreCityPickerPresentation",
@@ -24234,13 +24214,13 @@
       "signature": "class ExploreCityPickerSheet extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "8bcf6c1da32d7984"
+      "body_hash": "2224544da7d40c52"
     },
     {
       "name": "CityOptionTile",
       "kind": "class",
       "file": "lib/explore/presentation/widgets/explore_city_picker.dart",
-      "line": 220,
+      "line": 218,
       "signature": "class CityOptionTile extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -24509,14 +24489,14 @@
       "kind": "constant",
       "file": "lib/explore/presentation/widgets/explore_events_section.dart",
       "line": 22,
-      "signature": "const EdgeInsets _exploreEventsErrorPadding = EdgeInsets.fromLTRB(",
-      "body_hash": "2c0270dd023e26b9"
+      "signature": "final EdgeInsets _exploreEventsErrorPadding = CatchInsets.pageBody.copyWith(",
+      "body_hash": "3ab7971108f6d46e"
     },
     {
       "name": "buildExploreEventsSlivers",
       "kind": "function",
       "file": "lib/explore/presentation/widgets/explore_events_section.dart",
-      "line": 34,
+      "line": 32,
       "signature": "List<Widget> buildExploreEventsSlivers(",
       "return_type": "List<Widget>",
       "body_hash": "ab62a95f1851e62e"
@@ -24525,7 +24505,7 @@
       "name": "ExploreEventsSection",
       "kind": "class",
       "file": "lib/explore/presentation/widgets/explore_events_section.dart",
-      "line": 118,
+      "line": 116,
       "signature": "class ExploreEventsSection extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -24535,10 +24515,10 @@
       "name": "_exploreContentSlivers",
       "kind": "function",
       "file": "lib/explore/presentation/widgets/explore_events_section.dart",
-      "line": 164,
+      "line": 162,
       "signature": "List<Widget> _exploreContentSlivers(",
       "return_type": "List<Widget>",
-      "body_hash": "06bdea9db9ccbdda"
+      "body_hash": "f6896c15e0e14f9a"
     },
     {
       "name": "exploreEventsLoadingPadding",
@@ -24572,27 +24552,27 @@
       "name": "ExploreFilterRail",
       "kind": "class",
       "file": "lib/explore/presentation/widgets/explore_filter_rail.dart",
-      "line": 21,
+      "line": 22,
       "signature": "class ExploreFilterRail extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "7f51a7098b3098ac"
+      "body_hash": "0d15a9d088bc54b1"
     },
     {
       "name": "ExploreFilterGlyphButton",
       "kind": "class",
       "file": "lib/explore/presentation/widgets/explore_filter_rail.dart",
-      "line": 126,
+      "line": 97,
       "signature": "class ExploreFilterGlyphButton extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "fc83f5fb259746e5"
+      "body_hash": "3e2c92e5e07d7683"
     },
     {
       "name": "ExploreFilterSheet",
       "kind": "class",
       "file": "lib/explore/presentation/widgets/explore_filter_rail.dart",
-      "line": 171,
+      "line": 147,
       "signature": "class ExploreFilterSheet extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -24602,7 +24582,7 @@
       "name": "_activityFilterActive",
       "kind": "function",
       "file": "lib/explore/presentation/widgets/explore_filter_rail.dart",
-      "line": 316,
+      "line": 292,
       "signature": "bool _activityFilterActive(String? selected, ActivityKind kind) {",
       "return_type": "bool",
       "body_hash": "f66227953c63c45f"
@@ -24652,7 +24632,7 @@
       "line": 137,
       "signature": "class _ExploreDiscoveryCoverHeaderState",
       "is_widget": false,
-      "body_hash": "83fa6e213dc19d5c"
+      "body_hash": "8912c2c170aa71ec"
     },
     {
       "name": "ExploreList",
@@ -24731,14 +24711,14 @@
       "kind": "constant",
       "file": "lib/explore/presentation/widgets/explore_peek_rail.dart",
       "line": 28,
-      "signature": "const EdgeInsets _mapSheetLeadPadding = EdgeInsets.fromLTRB(",
-      "body_hash": "72a28a817c06b82c"
+      "signature": "final EdgeInsets _mapSheetLeadPadding = CatchInsets.pageBody.copyWith(",
+      "body_hash": "9eefe469de34a6f6"
     },
     {
       "name": "ExploreMapSheetLeadMode",
       "kind": "enum",
       "file": "lib/explore/presentation/widgets/explore_peek_rail.dart",
-      "line": 35,
+      "line": 33,
       "signature": "enum ExploreMapSheetLeadMode { collapsedSummary, selectedEvent, nearbyRail }",
       "body_hash": "bc786063d3d50437"
     },
@@ -24746,16 +24726,16 @@
       "name": "buildExploreMapSheetLeadSlivers",
       "kind": "function",
       "file": "lib/explore/presentation/widgets/explore_peek_rail.dart",
-      "line": 42,
+      "line": 40,
       "signature": "List<Widget> buildExploreMapSheetLeadSlivers({",
       "return_type": "List<Widget>",
-      "body_hash": "0137f82979baa761"
+      "body_hash": "75e647dde6836445"
     },
     {
       "name": "_sortItemsForCamera",
       "kind": "function",
       "file": "lib/explore/presentation/widgets/explore_peek_rail.dart",
-      "line": 96,
+      "line": 94,
       "signature": "List<ExploreEventItem> _sortItemsForCamera(",
       "return_type": "List<ExploreEventItem>",
       "body_hash": "8f0f2a3c5d091ae8"
@@ -24764,7 +24744,7 @@
       "name": "_distanceFromCamera",
       "kind": "function",
       "file": "lib/explore/presentation/widgets/explore_peek_rail.dart",
-      "line": 117,
+      "line": 115,
       "signature": "double? _distanceFromCamera(",
       "return_type": "double?",
       "body_hash": "08ffddf8205cb273"
@@ -24773,7 +24753,7 @@
       "name": "ExploreMapSheetLead",
       "kind": "class",
       "file": "lib/explore/presentation/widgets/explore_peek_rail.dart",
-      "line": 129,
+      "line": 127,
       "signature": "class ExploreMapSheetLead extends ConsumerWidget {",
       "superclass": "ConsumerWidget",
       "is_widget": true,
@@ -24783,7 +24763,7 @@
       "name": "_selectedItem",
       "kind": "function",
       "file": "lib/explore/presentation/widgets/explore_peek_rail.dart",
-      "line": 180,
+      "line": 178,
       "signature": "ExploreEventItem? _selectedItem(",
       "return_type": "ExploreEventItem?",
       "body_hash": "ead463dbc26d0549"
@@ -24792,7 +24772,7 @@
       "name": "CollapsedMapSummary",
       "kind": "class",
       "file": "lib/explore/presentation/widgets/explore_peek_rail.dart",
-      "line": 191,
+      "line": 189,
       "signature": "class CollapsedMapSummary extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -24802,7 +24782,7 @@
       "name": "ExploreSelectedEventLead",
       "kind": "class",
       "file": "lib/explore/presentation/widgets/explore_peek_rail.dart",
-      "line": 237,
+      "line": 235,
       "signature": "class ExploreSelectedEventLead extends ConsumerWidget {",
       "superclass": "ConsumerWidget",
       "is_widget": true,
@@ -24812,7 +24792,7 @@
       "name": "ExploreEventTicketCard",
       "kind": "class",
       "file": "lib/explore/presentation/widgets/explore_peek_rail.dart",
-      "line": 300,
+      "line": 298,
       "signature": "class ExploreEventTicketCard extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -24822,7 +24802,7 @@
       "name": "ExplorePeekRailContent",
       "kind": "class",
       "file": "lib/explore/presentation/widgets/explore_peek_rail.dart",
-      "line": 340,
+      "line": 338,
       "signature": "class ExplorePeekRailContent extends ConsumerStatefulWidget {",
       "superclass": "ConsumerStatefulWidget",
       "is_widget": true,
@@ -24832,7 +24812,7 @@
       "name": "_ExplorePeekRailContentState",
       "kind": "class",
       "file": "lib/explore/presentation/widgets/explore_peek_rail.dart",
-      "line": 359,
+      "line": 357,
       "signature": "class _ExplorePeekRailContentState",
       "is_widget": false,
       "body_hash": "f47d5e2d09a68258"
@@ -24841,7 +24821,7 @@
       "name": "_sameEventOrder",
       "kind": "function",
       "file": "lib/explore/presentation/widgets/explore_peek_rail.dart",
-      "line": 532,
+      "line": 530,
       "signature": "bool _sameEventOrder(",
       "return_type": "bool",
       "body_hash": "92dc6357e64d8e75"
@@ -24850,7 +24830,7 @@
       "name": "PeekRailSkeleton",
       "kind": "class",
       "file": "lib/explore/presentation/widgets/explore_peek_rail.dart",
-      "line": 543,
+      "line": 541,
       "signature": "class PeekRailSkeleton extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -24860,7 +24840,7 @@
       "name": "exploreMapScopeLabel",
       "kind": "function",
       "file": "lib/explore/presentation/widgets/explore_peek_rail.dart",
-      "line": 576,
+      "line": 574,
       "signature": "String exploreMapScopeLabel({",
       "return_type": "String",
       "body_hash": "4e34395a3f784080"
@@ -24869,7 +24849,7 @@
       "name": "_ticketStatusLabel",
       "kind": "function",
       "file": "lib/explore/presentation/widgets/explore_peek_rail.dart",
-      "line": 587,
+      "line": 585,
       "signature": "String? _ticketStatusLabel(ExploreEventItem item) {",
       "return_type": "String?",
       "body_hash": "8b1cfd70e9ccd15e"
@@ -24878,7 +24858,7 @@
       "name": "_logMapEventSelected",
       "kind": "function",
       "file": "lib/explore/presentation/widgets/explore_peek_rail.dart",
-      "line": 591,
+      "line": 589,
       "signature": "void _logMapEventSelected(",
       "return_type": "void",
       "body_hash": "c8e25228aa988163"
@@ -24887,7 +24867,7 @@
       "name": "_openEvent",
       "kind": "function",
       "file": "lib/explore/presentation/widgets/explore_peek_rail.dart",
-      "line": 602,
+      "line": 600,
       "signature": "void _openEvent(",
       "return_type": "void",
       "body_hash": "3050ec708c183669"
@@ -24896,7 +24876,7 @@
       "name": "_analyticsParameters",
       "kind": "function",
       "file": "lib/explore/presentation/widgets/explore_peek_rail.dart",
-      "line": 627,
+      "line": 625,
       "signature": "Map<String, Object?> _analyticsParameters(",
       "return_type": "Map<String, Object?>",
       "body_hash": "30da295dc160aee0"
@@ -26231,7 +26211,7 @@
       "signature": "class HostClubEditSection extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "86e94ae5d6108eff"
+      "body_hash": "4e02693233910881"
     },
     {
       "name": "HostClubEditCityField",
@@ -26665,7 +26645,7 @@
       "name": "EditHostedEventKeys",
       "kind": "class",
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 55,
+      "line": 56,
       "signature": "abstract final class EditHostedEventKeys {",
       "is_widget": false,
       "body_hash": "4da2de959ee6b590"
@@ -26674,7 +26654,7 @@
       "name": "HostEventEditSaveRequest",
       "kind": "class",
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 60,
+      "line": 61,
       "signature": "class HostEventEditSaveRequest {",
       "is_widget": false,
       "body_hash": "3c45e5670db8fe23"
@@ -26683,7 +26663,7 @@
       "name": "EditHostedEventScreen",
       "kind": "class",
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 183,
+      "line": 184,
       "signature": "class EditHostedEventScreen extends ConsumerStatefulWidget {",
       "superclass": "ConsumerStatefulWidget",
       "is_widget": true,
@@ -26693,7 +26673,7 @@
       "name": "_EditHostedEventScreenState",
       "kind": "class",
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 204,
+      "line": 205,
       "signature": "class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {",
       "superclass": "ConsumerState<EditHostedEventScreen>",
       "is_widget": false,
@@ -26703,7 +26683,7 @@
       "name": "EditHostedEventScopeNotice",
       "kind": "class",
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 823,
+      "line": 824,
       "signature": "class EditHostedEventScopeNotice extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -26713,7 +26693,7 @@
       "name": "EditableHostedEventPolicyCard",
       "kind": "class",
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 894,
+      "line": 895,
       "signature": "class EditableHostedEventPolicyCard extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -26723,7 +26703,7 @@
       "name": "ReadOnlyHostedEventPolicyCard",
       "kind": "class",
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1158,
+      "line": 1159,
       "signature": "class ReadOnlyHostedEventPolicyCard extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -26733,17 +26713,17 @@
       "name": "ReadOnlyHostedEventPolicyRow",
       "kind": "class",
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1208,
+      "line": 1209,
       "signature": "class ReadOnlyHostedEventPolicyRow extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "48bd5d8f037f4e77"
+      "body_hash": "4a089e53feb43fa5"
     },
     {
       "name": "ReadOnlyHostedEventScheduleCard",
       "kind": "class",
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1247,
+      "line": 1248,
       "signature": "class ReadOnlyHostedEventScheduleCard extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -26753,7 +26733,7 @@
       "name": "_trimToNull",
       "kind": "function",
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1278,
+      "line": 1279,
       "signature": "String? _trimToNull(String value) {",
       "return_type": "String?",
       "body_hash": "1a5c27da0d1b77b6"
@@ -26762,7 +26742,7 @@
       "name": "_admissionPresetFor",
       "kind": "function",
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1283,
+      "line": 1284,
       "signature": "EventAdmissionPreset _admissionPresetFor(EventPolicyBundle policy) {",
       "return_type": "EventAdmissionPreset",
       "body_hash": "08944f173f81210c"
@@ -26771,7 +26751,7 @@
       "name": "_admissionDefaultPresetFromSelected",
       "kind": "function",
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1292,
+      "line": 1293,
       "signature": "EventAdmissionDefaultPreset _admissionDefaultPresetFromSelected(",
       "return_type": "EventAdmissionDefaultPreset",
       "body_hash": "9aa65c7b766189b8"
@@ -26780,7 +26760,7 @@
       "name": "_minorUnitsText",
       "kind": "function",
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1310,
+      "line": 1311,
       "signature": "String _minorUnitsText(int? value, {required String currencyCode}) =>",
       "return_type": "String",
       "body_hash": "773791323818ca23"
@@ -26789,7 +26769,7 @@
       "name": "_currencyTextValueInMinorUnits",
       "kind": "function",
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1313,
+      "line": 1314,
       "signature": "int? _currencyTextValueInMinorUnits(",
       "return_type": "int?",
       "body_hash": "1069e3e4f6f96a96"
@@ -26798,7 +26778,7 @@
       "name": "_eventPolicyForDefaults",
       "kind": "function",
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1318,
+      "line": 1319,
       "signature": "EventPolicyBundle _eventPolicyForDefaults({",
       "return_type": "EventPolicyBundle",
       "body_hash": "abf6f18d11f45b8f"
@@ -26807,7 +26787,7 @@
       "name": "_inviteCodeHint",
       "kind": "function",
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1339,
+      "line": 1340,
       "signature": "String? _inviteCodeHint(String value) {",
       "return_type": "String?",
       "body_hash": "0792e19243d1b338"
@@ -26816,7 +26796,7 @@
       "name": "_moneyRequiredValidator",
       "kind": "function",
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1345,
+      "line": 1346,
       "signature": "String? _moneyRequiredValidator(String? value, {required String currencyCode}) {",
       "return_type": "String?",
       "body_hash": "ec821574d3792611"
@@ -27390,7 +27370,7 @@
       "name": "showDraftPickerSheet",
       "kind": "function",
       "file": "lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart",
-      "line": 19,
+      "line": 20,
       "signature": "Future<EventDraft?> showDraftPickerSheet({",
       "return_type": "Future<EventDraft?>",
       "body_hash": "c1263162611f8b00"
@@ -27399,7 +27379,7 @@
       "name": "draftDeleteConfirmationDialogTitle",
       "kind": "constant",
       "file": "lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart",
-      "line": 44,
+      "line": 45,
       "signature": "const draftDeleteConfirmationDialogTitle = 'Delete draft?';",
       "body_hash": "99cc7e615023bb5e"
     },
@@ -27407,7 +27387,7 @@
       "name": "draftDeleteConfirmationDialogActions",
       "kind": "constant",
       "file": "lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart",
-      "line": 45,
+      "line": 46,
       "signature": "const draftDeleteConfirmationDialogActions = <CatchDialogAction<bool>>[",
       "body_hash": "ff4484af2499e848"
     },
@@ -27415,7 +27395,7 @@
       "name": "draftDeleteConfirmationDialogMessage",
       "kind": "function",
       "file": "lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart",
-      "line": 50,
+      "line": 51,
       "signature": "String draftDeleteConfirmationDialogMessage(EventDraft draft) {",
       "return_type": "String",
       "body_hash": "fbe5ae22c4222fbd"
@@ -27424,7 +27404,7 @@
       "name": "DraftDeleteConfirmationDialog",
       "kind": "class",
       "file": "lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart",
-      "line": 54,
+      "line": 55,
       "signature": "class DraftDeleteConfirmationDialog extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -27434,7 +27414,7 @@
       "name": "showDraftDeleteConfirmationDialog",
       "kind": "function",
       "file": "lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart",
-      "line": 69,
+      "line": 70,
       "signature": "Future<bool?> showDraftDeleteConfirmationDialog({",
       "return_type": "Future<bool?>",
       "body_hash": "739430ffdaf4f555"
@@ -27443,7 +27423,7 @@
       "name": "DraftPickerSheet",
       "kind": "class",
       "file": "lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart",
-      "line": 81,
+      "line": 82,
       "signature": "class DraftPickerSheet extends StatefulWidget {",
       "superclass": "StatefulWidget",
       "is_widget": true,
@@ -27453,17 +27433,17 @@
       "name": "_DraftPickerSheetState",
       "kind": "class",
       "file": "lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart",
-      "line": 99,
+      "line": 100,
       "signature": "class _DraftPickerSheetState extends State<DraftPickerSheet> {",
       "superclass": "State<DraftPickerSheet>",
       "is_widget": false,
-      "body_hash": "7d114909b3ce9535"
+      "body_hash": "e1ff076a8f08b522"
     },
     {
       "name": "DraftCard",
       "kind": "class",
       "file": "lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart",
-      "line": 199,
+      "line": 195,
       "signature": "class DraftCard extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -27473,7 +27453,7 @@
       "name": "_formatRelative",
       "kind": "function",
       "file": "lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart",
-      "line": 270,
+      "line": 266,
       "signature": "String _formatRelative(DateTime dt) {",
       "return_type": "String",
       "body_hash": "8b5b55cf348b2b6e"
@@ -28043,7 +28023,7 @@
       "name": "HostEventManageScreen",
       "kind": "class",
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 56,
+      "line": 57,
       "signature": "class HostEventManageScreen extends ConsumerStatefulWidget {",
       "superclass": "ConsumerStatefulWidget",
       "is_widget": true,
@@ -28053,17 +28033,17 @@
       "name": "_HostEventManageScreenState",
       "kind": "class",
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 81,
+      "line": 82,
       "signature": "class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {",
       "superclass": "ConsumerState<HostEventManageScreen>",
       "is_widget": false,
-      "body_hash": "c25031e234ebe914"
+      "body_hash": "aa9992015d4a4dbc"
     },
     {
       "name": "_showsCapacityNotice",
       "kind": "function",
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 583,
+      "line": 582,
       "signature": "bool _showsCapacityNotice(Event event) {",
       "return_type": "bool",
       "body_hash": "6546284b2b085e77"
@@ -28072,7 +28052,7 @@
       "name": "_firstMutationError",
       "kind": "function",
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 588,
+      "line": 587,
       "signature": "Object? _firstMutationError(Iterable<Object> mutations) {",
       "return_type": "Object?",
       "body_hash": "ad2f8708dd1e1e28"
@@ -28081,7 +28061,7 @@
       "name": "HostManageMetaRow",
       "kind": "class",
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 595,
+      "line": 594,
       "signature": "class HostManageMetaRow extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -28091,7 +28071,7 @@
       "name": "HostManageSectionPicker",
       "kind": "class",
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 637,
+      "line": 636,
       "signature": "class HostManageSectionPicker extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -28101,7 +28081,7 @@
       "name": "HostPrivateAccessCard",
       "kind": "class",
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 662,
+      "line": 661,
       "signature": "class HostPrivateAccessCard extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -28111,7 +28091,7 @@
       "name": "_hostEventInviteUrl",
       "kind": "function",
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 762,
+      "line": 761,
       "signature": "String? _hostEventInviteUrl({",
       "return_type": "String?",
       "body_hash": "905f9db4a390fe0d"
@@ -28120,7 +28100,7 @@
       "name": "HostPrivateAccessShell",
       "kind": "class",
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 780,
+      "line": 779,
       "signature": "class HostPrivateAccessShell extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -28130,7 +28110,7 @@
       "name": "HostPrivateAccessBody",
       "kind": "class",
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 796,
+      "line": 795,
       "signature": "class HostPrivateAccessBody extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -28140,7 +28120,7 @@
       "name": "HostInviteLinksList",
       "kind": "class",
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 911,
+      "line": 910,
       "signature": "class HostInviteLinksList extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -28150,7 +28130,7 @@
       "name": "HostInviteLinkRow",
       "kind": "class",
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 1035,
+      "line": 1034,
       "signature": "class HostInviteLinkRow extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -28160,7 +28140,7 @@
       "name": "_showInviteLinkDialog",
       "kind": "function",
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 1165,
+      "line": 1164,
       "signature": "Future<HostInviteLinkDraft?> _showInviteLinkDialog(BuildContext context) async {",
       "return_type": "Future<HostInviteLinkDraft?>",
       "body_hash": "edbd7c1ac3e9fb6f"
@@ -28169,7 +28149,7 @@
       "name": "HostFullCapacityApron",
       "kind": "class",
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 1224,
+      "line": 1223,
       "signature": "class HostFullCapacityApron extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -28179,7 +28159,7 @@
       "name": "HostFullCapacityBanner",
       "kind": "class",
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 1295,
+      "line": 1294,
       "signature": "class HostFullCapacityBanner extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -28189,7 +28169,7 @@
       "name": "HostCapacityTile",
       "kind": "class",
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 1329,
+      "line": 1328,
       "signature": "class HostCapacityTile extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -28199,27 +28179,27 @@
       "name": "HostEventActionsSection",
       "kind": "class",
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 1390,
+      "line": 1389,
       "signature": "class HostEventActionsSection extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "9c2c09ea5d72db4d"
+      "body_hash": "90e7474fc3a95202"
     },
     {
       "name": "HostActionRow",
       "kind": "class",
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 1491,
+      "line": 1490,
       "signature": "class HostActionRow extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "ec712d86e8f41f5b"
+      "body_hash": "d14269fc7825bc25"
     },
     {
       "name": "HostEventSummaryCard",
       "kind": "class",
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 1572,
+      "line": 1571,
       "signature": "class HostEventSummaryCard extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -28229,11 +28209,11 @@
       "name": "HostEventSummaryRow",
       "kind": "class",
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 1624,
+      "line": 1623,
       "signature": "class HostEventSummaryRow extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "dc653b81806ee8e4"
+      "body_hash": "7c83ff4a27eae4b6"
     },
     {
       "name": "HostEventManageSection",
@@ -28864,13 +28844,13 @@
       "signature": "class _HostEventsScaffoldState extends State<HostEventsScaffold> {",
       "superclass": "State<HostEventsScaffold>",
       "is_widget": false,
-      "body_hash": "a174246b222d3253"
+      "body_hash": "96e552736ff0724f"
     },
     {
       "name": "HostClubsScaffold",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 592,
+      "line": 587,
       "signature": "class HostClubsScaffold extends StatefulWidget {",
       "superclass": "StatefulWidget",
       "is_widget": true,
@@ -28880,17 +28860,17 @@
       "name": "_HostClubsScaffoldState",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 612,
+      "line": 607,
       "signature": "class _HostClubsScaffoldState extends State<HostClubsScaffold> {",
       "superclass": "State<HostClubsScaffold>",
       "is_widget": false,
-      "body_hash": "a65d473d3095ea69"
+      "body_hash": "fd5274ff2196600f"
     },
     {
       "name": "HostOperationsTopBar",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 785,
+      "line": 775,
       "signature": "class HostOperationsTopBar extends StatelessWidget",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -28900,7 +28880,7 @@
       "name": "HostSectionLabel",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 842,
+      "line": 832,
       "signature": "class HostSectionLabel extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -28910,7 +28890,7 @@
       "name": "HostTodayDashboardCard",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 854,
+      "line": 844,
       "signature": "class HostTodayDashboardCard extends ConsumerWidget {",
       "superclass": "ConsumerWidget",
       "is_widget": true,
@@ -28920,7 +28900,7 @@
       "name": "HostTodayDashboardSection",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 896,
+      "line": 886,
       "signature": "class HostTodayDashboardSection extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -28930,7 +28910,7 @@
       "name": "HostTodayHeader",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 989,
+      "line": 979,
       "signature": "class HostTodayHeader extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -28940,7 +28920,7 @@
       "name": "HostTodayClubPill",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1042,
+      "line": 1032,
       "signature": "class HostTodayClubPill extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -28950,7 +28930,7 @@
       "name": "HostTodayLoadingBody",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1120,
+      "line": 1110,
       "signature": "class HostTodayLoadingBody extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -28960,7 +28940,7 @@
       "name": "HostTodayEventHero",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1138,
+      "line": 1128,
       "signature": "class HostTodayEventHero extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -28970,7 +28950,7 @@
       "name": "HostTodayCountdownPill",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1253,
+      "line": 1243,
       "signature": "class HostTodayCountdownPill extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -28980,7 +28960,7 @@
       "name": "HostTodayHeroMetric",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1281,
+      "line": 1271,
       "signature": "class HostTodayHeroMetric extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -28990,7 +28970,7 @@
       "name": "HostTodayAvatarStack",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1320,
+      "line": 1310,
       "signature": "class HostTodayAvatarStack extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -29000,7 +28980,7 @@
       "name": "HostTodayAvatarDot",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1355,
+      "line": 1345,
       "signature": "class HostTodayAvatarDot extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -29010,7 +28990,7 @@
       "name": "HostTodayTaskCard",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1392,
+      "line": 1382,
       "signature": "class HostTodayTaskCard extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -29020,7 +29000,7 @@
       "name": "_hostFirstName",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1467,
+      "line": 1457,
       "signature": "String _hostFirstName(Club club, String currentUid) {",
       "return_type": "String",
       "body_hash": "510da1a80a0d682f"
@@ -29029,7 +29009,7 @@
       "name": "_initialsFor",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1478,
+      "line": 1468,
       "signature": "String _initialsFor(String value) {",
       "return_type": "String",
       "body_hash": "6beb8a341e5fc7c4"
@@ -29038,7 +29018,7 @@
       "name": "_eventDayLabel",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1488,
+      "line": 1478,
       "signature": "String _eventDayLabel(Event event) {",
       "return_type": "String",
       "body_hash": "20ee2acd7a50aa7c"
@@ -29047,7 +29027,7 @@
       "name": "_todayEventHeroTitle",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1493,
+      "line": 1483,
       "signature": "String _todayEventHeroTitle(Event event) {",
       "return_type": "String",
       "body_hash": "fa6921f166b832da"
@@ -29056,7 +29036,7 @@
       "name": "_eventStartLeadLabel",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1507,
+      "line": 1497,
       "signature": "String _eventStartLeadLabel(Event event) {",
       "return_type": "String",
       "body_hash": "f77b2ffb840bc4cf"
@@ -29065,7 +29045,7 @@
       "name": "_reviewCount",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1513,
+      "line": 1503,
       "signature": "int _reviewCount(Event event) {",
       "return_type": "int",
       "body_hash": "5155a3c29f7f93d4"
@@ -29074,7 +29054,7 @@
       "name": "HostEventsClubCard",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1522,
+      "line": 1512,
       "signature": "class HostEventsClubCard extends ConsumerWidget {",
       "superclass": "ConsumerWidget",
       "is_widget": true,
@@ -29084,7 +29064,7 @@
       "name": "HostEventsClubSection",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1554,
+      "line": 1544,
       "signature": "class HostEventsClubSection extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -29094,7 +29074,7 @@
       "name": "HostEventRows",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1616,
+      "line": 1606,
       "signature": "class HostEventRows extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -29104,7 +29084,7 @@
       "name": "HostMetaRow",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1664,
+      "line": 1654,
       "signature": "class HostMetaRow extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -29114,7 +29094,7 @@
       "name": "HostClubOrganizerOverviewController",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1708,
+      "line": 1698,
       "signature": "class HostClubOrganizerOverviewController extends ConsumerWidget {",
       "superclass": "ConsumerWidget",
       "is_widget": true,
@@ -29124,7 +29104,7 @@
       "name": "HostClubOrganizerOverview",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1755,
+      "line": 1745,
       "signature": "class HostClubOrganizerOverview extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -29134,7 +29114,7 @@
       "name": "HostOrganizerHeader",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1907,
+      "line": 1897,
       "signature": "class HostOrganizerHeader extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -29144,7 +29124,7 @@
       "name": "HostOrganizerMetricGrid",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1958,
+      "line": 1948,
       "signature": "class HostOrganizerMetricGrid extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -29154,7 +29134,7 @@
       "name": "HostOrganizerMetricItem",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 2005,
+      "line": 1995,
       "signature": "class HostOrganizerMetricItem {",
       "is_widget": false,
       "body_hash": "b4ac2219075f47f2"
@@ -29163,7 +29143,7 @@
       "name": "HostOrganizerMetricRow",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 2012,
+      "line": 2002,
       "signature": "class HostOrganizerMetricRow extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -29173,7 +29153,7 @@
       "name": "HostOrganizerTeamCard",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 2060,
+      "line": 2050,
       "signature": "class HostOrganizerTeamCard extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -29183,7 +29163,7 @@
       "name": "HostOrganizerTeamRow",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 2098,
+      "line": 2088,
       "signature": "class HostOrganizerTeamRow extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -29193,7 +29173,7 @@
       "name": "HostOrganizerTrendStrip",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 2177,
+      "line": 2167,
       "signature": "class HostOrganizerTrendStrip extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -29203,7 +29183,7 @@
       "name": "_organizerFormats",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 2253,
+      "line": 2243,
       "signature": "List<String> _organizerFormats(Club club) {",
       "return_type": "List<String>",
       "body_hash": "dccc4882487bff30"
@@ -29212,7 +29192,7 @@
       "name": "_organizerMeta",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 2263,
+      "line": 2253,
       "signature": "String _organizerMeta(Club club) {",
       "return_type": "String",
       "body_hash": "ff93c5c917ea77a3"
@@ -29221,7 +29201,7 @@
       "name": "_initialsForName",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 2272,
+      "line": 2262,
       "signature": "String _initialsForName(String name) {",
       "return_type": "String",
       "body_hash": "ee9d885fd82e9cdf"
@@ -29230,7 +29210,7 @@
       "name": "_compactCount",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 2282,
+      "line": 2272,
       "signature": "String _compactCount(int count) {",
       "return_type": "String",
       "body_hash": "97d67e6c72386570"
@@ -29239,7 +29219,7 @@
       "name": "_ratingValue",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 2288,
+      "line": 2278,
       "signature": "String _ratingValue(Club club) {",
       "return_type": "String",
       "body_hash": "96f75ebc6bfed0f6"
@@ -29248,7 +29228,7 @@
       "name": "_trendBars",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 2296,
+      "line": 2286,
       "signature": "List<double> _trendBars({required int memberCount, required int events}) {",
       "return_type": "List<double>",
       "body_hash": "c30a5bd66fd010c9"
@@ -29257,7 +29237,7 @@
       "name": "HostClubProfileCard",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 2304,
+      "line": 2294,
       "signature": "class HostClubProfileCard extends ConsumerStatefulWidget {",
       "superclass": "ConsumerStatefulWidget",
       "is_widget": true,
@@ -29267,17 +29247,17 @@
       "name": "_HostClubProfileCardState",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 2325,
+      "line": 2315,
       "signature": "class _HostClubProfileCardState extends ConsumerState<HostClubProfileCard> {",
       "superclass": "ConsumerState<HostClubProfileCard>",
       "is_widget": false,
-      "body_hash": "c60f27a104b63455"
+      "body_hash": "898d074049792e73"
     },
     {
       "name": "HostClubInsightsPane",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 2725,
+      "line": 2711,
       "signature": "class HostClubInsightsPane extends ConsumerStatefulWidget {",
       "superclass": "ConsumerStatefulWidget",
       "is_widget": true,
@@ -29287,7 +29267,7 @@
       "name": "_HostClubInsightsPaneState",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 2735,
+      "line": 2721,
       "signature": "class _HostClubInsightsPaneState extends ConsumerState<HostClubInsightsPane> {",
       "superclass": "ConsumerState<HostClubInsightsPane>",
       "is_widget": false,
@@ -29297,7 +29277,7 @@
       "name": "_hostAnalyticsQueryFor",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 2827,
+      "line": 2813,
       "signature": "HostAnalyticsQuery _hostAnalyticsQueryFor(HostClubInsightsQueryState state) {",
       "return_type": "HostAnalyticsQuery",
       "body_hash": "b18bb12a9a5e83d8"
@@ -29306,7 +29286,7 @@
       "name": "HostAnalyticsControls",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 2851,
+      "line": 2837,
       "signature": "class HostAnalyticsControls extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -29316,7 +29296,7 @@
       "name": "HostAnalyticsDateButton",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 2974,
+      "line": 2960,
       "signature": "class HostAnalyticsDateButton extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -29326,7 +29306,7 @@
       "name": "HostAnalyticsReportView",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3021,
+      "line": 3007,
       "signature": "class HostAnalyticsReportView extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -29336,7 +29316,7 @@
       "name": "HostAnalyticsTrendPanel",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3072,
+      "line": 3058,
       "signature": "class HostAnalyticsTrendPanel extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -29346,7 +29326,7 @@
       "name": "HostAnalyticsEventList",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3142,
+      "line": 3128,
       "signature": "class HostAnalyticsEventList extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -29356,7 +29336,7 @@
       "name": "HostAnalyticsEventTile",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3200,
+      "line": 3186,
       "signature": "class HostAnalyticsEventTile extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -29366,7 +29346,7 @@
       "name": "_formatAnalyticsDate",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3329,
+      "line": 3315,
       "signature": "String _formatAnalyticsDate(DateTime date) {",
       "return_type": "String",
       "body_hash": "e7e9b295c85f4ba1"
@@ -29375,7 +29355,7 @@
       "name": "_analyticsDateDaysAgo",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3335,
+      "line": 3321,
       "signature": "DateTime _analyticsDateDaysAgo(int days) {",
       "return_type": "DateTime",
       "body_hash": "0cfd91435d5398df"
@@ -29384,7 +29364,7 @@
       "name": "HostAnalyticsReviewDiscoveryPanel",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3340,
+      "line": 3326,
       "signature": "class HostAnalyticsReviewDiscoveryPanel extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -29394,7 +29374,7 @@
       "name": "_metricIcon",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3396,
+      "line": 3382,
       "signature": "IconData _metricIcon(String metricId) {",
       "return_type": "IconData",
       "body_hash": "f94a1428f4561968"
@@ -29403,7 +29383,7 @@
       "name": "_hostMetricCardData",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3411,
+      "line": 3397,
       "signature": "CatchMetricCardData _hostMetricCardData(HostAnalyticsMetricCard metric) {",
       "return_type": "CatchMetricCardData",
       "body_hash": "c1552038cfdc5a5c"
@@ -29412,7 +29392,7 @@
       "name": "_hostDataQualityRowData",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3425,
+      "line": 3411,
       "signature": "CatchDataQualityRowData _hostDataQualityRowData(HostAnalyticsDataQuality row) {",
       "return_type": "CatchDataQualityRowData",
       "body_hash": "fcaa349eda76f3fd"
@@ -29421,7 +29401,7 @@
       "name": "_formatMetricValue",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3436,
+      "line": 3422,
       "signature": "String _formatMetricValue(HostAnalyticsMetricCard metric) {",
       "return_type": "String",
       "body_hash": "bfe198d82b88ae74"
@@ -29430,7 +29410,7 @@
       "name": "_analyticsEventStatusLabel",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3448,
+      "line": 3434,
       "signature": "String _analyticsEventStatusLabel(String status) {",
       "return_type": "String",
       "body_hash": "11f07b94c52b66e6"
@@ -29439,7 +29419,7 @@
       "name": "_analyticsEventStatusTone",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3458,
+      "line": 3444,
       "signature": "CatchBadgeTone _analyticsEventStatusTone(String status) {",
       "return_type": "CatchBadgeTone",
       "body_hash": "abfce31f7f9d2e64"
@@ -29448,7 +29428,7 @@
       "name": "_formatCount",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3468,
+      "line": 3454,
       "signature": "String _formatCount(num value) {",
       "return_type": "String",
       "body_hash": "d834e626b3c41da6"
@@ -29457,7 +29437,7 @@
       "name": "_HostInlineClubSaveState",
       "kind": "mixin",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3477,
+      "line": 3463,
       "signature": "mixin _HostInlineClubSaveState<T extends ConsumerStatefulWidget>",
       "body_hash": "0a1d5e632f472b58"
     },
@@ -29465,7 +29445,7 @@
       "name": "HostInlineTextEntryEditor",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3503,
+      "line": 3489,
       "signature": "class HostInlineTextEntryEditor extends ConsumerStatefulWidget {",
       "superclass": "ConsumerStatefulWidget",
       "is_widget": true,
@@ -29475,7 +29455,7 @@
       "name": "_HostInlineTextEntryEditorState",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3558,
+      "line": 3544,
       "signature": "class _HostInlineTextEntryEditorState",
       "is_widget": false,
       "body_hash": "4fa2fde280cdc1d1"
@@ -29484,7 +29464,7 @@
       "name": "HostInlineOption",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3678,
+      "line": 3664,
       "signature": "class HostInlineOption<T> {",
       "is_widget": false,
       "body_hash": "a4f6e7f2a6cb1742"
@@ -29493,7 +29473,7 @@
       "name": "HostInlineOptionEditor",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3690,
+      "line": 3676,
       "signature": "class HostInlineOptionEditor<T> extends ConsumerStatefulWidget {",
       "superclass": "ConsumerStatefulWidget",
       "is_widget": true,
@@ -29503,7 +29483,7 @@
       "name": "_HostInlineOptionEditorState",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3727,
+      "line": 3713,
       "signature": "class _HostInlineOptionEditorState<T>",
       "is_widget": false,
       "body_hash": "ba9829a3b4e31124"
@@ -29512,7 +29492,7 @@
       "name": "HostInlineAgeRangeEditor",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3815,
+      "line": 3801,
       "signature": "class HostInlineAgeRangeEditor extends ConsumerStatefulWidget {",
       "superclass": "ConsumerStatefulWidget",
       "is_widget": true,
@@ -29522,7 +29502,7 @@
       "name": "_HostInlineAgeRangeEditorState",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3846,
+      "line": 3832,
       "signature": "class _HostInlineAgeRangeEditorState",
       "is_widget": false,
       "body_hash": "482fccfd38dd6f7d"
@@ -29531,7 +29511,7 @@
       "name": "HostClubPreviewPane",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3980,
+      "line": 3966,
       "signature": "class HostClubPreviewPane extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -29541,7 +29521,7 @@
       "name": "_valueOrDash",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 4013,
+      "line": 3999,
       "signature": "String _valueOrDash(String? value) {",
       "return_type": "String",
       "body_hash": "f9714fb2f25c7c48"
@@ -29550,7 +29530,7 @@
       "name": "_admissionDefaultLabel",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 4018,
+      "line": 4004,
       "signature": "String _admissionDefaultLabel(EventAdmissionDefaultPreset preset) {",
       "return_type": "String",
       "body_hash": "002e791f2f1956a2"
@@ -29559,7 +29539,7 @@
       "name": "_admissionDefaultDescription",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 4027,
+      "line": 4013,
       "signature": "String _admissionDefaultDescription(EventAdmissionDefaultPreset preset) {",
       "return_type": "String",
       "body_hash": "0195a6bba04b8a7a"
@@ -29568,7 +29548,7 @@
       "name": "_hostDefaultsWithActivity",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 4040,
+      "line": 4026,
       "signature": "ClubHostDefaults _hostDefaultsWithActivity(",
       "return_type": "ClubHostDefaults",
       "body_hash": "e3ebbd0ff3a433bb"
@@ -29577,7 +29557,7 @@
       "name": "_cancellationPolicyFor",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 4054,
+      "line": 4040,
       "signature": "EventCancellationPolicy _cancellationPolicyFor(",
       "return_type": "EventCancellationPolicy",
       "body_hash": "082f4375730e6c2d"
@@ -29586,7 +29566,7 @@
       "name": "_normalizeSingleLineInput",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 4066,
+      "line": 4052,
       "signature": "String _normalizeSingleLineInput(String value) {",
       "return_type": "String",
       "body_hash": "4c58b303cfe669ea"
@@ -29595,7 +29575,7 @@
       "name": "_normalizeMultilineInput",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 4070,
+      "line": 4056,
       "signature": "String _normalizeMultilineInput(String value) {",
       "return_type": "String",
       "body_hash": "826f47eec3b3ab17"
@@ -29604,7 +29584,7 @@
       "name": "Function",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 4077,
+      "line": 4063,
       "signature": "String? Function(String?) _requiredHostFieldValidator(String label) {",
       "return_type": "String?",
       "body_hash": "e0ca2afa65c0ffe6"
@@ -29613,7 +29593,7 @@
       "name": "_optionalEmailValidator",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 4086,
+      "line": 4072,
       "signature": "String? _optionalEmailValidator(String? value) {",
       "return_type": "String?",
       "body_hash": "cfa54fee92e79913"
@@ -29622,7 +29602,7 @@
       "name": "_optionalStringFieldValue",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 4093,
+      "line": 4079,
       "signature": "Object? _optionalStringFieldValue(String value) {",
       "return_type": "Object?",
       "body_hash": "4f77b34603d386c5"
@@ -29631,7 +29611,7 @@
       "name": "_optionalMinAgeText",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 4098,
+      "line": 4084,
       "signature": "String _optionalMinAgeText(int minAge) => minAge == 0 ? '' : '$minAge';",
       "return_type": "String",
       "body_hash": "3a9592b96b981cc6"
@@ -29640,7 +29620,7 @@
       "name": "_optionalMaxAgeText",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 4100,
+      "line": 4086,
       "signature": "String _optionalMaxAgeText(int maxAge) => maxAge == 99 ? '' : '$maxAge';",
       "return_type": "String",
       "body_hash": "aa16f0ecb419433a"
@@ -29649,7 +29629,7 @@
       "name": "_parseAgeRange",
       "kind": "function",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 4102,
+      "line": 4088,
       "signature": "_ParsedAgeRange _parseAgeRange({",
       "return_type": "_ParsedAgeRange",
       "body_hash": "ce76eef1f868013f"
@@ -29658,7 +29638,7 @@
       "name": "_ParsedAgeRange",
       "kind": "class",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 4123,
+      "line": 4109,
       "signature": "class _ParsedAgeRange {",
       "is_widget": false,
       "body_hash": "00e4957b466d1b9d"
@@ -29667,7 +29647,7 @@
       "name": "_hostClubsForUserProvider",
       "kind": "constant",
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 4134,
+      "line": 4120,
       "signature": "final _hostClubsForUserProvider = Provider.autoDispose",
       "body_hash": "bbe52209d27e9646"
     },
@@ -30671,13 +30651,13 @@
       "signature": "class HostTeamManagementSection extends ConsumerWidget {",
       "superclass": "ConsumerWidget",
       "is_widget": true,
-      "body_hash": "28a1de7c8caaea30"
+      "body_hash": "91b561ceb43e625a"
     },
     {
       "name": "HostTeamHostAction",
       "kind": "enum",
       "file": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-      "line": 199,
+      "line": 193,
       "signature": "enum HostTeamHostAction { remove, transferOwnership }",
       "body_hash": "fb168b8bdd106964"
     },
@@ -30685,7 +30665,7 @@
       "name": "HostTeamHostActionConfirmation",
       "kind": "class",
       "file": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-      "line": 201,
+      "line": 195,
       "signature": "class HostTeamHostActionConfirmation {",
       "is_widget": false,
       "body_hash": "61e34acbb61ded46"
@@ -30694,7 +30674,7 @@
       "name": "showHostTeamHostActionDialog",
       "kind": "function",
       "file": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-      "line": 253,
+      "line": 247,
       "signature": "Future<bool?> showHostTeamHostActionDialog({",
       "return_type": "Future<bool?>",
       "body_hash": "2799f7dd7633c8bd"
@@ -30703,7 +30683,7 @@
       "name": "HostTeamHostActionDialog",
       "kind": "class",
       "file": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-      "line": 265,
+      "line": 259,
       "signature": "class HostTeamHostActionDialog extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -30713,7 +30693,7 @@
       "name": "HostTeamOwnerHostRow",
       "kind": "class",
       "file": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-      "line": 280,
+      "line": 274,
       "signature": "class HostTeamOwnerHostRow extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -30723,7 +30703,7 @@
       "name": "HostTeamAddHostActionState",
       "kind": "class",
       "file": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-      "line": 348,
+      "line": 342,
       "signature": "class HostTeamAddHostActionState {",
       "is_widget": false,
       "body_hash": "06b5b9f78de9fdd1"
@@ -30732,7 +30712,7 @@
       "name": "_noopAddHost",
       "kind": "function",
       "file": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-      "line": 355,
+      "line": 349,
       "signature": "Future<void> _noopAddHost(String phoneNumber) async {}",
       "return_type": "Future<void>",
       "body_hash": "a0567d5a575f9b28"
@@ -30741,7 +30721,7 @@
       "name": "HostTeamAddHostSheet",
       "kind": "class",
       "file": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-      "line": 357,
+      "line": 351,
       "signature": "class HostTeamAddHostSheet extends StatefulWidget {",
       "superclass": "StatefulWidget",
       "is_widget": true,
@@ -30751,7 +30731,7 @@
       "name": "_HostTeamAddHostSheetState",
       "kind": "class",
       "file": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-      "line": 373,
+      "line": 367,
       "signature": "class _HostTeamAddHostSheetState extends State<HostTeamAddHostSheet> {",
       "superclass": "State<HostTeamAddHostSheet>",
       "is_widget": false,
@@ -30761,7 +30741,7 @@
       "name": "_firstErrorMutation",
       "kind": "function",
       "file": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-      "line": 450,
+      "line": 444,
       "signature": "MutationState? _firstErrorMutation(Iterable<MutationState> mutations) {",
       "return_type": "MutationState?",
       "body_hash": "9d784b11f11252df"
@@ -32023,7 +32003,7 @@
       "name": "PhotosPage",
       "kind": "class",
       "file": "lib/onboarding/presentation/pages/photos_page.dart",
-      "line": 20,
+      "line": 21,
       "signature": "class PhotosPage extends ConsumerWidget {",
       "superclass": "ConsumerWidget",
       "is_widget": true,
@@ -32033,11 +32013,11 @@
       "name": "OnboardingPhotosStep",
       "kind": "class",
       "file": "lib/onboarding/presentation/pages/photos_page.dart",
-      "line": 91,
+      "line": 92,
       "signature": "class OnboardingPhotosStep extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "13799c8b10df2083"
+      "body_hash": "7f5aa7ddc7c3d882"
     },
     {
       "name": "OnboardingPhotosState",
@@ -32699,23 +32679,23 @@
       "signature": "class PaymentCheckoutEventBackdrop extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "beba54c8e1f1f19e"
+      "body_hash": "227728bb2e9373aa"
     },
     {
       "name": "PaymentCheckoutSheet",
       "kind": "class",
       "file": "lib/payments/presentation/payment_confirmation_screen.dart",
-      "line": 241,
+      "line": 242,
       "signature": "class PaymentCheckoutSheet extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "387facf5cb20b109"
+      "body_hash": "98b303c45f850aa1"
     },
     {
       "name": "_providerLabel",
       "kind": "function",
       "file": "lib/payments/presentation/payment_confirmation_screen.dart",
-      "line": 403,
+      "line": 402,
       "signature": "String _providerLabel(String provider) {",
       "return_type": "String",
       "body_hash": "df244fa474e4d97b"
@@ -32724,7 +32704,7 @@
       "name": "PaymentConfirmationBodyController",
       "kind": "class",
       "file": "lib/payments/presentation/payment_confirmation_screen.dart",
-      "line": 408,
+      "line": 407,
       "signature": "class PaymentConfirmationBodyController extends ConsumerWidget {",
       "superclass": "ConsumerWidget",
       "is_widget": true,
@@ -32734,7 +32714,7 @@
       "name": "PaymentConfirmationBody",
       "kind": "class",
       "file": "lib/payments/presentation/payment_confirmation_screen.dart",
-      "line": 447,
+      "line": 446,
       "signature": "class PaymentConfirmationBody extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -32744,7 +32724,7 @@
       "name": "PaymentConfirmationHeadsUp",
       "kind": "class",
       "file": "lib/payments/presentation/payment_confirmation_screen.dart",
-      "line": 513,
+      "line": 512,
       "signature": "class PaymentConfirmationHeadsUp extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -32754,7 +32734,7 @@
       "name": "PaymentReferralBannerController",
       "kind": "class",
       "file": "lib/payments/presentation/payment_confirmation_screen.dart",
-      "line": 544,
+      "line": 543,
       "signature": "class PaymentReferralBannerController extends ConsumerWidget {",
       "superclass": "ConsumerWidget",
       "is_widget": true,
@@ -32764,7 +32744,7 @@
       "name": "PaymentReferralBanner",
       "kind": "class",
       "file": "lib/payments/presentation/payment_confirmation_screen.dart",
-      "line": 560,
+      "line": 559,
       "signature": "class PaymentReferralBanner extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -32807,7 +32787,7 @@
       "signature": "class PaymentHistoryList extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "6c86ca458cbff568"
+      "body_hash": "cb9eef391f34af84"
     },
     {
       "name": "PaymentHistorySkeleton",
@@ -32817,7 +32797,7 @@
       "signature": "class PaymentHistorySkeleton extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "4f068b7be9b35c19"
+      "body_hash": "074ea6fc08fedfdf"
     },
     {
       "name": "PaymentHistoryTileSkeleton",
@@ -32847,7 +32827,7 @@
       "signature": "class PaymentReceiptSheet extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "ecc6253811760cb2"
+      "body_hash": "592a0669681c9be8"
     },
     {
       "name": "paymentHistoryFallbackEventTitle",
@@ -33585,23 +33565,23 @@
       "signature": "class EventReviewsSection extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "e61849610e34cb27"
+      "body_hash": "43329f75987bde3d"
     },
     {
       "name": "ReviewsPreviewSection",
       "kind": "class",
       "file": "lib/reviews/shared/reviews_section.dart",
-      "line": 132,
+      "line": 133,
       "signature": "class ReviewsPreviewSection extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "d883e1b455e1aadc"
+      "body_hash": "0314dc6293a8a9f6"
     },
     {
       "name": "ReviewCard",
       "kind": "class",
       "file": "lib/reviews/shared/reviews_section.dart",
-      "line": 271,
+      "line": 274,
       "signature": "class ReviewCard extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -33611,7 +33591,7 @@
       "name": "ReviewOwnerResponseBlock",
       "kind": "class",
       "file": "lib/reviews/shared/reviews_section.dart",
-      "line": 358,
+      "line": 361,
       "signature": "class ReviewOwnerResponseBlock extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -33621,7 +33601,7 @@
       "name": "showReviewResponseSheet",
       "kind": "function",
       "file": "lib/reviews/shared/reviews_section.dart",
-      "line": 405,
+      "line": 408,
       "signature": "Future<void> showReviewResponseSheet({",
       "return_type": "Future<void>",
       "body_hash": "e284af19893d6d5d"
@@ -33630,7 +33610,7 @@
       "name": "ReviewResponseSheet",
       "kind": "class",
       "file": "lib/reviews/shared/reviews_section.dart",
-      "line": 417,
+      "line": 420,
       "signature": "class ReviewResponseSheet extends ConsumerStatefulWidget {",
       "superclass": "ConsumerStatefulWidget",
       "is_widget": true,
@@ -33640,7 +33620,7 @@
       "name": "_ReviewResponseSheetState",
       "kind": "class",
       "file": "lib/reviews/shared/reviews_section.dart",
-      "line": 427,
+      "line": 430,
       "signature": "class _ReviewResponseSheetState extends ConsumerState<ReviewResponseSheet> {",
       "superclass": "ConsumerState<ReviewResponseSheet>",
       "is_widget": false,
@@ -34325,13 +34305,13 @@
       "signature": "class _SettingsScreenState extends ConsumerState<SettingsScreen> {",
       "superclass": "ConsumerState<SettingsScreen>",
       "is_widget": false,
-      "body_hash": "90484eecf8c44343"
+      "body_hash": "07f0ab84663585c0"
     },
     {
       "name": "AccountProfileStatus",
       "kind": "class",
       "file": "lib/safety/presentation/settings_screen.dart",
-      "line": 481,
+      "line": 480,
       "signature": "class AccountProfileStatus extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -34341,7 +34321,7 @@
       "name": "BlockedAccountsSection",
       "kind": "class",
       "file": "lib/safety/presentation/settings_screen.dart",
-      "line": 519,
+      "line": 518,
       "signature": "class BlockedAccountsSection extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -34351,7 +34331,7 @@
       "name": "BlockedAccountsSkeleton",
       "kind": "class",
       "file": "lib/safety/presentation/settings_screen.dart",
-      "line": 580,
+      "line": 579,
       "signature": "class BlockedAccountsSkeleton extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -34361,7 +34341,7 @@
       "name": "BlockedAccountTile",
       "kind": "class",
       "file": "lib/safety/presentation/settings_screen.dart",
-      "line": 630,
+      "line": 629,
       "signature": "class BlockedAccountTile extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -35014,23 +34994,23 @@
       "signature": "class FiltersContent extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "ac5443190a79ce43"
+      "body_hash": "4f54480a9b514be4"
     },
     {
       "name": "FiltersContentSkeleton",
       "kind": "class",
       "file": "lib/swipes/presentation/filters_screen.dart",
-      "line": 266,
+      "line": 262,
       "signature": "class FiltersContentSkeleton extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "74fc7cb727f67e01"
+      "body_hash": "53e67d41355a99fa"
     },
     {
       "name": "AgeFilterSkeleton",
       "kind": "class",
       "file": "lib/swipes/presentation/filters_screen.dart",
-      "line": 309,
+      "line": 301,
       "signature": "class AgeFilterSkeleton extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -35040,7 +35020,7 @@
       "name": "FiltersSection",
       "kind": "class",
       "file": "lib/swipes/presentation/filters_screen.dart",
-      "line": 341,
+      "line": 333,
       "signature": "class FiltersSection extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -35050,7 +35030,7 @@
       "name": "FiltersValue",
       "kind": "class",
       "file": "lib/swipes/presentation/filters_screen.dart",
-      "line": 368,
+      "line": 360,
       "signature": "class FiltersValue extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -35387,13 +35367,13 @@
       "signature": "class CatchProfileView extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "65bb75ae1efdf17f"
+      "body_hash": "f95bd34b6d450ea3"
     },
     {
       "name": "ProfileHeroWidget",
       "kind": "class",
       "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "line": 125,
+      "line": 123,
       "signature": "class ProfileHeroWidget extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -35403,7 +35383,7 @@
       "name": "ProfilePhoto",
       "kind": "class",
       "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "line": 212,
+      "line": 210,
       "signature": "class ProfilePhoto extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -35413,7 +35393,7 @@
       "name": "ProfileSectionView",
       "kind": "class",
       "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "line": 241,
+      "line": 239,
       "signature": "class ProfileSectionView extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -35423,7 +35403,7 @@
       "name": "ProfileSectionKicker",
       "kind": "class",
       "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "line": 301,
+      "line": 299,
       "signature": "class ProfileSectionKicker extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -35433,7 +35413,7 @@
       "name": "ProfileCompatibility",
       "kind": "class",
       "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "line": 319,
+      "line": 317,
       "signature": "class ProfileCompatibility extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -35443,7 +35423,7 @@
       "name": "ProfilePrompt",
       "kind": "class",
       "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "line": 376,
+      "line": 374,
       "signature": "class ProfilePrompt extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -35453,7 +35433,7 @@
       "name": "ProfileRunning",
       "kind": "class",
       "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "line": 400,
+      "line": 398,
       "signature": "class ProfileRunning extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -35463,7 +35443,7 @@
       "name": "ProfileFacts",
       "kind": "class",
       "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "line": 451,
+      "line": 449,
       "signature": "class ProfileFacts extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -35473,7 +35453,7 @@
       "name": "ProfilePhotoBlock",
       "kind": "class",
       "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "line": 495,
+      "line": 493,
       "signature": "class ProfilePhotoBlock extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -35483,7 +35463,7 @@
       "name": "PhotoCaption",
       "kind": "class",
       "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "line": 546,
+      "line": 544,
       "signature": "class PhotoCaption extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -35493,7 +35473,7 @@
       "name": "ProfileRule",
       "kind": "class",
       "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "line": 569,
+      "line": 567,
       "signature": "class ProfileRule extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -35651,13 +35631,13 @@
       "signature": "class ProfileSurfaceSkeleton extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "630de194df0291ea"
+      "body_hash": "33348c54bd22454d"
     },
     {
       "name": "ProfileSurfaceHeroSkeleton",
       "kind": "class",
       "file": "lib/swipes/shared/profile_surface/profile_surface.dart",
-      "line": 149,
+      "line": 147,
       "signature": "class ProfileSurfaceHeroSkeleton extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -35667,7 +35647,7 @@
       "name": "ProfileSurfaceSectionSkeleton",
       "kind": "class",
       "file": "lib/swipes/shared/profile_surface/profile_surface.dart",
-      "line": 191,
+      "line": 189,
       "signature": "class ProfileSurfaceSectionSkeleton extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -35677,7 +35657,7 @@
       "name": "ProfileSurfaceRunningSkeleton",
       "kind": "class",
       "file": "lib/swipes/shared/profile_surface/profile_surface.dart",
-      "line": 225,
+      "line": 223,
       "signature": "class ProfileSurfaceRunningSkeleton extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -35687,7 +35667,7 @@
       "name": "ProfileSurfacePhotoSkeleton",
       "kind": "class",
       "file": "lib/swipes/shared/profile_surface/profile_surface.dart",
-      "line": 260,
+      "line": 258,
       "signature": "class ProfileSurfacePhotoSkeleton extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -35697,7 +35677,7 @@
       "name": "ProfileSurfaceFactsSkeleton",
       "kind": "class",
       "file": "lib/swipes/shared/profile_surface/profile_surface.dart",
-      "line": 282,
+      "line": 280,
       "signature": "class ProfileSurfaceFactsSkeleton extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -35707,7 +35687,7 @@
       "name": "ProfileSurfaceRule",
       "kind": "class",
       "file": "lib/swipes/shared/profile_surface/profile_surface.dart",
-      "line": 314,
+      "line": 312,
       "signature": "class ProfileSurfaceRule extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -35717,7 +35697,7 @@
       "name": "_kicker",
       "kind": "function",
       "file": "lib/swipes/shared/profile_surface/profile_surface.dart",
-      "line": 330,
+      "line": 328,
       "signature": "String? _kicker(String? sharedRunTitle) {",
       "return_type": "String?",
       "body_hash": "b1b071debe5726f5"
@@ -35726,7 +35706,7 @@
       "name": "_metaLine",
       "kind": "function",
       "file": "lib/swipes/shared/profile_surface/profile_surface.dart",
-      "line": 336,
+      "line": 334,
       "signature": "String? _metaLine(PublicProfile profile) {",
       "return_type": "String?",
       "body_hash": "1031a47482a09c09"
@@ -35735,7 +35715,7 @@
       "name": "_trimToNull",
       "kind": "function",
       "file": "lib/swipes/shared/profile_surface/profile_surface.dart",
-      "line": 344,
+      "line": 342,
       "signature": "String? _trimToNull(String? value) {",
       "return_type": "String?",
       "body_hash": "e6d2db7929517af6"
@@ -35744,7 +35724,7 @@
       "name": "_semanticHint",
       "kind": "function",
       "file": "lib/swipes/shared/profile_surface/profile_surface.dart",
-      "line": 350,
+      "line": 348,
       "signature": "String _semanticHint(ProfileSurfaceMode mode) {",
       "return_type": "String",
       "body_hash": "1171fdd412d76c3e"
@@ -37950,7 +37930,7 @@
       "name": "ProfileSliverHeader",
       "kind": "class",
       "file": "lib/user_profile/presentation/widgets/profile_sliver_header.dart",
-      "line": 10,
+      "line": 11,
       "signature": "class ProfileSliverHeader {",
       "is_widget": false,
       "body_hash": "fe5f72df5d5dfa8f"
@@ -37959,7 +37939,7 @@
       "name": "ProfileTitle",
       "kind": "class",
       "file": "lib/user_profile/presentation/widgets/profile_sliver_header.dart",
-      "line": 26,
+      "line": 27,
       "signature": "class ProfileTitle extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -37969,17 +37949,17 @@
       "name": "ProfileTabBar",
       "kind": "class",
       "file": "lib/user_profile/presentation/widgets/profile_sliver_header.dart",
-      "line": 54,
+      "line": 55,
       "signature": "class ProfileTabBar extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "2e14288e966b7ff3"
+      "body_hash": "777c760e4387a4b3"
     },
     {
       "name": "ProfileSettingsButton",
       "kind": "class",
       "file": "lib/user_profile/presentation/widgets/profile_sliver_header.dart",
-      "line": 91,
+      "line": 80,
       "signature": "class ProfileSettingsButton extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
