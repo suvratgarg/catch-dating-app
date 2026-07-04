@@ -29,6 +29,7 @@ import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor_prompt.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/preview_tab.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_insights_tab.dart';
@@ -1073,17 +1074,31 @@ void main() {
     await _pumpProfileSheet(tester);
 
     await tester.tap(
-      find.descendant(of: promptEditor, matching: find.byType(MenuAnchor)),
+      find.byKey(const ValueKey('profile-inline-change-prompt')),
     );
-    await tester.pump();
+    await _pumpProfileSheet(tester);
 
     expect(
-      find.widgetWithText(MenuItemButton, _perfectRunPromptTitle),
+      find.widgetWithText(PromptOptionTile, _perfectRunPromptTitle),
       findsNothing,
     );
-    expect(find.widgetWithText(MenuItemButton, usedPrompt.title), findsNothing);
-    await tester.tap(find.widgetWithText(MenuItemButton, favoriteRoute.title));
-    await tester.pump();
+    expect(
+      find.widgetWithText(PromptOptionTile, usedPrompt.title),
+      findsNothing,
+    );
+    await tester.tap(
+      find.widgetWithText(PromptOptionTile, favoriteRoute.title),
+    );
+    await _pumpProfileSheet(tester);
+
+    // The expanded row header reflects the newly selected question live.
+    expect(
+      find.descendant(
+        of: promptEditor,
+        matching: find.text(favoriteRoute.title),
+      ),
+      findsOneWidget,
+    );
 
     await tester.enterText(
       find.descendant(of: promptEditor, matching: find.byType(EditableText)),

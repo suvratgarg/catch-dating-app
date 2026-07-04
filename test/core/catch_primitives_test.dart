@@ -3664,7 +3664,7 @@ void main() {
     expect(find.byType(CatchMenu<String>), findsNothing);
   });
 
-  testWidgets('CatchField.select uses normal menu corners for flat triggers', (
+  testWidgets('CatchField.select opens the shared CatchMenu panel', (
     tester,
   ) async {
     CityOption? selected = cityOptionByName('ahmedabad');
@@ -3689,15 +3689,20 @@ void main() {
     await tester.tap(find.byIcon(CatchIcons.expandMoreRounded));
     await pumpFeatureUi(tester);
 
-    expect(find.byType(MenuItemButton), findsWidgets);
-    expect(
-      tester.widgetList<Material>(find.byType(Material)).any((material) {
-        final shape = material.shape;
-        return shape is RoundedRectangleBorder &&
-            shape.borderRadius == BorderRadius.circular(CatchRadius.sm);
-      }),
-      isTrue,
+    // Select renders through the shared CatchMenu panel, not raw Material
+    // menu items; the selected option carries the shared check affordance.
+    expect(find.byType(CatchMenu<Object?>), findsOneWidget);
+    expect(find.byType(MenuItemButton), findsNothing);
+    expect(find.byIcon(CatchIcons.check), findsOneWidget);
+
+    final other = defaultCityOptions.firstWhere(
+      (city) => city != cityOptionByName('ahmedabad'),
     );
+    await tester.tap(find.text(other.label));
+    await pumpFeatureUi(tester);
+
+    expect(selected, other);
+    expect(find.byType(CatchMenu<Object?>), findsNothing);
   });
 }
 

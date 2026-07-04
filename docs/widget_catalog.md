@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.570
+version: 2.5.571
 updated: 2026-07-04
 owner: recursive_audit_loop
 status: active
@@ -17,7 +17,22 @@ a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
 
-### 2.5.570
+### 2.5.571
+
+- `CatchField.select` now opens the shared `CatchMenu` panel instead of a
+  hand-rolled Material `MenuItemButton` menu, so selects and `CatchActionMenu`
+  share one menu design language (surface, radius, item chrome, selected
+  check). The duplicate `MenuStyle`/item styling in `catch_field.dart` is
+  gone.
+- Prompt editing on Profile Edit reads in place: the expanded row header
+  shows the live selected question and no longer duplicates the answer above
+  the editable input. Changing the question now goes through
+  `PromptPickerSheet` (a `CatchBottomSheetScaffold` picker with full-width
+  wrapping option rows) via a `Change prompt` text action instead of an
+  inline dropdown — long option text belongs in sheets, compact actions in
+  menus. `PromptOptionTile` mirrors the Explore `CityOptionTile` treatment;
+  a third occurrence of this pure option-tile pattern should promote a core
+  sheet-option primitive.
 
 - `CatchFieldRow`'s trailing slot is now intrinsic and pins to the row's
   trailing edge. It was `Flexible`, which split the free space 50/50 with the

@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_grid_keys.dart';
@@ -998,24 +999,29 @@ void main() {
       await tester.tap(menus.at(1));
       await pumpOnboardingUi(tester);
 
+      final menuPanel = find.byWidgetPredicate((widget) => widget is CatchMenu);
       expect(
-        find.widgetWithText(
-          MenuItemButton,
-          profilePromptDefinition(profilePromptPerfectEventId).title,
+        find.descendant(
+          of: menuPanel,
+          matching: find.text(
+            profilePromptDefinition(profilePromptPerfectEventId).title,
+          ),
         ),
         findsNothing,
       );
       final unusedPrompt = profilePromptCatalog.firstWhere(
         (definition) => !defaultProfilePromptIds.contains(definition.id),
       );
-      await tester.tap(find.widgetWithText(MenuItemButton, unusedPrompt.title));
+      await tester.tap(
+        find.descendant(of: menuPanel, matching: find.text(unusedPrompt.title)),
+      );
       await pumpOnboardingUi(tester);
 
       await tester.tap(menus.at(2));
       await pumpOnboardingUi(tester);
 
       expect(
-        find.widgetWithText(MenuItemButton, unusedPrompt.title),
+        find.descendant(of: menuPanel, matching: find.text(unusedPrompt.title)),
         findsNothing,
       );
     });

@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
+import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:flutter/foundation.dart';
@@ -1497,7 +1498,6 @@ class _CatchFieldState extends State<CatchField> {
     final labelOf = widget._selectItemLabel!;
     final label = value == null ? null : labelOf(value);
     final canOpen = widget.enabled && onChanged != null && values.isNotEmpty;
-    final menuBorderRadius = BorderRadius.circular(CatchRadius.sm);
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -1506,58 +1506,31 @@ class _CatchFieldState extends State<CatchField> {
             : null;
         return MenuAnchor(
           controller: _menuController,
-          style: MenuStyle(
-            backgroundColor: WidgetStatePropertyAll(tokens.surface),
-            elevation: const WidgetStatePropertyAll(CatchElevation.menu),
-            shadowColor: WidgetStatePropertyAll(tokens.overlay),
-            surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
-            shape: WidgetStatePropertyAll(
-              RoundedRectangleBorder(borderRadius: menuBorderRadius),
-            ),
-            padding: const WidgetStatePropertyAll(
-              EdgeInsets.symmetric(vertical: CatchSpacing.s1),
-            ),
+          // The panel itself is the shared CatchMenu surface; the anchor
+          // chrome stays transparent (same contract as CatchActionMenu).
+          style: const MenuStyle(
+            backgroundColor: WidgetStatePropertyAll(Colors.transparent),
+            elevation: WidgetStatePropertyAll(0),
+            shadowColor: WidgetStatePropertyAll(Colors.transparent),
+            surfaceTintColor: WidgetStatePropertyAll(Colors.transparent),
+            padding: WidgetStatePropertyAll(EdgeInsets.zero),
           ),
           menuChildren: [
-            for (final item in values)
-              SizedBox(
-                width: menuWidth,
-                child: MenuItemButton(
-                  style: ButtonStyle(
-                    minimumSize: WidgetStatePropertyAll(
-                      Size(0, _menuItemHeight),
-                    ),
-                    padding: const WidgetStatePropertyAll(
-                      EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
-                    ),
-                    foregroundColor: WidgetStatePropertyAll(tokens.ink),
-                    backgroundColor: WidgetStatePropertyAll(
-                      item == value ? tokens.primarySoft : Colors.transparent,
-                    ),
-                    overlayColor: WidgetStatePropertyAll(tokens.primarySoft),
-                    textStyle: WidgetStatePropertyAll(
-                      CatchTextStyles.bodyLead(context, color: tokens.ink),
-                    ),
+            CatchMenu<Object?>(
+              width: menuWidth,
+              items: [
+                for (final item in values)
+                  CatchMenuItem<Object?>(
+                    value: item,
+                    label: labelOf(item),
+                    selected: item == value,
                   ),
-                  trailingIcon: item == value
-                      ? Icon(
-                          CatchIcons.checkRounded,
-                          color: tokens.primary,
-                          size: CatchIcon.sm,
-                        )
-                      : null,
-                  onPressed: () {
-                    onChanged?.call(item);
-                    _menuController.close();
-                  },
-                  child: Text(
-                    labelOf(item),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.labelL(context, color: tokens.ink),
-                  ),
-                ),
-              ),
+              ],
+              onSelected: (item, _) {
+                onChanged?.call(item);
+                _menuController.close();
+              },
+            ),
           ],
           builder: (context, controller, child) {
             final selectHasLabel =
@@ -1767,13 +1740,6 @@ class _CatchFieldState extends State<CatchField> {
       CatchFieldSize.floating => CatchControlSize.floating,
       CatchFieldSize.compact => CatchControlSize.compact,
       CatchFieldSize.md => CatchControlSize.md,
-    };
-  }
-
-  double get _menuItemHeight {
-    return switch (widget.size) {
-      CatchFieldSize.compact => CatchLayout.menuItemHeightCompact,
-      _ => CatchLayout.menuItemHeight,
     };
   }
 
