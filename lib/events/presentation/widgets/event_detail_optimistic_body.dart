@@ -1,7 +1,5 @@
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_app_bar.dart';
@@ -84,7 +82,7 @@ class EventDetailOptimisticBody extends StatelessWidget {
                       )
                     : null,
               ),
-              const OptimisticHostsSkeleton(),
+              EventDetailHostsSkeleton(surfaceStyle: style),
               const EventDetailSocialSkeleton(),
             ],
           ),
@@ -106,33 +104,6 @@ class EventDetailOptimisticBody extends StatelessWidget {
           ),
         },
       ).toString(),
-    );
-  }
-}
-
-class OptimisticHostsSkeleton extends StatelessWidget {
-  const OptimisticHostsSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchSection.divided(
-      title: 'Your hosts',
-      child: Row(
-        children: [
-          CatchSkeleton.circle(size: CatchIcon.avatarLg),
-          gapW12,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CatchSkeleton.text(),
-                gapH8,
-                CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

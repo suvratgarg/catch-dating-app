@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-07-04T13:58:12.970Z",
+  "generatedAt": "2026-07-04T22:51:12.639Z",
   "decisionLedgerPath": "docs/design_parity/widgetbook_widget_decisions.json",
-  "total": 987,
+  "total": 986,
   "stats": {
-    "PUBLIC_ALREADY_CATALOGED_NAME_MATCH": 862,
-    "PUBLIC_NEEDS_CATALOG_OR_REPLACE": 123,
+    "PUBLIC_ALREADY_CATALOGED_NAME_MATCH": 864,
+    "PUBLIC_NEEDS_CATALOG_OR_REPLACE": 120,
     "PRIVATE_NEEDS_RENAME_OR_REPLACE": 2
   },
   "decisionStats": {},
@@ -44,8 +44,8 @@
     },
     {
       "area": "events",
-      "total": 117,
-      "publicAlreadyCataloged": 101,
+      "total": 118,
+      "publicAlreadyCataloged": 102,
       "privateNameMatchNeedsDecision": 0,
       "privateNeedsRenameOrReplace": 0,
       "publicNeedsCatalogOrReplace": 16,
@@ -88,11 +88,11 @@
     },
     {
       "area": "dashboard",
-      "total": 37,
-      "publicAlreadyCataloged": 26,
+      "total": 35,
+      "publicAlreadyCataloged": 27,
       "privateNameMatchNeedsDecision": 0,
       "privateNeedsRenameOrReplace": 0,
-      "publicNeedsCatalogOrReplace": 11,
+      "publicNeedsCatalogOrReplace": 8,
       "replacedWithCatalogEntry": 0,
       "promotedToWidgetbookCatalog": 0,
       "deletedOrMergedDuplicate": 0
@@ -434,7 +434,7 @@
     },
     {
       "file": "lib/chats/presentation/inbox/chat_inbox_screen.dart",
-      "line": 18,
+      "line": 19,
       "name": "ChatsListScreen",
       "base": "ConsumerStatefulWidget",
       "area": "chats",
@@ -448,7 +448,7 @@
     },
     {
       "file": "lib/chats/presentation/inbox/chat_inbox_screen.dart",
-      "line": 104,
+      "line": 111,
       "name": "HostBroadcastComposerSheet",
       "base": "StatelessWidget",
       "area": "chats",
@@ -504,7 +504,7 @@
     },
     {
       "file": "lib/chats/presentation/inbox/widgets/chats_list_body.dart",
-      "line": 72,
+      "line": 70,
       "name": "HostInboxBroadcastCard",
       "base": "StatelessWidget",
       "area": "chats",
@@ -560,7 +560,7 @@
     },
     {
       "file": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
-      "line": 37,
+      "line": 17,
       "name": "ChatsBrowseHeader",
       "base": "StatefulWidget",
       "area": "chats",
@@ -700,7 +700,7 @@
     },
     {
       "file": "lib/chats/presentation/widgets/suvbot_action_bar.dart",
-      "line": 29,
+      "line": 30,
       "name": "SuvbotActionBar",
       "base": "StatelessWidget",
       "area": "chats",
@@ -812,7 +812,7 @@
     },
     {
       "file": "lib/clubs/presentation/detail/widgets/club_contact_section.dart",
-      "line": 15,
+      "line": 14,
       "name": "ClubContactSection",
       "base": "StatelessWidget",
       "area": "clubs",
@@ -1414,7 +1414,7 @@
     },
     {
       "file": "lib/core/celebration/catch_celebration_screen.dart",
-      "line": 47,
+      "line": 48,
       "name": "CatchCelebrationScreen",
       "base": "ConsumerStatefulWidget",
       "area": "core/celebration",
@@ -1428,7 +1428,7 @@
     },
     {
       "file": "lib/core/celebration/catch_celebration_screen.dart",
-      "line": 244,
+      "line": 245,
       "name": "PaperCelebrationScaffold",
       "base": "StatelessWidget",
       "area": "core/celebration",
@@ -1442,7 +1442,7 @@
     },
     {
       "file": "lib/core/celebration/catch_celebration_screen.dart",
-      "line": 374,
+      "line": 381,
       "name": "PaperCelebrationIcon",
       "base": "StatelessWidget",
       "area": "core/celebration",
@@ -1456,7 +1456,7 @@
     },
     {
       "file": "lib/core/celebration/catch_celebration_screen.dart",
-      "line": 392,
+      "line": 399,
       "name": "PaperCelebrationDetailsCard",
       "base": "StatelessWidget",
       "area": "core/celebration",
@@ -1470,7 +1470,7 @@
     },
     {
       "file": "lib/core/celebration/catch_celebration_screen.dart",
-      "line": 423,
+      "line": 430,
       "name": "PaperCelebrationDetailRow",
       "base": "StatelessWidget",
       "area": "core/celebration",
@@ -1484,7 +1484,7 @@
     },
     {
       "file": "lib/core/celebration/catch_celebration_screen.dart",
-      "line": 461,
+      "line": 468,
       "name": "CelebrationIcon",
       "base": "StatelessWidget",
       "area": "core/celebration",
@@ -1498,7 +1498,7 @@
     },
     {
       "file": "lib/core/celebration/catch_celebration_screen.dart",
-      "line": 481,
+      "line": 488,
       "name": "CelebrationDetailsCard",
       "base": "StatelessWidget",
       "area": "core/celebration",
@@ -1512,7 +1512,7 @@
     },
     {
       "file": "lib/core/celebration/catch_celebration_screen.dart",
-      "line": 513,
+      "line": 525,
       "name": "CelebrationDetailRow",
       "base": "StatelessWidget",
       "area": "core/celebration",
@@ -1526,7 +1526,7 @@
     },
     {
       "file": "lib/core/celebration/catch_celebration_screen.dart",
-      "line": 553,
+      "line": 568,
       "name": "CelebrationNote",
       "base": "StatelessWidget",
       "area": "core/celebration",
@@ -1806,7 +1806,7 @@
     },
     {
       "file": "lib/core/widgets/catch_bottom_dock.dart",
-      "line": 12,
+      "line": 13,
       "name": "CatchBottomDock",
       "base": "StatelessWidget",
       "area": "core/widgets",
@@ -1820,7 +1820,7 @@
     },
     {
       "file": "lib/core/widgets/catch_bottom_dock.dart",
-      "line": 102,
+      "line": 103,
       "name": "CatchBottomDockCta",
       "base": "StatelessWidget",
       "area": "core/widgets",
@@ -2436,7 +2436,7 @@
     },
     {
       "file": "lib/core/widgets/catch_horizontal_rail.dart",
-      "line": 12,
+      "line": 13,
       "name": "CatchHorizontalRail",
       "base": "StatelessWidget",
       "area": "core/widgets",
@@ -3248,7 +3248,7 @@
     },
     {
       "file": "lib/core/widgets/catch_section_layout.dart",
-      "line": 580,
+      "line": 608,
       "name": "CatchSectionFocusSurface",
       "base": "StatefulWidget",
       "area": "core/widgets",
@@ -3262,7 +3262,7 @@
     },
     {
       "file": "lib/core/widgets/catch_section_layout.dart",
-      "line": 659,
+      "line": 702,
       "name": "CatchDetailSliverSectionList",
       "base": "StatelessWidget",
       "area": "core/widgets",
@@ -3814,11 +3814,11 @@
       "area": "dashboard",
       "visibility": "public",
       "publicName": "DashboardHomeScreen",
-      "exactNameMatched": false,
-      "publicNameMatched": false,
-      "mechanicalStatus": "PUBLIC_NEEDS_CATALOG_OR_REPLACE",
+      "exactNameMatched": true,
+      "publicNameMatched": true,
+      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
       "decision": null,
-      "status": "PUBLIC_NEEDS_CATALOG_OR_REPLACE"
+      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
     },
     {
       "file": "lib/dashboard/presentation/dashboard_loading_screen.dart",
@@ -3836,7 +3836,7 @@
     },
     {
       "file": "lib/dashboard/presentation/dashboard_screen.dart",
-      "line": 32,
+      "line": 33,
       "name": "DashboardScreen",
       "base": "ConsumerWidget",
       "area": "dashboard",
@@ -3850,7 +3850,7 @@
     },
     {
       "file": "lib/dashboard/presentation/dashboard_screen.dart",
-      "line": 76,
+      "line": 77,
       "name": "NotificationsAction",
       "base": "ConsumerWidget",
       "area": "dashboard",
@@ -3864,7 +3864,7 @@
     },
     {
       "file": "lib/dashboard/presentation/dashboard_screen.dart",
-      "line": 99,
+      "line": 100,
       "name": "DashboardNotificationBellButton",
       "base": "StatelessWidget",
       "area": "dashboard",
@@ -3878,7 +3878,7 @@
     },
     {
       "file": "lib/dashboard/presentation/dashboard_screen.dart",
-      "line": 127,
+      "line": 128,
       "name": "DashboardLoadingHeader",
       "base": "StatelessWidget",
       "area": "dashboard",
@@ -3892,40 +3892,12 @@
     },
     {
       "file": "lib/dashboard/presentation/dashboard_screen.dart",
-      "line": 158,
+      "line": 159,
       "name": "DashboardFocusLoadingCard",
       "base": "StatelessWidget",
       "area": "dashboard",
       "visibility": "public",
       "publicName": "DashboardFocusLoadingCard",
-      "exactNameMatched": false,
-      "publicNameMatched": false,
-      "mechanicalStatus": "PUBLIC_NEEDS_CATALOG_OR_REPLACE",
-      "decision": null,
-      "status": "PUBLIC_NEEDS_CATALOG_OR_REPLACE"
-    },
-    {
-      "file": "lib/dashboard/presentation/dashboard_screen.dart",
-      "line": 200,
-      "name": "DashboardStrideLoadingCard",
-      "base": "StatelessWidget",
-      "area": "dashboard",
-      "visibility": "public",
-      "publicName": "DashboardStrideLoadingCard",
-      "exactNameMatched": false,
-      "publicNameMatched": false,
-      "mechanicalStatus": "PUBLIC_NEEDS_CATALOG_OR_REPLACE",
-      "decision": null,
-      "status": "PUBLIC_NEEDS_CATALOG_OR_REPLACE"
-    },
-    {
-      "file": "lib/dashboard/presentation/dashboard_screen.dart",
-      "line": 230,
-      "name": "DashboardRecommendedLoadingSection",
-      "base": "StatelessWidget",
-      "area": "dashboard",
-      "visibility": "public",
-      "publicName": "DashboardRecommendedLoadingSection",
       "exactNameMatched": false,
       "publicNameMatched": false,
       "mechanicalStatus": "PUBLIC_NEEDS_CATALOG_OR_REPLACE",
@@ -4032,21 +4004,7 @@
     },
     {
       "file": "lib/dashboard/presentation/widgets/dashboard_full.dart",
-      "line": 39,
-      "name": "DashboardFull",
-      "base": "ConsumerWidget",
-      "area": "dashboard",
-      "visibility": "public",
-      "publicName": "DashboardFull",
-      "exactNameMatched": true,
-      "publicNameMatched": true,
-      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
-      "decision": null,
-      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
-    },
-    {
-      "file": "lib/dashboard/presentation/widgets/dashboard_full.dart",
-      "line": 95,
+      "line": 38,
       "name": "DashboardFullSliverBody",
       "base": "ConsumerStatefulWidget",
       "area": "dashboard",
@@ -4060,7 +4018,7 @@
     },
     {
       "file": "lib/dashboard/presentation/widgets/dashboard_full.dart",
-      "line": 372,
+      "line": 305,
       "name": "FollowedClubsRailSkeleton",
       "base": "StatelessWidget",
       "area": "dashboard",
@@ -4073,13 +4031,27 @@
       "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
     },
     {
-      "file": "lib/dashboard/presentation/widgets/dashboard_section_state_card.dart",
-      "line": 9,
-      "name": "DashboardSectionStateCard",
+      "file": "lib/dashboard/presentation/widgets/dashboard_loading_widgets.dart",
+      "line": 7,
+      "name": "DashboardStrideLoadingCard",
       "base": "StatelessWidget",
       "area": "dashboard",
       "visibility": "public",
-      "publicName": "DashboardSectionStateCard",
+      "publicName": "DashboardStrideLoadingCard",
+      "exactNameMatched": true,
+      "publicNameMatched": true,
+      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
+      "decision": null,
+      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
+    },
+    {
+      "file": "lib/dashboard/presentation/widgets/dashboard_loading_widgets.dart",
+      "line": 37,
+      "name": "DashboardRecommendedLoadingSection",
+      "base": "StatelessWidget",
+      "area": "dashboard",
+      "visibility": "public",
+      "publicName": "DashboardRecommendedLoadingSection",
       "exactNameMatched": true,
       "publicNameMatched": true,
       "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
@@ -4088,7 +4060,7 @@
     },
     {
       "file": "lib/dashboard/presentation/widgets/dashboard_sliver_header.dart",
-      "line": 15,
+      "line": 6,
       "name": "DashboardHeaderContent",
       "base": "StatelessWidget",
       "area": "dashboard",
@@ -4116,7 +4088,7 @@
     },
     {
       "file": "lib/dashboard/presentation/widgets/empty_hero_card.dart",
-      "line": 57,
+      "line": 55,
       "name": "EmptyHeroContent",
       "base": "StatelessWidget",
       "area": "dashboard",
@@ -4200,7 +4172,7 @@
     },
     {
       "file": "lib/dashboard/presentation/widgets/stride_card.dart",
-      "line": 82,
+      "line": 79,
       "name": "StrideCard",
       "base": "StatelessWidget",
       "area": "dashboard",
@@ -4214,7 +4186,7 @@
     },
     {
       "file": "lib/dashboard/presentation/widgets/stride_card.dart",
-      "line": 242,
+      "line": 239,
       "name": "StrideBarColumn",
       "base": "StatelessWidget",
       "area": "dashboard",
@@ -4256,7 +4228,7 @@
     },
     {
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 29,
+      "line": 30,
       "name": "EventPolicyLabScreen",
       "base": "StatefulWidget",
       "area": "event_policies",
@@ -4270,7 +4242,7 @@
     },
     {
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 93,
+      "line": 94,
       "name": "EventPolicyLabHeader",
       "base": "StatelessWidget",
       "area": "event_policies",
@@ -4284,7 +4256,7 @@
     },
     {
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 208,
+      "line": 209,
       "name": "EventPolicyScenarioPicker",
       "base": "StatelessWidget",
       "area": "event_policies",
@@ -4298,7 +4270,7 @@
     },
     {
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 257,
+      "line": 258,
       "name": "EventPolicyScenarioCard",
       "base": "StatelessWidget",
       "area": "event_policies",
@@ -4312,7 +4284,7 @@
     },
     {
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 310,
+      "line": 311,
       "name": "EventPolicySummary",
       "base": "StatelessWidget",
       "area": "event_policies",
@@ -4326,7 +4298,7 @@
     },
     {
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 447,
+      "line": 448,
       "name": "EventPolicyResultRows",
       "base": "StatelessWidget",
       "area": "event_policies",
@@ -4340,7 +4312,7 @@
     },
     {
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 479,
+      "line": 480,
       "name": "EventPolicyResultRow",
       "base": "StatelessWidget",
       "area": "event_policies",
@@ -4354,7 +4326,7 @@
     },
     {
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 555,
+      "line": 556,
       "name": "EventPolicyCancellationRows",
       "base": "StatelessWidget",
       "area": "event_policies",
@@ -4368,7 +4340,7 @@
     },
     {
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 589,
+      "line": 590,
       "name": "EventPolicyCancellationRow",
       "base": "StatelessWidget",
       "area": "event_policies",
@@ -4382,7 +4354,7 @@
     },
     {
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 669,
+      "line": 670,
       "name": "EventPolicyDebugOutput",
       "base": "StatelessWidget",
       "area": "event_policies",
@@ -4396,7 +4368,7 @@
     },
     {
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 705,
+      "line": 706,
       "name": "EventPolicyLabSectionTitle",
       "base": "StatelessWidget",
       "area": "event_policies",
@@ -4410,7 +4382,7 @@
     },
     {
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 737,
+      "line": 738,
       "name": "EventPolicySummaryLine",
       "base": "StatelessWidget",
       "area": "event_policies",
@@ -4424,7 +4396,7 @@
     },
     {
       "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-      "line": 778,
+      "line": 779,
       "name": "EventPolicyDividerLine",
       "base": "StatelessWidget",
       "area": "event_policies",
@@ -4816,7 +4788,7 @@
     },
     {
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 208,
+      "line": 204,
       "name": "PaperCompanionNav",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -4830,7 +4802,7 @@
     },
     {
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 262,
+      "line": 258,
       "name": "PaperProgressRail",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -4844,7 +4816,7 @@
     },
     {
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 291,
+      "line": 287,
       "name": "PaperCompanionTicket",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -4858,7 +4830,7 @@
     },
     {
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 384,
+      "line": 380,
       "name": "PaperTicketHeader",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -4872,7 +4844,7 @@
     },
     {
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 482,
+      "line": 478,
       "name": "PaperTicketDetail",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -4886,7 +4858,7 @@
     },
     {
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 512,
+      "line": 508,
       "name": "PaperTicketPerforation",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -4900,7 +4872,7 @@
     },
     {
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 553,
+      "line": 549,
       "name": "PaperTicketSerial",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -4914,7 +4886,7 @@
     },
     {
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 571,
+      "line": 567,
       "name": "PaperBarcode",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -4928,7 +4900,7 @@
     },
     {
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 609,
+      "line": 605,
       "name": "PaperExpectationCard",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -4942,7 +4914,7 @@
     },
     {
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 656,
+      "line": 652,
       "name": "PaperExpectationRow",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -4956,7 +4928,7 @@
     },
     {
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 680,
+      "line": 676,
       "name": "PaperPrivacyCard",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -4970,7 +4942,7 @@
     },
     {
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 714,
+      "line": 710,
       "name": "PaperSelfCheckInBar",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -4984,7 +4956,7 @@
     },
     {
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 811,
+      "line": 807,
       "name": "CompanionMomentStage",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -4998,7 +4970,7 @@
     },
     {
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 936,
+      "line": 932,
       "name": "StageNav",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5012,7 +4984,7 @@
     },
     {
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 989,
+      "line": 985,
       "name": "CompanionHero",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5026,7 +4998,7 @@
     },
     {
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1063,
+      "line": 1059,
       "name": "StageGlyph",
       "base": "StatefulWidget",
       "area": "event_success",
@@ -5040,7 +5012,7 @@
     },
     {
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1145,
+      "line": 1141,
       "name": "StagePrivacyLine",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5054,7 +5026,7 @@
     },
     {
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1190,
+      "line": 1186,
       "name": "CompanionMomentStageContent",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5068,7 +5040,7 @@
     },
     {
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1212,
+      "line": 1208,
       "name": "StagePanel",
       "base": "StatefulWidget",
       "area": "event_success",
@@ -5082,7 +5054,7 @@
     },
     {
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1265,
+      "line": 1261,
       "name": "StageActionDock",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5096,7 +5068,7 @@
     },
     {
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1284,
+      "line": 1280,
       "name": "StageSoftBand",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5110,7 +5082,7 @@
     },
     {
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1431,
+      "line": 1427,
       "name": "AnimatedStageMotifBackground",
       "base": "StatefulWidget",
       "area": "event_success",
@@ -5124,7 +5096,7 @@
     },
     {
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1645,
+      "line": 1641,
       "name": "CompanionStageContentTransition",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5138,7 +5110,7 @@
     },
     {
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1687,
+      "line": 1683,
       "name": "StageBouncyPress",
       "base": "StatefulWidget",
       "area": "event_success",
@@ -5152,7 +5124,7 @@
     },
     {
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1806,
+      "line": 1802,
       "name": "StageBouncyChip",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5166,7 +5138,7 @@
     },
     {
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1852,
+      "line": 1848,
       "name": "LiveArrivalRing",
       "base": "StatefulWidget",
       "area": "event_success",
@@ -5180,7 +5152,7 @@
     },
     {
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1915,
+      "line": 1911,
       "name": "ArrivalRingCard",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5194,7 +5166,7 @@
     },
     {
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 1983,
+      "line": 1979,
       "name": "LiveOthersInRoomLine",
       "base": "StatefulWidget",
       "area": "event_success",
@@ -5208,7 +5180,7 @@
     },
     {
       "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "line": 2118,
+      "line": 2114,
       "name": "NoCompanionActionsCard",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5726,7 +5698,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line": 144,
+      "line": 139,
       "name": "EventSuccessHostSection",
       "base": "ConsumerStatefulWidget",
       "area": "event_success",
@@ -5740,7 +5712,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line": 610,
+      "line": 605,
       "name": "EventSuccessHostSectionSkeleton",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5754,7 +5726,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line": 644,
+      "line": 639,
       "name": "EventSuccessSetupTabSkeleton",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5768,7 +5740,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line": 669,
+      "line": 664,
       "name": "EventSuccessLiveTabSkeleton",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5782,7 +5754,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line": 694,
+      "line": 689,
       "name": "EventSuccessReportTabSkeleton",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5796,7 +5768,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line": 719,
+      "line": 714,
       "name": "EventSuccessSetupControlsSkeleton",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5810,7 +5782,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line": 751,
+      "line": 746,
       "name": "EventSuccessReportMetricsSkeleton",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5824,7 +5796,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_host_screen.dart",
-      "line": 793,
+      "line": 788,
       "name": "EventSuccessHostPanel",
       "base": "StatefulWidget",
       "area": "event_success",
@@ -5838,7 +5810,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 35,
+      "line": 33,
       "name": "EventSuccessLabScreen",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5852,7 +5824,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 115,
+      "line": 113,
       "name": "LabHero",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5866,7 +5838,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 186,
+      "line": 184,
       "name": "PromiseGrid",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5880,7 +5852,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 239,
+      "line": 237,
       "name": "PromiseCard",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5894,7 +5866,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 270,
+      "line": 268,
       "name": "PlaybookCard",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5908,7 +5880,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 334,
+      "line": 332,
       "name": "CapacityRow",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5922,7 +5894,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 374,
+      "line": 372,
       "name": "RunOfShow",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5936,7 +5908,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 445,
+      "line": 443,
       "name": "ModuleGrid",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5950,7 +5922,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 484,
+      "line": 482,
       "name": "LayerHeader",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5964,7 +5936,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 509,
+      "line": 507,
       "name": "ModuleCard",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5978,7 +5950,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 563,
+      "line": 561,
       "name": "CoachPanel",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -5992,7 +5964,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 639,
+      "line": 637,
       "name": "NotesList",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -6006,7 +5978,7 @@
     },
     {
       "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-      "line": 675,
+      "line": 673,
       "name": "Section",
       "base": "StatelessWidget",
       "area": "event_success",
@@ -7280,7 +7252,7 @@
     },
     {
       "file": "lib/events/presentation/calendar/calendar_screen.dart",
-      "line": 679,
+      "line": 677,
       "name": "CalendarStatsHeaderSkeleton",
       "base": "StatelessWidget",
       "area": "events",
@@ -7294,7 +7266,7 @@
     },
     {
       "file": "lib/events/presentation/calendar/calendar_screen.dart",
-      "line": 718,
+      "line": 714,
       "name": "CalendarStatSkeleton",
       "base": "StatelessWidget",
       "area": "events",
@@ -7308,7 +7280,7 @@
     },
     {
       "file": "lib/events/presentation/calendar/calendar_screen.dart",
-      "line": 734,
+      "line": 730,
       "name": "CalendarWeekStrip",
       "base": "StatelessWidget",
       "area": "events",
@@ -7322,7 +7294,7 @@
     },
     {
       "file": "lib/events/presentation/calendar/calendar_screen.dart",
-      "line": 778,
+      "line": 774,
       "name": "CalendarMonthGrid",
       "base": "StatelessWidget",
       "area": "events",
@@ -7336,7 +7308,7 @@
     },
     {
       "file": "lib/events/presentation/calendar/calendar_screen.dart",
-      "line": 856,
+      "line": 852,
       "name": "CalendarStatDivider",
       "base": "StatelessWidget",
       "area": "events",
@@ -7490,7 +7462,7 @@
     },
     {
       "file": "lib/events/presentation/location_picker_screen.dart",
-      "line": 473,
+      "line": 474,
       "name": "PlaceSuggestionRow",
       "base": "StatelessWidget",
       "area": "events",
@@ -7504,7 +7476,7 @@
     },
     {
       "file": "lib/events/presentation/location_picker_screen.dart",
-      "line": 543,
+      "line": 544,
       "name": "SelectedPointPanel",
       "base": "StatelessWidget",
       "area": "events",
@@ -7616,7 +7588,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/booking_conflict_sheet.dart",
-      "line": 151,
+      "line": 149,
       "name": "BookingConflictEventRow",
       "base": "StatelessWidget",
       "area": "events",
@@ -7672,7 +7644,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_body.dart",
-      "line": 274,
+      "line": 273,
       "name": "EventCompanionCard",
       "base": "StatelessWidget",
       "area": "events",
@@ -7686,7 +7658,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_body.dart",
-      "line": 332,
+      "line": 331,
       "name": "GuestBookCta",
       "base": "StatelessWidget",
       "area": "events",
@@ -7700,7 +7672,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_body.dart",
-      "line": 368,
+      "line": 367,
       "name": "EventDetailHostsSection",
       "base": "StatelessWidget",
       "area": "events",
@@ -7784,7 +7756,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 22,
+      "line": 23,
       "name": "EventDetailTicketStubBand",
       "base": "StatelessWidget",
       "area": "events",
@@ -7798,7 +7770,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 81,
+      "line": 82,
       "name": "EventDetailHintList",
       "base": "StatelessWidget",
       "area": "events",
@@ -7812,7 +7784,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 129,
+      "line": 130,
       "name": "EventDetailItinerary",
       "base": "StatelessWidget",
       "area": "events",
@@ -7826,7 +7798,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 166,
+      "line": 167,
       "name": "EventDetailMapCard",
       "base": "StatelessWidget",
       "area": "events",
@@ -7840,7 +7812,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 251,
+      "line": 252,
       "name": "EventDetailMechanismList",
       "base": "StatelessWidget",
       "area": "events",
@@ -7854,7 +7826,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 284,
+      "line": 285,
       "name": "EventDetailPhotoStrip",
       "base": "StatelessWidget",
       "area": "events",
@@ -7868,7 +7840,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 333,
+      "line": 334,
       "name": "EventDetailPhotoStripTile",
       "base": "StatelessWidget",
       "area": "events",
@@ -7882,7 +7854,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 390,
+      "line": 391,
       "name": "TicketStubCell",
       "base": "StatelessWidget",
       "area": "events",
@@ -7896,7 +7868,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 464,
+      "line": 465,
       "name": "HairlineList",
       "base": "StatelessWidget",
       "area": "events",
@@ -7910,7 +7882,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 507,
+      "line": 502,
       "name": "ItineraryRow",
       "base": "StatelessWidget",
       "area": "events",
@@ -7924,7 +7896,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 605,
+      "line": 600,
       "name": "MapPill",
       "base": "StatelessWidget",
       "area": "events",
@@ -7938,7 +7910,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 916,
+      "line": 911,
       "name": "EventDetailHostCard",
       "base": "StatelessWidget",
       "area": "events",
@@ -7952,7 +7924,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "line": 1115,
+      "line": 1110,
       "name": "HostAvatar",
       "base": "StatelessWidget",
       "area": "events",
@@ -8022,7 +7994,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
-      "line": 412,
+      "line": 410,
       "name": "HeroActivityBadge",
       "base": "StatelessWidget",
       "area": "events",
@@ -8036,7 +8008,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
-      "line": 446,
+      "line": 444,
       "name": "HeroTimeChip",
       "base": "StatelessWidget",
       "area": "events",
@@ -8050,7 +8022,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_loading_skeleton.dart",
-      "line": 9,
+      "line": 11,
       "name": "EventDetailLoadingScreen",
       "base": "StatelessWidget",
       "area": "events",
@@ -8064,7 +8036,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_loading_skeleton.dart",
-      "line": 54,
+      "line": 56,
       "name": "EventDetailHeroSkeleton",
       "base": "StatelessWidget",
       "area": "events",
@@ -8078,7 +8050,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_loading_skeleton.dart",
-      "line": 141,
+      "line": 143,
       "name": "EventDetailTicketStubSkeleton",
       "base": "StatelessWidget",
       "area": "events",
@@ -8092,7 +8064,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_loading_skeleton.dart",
-      "line": 176,
+      "line": 178,
       "name": "TicketStubCellSkeleton",
       "base": "StatelessWidget",
       "area": "events",
@@ -8106,7 +8078,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_loading_skeleton.dart",
-      "line": 199,
+      "line": 201,
       "name": "EventDetailPlanSkeleton",
       "base": "StatelessWidget",
       "area": "events",
@@ -8120,7 +8092,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_loading_skeleton.dart",
-      "line": 219,
+      "line": 221,
       "name": "EventDetailHintSkeleton",
       "base": "StatelessWidget",
       "area": "events",
@@ -8134,7 +8106,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_loading_skeleton.dart",
-      "line": 252,
+      "line": 254,
       "name": "EventDetailItinerarySkeleton",
       "base": "StatelessWidget",
       "area": "events",
@@ -8148,7 +8120,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_loading_skeleton.dart",
-      "line": 293,
+      "line": 295,
       "name": "EventDetailMapSkeleton",
       "base": "StatelessWidget",
       "area": "events",
@@ -8162,7 +8134,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_loading_skeleton.dart",
-      "line": 305,
+      "line": 307,
       "name": "EventDetailMechanismSkeleton",
       "base": "StatelessWidget",
       "area": "events",
@@ -8176,7 +8148,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_loading_skeleton.dart",
-      "line": 334,
+      "line": 336,
       "name": "EventDetailSocialSkeleton",
       "base": "StatelessWidget",
       "area": "events",
@@ -8190,7 +8162,35 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_loading_skeleton.dart",
-      "line": 355,
+      "line": 357,
+      "name": "EventDetailCompanionSkeleton",
+      "base": "StatelessWidget",
+      "area": "events",
+      "visibility": "public",
+      "publicName": "EventDetailCompanionSkeleton",
+      "exactNameMatched": true,
+      "publicNameMatched": true,
+      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
+      "decision": null,
+      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
+    },
+    {
+      "file": "lib/events/presentation/widgets/event_detail_loading_skeleton.dart",
+      "line": 395,
+      "name": "EventDetailHostsSkeleton",
+      "base": "StatelessWidget",
+      "area": "events",
+      "visibility": "public",
+      "publicName": "EventDetailHostsSkeleton",
+      "exactNameMatched": true,
+      "publicNameMatched": true,
+      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
+      "decision": null,
+      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
+    },
+    {
+      "file": "lib/events/presentation/widgets/event_detail_loading_skeleton.dart",
+      "line": 426,
       "name": "EventDetailLoadingCta",
       "base": "StatelessWidget",
       "area": "events",
@@ -8204,26 +8204,12 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_optimistic_body.dart",
-      "line": 26,
+      "line": 24,
       "name": "EventDetailOptimisticBody",
       "base": "StatelessWidget",
       "area": "events",
       "visibility": "public",
       "publicName": "EventDetailOptimisticBody",
-      "exactNameMatched": true,
-      "publicNameMatched": true,
-      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
-      "decision": null,
-      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
-    },
-    {
-      "file": "lib/events/presentation/widgets/event_detail_optimistic_body.dart",
-      "line": 113,
-      "name": "OptimisticHostsSkeleton",
-      "base": "StatelessWidget",
-      "area": "events",
-      "visibility": "public",
-      "publicName": "OptimisticHostsSkeleton",
       "exactNameMatched": true,
       "publicNameMatched": true,
       "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
@@ -8274,7 +8260,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_overview_section.dart",
-      "line": 220,
+      "line": 212,
       "name": "EventDetailPolicySummary",
       "base": "StatelessWidget",
       "area": "events",
@@ -8288,7 +8274,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_overview_section.dart",
-      "line": 286,
+      "line": 269,
       "name": "EventDetailPolicySummaryLine",
       "base": "StatelessWidget",
       "area": "events",
@@ -8904,7 +8890,7 @@
     },
     {
       "file": "lib/explore/presentation/widgets/catch_cover_story.dart",
-      "line": 135,
+      "line": 133,
       "name": "CoverStoryChrome",
       "base": "StatelessWidget",
       "area": "explore",
@@ -8918,7 +8904,7 @@
     },
     {
       "file": "lib/explore/presentation/widgets/catch_cover_story.dart",
-      "line": 221,
+      "line": 217,
       "name": "CoverStoryContent",
       "base": "StatelessWidget",
       "area": "explore",
@@ -9058,7 +9044,7 @@
     },
     {
       "file": "lib/explore/presentation/widgets/explore_city_picker.dart",
-      "line": 220,
+      "line": 218,
       "name": "CityOptionTile",
       "base": "StatelessWidget",
       "area": "explore",
@@ -9310,7 +9296,7 @@
     },
     {
       "file": "lib/explore/presentation/widgets/explore_events_section.dart",
-      "line": 118,
+      "line": 116,
       "name": "ExploreEventsSection",
       "base": "StatelessWidget",
       "area": "explore",
@@ -9352,7 +9338,7 @@
     },
     {
       "file": "lib/explore/presentation/widgets/explore_filter_rail.dart",
-      "line": 21,
+      "line": 22,
       "name": "ExploreFilterRail",
       "base": "StatelessWidget",
       "area": "explore",
@@ -9366,7 +9352,7 @@
     },
     {
       "file": "lib/explore/presentation/widgets/explore_filter_rail.dart",
-      "line": 126,
+      "line": 97,
       "name": "ExploreFilterGlyphButton",
       "base": "StatelessWidget",
       "area": "explore",
@@ -9380,7 +9366,7 @@
     },
     {
       "file": "lib/explore/presentation/widgets/explore_filter_rail.dart",
-      "line": 171,
+      "line": 147,
       "name": "ExploreFilterSheet",
       "base": "StatelessWidget",
       "area": "explore",
@@ -9394,7 +9380,7 @@
     },
     {
       "file": "lib/explore/presentation/widgets/explore_header.dart",
-      "line": 38,
+      "line": 16,
       "name": "ExploreBrowseHeaderContent",
       "base": "StatelessWidget",
       "area": "explore",
@@ -9408,7 +9394,7 @@
     },
     {
       "file": "lib/explore/presentation/widgets/explore_header.dart",
-      "line": 114,
+      "line": 92,
       "name": "ExploreDiscoveryCoverHeader",
       "base": "StatefulWidget",
       "area": "explore",
@@ -9478,7 +9464,7 @@
     },
     {
       "file": "lib/explore/presentation/widgets/explore_peek_rail.dart",
-      "line": 129,
+      "line": 127,
       "name": "ExploreMapSheetLead",
       "base": "ConsumerWidget",
       "area": "explore",
@@ -9492,7 +9478,7 @@
     },
     {
       "file": "lib/explore/presentation/widgets/explore_peek_rail.dart",
-      "line": 191,
+      "line": 189,
       "name": "CollapsedMapSummary",
       "base": "StatelessWidget",
       "area": "explore",
@@ -9506,7 +9492,7 @@
     },
     {
       "file": "lib/explore/presentation/widgets/explore_peek_rail.dart",
-      "line": 237,
+      "line": 235,
       "name": "ExploreSelectedEventLead",
       "base": "ConsumerWidget",
       "area": "explore",
@@ -9520,7 +9506,7 @@
     },
     {
       "file": "lib/explore/presentation/widgets/explore_peek_rail.dart",
-      "line": 300,
+      "line": 298,
       "name": "ExploreEventTicketCard",
       "base": "StatelessWidget",
       "area": "explore",
@@ -9534,7 +9520,7 @@
     },
     {
       "file": "lib/explore/presentation/widgets/explore_peek_rail.dart",
-      "line": 340,
+      "line": 338,
       "name": "ExplorePeekRailContent",
       "base": "ConsumerStatefulWidget",
       "area": "explore",
@@ -9548,7 +9534,7 @@
     },
     {
       "file": "lib/explore/presentation/widgets/explore_peek_rail.dart",
-      "line": 543,
+      "line": 541,
       "name": "PeekRailSkeleton",
       "base": "StatelessWidget",
       "area": "explore",
@@ -9842,7 +9828,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 183,
+      "line": 184,
       "name": "EditHostedEventScreen",
       "base": "ConsumerStatefulWidget",
       "area": "hosts",
@@ -9856,7 +9842,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 823,
+      "line": 824,
       "name": "EditHostedEventScopeNotice",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -9870,7 +9856,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 894,
+      "line": 895,
       "name": "EditableHostedEventPolicyCard",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -9884,7 +9870,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1158,
+      "line": 1159,
       "name": "ReadOnlyHostedEventPolicyCard",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -9898,7 +9884,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1208,
+      "line": 1209,
       "name": "ReadOnlyHostedEventPolicyRow",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -9912,7 +9898,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1247,
+      "line": 1248,
       "name": "ReadOnlyHostedEventScheduleCard",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10080,7 +10066,7 @@
     },
     {
       "file": "lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart",
-      "line": 54,
+      "line": 55,
       "name": "DraftDeleteConfirmationDialog",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10094,7 +10080,7 @@
     },
     {
       "file": "lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart",
-      "line": 81,
+      "line": 82,
       "name": "DraftPickerSheet",
       "base": "StatefulWidget",
       "area": "hosts",
@@ -10108,7 +10094,7 @@
     },
     {
       "file": "lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart",
-      "line": 199,
+      "line": 195,
       "name": "DraftCard",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10332,7 +10318,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 56,
+      "line": 57,
       "name": "HostEventManageScreen",
       "base": "ConsumerStatefulWidget",
       "area": "hosts",
@@ -10346,7 +10332,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 595,
+      "line": 594,
       "name": "HostManageMetaRow",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10360,7 +10346,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 637,
+      "line": 636,
       "name": "HostManageSectionPicker",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10374,7 +10360,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 662,
+      "line": 661,
       "name": "HostPrivateAccessCard",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10388,7 +10374,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 780,
+      "line": 779,
       "name": "HostPrivateAccessShell",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10402,7 +10388,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 796,
+      "line": 795,
       "name": "HostPrivateAccessBody",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10416,7 +10402,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 911,
+      "line": 910,
       "name": "HostInviteLinksList",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10430,7 +10416,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 1035,
+      "line": 1034,
       "name": "HostInviteLinkRow",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10444,7 +10430,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 1224,
+      "line": 1223,
       "name": "HostFullCapacityApron",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10458,7 +10444,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 1295,
+      "line": 1294,
       "name": "HostFullCapacityBanner",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10472,7 +10458,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 1329,
+      "line": 1328,
       "name": "HostCapacityTile",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10486,7 +10472,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 1390,
+      "line": 1389,
       "name": "HostEventActionsSection",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10500,7 +10486,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 1491,
+      "line": 1490,
       "name": "HostActionRow",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10514,7 +10500,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 1572,
+      "line": 1571,
       "name": "HostEventSummaryCard",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10528,7 +10514,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "line": 1624,
+      "line": 1623,
       "name": "HostEventSummaryRow",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10626,7 +10612,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 592,
+      "line": 587,
       "name": "HostClubsScaffold",
       "base": "StatefulWidget",
       "area": "hosts",
@@ -10640,7 +10626,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 785,
+      "line": 775,
       "name": "HostOperationsTopBar",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10654,7 +10640,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 842,
+      "line": 832,
       "name": "HostSectionLabel",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10668,7 +10654,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 854,
+      "line": 844,
       "name": "HostTodayDashboardCard",
       "base": "ConsumerWidget",
       "area": "hosts",
@@ -10682,7 +10668,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 896,
+      "line": 886,
       "name": "HostTodayDashboardSection",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10696,7 +10682,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 989,
+      "line": 979,
       "name": "HostTodayHeader",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10710,7 +10696,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1042,
+      "line": 1032,
       "name": "HostTodayClubPill",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10724,7 +10710,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1120,
+      "line": 1110,
       "name": "HostTodayLoadingBody",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10738,7 +10724,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1138,
+      "line": 1128,
       "name": "HostTodayEventHero",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10752,7 +10738,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1253,
+      "line": 1243,
       "name": "HostTodayCountdownPill",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10766,7 +10752,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1281,
+      "line": 1271,
       "name": "HostTodayHeroMetric",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10780,7 +10766,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1320,
+      "line": 1310,
       "name": "HostTodayAvatarStack",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10794,7 +10780,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1355,
+      "line": 1345,
       "name": "HostTodayAvatarDot",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10808,7 +10794,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1392,
+      "line": 1382,
       "name": "HostTodayTaskCard",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10822,7 +10808,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1522,
+      "line": 1512,
       "name": "HostEventsClubCard",
       "base": "ConsumerWidget",
       "area": "hosts",
@@ -10836,7 +10822,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1554,
+      "line": 1544,
       "name": "HostEventsClubSection",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10850,7 +10836,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1616,
+      "line": 1606,
       "name": "HostEventRows",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10864,7 +10850,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1664,
+      "line": 1654,
       "name": "HostMetaRow",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10878,7 +10864,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1708,
+      "line": 1698,
       "name": "HostClubOrganizerOverviewController",
       "base": "ConsumerWidget",
       "area": "hosts",
@@ -10892,7 +10878,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1755,
+      "line": 1745,
       "name": "HostClubOrganizerOverview",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10906,7 +10892,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1907,
+      "line": 1897,
       "name": "HostOrganizerHeader",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10920,7 +10906,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1958,
+      "line": 1948,
       "name": "HostOrganizerMetricGrid",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10934,7 +10920,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 2012,
+      "line": 2002,
       "name": "HostOrganizerMetricRow",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10948,7 +10934,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 2060,
+      "line": 2050,
       "name": "HostOrganizerTeamCard",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10962,7 +10948,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 2098,
+      "line": 2088,
       "name": "HostOrganizerTeamRow",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10976,7 +10962,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 2177,
+      "line": 2167,
       "name": "HostOrganizerTrendStrip",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10990,7 +10976,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 2304,
+      "line": 2294,
       "name": "HostClubProfileCard",
       "base": "ConsumerStatefulWidget",
       "area": "hosts",
@@ -11004,7 +10990,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 2725,
+      "line": 2711,
       "name": "HostClubInsightsPane",
       "base": "ConsumerStatefulWidget",
       "area": "hosts",
@@ -11018,7 +11004,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 2851,
+      "line": 2837,
       "name": "HostAnalyticsControls",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -11032,7 +11018,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 2974,
+      "line": 2960,
       "name": "HostAnalyticsDateButton",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -11046,7 +11032,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3021,
+      "line": 3007,
       "name": "HostAnalyticsReportView",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -11060,7 +11046,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3072,
+      "line": 3058,
       "name": "HostAnalyticsTrendPanel",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -11074,7 +11060,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3142,
+      "line": 3128,
       "name": "HostAnalyticsEventList",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -11088,7 +11074,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3200,
+      "line": 3186,
       "name": "HostAnalyticsEventTile",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -11102,7 +11088,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3340,
+      "line": 3326,
       "name": "HostAnalyticsReviewDiscoveryPanel",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -11116,7 +11102,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3503,
+      "line": 3489,
       "name": "HostInlineTextEntryEditor",
       "base": "ConsumerStatefulWidget",
       "area": "hosts",
@@ -11130,7 +11116,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3815,
+      "line": 3801,
       "name": "HostInlineAgeRangeEditor",
       "base": "ConsumerStatefulWidget",
       "area": "hosts",
@@ -11144,7 +11130,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3980,
+      "line": 3966,
       "name": "HostClubPreviewPane",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -11662,7 +11648,7 @@
     },
     {
       "file": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-      "line": 265,
+      "line": 259,
       "name": "HostTeamHostActionDialog",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -11676,7 +11662,7 @@
     },
     {
       "file": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-      "line": 280,
+      "line": 274,
       "name": "HostTeamOwnerHostRow",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -11690,7 +11676,7 @@
     },
     {
       "file": "lib/hosts/presentation/widgets/host_team_management_section.dart",
-      "line": 357,
+      "line": 351,
       "name": "HostTeamAddHostSheet",
       "base": "StatefulWidget",
       "area": "hosts",
@@ -11998,7 +11984,7 @@
     },
     {
       "file": "lib/onboarding/presentation/pages/photos_page.dart",
-      "line": 20,
+      "line": 21,
       "name": "PhotosPage",
       "base": "ConsumerWidget",
       "area": "onboarding",
@@ -12012,7 +11998,7 @@
     },
     {
       "file": "lib/onboarding/presentation/pages/photos_page.dart",
-      "line": 91,
+      "line": 92,
       "name": "OnboardingPhotosStep",
       "base": "StatelessWidget",
       "area": "onboarding",
@@ -12250,7 +12236,7 @@
     },
     {
       "file": "lib/payments/presentation/payment_confirmation_screen.dart",
-      "line": 241,
+      "line": 242,
       "name": "PaymentCheckoutSheet",
       "base": "StatelessWidget",
       "area": "payments",
@@ -12264,7 +12250,7 @@
     },
     {
       "file": "lib/payments/presentation/payment_confirmation_screen.dart",
-      "line": 408,
+      "line": 407,
       "name": "PaymentConfirmationBodyController",
       "base": "ConsumerWidget",
       "area": "payments",
@@ -12278,7 +12264,7 @@
     },
     {
       "file": "lib/payments/presentation/payment_confirmation_screen.dart",
-      "line": 447,
+      "line": 446,
       "name": "PaymentConfirmationBody",
       "base": "StatelessWidget",
       "area": "payments",
@@ -12292,7 +12278,7 @@
     },
     {
       "file": "lib/payments/presentation/payment_confirmation_screen.dart",
-      "line": 513,
+      "line": 512,
       "name": "PaymentConfirmationHeadsUp",
       "base": "StatelessWidget",
       "area": "payments",
@@ -12306,7 +12292,7 @@
     },
     {
       "file": "lib/payments/presentation/payment_confirmation_screen.dart",
-      "line": 544,
+      "line": 543,
       "name": "PaymentReferralBannerController",
       "base": "ConsumerWidget",
       "area": "payments",
@@ -12320,7 +12306,7 @@
     },
     {
       "file": "lib/payments/presentation/payment_confirmation_screen.dart",
-      "line": 560,
+      "line": 559,
       "name": "PaymentReferralBanner",
       "base": "StatelessWidget",
       "area": "payments",
@@ -12614,7 +12600,7 @@
     },
     {
       "file": "lib/reviews/shared/reviews_section.dart",
-      "line": 132,
+      "line": 133,
       "name": "ReviewsPreviewSection",
       "base": "StatelessWidget",
       "area": "reviews",
@@ -12628,7 +12614,7 @@
     },
     {
       "file": "lib/reviews/shared/reviews_section.dart",
-      "line": 271,
+      "line": 274,
       "name": "ReviewCard",
       "base": "StatelessWidget",
       "area": "reviews",
@@ -12642,7 +12628,7 @@
     },
     {
       "file": "lib/reviews/shared/reviews_section.dart",
-      "line": 358,
+      "line": 361,
       "name": "ReviewOwnerResponseBlock",
       "base": "StatelessWidget",
       "area": "reviews",
@@ -12656,7 +12642,7 @@
     },
     {
       "file": "lib/reviews/shared/reviews_section.dart",
-      "line": 417,
+      "line": 420,
       "name": "ReviewResponseSheet",
       "base": "ConsumerStatefulWidget",
       "area": "reviews",
@@ -12964,7 +12950,7 @@
     },
     {
       "file": "lib/swipes/presentation/filters_screen.dart",
-      "line": 266,
+      "line": 262,
       "name": "FiltersContentSkeleton",
       "base": "StatelessWidget",
       "area": "swipes",
@@ -12978,7 +12964,7 @@
     },
     {
       "file": "lib/swipes/presentation/filters_screen.dart",
-      "line": 309,
+      "line": 301,
       "name": "AgeFilterSkeleton",
       "base": "StatelessWidget",
       "area": "swipes",
@@ -12992,7 +12978,7 @@
     },
     {
       "file": "lib/swipes/presentation/filters_screen.dart",
-      "line": 341,
+      "line": 333,
       "name": "FiltersSection",
       "base": "StatelessWidget",
       "area": "swipes",
@@ -13006,7 +12992,7 @@
     },
     {
       "file": "lib/swipes/presentation/filters_screen.dart",
-      "line": 368,
+      "line": 360,
       "name": "FiltersValue",
       "base": "StatelessWidget",
       "area": "swipes",
@@ -13286,7 +13272,7 @@
     },
     {
       "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "line": 125,
+      "line": 123,
       "name": "ProfileHeroWidget",
       "base": "StatelessWidget",
       "area": "swipes",
@@ -13300,7 +13286,7 @@
     },
     {
       "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "line": 212,
+      "line": 210,
       "name": "ProfilePhoto",
       "base": "StatelessWidget",
       "area": "swipes",
@@ -13314,7 +13300,7 @@
     },
     {
       "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "line": 241,
+      "line": 239,
       "name": "ProfileSectionView",
       "base": "StatelessWidget",
       "area": "swipes",
@@ -13328,7 +13314,7 @@
     },
     {
       "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "line": 301,
+      "line": 299,
       "name": "ProfileSectionKicker",
       "base": "StatelessWidget",
       "area": "swipes",
@@ -13342,7 +13328,7 @@
     },
     {
       "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "line": 319,
+      "line": 317,
       "name": "ProfileCompatibility",
       "base": "StatelessWidget",
       "area": "swipes",
@@ -13356,7 +13342,7 @@
     },
     {
       "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "line": 376,
+      "line": 374,
       "name": "ProfilePrompt",
       "base": "StatelessWidget",
       "area": "swipes",
@@ -13370,7 +13356,7 @@
     },
     {
       "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "line": 400,
+      "line": 398,
       "name": "ProfileRunning",
       "base": "StatelessWidget",
       "area": "swipes",
@@ -13384,7 +13370,7 @@
     },
     {
       "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "line": 451,
+      "line": 449,
       "name": "ProfileFacts",
       "base": "StatelessWidget",
       "area": "swipes",
@@ -13398,7 +13384,7 @@
     },
     {
       "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "line": 495,
+      "line": 493,
       "name": "ProfilePhotoBlock",
       "base": "StatelessWidget",
       "area": "swipes",
@@ -13412,7 +13398,7 @@
     },
     {
       "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "line": 546,
+      "line": 544,
       "name": "PhotoCaption",
       "base": "StatelessWidget",
       "area": "swipes",
@@ -13426,7 +13412,7 @@
     },
     {
       "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-      "line": 569,
+      "line": 567,
       "name": "ProfileRule",
       "base": "StatelessWidget",
       "area": "swipes",
@@ -13524,7 +13510,7 @@
     },
     {
       "file": "lib/swipes/shared/profile_surface/profile_surface.dart",
-      "line": 149,
+      "line": 147,
       "name": "ProfileSurfaceHeroSkeleton",
       "base": "StatelessWidget",
       "area": "swipes",
@@ -13538,7 +13524,7 @@
     },
     {
       "file": "lib/swipes/shared/profile_surface/profile_surface.dart",
-      "line": 191,
+      "line": 189,
       "name": "ProfileSurfaceSectionSkeleton",
       "base": "StatelessWidget",
       "area": "swipes",
@@ -13552,7 +13538,7 @@
     },
     {
       "file": "lib/swipes/shared/profile_surface/profile_surface.dart",
-      "line": 225,
+      "line": 223,
       "name": "ProfileSurfaceRunningSkeleton",
       "base": "StatelessWidget",
       "area": "swipes",
@@ -13566,7 +13552,7 @@
     },
     {
       "file": "lib/swipes/shared/profile_surface/profile_surface.dart",
-      "line": 260,
+      "line": 258,
       "name": "ProfileSurfacePhotoSkeleton",
       "base": "StatelessWidget",
       "area": "swipes",
@@ -13580,7 +13566,7 @@
     },
     {
       "file": "lib/swipes/shared/profile_surface/profile_surface.dart",
-      "line": 282,
+      "line": 280,
       "name": "ProfileSurfaceFactsSkeleton",
       "base": "StatelessWidget",
       "area": "swipes",
@@ -13594,7 +13580,7 @@
     },
     {
       "file": "lib/swipes/shared/profile_surface/profile_surface.dart",
-      "line": 314,
+      "line": 312,
       "name": "ProfileSurfaceRule",
       "base": "StatelessWidget",
       "area": "swipes",
@@ -13706,7 +13692,7 @@
     },
     {
       "file": "lib/user_profile/presentation/profile_screen.dart",
-      "line": 26,
+      "line": 27,
       "name": "ProfileScreen",
       "base": "ConsumerStatefulWidget",
       "area": "user_profile",
@@ -13720,7 +13706,7 @@
     },
     {
       "file": "lib/user_profile/presentation/profile_screen.dart",
-      "line": 162,
+      "line": 165,
       "name": "SelfProfileTabBody",
       "base": "StatelessWidget",
       "area": "user_profile",
@@ -13734,7 +13720,7 @@
     },
     {
       "file": "lib/user_profile/presentation/profile_screen.dart",
-      "line": 257,
+      "line": 260,
       "name": "ProfileTabScrollView",
       "base": "StatelessWidget",
       "area": "user_profile",
@@ -13748,7 +13734,7 @@
     },
     {
       "file": "lib/user_profile/presentation/profile_screen.dart",
-      "line": 289,
+      "line": 292,
       "name": "PreviewTabSkeletonSliverBody",
       "base": "StatelessWidget",
       "area": "user_profile",
@@ -13762,7 +13748,7 @@
     },
     {
       "file": "lib/user_profile/presentation/profile_screen.dart",
-      "line": 326,
+      "line": 329,
       "name": "PreviewTabSliverBody",
       "base": "StatelessWidget",
       "area": "user_profile",
@@ -13944,7 +13930,7 @@
     },
     {
       "file": "lib/user_profile/presentation/widgets/profile_sliver_header.dart",
-      "line": 26,
+      "line": 11,
       "name": "ProfileTitle",
       "base": "StatelessWidget",
       "area": "user_profile",
@@ -13958,7 +13944,7 @@
     },
     {
       "file": "lib/user_profile/presentation/widgets/profile_sliver_header.dart",
-      "line": 54,
+      "line": 39,
       "name": "ProfileTabBar",
       "base": "StatelessWidget",
       "area": "user_profile",
@@ -13972,7 +13958,7 @@
     },
     {
       "file": "lib/user_profile/presentation/widgets/profile_sliver_header.dart",
-      "line": 91,
+      "line": 64,
       "name": "ProfileSettingsButton",
       "base": "StatelessWidget",
       "area": "user_profile",

@@ -3227,12 +3227,32 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'EventDetailCompanionSkeleton',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Event detail companion skeleton',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventDetailCompanionSkeletonState,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'EventDetailHostsSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Host section states',
                 builder: _widgetbook_workspace_events_event_detail_use_cases
                     .eventDetailHostSectionStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventDetailHostsSkeleton',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Event detail hosts skeleton',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventDetailHostsSkeletonState,
               ),
             ],
           ),
@@ -3363,16 +3383,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Guest who is going',
                 builder: _widgetbook_workspace_events_event_detail_use_cases
                     .eventDetailGuestWhoIsGoingState,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'OptimisticHostsSkeleton',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Optimistic hosts skeleton',
-                builder: _widgetbook_workspace_events_event_detail_use_cases
-                    .eventDetailOptimisticHostsSkeletonState,
               ),
             ],
           ),

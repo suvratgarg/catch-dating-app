@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.579
+version: 2.5.580
 updated: 2026-07-05
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,16 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.580
+
+- Event Detail section-loading states now use content-shaped skeletons instead
+  of centered spinners. `EventCompanionEntry.loading` renders
+  `EventDetailCompanionSkeleton`, and `EventDetailHostsSection.loading` reuses
+  the shared `EventDetailHostsSkeleton`.
+- Renamed the optimistic-only host skeleton into `EventDetailHostsSkeleton` and
+  moved it to the shared Event Detail loading skeleton module so the optimistic
+  bridge and loaded body use one host-loading surface.
 
 ### 2.5.579
 
@@ -661,10 +671,10 @@ a feature section here only when auditing that feature's widget surface.
 
 ### 2.5.505
 
-- Promoted `OptimisticHostsSkeleton` and `OptimisticSocialSkeleton` as public
-  cataloged loading sections used by `EventDetailOptimisticBody`, with exact
-  Widgetbook coverage. The classification scanner's private widget review count
-  drops by two without changing optimistic event-detail rendering.
+- Promoted the Event Detail host and social skeletons as public cataloged
+  loading sections used by `EventDetailOptimisticBody`, with exact Widgetbook
+  coverage. The classification scanner's private widget review count drops by
+  two without changing optimistic event-detail rendering.
 
 ### 2.5.504
 
@@ -6409,11 +6419,12 @@ Generated 2026-05-06.
 | `EventLocationMapRouteScreen` | `lib/events/presentation/event_location_map_screen.dart:24` | Route-facing single-event map entry registered as `screen.event.location_map` and aligned `ARCH-SCREEN-001` adopter. Reuses `EventDetailViewModel` by `eventId`, owns the chromeless route `Scaffold`, floating back controls, load/error/not-found states, exact-coordinate gate, retry invalidation, `EventLocationMapState` creation, and external directions side effect before delegating provider-free map content to `EventLocationMapScreen`. |
 | `EventDetailBody` | `lib/events/presentation/widgets/event_detail_body.dart:107` | Scrollable event detail composition. It receives shell state plus explicit save/share/calendar/back callbacks, companion state, host state, location/companion/club/message callbacks, and retry callbacks from `EventDetailScreen`, then composes the source-aware hero app bar, flush ticket-stub band, handoff-ordered overview stack, optional saved-plan companion entry, booked-attendee invite card, hosts, and social sections. It no longer owns a direct `Scaffold`, bottom navigation, route-level booking/cancel mutation listeners, provider reads, or route side effects; direct Widgetbook/test states are body-only review states with explicit no-op or assertion callbacks. |
 | `EventDetailOptimisticBody` | `lib/events/presentation/widgets/event_detail_optimistic_body.dart:24` | Optimistic event-detail body rendered from raw route fallback event data while `EventDetailViewModel` resolves. It owns a temporary scaffold with hero, ticket stub, overview, host skeleton, and social skeleton, disables user-specific share/calendar actions, and routes guest save intent through auth until the full loaded `EventDetailBody` can replace it. |
-| `EventCompanionEntry` | `lib/events/presentation/widgets/event_detail_body.dart:343` | Provider-free Event Detail companion section adapter. Switches explicit `EventDetailCompanionState` into hidden/loading/error/available rendering, delegates retry and open-companion effects to route callbacks, and keeps the Event Success provider watch in `EventDetailScreen`. Widgetbook covers hidden, loading, available, and error states. |
+| `EventCompanionEntry` | `lib/events/presentation/widgets/event_detail_body.dart:343` | Provider-free Event Detail companion section adapter. Switches explicit `EventDetailCompanionState` into hidden/loading/error/available rendering, delegates retry and open-companion effects to route callbacks, keeps the Event Success provider watch in `EventDetailScreen`, and uses `EventDetailCompanionSkeleton` for content-shaped loading. Widgetbook covers hidden, loading, available, and error states. |
 | `EventInviteLoopCard` | `lib/events/presentation/widgets/event_detail_body.dart:302` | Provider-free booked-attendee invite card for Event Detail. Receives the event, share callback, and `EventDetailSurfaceStyle`, then renders the friend-invite prompt and full-width invite action without reading route/controller state directly. |
 | `EventCompanionCard` | `lib/events/presentation/widgets/event_detail_body.dart:404` | Leaf Event Detail companion card rendered by `EventCompanionEntry` when Event Success setup is available. Uses explicit surface styling and open callback props to present the companion explanation and action without owning provider or navigation state. |
+| `EventDetailCompanionSkeleton` | `lib/events/presentation/widgets/event_detail_loading_skeleton.dart:357` | Event Detail companion callout loading skeleton. Mirrors the companion card's icon, title, body, and full-width action geometry inside the current `EventDetailSurfaceStyle` so provider waves do not collapse to a centered spinner. |
 | `GuestBookCta` | `lib/events/presentation/widgets/event_detail_body.dart:462` | Guest-only Event Detail booking dock CTA. Renders the sign-in-to-book action inside the light or dark footer surface while the route/body owner supplies the navigation callback. |
-| `EventDetailHostsSection` | `lib/events/presentation/widgets/event_detail_body.dart:472` | Provider-free Event Detail host section adapter. Switches explicit `EventDetailHostState` into hidden/loading/error/content rendering, renders `EventDetailHostCard` from preformatted display data, and delegates View club, Message host, and retry effects to route callbacks. Widgetbook covers hidden, loading, content, and error states. |
+| `EventDetailHostsSection` | `lib/events/presentation/widgets/event_detail_body.dart:472` | Provider-free Event Detail host section adapter. Switches explicit `EventDetailHostState` into hidden/loading/error/content rendering, renders `EventDetailHostsSkeleton` while host data resolves, renders `EventDetailHostCard` from preformatted display data, and delegates View club, Message host, and retry effects to route callbacks. Widgetbook covers hidden, loading, content, and error states. |
 | `EventDetailHeroAppBar` | `lib/events/presentation/widgets/event_detail_hero_app_bar.dart:10` | Event detail hero app bar. Uses the shared event photo header for standard routes and a full-bleed ticket-mode visual band for card-opened routes; both paths prefer uploaded photos and fall back to activity artwork. Standard and ticket/spotlight expanded heights resolve through named `CatchLayout.eventDetailHero*` constants; ticket mode keeps the perforated ticket seam, shares the event display font with cards, and owns floating back/share/save/calendar actions without adding the club-detail viewport-curve inset. |
 | `LegacyEventHeroSurface` | `lib/events/presentation/widgets/event_detail_hero_app_bar.dart:171` | Standard event-detail hero surface used by `EventDetailHeroAppBar` for non-ticket routes. Composes the uploaded-photo header with the activity badge and display-title overlay while keeping route actions in the sliver app bar. Widgetbook covers the exact surface state directly. |
 | `EventDetailTicketHeroSurface` | `lib/events/presentation/widgets/event_detail_hero_app_bar.dart:217` | Ticket-mode hero transition adapter used by `EventDetailHeroAppBar`. Wraps `EventDetailTicketSurface` in `catchHeroSurface` only when a route-provided hero tag exists, so direct ticket rendering and card-to-detail Hero flights stay separated. Widgetbook covers ticket and spotlight transition-target states. |
@@ -6486,7 +6497,7 @@ Generated 2026-05-06.
 | `EventAgendaTileSkeleton` | `lib/events/presentation/widgets/event_agenda_list.dart:200` | Public placeholder row renderer used by `EventAgendaSliverSkeleton`. Mirrors the date rail plus body layout of agenda event tiles with shared skeleton primitives and owns no loading state. |
 | `AgendaDayGroup` | `lib/events/presentation/widgets/event_agenda_list.dart:292` | Public day-group renderer used by `EventAgendaSliverList`. Renders the day label, maps grouped events into `EventAgendaTile`, and applies caller-provided badge, club-name, status, selection, and gap policies without owning sorting or grouping. |
 | `EventDetailOverviewSection` | `lib/events/presentation/widgets/event_detail_overview_section.dart:10` | Handoff-ordered event-detail body stack: The plan, Why you might click, Itinerary, Photos when available, Where, How sign-ups work, and Good to know. Uses `CatchSection` plus event-detail primitives while retaining requirements, expectation, cancellation, and settlement policy copy from the existing event policy model. |
-| `OptimisticHostsSkeleton` | `lib/events/presentation/widgets/event_detail_optimistic_body.dart:113` | Public optimistic-loading host section used by `EventDetailOptimisticBody` while the full event-detail view model resolves. Renders a divided host section with avatar/text skeletons. |
+| `EventDetailHostsSkeleton` | `lib/events/presentation/widgets/event_detail_loading_skeleton.dart:395` | Public Event Detail host-section loading skeleton used by `EventDetailOptimisticBody` and `EventDetailHostsSection.loading` while the full event-detail host model resolves. Renders a divided host section with avatar/text skeletons and optional event-detail surface colors. |
 | `EventDescription` | `lib/events/presentation/widgets/event_detail_overview_section.dart:130` | Public description block used by `EventDetailOverviewSection` for the plan copy. Renders the local heading and body text with optional event-detail surface colors. |
 | `WhatToExpectSection` | `lib/events/presentation/widgets/event_detail_overview_section.dart:174` | Public expectation-summary block used by `EventDetailOverviewSection`. Maps an event into policy summary lines inside a tokenized surface without owning section ordering. |
 | `EventDetailSocialSection` | `lib/events/presentation/widgets/event_detail_social_section.dart:10` | Social context sections for the loaded event detail body: Who's going and Reviews, both composed with `CatchSection`. The roster supports a guest lock prompt and signed-in roster view; review writing requires an attended `EventParticipation` and an event end time that has passed. |

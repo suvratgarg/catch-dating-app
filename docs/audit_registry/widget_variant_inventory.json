@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-07-04T21:50:11.392Z",
+  "generatedAt": "2026-07-04T22:48:16.165Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
-    "useCases": 870,
-    "components": 843,
-    "stateCards": 1746,
+    "useCases": 871,
+    "components": 844,
+    "stateCards": 1748,
     "reviewCandidates": 38,
     "oversizedUseCases": 43,
     "multiUseCaseComponents": 26
@@ -18554,6 +18554,43 @@
       ]
     },
     {
+      "component": "EventDetailCompanionSkeleton",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[Event Detail]/Sections"
+      ],
+      "labels": [
+        "light surface",
+        "ticket surface"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Event detail companion skeleton",
+          "functionName": "eventDetailCompanionSkeletonState",
+          "file": "widgetbook/lib/events/event_detail_use_cases.dart",
+          "path": "[Event Detail]/Sections",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "light surface",
+              "normalizedLabel": "light surface"
+            },
+            {
+              "label": "ticket surface",
+              "normalizedLabel": "ticket surface"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "EventDetailHeroAppBar",
       "useCaseCount": 1,
       "stateCardCount": 2,
@@ -30577,6 +30614,31 @@
       ]
     },
     {
+      "component": "EventDetailHostsSkeleton",
+      "useCaseCount": 1,
+      "stateCardCount": 0,
+      "paths": [
+        "[Event Detail]/Sections"
+      ],
+      "labels": [],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Event detail hosts skeleton",
+          "functionName": "eventDetailHostsSkeletonState",
+          "file": "widgetbook/lib/events/event_detail_use_cases.dart",
+          "path": "[Event Detail]/Sections",
+          "stateCardCount": 0,
+          "stateCards": []
+        }
+      ]
+    },
+    {
       "component": "EventDetailPolicySummaryLine",
       "useCaseCount": 1,
       "stateCardCount": 0,
@@ -33096,31 +33158,6 @@
           "functionName": "eventSuccessStrictNoticeCard",
           "file": "widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart",
           "path": "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-          "stateCardCount": 0,
-          "stateCards": []
-        }
-      ]
-    },
-    {
-      "component": "OptimisticHostsSkeleton",
-      "useCaseCount": 1,
-      "stateCardCount": 0,
-      "paths": [
-        "[Event Detail]/Sections"
-      ],
-      "labels": [],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Optimistic hosts skeleton",
-          "functionName": "eventDetailOptimisticHostsSkeletonState",
-          "file": "widgetbook/lib/events/event_detail_use_cases.dart",
-          "path": "[Event Detail]/Sections",
           "stateCardCount": 0,
           "stateCards": []
         }

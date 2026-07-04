@@ -27,7 +27,9 @@ import 'package:catch_dating_app/events/presentation/widgets/event_detail_body.d
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_app_bar.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_loading_skeleton.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_optimistic_body.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/shared/event_share_card.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
@@ -166,6 +168,61 @@ void main() {
       );
       expect(find.text('Attendance matters'), findsOneWidget);
       expect(find.text('Booking policy'), findsOneWidget);
+    });
+  });
+
+  group('Event Detail section loading states', () {
+    testWidgets('companion loading renders a callout skeleton', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => EventCompanionEntry(
+                state: const EventDetailCompanionState.loading(),
+                surfaceStyle: EventDetailSurfaceStyle.light(
+                  CatchTokens.of(context),
+                ),
+                onOpen: () {},
+                onRetry: () {},
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(EventDetailCompanionSkeleton), findsOneWidget);
+      expect(find.byType(CatchSkeleton), findsWidgets);
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+    });
+
+    testWidgets('hosts loading renders the shared hosts skeleton', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => EventDetailHostsSection(
+                event: buildEvent(),
+                state: const EventDetailHostState.loading(),
+                onViewClub: (_) {},
+                onMessageHost: (_, _) {},
+                onRetry: () {},
+                surfaceStyle: EventDetailSurfaceStyle.light(
+                  CatchTokens.of(context),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(EventDetailHostsSkeleton), findsOneWidget);
+      expect(find.text('YOUR HOSTS'), findsOneWidget);
+      expect(find.byType(CatchSkeleton), findsWidgets);
+      expect(find.byType(CircularProgressIndicator), findsNothing);
     });
   });
 

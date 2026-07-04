@@ -4,7 +4,6 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -12,6 +11,7 @@ import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_app_bar.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_loading_skeleton.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_overview_section.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_social_section.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
@@ -254,9 +254,8 @@ class EventCompanionEntry extends StatelessWidget {
   Widget build(BuildContext context) {
     return switch (state.status) {
       EventDetailCompanionStatus.hidden => const SizedBox.shrink(),
-      EventDetailCompanionStatus.loading => const Padding(
-        padding: EdgeInsets.all(CatchSpacing.s4),
-        child: Center(child: CatchLoadingIndicator()),
+      EventDetailCompanionStatus.loading => EventDetailCompanionSkeleton(
+        surfaceStyle: surfaceStyle,
       ),
       EventDetailCompanionStatus.error => CatchInlineErrorState.fromError(
         state.error!,
@@ -389,10 +388,7 @@ class EventDetailHostsSection extends StatelessWidget {
       case EventDetailHostStatus.hidden:
         return const SizedBox.shrink();
       case EventDetailHostStatus.loading:
-        return const Padding(
-          padding: EdgeInsets.all(CatchSpacing.s4),
-          child: Center(child: CatchLoadingIndicator()),
-        );
+        return EventDetailHostsSkeleton(surfaceStyle: surfaceStyle);
       case EventDetailHostStatus.error:
         return CatchInlineErrorState.fromError(
           state.error!,

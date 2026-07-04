@@ -10,29 +10,29 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1117,
-    "widgetClasses": 1009,
+    "total": 1118,
+    "widgetClasses": 1010,
     "stateClasses": 108,
-    "publicClasses": 1007,
+    "publicClasses": 1008,
     "privateClasses": 110,
     "byRole": {
       "atom": 57,
       "composition": 322,
-      "feature-adapter": 314,
+      "feature-adapter": 315,
       "pattern": 16,
       "screen": 300,
       "widget-state": 108
     },
     "byDecision": {
       "keep-canonical-contract": 171,
-      "keep-public-cataloged": 783,
+      "keep-public-cataloged": 784,
       "keep-widget-state": 108,
       "review-catalog-coverage": 38,
       "review-promote-or-consolidate": 15,
       "review-promote-or-inline": 2
     },
     "byCatalogStatus": {
-      "cataloged": 716,
+      "cataloged": 717,
       "contracted": 171,
       "not-applicable": 108,
       "route-covered": 81,
@@ -14491,6 +14491,29 @@
       "flags": []
     },
     {
+      "name": "EventDetailCompanionSkeleton",
+      "file": "lib/events/presentation/widgets/event_detail_loading_skeleton.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "feature-adapter",
+      "canonicalFamily": "feature.events.event_detail_companion_skeleton",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "feature-display-models",
+      "stateOwnership": "feature-display-state",
+      "asyncOwnership": "display-state-only",
+      "layoutOwnership": "feature-section-layout",
+      "actionOwnership": "feature-callbacks",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
       "name": "EventDetailHeroSkeleton",
       "file": "lib/events/presentation/widgets/event_detail_loading_skeleton.dart",
       "classKind": "widget",
@@ -14543,6 +14566,29 @@
       "flags": [
         "public-widget-missing-widgetbook"
       ]
+    },
+    {
+      "name": "EventDetailHostsSkeleton",
+      "file": "lib/events/presentation/widgets/event_detail_loading_skeleton.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "feature-adapter",
+      "canonicalFamily": "feature.events.event_detail_hosts_skeleton",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "feature-display-models",
+      "stateOwnership": "feature-display-state",
+      "asyncOwnership": "display-state-only",
+      "layoutOwnership": "feature-section-layout",
+      "actionOwnership": "feature-callbacks",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
     },
     {
       "name": "EventDetailItinerarySkeleton",
@@ -14803,29 +14849,6 @@
       "flags": [
         "primitive-imports-routing-layer"
       ]
-    },
-    {
-      "name": "OptimisticHostsSkeleton",
-      "file": "lib/events/presentation/widgets/event_detail_optimistic_body.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.events.optimistic_hosts_skeleton",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
     },
     {
       "name": "EventDescription",

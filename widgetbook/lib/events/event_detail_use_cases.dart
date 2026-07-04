@@ -629,14 +629,54 @@ Widget eventDetailOptimisticBodyStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Optimistic hosts skeleton',
-  type: OptimisticHostsSkeleton,
+  name: 'Event detail hosts skeleton',
+  type: EventDetailHostsSkeleton,
   path: '[Event Detail]/Sections',
 )
-Widget eventDetailOptimisticHostsSkeletonState(BuildContext context) {
+Widget eventDetailHostsSkeletonState(BuildContext context) {
   return const Padding(
     padding: CatchInsets.contentDense,
-    child: OptimisticHostsSkeleton(),
+    child: EventDetailHostsSkeleton(),
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Event detail companion skeleton',
+  type: EventDetailCompanionSkeleton,
+  path: '[Event Detail]/Sections',
+)
+Widget eventDetailCompanionSkeletonState(BuildContext context) {
+  return _CatalogScreen(
+    title: 'EventDetailCompanionSkeleton',
+    catalogId: 'section.event.companion_skeleton',
+    children: [
+      _StateCard(
+        label: 'light surface',
+        child: _DeviceFrame(
+          child: Padding(
+            padding: CatchInsets.content,
+            child: EventDetailCompanionSkeleton(
+              surfaceStyle: EventDetailSurfaceStyle.light(
+                CatchTokens.of(context),
+              ),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'ticket surface',
+        child: _DeviceFrame(
+          child: Padding(
+            padding: CatchInsets.content,
+            child: EventDetailCompanionSkeleton(
+              surfaceStyle: EventDetailSurfaceStyle.dark(
+                CatchTokens.of(context),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ],
   );
 }
 
