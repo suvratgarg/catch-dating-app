@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.589
+version: 2.5.590
 updated: 2026-07-05
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.590
+
+- Added `EventSuccessHostTabBody` as the single Event Success host-tab scroll
+  shell owner. Setup, Live, and Report tab bodies now pass child lists into it
+  instead of repeating `ListView` shrink-wrap, physics, and padding
+  configuration across every branch.
 
 ### 2.5.589
 
@@ -6640,6 +6647,7 @@ Generated 2026-05-06.
 | `EventSuccessLiveRevealHostCard` | `lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_host.dart:3` | Provider-free host Live-mode reveal console for structured assignment flows. Receives `EventSuccessRevealActionState` plus typed countdown/reveal/reset callbacks, shows pending/error state, and composes the kinetic countdown, round queue, assignment clues, and `HostRevealActions` without watching providers or executing controller writes directly. |
 | `EventSuccessLiveRevealAttendeeCard` | `lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_attendee.dart:3` | Provider-free companion-side reveal surface for pods and rotations. Receives explicit opt-out state, pending state, and include/exclude callback from `EventSuccessCompanionScreen`, hides assignment details until the host reveal unlocks the round, and then shows partners or podmates without watching providers or executing controller writes directly. |
 | `HostRevealActions` | `lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_actions.dart:3` | Provider-free reveal action row used by `EventSuccessLiveRevealHostCard`. Renders generate-first, countdown, reveal-now, all-revealed reset, and disabled/pending states from explicit inputs while delegating countdown/reveal/reset effects to typed callbacks supplied by the host panel. |
+| `EventSuccessHostTabBody` | `lib/event_success/presentation/host_parts/event_success_host_shared.dart:25` | Provider-free host-tab scroll shell used by Event Success Setup, Live, and Report tab bodies. Owns the embedded versus standalone `ListView` contract: embedded Host Manage panels use zero padding, no primary scroll, and disabled inner scrolling, while standalone panels use relaxed content padding and normal scroll physics. Tab content widgets supply only ordered child lists plus the embedded flag, so branch renderers no longer repeat scroll mechanics. |
 | `EventSuccessHostSectionSkeleton` | `lib/event_success/presentation/event_success_host_screen.dart:779` | Tab-aware Event Success host-section loading body. Mirrors Setup with configuration controls, Live with roster/assignment surfaces, and Report with metric/report cards, while respecting fixed Host Manage sections that hide the inner tab picker. |
 | `EventSuccessCompanionLoadingBody` | `lib/event_success/presentation/event_success_companion_screen.dart:115` | Companion route loading body rendered inside stable companion chrome. Shows stage, primary action, and peer-list skeletons so event/profile/plan/mission/assignment provider waves do not collapse back to a centered spinner. |
 | `EventSuccessEventPreviewLoadingScreen` | `lib/event_success/presentation/event_success_event_preview_loading_screen.dart:9` | Preview-route loading scaffold with the real preview app bar and a body of hero, notes, setup, live, companion, and report skeleton sections. |

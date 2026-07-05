@@ -8,9 +8,7 @@ class SetupTab extends StatefulWidget {
     required this.planIsPersisted,
     required this.actionState,
     required this.onSaveSetup,
-    required this.shrinkWrap,
-    required this.physics,
-    required this.padding,
+    required this.embedded,
   });
 
   final Event event;
@@ -19,9 +17,7 @@ class SetupTab extends StatefulWidget {
   final EventSuccessSetupActionState actionState;
   final Future<void> Function(EventSuccessSetupSaveRequest request)?
   onSaveSetup;
-  final bool shrinkWrap;
-  final ScrollPhysics physics;
-  final EdgeInsetsGeometry padding;
+  final bool embedded;
 
   @override
   State<SetupTab> createState() => _SetupTabState();
@@ -100,11 +96,8 @@ class _SetupTabState extends State<SetupTab> {
     );
     final presentedDraft = _resolvedDraft;
 
-    return ListView(
-      shrinkWrap: widget.shrinkWrap,
-      primary: widget.shrinkWrap ? false : null,
-      physics: widget.physics,
-      padding: widget.padding,
+    return EventSuccessHostTabBody(
+      embedded: widget.embedded,
       children: [
         if (unsavedFrozen) ...[
           NoticeCard(

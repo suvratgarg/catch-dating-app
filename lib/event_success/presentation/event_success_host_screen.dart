@@ -883,14 +883,6 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
 
   @override
   Widget build(BuildContext context) {
-    final shrinkWrap = widget.embedded;
-    final physics = widget.embedded
-        ? const NeverScrollableScrollPhysics()
-        : const AlwaysScrollableScrollPhysics();
-    final padding = widget.embedded
-        ? EdgeInsets.zero
-        : CatchInsets.contentRelaxed;
-
     final body = switch (_selectedTab) {
       EventSuccessHostTab.setup => SetupTab(
         event: widget.event,
@@ -898,9 +890,7 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         planIsPersisted: widget.planIsPersisted,
         actionState: widget.setupActionState,
         onSaveSetup: _setupSaveCallback(),
-        shrinkWrap: shrinkWrap,
-        physics: physics,
-        padding: padding,
+        embedded: widget.embedded,
       ),
       EventSuccessHostTab.live => LiveTab(
         event: widget.event,
@@ -939,9 +929,7 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         onRevealRound: _revealRoundCallback(),
         onResetReveal: _resetRevealCallback(),
         fixtureActions: widget.fixtureActions,
-        shrinkWrap: shrinkWrap,
-        physics: physics,
-        padding: padding,
+        embedded: widget.embedded,
       ),
       EventSuccessHostTab.report => ReportTab(
         event: widget.event,
@@ -952,9 +940,7 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         rotationAssignments: widget.rotationAssignments,
         preferences: widget.preferences,
         wingmanRequests: widget.wingmanRequests,
-        shrinkWrap: shrinkWrap,
-        physics: physics,
-        padding: padding,
+        embedded: widget.embedded,
       ),
     };
     if (!widget.showTabs) return body;

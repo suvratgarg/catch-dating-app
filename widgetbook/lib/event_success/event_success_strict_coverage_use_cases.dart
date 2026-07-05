@@ -1236,6 +1236,20 @@ Widget eventSuccessStrictEventSuccessHostPanel(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: "EventSuccessHostTabBody",
+  type: EventSuccessHostTabBody,
+  path:
+      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
+)
+Widget eventSuccessStrictEventSuccessHostTabBody(BuildContext context) {
+  return _eventSuccessStrictPreview(
+    context,
+    surface: _EventSuccessStrictSurface.host,
+    componentName: "EventSuccessHostTabBody",
+  );
+}
+
+@widgetbook.UseCase(
   name: "EventSuccessHostSection",
   type: EventSuccessHostSection,
   path:

@@ -31,9 +31,7 @@ class LiveTab extends StatelessWidget {
     required this.onRevealRound,
     required this.onResetReveal,
     required this.fixtureActions,
-    required this.shrinkWrap,
-    required this.physics,
-    required this.padding,
+    required this.embedded,
   });
 
   final Event event;
@@ -67,19 +65,14 @@ class LiveTab extends StatelessWidget {
   final Future<void> Function(int roundIndex)? onRevealRound;
   final Future<void> Function()? onResetReveal;
   final EventSuccessHostFixtureActions? fixtureActions;
-  final bool shrinkWrap;
-  final ScrollPhysics physics;
-  final EdgeInsetsGeometry padding;
+  final bool embedded;
 
   @override
   Widget build(BuildContext context) {
     if (!planIsPersisted) {
       final isPreEvent = event.startTime.isAfter(DateTime.now());
-      return ListView(
-        shrinkWrap: shrinkWrap,
-        primary: shrinkWrap ? false : null,
-        physics: physics,
-        padding: padding,
+      return EventSuccessHostTabBody(
+        embedded: embedded,
         children: [
           NoticeCard(
             icon: isPreEvent
@@ -121,11 +114,8 @@ class LiveTab extends StatelessWidget {
           : roster.checkedInCount,
     );
     if (livePlan == null) {
-      return ListView(
-        shrinkWrap: shrinkWrap,
-        primary: shrinkWrap ? false : null,
-        physics: physics,
-        padding: padding,
+      return EventSuccessHostTabBody(
+        embedded: embedded,
         children: [
           NoticeCard(
             icon: CatchIcons.ruleFolderOutlined,
@@ -277,11 +267,8 @@ class LiveTab extends StatelessWidget {
               liveRevealCard(),
           ];
 
-    return ListView(
-      shrinkWrap: shrinkWrap,
-      primary: shrinkWrap ? false : null,
-      physics: physics,
-      padding: padding,
+    return EventSuccessHostTabBody(
+      embedded: embedded,
       children: [
         if (actionState.stepError != null) ...[
           CatchErrorBanner.fromError(

@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-07-05T03:20:16.421Z",
+  "generatedAt": "2026-07-05T09:22:11.764Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
-    "useCases": 871,
-    "components": 841,
-    "stateCards": 1749,
+    "useCases": 872,
+    "components": 842,
+    "stateCards": 1750,
     "reviewCandidates": 39,
     "oversizedUseCases": 43,
     "multiUseCaseComponents": 29
@@ -14345,6 +14345,48 @@
       ]
     },
     {
+      "component": "ChatsEmptyState",
+      "useCaseCount": 1,
+      "stateCardCount": 3,
+      "paths": [
+        "[P1 product surfaces]/Matches and chat/Components"
+      ],
+      "labels": [
+        "host inbox empty",
+        "no catches",
+        "search empty"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Empty states",
+          "functionName": "chatsEmptyStateVariants",
+          "file": "widgetbook/lib/matches/matches_chat_use_cases.dart",
+          "path": "[P1 product surfaces]/Matches and chat/Components",
+          "stateCardCount": 3,
+          "stateCards": [
+            {
+              "label": "no catches",
+              "normalizedLabel": "no catches"
+            },
+            {
+              "label": "host inbox empty",
+              "normalizedLabel": "host inbox empty"
+            },
+            {
+              "label": "search empty",
+              "normalizedLabel": "search empty"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "CityTrigger",
       "useCaseCount": 1,
       "stateCardCount": 3,
@@ -16855,43 +16897,6 @@
             {
               "label": "host inquiry row",
               "normalizedLabel": "host inquiry row"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "ChatsEmptyState",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[P1 product surfaces]/Matches and chat/Components"
-      ],
-      "labels": [
-        "no catches",
-        "search empty"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Empty states",
-          "functionName": "chatsEmptyStateVariants",
-          "file": "widgetbook/lib/matches/matches_chat_use_cases.dart",
-          "path": "[P1 product surfaces]/Matches and chat/Components",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "no catches",
-              "normalizedLabel": "no catches"
-            },
-            {
-              "label": "search empty",
-              "normalizedLabel": "search empty"
             }
           ]
         }
@@ -31429,6 +31434,31 @@
           "functionName": "eventSuccessStrictEventSuccessHostSetupFlow",
           "file": "widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart",
           "path": "[P1 product surfaces]/Event Success strict coverage/Feature block folded states",
+          "stateCardCount": 0,
+          "stateCards": []
+        }
+      ]
+    },
+    {
+      "component": "EventSuccessHostTabBody",
+      "useCaseCount": 1,
+      "stateCardCount": 0,
+      "paths": [
+        "[P1 product surfaces]/Event Success strict coverage/Host folded states"
+      ],
+      "labels": [],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "EventSuccessHostTabBody",
+          "functionName": "eventSuccessStrictEventSuccessHostTabBody",
+          "file": "widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart",
+          "path": "[P1 product surfaces]/Event Success strict coverage/Host folded states",
           "stateCardCount": 0,
           "stateCards": []
         }

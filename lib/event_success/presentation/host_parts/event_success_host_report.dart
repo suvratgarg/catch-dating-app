@@ -10,9 +10,7 @@ class ReportTab extends StatelessWidget {
     required this.rotationAssignments,
     required this.preferences,
     required this.wingmanRequests,
-    required this.shrinkWrap,
-    required this.physics,
-    required this.padding,
+    required this.embedded,
   });
 
   final Event event;
@@ -23,18 +21,13 @@ class ReportTab extends StatelessWidget {
   final List<EventSuccessAssignment> rotationAssignments;
   final List<EventSuccessPreference> preferences;
   final List<EventSuccessWingmanRequest> wingmanRequests;
-  final bool shrinkWrap;
-  final ScrollPhysics physics;
-  final EdgeInsetsGeometry padding;
+  final bool embedded;
 
   @override
   Widget build(BuildContext context) {
     if (!planIsPersisted) {
-      return ListView(
-        shrinkWrap: shrinkWrap,
-        primary: shrinkWrap ? false : null,
-        physics: physics,
-        padding: padding,
+      return EventSuccessHostTabBody(
+        embedded: embedded,
         children: [
           NoticeCard(
             icon: CatchIcons.insightsOutlined,
@@ -52,11 +45,8 @@ class ReportTab extends StatelessWidget {
       now: DateTime.now(),
     );
     if (!runtime.hostReportEnabled) {
-      return ListView(
-        shrinkWrap: shrinkWrap,
-        primary: shrinkWrap ? false : null,
-        physics: physics,
-        padding: padding,
+      return EventSuccessHostTabBody(
+        embedded: embedded,
         children: [
           NoticeCard(
             icon: CatchIcons.insightsOutlined,
@@ -70,11 +60,8 @@ class ReportTab extends StatelessWidget {
 
     final reportScorecard = scorecard;
     if (reportScorecard == null) {
-      return ListView(
-        shrinkWrap: shrinkWrap,
-        primary: shrinkWrap ? false : null,
-        physics: physics,
-        padding: padding,
+      return EventSuccessHostTabBody(
+        embedded: embedded,
         children: [
           NoticeCard(
             icon: CatchIcons.insightsOutlined,
@@ -97,11 +84,8 @@ class ReportTab extends StatelessWidget {
     );
     final feedbackCount = brief.scorecard.feedbackResponseCount;
 
-    return ListView(
-      shrinkWrap: shrinkWrap,
-      primary: shrinkWrap ? false : null,
-      physics: physics,
-      padding: padding,
+    return EventSuccessHostTabBody(
+      embedded: embedded,
       children: [
         NoticeCard(
           icon: CatchIcons.assignmentTurnedInOutlined,

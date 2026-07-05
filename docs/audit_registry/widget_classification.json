@@ -10,14 +10,14 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1112,
-    "widgetClasses": 1004,
+    "total": 1113,
+    "widgetClasses": 1005,
     "stateClasses": 108,
-    "publicClasses": 1002,
+    "publicClasses": 1003,
     "privateClasses": 110,
     "byRole": {
       "atom": 57,
-      "composition": 319,
+      "composition": 320,
       "feature-adapter": 314,
       "pattern": 16,
       "screen": 298,
@@ -25,14 +25,14 @@
     },
     "byDecision": {
       "keep-canonical-contract": 170,
-      "keep-public-cataloged": 779,
+      "keep-public-cataloged": 780,
       "keep-widget-state": 108,
       "review-catalog-coverage": 38,
       "review-promote-or-consolidate": 15,
       "review-promote-or-inline": 2
     },
     "byCatalogStatus": {
-      "cataloged": 715,
+      "cataloged": 716,
       "contracted": 170,
       "not-applicable": 108,
       "route-covered": 78,
@@ -12217,6 +12217,29 @@
       "visibility": "public",
       "role": "composition",
       "canonicalFamily": "catch.compatibility_signal_host_card",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "EventSuccessHostTabBody",
+      "file": "lib/event_success/presentation/host_parts/event_success_host_shared.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.event_success_host_tab_body",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,
