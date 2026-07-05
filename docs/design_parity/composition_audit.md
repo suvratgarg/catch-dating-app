@@ -201,18 +201,16 @@ architecture, section list, ticket identity, and dock are all right. The
 issues are one parallel shell, in-file twins, spinner loading, and the style
 plumbing (G2/G3).
 
-### E1. `EventDetailOptimisticBody` is a second full shell — merge `[codex]` (G2 approved; do E3 first)
+### E1. `EventDetailOptimisticBody` is a second full shell — merge `[done 76269027c]`
 
-It rebuilds Scaffold + hero + stub band + section list + overview with
-hard-coded disabled actions, and swaps to `EventDetailBody` when the view
-model resolves — two assemblies of one screen that must be kept in sync by
-hand. Decision (resolves the consolidation escalation on this pair): once
-section loading is skeleton-based (G2), the optimistic render IS
-`EventDetailBody` with `hostState`/`socialState` in loading, guest-mode
-callbacks injected (save → auth redirect, share/calendar hidden), and the
-same Scaffold provided by the route screen for both branches. Delete
-`EventDetailOptimisticBody`; keep `EventDetailHostsSkeleton` as the shared
-hosts loading skeleton (rename landed in `fca49f467`).
+Fixed in `76269027c`: `EventDetailOptimisticBody` was deleted. The
+initial-event loading branch now uses the route-owned `Scaffold` plus
+`EventDetailBody` with `EventDetailHostState.loading` and
+`EventDetailSocialState.loading`, guest-mode callbacks injected, share/calendar
+hidden, save routed through the existing auth redirect, and the source
+presentation mode/Hero tag preserved. `EventDetailHostsSkeleton` remains the
+shared host-loading section, and the new `EventDetailSocialState.loading`
+renders the shared `EventDetailSocialSkeleton`.
 
 ### E2. `EventCompanionCard` / `EventInviteLoopCard` are in-file twins `[done f2ce30b49]`
 
