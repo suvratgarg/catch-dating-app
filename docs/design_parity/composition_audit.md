@@ -1,6 +1,6 @@
 ---
 doc_id: composition_audit
-version: 0.1.1
+version: 0.1.2
 updated: 2026-07-05
 owner: design_parity_review
 status: active
@@ -593,7 +593,7 @@ spacing changes, and no controller changes. Acceptance: the existing
 `event_success_live_screens_test.dart` host-panel coverage still passes, and
 Widgetbook strict states for setup/live/report keep rendering the same branches.
 
-### S3. `QuestionProgressRail` uses Material ink inside the stage grammar `[codex]`
+### S3. `QuestionProgressRail` uses Material ink inside the stage grammar `[done 929cf34a7]`
 
 The companion stage already defines `StageBouncyPress` specifically because
 Material ink feels wrong on the gradient/motif surface. `StageBouncyChip` uses
@@ -605,6 +605,13 @@ primitive just enough to preserve `selected` semantics cleanly), keeping the
 current tooltip, selected semantics, dot sizing, and colors. Add or update the
 strict Widgetbook state/test for `QuestionProgressRail` so this does not drift
 back to Material ink.
+
+Done: `QuestionProgressRail` now uses `StageBouncyPress` for each numbered dot.
+`StageBouncyPress` gained optional selected semantics and suppresses duplicate
+child semantics when it owns an explicit label, so stage press targets announce
+cleanly. `event_success_live_screens_test.dart` now asserts the rail has three
+stage press targets, no `InkWell`, selected semantics for the active question,
+and a working tap callback.
 
 ### S4. Fixture actions leak into production host panel construction `[watch]`
 
