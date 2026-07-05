@@ -1,6 +1,6 @@
 ---
 doc_id: design_language
-version: 1.3.0
+version: 1.4.0
 updated: 2026-07-05
 owner: ui_elevation_initiative
 status: active — identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
@@ -159,6 +159,14 @@ system font.
 ---
 
 ## 6. Metaphors
+
+**Presentation tiers (ratified 2026-07-05):** every entity material (event
+ticket, club polaroid, person card) ships in at least two tiers — a **hero**
+form for surfaces where the entity earns attention, detail, and vertical
+space (detail heroes, featured cards, cover moments), and a **condensed**
+form for long lists and date-grouped rails (DateTicket rows, index rows).
+More tiers are allowed when a surface justifies them; a surface never mixes
+tiers within one list.
 
 - **Ticket → events: keep & refine.** `event_ticket_surface.dart` (real `CustomClipper`
   notches, perforation, Hero card→detail) is strong, award-adjacent craft. Refine: the

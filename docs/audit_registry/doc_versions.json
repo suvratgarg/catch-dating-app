@@ -373,10 +373,10 @@
   },
   "design_language": {
     "path": "docs/design_language.md",
-    "version": "1.2.0",
-    "updated": "2026-06-30",
+    "version": "1.4.0",
+    "updated": "2026-07-05",
     "status": "active",
-    "read_policy": "Read before changing Catch visual identity, palette, typography, photography treatment, metaphors, motion, or remaining map-pin palette policy."
+    "read_policy": "Read before changing Catch visual identity, palette, typography, photography treatment, metaphors, presentation tiers (§6), containment doctrine (§7.1), motion, or remaining map-pin palette policy."
   },
   "ui_elevation_implementation": {
     "path": "docs/ui_elevation_implementation.md",
