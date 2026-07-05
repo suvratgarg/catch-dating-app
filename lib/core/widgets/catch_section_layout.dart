@@ -539,18 +539,22 @@ class CatchSection extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (hasTitle)
-                  Text(
-                    count == null ? displayTitle : '$displayTitle · $count',
-                    style: contained
-                        ? CatchTextStyles.sectionTitle(
-                            context,
-                            color: titleColor ?? t.ink,
-                          )
-                        : CatchKicker.styleOf(
+                  contained
+                      ? Text(
+                          count == null
+                              ? displayTitle
+                              : '$displayTitle · $count',
+                          style: CatchTextStyles.sectionTitle(
                             context,
                             color: titleColor ?? t.ink,
                           ),
-                  ),
+                        )
+                      : _buildCatchSectionKicker(
+                          context,
+                          text: displayTitle,
+                          count: count,
+                          color: titleColor ?? t.ink,
+                        ),
                 if (hasSubtitle) ...[
                   const SizedBox(height: CatchSpacing.s1),
                   Text(

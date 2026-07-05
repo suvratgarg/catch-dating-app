@@ -10,22 +10,22 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1113,
-    "widgetClasses": 1005,
+    "total": 1112,
+    "widgetClasses": 1004,
     "stateClasses": 108,
-    "publicClasses": 1003,
+    "publicClasses": 1002,
     "privateClasses": 110,
     "byRole": {
       "atom": 57,
       "composition": 319,
       "feature-adapter": 314,
       "pattern": 16,
-      "screen": 299,
+      "screen": 298,
       "widget-state": 108
     },
     "byDecision": {
       "keep-canonical-contract": 170,
-      "keep-public-cataloged": 780,
+      "keep-public-cataloged": 779,
       "keep-widget-state": 108,
       "review-catalog-coverage": 38,
       "review-promote-or-consolidate": 15,
@@ -35,7 +35,7 @@
       "cataloged": 715,
       "contracted": 170,
       "not-applicable": 108,
-      "route-covered": 79,
+      "route-covered": 78,
       "uncataloged": 41
     }
   },
@@ -19799,29 +19799,6 @@
       "canonicalFamily": "screen.host_profile_screen",
       "publicApi": true,
       "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "HostSectionLabel",
-      "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.host_section_label",
-      "publicApi": true,
-      "catalogStatus": "route-covered",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",

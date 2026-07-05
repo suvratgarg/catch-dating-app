@@ -829,18 +829,6 @@ class HostOperationsTopBar extends StatelessWidget
   }
 }
 
-class HostSectionLabel extends StatelessWidget {
-  const HostSectionLabel({super.key, required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Text(label, style: CatchTextStyles.kicker(context, color: t.ink3));
-  }
-}
-
 class HostTodayDashboardCard extends ConsumerWidget {
   const HostTodayDashboardCard({
     super.key,
@@ -947,13 +935,13 @@ class HostTodayDashboardSection extends StatelessWidget {
               ),
             ],
           ),
-          HostHomeTodayStatus.content => _buildContent(),
+          HostHomeTodayStatus.content => _buildContent(context),
         },
       ],
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildContent(BuildContext context) {
     final event = state.event!;
     final tasks = state.tasks;
 
@@ -965,12 +953,20 @@ class HostTodayDashboardSection extends StatelessWidget {
           onPressed: () => onManageEvent(club, event),
         ),
         gapH24,
-        HostSectionLabel(label: 'NEEDS YOU · ${tasks.length}'),
-        gapH12,
-        for (final task in tasks) ...[
-          HostTodayTaskCard(task: task, onPrimary: () {}),
-          gapH12,
-        ],
+        CatchSection.plain(
+          title: 'Needs you',
+          count: tasks.length,
+          titleColor: CatchTokens.of(context).ink3,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (final task in tasks) ...[
+                HostTodayTaskCard(task: task, onPrimary: () {}),
+                gapH12,
+              ],
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -1570,34 +1566,37 @@ class HostEventsClubSection extends StatelessWidget {
       children: [
         HostMetaRow(club: club, roleLabel: roleLabel, owner: owner),
         gapH24,
-        const HostSectionLabel(label: 'Upcoming'),
-        gapH8,
-        switch (eventsState.status) {
-          HostHomeEventsStatus.loading => const CatchSkeletonRows(
-            leading: CatchSkeletonRowLeading.mediaTile,
-            count: 2,
-            divided: true,
-          ),
-          HostHomeEventsStatus.error => CatchInlineErrorState.fromError(
-            eventsState.error!,
-            context: AppErrorContext.event,
-            onRetry: onRetryEvents,
-          ),
-          HostHomeEventsStatus.empty => HostEventRows(
-            club: club,
-            rows: eventsState.rows,
-            emptyTextColor: t.ink2,
-            onCreateEvent: onCreateEvent,
-            onManageEvent: onManageEvent,
-          ),
-          HostHomeEventsStatus.populated => HostEventRows(
-            club: club,
-            rows: eventsState.rows,
-            emptyTextColor: t.ink2,
-            onCreateEvent: onCreateEvent,
-            onManageEvent: onManageEvent,
-          ),
-        },
+        CatchSection.plain(
+          title: 'Upcoming',
+          titleColor: t.ink3,
+          bodyGap: CatchSpacing.s2,
+          child: switch (eventsState.status) {
+            HostHomeEventsStatus.loading => const CatchSkeletonRows(
+              leading: CatchSkeletonRowLeading.mediaTile,
+              count: 2,
+              divided: true,
+            ),
+            HostHomeEventsStatus.error => CatchInlineErrorState.fromError(
+              eventsState.error!,
+              context: AppErrorContext.event,
+              onRetry: onRetryEvents,
+            ),
+            HostHomeEventsStatus.empty => HostEventRows(
+              club: club,
+              rows: eventsState.rows,
+              emptyTextColor: t.ink2,
+              onCreateEvent: onCreateEvent,
+              onManageEvent: onManageEvent,
+            ),
+            HostHomeEventsStatus.populated => HostEventRows(
+              club: club,
+              rows: eventsState.rows,
+              emptyTextColor: t.ink2,
+              onCreateEvent: onCreateEvent,
+              onManageEvent: onManageEvent,
+            ),
+          },
+        ),
       ],
     );
   }

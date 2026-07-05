@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-07-05T04:06:26.530Z",
+  "generatedAt": "2026-07-05T04:32:20.883Z",
   "decisionLedgerPath": "docs/design_parity/widgetbook_widget_decisions.json",
-  "total": 981,
+  "total": 980,
   "stats": {
     "PUBLIC_ALREADY_CATALOGED_NAME_MATCH": 861,
-    "PUBLIC_NEEDS_CATALOG_OR_REPLACE": 118,
+    "PUBLIC_NEEDS_CATALOG_OR_REPLACE": 117,
     "PRIVATE_NEEDS_RENAME_OR_REPLACE": 2
   },
   "decisionStats": {},
@@ -21,23 +21,23 @@
       "deletedOrMergedDuplicate": 0
     },
     {
-      "area": "hosts",
-      "total": 152,
-      "publicAlreadyCataloged": 98,
-      "privateNameMatchNeedsDecision": 0,
-      "privateNeedsRenameOrReplace": 0,
-      "publicNeedsCatalogOrReplace": 54,
-      "replacedWithCatalogEntry": 0,
-      "promotedToWidgetbookCatalog": 0,
-      "deletedOrMergedDuplicate": 0
-    },
-    {
       "area": "core/widgets",
       "total": 151,
       "publicAlreadyCataloged": 148,
       "privateNameMatchNeedsDecision": 0,
       "privateNeedsRenameOrReplace": 2,
       "publicNeedsCatalogOrReplace": 1,
+      "replacedWithCatalogEntry": 0,
+      "promotedToWidgetbookCatalog": 0,
+      "deletedOrMergedDuplicate": 0
+    },
+    {
+      "area": "hosts",
+      "total": 151,
+      "publicAlreadyCataloged": 98,
+      "privateNameMatchNeedsDecision": 0,
+      "privateNeedsRenameOrReplace": 0,
+      "publicNeedsCatalogOrReplace": 53,
       "replacedWithCatalogEntry": 0,
       "promotedToWidgetbookCatalog": 0,
       "deletedOrMergedDuplicate": 0
@@ -3248,7 +3248,7 @@
     },
     {
       "file": "lib/core/widgets/catch_section_layout.dart",
-      "line": 608,
+      "line": 612,
       "name": "CatchSectionFocusSurface",
       "base": "StatefulWidget",
       "area": "core/widgets",
@@ -3262,7 +3262,7 @@
     },
     {
       "file": "lib/core/widgets/catch_section_layout.dart",
-      "line": 702,
+      "line": 706,
       "name": "CatchDetailSliverSectionList",
       "base": "StatelessWidget",
       "area": "core/widgets",
@@ -10571,20 +10571,6 @@
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
       "line": 832,
-      "name": "HostSectionLabel",
-      "base": "StatelessWidget",
-      "area": "hosts",
-      "visibility": "public",
-      "publicName": "HostSectionLabel",
-      "exactNameMatched": false,
-      "publicNameMatched": false,
-      "mechanicalStatus": "PUBLIC_NEEDS_CATALOG_OR_REPLACE",
-      "decision": null,
-      "status": "PUBLIC_NEEDS_CATALOG_OR_REPLACE"
-    },
-    {
-      "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 844,
       "name": "HostTodayDashboardCard",
       "base": "ConsumerWidget",
       "area": "hosts",
@@ -10598,7 +10584,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 886,
+      "line": 874,
       "name": "HostTodayDashboardSection",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10612,7 +10598,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 979,
+      "line": 975,
       "name": "HostTodayHeader",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10626,7 +10612,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1032,
+      "line": 1028,
       "name": "HostTodayClubPill",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10640,7 +10626,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1110,
+      "line": 1106,
       "name": "HostTodayLoadingBody",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10654,7 +10640,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1128,
+      "line": 1124,
       "name": "HostTodayEventHero",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10668,7 +10654,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1243,
+      "line": 1239,
       "name": "HostTodayCountdownPill",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10682,7 +10668,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1271,
+      "line": 1267,
       "name": "HostTodayHeroMetric",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10696,7 +10682,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1310,
+      "line": 1306,
       "name": "HostTodayAvatarStack",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10710,7 +10696,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1345,
+      "line": 1341,
       "name": "HostTodayAvatarDot",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10724,7 +10710,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1382,
+      "line": 1378,
       "name": "HostTodayTaskCard",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10738,7 +10724,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1512,
+      "line": 1508,
       "name": "HostEventsClubCard",
       "base": "ConsumerWidget",
       "area": "hosts",
@@ -10752,7 +10738,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1544,
+      "line": 1540,
       "name": "HostEventsClubSection",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10766,7 +10752,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1606,
+      "line": 1605,
       "name": "HostEventRows",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10780,7 +10766,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1654,
+      "line": 1653,
       "name": "HostMetaRow",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10794,7 +10780,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1698,
+      "line": 1697,
       "name": "HostClubOrganizerOverviewController",
       "base": "ConsumerWidget",
       "area": "hosts",
@@ -10808,7 +10794,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1745,
+      "line": 1744,
       "name": "HostClubOrganizerOverview",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10822,7 +10808,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1897,
+      "line": 1896,
       "name": "HostOrganizerHeader",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10836,7 +10822,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 1948,
+      "line": 1947,
       "name": "HostOrganizerMetricGrid",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10850,7 +10836,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 2002,
+      "line": 2001,
       "name": "HostOrganizerMetricRow",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10864,7 +10850,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 2050,
+      "line": 2049,
       "name": "HostOrganizerTeamCard",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10878,7 +10864,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 2088,
+      "line": 2087,
       "name": "HostOrganizerTeamRow",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10892,7 +10878,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 2167,
+      "line": 2166,
       "name": "HostOrganizerTrendStrip",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10906,7 +10892,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 2294,
+      "line": 2293,
       "name": "HostClubProfileCard",
       "base": "ConsumerStatefulWidget",
       "area": "hosts",
@@ -10920,7 +10906,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 2711,
+      "line": 2710,
       "name": "HostClubInsightsPane",
       "base": "ConsumerStatefulWidget",
       "area": "hosts",
@@ -10934,7 +10920,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 2837,
+      "line": 2836,
       "name": "HostAnalyticsControls",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10948,7 +10934,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 2960,
+      "line": 2959,
       "name": "HostAnalyticsDateButton",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10962,7 +10948,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3007,
+      "line": 3006,
       "name": "HostAnalyticsReportView",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10976,7 +10962,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3058,
+      "line": 3057,
       "name": "HostAnalyticsTrendPanel",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -10990,7 +10976,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3128,
+      "line": 3127,
       "name": "HostAnalyticsEventList",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -11004,7 +10990,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3186,
+      "line": 3185,
       "name": "HostAnalyticsEventTile",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -11018,7 +11004,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3326,
+      "line": 3325,
       "name": "HostAnalyticsReviewDiscoveryPanel",
       "base": "StatelessWidget",
       "area": "hosts",
@@ -11032,7 +11018,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3489,
+      "line": 3488,
       "name": "HostInlineTextEntryEditor",
       "base": "ConsumerStatefulWidget",
       "area": "hosts",
@@ -11046,7 +11032,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3801,
+      "line": 3800,
       "name": "HostInlineAgeRangeEditor",
       "base": "ConsumerStatefulWidget",
       "area": "hosts",
@@ -11060,7 +11046,7 @@
     },
     {
       "file": "lib/hosts/presentation/host_operations_screen.dart",
-      "line": 3966,
+      "line": 3965,
       "name": "HostClubPreviewPane",
       "base": "StatelessWidget",
       "area": "hosts",

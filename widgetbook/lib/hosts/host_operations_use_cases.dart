@@ -294,11 +294,6 @@ HostProfile _hostProfileVariant(HostProfileStatus status) {
 )
 @widgetbook.UseCase(
   name: 'Covered by host home route states',
-  type: HostSectionLabel,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host home route states',
   type: HostTodayDashboardCard,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
@@ -1151,7 +1146,6 @@ Widget _hostHomePreviewFor(String focus) {
         ),
       ],
     ),
-    'HostSectionLabel' => const HostSectionLabel(label: 'TODAY'),
     'HostTodayAvatarDot' => Builder(
       builder: (context) {
         final activity = ActivityPalette.resolve(
