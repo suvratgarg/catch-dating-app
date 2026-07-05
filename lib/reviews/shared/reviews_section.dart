@@ -44,6 +44,7 @@ class ClubReviewsSection extends StatelessWidget {
       currentUid: currentUid,
       maxVisibleReviews: maxVisibleReviews,
       compactEmptyState: true,
+      showHeader: false,
       emptyMessage: 'Reviews appear after members attend an event.',
     );
   }

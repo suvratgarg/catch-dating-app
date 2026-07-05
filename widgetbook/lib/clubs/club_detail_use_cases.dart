@@ -30,6 +30,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
@@ -1666,11 +1667,19 @@ Widget clubReviewsSectionStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'published reviews',
-        child: ClubReviewsSection(reviews: _reviews, currentUid: _viewerUid),
+        child: CatchSection.divided(
+          title: 'Reviews',
+          first: true,
+          child: ClubReviewsSection(reviews: _reviews, currentUid: _viewerUid),
+        ),
       ),
       const _StateCard(
         label: 'empty',
-        child: ClubReviewsSection(reviews: [], currentUid: _viewerUid),
+        child: CatchSection.divided(
+          title: 'Reviews',
+          first: true,
+          child: ClubReviewsSection(reviews: [], currentUid: _viewerUid),
+        ),
       ),
     ],
   );

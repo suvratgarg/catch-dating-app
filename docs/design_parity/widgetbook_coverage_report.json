@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-05T00:49:07.365Z",
+  "generatedAt": "2026-07-05T01:49:48.220Z",
   "decisionLedgerPath": "docs/design_parity/widgetbook_widget_decisions.json",
   "total": 984,
   "stats": {
@@ -826,7 +826,7 @@
     },
     {
       "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-      "line": 35,
+      "line": 32,
       "name": "ClubDetailBody",
       "base": "StatelessWidget",
       "area": "clubs",
@@ -840,7 +840,7 @@
     },
     {
       "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-      "line": 213,
+      "line": 211,
       "name": "ClubNextRunBanner",
       "base": "StatelessWidget",
       "area": "clubs",
@@ -854,7 +854,7 @@
     },
     {
       "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-      "line": 280,
+      "line": 278,
       "name": "ClubActivitySection",
       "base": "StatelessWidget",
       "area": "clubs",
@@ -882,7 +882,7 @@
     },
     {
       "file": "lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart",
-      "line": 63,
+      "line": 56,
       "name": "ClubHeroLoadingSkeleton",
       "base": "StatelessWidget",
       "area": "clubs",
@@ -896,7 +896,7 @@
     },
     {
       "file": "lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart",
-      "line": 99,
+      "line": 92,
       "name": "ClubStatsLoadingSkeleton",
       "base": "StatelessWidget",
       "area": "clubs",
@@ -910,7 +910,7 @@
     },
     {
       "file": "lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart",
-      "line": 124,
+      "line": 117,
       "name": "ClubStatLoadingSkeleton",
       "base": "StatelessWidget",
       "area": "clubs",
@@ -924,7 +924,7 @@
     },
     {
       "file": "lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart",
-      "line": 140,
+      "line": 133,
       "name": "ClubStatsDividerSkeleton",
       "base": "StatelessWidget",
       "area": "clubs",
@@ -938,7 +938,7 @@
     },
     {
       "file": "lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart",
-      "line": 156,
+      "line": 149,
       "name": "ClubHostLoadingSkeleton",
       "base": "StatelessWidget",
       "area": "clubs",
@@ -952,7 +952,7 @@
     },
     {
       "file": "lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart",
-      "line": 186,
+      "line": 179,
       "name": "ClubTextLoadingSkeleton",
       "base": "StatelessWidget",
       "area": "clubs",
@@ -966,7 +966,7 @@
     },
     {
       "file": "lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart",
-      "line": 197,
+      "line": 190,
       "name": "ClubScheduleLoadingSkeleton",
       "base": "StatelessWidget",
       "area": "clubs",
@@ -12558,7 +12558,7 @@
     },
     {
       "file": "lib/reviews/shared/reviews_section.dart",
-      "line": 53,
+      "line": 54,
       "name": "EventReviewsSection",
       "base": "StatelessWidget",
       "area": "reviews",
@@ -12572,7 +12572,7 @@
     },
     {
       "file": "lib/reviews/shared/reviews_section.dart",
-      "line": 133,
+      "line": 134,
       "name": "ReviewsPreviewSection",
       "base": "StatelessWidget",
       "area": "reviews",
@@ -12586,7 +12586,7 @@
     },
     {
       "file": "lib/reviews/shared/reviews_section.dart",
-      "line": 274,
+      "line": 275,
       "name": "ReviewCard",
       "base": "StatelessWidget",
       "area": "reviews",
@@ -12600,7 +12600,7 @@
     },
     {
       "file": "lib/reviews/shared/reviews_section.dart",
-      "line": 361,
+      "line": 362,
       "name": "ReviewOwnerResponseBlock",
       "base": "StatelessWidget",
       "area": "reviews",
@@ -12614,7 +12614,7 @@
     },
     {
       "file": "lib/reviews/shared/reviews_section.dart",
-      "line": 420,
+      "line": 421,
       "name": "ReviewResponseSheet",
       "base": "ConsumerStatefulWidget",
       "area": "reviews",

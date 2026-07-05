@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.583
+version: 2.5.584
 updated: 2026-07-05
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,17 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.584
+
+- Moved Club Detail's loaded and loading bodies onto
+  `CatchDetailSliverSectionList` for detail-screen gutters and section rhythm.
+  `ClubScheduleSection` now uses `CatchSection.divided` for the Schedule title,
+  exposes a `bottomPadding` seam for trailing detail sections, and lets
+  `CatchEmptyState` own its inline empty-state sizing. `ClubReviewsSection` is
+  now content-only, so `ClubDetailBody` and Widgetbook wrap Reviews in the shared
+  section kicker voice, and Get in touch now renders after Reviews as footer
+  content.
 
 ### 2.5.583
 
@@ -6325,7 +6336,7 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `ClubDetailLoadingBody` | `lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart:9` | Club-profile-shaped loading body for no-fallback Club Detail route loads. Mirrors the loaded hero, stats strip, host card, about copy, tag chips, and upcoming event sections while `initialClub` fallback still renders real content when available. |
+| `ClubDetailLoadingBody` | `lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart:9` | Club-profile-shaped loading body for no-fallback Club Detail route loads. Mirrors the loaded hero, stats strip, About, What we do, hosts, and Schedule sections through `CatchDetailSliverSectionList` while `initialClub` fallback still renders real content when available. |
 | `ClubHeroLoadingSkeleton` | `lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart:62` | Club Detail loading hero. Reserves the no-cover hero height and bottom-aligned title/location/summary placeholders so loading route transitions do not collapse the visual identity area. |
 | `ClubStatsLoadingSkeleton` | `lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart:98` | Club Detail loading metric strip. Uses the same compact `CatchSurface` padding and four-column/divider rhythm as the loaded club stats row. |
 | `ClubStatLoadingSkeleton` | `lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart:123` | Single Club Detail loading metric cell with value and label placeholders. Used only inside `ClubStatsLoadingSkeleton` so metric spacing remains centralized. |
@@ -6377,7 +6388,7 @@ Generated 2026-05-06.
 | `ClubHeroAppBar` | `lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart:21` | Club detail identity hero with cover-photo support, shared branded fallback, name, optional location-label override, back, and share. The hero uses `clubInteractionHeroTag` and the same base `clubInteractionMediaPadding` as the Explore Polaroid club card, and owns the device-derived top viewport curve that clips its media frame. Hero back/share actions use the shared floating `CatchIconButton` chrome. The caption sits outside that clipped frame on the page surface, uses tighter `CatchLayout.clubDetailHero*` sizing so the Claude reference title fits one line, shows an area/city kicker, and can receive the next event address from `ClubDetailBody`. Expanded and collapsed titles use the central `CatchTextStyles.clubDisplay` treatment. Rating and host-only ownership cues stay out of the hero, and no-photo headers use a shorter height. |
 | `ClubHeroModule` | `lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart:230` | Provider-free Club Detail hero module used inside `ClubHeroAppBar`'s flexible space. Receives computed media height, kicker, and location copy, owns the curved media frame, `CatchDetailHeroBackdrop`, expanded club title, and location row without route actions or provider reads. |
 | `ClubContactAction` | `lib/clubs/presentation/detail/club_detail_screen_state.dart:14` | Typed contact-row intent emitted by `ClubDetailBodyState`. Encodes Instagram, phone, and email labels/URIs plus whether the link should open externally so `ClubDetailScreen` can own the platform link side effect. |
-| `ClubDetailBody` | `lib/clubs/presentation/detail/widgets/club_detail_body.dart:74` | Scrollable public club detail body on a white page surface: hero, optional next-run banner, stats apron, then handoff-style `CatchSection`s for About, What we do, From the club, Your hosts, Get in touch, schedule, and read-only club review aggregate. The body is a reusable renderer: it receives typed callbacks for share, schedule taps, host profile/message actions, and contact links instead of reading GoRouter or external link/share providers itself. For Host Club Detail parity, it passes the next event address into `ClubHeroAppBar`, renders activity-kind chips before generic tags, uses regular-weight About copy, splits additional generic tags onto a follow-up wrap row, keeps the current public-preview contract, and leaves operational Add event, Edit club, payouts, and host-team editing in Host Operations unless a future design contract moves them here. |
+| `ClubDetailBody` | `lib/clubs/presentation/detail/widgets/club_detail_body.dart:74` | Scrollable public club detail body on a white page surface: hero, optional next-run banner, stats apron, then detail-list `CatchSection`s for About, What we do, From the club, Your hosts, sliver-native Schedule, Reviews, and footer-position Get in touch. The body is a reusable renderer: it receives typed callbacks for share, schedule taps, host profile/message actions, and contact links instead of reading GoRouter or external link/share providers itself. For Host Club Detail parity, it passes the next event address into `ClubHeroAppBar`, renders activity-kind chips before generic tags, uses regular-weight About copy, splits additional generic tags onto a follow-up wrap row, keeps the current public-preview contract, and leaves operational Add event, Edit club, payouts, and host-team editing in Host Operations unless a future design contract moves them here. |
 | `ClubNextRunBanner` | `lib/clubs/presentation/detail/widgets/club_detail_body.dart:205` | Optional next-run banner shown near the top of Club Detail when the club has an upcoming event. Uses activity pigment, event date/time copy from `EventFormatters`, tap semantics, and a forward affordance while navigation remains an injected callback. |
 | `ClubActivitySection` | `lib/clubs/presentation/detail/widgets/club_detail_body.dart:275` | Activity/tag renderer for the Club Detail "What we do" section. Promotes supported activity kinds into `CatchActivityChip`s, keeps the primary activity highlighted, and renders remaining generic tags through neutral `ClubTagWrap` rows. |
 | `ClubHostSection` | `lib/clubs/presentation/detail/widgets/club_host_section.dart:17` | Provider-free Club Detail hosts section. Receives the club, profile-view affordance, pending message flag, and precomputed messageable host ids from `ClubDetailBodyState`; renders owner/host rows without reading providers or deciding app-role policy. |
@@ -6387,7 +6398,7 @@ Generated 2026-05-06.
 | `ClubShareCard` | `lib/clubs/presentation/detail/widgets/club_share_card.dart:46` | Shareable club card rendered inside `RichShareCardSheet`. Uses `CatchSurface`, bounded rich-card aspect ratio constants, cover-photo or `ClubPolaroidArtwork`, shared club identity atoms for member/tag copy, and `clubShareText` for the public club deep link. |
 | `ClubShareArtwork` | `lib/clubs/presentation/detail/widgets/club_share_card.dart:134` | Media block used by `ClubShareCard`. Chooses the primary club photo for `CatchDetailHeroBackdrop` when present and falls back to `ClubPolaroidArtwork` so share cards remain branded for no-photo clubs. |
 | `ClubShareMetaRow` | `lib/clubs/presentation/detail/widgets/club_share_card.dart:153` | One-line icon/text metadata row used inside the club share card for location and member count facts. Receives the icon and label explicitly so the share card owns the row order while the row owns shared spacing, primary icon color, and ellipsis behavior. |
-| `ClubScheduleSection` | `lib/clubs/presentation/detail/widgets/club_schedule_section.dart:10` | Sliver-native agenda section for a club's upcoming events. Reuses `EventAgendaSliverList` with detail-screen padding and agenda gap constants, shows compact inline empty states with public-profile copy, emits selected events through an injected callback, and marks host-owned event rows with the `HOSTED` event-tile status. Operational publish prompts stay in Host Operations unless the Host Club Detail design contract intentionally moves them here. |
+| `ClubScheduleSection` | `lib/clubs/presentation/detail/widgets/club_schedule_section.dart:10` | Sliver-native agenda section for a club's upcoming events. Uses `CatchSection.divided` for the Schedule kicker, reuses `EventAgendaSliverList` with detail-screen padding and agenda gap constants, exposes `bottomPadding` so trailing detail sections can own the final gutter, shows the shared compact inline empty state with public-profile copy, emits selected events through an injected callback, and marks host-owned event rows with the `HOSTED` event-tile status. Operational publish prompts stay in Host Operations unless the Host Club Detail design contract intentionally moves them here. |
 | `CatchPolaroid` | `lib/clubs/presentation/shared/catch_polaroid.dart:12` | Shared club polaroid primitive: tight white framed media, mono caption, upright Archivo club title, optional title-row arrow, editorial supporting copy, and optional footer/actions. Used by Explore club cards and directory club cards so image-backed and no-cover states share one named metaphor. |
 | `ClubPolaroidArtwork` | `lib/clubs/presentation/shared/catch_polaroid.dart:115` | Map-style no-photo artwork for club polaroids and compact club crests. It avoids generated initials, uses a quiet location mark, and derives deterministic accents from `ClubCoverVisualPalette`. |
 | `ClubCoverVisualPalette` | `lib/clubs/presentation/shared/catch_polaroid.dart:175` | Deterministic club visual palette derived from `ActivityPalette` and tokens for production cards that need matching no-cover accents. |
@@ -6752,7 +6763,7 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `ClubReviewsSection` | `lib/reviews/presentation/reviews_section.dart:19` | Read-only club review aggregate. Shows the latest three reviews, uses the compact inline empty state, and never opens the write/edit sheet. |
+| `ClubReviewsSection` | `lib/reviews/shared/reviews_section.dart:19` | Content-only read-only club review aggregate. Shows the latest three reviews, leaves section title/divider ownership to the parent `CatchSection`, uses the compact inline empty state, and never opens the write/edit sheet. |
 | `EventReviewsSection` | `lib/reviews/presentation/reviews_section.dart:44` | Event-scoped reviews with write/edit CTA for attended participants. Uses the same compact inline empty-state primitive as club reviews; this is the only page-level review section that should open `WriteReviewSheet`. |
 | `ReviewsPreviewSection` | `lib/reviews/presentation/reviews_section.dart:121` | Shared read-only preview list: header, aggregate rating, compact/stacked empty-state configuration, top-N review cards, and optional see-all sheet. Callers supply edit callbacks only when the parent surface is event-scoped. |
 | `ReviewsHistoryState` | `lib/reviews/presentation/reviews_history_state.dart:7` | Reviews History display seam. Owns signed-out/loading/error/empty/content selection, event-context labels, edit availability, retry targets, and provider-free `ReviewsHistoryRow` data. |

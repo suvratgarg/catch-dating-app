@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-07-05T00:49:19.369263+00:00",
+  "generated_at": "2026-07-05T01:50:05.336640+00:00",
   "repo_root": "/Users/suvratgarg/Development/catch-dating-app/catch_dating_app",
   "total_files_scanned": 735,
-  "total_definitions": 3738,
+  "total_definitions": 3737,
   "file_manifest": [
     {
       "file": "lib/activity/domain/activity_taxonomy.dart",
@@ -351,12 +351,12 @@
     },
     {
       "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-      "line_count": 352,
-      "definition_count": 10
+      "line_count": 350,
+      "definition_count": 9
     },
     {
       "file": "lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart",
-      "line_count": 211,
+      "line_count": 204,
       "definition_count": 8
     },
     {
@@ -376,7 +376,7 @@
     },
     {
       "file": "lib/clubs/presentation/detail/widgets/club_schedule_section.dart",
-      "line_count": 80,
+      "line_count": 77,
       "definition_count": 1
     },
     {
@@ -3301,7 +3301,7 @@
     },
     {
       "file": "lib/reviews/shared/reviews_section.dart",
-      "line_count": 516,
+      "line_count": 517,
       "definition_count": 8
     },
     {
@@ -5615,18 +5615,10 @@
       "body_hash": "10f4c7f2e27d832f"
     },
     {
-      "name": "_clubDetailSectionStackPadding",
-      "kind": "constant",
-      "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-      "line": 27,
-      "signature": "const EdgeInsets _clubDetailSectionStackPadding = EdgeInsets.only(",
-      "body_hash": "f44adcd90e8c4f3d"
-    },
-    {
       "name": "_clubActivityTilePadding",
       "kind": "constant",
       "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-      "line": 30,
+      "line": 27,
       "signature": "const EdgeInsets _clubActivityTilePadding = EdgeInsets.symmetric(",
       "body_hash": "6162fcfd8b10c9b0"
     },
@@ -5634,17 +5626,17 @@
       "name": "ClubDetailBody",
       "kind": "class",
       "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-      "line": 35,
+      "line": 32,
       "signature": "class ClubDetailBody extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "a8885ef55c8d6595"
+      "body_hash": "61b29c19519f3612"
     },
     {
       "name": "_clubMetricItems",
       "kind": "function",
       "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-      "line": 167,
+      "line": 165,
       "signature": "List<CatchMetricStripItem> _clubMetricItems(Club club) {",
       "return_type": "List<CatchMetricStripItem>",
       "body_hash": "fbc4b1d85c3c3311"
@@ -5653,7 +5645,7 @@
       "name": "_clubEstablishedLabel",
       "kind": "function",
       "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-      "line": 179,
+      "line": 177,
       "signature": "String _clubEstablishedLabel(Club club) {",
       "return_type": "String",
       "body_hash": "0978195dc83b9760"
@@ -5662,7 +5654,7 @@
       "name": "_clubHeroLocationLabel",
       "kind": "function",
       "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-      "line": 199,
+      "line": 197,
       "signature": "String _clubHeroLocationLabel(Club club, Event? nextEvent) {",
       "return_type": "String",
       "body_hash": "93f6dd5839c9a838"
@@ -5671,7 +5663,7 @@
       "name": "ClubNextRunBanner",
       "kind": "class",
       "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-      "line": 213,
+      "line": 211,
       "signature": "class ClubNextRunBanner extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -5681,7 +5673,7 @@
       "name": "_nextRunLabel",
       "kind": "function",
       "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-      "line": 273,
+      "line": 271,
       "signature": "String _nextRunLabel(Event event) {",
       "return_type": "String",
       "body_hash": "725bf711ef8f37ba"
@@ -5690,7 +5682,7 @@
       "name": "ClubActivitySection",
       "kind": "class",
       "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-      "line": 280,
+      "line": 278,
       "signature": "class ClubActivitySection extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -5704,13 +5696,13 @@
       "signature": "class ClubDetailLoadingBody extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "656eec4d80d3c5bc"
+      "body_hash": "92f054c29d16cebb"
     },
     {
       "name": "ClubHeroLoadingSkeleton",
       "kind": "class",
       "file": "lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart",
-      "line": 63,
+      "line": 56,
       "signature": "class ClubHeroLoadingSkeleton extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -5720,17 +5712,17 @@
       "name": "ClubStatsLoadingSkeleton",
       "kind": "class",
       "file": "lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart",
-      "line": 99,
+      "line": 92,
       "signature": "class ClubStatsLoadingSkeleton extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "79bc5ff905b9668c"
+      "body_hash": "c24c6ff73a9d708e"
     },
     {
       "name": "ClubStatLoadingSkeleton",
       "kind": "class",
       "file": "lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart",
-      "line": 124,
+      "line": 117,
       "signature": "class ClubStatLoadingSkeleton extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -5740,7 +5732,7 @@
       "name": "ClubStatsDividerSkeleton",
       "kind": "class",
       "file": "lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart",
-      "line": 140,
+      "line": 133,
       "signature": "class ClubStatsDividerSkeleton extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -5750,7 +5742,7 @@
       "name": "ClubHostLoadingSkeleton",
       "kind": "class",
       "file": "lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart",
-      "line": 156,
+      "line": 149,
       "signature": "class ClubHostLoadingSkeleton extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -5760,7 +5752,7 @@
       "name": "ClubTextLoadingSkeleton",
       "kind": "class",
       "file": "lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart",
-      "line": 186,
+      "line": 179,
       "signature": "class ClubTextLoadingSkeleton extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -5770,7 +5762,7 @@
       "name": "ClubScheduleLoadingSkeleton",
       "kind": "class",
       "file": "lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart",
-      "line": 197,
+      "line": 190,
       "signature": "class ClubScheduleLoadingSkeleton extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -5956,7 +5948,7 @@
       "signature": "class ClubScheduleSection extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "32393d21b88bef8e"
+      "body_hash": "ebd71f5d89c03a68"
     },
     {
       "name": "showClubShareCardSheet",
@@ -33521,13 +33513,13 @@
       "signature": "class ClubReviewsSection extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "b6c2ff286c9be820"
+      "body_hash": "a322f91a90867d73"
     },
     {
       "name": "EventReviewsSection",
       "kind": "class",
       "file": "lib/reviews/shared/reviews_section.dart",
-      "line": 53,
+      "line": 54,
       "signature": "class EventReviewsSection extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -33537,7 +33529,7 @@
       "name": "ReviewsPreviewSection",
       "kind": "class",
       "file": "lib/reviews/shared/reviews_section.dart",
-      "line": 133,
+      "line": 134,
       "signature": "class ReviewsPreviewSection extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -33547,7 +33539,7 @@
       "name": "ReviewCard",
       "kind": "class",
       "file": "lib/reviews/shared/reviews_section.dart",
-      "line": 274,
+      "line": 275,
       "signature": "class ReviewCard extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -33557,7 +33549,7 @@
       "name": "ReviewOwnerResponseBlock",
       "kind": "class",
       "file": "lib/reviews/shared/reviews_section.dart",
-      "line": 361,
+      "line": 362,
       "signature": "class ReviewOwnerResponseBlock extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -33567,7 +33559,7 @@
       "name": "showReviewResponseSheet",
       "kind": "function",
       "file": "lib/reviews/shared/reviews_section.dart",
-      "line": 408,
+      "line": 409,
       "signature": "Future<void> showReviewResponseSheet({",
       "return_type": "Future<void>",
       "body_hash": "e284af19893d6d5d"
@@ -33576,7 +33568,7 @@
       "name": "ReviewResponseSheet",
       "kind": "class",
       "file": "lib/reviews/shared/reviews_section.dart",
-      "line": 420,
+      "line": 421,
       "signature": "class ReviewResponseSheet extends ConsumerStatefulWidget {",
       "superclass": "ConsumerStatefulWidget",
       "is_widget": true,
@@ -33586,7 +33578,7 @@
       "name": "_ReviewResponseSheetState",
       "kind": "class",
       "file": "lib/reviews/shared/reviews_section.dart",
-      "line": 430,
+      "line": 431,
       "signature": "class _ReviewResponseSheetState extends ConsumerState<ReviewResponseSheet> {",
       "superclass": "ConsumerState<ReviewResponseSheet>",
       "is_widget": false,
