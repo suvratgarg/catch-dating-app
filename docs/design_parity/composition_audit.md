@@ -1,6 +1,6 @@
 ---
 doc_id: composition_audit
-version: 0.1.0
+version: 0.1.1
 updated: 2026-07-05
 owner: design_parity_review
 status: active
@@ -47,7 +47,8 @@ Standing doctrine (owner-approved 2026-07-05):
   `*Screen`/`*Body`-suffixed widgets that duplicate a production shell.
 
 Screen queue (working order): Dashboard ✅ → Event Detail ✅ → Club Detail ✅
-→ Explore → Catches/Swipe Hub → Chats/Inbox → Profile → Host Operations.
+→ Explore ✅ → Catches/Swipe Hub ✅ → Chats/Inbox ✅ → Profile ✅ →
+Host Operations (structural pass; O1 open) → Event Success ✅.
 
 ---
 
@@ -542,7 +543,103 @@ plus Widgetbook coverage were refreshed.
 
 ---
 
-## Screens 9+ — pending
+## Screen 9 — Event Success (audited 2026-07-05, companion + host surfaces)
 
-Remaining candidates: Event Success companion/host surfaces, Calendar,
-Saved Events, Payments/Reviews history. Audits append here, same format.
+Files: `lib/event_success/presentation/event_success_companion_screen.dart`
+plus companion part files, `lib/event_success/presentation/event_success_host_screen.dart`
+plus host part files, and `event_success_event_preview_*`. This is another
+module-sized feature (~18k presentation lines), but the production composition
+is healthier than the size suggests: provider waves live at the route/section
+edge, companion/host bodies are mostly provider-free, mutation errors surface
+through shared listeners/banners, and the immersive companion stage has a
+deliberate grammar that should not be forced into ordinary `CatchSection`
+rules.
+
+### S1. Companion route orchestration is inline, unlike the host adapter `[codex]`
+
+`EventSuccessCompanionRouteScreen` runs three provider waves inline: event/auth/
+profile/participation/plan, then arrival mission/compatibility, then moment-
+specific feedback/preference/wingman/assignment/peer reads. Each branch returns
+`CompanionLoading`, `CompanionError`, or `CompanionMessage` directly, and the
+loaded branch then constructs a very wide `EventSuccessCompanionScreen`
+argument list.
+
+This is not a visual wrapper bug; it is the same state-adapter problem the host
+side already solved with `EventSuccessHostSectionState.resolve`. Root fix:
+create an `EventSuccessCompanionRouteState` (or similarly named display-state
+adapter) with statuses for loading, access/message, error + retry intent, and
+ready data. The route screen still owns the provider watches and mutation
+callbacks, but branch selection and retry intent mapping move into that adapter
+with focused tests. Keep `CompanionLoading/Error/Message` as renderers unless
+the adapter makes one redundant. Acceptance: no UI copy or state-order change;
+existing route Widgetbook states still cover event-not-found, sign-in-required,
+no-booking, plan-missing, offline/error, loading, and ready moments.
+
+### S2. Host tab bodies repeat the scroll-shell contract `[codex]`
+
+`EventSuccessHostPanel` computes `shrinkWrap`, `physics`, and `padding` once
+from `embedded`, then passes those three knobs into `SetupTab`, `LiveTab`, and
+`ReportTab`. Each tab then constructs its own `ListView`; `LiveTab` has three
+separate early-return `ListView` branches, and `ReportTab` has four. The result
+is correct today, but the scroll ownership is spread across every tab and every
+empty/report branch.
+
+Root fix: introduce one local host-tab body shell (working name
+`EventSuccessHostTabBody`) or invert the tabs to return content children while
+the parent owns the `ListView`. It should encode the embedded/standalone
+scroll contract once and expose the smallest necessary child-list API. This is
+mechanical if done as a pure shell extraction: no section reordering, no visual
+spacing changes, and no controller changes. Acceptance: the existing
+`event_success_live_screens_test.dart` host-panel coverage still passes, and
+Widgetbook strict states for setup/live/report keep rendering the same branches.
+
+### S3. `QuestionProgressRail` uses Material ink inside the stage grammar `[codex]`
+
+The companion stage already defines `StageBouncyPress` specifically because
+Material ink feels wrong on the gradient/motif surface. `StageBouncyChip` uses
+it, but `QuestionProgressRail` still wraps each numbered dot in raw `InkWell`.
+This is a small local inconsistency, not a global primitive gap.
+
+Fix: migrate the numbered dot tap target to `StageBouncyPress` (or extend that
+primitive just enough to preserve `selected` semantics cleanly), keeping the
+current tooltip, selected semantics, dot sizing, and colors. Add or update the
+strict Widgetbook state/test for `QuestionProgressRail` so this does not drift
+back to Material ink.
+
+### S4. Fixture actions leak into production host panel construction `[watch]`
+
+`EventSuccessHostFixtureActions` is consumed by Widgetbook, tests, manual QA,
+and through `HostEventManageScreen`'s `eventSuccessFixtureActions` seam. It is
+useful for fixture surfaces, but it also means `EventSuccessHostPanel` contains
+fixture-vs-production callback arbitration. That is not a blocker for current
+composition, because production passes `null`, but it is a cleanup candidate if
+this module is split: move fixture adaptation to Widgetbook/manual-QA owners
+and pass ordinary typed callbacks into the provider-free panel.
+
+### S5. Positive calibration — keep the stage grammar distinct
+
+`StagePanel`, `StageSectionLabel`, `StageActionDock`, `StageSoftBand`,
+`StageBouncyPress`, and the paper companion scaffold are not stray aliases for
+ordinary sections. They define the immersive attendee companion language:
+breathing surfaces, stage-native press feedback, motif/reveal overlays, and
+paper-ticket pre-arrival states. Do not fold these into `CatchSection` or
+`CatchSectionHeader`; the right consolidation path is local consistency inside
+the stage grammar (S3), plus eventual component-contract registration if the
+stage language becomes a reusable product system.
+
+### S6. Preview/lab surfaces are not product-screen debt yet
+
+`EventSuccessEventPreviewScreen`, the lab screen, and manual QA screen are
+review harnesses. They can carry their own preview scaffolding as long as they
+compose the production host/companion bodies rather than forking them. Current
+preview code uses `EventSuccessHostSetupFlow`, `EventSuccessLiveHostMode`,
+`EventSuccessAttendeeCompanionPreview`, and report blocks as review slices; no
+product-screen composition work order here until a preview wrapper drifts from
+the production component it is meant to exercise.
+
+---
+
+## Screens 10+ — pending
+
+Remaining candidates: Calendar, Saved Events, Payments/Reviews history. Audits
+append here, same format.
