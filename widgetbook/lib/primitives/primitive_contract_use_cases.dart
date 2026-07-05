@@ -61,6 +61,7 @@ import 'package:catch_dating_app/core/widgets/catch_tab_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_dock.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
@@ -5217,6 +5218,100 @@ Widget catchBottomDockCtaContractStates(BuildContext context) {
             catchLine: 'FREE TO JOIN',
             footnote: 'No charge until the host approves.',
             onPressed: _noop,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: ClubDetailDock,
+  path: '[Core primitives]/Product composites',
+)
+Widget clubDetailDockContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'ClubDetailDock',
+    contractId: 'catch.club_dock',
+    states: const [
+      'guest',
+      'visitor',
+      'visitor-pending',
+      'member',
+      'member-bell-pending',
+      'owner',
+    ],
+    children: [
+      _StateCard(
+        label: 'guest',
+        child: _DockFrame(
+          child: ClubDetailDock(
+            state: ClubDetailDockRole.guest,
+            activityKind: ActivityKind.socialRun,
+            footnote: 'Sign in to request access.',
+            onSignIn: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'visitor',
+        child: _DockFrame(
+          child: ClubDetailDock(
+            state: ClubDetailDockRole.visitor,
+            activityKind: ActivityKind.pickleball,
+            members: 128,
+            footnote: 'Requests are approved by the host.',
+            onJoin: _noop,
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'visitor-pending',
+        child: _DockFrame(
+          child: ClubDetailDock(
+            state: ClubDetailDockRole.visitor,
+            activityKind: ActivityKind.dinner,
+            members: 42,
+            isJoinLoading: true,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'member',
+        child: _DockFrame(
+          child: ClubDetailDock(
+            state: ClubDetailDockRole.member,
+            activityKind: ActivityKind.yoga,
+            members: 76,
+            footnote: 'You are a member.',
+            onBell: _noop,
+            onManage: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'member-bell-pending',
+        child: _DockFrame(
+          child: ClubDetailDock(
+            state: ClubDetailDockRole.member,
+            activityKind: ActivityKind.socialRun,
+            members: 76,
+            notificationsEnabled: false,
+            isBellLoading: true,
+            onBell: _noop,
+            onManage: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'owner',
+        child: _DockFrame(
+          child: ClubDetailDock(
+            state: ClubDetailDockRole.owner,
+            activityKind: ActivityKind.pubQuiz,
+            onManage: _noop,
+            onCreate: _noop,
           ),
         ),
       ),

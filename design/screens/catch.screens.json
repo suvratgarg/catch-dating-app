@@ -951,7 +951,7 @@
             "symbol": "ClubDetailBody"
           },
           {
-            "file": "lib/clubs/presentation/detail/widgets/catch_club_dock.dart",
+            "file": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
             "symbol": "ClubMembershipDock"
           }
         ],
@@ -1171,7 +1171,7 @@
             "club_detail_host_public"
           ],
           "previewIds": [
-            "CatchClubDock/Contract states"
+            "ClubDetailDock/Dock states"
           ],
           "tests": [
             "test/clubs/clubs_controllers_test.dart"
@@ -1200,7 +1200,7 @@
             "club_detail_join_pending"
           ],
           "previewIds": [
-            "CatchClubDock/Contract states"
+            "ClubDetailDock/Dock states"
           ],
           "tests": [
             "test/clubs/clubs_controllers_test.dart"
@@ -1505,7 +1505,7 @@
               "ClubDock"
             ],
             "flutter": {
-              "file": "lib/clubs/presentation/detail/widgets/catch_club_dock.dart",
+              "file": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
               "symbol": "ClubMembershipDock"
             },
             "currentOwner": "ClubDetailScreen",
@@ -1524,7 +1524,7 @@
               "owner_host_app"
             ],
             "previewIds": [
-              "CatchClubDock/Contract states"
+              "ClubDetailDock/Dock states"
             ],
             "migration": "Decision closed: keep provider-backed ClubMembershipDock screen-local and consumer-only. Host Club Detail suppresses this dock, so provider-free CatchClubDock promotion is intentionally deferred until another host/member surface proves the same action dock contract."
           }
@@ -2823,7 +2823,7 @@
             ],
             "flutter": {
               "file": "lib/dashboard/presentation/widgets/dashboard_sliver_header.dart",
-              "symbol": "DashboardSliverHeader"
+              "symbol": "DashboardHeaderContent"
             },
             "currentOwner": "DashboardScreen and DashboardFull",
             "targetOwner": "registered Dashboard Home header section with view data and action slots",
@@ -5688,7 +5688,7 @@
             ],
             "flutter": {
               "file": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
-              "symbol": "ChatsSliverHeader"
+              "symbol": "ChatsBrowseHeader"
             },
             "currentOwner": "ChatsListScreen",
             "targetOwner": "provider-free chats list header section",
@@ -7175,7 +7175,7 @@
             ],
             "flutter": {
               "file": "lib/user_profile/presentation/widgets/profile_sliver_header.dart",
-              "symbol": "ProfileSliverHeader"
+              "symbol": "ProfileTitle"
             },
             "currentOwner": "ProfileScreen",
             "targetOwner": "provider-free self-profile header section",
@@ -7267,8 +7267,8 @@
               "ProfileFieldRow"
             ],
             "flutter": {
-              "file": "lib/user_profile/presentation/widgets/profile_info_section.dart",
-              "symbol": "ProfileInfoSection"
+              "file": "lib/user_profile/presentation/widgets/profile_tab.dart",
+              "symbol": "ProfileFieldRow"
             },
             "currentOwner": "ProfileTabSliverBody",
             "targetOwner": "provider-free profile info section list",
@@ -8009,14 +8009,14 @@
         }
       ],
       "source": {
-        "file": "lib/hosts/presentation/host_operations_home_screen.dart",
+        "file": "lib/hosts/presentation/host_operations/host_operations_home_screen.dart",
         "symbol": "HostOperationsHomeScreen"
       },
       "stateController": {
         "primary": "uidProvider + _hostClubsForUserProvider + watchEventsForClubProvider",
         "files": [
           {
-            "file": "lib/hosts/presentation/host_operations_home_screen.dart",
+            "file": "lib/hosts/presentation/host_operations/host_operations_home_screen.dart",
             "symbol": "HostOperationsHomeScreen"
           },
           {
@@ -8152,7 +8152,7 @@
           "source": "Null uid renders _HostAuthRequiredScreen with Sign in required copy and auth route retry.",
           "nextAction": "Keep signed-out/access capture synced with host auth copy.",
           "previewIds": [
-            "HostOperationsHomeScreen/Route states"
+            "hostHomeRouteStates"
           ],
           "captureIds": [
             "host_home_signed_out"
@@ -8165,7 +8165,7 @@
           "source": "_hostClubsForUserProvider loading renders _HostLoadingScreen with HostRouteLoadingBody and host-operations-shaped skeletons.",
           "nextAction": "Keep loading capture synced with HostRouteLoadingBody visual edits.",
           "previewIds": [
-            "HostOperationsHomeScreen/Route states"
+            "hostHomeRouteStates"
           ],
           "captureIds": [
             "host_home_clubs_loading"
@@ -8178,7 +8178,7 @@
           "source": "Hosted or owned club stream errors become CatchErrorScaffold.fromError with AppErrorContext.club and retry invalidation.",
           "nextAction": "Keep generic and offline load-error captures synced with AppErrorMessage copy.",
           "previewIds": [
-            "HostOperationsHomeScreen/Route states"
+            "hostHomeRouteStates"
           ],
           "captureIds": [
             "host_home_clubs_error",
@@ -8192,7 +8192,7 @@
           "source": "No hosted or owned clubs renders HostEmptyActionCard with Create your first club copy and Create club action.",
           "nextAction": "Verify create-club CTA routing in host shell once Host Club Create callbacks are fully typed.",
           "previewIds": [
-            "HostOperationsHomeScreen/Route states"
+            "hostHomeRouteStates"
           ],
           "captureIds": [
             "host_home_empty_clubs"
@@ -8208,7 +8208,7 @@
           ],
           "nextAction": "Add single-owned-club-only capture if it diverges from the existing owned baseline.",
           "previewIds": [
-            "HostOperationsHomeScreen/Route states"
+            "hostHomeRouteStates"
           ],
           "captureIds": [
             "host_home_dashboard"
@@ -8224,7 +8224,7 @@
           ],
           "nextAction": "Captured by host_home_switcher_cohost and host_home_long_club_names; remaining switcher work is future menu-open or pixel-reference variants if design requires them.",
           "previewIds": [
-            "HostOperationsHomeScreen/Route states"
+            "hostHomeRouteStates"
           ],
           "captureIds": [
             "host_home_switcher_cohost",
@@ -8241,7 +8241,7 @@
           ],
           "nextAction": "Confirm create/manage affordances match ownership rules as Host Event Create/Manage callbacks are typed.",
           "previewIds": [
-            "HostOperationsHomeScreen/Route states"
+            "hostHomeRouteStates"
           ],
           "captureIds": [
             "host_home_cohost_empty_events"
@@ -8254,7 +8254,7 @@
           "source": "HostHomeEventsSectionState maps the selected club event async branch to loading before HostEventsClubSection renders HostEventRowsSkeleton under the Upcoming label.",
           "nextAction": "Keep event-list loading capture synced with HostEventRowsSkeleton changes.",
           "previewIds": [
-            "HostOperationsHomeScreen/Route states"
+            "hostHomeRouteStates"
           ],
           "captureIds": [
             "host_home_events_loading"
@@ -8267,7 +8267,7 @@
           "source": "HostHomeEventsSectionState maps event errors before HostEventsClubSection renders CatchInlineErrorState.fromError with AppErrorContext.event and a typed retry callback supplied by HostEventsClubCard.",
           "nextAction": "Add nested event-list offline capture if event-specific offline copy diverges from club-load offline.",
           "previewIds": [
-            "HostOperationsHomeScreen/Route states"
+            "hostHomeRouteStates"
           ],
           "captureIds": [
             "host_home_events_error"
@@ -8293,7 +8293,7 @@
           ],
           "nextAction": "Host Home now has manifest-registered Host Today and Host Events-list references. The 2026-06-25 Today pass separates HostHomeTab.today from HostHomeTab.events, adds HostHomeTodayDashboardState plus provider-free Today sections, and brings both registered references within threshold: Today 17.48% / 15.54, Events 6.76% / 12.26. Keep zero, one, multiple, long-title, loading/error, and accessibility variants moving through captures and Widgetbook previews.",
           "previewIds": [
-            "HostOperationsHomeScreen/Route states"
+            "hostHomeRouteStates"
           ],
           "captureIds": [
             "host_home_dashboard",
@@ -8307,7 +8307,7 @@
           "source": "When selected club has no active events, Host Home still shows Add event and No active events yet copy.",
           "nextAction": "Add owner-empty-events capture if it diverges from the co-host empty-events variant.",
           "previewIds": [
-            "HostOperationsHomeScreen/Route states"
+            "hostHomeRouteStates"
           ],
           "captureIds": [
             "host_home_cohost_empty_events"
@@ -8323,7 +8323,7 @@
           ],
           "nextAction": "Coordinate this callback contract with screen.host.event.create once the create flow gets a fuller route-state adapter.",
           "previewIds": [
-            "HostOperationsHomeScreen/Route states"
+            "hostHomeRouteStates"
           ]
         },
         {
@@ -8336,7 +8336,7 @@
           ],
           "nextAction": "Keep this callback contract aligned with screen.host.event.manage as the host manage adapter is expanded.",
           "previewIds": [
-            "HostOperationsHomeScreen/Route states"
+            "hostHomeRouteStates"
           ]
         },
         {
@@ -8346,7 +8346,7 @@
           "source": "Club and event stream errors currently use generic club/event error mapping.",
           "nextAction": "Club-load offline is captured; nested hosted-event offline is tracked separately as club_events_offline.",
           "previewIds": [
-            "HostOperationsHomeScreen/Route states"
+            "hostHomeRouteStates"
           ],
           "captureIds": [
             "host_home_clubs_offline"
@@ -8359,7 +8359,7 @@
           "source": "Host Home has a deterministic text-scale 2.0 capture.",
           "nextAction": "Add text-scale captures for empty/error/event-loading states if those layouts diverge.",
           "previewIds": [
-            "HostOperationsHomeScreen/Route states"
+            "hostHomeRouteStates"
           ],
           "captureIds": [
             "host_home_text_scale_2"
@@ -8372,7 +8372,7 @@
           "source": "Host Home has a deterministic reduced-motion capture.",
           "nextAction": "Review host shell branch switching, menus, and any future status animation under reduced motion.",
           "previewIds": [
-            "HostOperationsHomeScreen/Route states"
+            "hostHomeRouteStates"
           ],
           "captureIds": [
             "host_home_reduced_motion"
@@ -8385,7 +8385,7 @@
           "source": "Host Home has paired light/dark deterministic capture output.",
           "nextAction": "Add paired theme captures for empty/error/event-loading states if those layouts diverge.",
           "previewIds": [
-            "HostOperationsHomeScreen/Route states"
+            "hostHomeRouteStates"
           ],
           "captureIds": [
             "host_home_light_dark"
@@ -8405,7 +8405,7 @@
               "HostHomeScreenState"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations_home_screen.dart",
+              "file": "lib/hosts/presentation/host_operations/host_operations_home_screen.dart",
               "symbol": "HostOperationsHomeScreen"
             },
             "currentOwner": "HostHomeRouteState + HostOperationsHomeScreen",
@@ -8424,7 +8424,7 @@
             ],
             "migration": "HostHomeRouteState now owns auth-required, loading, error, empty, and loaded route selection from uid plus host-club async state in host_home_screen_state.dart. HostHomeScreenState owns selected-club, selected HostHomeTab, title, switcher visibility, and owner/co-host role display state; HostHomeTodayDashboardState owns Today next-event/task derivation; HostHomeEventRowsState owns Events row derivation; _HostEventsScaffold owns navigation callbacks.",
             "previewIds": [
-              "HostOperationsHomeScreen/Route states"
+              "hostHomeRouteStates"
             ]
           },
           {
@@ -8437,7 +8437,7 @@
               "ClubSwitcher"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations_screen.dart",
+              "file": "lib/hosts/presentation/host_operations/host_operations_top_bar.dart",
               "symbol": "HostOperationsTopBar"
             },
             "currentOwner": "_HostEventsScaffold",
@@ -8455,7 +8455,7 @@
             ],
             "migration": "Selected club title, kicker, switcher actions, and host role menu labels render through public HostOperationsTopBar with section-level Widgetbook states. Route-state selection policy now lives in HostHomeRouteState.",
             "previewIds": [
-              "HostOperationsHomeScreen/Route states",
+              "hostHomeRouteStates",
               "HostOperationsTopBar/Top bar states"
             ]
           },
@@ -8470,7 +8470,7 @@
               "ActivityChip"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations_screen.dart",
+              "file": "lib/hosts/presentation/host_operations/host_events_list.dart",
               "symbol": "HostMetaRow"
             },
             "currentOwner": "HostEventsClubCard",
@@ -8488,7 +8488,7 @@
             ],
             "migration": "HostMetaRow is public and has section-level Widgetbook states for owner, host-team, and missing-area metadata. Keep activity/role display data in the adapter and reuse with Host Clubs and Host Club Detail if the same header language persists.",
             "previewIds": [
-              "HostOperationsHomeScreen/Route states",
+              "hostHomeRouteStates",
               "HostMetaRow/Meta row states"
             ]
           },
@@ -8502,7 +8502,7 @@
               "EventManagementList"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations_screen.dart",
+              "file": "lib/hosts/presentation/host_operations/host_events_list.dart",
               "symbol": "HostEventsClubSection"
             },
             "currentOwner": "HostEventsClubCard adapter + HostHomeEventsSectionState + HostEventsClubSection",
@@ -8523,7 +8523,7 @@
             ],
             "migration": "Event loading/error/empty/populated mapping now lives in HostHomeEventsSectionState, event sorting/filtering lives in HostHomeEventRowsState, and provider-free HostEventsClubSection receives typed retry/create/manage callbacks. HostEventsClubCard remains the narrow provider adapter over watchEventsForClubProvider. Widgetbook states still cover content, loading, error, offline, empty, and cancelled-filtered lists.",
             "previewIds": [
-              "HostOperationsHomeScreen/Route states",
+              "hostHomeRouteStates",
               "hostHomeEventSectionStates"
             ]
           },
@@ -8537,7 +8537,7 @@
               "ManageEventRow"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations_screen.dart",
+              "file": "lib/hosts/presentation/host_operations/host_events_list.dart",
               "symbol": "HostEventRows"
             },
             "currentOwner": "HostEventRows",
@@ -8554,7 +8554,7 @@
             ],
             "migration": "HostEventRows receives provider-free HostHomeEventRowData plus typed tap callbacks. Keep it local unless Host Manage and Host Club Detail confirm the same row treatment.",
             "previewIds": [
-              "HostOperationsHomeScreen/Route states",
+              "hostHomeRouteStates",
               "HostEventRows/Exact catalog"
             ]
           },
@@ -8583,7 +8583,7 @@
             ],
             "migration": "Keep no-clubs and no-events copy/action construction in route call sites while sharing HostEmptyActionCard for the visual shell.",
             "previewIds": [
-              "HostOperationsHomeScreen/Route states",
+              "hostHomeRouteStates",
               "HostEmptyActionCard/Action card states"
             ]
           },
@@ -8598,7 +8598,7 @@
               "HostErrorState"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_auth_required_screen.dart",
+              "file": "lib/hosts/presentation/host_operations/host_auth_required_screen.dart",
               "symbol": "HostAuthRequiredScreen"
             },
             "currentOwner": "HostOperationsHomeScreen",
@@ -8614,7 +8614,7 @@
             ],
             "migration": "Keep retry/navigation intents in the adapter and add deterministic access/loading/error/offline captures.",
             "previewIds": [
-              "HostOperationsHomeScreen/Route states"
+              "hostHomeRouteStates"
             ]
           }
         ]
@@ -8656,14 +8656,14 @@
         }
       ],
       "source": {
-        "file": "lib/hosts/presentation/host_clubs_screen.dart",
+        "file": "lib/hosts/presentation/host_operations/host_clubs_screen.dart",
         "symbol": "HostClubsScreen"
       },
       "stateController": {
         "primary": "uidProvider + _hostClubsForUserProvider + HostClubsScreenState + HostClubEditController + HostPaymentAccountController + watchHostPaymentAccountProvider + hostAnalyticsProvider",
         "files": [
           {
-            "file": "lib/hosts/presentation/host_clubs_screen.dart",
+            "file": "lib/hosts/presentation/host_operations/host_clubs_screen.dart",
             "symbol": "HostClubsScreen"
           },
           {
@@ -9131,7 +9131,7 @@
           "nextAction": "Direct section captures cover host-team pending/error/offline, add-host sheet states, and remove/transfer confirmation-dialog previews; only reference-specific variants remain.",
           "previewIds": [
             "HostClubsScreen/Route states",
-            "HostTeamAddHostSheet/Add host sheet states",
+            "hostTeamAddHostSheetStates",
             "HostTeamHostActionDialog/Host action confirmation dialogs"
           ],
           "captureIds": [
@@ -9151,7 +9151,7 @@
           "nextAction": "Covered by host_clubs_team_pending, host_clubs_team_error, host_clubs_team_offline, HostTeamAddHostSheet ready/pending/error/offline previews, and HostTeamHostActionDialog remove/transfer previews.",
           "previewIds": [
             "HostClubsScreen/Route states",
-            "HostTeamAddHostSheet/Add host sheet states",
+            "hostTeamAddHostSheetStates",
             "HostTeamHostActionDialog/Host action confirmation dialogs"
           ],
           "captureIds": [
@@ -9288,7 +9288,7 @@
               "HostClubsScreenState"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_clubs_screen.dart",
+              "file": "lib/hosts/presentation/host_operations/host_clubs_screen.dart",
               "symbol": "HostClubsScreen"
             },
             "currentOwner": "HostClubsScreen",
@@ -9326,7 +9326,7 @@
               "FieldGroup"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations_screen.dart",
+              "file": "lib/hosts/presentation/host_operations/host_organizer.dart",
               "symbol": "HostClubOrganizerOverview"
             },
             "currentOwner": "_HostClubsScaffold",
@@ -9363,7 +9363,7 @@
               "ClubSwitcher"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations_screen.dart",
+              "file": "lib/hosts/presentation/host_operations/host_operations_top_bar.dart",
               "symbol": "HostOperationsTopBar"
             },
             "currentOwner": "_HostClubsScaffold",
@@ -9425,7 +9425,7 @@
               "HostClubMetaRow"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations_screen.dart",
+              "file": "lib/hosts/presentation/host_operations/host_club_profile.dart",
               "symbol": "HostClubProfileCard"
             },
             "currentOwner": "_HostClubsScaffold",
@@ -9458,7 +9458,7 @@
               "HostInlineEditor"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations_screen.dart",
+              "file": "lib/hosts/presentation/host_operations/host_inline_editors.dart",
               "symbol": "HostInlineTextEntryEditor"
             },
             "currentOwner": "_HostClubProfileCard",
@@ -9490,7 +9490,7 @@
               "HostEventDefaultsEditor"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations_screen.dart",
+              "file": "lib/hosts/presentation/host_operations/host_inline_editors.dart",
               "symbol": "HostInlineOptionEditor"
             },
             "currentOwner": "_HostClubProfileCard",
@@ -9582,7 +9582,7 @@
             "migration": "Keep host-team writes in HostTeamManagementController. HostTeamAddHostSheet is public and source-backed with Widgetbook ready, pending, error, and offline states; HostTeamHostActionDialog is public and source-backed with remove-host and transfer-ownership states. Remaining team migration is a broader controller/display-state seam if Host Clubs needs to lift every route/sheet side effect out of the section.",
             "previewIds": [
               "HostClubsScreen/Route states",
-              "HostTeamAddHostSheet/Add host sheet states",
+              "hostTeamAddHostSheetStates",
               "HostTeamHostActionDialog/Host action confirmation dialogs"
             ]
           },
@@ -9597,7 +9597,7 @@
               "HostAnalyticsReport"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations_screen.dart",
+              "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
               "symbol": "HostClubInsightsPane"
             },
             "currentOwner": "_HostClubsScaffold",
@@ -9636,7 +9636,7 @@
               "HostClubPreviewPane"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations_screen.dart",
+              "file": "lib/hosts/presentation/host_operations/host_club_preview.dart",
               "symbol": "HostClubPreviewPane"
             },
             "currentOwner": "_HostClubsScaffold",
@@ -9693,7 +9693,7 @@
               "HostErrorState"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_auth_required_screen.dart",
+              "file": "lib/hosts/presentation/host_operations/host_auth_required_screen.dart",
               "symbol": "HostAuthRequiredScreen"
             },
             "currentOwner": "HostClubsScreen",
@@ -13580,7 +13580,7 @@
           },
           {
             "file": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
-            "symbol": "ChatsSliverHeader"
+            "symbol": "ChatsBrowseHeader"
           },
           {
             "file": "lib/chats/presentation/inbox/widgets/chats_list.dart",
@@ -14090,7 +14090,7 @@
             ],
             "flutter": {
               "file": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
-              "symbol": "ChatsSliverHeader"
+              "symbol": "ChatsBrowseHeader"
             },
             "currentOwner": "ChatsSliverHeader",
             "targetOwner": "provider-free host inbox header section",
@@ -14121,7 +14121,7 @@
             ],
             "flutter": {
               "file": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
-              "symbol": "ChatsSliverHeader"
+              "symbol": "ChatsBrowseHeader"
             },
             "currentOwner": "HostInboxScreenState + ChatsSliverHeader",
             "targetOwner": "provider-free host filter row",
@@ -16975,7 +16975,7 @@
             ],
             "flutter": {
               "file": "lib/events/presentation/calendar/calendar_screen.dart",
-              "symbol": "CalendarMessage"
+              "symbol": "CalendarAgendaSliverSection"
             },
             "currentOwner": "CalendarAgendaSectionState + CalendarAgendaSliverSection",
             "targetOwner": "CalendarAgendaSectionState + CalendarAgendaSliverSection",
@@ -17314,8 +17314,8 @@
               "SavedEventsStateSurfaces"
             ],
             "flutter": {
-              "file": "lib/events/presentation/saved_events_screen.dart",
-              "symbol": "SavedEventsMessage"
+              "file": "lib/core/widgets/catch_empty_state.dart",
+              "symbol": "CatchEmptyState"
             },
             "currentOwner": "SavedEventsLoading + SavedEventsError + SavedEventsClubNamesErrorSliver + SavedEventsMessage",
             "targetOwner": "SavedEventsLoading + SavedEventsError + SavedEventsClubNamesErrorSliver + SavedEventsMessage",
@@ -18261,8 +18261,8 @@
             "symbol": "HostClubEditScaffold"
           },
           {
-            "file": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-            "symbol": "HostClubEditFooter"
+            "file": "lib/core/widgets/catch_bottom_dock.dart",
+            "symbol": "CatchBottomDock"
           },
           {
             "file": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
@@ -18829,7 +18829,7 @@
             "symbol": "CreateClubPhotosPicker"
           },
           {
-            "file": "lib/core/widgets/catch_field.dart",
+            "file": "lib/core/widgets/catch_section_layout.dart",
             "symbol": "CatchSection"
           }
         ],
@@ -19279,8 +19279,8 @@
               "EditClubFooter"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-              "symbol": "HostClubEditFooter"
+              "file": "lib/core/widgets/catch_bottom_dock.dart",
+              "symbol": "CatchBottomDock"
             },
             "currentOwner": "HostClubEditFooter + HostClubCreateFooterState",
             "targetOwner": "provider-free edit footer",
@@ -19863,8 +19863,8 @@
               "EditEventFooter"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-              "symbol": "EditHostedEventFooter"
+              "file": "lib/core/widgets/catch_bottom_dock.dart",
+              "symbol": "CatchBottomDock"
             },
             "currentOwner": "EditHostedEventFooter over EditHostedEventFooterState",
             "targetOwner": "provider-free mutation footer",
@@ -19917,14 +19917,14 @@
         }
       ],
       "source": {
-        "file": "lib/hosts/presentation/host_account_screen.dart",
+        "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
         "symbol": "HostAccountScreen"
       },
       "stateController": {
         "primary": "HostAccountScreen + HostSettingsState + HostProfileController + uidProvider + watchHostProfileProvider + _hostClubsForUserProvider + AuthSessionController",
         "files": [
           {
-            "file": "lib/hosts/presentation/host_account_screen.dart",
+            "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
             "symbol": "HostAccountScreen"
           },
           {
@@ -20353,7 +20353,7 @@
               "HostSettingsState"
             ],
             "flutter": {
-              "file": "lib/core/widgets/catch_tab_rail.dart",
+              "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
               "symbol": "HostAccountScreen"
             },
             "currentOwner": "HostAccountScreen + provider watches",
@@ -20381,7 +20381,7 @@
               "HostSettingsTopBar"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_account_screen.dart",
+              "file": "lib/core/widgets/catch_tab_rail.dart",
               "symbol": "CatchTabRail"
             },
             "currentOwner": "HostAccountScreen + CatchTabRail",
@@ -20410,7 +20410,7 @@
               "HostProfileSummaryRows"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_account_screen.dart",
+              "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
               "symbol": "HostSettingsProfileSection"
             },
             "currentOwner": "HostSettingsProfileSection",
@@ -20437,7 +20437,7 @@
               "HostProfileEditorSheet"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_account_screen.dart",
+              "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
               "symbol": "HostProfileEditorSheet"
             },
             "currentOwner": "HostAccountScreen private bottom sheet",
@@ -20465,7 +20465,7 @@
               "HostSettingsClubsSection"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_account_screen.dart",
+              "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
               "symbol": "HostSettingsClubsSection"
             },
             "currentOwner": "HostSettingsClubsSection",
@@ -20544,14 +20544,14 @@
         }
       ],
       "source": {
-        "file": "lib/hosts/presentation/host_operations_screen.dart",
+        "file": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
         "symbol": "HostProfileScreen"
       },
       "stateController": {
         "primary": "HostProfileScreen + HostProfileEditState + HostProfileController + uidProvider + watchHostProfileProvider",
         "files": [
           {
-            "file": "lib/hosts/presentation/host_operations_screen.dart",
+            "file": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
             "symbol": "HostProfileScreen"
           },
           {
@@ -20874,7 +20874,7 @@
               "HostProfileEditState"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations_screen.dart",
+              "file": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
               "symbol": "HostProfileScreen"
             },
             "currentOwner": "HostProfileScreen + provider watches",
@@ -20902,7 +20902,7 @@
               "HostProfileTopBar"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations_screen.dart",
+              "file": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
               "symbol": "HostProfileScreen"
             },
             "currentOwner": "HostProfileScreen",
@@ -20928,7 +20928,7 @@
               "HostProfileForm"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations_screen.dart",
+              "file": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
               "symbol": "HostProfileForm"
             },
             "currentOwner": "HostProfileForm + HostProfileFields",
@@ -22281,7 +22281,7 @@
             ],
             "flutter": {
               "file": "lib/reviews/presentation/reviews_history_screen.dart",
-              "symbol": "ReviewsHistoryEmptyState"
+              "symbol": "ReviewsHistoryBody"
             },
             "currentOwner": "ReviewsHistoryEmptyState",
             "targetOwner": "provider-free reviews history empty state",
@@ -22882,8 +22882,8 @@
               "SettingsAccountSection"
             ],
             "flutter": {
-              "file": "lib/safety/presentation/settings_screen.dart",
-              "symbol": "SettingsSection"
+              "file": "lib/core/widgets/catch_section_layout.dart",
+              "symbol": "CatchSection"
             },
             "currentOwner": "_SettingsSection + CatchSettingsRow",
             "targetOwner": "provider-free settings account section",
@@ -22909,8 +22909,8 @@
               "SettingsNotificationPreferences"
             ],
             "flutter": {
-              "file": "lib/safety/presentation/settings_screen.dart",
-              "symbol": "SettingsSection"
+              "file": "lib/core/widgets/catch_section_layout.dart",
+              "symbol": "CatchSection"
             },
             "currentOwner": "_SettingsSection + CatchToggle",
             "targetOwner": "provider-free settings notification preferences section",
@@ -22936,8 +22936,8 @@
               "SettingsPrivacySafetySection"
             ],
             "flutter": {
-              "file": "lib/safety/presentation/settings_screen.dart",
-              "symbol": "SettingsSection"
+              "file": "lib/core/widgets/catch_section_layout.dart",
+              "symbol": "CatchSection"
             },
             "currentOwner": "_SettingsSection + SettingsController",
             "targetOwner": "provider-free settings privacy and safety section",
@@ -22996,8 +22996,8 @@
               "SettingsSignOutSection"
             ],
             "flutter": {
-              "file": "lib/safety/presentation/settings_screen.dart",
-              "symbol": "SettingsSection"
+              "file": "lib/core/widgets/catch_section_layout.dart",
+              "symbol": "CatchSection"
             },
             "currentOwner": "_SettingsSection + AuthSessionController",
             "targetOwner": "provider-free settings about and sign-out sections",

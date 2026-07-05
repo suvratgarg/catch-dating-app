@@ -5880,8 +5880,7 @@
           "space.s5",
           "theme.light.color.ink",
           "theme.light.color.ink3",
-          "theme.light.color.line",
-          "layout.tabRailHeight"
+          "theme.light.color.line"
         ],
         "dartRoles": [
           "CatchOptionGroup",
@@ -7265,15 +7264,15 @@
     },
     {
       "id": "catch.club_dock",
-      "name": "CatchClubDock",
+      "name": "ClubDetailDock",
       "status": "active",
       "kind": "composite",
       "summary": "Club-detail membership dock with role-specific guest, visitor, member, and owner action states.",
       "dart": {
-        "symbol": "CatchClubDock",
-        "file": "lib/clubs/presentation/detail/widgets/catch_club_dock.dart",
+        "symbol": "ClubDetailDock",
+        "file": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
         "constructors": [
-          "CatchClubDock"
+          "ClubDetailDock"
         ]
       },
       "design": {
@@ -7298,7 +7297,7 @@
             "name": "state",
             "type": "enum",
             "required": true,
-            "dartType": "CatchClubDockState",
+            "dartType": "ClubDetailDockRole",
             "values": [
               "guest",
               "visitor",
@@ -7390,7 +7389,7 @@
           "theme.light.color.surface"
         ],
         "dartRoles": [
-          "CatchClubDockState",
+          "ClubDetailDockRole",
           "CatchButton",
           "CatchIconButton",
           "ActivityPalette.resolve"

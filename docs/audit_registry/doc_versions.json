@@ -43,17 +43,17 @@
   },
   "audit_doc_summaries": {
     "path": "docs/audit_registry/doc_summaries.json",
-    "version": "4.5.142",
-    "updated": "2026-07-03",
+    "version": "4.5.143",
+    "updated": "2026-07-05",
     "status": "active",
     "read_policy": "Use for compact read/skip policies before opening long markdown docs, including agent-harness, enforcement-integrity hardening, exhibit freshness, React surface refactor and component-family governance through the retired website legacy site barrel/import boundary, website page shells, admin directory/detail screen shells, admin workbench layouts, admin intake section/search-candidate shells, admin marketing field shells, admin marketing carousel preview shells, empty-state variants, product-module grids, event-action cards, PublicSearchBar ownership, public event-card shells, and parallel delegation routing. Includes admin component registry summary routing. Admin Storybook preview coverage obligations."
   },
   "audit_doc_versions": {
     "path": "docs/audit_registry/doc_versions.json",
-    "version": "4.6.187",
+    "version": "4.6.188",
     "updated": "2026-07-05",
     "status": "active",
-    "read_policy": "Use for durable doc version metadata, read policies, architecture pattern-tracker routing, exhibit-freshness routing, manifest role metadata, allowedFindings receipt checks, React class-name boundaries, React surface and component-family governance including the retired website legacy site barrel/import boundary, website page shells, admin directory/detail screen shells, admin workbench layouts, admin editor section/form shells, admin layout span classes, admin eyebrow labels, admin card/stat layout shells, admin marketing studio shell/tabs, admin marketing post-board shells, admin marketing composer flow shells, admin marketing picker list/row shells, admin marketing feature-shot grid/card shells, admin marketing brand-contract shells, admin marketing help/compliance text/list shells, admin marketing event-library grid/card/link shells, admin marketing media-library grid/card shells, admin marketing new-post grid/card shells, admin marketing guide shells, admin marketing stacked-section shells, admin marketing app-media shells, admin marketing field shells, admin diff list shells, admin publishing utility primitives, admin event supply shells, admin selected table rows, admin marketing tag rows, admin marketing query lists, admin marketing slide editor/list shells, admin marketing recommendation list/item shells, admin marketing audit list/row shells, admin feature-drop feature editor/list shells, admin feature-drop controls/preview shells, admin marketing preview/export shells, admin marketing carousel preview shells, admin marketing image editor shells, admin guardrail lists, admin intake source lists, admin intake gate lists, admin intake decision shells, admin intake workspace shells, admin organizer intake curation shells, admin overview queue shells, admin overview analytics shells, capture-card shells, empty-state variants, badge/status rows, website identity display shells, website process status panels, product-module grids, event-action cards, PublicSearchBar ownership, public event-card shells, UI label spans, claim-flow route/root/auth-row shells, Host Page route shells, Host Application flow shells, Host feature section shells, featured organizer card shells, and app-download CTA group/shells, agent delegation protocol doc freshness, composition-audit routing, and design parity/catalog version bumps including Host Manage Event Success, private-access, and invite-link edge coverage. Admin component registry scanner obligations. Admin Storybook preview coverage obligations."
+    "read_policy": "Use for durable doc version metadata, read policies, AI-first workflow guide routing, architecture pattern-tracker routing, exhibit-freshness routing, manifest role metadata, allowedFindings receipt checks, React class-name boundaries, React surface and component-family governance including the retired website legacy site barrel/import boundary, website page shells, admin directory/detail screen shells, admin workbench layouts, admin editor section/form shells, admin layout span classes, admin eyebrow labels, admin card/stat layout shells, admin marketing studio shell/tabs, admin marketing post-board shells, admin marketing composer flow shells, admin marketing picker list/row shells, admin marketing feature-shot grid/card shells, admin marketing brand-contract shells, admin marketing help/compliance text/list shells, admin marketing event-library grid/card/link shells, admin marketing media-library grid/card shells, admin marketing new-post grid/card shells, admin marketing guide shells, admin marketing stacked-section shells, admin marketing app-media shells, admin marketing field shells, admin diff list shells, admin publishing utility primitives, admin event supply shells, admin selected table rows, admin marketing tag rows, admin marketing query lists, admin marketing slide editor/list shells, admin marketing recommendation list/item shells, admin marketing audit list/row shells, admin feature-drop feature editor/list shells, admin feature-drop controls/preview shells, admin marketing preview/export shells, admin marketing carousel preview shells, admin marketing image editor shells, admin guardrail lists, admin intake source lists, admin intake gate lists, admin intake decision shells, admin intake workspace shells, admin organizer intake curation shells, admin overview queue shells, admin overview analytics shells, capture-card shells, empty-state variants, badge/status rows, website identity display shells, website process status panels, product-module grids, event-action cards, PublicSearchBar ownership, public event-card shells, UI label spans, claim-flow route/root/auth-row shells, Host Page route shells, Host Application flow shells, Host feature section shells, featured organizer card shells, and app-download CTA group/shells, agent delegation protocol doc freshness, composition-audit routing, and design parity/catalog version bumps including Host Manage Event Success, private-access, and invite-link edge coverage. Admin component registry scanner obligations. Admin Storybook preview coverage obligations."
   },
   "agent_entrypoint": {
     "path": "AGENTS.md",
@@ -68,6 +68,13 @@
     "updated": "2026-07-02",
     "status": "active",
     "read_policy": "Read before broad AI-assisted cleanup, architecture refactors, repeated pattern rollouts, design implementation, doc consolidation, workflow-harness changes, parallel worktree delegation, or enforcement-integrity metadata changes including manifest roles and ratchet baseline receipts."
+  },
+  "ai_first_workflow_guide": {
+    "path": "docs/ai_first_workflow_guide.md",
+    "version": "1.0.0",
+    "updated": "2026-07-05",
+    "status": "active",
+    "read_policy": "Use when explaining Catch's AI-first workflow to another repository owner or when implementing a similar agent entrypoint, context-pack, rules, scanner, audit-registry, CI, and readiness pattern elsewhere. Do not treat it as the canonical owner for Catch-specific rules."
   },
   "agent_regression_ledger": {
     "path": "docs/agent_regression_ledger.json",
@@ -149,8 +156,8 @@
   },
   "docs_index": {
     "path": "docs/README.md",
-    "version": "4.5.3",
-    "updated": "2026-07-02",
+    "version": "4.5.4",
+    "updated": "2026-07-05",
     "status": "active",
     "read_policy": "Read before adding, deleting, consolidating docs, changing canonical doc routing, or adding agent-facing workflow instructions."
   },
@@ -399,7 +406,7 @@
     "status": "temporary_active",
     "read_policy": "Read when changing packages/catch_ui_lints, UI analyzer diagnostics, UI scanner wrapper commands, or visual drift governance."
   },
-  "version": "4.6.186",
+  "version": "4.6.188",
   "admin_components": {
     "path": "design/admin/components.json",
     "version": "19",

@@ -925,7 +925,7 @@
             "lib/explore/presentation/widgets/explore_filter_rail.dart",
             "lib/explore/presentation/widgets/explore_body.dart",
             "lib/explore/presentation/widgets/explore_events_section.dart",
-            "lib/explore/presentation/widgets/explore_empty_state.dart",
+            "lib/explore/presentation/widgets/explore_list.dart",
             "lib/explore/presentation/widgets/explore_event_type_browse_grid.dart",
             "lib/explore/presentation/widgets/catch_cover_story.dart"
           ],
@@ -1275,7 +1275,7 @@
             "lib/clubs/presentation/detail/widgets/club_host_section.dart",
             "lib/clubs/presentation/detail/widgets/club_photo_strip.dart",
             "lib/clubs/presentation/detail/widgets/club_schedule_section.dart",
-            "lib/clubs/presentation/detail/widgets/catch_club_dock.dart",
+            "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
             "lib/reviews/shared/reviews_section.dart"
           ],
           "componentIds": [
@@ -1425,7 +1425,7 @@
                 "club_detail_host_public"
               ],
               "previewIds": [
-                "CatchClubDock/Contract states"
+                "ClubDetailDock/Dock states"
               ],
               "tests": [
                 "test/clubs/clubs_controllers_test.dart"
@@ -1452,7 +1452,7 @@
                 "club_detail_join_pending"
               ],
               "previewIds": [
-                "CatchClubDock/Contract states"
+                "ClubDetailDock/Dock states"
               ],
               "tests": [
                 "test/clubs/clubs_controllers_test.dart"
@@ -3890,7 +3890,6 @@
             "lib/user_profile/presentation/profile_edit_controller.dart",
             "lib/user_profile/presentation/widgets/profile_sliver_header.dart",
             "lib/user_profile/presentation/widgets/profile_tab.dart",
-            "lib/user_profile/presentation/widgets/profile_info_section.dart",
             "lib/user_profile/presentation/widgets/profile_inline_editors.dart",
             "lib/user_profile/presentation/widgets/preview_tab.dart",
             "lib/image_uploads/shared/photo_grid.dart",
@@ -4526,7 +4525,7 @@
               "status": "captured",
               "notes": "Null uid renders _HostAuthRequiredScreen with Sign in required copy and auth route retry. Signed-out/access capture is registered.",
               "previewIds": [
-                "HostOperationsHomeScreen/Route states"
+                "hostHomeRouteStates"
               ],
               "captureIds": [
                 "host_home_signed_out"
@@ -4538,7 +4537,7 @@
               "status": "captured",
               "notes": "_hostClubsForUserProvider loading renders _HostLoadingScreen with HostRouteLoadingBody and host-operations-shaped skeletons. Club loading capture is registered.",
               "previewIds": [
-                "HostOperationsHomeScreen/Route states"
+                "hostHomeRouteStates"
               ],
               "captureIds": [
                 "host_home_clubs_loading"
@@ -4550,7 +4549,7 @@
               "status": "captured",
               "notes": "Hosted or owned club stream errors become CatchErrorScaffold.fromError with AppErrorContext.club and retry invalidation. Generic and offline captures are registered.",
               "previewIds": [
-                "HostOperationsHomeScreen/Route states"
+                "hostHomeRouteStates"
               ],
               "captureIds": [
                 "host_home_clubs_error",
@@ -4563,7 +4562,7 @@
               "status": "captured",
               "notes": "No hosted or owned clubs renders HostEmptyActionCard with Create your first club copy and Create club action. Verify create-club CTA routing once Host Club Create callbacks are fully typed.",
               "previewIds": [
-                "HostOperationsHomeScreen/Route states"
+                "hostHomeRouteStates"
               ],
               "captureIds": [
                 "host_home_empty_clubs"
@@ -4578,7 +4577,7 @@
               ],
               "notes": "An owned club renders Host Home Today without a switcher, then composes the next-event hero and needs-you task rows from HostHomeTodayDashboardState. Add a single-owned-club-only capture if it diverges from the existing owned baseline.",
               "previewIds": [
-                "HostOperationsHomeScreen/Route states"
+                "hostHomeRouteStates"
               ],
               "captureIds": [
                 "host_home_dashboard"
@@ -4593,7 +4592,7 @@
               ],
               "notes": "Multiple owned/hosted clubs expose Switch club menu in the top bar and update selected club/event rows. host_home_switcher_cohost captures a co-host selection while owned clubs are present, and host_home_long_club_names captures title/menu pressure with long owner/co-host names.",
               "previewIds": [
-                "HostOperationsHomeScreen/Route states"
+                "hostHomeRouteStates"
               ],
               "captureIds": [
                 "host_home_switcher_cohost",
@@ -4609,7 +4608,7 @@
               ],
               "notes": "Co-hosted clubs show HOST TEAM role badge and keep operations scoped to the selected hosted club. Confirm create/manage affordances match ownership rules as route callbacks are typed.",
               "previewIds": [
-                "HostOperationsHomeScreen/Route states"
+                "hostHomeRouteStates"
               ],
               "captureIds": [
                 "host_home_cohost_empty_events"
@@ -4621,7 +4620,7 @@
               "status": "captured",
               "notes": "HostHomeEventsSectionState maps the selected club event async branch to loading, and HostEventsClubSection renders HostEventRowsSkeleton under the Upcoming label. Event-list loading capture is registered.",
               "previewIds": [
-                "HostOperationsHomeScreen/Route states",
+                "hostHomeRouteStates",
                 "hostHomeEventSectionStates"
               ],
               "captureIds": [
@@ -4634,7 +4633,7 @@
               "status": "captured",
               "notes": "HostHomeEventsSectionState maps event errors before HostEventsClubSection renders CatchInlineErrorState.fromError with AppErrorContext.event and a typed retry callback supplied by HostEventsClubCard. Event-list error capture is registered.",
               "previewIds": [
-                "HostOperationsHomeScreen/Route states",
+                "hostHomeRouteStates",
                 "hostHomeEventSectionStates"
               ],
               "captureIds": [
@@ -4662,7 +4661,7 @@
               ],
               "notes": "Host Home now separates HostHomeTab.today from HostHomeTab.events. HostHomeTodayDashboardState maps selected-club events into the Today next-event hero plus needs-you task rows, while HostHomeEventRowsState continues sorting non-cancelled club events for the Events list. The registered Host Today and Host Events-list references are both within threshold after the 2026-06-25 pass: Today 17.48% / 15.54, Events 6.76% / 12.26. Add long-title and accessibility variants.",
               "previewIds": [
-                "HostOperationsHomeScreen/Route states",
+                "hostHomeRouteStates",
                 "hostHomeEventSectionStates",
                 "HostEventRows/Exact catalog"
               ],
@@ -4677,7 +4676,7 @@
               "status": "captured",
               "notes": "When selected club has no active events, Host Home still shows Add event and No active events yet copy. Add an owner-empty-events capture if it diverges from the co-host empty-events variant.",
               "previewIds": [
-                "HostOperationsHomeScreen/Route states",
+                "hostHomeRouteStates",
                 "hostHomeEventSectionStates"
               ],
               "captureIds": [
@@ -4693,7 +4692,7 @@
               ],
               "notes": "_HostEventsScaffold owns the typed Add event callback and pushes hostCreateEventScreen with selected club id plus club extra. HostEventsClubCard receives the callback instead of constructing route parameters locally.",
               "previewIds": [
-                "HostOperationsHomeScreen/Route states",
+                "hostHomeRouteStates",
                 "hostHomeEventSectionStates"
               ]
             },
@@ -4706,7 +4705,7 @@
               ],
               "notes": "_HostEventsScaffold owns the typed manage-event callback and pushes hostAppEventManageScreen with clubId, eventId, and event extra. HostEventRows now renders provider/router-free row data and delegates taps to its parent.",
               "previewIds": [
-                "HostOperationsHomeScreen/Route states",
+                "hostHomeRouteStates",
                 "HostEventRows/Exact catalog"
               ]
             },
@@ -4716,7 +4715,7 @@
               "status": "captured",
               "notes": "Club-load offline is captured through a typed offline error; nested hosted-event offline is tracked separately as club_events_offline.",
               "previewIds": [
-                "HostOperationsHomeScreen/Route states"
+                "hostHomeRouteStates"
               ],
               "captureIds": [
                 "host_home_clubs_offline"
@@ -4728,7 +4727,7 @@
               "status": "captured",
               "notes": "Host Home has a deterministic text-scale 2.0 capture. Add text-scale captures for empty/error/event-loading states if those layouts diverge.",
               "previewIds": [
-                "HostOperationsHomeScreen/Route states"
+                "hostHomeRouteStates"
               ],
               "captureIds": [
                 "host_home_text_scale_2"
@@ -4740,7 +4739,7 @@
               "status": "captured",
               "notes": "Host Home has a deterministic reduced-motion capture. Review host shell branch switching, menus, and any future status animation under reduced motion.",
               "previewIds": [
-                "HostOperationsHomeScreen/Route states"
+                "hostHomeRouteStates"
               ],
               "captureIds": [
                 "host_home_reduced_motion"
@@ -4752,7 +4751,7 @@
               "status": "captured",
               "notes": "Host Home has paired light/dark deterministic capture output. Add paired theme captures for empty/error/event-loading states if those layouts diverge.",
               "previewIds": [
-                "HostOperationsHomeScreen/Route states"
+                "hostHomeRouteStates"
               ],
               "captureIds": [
                 "host_home_light_dark"
@@ -5053,7 +5052,7 @@
               "notes": "HostTeamManagementSection lists owner/co-host profiles, role badges, Add host, transfer ownership, and remove-host actions. HostTeamAddHostSheet is public and Widgetbook covers ready, pending, generic error, and offline add-host states; HostTeamHostActionDialog covers remove-host and transfer-ownership confirmations; direct section captures cover pending, generic error, and offline host-team mutations.",
               "previewIds": [
                 "HostClubsScreen/Route states",
-                "HostTeamAddHostSheet/Add host sheet states",
+                "hostTeamAddHostSheetStates",
                 "HostTeamHostActionDialog/Host action confirmation dialogs"
               ],
               "captureIds": [
@@ -5072,7 +5071,7 @@
               "notes": "HostTeamManagementController mutations drive add/remove/transfer pending and error feedback in the embedded team section and inline add-host sheet. The section renders a persistent CatchErrorBanner for mutation failures, HostTeamAddHostSheet renders inline add errors, and HostTeamHostActionDialog supplies typed remove/transfer confirmation copy; captures cover pending, generic error, and offline states.",
               "previewIds": [
                 "HostClubsScreen/Route states",
-                "HostTeamAddHostSheet/Add host sheet states",
+                "hostTeamAddHostSheetStates",
                 "HostTeamHostActionDialog/Host action confirmation dialogs"
               ],
               "captureIds": [
