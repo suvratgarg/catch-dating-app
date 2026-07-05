@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -118,29 +119,26 @@ class CatchesHubContent extends StatelessWidget {
                     onTap: () => onOpenCatch(featuredRun),
                   ),
                   gapH24,
-                  Row(
+                  CatchSectionHeader(
+                    title: 'Open catch windows',
+                    heavy: true,
+                    padding: const EdgeInsets.only(bottom: CatchSpacing.s3),
+                    trailing: Text(
+                      '${state.rows.length}',
+                      style: CatchTextStyles.mono(context, color: t.primary),
+                    ),
+                  ),
+                  CatchSectionList(
+                    gap: CatchSpacing.s3,
                     children: [
-                      Expanded(
-                        child: Text(
-                          'Open catch windows',
-                          style: CatchTextStyles.titleL(context),
+                      for (final row in state.rows)
+                        AttendedEventTile(
+                          row: row,
+                          onOpenCatch: () => onOpenCatch(row),
+                          onOpenRecap: () => onOpenRecap(row),
                         ),
-                      ),
-                      Text(
-                        '${state.rows.length}',
-                        style: CatchTextStyles.mono(context, color: t.primary),
-                      ),
                     ],
                   ),
-                  gapH12,
-                  for (final row in state.rows) ...[
-                    AttendedEventTile(
-                      row: row,
-                      onOpenCatch: () => onOpenCatch(row),
-                      onOpenRecap: () => onOpenRecap(row),
-                    ),
-                    if (row != state.rows.last) gapH12,
-                  ],
                 ],
               ),
             ),

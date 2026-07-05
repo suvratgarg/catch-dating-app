@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-05T03:31:31.142Z",
+  "generatedAt": "2026-07-05T03:45:19.487Z",
   "decisionLedgerPath": "docs/design_parity/widgetbook_widget_decisions.json",
   "total": 981,
   "stats": {
@@ -12936,7 +12936,7 @@
     },
     {
       "file": "lib/swipes/presentation/swipe_hub_screen.dart",
-      "line": 25,
+      "line": 26,
       "name": "SwipeHubScreen",
       "base": "ConsumerWidget",
       "area": "swipes",
@@ -12950,7 +12950,7 @@
     },
     {
       "file": "lib/swipes/presentation/swipe_hub_screen.dart",
-      "line": 51,
+      "line": 52,
       "name": "CatchesHubStateView",
       "base": "ConsumerWidget",
       "area": "swipes",
@@ -12964,7 +12964,7 @@
     },
     {
       "file": "lib/swipes/presentation/swipe_hub_screen.dart",
-      "line": 85,
+      "line": 86,
       "name": "CatchesHubContent",
       "base": "StatelessWidget",
       "area": "swipes",
@@ -12978,7 +12978,7 @@
     },
     {
       "file": "lib/swipes/presentation/swipe_hub_screen.dart",
-      "line": 154,
+      "line": 152,
       "name": "CatchesHubHeader",
       "base": "StatelessWidget",
       "area": "swipes",
@@ -12992,7 +12992,7 @@
     },
     {
       "file": "lib/swipes/presentation/swipe_hub_screen.dart",
-      "line": 187,
+      "line": 185,
       "name": "CatchesIntroCard",
       "base": "StatelessWidget",
       "area": "swipes",
@@ -13006,7 +13006,7 @@
     },
     {
       "file": "lib/swipes/presentation/swipe_hub_screen.dart",
-      "line": 268,
+      "line": 266,
       "name": "PillStat",
       "base": "StatelessWidget",
       "area": "swipes",
@@ -13020,7 +13020,7 @@
     },
     {
       "file": "lib/swipes/presentation/swipe_hub_screen.dart",
-      "line": 309,
+      "line": 307,
       "name": "CatchesHubEmptyState",
       "base": "StatelessWidget",
       "area": "swipes",
