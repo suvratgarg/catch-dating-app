@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-05T09:22:40.717Z",
+  "generatedAt": "2026-07-05T09:55:44.553Z",
   "baseRef": "HEAD^",
   "baseStatus": "git-ref",
   "baseWarning": null,
@@ -10,31 +10,16 @@
     "policy": "New public widget classes need Widgetbook and widget catalog coverage. New private widget classes and Widget-returning helpers must be inlined/deleted, merged into an existing primitive, or promoted to public cataloged widgets."
   },
   "summary": {
-    "addedWidgetClasses": 1,
-    "addedPublicWidgetClasses": 1,
+    "addedWidgetClasses": 0,
+    "addedPublicWidgetClasses": 0,
     "addedPrivateWidgetClasses": 0,
     "addedWidgetReturningHelpers": 0,
-    "coveredNewWidgets": 1,
+    "coveredNewWidgets": 0,
     "unresolved": 0,
-    "widgetsByStatus": {
-      "covered": 1
-    },
+    "widgetsByStatus": {},
     "helpersByStatus": {},
     "issues": {}
   },
-  "addedWidgets": [
-    {
-      "name": "EventSuccessHostTabBody",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 25,
-      "file": "lib/event_success/presentation/host_parts/event_success_host_shared.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    }
-  ],
+  "addedWidgets": [],
   "addedWidgetHelpers": []
 }

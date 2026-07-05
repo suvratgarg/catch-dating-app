@@ -5,6 +5,7 @@ import 'dart:math' as math;
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -44,7 +45,6 @@ import 'package:catch_dating_app/event_success/presentation/event_success_live_r
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_arrival_action.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
@@ -273,6 +273,14 @@ void _noopIncludeChange(bool include) {}
 Future<void> _noopSaveWingmanRequest(PublicProfile target, String note) async {}
 Future<void> _noopSubmitFeedback(EventSuccessFeedback feedback) async {}
 
+CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
+  return value.when(
+    data: CatchAsyncState<T>.data,
+    loading: () => CatchAsyncState<T>.loading(),
+    error: (error, stackTrace) => CatchAsyncState<T>.error(error),
+  );
+}
+
 class EventSuccessCompanionRouteScreen extends ConsumerWidget {
   const EventSuccessCompanionRouteScreen({
     super.key,
@@ -288,116 +296,46 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final uidAsync = ref.watch(uidProvider);
-    final uid = uidAsync.asData?.value;
+    final watchedUid = uidAsync.asData?.value;
     final eventAsync = ref.watch(watchEventProvider(eventId));
-    final event = eventAsync.asData?.value ?? initialEvent;
     final planAsync = ref.watch(watchEventSuccessPlanProvider(eventId));
-    // Wave 1: core event, profile, participation, and plan load together.
-    if (eventAsync.isLoading && event == null) {
-      return const CompanionLoading();
-    }
-    if (eventAsync.hasError) {
-      return CompanionError(
-        error: eventAsync.error!,
-        errorContext: AppErrorContext.event,
-        onRetry: () => ref.invalidate(watchEventProvider(eventId)),
-      );
-    }
-    if (event == null) {
-      return const CompanionMessage(
-        title: 'Event not found',
-        message: 'This event is no longer available.',
-      );
-    }
-    if (uidAsync.isLoading) {
-      return const CompanionLoading();
-    }
-    if (uidAsync.hasError) {
-      return CompanionError(
-        error: uidAsync.error!,
-        errorContext: AppErrorContext.auth,
-        onRetry: () => ref.invalidate(uidProvider),
-      );
-    }
-    if (uid == null) {
-      return const CompanionMessage(
-        title: 'Sign in required',
-        message: 'Sign in to open your event companion.',
-      );
-    }
-    final profileAsync = ref.watch(watchUserProfileProvider);
-    final participationAsync = ref.watch(
-      watchEventParticipationProvider(eventId, uid),
-    );
-    if (profileAsync.isLoading ||
-        participationAsync.isLoading ||
-        planAsync.isLoading) {
-      return const CompanionLoading();
-    }
-    if (profileAsync.hasError) {
-      return CompanionError(
-        error: profileAsync.error!,
-        errorContext: AppErrorContext.profile,
-        onRetry: () => ref.invalidate(watchUserProfileProvider),
-      );
-    }
-    if (participationAsync.hasError) {
-      return CompanionError(
-        error: participationAsync.error!,
-        errorContext: AppErrorContext.event,
-        onRetry: () =>
-            ref.invalidate(watchEventParticipationProvider(eventId, uid)),
-      );
-    }
-    if (planAsync.hasError) {
-      return CompanionError(
-        error: planAsync.error!,
-        errorContext: AppErrorContext.event,
-        onRetry: () => ref.invalidate(watchEventSuccessPlanProvider(eventId)),
-      );
-    }
-
-    final profile = profileAsync.asData?.value;
-    final participation = participationAsync.asData?.value;
-    if (profile == null || participation == null) {
-      return const CompanionMessage(
-        title: 'No booking found',
-        message: 'Book this event before opening the companion.',
-      );
-    }
-
-    final plan = planAsync.asData?.value;
-    if (plan == null) {
-      return const CompanionMessage(
-        title: 'Companion not available',
-        message:
-            'The host has not enabled the live event guide for this event yet.',
-      );
-    }
-
     final referenceNow =
         ref.watch(eventSuccessCompanionClockProvider).asData?.value ??
         DateTime.now();
-    final runtime = EventSuccessRuntime(
-      plan: plan,
-      event: event,
-      now: referenceNow,
+
+    final profileAsync = watchedUid == null
+        ? null
+        : ref.watch(watchUserProfileProvider);
+    final participationAsync = watchedUid == null
+        ? null
+        : ref.watch(watchEventParticipationProvider(eventId, watchedUid));
+    var routeState = EventSuccessCompanionRouteState.resolveCore(
+      eventState: _catchAsyncState(eventAsync),
+      initialEvent: initialEvent,
+      uidState: _catchAsyncState(uidAsync),
+      profileState: profileAsync == null
+          ? null
+          : _catchAsyncState(profileAsync),
+      participationState: participationAsync == null
+          ? null
+          : _catchAsyncState(participationAsync),
+      planState: _catchAsyncState(planAsync),
+      referenceNow: referenceNow,
     );
-    final eventEnded = !event.endTime.isAfter(referenceNow);
-    final checkInOpen = isSelfCheckInOpenForParticipationStatus(
-      event: event,
-      status: participation.status,
-      now: referenceNow,
+    final coreGate = _buildCompanionRouteGate(
+      routeState,
+      ref,
+      eventId: eventId,
     );
-    final firstHelloAvailable = runtime.canShowFirstHelloCheckIn(
-      participationStatus: participation.status,
-      checkInOpen: checkInOpen,
-      eventEnded: eventEnded,
-      arrivalMissionAssigned: false,
-      arrivalMissionStartAvailable: true,
-    );
+    if (coreGate != null) return coreGate;
+
+    final event = routeState.event!;
+    final uid = routeState.uid!;
+    final profile = routeState.profile!;
+    final participation = routeState.participation!;
+    final plan = routeState.plan!;
     final AsyncValue<EventSuccessArrivalMission?> arrivalMissionAsync =
-        firstHelloAvailable
+        routeState.firstHelloAvailable
         ? ref.watch(
             watchUserEventSuccessArrivalMissionProvider(
               eventId: eventId,
@@ -408,30 +346,21 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
 
     // Wave 2: arrival mission resolves before the attendee moment so First
     // Hello can preempt questionnaire/check-in when the module is enabled.
-    if (arrivalMissionAsync.isLoading) {
-      return const CompanionLoading();
-    }
-    if (arrivalMissionAsync.hasError) {
-      return CompanionError(
-        error: arrivalMissionAsync.error!,
-        errorContext: AppErrorContext.event,
-        onRetry: () => ref.invalidate(
-          watchUserEventSuccessArrivalMissionProvider(
-            eventId: eventId,
-            uid: uid,
-          ),
-        ),
-      );
-    }
-    final arrivalMission = arrivalMissionAsync.asData?.value;
-    final activeArrivalMission = arrivalMission?.isActive == true
-        ? arrivalMission
-        : null;
+    routeState = routeState.withArrivalMission(
+      _catchAsyncState(arrivalMissionAsync),
+    );
+    final arrivalGate = _buildCompanionRouteGate(
+      routeState,
+      ref,
+      eventId: eventId,
+    );
+    if (arrivalGate != null) return arrivalGate;
+
     final AsyncValue<EventSuccessCompatibilityResponse?> compatibilityAsync =
-        !firstHelloAvailable &&
-            runtime.canUseCompatibilityQuestionnaire(
+        !routeState.firstHelloAvailable &&
+            routeState.runtime!.canUseCompatibilityQuestionnaire(
               participationStatus: participation.status,
-              eventEnded: eventEnded,
+              eventEnded: routeState.eventEnded,
             )
         ? ref.watch(
             watchUserEventSuccessCompatibilityResponseProvider(
@@ -442,46 +371,21 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
         : const AsyncData<EventSuccessCompatibilityResponse?>(null);
 
     // Wave 2: compatibility response, resolved before the attendee moment.
-    if (compatibilityAsync.isLoading) {
-      return const CompanionLoading();
-    }
-    if (compatibilityAsync.hasError) {
-      return CompanionError(
-        error: compatibilityAsync.error!,
-        errorContext: AppErrorContext.event,
-        onRetry: () => ref.invalidate(
-          watchUserEventSuccessCompatibilityResponseProvider(
-            eventId: eventId,
-            uid: uid,
-          ),
-        ),
-      );
-    }
-
-    final attendeeMoment = runtime.attendeeMoment(
-      participationStatus: participation.status,
-      checkInOpen: checkInOpen,
-      eventEnded: eventEnded,
-      compatibilityResponseSaved: compatibilityAsync.asData?.value != null,
-      arrivalMissionAssigned: activeArrivalMission != null,
-      arrivalMissionStartAvailable: firstHelloAvailable,
+    routeState = routeState.withCompatibilityResponse(
+      _catchAsyncState(compatibilityAsync),
     );
-    final shouldLoadFeedback = attendeeMoment.showFeedback;
-    final shouldLoadWingmanRequest = attendeeMoment.showWingmanRequest;
-    final shouldLoadAssignment =
-        attendeeMoment.showPodAssignment ||
-        (attendeeMoment.showLiveReveal &&
-            attendeeMoment.assignmentModuleId ==
-                EventSuccessModuleCatalog.microPods.id);
-    final shouldLoadRotations =
-        attendeeMoment.showRotationSchedule ||
-        (attendeeMoment.showLiveReveal &&
-            attendeeMoment.assignmentModuleId ==
-                EventSuccessModuleCatalog.guidedRotations.id);
+    final compatibilityGate = _buildCompanionRouteGate(
+      routeState,
+      ref,
+      eventId: eventId,
+    );
+    if (compatibilityGate != null) return compatibilityGate;
+
+    final attendeeMoment = routeState.attendeeMoment!;
     final AsyncValue<EventSuccessPreference?> preferenceAsync =
         attendeeMoment.showPreCheckInPlanning ||
-            shouldLoadAssignment ||
-            shouldLoadRotations
+            routeState.shouldLoadAssignment ||
+            routeState.shouldLoadRotations
         ? ref.watch(
             watchUserEventSuccessPreferenceProvider(eventId: eventId, uid: uid),
           )
@@ -490,13 +394,14 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
         preferenceAsync.asData?.value?.microPodsOptedOut ?? false;
     final guidedRotationsOptedOut =
         preferenceAsync.asData?.value?.guidedRotationsOptedOut ?? false;
-    final AsyncValue<EventSuccessFeedback?> feedbackAsync = shouldLoadFeedback
+    final AsyncValue<EventSuccessFeedback?> feedbackAsync =
+        routeState.shouldLoadFeedback
         ? ref.watch(
             watchUserEventSuccessFeedbackProvider(eventId: eventId, uid: uid),
           )
         : const AsyncData<EventSuccessFeedback?>(null);
     final AsyncValue<List<PublicProfile>> candidatesAsync =
-        shouldLoadWingmanRequest
+        routeState.shouldLoadWingmanRequest
         ? ref.watch(
             wingmanRequestCandidatesProvider(
               eventId: eventId,
@@ -505,7 +410,7 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
           )
         : const AsyncData(<PublicProfile>[]);
     final AsyncValue<EventSuccessWingmanRequest?> wingmanRequestAsync =
-        shouldLoadWingmanRequest
+        routeState.shouldLoadWingmanRequest
         ? ref.watch(
             watchUserEventSuccessWingmanRequestProvider(
               eventId: eventId,
@@ -514,13 +419,15 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
           )
         : const AsyncData<EventSuccessWingmanRequest?>(null);
     final AsyncValue<EventSuccessAssignment?> assignmentAsync =
-        shouldLoadAssignment && !preferenceAsync.isLoading && !microPodsOptedOut
+        routeState.shouldLoadAssignment &&
+            !preferenceAsync.isLoading &&
+            !microPodsOptedOut
         ? ref.watch(
             watchUserEventSuccessAssignmentProvider(eventId: eventId, uid: uid),
           )
         : const AsyncData<EventSuccessAssignment?>(null);
     final AsyncValue<EventSuccessAssignment?> rotationAsync =
-        shouldLoadRotations &&
+        routeState.shouldLoadRotations &&
             !preferenceAsync.isLoading &&
             !guidedRotationsOptedOut
         ? ref.watch(
@@ -532,81 +439,23 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
         : const AsyncData<EventSuccessAssignment?>(null);
 
     // Wave 3: moment-specific feedback, preference, wingman, and assignments.
-    if (feedbackAsync.isLoading ||
-        preferenceAsync.isLoading ||
-        wingmanRequestAsync.isLoading ||
-        assignmentAsync.isLoading ||
-        rotationAsync.isLoading) {
-      return const CompanionLoading();
-    }
-    if (feedbackAsync.hasError) {
-      return CompanionError(
-        error: feedbackAsync.error!,
-        errorContext: AppErrorContext.event,
-        onRetry: () => ref.invalidate(
-          watchUserEventSuccessFeedbackProvider(eventId: eventId, uid: uid),
-        ),
-      );
-    }
-    if (assignmentAsync.hasError) {
-      return CompanionError(
-        error: assignmentAsync.error!,
-        errorContext: AppErrorContext.event,
-        onRetry: () => ref.invalidate(
-          watchUserEventSuccessAssignmentProvider(eventId: eventId, uid: uid),
-        ),
-      );
-    }
-    if (rotationAsync.hasError) {
-      return CompanionError(
-        error: rotationAsync.error!,
-        errorContext: AppErrorContext.event,
-        onRetry: () => ref.invalidate(
-          watchUserEventSuccessRotationAssignmentProvider(
-            eventId: eventId,
-            uid: uid,
-          ),
-        ),
-      );
-    }
-    if (preferenceAsync.hasError) {
-      return CompanionError(
-        error: preferenceAsync.error!,
-        errorContext: AppErrorContext.event,
-        onRetry: () => ref.invalidate(
-          watchUserEventSuccessPreferenceProvider(eventId: eventId, uid: uid),
-        ),
-      );
-    }
-    if (wingmanRequestAsync.hasError) {
-      return CompanionError(
-        error: wingmanRequestAsync.error!,
-        errorContext: AppErrorContext.event,
-        onRetry: () => ref.invalidate(
-          watchUserEventSuccessWingmanRequestProvider(
-            eventId: eventId,
-            uid: uid,
-          ),
-        ),
-      );
-    }
-    if (candidatesAsync.hasError) {
-      return CompanionError(
-        error: candidatesAsync.error!,
-        errorContext: AppErrorContext.event,
-        onRetry: () => ref.invalidate(
-          wingmanRequestCandidatesProvider(
-            eventId: eventId,
-            currentUser: profile,
-          ),
-        ),
-      );
-    }
+    routeState = routeState.withMomentData(
+      feedbackState: _catchAsyncState(feedbackAsync),
+      preferenceState: _catchAsyncState(preferenceAsync),
+      wingmanCandidatesState: _catchAsyncState(candidatesAsync),
+      wingmanRequestState: _catchAsyncState(wingmanRequestAsync),
+      assignmentState: _catchAsyncState(assignmentAsync),
+      rotationState: _catchAsyncState(rotationAsync),
+    );
+    final momentGate = _buildCompanionRouteGate(
+      routeState,
+      ref,
+      eventId: eventId,
+    );
+    if (momentGate != null) return momentGate;
 
-    final candidates = candidatesAsync.asData?.value ?? const <PublicProfile>[];
-    final feedback = feedbackAsync.asData?.value;
-    final assignment = assignmentAsync.asData?.value;
-    final rotationAssignment = rotationAsync.asData?.value;
+    final assignment = routeState.assignment;
+    final rotationAssignment = routeState.rotationAssignment;
     final peerUidsKey = assignment == null
         ? ''
         : eventSuccessPeerUidsKey(assignment.allPeerUids);
@@ -663,22 +512,22 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
         plan: plan,
         userProfile: profile,
         participation: participation,
-        wingmanRequestCandidates: candidates,
-        wingmanRequest: wingmanRequestAsync.asData?.value,
-        compatibilityResponse: compatibilityAsync.asData?.value,
-        existingFeedback: feedback,
+        wingmanRequestCandidates: routeState.wingmanRequestCandidates,
+        wingmanRequest: routeState.wingmanRequest,
+        compatibilityResponse: routeState.compatibilityResponse,
+        existingFeedback: routeState.feedback,
         assignment: assignment,
         assignmentPeerProfiles:
             peersAsync.asData?.value ?? const <PublicProfile>[],
         assignmentPeersLoading: peersAsync.isLoading,
-        microPodsOptedOut: microPodsOptedOut,
+        microPodsOptedOut: routeState.microPodsOptedOut,
         rotationAssignment: rotationAssignment,
         rotationPeerProfiles:
             rotationPeersAsync.asData?.value ?? const <PublicProfile>[],
         rotationPeersLoading: rotationPeersAsync.isLoading,
-        guidedRotationsOptedOut: guidedRotationsOptedOut,
-        arrivalMission: activeArrivalMission,
-        now: referenceNow,
+        guidedRotationsOptedOut: routeState.guidedRotationsOptedOut,
+        arrivalMission: routeState.activeArrivalMission,
+        now: routeState.referenceNow!,
         compatibilityActionState: CompatibilityQuestionnaireActionState(
           isSaving: compatibilityMutation.isPending,
           error: compatibilityMutation.hasError
@@ -790,4 +639,121 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
       ),
     );
   }
+}
+
+Widget? _buildCompanionRouteGate(
+  EventSuccessCompanionRouteState state,
+  WidgetRef ref, {
+  required String eventId,
+}) {
+  return switch (state.status) {
+    EventSuccessCompanionRouteStatus.loading => const CompanionLoading(),
+    EventSuccessCompanionRouteStatus.message => CompanionMessage(
+      title: state.message!.title,
+      message: state.message!.message,
+    ),
+    EventSuccessCompanionRouteStatus.error => CompanionError(
+      error: state.error!,
+      errorContext: state.errorContext!,
+      onRetry: _companionRouteRetryCallback(ref, state, eventId: eventId),
+    ),
+    EventSuccessCompanionRouteStatus.ready => null,
+  };
+}
+
+VoidCallback _companionRouteRetryCallback(
+  WidgetRef ref,
+  EventSuccessCompanionRouteState state, {
+  required String eventId,
+}) {
+  return () {
+    switch (state.retryIntent) {
+      case EventSuccessCompanionRetryIntent.event:
+        ref.invalidate(watchEventProvider(eventId));
+      case EventSuccessCompanionRetryIntent.uid:
+        ref.invalidate(uidProvider);
+      case EventSuccessCompanionRetryIntent.profile:
+        ref.invalidate(watchUserProfileProvider);
+      case EventSuccessCompanionRetryIntent.participation:
+        final uid = state.uid;
+        if (uid != null) {
+          ref.invalidate(watchEventParticipationProvider(eventId, uid));
+        }
+      case EventSuccessCompanionRetryIntent.plan:
+        ref.invalidate(watchEventSuccessPlanProvider(eventId));
+      case EventSuccessCompanionRetryIntent.arrivalMission:
+        final uid = state.uid;
+        if (uid != null) {
+          ref.invalidate(
+            watchUserEventSuccessArrivalMissionProvider(
+              eventId: eventId,
+              uid: uid,
+            ),
+          );
+        }
+      case EventSuccessCompanionRetryIntent.compatibility:
+        final uid = state.uid;
+        if (uid != null) {
+          ref.invalidate(
+            watchUserEventSuccessCompatibilityResponseProvider(
+              eventId: eventId,
+              uid: uid,
+            ),
+          );
+        }
+      case EventSuccessCompanionRetryIntent.feedback:
+        final uid = state.uid;
+        if (uid != null) {
+          ref.invalidate(
+            watchUserEventSuccessFeedbackProvider(eventId: eventId, uid: uid),
+          );
+        }
+      case EventSuccessCompanionRetryIntent.assignment:
+        final uid = state.uid;
+        if (uid != null) {
+          ref.invalidate(
+            watchUserEventSuccessAssignmentProvider(eventId: eventId, uid: uid),
+          );
+        }
+      case EventSuccessCompanionRetryIntent.rotationAssignment:
+        final uid = state.uid;
+        if (uid != null) {
+          ref.invalidate(
+            watchUserEventSuccessRotationAssignmentProvider(
+              eventId: eventId,
+              uid: uid,
+            ),
+          );
+        }
+      case EventSuccessCompanionRetryIntent.preference:
+        final uid = state.uid;
+        if (uid != null) {
+          ref.invalidate(
+            watchUserEventSuccessPreferenceProvider(eventId: eventId, uid: uid),
+          );
+        }
+      case EventSuccessCompanionRetryIntent.wingmanRequest:
+        final uid = state.uid;
+        if (uid != null) {
+          ref.invalidate(
+            watchUserEventSuccessWingmanRequestProvider(
+              eventId: eventId,
+              uid: uid,
+            ),
+          );
+        }
+      case EventSuccessCompanionRetryIntent.wingmanCandidates:
+        final profile = state.profile;
+        if (profile != null) {
+          ref.invalidate(
+            wingmanRequestCandidatesProvider(
+              eventId: eventId,
+              currentUser: profile,
+            ),
+          );
+        }
+      case null:
+        break;
+    }
+  };
 }

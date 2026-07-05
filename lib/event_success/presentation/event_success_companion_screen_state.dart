@@ -1,10 +1,15 @@
+import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_arrival_mission.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_preference.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_runtime.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -13,6 +18,575 @@ import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/widgets.dart';
+
+enum EventSuccessCompanionRouteStatus { loading, message, error, ready }
+
+enum EventSuccessCompanionRetryIntent {
+  event,
+  uid,
+  profile,
+  participation,
+  plan,
+  arrivalMission,
+  compatibility,
+  feedback,
+  assignment,
+  rotationAssignment,
+  preference,
+  wingmanRequest,
+  wingmanCandidates,
+}
+
+@immutable
+class EventSuccessCompanionRouteMessage {
+  const EventSuccessCompanionRouteMessage({
+    required this.title,
+    required this.message,
+  });
+
+  final String title;
+  final String message;
+}
+
+@immutable
+class EventSuccessCompanionRouteState {
+  const EventSuccessCompanionRouteState._({
+    required this.status,
+    required this.message,
+    required this.error,
+    required this.errorContext,
+    required this.retryIntent,
+    required this.event,
+    required this.uid,
+    required this.profile,
+    required this.participation,
+    required this.plan,
+    required this.referenceNow,
+    required this.runtime,
+    required this.eventEnded,
+    required this.checkInOpen,
+    required this.firstHelloAvailable,
+    required this.activeArrivalMission,
+    required this.compatibilityResponse,
+    required this.attendeeMoment,
+    required this.shouldLoadFeedback,
+    required this.shouldLoadWingmanRequest,
+    required this.shouldLoadAssignment,
+    required this.shouldLoadRotations,
+    required this.feedback,
+    required this.wingmanRequestCandidates,
+    required this.wingmanRequest,
+    required this.assignment,
+    required this.rotationAssignment,
+    required this.microPodsOptedOut,
+    required this.guidedRotationsOptedOut,
+  });
+
+  factory EventSuccessCompanionRouteState.resolveCore({
+    required CatchAsyncState<Event?> eventState,
+    required Event? initialEvent,
+    required CatchAsyncState<String?> uidState,
+    required CatchAsyncState<UserProfile?>? profileState,
+    required CatchAsyncState<EventParticipation?>? participationState,
+    required CatchAsyncState<EventSuccessPlan?> planState,
+    required DateTime referenceNow,
+  }) {
+    final event = eventState.value ?? initialEvent;
+    if (eventState.status == CatchAsyncStatus.loading && event == null) {
+      return EventSuccessCompanionRouteState.loading();
+    }
+    if (eventState.status == CatchAsyncStatus.error &&
+        eventState.error != null) {
+      return EventSuccessCompanionRouteState.error(
+        error: eventState.error!,
+        errorContext: AppErrorContext.event,
+        retryIntent: EventSuccessCompanionRetryIntent.event,
+      );
+    }
+    if (event == null) {
+      return EventSuccessCompanionRouteState.message(
+        title: 'Event not found',
+        message: 'This event is no longer available.',
+      );
+    }
+
+    if (uidState.status == CatchAsyncStatus.loading) {
+      return EventSuccessCompanionRouteState.loading(event: event);
+    }
+    if (uidState.status == CatchAsyncStatus.error && uidState.error != null) {
+      return EventSuccessCompanionRouteState.error(
+        error: uidState.error!,
+        errorContext: AppErrorContext.auth,
+        retryIntent: EventSuccessCompanionRetryIntent.uid,
+        event: event,
+      );
+    }
+    final uid = uidState.value;
+    if (uid == null) {
+      return EventSuccessCompanionRouteState.message(
+        title: 'Sign in required',
+        message: 'Sign in to open your event companion.',
+        event: event,
+      );
+    }
+
+    final profile = profileState;
+    final participation = participationState;
+    if (profile == null ||
+        participation == null ||
+        profile.status == CatchAsyncStatus.loading ||
+        participation.status == CatchAsyncStatus.loading ||
+        planState.status == CatchAsyncStatus.loading) {
+      return EventSuccessCompanionRouteState.loading(event: event, uid: uid);
+    }
+    if (profile.status == CatchAsyncStatus.error && profile.error != null) {
+      return EventSuccessCompanionRouteState.error(
+        error: profile.error!,
+        errorContext: AppErrorContext.profile,
+        retryIntent: EventSuccessCompanionRetryIntent.profile,
+        event: event,
+        uid: uid,
+      );
+    }
+    if (participation.status == CatchAsyncStatus.error &&
+        participation.error != null) {
+      return EventSuccessCompanionRouteState.error(
+        error: participation.error!,
+        errorContext: AppErrorContext.event,
+        retryIntent: EventSuccessCompanionRetryIntent.participation,
+        event: event,
+        uid: uid,
+      );
+    }
+    if (planState.status == CatchAsyncStatus.error && planState.error != null) {
+      return EventSuccessCompanionRouteState.error(
+        error: planState.error!,
+        errorContext: AppErrorContext.event,
+        retryIntent: EventSuccessCompanionRetryIntent.plan,
+        event: event,
+        uid: uid,
+      );
+    }
+
+    final userProfile = profile.value;
+    final eventParticipation = participation.value;
+    if (userProfile == null || eventParticipation == null) {
+      return EventSuccessCompanionRouteState.message(
+        title: 'No booking found',
+        message: 'Book this event before opening the companion.',
+        event: event,
+        uid: uid,
+      );
+    }
+
+    final plan = planState.value;
+    if (plan == null) {
+      return EventSuccessCompanionRouteState.message(
+        title: 'Companion not available',
+        message:
+            'The host has not enabled the live event guide for this event yet.',
+        event: event,
+        uid: uid,
+        profile: userProfile,
+        participation: eventParticipation,
+      );
+    }
+
+    final runtime = EventSuccessRuntime(
+      plan: plan,
+      event: event,
+      now: referenceNow,
+    );
+    final eventEnded = !event.endTime.isAfter(referenceNow);
+    final checkInOpen = isSelfCheckInOpenForParticipationStatus(
+      event: event,
+      status: eventParticipation.status,
+      now: referenceNow,
+    );
+    final firstHelloAvailable = runtime.canShowFirstHelloCheckIn(
+      participationStatus: eventParticipation.status,
+      checkInOpen: checkInOpen,
+      eventEnded: eventEnded,
+      arrivalMissionAssigned: false,
+      arrivalMissionStartAvailable: true,
+    );
+
+    return EventSuccessCompanionRouteState._(
+      status: EventSuccessCompanionRouteStatus.ready,
+      message: null,
+      error: null,
+      errorContext: null,
+      retryIntent: null,
+      event: event,
+      uid: uid,
+      profile: userProfile,
+      participation: eventParticipation,
+      plan: plan,
+      referenceNow: referenceNow,
+      runtime: runtime,
+      eventEnded: eventEnded,
+      checkInOpen: checkInOpen,
+      firstHelloAvailable: firstHelloAvailable,
+      activeArrivalMission: null,
+      compatibilityResponse: null,
+      attendeeMoment: null,
+      shouldLoadFeedback: false,
+      shouldLoadWingmanRequest: false,
+      shouldLoadAssignment: false,
+      shouldLoadRotations: false,
+      feedback: null,
+      wingmanRequestCandidates: const <PublicProfile>[],
+      wingmanRequest: null,
+      assignment: null,
+      rotationAssignment: null,
+      microPodsOptedOut: false,
+      guidedRotationsOptedOut: false,
+    );
+  }
+
+  factory EventSuccessCompanionRouteState.loading({Event? event, String? uid}) {
+    return EventSuccessCompanionRouteState._empty(
+      status: EventSuccessCompanionRouteStatus.loading,
+      event: event,
+      uid: uid,
+    );
+  }
+
+  factory EventSuccessCompanionRouteState.message({
+    required String title,
+    required String message,
+    Event? event,
+    String? uid,
+    UserProfile? profile,
+    EventParticipation? participation,
+  }) {
+    return EventSuccessCompanionRouteState._empty(
+      status: EventSuccessCompanionRouteStatus.message,
+      message: EventSuccessCompanionRouteMessage(
+        title: title,
+        message: message,
+      ),
+      event: event,
+      uid: uid,
+      profile: profile,
+      participation: participation,
+    );
+  }
+
+  factory EventSuccessCompanionRouteState.error({
+    required Object error,
+    required AppErrorContext errorContext,
+    required EventSuccessCompanionRetryIntent retryIntent,
+    Event? event,
+    String? uid,
+  }) {
+    return EventSuccessCompanionRouteState._empty(
+      status: EventSuccessCompanionRouteStatus.error,
+      error: error,
+      errorContext: errorContext,
+      retryIntent: retryIntent,
+      event: event,
+      uid: uid,
+    );
+  }
+
+  factory EventSuccessCompanionRouteState._empty({
+    required EventSuccessCompanionRouteStatus status,
+    EventSuccessCompanionRouteMessage? message,
+    Object? error,
+    AppErrorContext? errorContext,
+    EventSuccessCompanionRetryIntent? retryIntent,
+    Event? event,
+    String? uid,
+    UserProfile? profile,
+    EventParticipation? participation,
+  }) {
+    return EventSuccessCompanionRouteState._(
+      status: status,
+      message: message,
+      error: error,
+      errorContext: errorContext,
+      retryIntent: retryIntent,
+      event: event,
+      uid: uid,
+      profile: profile,
+      participation: participation,
+      plan: null,
+      referenceNow: null,
+      runtime: null,
+      eventEnded: false,
+      checkInOpen: false,
+      firstHelloAvailable: false,
+      activeArrivalMission: null,
+      compatibilityResponse: null,
+      attendeeMoment: null,
+      shouldLoadFeedback: false,
+      shouldLoadWingmanRequest: false,
+      shouldLoadAssignment: false,
+      shouldLoadRotations: false,
+      feedback: null,
+      wingmanRequestCandidates: const <PublicProfile>[],
+      wingmanRequest: null,
+      assignment: null,
+      rotationAssignment: null,
+      microPodsOptedOut: false,
+      guidedRotationsOptedOut: false,
+    );
+  }
+
+  final EventSuccessCompanionRouteStatus status;
+  final EventSuccessCompanionRouteMessage? message;
+  final Object? error;
+  final AppErrorContext? errorContext;
+  final EventSuccessCompanionRetryIntent? retryIntent;
+  final Event? event;
+  final String? uid;
+  final UserProfile? profile;
+  final EventParticipation? participation;
+  final EventSuccessPlan? plan;
+  final DateTime? referenceNow;
+  final EventSuccessRuntime? runtime;
+  final bool eventEnded;
+  final bool checkInOpen;
+  final bool firstHelloAvailable;
+  final EventSuccessArrivalMission? activeArrivalMission;
+  final EventSuccessCompatibilityResponse? compatibilityResponse;
+  final EventSuccessAttendeeMoment? attendeeMoment;
+  final bool shouldLoadFeedback;
+  final bool shouldLoadWingmanRequest;
+  final bool shouldLoadAssignment;
+  final bool shouldLoadRotations;
+  final EventSuccessFeedback? feedback;
+  final List<PublicProfile> wingmanRequestCandidates;
+  final EventSuccessWingmanRequest? wingmanRequest;
+  final EventSuccessAssignment? assignment;
+  final EventSuccessAssignment? rotationAssignment;
+  final bool microPodsOptedOut;
+  final bool guidedRotationsOptedOut;
+
+  bool get isReady => status == EventSuccessCompanionRouteStatus.ready;
+
+  EventSuccessCompanionRouteState withArrivalMission(
+    CatchAsyncState<EventSuccessArrivalMission?> arrivalMissionState,
+  ) {
+    if (!isReady) return this;
+    if (arrivalMissionState.status == CatchAsyncStatus.loading) {
+      return _withRouteStatus(EventSuccessCompanionRouteStatus.loading);
+    }
+    if (arrivalMissionState.status == CatchAsyncStatus.error &&
+        arrivalMissionState.error != null) {
+      return _withRouteStatus(
+        EventSuccessCompanionRouteStatus.error,
+        error: arrivalMissionState.error,
+        errorContext: AppErrorContext.event,
+        retryIntent: EventSuccessCompanionRetryIntent.arrivalMission,
+      );
+    }
+    final arrivalMission = arrivalMissionState.value;
+    return _copyWith(
+      activeArrivalMission: arrivalMission?.isActive == true
+          ? arrivalMission
+          : null,
+    );
+  }
+
+  EventSuccessCompanionRouteState withCompatibilityResponse(
+    CatchAsyncState<EventSuccessCompatibilityResponse?> compatibilityState,
+  ) {
+    if (!isReady) return this;
+    if (compatibilityState.status == CatchAsyncStatus.loading) {
+      return _withRouteStatus(EventSuccessCompanionRouteStatus.loading);
+    }
+    if (compatibilityState.status == CatchAsyncStatus.error &&
+        compatibilityState.error != null) {
+      return _withRouteStatus(
+        EventSuccessCompanionRouteStatus.error,
+        error: compatibilityState.error,
+        errorContext: AppErrorContext.event,
+        retryIntent: EventSuccessCompanionRetryIntent.compatibility,
+      );
+    }
+
+    final moment = runtime!.attendeeMoment(
+      participationStatus: participation!.status,
+      checkInOpen: checkInOpen,
+      eventEnded: eventEnded,
+      compatibilityResponseSaved: compatibilityState.value != null,
+      arrivalMissionAssigned: activeArrivalMission != null,
+      arrivalMissionStartAvailable: firstHelloAvailable,
+    );
+
+    return _copyWith(
+      compatibilityResponse: compatibilityState.value,
+      attendeeMoment: moment,
+      shouldLoadFeedback: moment.showFeedback,
+      shouldLoadWingmanRequest: moment.showWingmanRequest,
+      shouldLoadAssignment:
+          moment.showPodAssignment ||
+          (moment.showLiveReveal &&
+              moment.assignmentModuleId ==
+                  EventSuccessModuleCatalog.microPods.id),
+      shouldLoadRotations:
+          moment.showRotationSchedule ||
+          (moment.showLiveReveal &&
+              moment.assignmentModuleId ==
+                  EventSuccessModuleCatalog.guidedRotations.id),
+    );
+  }
+
+  EventSuccessCompanionRouteState withMomentData({
+    required CatchAsyncState<EventSuccessFeedback?> feedbackState,
+    required CatchAsyncState<EventSuccessPreference?> preferenceState,
+    required CatchAsyncState<List<PublicProfile>> wingmanCandidatesState,
+    required CatchAsyncState<EventSuccessWingmanRequest?> wingmanRequestState,
+    required CatchAsyncState<EventSuccessAssignment?> assignmentState,
+    required CatchAsyncState<EventSuccessAssignment?> rotationState,
+  }) {
+    if (!isReady) return this;
+    if (feedbackState.status == CatchAsyncStatus.loading ||
+        preferenceState.status == CatchAsyncStatus.loading ||
+        wingmanRequestState.status == CatchAsyncStatus.loading ||
+        assignmentState.status == CatchAsyncStatus.loading ||
+        rotationState.status == CatchAsyncStatus.loading) {
+      return _withRouteStatus(EventSuccessCompanionRouteStatus.loading);
+    }
+
+    final error = _firstCompanionRouteError([
+      (feedbackState, EventSuccessCompanionRetryIntent.feedback),
+      (assignmentState, EventSuccessCompanionRetryIntent.assignment),
+      (rotationState, EventSuccessCompanionRetryIntent.rotationAssignment),
+      (preferenceState, EventSuccessCompanionRetryIntent.preference),
+      (wingmanRequestState, EventSuccessCompanionRetryIntent.wingmanRequest),
+      (
+        wingmanCandidatesState,
+        EventSuccessCompanionRetryIntent.wingmanCandidates,
+      ),
+    ]);
+    if (error != null) {
+      return _withRouteStatus(
+        EventSuccessCompanionRouteStatus.error,
+        error: error.$1,
+        errorContext: AppErrorContext.event,
+        retryIntent: error.$2,
+      );
+    }
+
+    final preference = preferenceState.value;
+    return _copyWith(
+      feedback: feedbackState.value,
+      wingmanRequestCandidates:
+          wingmanCandidatesState.value ?? const <PublicProfile>[],
+      wingmanRequest: wingmanRequestState.value,
+      assignment: assignmentState.value,
+      rotationAssignment: rotationState.value,
+      microPodsOptedOut: preference?.microPodsOptedOut ?? false,
+      guidedRotationsOptedOut: preference?.guidedRotationsOptedOut ?? false,
+    );
+  }
+
+  EventSuccessCompanionRouteState _withRouteStatus(
+    EventSuccessCompanionRouteStatus status, {
+    Object? error,
+    AppErrorContext? errorContext,
+    EventSuccessCompanionRetryIntent? retryIntent,
+  }) {
+    return EventSuccessCompanionRouteState._(
+      status: status,
+      message: null,
+      error: error,
+      errorContext: errorContext,
+      retryIntent: retryIntent,
+      event: event,
+      uid: uid,
+      profile: profile,
+      participation: participation,
+      plan: plan,
+      referenceNow: referenceNow,
+      runtime: runtime,
+      eventEnded: eventEnded,
+      checkInOpen: checkInOpen,
+      firstHelloAvailable: firstHelloAvailable,
+      activeArrivalMission: activeArrivalMission,
+      compatibilityResponse: compatibilityResponse,
+      attendeeMoment: attendeeMoment,
+      shouldLoadFeedback: shouldLoadFeedback,
+      shouldLoadWingmanRequest: shouldLoadWingmanRequest,
+      shouldLoadAssignment: shouldLoadAssignment,
+      shouldLoadRotations: shouldLoadRotations,
+      feedback: feedback,
+      wingmanRequestCandidates: wingmanRequestCandidates,
+      wingmanRequest: wingmanRequest,
+      assignment: assignment,
+      rotationAssignment: rotationAssignment,
+      microPodsOptedOut: microPodsOptedOut,
+      guidedRotationsOptedOut: guidedRotationsOptedOut,
+    );
+  }
+
+  EventSuccessCompanionRouteState _copyWith({
+    EventSuccessArrivalMission? activeArrivalMission,
+    EventSuccessCompatibilityResponse? compatibilityResponse,
+    EventSuccessAttendeeMoment? attendeeMoment,
+    bool? shouldLoadFeedback,
+    bool? shouldLoadWingmanRequest,
+    bool? shouldLoadAssignment,
+    bool? shouldLoadRotations,
+    EventSuccessFeedback? feedback,
+    List<PublicProfile>? wingmanRequestCandidates,
+    EventSuccessWingmanRequest? wingmanRequest,
+    EventSuccessAssignment? assignment,
+    EventSuccessAssignment? rotationAssignment,
+    bool? microPodsOptedOut,
+    bool? guidedRotationsOptedOut,
+  }) {
+    return EventSuccessCompanionRouteState._(
+      status: EventSuccessCompanionRouteStatus.ready,
+      message: null,
+      error: null,
+      errorContext: null,
+      retryIntent: null,
+      event: event,
+      uid: uid,
+      profile: profile,
+      participation: participation,
+      plan: plan,
+      referenceNow: referenceNow,
+      runtime: runtime,
+      eventEnded: eventEnded,
+      checkInOpen: checkInOpen,
+      firstHelloAvailable: firstHelloAvailable,
+      activeArrivalMission: activeArrivalMission ?? this.activeArrivalMission,
+      compatibilityResponse:
+          compatibilityResponse ?? this.compatibilityResponse,
+      attendeeMoment: attendeeMoment ?? this.attendeeMoment,
+      shouldLoadFeedback: shouldLoadFeedback ?? this.shouldLoadFeedback,
+      shouldLoadWingmanRequest:
+          shouldLoadWingmanRequest ?? this.shouldLoadWingmanRequest,
+      shouldLoadAssignment: shouldLoadAssignment ?? this.shouldLoadAssignment,
+      shouldLoadRotations: shouldLoadRotations ?? this.shouldLoadRotations,
+      feedback: feedback ?? this.feedback,
+      wingmanRequestCandidates:
+          wingmanRequestCandidates ?? this.wingmanRequestCandidates,
+      wingmanRequest: wingmanRequest ?? this.wingmanRequest,
+      assignment: assignment ?? this.assignment,
+      rotationAssignment: rotationAssignment ?? this.rotationAssignment,
+      microPodsOptedOut: microPodsOptedOut ?? this.microPodsOptedOut,
+      guidedRotationsOptedOut:
+          guidedRotationsOptedOut ?? this.guidedRotationsOptedOut,
+    );
+  }
+}
+
+(Object, EventSuccessCompanionRetryIntent)? _firstCompanionRouteError(
+  Iterable<(CatchAsyncState<dynamic>, EventSuccessCompanionRetryIntent)> values,
+) {
+  for (final (value, intent) in values) {
+    if (value.status == CatchAsyncStatus.error && value.error != null) {
+      return (value.error!, intent);
+    }
+  }
+  return null;
+}
 
 @immutable
 class EventSuccessCompanionScreenState {
