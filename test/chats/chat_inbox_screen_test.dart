@@ -484,6 +484,44 @@ void main() {
     );
   });
 
+  testWidgets('host inbox empty state uses explicit attendee-query copy', (
+    tester,
+  ) async {
+    AppConfig.configureEntrypointRole(AppRole.host);
+    final matchRepository = _FakeMatchRepository(matches: const []);
+    final conversationRepository = _FakeConversationRepository();
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream.value('host-1')),
+          matchRepositoryProvider.overrideWithValue(matchRepository),
+          conversationRepositoryProvider.overrideWithValue(
+            conversationRepository,
+          ),
+          watchMatchesForUserProvider(
+            'host-1',
+          ).overrideWith((ref) => Stream.value(const [])),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: const ChatsListScreen(),
+        ),
+      ),
+    );
+
+    await pumpFeatureUi(tester);
+
+    expect(find.text('No attendee queries yet'), findsOneWidget);
+    expect(
+      find.text(
+        'Guest and attendee questions will appear here once people reach out about an event.',
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('No catches yet'), findsNothing);
+  });
+
   testWidgets('shows search-specific empty copy when a query has no matches', (
     tester,
   ) async {

@@ -650,6 +650,13 @@ Widget chatsEmptyStateVariants(BuildContext context) {
           child: _PrimitiveReviewFrame(height: 360, child: ChatsEmptyState()),
         ),
         _StateCard(
+          label: 'host inbox empty',
+          child: _PrimitiveReviewFrame(
+            height: 360,
+            child: ChatsEmptyState.hostInbox(),
+          ),
+        ),
+        _StateCard(
           label: 'search empty',
           child: _PrimitiveReviewFrame(
             height: 360,

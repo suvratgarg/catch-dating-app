@@ -85,7 +85,10 @@ class ChatsList extends ConsumerWidget {
             const ChatsEmptyState.noHostSearchResults(),
           ChatsListEmptyKind.noUnreadQueries =>
             const ChatsEmptyState.noUnreadQueries(),
-          ChatsListEmptyKind.noThreads => const ChatsEmptyState(),
+          ChatsListEmptyKind.noThreads =>
+            AppConfig.appRole.isHost
+                ? const ChatsEmptyState.hostInbox()
+                : const ChatsEmptyState(),
         },
       ),
     };

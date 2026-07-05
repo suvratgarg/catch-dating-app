@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.588
+version: 2.5.589
 updated: 2026-07-05
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.589
+
+- Replaced `ChatsEmptyState`'s AppConfig/string-sentinel host copy swap with
+  explicit named variants. `ChatsList` now chooses
+  `ChatsEmptyState.hostInbox()` for the host no-thread branch, and Widgetbook
+  covers that state in the empty-state matrix.
 
 ### 2.5.588
 
@@ -6086,7 +6093,7 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `ChatsList` | `lib/chats/presentation/inbox/widgets/chats_list.dart:18` | Sliver body for chat conversations fed from `ChatsListDisplayState` or, for legacy callers, `chatsListViewModelProvider`. Uses a section-labeled inbox-row skeleton loading sliver, branded error state, explicit empty states, host unread filtering, and delegates populated data plus optional row-selection and host-broadcast callbacks to `ChatsListBody`. |
+| `ChatsList` | `lib/chats/presentation/inbox/widgets/chats_list.dart:21` | Sliver body for chat conversations fed from `ChatsListDisplayState` or, for legacy callers, `chatsListViewModelProvider`. Uses a section-labeled inbox-row skeleton loading sliver, branded error state, explicit empty states, host unread filtering, chooses the host inbox empty-state variant at the caller seam, and delegates populated data plus optional row-selection and host-broadcast callbacks to `ChatsListBody`. |
 | `MatchCelebrationDialog` | `lib/matches/presentation/widgets/match_celebration_dialog.dart:46` | Compatibility-named full-screen match celebration route. Uses `CatchCelebrationScreen` with match haptics, then routes the primary action into `ChatScreen` or dismisses back to swiping. |
 | `CatchPersonRow` | `lib/core/widgets/catch_person_row.dart:89` | Canonical inbox and roster row. Receives `CatchPersonRowData`, renders directly on the page surface with an optional inset hairline divider, `CatchPersonAvatar` (rounded square for host inquiries), display name, semantic `chatPreview` secondary text, timestamp, and row-level unread/new treatment through avatar ring, text color, timestamp color, unread badge, or a trailing new-match dot. Routes to `ChatScreen` or `hostChatScreen` through the parent row-list section. Widgetbook exposes standalone states for read, unread, new match, own latest, host inquiry, roster, and long preview rows. |
 | `CatchPersonChatLayout` | `lib/core/widgets/catch_person_row.dart:177` | Shared chat-preview body renderer used by `CatchPersonRow`. |
@@ -6101,12 +6108,12 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `ChatsEmptyState` | `lib/chats/presentation/inbox/widgets/chats_empty_state.dart:6` | Empty state shown when there are no chat conversations, no search results, or no unread host queries. |
+| `ChatsEmptyState` | `lib/chats/presentation/inbox/widgets/chats_empty_state.dart:7` | Empty state shown when there are no chat conversations, no search results, no host attendee queries, or no unread host queries. Exposes explicit named constructors for consumer, host-inbox, search, host-search, and unread-query copy/icons; it no longer reads app role or infers variants from title strings. |
 | `ChatsListBody` | `lib/chats/presentation/inbox/widgets/chats_list_body.dart:10` | Body wrapper for the chats list. Folds `viewModel.newMatches` and `viewModel.conversations` into one contiguous row list, renders `HostInboxBroadcastCard` as the host populated-state lead-in, keeps the consumer `CONVERSATIONS` section label, and delegates row rendering plus parent-supplied callbacks to `ChatConversationsList` without rendering the old new-match rail. |
 | `HostInboxBroadcastCard` | `lib/chats/presentation/inbox/widgets/chats_list_body.dart:72` | Provider-free dark host broadcast lead-in card for populated Host Inbox states. Shows the broadcast affordance, attendee-count copy, short template hint, and a parent-owned tap callback so route-level send/review behavior stays outside the row-list primitive. |
 | `HostBroadcastComposerSheet` | `lib/chats/presentation/inbox/chat_inbox_screen.dart:136` | Route-scoped Host Inbox broadcast review sheet. Shows the disabled future-send action plus template preview rows with tokenized `CatchSurface` composition while actual broadcast sending remains unconnected and owned outside the shared list body. |
-| `ChatsListSkeleton` | `lib/chats/presentation/inbox/widgets/chats_list.dart:205` | Sliver-native loading body for the inbox list. Preserves the section label and contiguous `CatchPersonRow` skeleton geometry so loading states do not collapse to a spinner or card stack. |
-| `ChatPersonRowSkeleton` | `lib/chats/presentation/inbox/widgets/chats_list.dart:249` | Loading atom for a single inbox row. Mirrors `CatchPersonRow` avatar, title, preview, timestamp, unread-pill, optional divider, and host square-avatar geometry for both consumer matches and host inquiries. |
+| `ChatsListSkeleton` | `lib/chats/presentation/inbox/widgets/chats_list.dart:106` | Sliver-native loading body for the inbox list. Preserves the section label and contiguous `CatchPersonRow` skeleton geometry so loading states do not collapse to a spinner or card stack. |
+| `ChatPersonRowSkeleton` | `lib/chats/presentation/inbox/widgets/chats_list.dart:150` | Loading atom for a single inbox row. Mirrors `CatchPersonRow` avatar, title, preview, timestamp, unread-pill, optional divider, and host square-avatar geometry for both consumer matches and host inquiries. |
 
 ---
 
