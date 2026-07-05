@@ -298,13 +298,20 @@ Done: `ClubNextRunBanner` now uses `CatchSurface` for the tappable tile shell,
 its label uses `CatchTextStyles.monoLabelS` directly, and the Club Detail About
 copy uses `CatchTextStyles.proseL` instead of overriding `bodyLead`'s weight.
 
-### C4. `CatchClubDock` — wrong shell, wrong name `[codex]`
+### C4. `CatchClubDock` — wrong shell, wrong name `[done f32bfd2ee]`
 
 341 lines hand-rolling its own SafeArea/ColoredBox dock shell while the
 event side rides `CatchBottomDock.cta`. Rebuild on `CatchBottomDock` (keep
 DockCount/DockBell content). LEXICON: `Catch*` is reserved for core
 primitives; this is a clubs feature widget — rename to `ClubDetailDock`
 (with the usual deprecated typedef for one release if usages are wide).
+
+Done: `CatchClubDock` moved to feature-owned `ClubDetailDock` in
+`club_detail_dock.dart`, delegates sticky footer chrome, the top divider, and
+bottom safe-area handling to `CatchBottomDock`, keeps `DockCount` and
+`DockBell` as feature content, and carries deprecated `CatchClubDock` /
+`CatchClubDockState` typedefs for one release. Its full state matrix now lives
+under `[Club Detail]/Dock` in Widgetbook instead of Core primitives.
 
 ### C5. Schedule empty state over-tuning `[done ea3f105ef]`
 
