@@ -371,7 +371,7 @@ the sliver-function pattern (`buildExploreBodySlivers`) is the right answer
 to Flutter's nested-sliver constraints and the feed composition is sound;
 the debt is two wrappers and a parallel surface system.
 
-### X1. `ExploreBody` — self-documented compatibility wrapper `[codex]`
+### X1. `ExploreBody` — self-documented compatibility wrapper `[done bf53a1894]`
 
 Its own doc comment says it exists "for call sites that still expect one
 sliver." One production caller remains (`explore_list.dart:63`) plus
@@ -379,14 +379,25 @@ widgetbook. Migrate that caller to spread `buildExploreBodySlivers(...)`
 (moving the `CatchMutationErrorListener` to wrap the enclosing scroll view),
 repoint widgetbook, delete the class.
 
-### X2. `ExploreChrome` — 16-parameter pass-through `[codex]`
+Done: `ExploreBody` is deleted. `ExploreList` now calls
+`buildExploreBodySlivers(...)` directly inside its data sliver group, while
+join-mutation feedback stays owned by `ExploreScreen` at the enclosing scroll
+boundary. Widgetbook now previews the same sliver function through a local
+test harness instead of keeping a public wrapper alive.
+
+### X2. `ExploreChrome` — 16-parameter pass-through `[done bf53a1894]`
 
 Forwards every one of its 16 params to exactly two children
 (`ExploreDiscoveryCoverHeader`, `ExploreFilterRail`) with zero logic. Inline
 the two children as two `SliverToBoxAdapter`s in `ExploreScreen`, delete the
 class.
 
-### X3. `CrossPathsSurface` + `CatchSurfaceShadow` — parallel surface system `[codex]`
+Done: `ExploreChrome` is deleted. `ExploreScreen` composes
+`ExploreDiscoveryCoverHeader` and `ExploreFilterRail` as sibling slivers, so
+the route owns the scroll composition directly instead of routing through a
+parameter-only wrapper.
+
+### X3. `CrossPathsSurface` + `CatchSurfaceShadow` — parallel surface system `[done bf53a1894]`
 
 `catch_cross_paths_card.dart` defines its own surface widget AND its own
 elevation enum (`CatchSurfaceShadow { card, raised }`) — a feature-local
@@ -395,6 +406,11 @@ duplicate of `CatchSurfaceElevation { …, card, raised, … }`. Replace
 role; delete both the widget and the enum. If any visual delta beyond
 shadow-token rounding appears, stop and record it in the receipt instead of
 forcing.
+
+Done: `CrossPathsSurface` and `CatchSurfaceShadow` are deleted.
+`CatchCrossPathsCard` now uses `CatchSurface` with canonical
+`CatchSurfaceElevation.card` / `.raised` roles, and Widgetbook coverage now
+exercises the real `CatchCrossPathsCard` postcard/photo states.
 
 ### X4. Lexicon notes (ratification input, no code now)
 
