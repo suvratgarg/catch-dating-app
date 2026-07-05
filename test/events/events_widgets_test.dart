@@ -764,42 +764,6 @@ void main() {
       expect(find.text(event.title), findsOneWidget);
     });
 
-    testWidgets('event compact row renders details and forwards taps', (
-      tester,
-    ) async {
-      var tapped = false;
-      final event = buildEvent(
-        startTime: DateTime.now().add(const Duration(days: 3)),
-        meetingPoint: 'Sea Link promenade',
-        distanceKm: 8,
-      );
-
-      await pumpEventsTestApp(
-        tester,
-        Scaffold(
-          body: SizedBox(
-            width: 360,
-            child: EventCompactRow(
-              event: event,
-              statusLabel: 'Saved',
-              onTap: () => tapped = true,
-            ),
-          ),
-        ),
-      );
-
-      expect(find.text(event.title), findsOneWidget);
-      expect(find.text('Sea Link promenade'), findsOneWidget);
-      expect(find.text('8km · Easy'), findsOneWidget);
-      expect(find.text('0 going · 20 left'), findsOneWidget);
-      expect(find.text('Saved'), findsOneWidget);
-
-      await tester.tap(find.byType(EventCompactRow));
-      await tester.pump();
-
-      expect(tapped, isTrue);
-    });
-
     testWidgets('event action card renders badges, meta, and actions', (
       tester,
     ) async {

@@ -258,95 +258,10 @@ int activeExploreFilterCount(ExploreFilterSelection filters) {
   if (filters.distanceFilter != ExploreDistanceFilter.any) count += 1;
   if (filters.highRatedOnly) count += 1;
   if (filters.joinedOnly) count += 1;
+  if (filters.followingOnly) count += 1;
   if (filters.activityTag != null) count += 1;
   if (filters.area != null) count += 1;
   return count;
-}
-
-class ExploreCollapsedMapSummaryState {
-  const ExploreCollapsedMapSummaryState({
-    required this.title,
-    required this.scopeLabel,
-  });
-
-  factory ExploreCollapsedMapSummaryState.from({
-    required int? count,
-    required String scopeLabel,
-    required ExploreFilterSelection filters,
-  }) {
-    return ExploreCollapsedMapSummaryState(
-      title: _collapsedMapTitle(count),
-      scopeLabel: _collapsedMapScopeLabel(
-        scopeLabel: scopeLabel,
-        filters: filters,
-      ),
-    );
-  }
-
-  final String title;
-  final String scopeLabel;
-}
-
-class ExplorePeekRailState {
-  const ExplorePeekRailState({
-    required this.title,
-    required this.seeAllLabel,
-    required this.seeAllButtonLabel,
-  });
-
-  factory ExplorePeekRailState.from({required int itemCount}) {
-    return ExplorePeekRailState(
-      title: itemCount == 1 ? '1 event near you' : '$itemCount events near you',
-      seeAllLabel: 'See all nearby events',
-      seeAllButtonLabel: 'See all',
-    );
-  }
-
-  final String title;
-  final String seeAllLabel;
-  final String seeAllButtonLabel;
-}
-
-class ExploreMapEventTicketState {
-  const ExploreMapEventTicketState({
-    required this.title,
-    required this.subtitle,
-    required this.timeLabel,
-    required this.countdownLabel,
-    required this.priceLabel,
-    required this.capacityLabel,
-    required this.spotlightKicker,
-    this.statusLabel,
-  });
-
-  factory ExploreMapEventTicketState.from(
-    ExploreEventItem item, {
-    String? statusLabel,
-    String? spotlightKicker,
-    DateTime? now,
-  }) {
-    final event = item.event;
-    return ExploreMapEventTicketState(
-      title: event.title,
-      subtitle: _mapEventTicketSubtitle(item),
-      timeLabel: EventFormatters.time(event.startTime),
-      countdownLabel: _mapEventCountdownLabel(event.startTime, now: now),
-      priceLabel: item.priceLabel,
-      capacityLabel: _mapEventCapacityLabel(item),
-      statusLabel: statusLabel ?? _mapEventTicketStatusLabel(item),
-      spotlightKicker:
-          spotlightKicker ?? item.distanceFromUserLabel ?? 'Spotlight pick',
-    );
-  }
-
-  final String title;
-  final String subtitle;
-  final String timeLabel;
-  final String countdownLabel;
-  final String priceLabel;
-  final String capacityLabel;
-  final String spotlightKicker;
-  final String? statusLabel;
 }
 
 class ExploreCoverStoryState {
@@ -444,7 +359,9 @@ class ExploreEventRowState {
 
   factory ExploreEventRowState.from(ExploreEventItem item) {
     return ExploreEventRowState(
-      kicker: item.club.name,
+      kicker: item.isFollowedClubSignal
+          ? 'FROM A CLUB YOU FOLLOW'
+          : item.club.name,
       supportingLabel: _rowSupportingLabel(item),
       priceLabel: item.priceLabel,
       capacityLabel: _capacityLabel(item),
@@ -776,77 +693,6 @@ String _coverTimeScope(DateTime start, {DateTime? now}) {
 String _coverSpotsLabel(ExploreEventItem item) {
   final spots = math.max(0, item.event.spotsRemaining);
   return spots == 1 ? '1 left' : '$spots left';
-}
-
-String _collapsedMapTitle(int? count) {
-  if (count == null) return 'Finding events nearby';
-  if (count == 0) return 'No events in this view';
-  if (count == 1) return '1 event nearby';
-  return '$count events nearby';
-}
-
-String _collapsedMapScopeLabel({
-  required String scopeLabel,
-  required ExploreFilterSelection filters,
-}) {
-  final parts = <String>[
-    scopeLabel,
-    _timeScopeLabel(filters.timeFilter),
-    if (filters.distanceFilter != ExploreDistanceFilter.any)
-      'within ${_distanceScopeLabel(filters.distanceFilter)}',
-    if (filters.joinedOnly) 'joined',
-    if (filters.highRatedOnly) 'high rated',
-    if (filters.activityTag != null) filters.activityTag!,
-    if (filters.area != null) filters.area!,
-  ];
-  return parts.join(' · ');
-}
-
-String _timeScopeLabel(ExploreTimeFilter filter) {
-  return switch (filter) {
-    ExploreTimeFilter.anytime => 'Anytime',
-    ExploreTimeFilter.tonight => 'Tonight',
-    ExploreTimeFilter.tomorrow => 'Tomorrow',
-    ExploreTimeFilter.weekend => 'Weekend',
-    ExploreTimeFilter.thisWeek => 'This week',
-  };
-}
-
-String _distanceScopeLabel(ExploreDistanceFilter filter) {
-  return switch (filter) {
-    ExploreDistanceFilter.any => 'any distance',
-    ExploreDistanceFilter.oneKm => '1 km',
-    ExploreDistanceFilter.threeKm => '3 km',
-    ExploreDistanceFilter.fiveKm => '5 km',
-    ExploreDistanceFilter.tenKm => '10 km',
-  };
-}
-
-String _mapEventTicketSubtitle(ExploreEventItem item) {
-  final event = item.event;
-  return '${item.club.name} · ${event.locationName}';
-}
-
-String? _mapEventTicketStatusLabel(ExploreEventItem item) {
-  return item.distanceFromUserLabel ?? item.availabilityLabel;
-}
-
-String _mapEventCapacityLabel(ExploreEventItem item) {
-  return EventCapacityLabels(
-    item.event,
-  ).activityGoingAvailabilityLabel(availabilityLabel: item.availabilityLabel);
-}
-
-String _mapEventCountdownLabel(DateTime startTime, {DateTime? now}) {
-  final reference = now ?? DateTime.now();
-  final today = DateUtils.dateOnly(reference);
-  final eventDay = DateUtils.dateOnly(startTime);
-  final diffDays = eventDay.difference(today).inDays;
-  return switch (diffDays) {
-    0 => 'Today',
-    1 => 'Tomorrow',
-    _ => EventFormatters.shortWeekday(startTime),
-  };
 }
 
 List<String> _areaOptions(Iterable<Club> clubs, String? selectedArea) {

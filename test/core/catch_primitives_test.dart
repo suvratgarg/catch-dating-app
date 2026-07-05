@@ -2024,7 +2024,7 @@ void main() {
     expect(find.byType(ListTile), findsNothing);
   });
 
-  testWidgets('CatchStartupLoadingScreen shows branded loading state', (
+  testWidgets('CatchStartupLoadingScreen delays slow-boot spinner', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -2035,6 +2035,11 @@ void main() {
     );
 
     expect(find.bySemanticsLabel('Catch'), findsOneWidget);
+    expect(find.byType(CatchLoadingIndicator), findsNothing);
+
+    await tester.pump(CatchMotion.startupIndicatorDelay);
+    await tester.pump(CatchMotion.fast);
+
     expect(find.byType(CatchLoadingIndicator), findsOneWidget);
   });
 

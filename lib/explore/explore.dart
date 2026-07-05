@@ -19,4 +19,3 @@ export 'presentation/widgets/explore_events_section.dart'; // public-api: shared
 export 'presentation/widgets/explore_filter_rail.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/explore_header.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/explore_list.dart'; // public-api: shared presentation component used outside this feature
-export 'presentation/widgets/explore_peek_rail.dart'; // public-api: shared presentation component used outside this feature
