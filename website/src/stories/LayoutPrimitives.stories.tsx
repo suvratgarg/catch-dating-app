@@ -1,10 +1,14 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import type {FormEvent} from "react";
+import {useState} from "react";
 import {SectionHeader} from "../shared/site/SectionHeader";
 import {
   ActionGroup,
   Button,
   ButtonLink,
+  ChoiceCard,
+  ChoiceChip,
+  ChoiceChipGrid,
   ContentGrid,
   ControlRow,
   EventSuccessModuleGrid,
@@ -27,8 +31,10 @@ import {
   ProductShell,
   ProofLedgerRows,
   SelectField,
+  StepRail,
   TextField,
   UiLabel,
+  VerificationMethodGrid,
   WaitlistFormShell,
   WaitlistSection,
 } from "../shared/ui/primitives";
@@ -153,6 +159,30 @@ export const FieldGridStory: Story = {
       />
     </FieldGrid>
   ),
+};
+
+export const StepRailStory: Story = {
+  name: "Step rail",
+  parameters: {
+    catchComponent: {
+      id: "shared_operational_step_rail",
+      routeIds: ["host", "claim"],
+      states: ["current", "complete", "disabled"],
+    },
+  },
+  render: () => <StepRailDemo />,
+};
+
+export const ChoiceControlsStory: Story = {
+  name: "Choice controls",
+  parameters: {
+    catchComponent: {
+      id: "shared_choice_controls",
+      routeIds: ["host", "claim"],
+      states: ["chip-grid", "choice-card", "selected"],
+    },
+  },
+  render: () => <ChoiceControlsDemo />,
 };
 
 export const WaitlistSectionStory: Story = {
@@ -427,4 +457,87 @@ export const ListingSuccessMetricGridStory: Story = {
 
 function preventSubmit(event: FormEvent<HTMLFormElement>) {
   event.preventDefault();
+}
+
+function StepRailDemo() {
+  const [activeId, setActiveId] = useState("proof");
+  const items = [
+    {
+      id: "identity",
+      label: "Identity",
+      body: "Organizer, city, and source proof.",
+    },
+    {
+      id: "proof",
+      label: "Proof",
+      body: "Events, links, and ownership checks.",
+    },
+    {
+      id: "publish",
+      label: "Publish",
+      body: "Route and review evidence ready.",
+    },
+  ];
+  const currentIndex = Math.max(0, items.findIndex((item) => item.id === activeId));
+
+  return (
+    <StepRail
+      currentIndex={currentIndex}
+      getDisabled={(_, index) => index > currentIndex + 1}
+      items={items}
+      label="Storybook operational steps"
+      onSelect={setActiveId}
+    />
+  );
+}
+
+function ChoiceControlsDemo() {
+  const [format, setFormat] = useState("Dinner");
+  const [method, setMethod] = useState("domain");
+  const formats = ["Dinner", "Run club", "Venue mixer"];
+  const methods = [
+    {
+      id: "domain",
+      title: "Domain email",
+      body: "Verify with a business or venue email tied to the listing.",
+    },
+    {
+      id: "source",
+      title: "Source proof",
+      body: "Attach public event links and ownership context for staff review.",
+    },
+  ];
+
+  return (
+    <ContentGrid variant="claim-review">
+      <div>
+        <UiLabel>Host formats</UiLabel>
+        <ChoiceChipGrid>
+          {formats.map((item) => (
+            <ChoiceChip
+              key={item}
+              onClick={() => setFormat(item)}
+              selected={format === item}
+            >
+              {item}
+            </ChoiceChip>
+          ))}
+        </ChoiceChipGrid>
+      </div>
+      <div>
+        <UiLabel>Verification</UiLabel>
+        <VerificationMethodGrid>
+          {methods.map((item) => (
+            <ChoiceCard
+              body={item.body}
+              key={item.id}
+              onClick={() => setMethod(item.id)}
+              selected={method === item.id}
+              title={item.title}
+            />
+          ))}
+        </VerificationMethodGrid>
+      </div>
+    </ContentGrid>
+  );
 }

@@ -2,10 +2,10 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_picker_tile.dart';
 import 'package:flutter/material.dart';
 
 class WhenStep extends StatelessWidget {
@@ -46,7 +46,7 @@ class WhenStep extends StatelessWidget {
         children: [
           const CatchFormFieldLabel(label: 'Date', large: true),
           gapH8,
-          WhenStepPickerTile(
+          HostPickerTile(
             key: CreateEventFormKeys.datePicker,
             icon: CatchIcons.calendarTodayOutlined,
             value: dateController.text.isEmpty ? null : dateController.text,
@@ -63,7 +63,7 @@ class WhenStep extends StatelessWidget {
           gapH20,
           const CatchFormFieldLabel(label: 'Start time', large: true),
           gapH8,
-          WhenStepPickerTile(
+          HostPickerTile(
             key: CreateEventFormKeys.timePicker,
             icon: CatchIcons.scheduleOutlined,
             value: startTimeController.text.isEmpty
@@ -91,51 +91,6 @@ class WhenStep extends StatelessWidget {
             decreaseTooltip: 'Decrease duration',
             increaseTooltip: 'Increase duration',
             formatValue: (value) => formatDuration(value.round()),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class WhenStepPickerTile extends StatelessWidget {
-  const WhenStepPickerTile({
-    super.key,
-    required this.icon,
-    required this.value,
-    required this.placeholder,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String? value;
-  final String placeholder;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return CatchControlShell(
-      onTap: onTap,
-      tone: CatchControlTone.raised,
-      padding: CatchControlMetrics.contentPadding(CatchControlSize.md),
-      semanticButton: true,
-      child: Row(
-        children: [
-          Icon(icon, size: CatchIcon.control, color: t.ink2),
-          gapW12,
-          Expanded(
-            child: Text(
-              value ?? placeholder,
-              style: value != null
-                  ? CatchTextStyles.bodyLead(context)
-                  : CatchTextStyles.bodyLead(context, color: t.ink3),
-            ),
-          ),
-          Icon(
-            CatchIcons.chevronRightRounded,
-            size: CatchIcon.md,
-            color: t.ink3,
           ),
         ],
       ),

@@ -40,10 +40,15 @@ class PaymentHistoryScreen extends ConsumerWidget {
         onRetry: () => ref.invalidate(uidProvider),
         builder: (context, uid) {
           if (uid == null) {
-            return PaymentHistoryEmptyState(
-              icon: CatchIcons.lockOutlineRounded,
-              title: 'Sign in required',
-              message: 'Sign in again to view payment history.',
+            return CatchScreenBody(
+              scrollable: false,
+              child: Center(
+                child: CatchEmptyState(
+                  icon: CatchIcons.lockOutlineRounded,
+                  title: 'Sign in required',
+                  message: 'Sign in again to view payment history.',
+                ),
+              ),
             );
           }
           return PaymentHistoryListController(userId: uid);
@@ -83,10 +88,15 @@ class PaymentHistoryList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (paymentHistory.isEmpty) {
-      return PaymentHistoryEmptyState(
-        icon: CatchIcons.receiptLongOutlined,
-        title: 'No payments yet',
-        message: 'Event bookings and refunds will appear here.',
+      return CatchScreenBody(
+        scrollable: false,
+        child: Center(
+          child: CatchEmptyState(
+            icon: CatchIcons.receiptLongOutlined,
+            title: 'No payments yet',
+            message: 'Event bookings and refunds will appear here.',
+          ),
+        ),
       );
     }
 
@@ -98,7 +108,7 @@ class PaymentHistoryList extends StatelessWidget {
           constraints: const BoxConstraints(
             maxWidth: CatchLayout.maxContentWidth,
           ),
-          child: Divider(color: CatchTokens.of(context).line, height: 1),
+          child: const CatchDivider.fieldRow(indent: 0),
         ),
       ),
       itemBuilder: (context, index) => Center(
@@ -126,7 +136,7 @@ class PaymentHistorySkeleton extends StatelessWidget {
           constraints: const BoxConstraints(
             maxWidth: CatchLayout.maxContentWidth,
           ),
-          child: Divider(color: CatchTokens.of(context).line, height: 1),
+          child: const CatchDivider.fieldRow(indent: 0),
         ),
       ),
       itemBuilder: (context, _) => Center(
@@ -185,29 +195,6 @@ class PaymentHistoryTileSkeleton extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class PaymentHistoryEmptyState extends StatelessWidget {
-  const PaymentHistoryEmptyState({
-    super.key,
-    required this.icon,
-    required this.title,
-    required this.message,
-  });
-
-  final IconData icon;
-  final String title;
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchScreenBody(
-      scrollable: false,
-      child: Center(
-        child: CatchEmptyState(icon: icon, title: title, message: message),
       ),
     );
   }
@@ -345,11 +332,9 @@ class PaymentReceiptSheet extends StatelessWidget {
       child: SingleChildScrollView(
         child: CatchBottomSheetScaffold(
           title: eventTitle,
-          padding: EdgeInsets.fromLTRB(
-            CatchSpacing.s5,
-            CatchSpacing.s3,
-            CatchSpacing.s5,
-            CatchSpacing.s5 + bottomPadding,
+          padding: CatchInsets.pageBody.copyWith(
+            top: CatchSpacing.s3,
+            bottom: CatchSpacing.s5 + bottomPadding,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -373,7 +358,7 @@ class PaymentReceiptSheet extends StatelessWidget {
                 ],
               ),
               gapH20,
-              Divider(color: t.line, height: 1),
+              const CatchDivider.section(),
               gapH20,
               CatchField.read(title: 'Payment ID', body: payment.paymentId),
               gapH12,
@@ -391,7 +376,7 @@ class PaymentReceiptSheet extends StatelessWidget {
               ],
               if (payment.signUpFailed) ...[
                 gapH20,
-                Divider(color: t.line, height: 1),
+                const CatchDivider.section(),
                 gapH16,
                 SizedBox(
                   width: double.infinity,

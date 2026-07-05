@@ -60,11 +60,9 @@ class BookingConflictSheet extends StatelessWidget {
           top: Radius.circular(CatchRadius.heroCard),
         ),
         width: double.infinity,
-        padding: const EdgeInsets.fromLTRB(
-          CatchSpacing.s5,
-          CatchSpacing.s3,
-          CatchSpacing.s5,
-          CatchSpacing.s6,
+        padding: CatchInsets.pageBody.copyWith(
+          top: CatchSpacing.s3,
+          bottom: CatchSpacing.s6,
         ),
         child: ConstrainedBox(
           constraints: const BoxConstraints(

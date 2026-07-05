@@ -20,15 +20,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 typedef ClubShareHandler =
     Future<void> Function(BuildContext context, Club club);
 
-const EdgeInsets _clubHeroLeadingPadding = EdgeInsets.only(
-  left: CatchSpacing.s5,
+final EdgeInsets _clubHeroLeadingPadding = CatchInsets.pageHorizontal.copyWith(
   top: CatchSpacing.micro10,
   bottom: CatchSpacing.micro6,
+  right: 0,
 );
-const EdgeInsets _clubHeroActionPadding = EdgeInsets.only(
+final EdgeInsets _clubHeroActionPadding = CatchInsets.pageHorizontal.copyWith(
   top: CatchSpacing.micro10,
   bottom: CatchSpacing.micro6,
-  right: CatchSpacing.s5,
+  left: 0,
 );
 
 class ClubHeroAppBar extends StatelessWidget {
@@ -87,7 +87,7 @@ class ClubHeroAppBar extends StatelessWidget {
       ),
       leading: Padding(
         padding: _clubHeroLeadingPadding,
-        child: CatchTopBarIconAction(
+        child: CatchIconAction(
           icon: CatchIcons.arrowBackIosNewRounded,
           tooltip: 'Back',
           variant: CatchIconButtonVariant.float,
@@ -98,7 +98,7 @@ class ClubHeroAppBar extends StatelessWidget {
         Padding(
           padding: _clubHeroActionPadding,
           child: Builder(
-            builder: (buttonContext) => CatchTopBarIconAction(
+            builder: (buttonContext) => CatchIconAction(
               icon: CatchIcons.platformShare(
                 platform: Theme.of(context).platform,
               ),

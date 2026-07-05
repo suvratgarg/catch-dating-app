@@ -2,10 +2,9 @@ import 'dart:async';
 
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen_state.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 
@@ -28,16 +27,14 @@ class ClubContactSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return CatchSurface(
+    return CatchSection.contained(
+      title: showTitle ? 'Contact' : null,
       borderColor: t.line,
+      elevation: CatchSurfaceElevation.none,
       padding: CatchInsets.tileContentCompact,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (showTitle) ...[
-            const CatchSectionHeader(title: 'Contact', heavy: true),
-            gapH12,
-          ],
           for (final action in actions)
             Padding(
               padding: CatchInsets.detailInlineRowBottomGap,

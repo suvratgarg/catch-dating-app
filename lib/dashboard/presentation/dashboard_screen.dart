@@ -4,14 +4,17 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_count_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_empty.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_loading_widgets.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_sliver_header.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -106,22 +109,17 @@ class DashboardNotificationBellButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final badgeLabel = unreadCount > 99 ? '99+' : '$unreadCount';
+    final badgeLabel = catchCountLabel(unreadCount);
 
-    return SizedBox.square(
-      dimension: CatchLayout.eventInfoTileExtent,
-      child: CatchIconBadge(
-        isLabelVisible: unreadCount > 0,
-        label: badgeLabel,
-        child: Align(
-          child: CatchTopBarIconAction(
-            icon: unreadCount > 0
-                ? CatchIcons.notificationsRounded
-                : CatchIcons.notificationsNoneRounded,
-            tooltip: 'Notifications',
-            onPressed: onPressed,
-          ),
-        ),
+    return CatchIconBadge(
+      isLabelVisible: unreadCount > 0,
+      label: badgeLabel,
+      child: CatchIconAction(
+        icon: unreadCount > 0
+            ? CatchIcons.notificationsRounded
+            : CatchIcons.notificationsNoneRounded,
+        tooltip: 'Notifications',
+        onPressed: onPressed,
       ),
     );
   }
@@ -196,76 +194,6 @@ class DashboardFocusLoadingCard extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class DashboardStrideLoadingCard extends StatelessWidget {
-  const DashboardStrideLoadingCard({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.content,
-      child: Row(
-        children: [
-          CatchSkeleton.circle(size: CatchLayout.skeletonMediaTileExtent),
-          gapW14,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CatchSkeleton.text(width: CatchLayout.skeletonTextWideWidth),
-                gapH8,
-                CatchSkeleton.textBlock(lines: 2),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class DashboardQuickActionsLoadingRow extends StatelessWidget {
-  const DashboardQuickActionsLoadingRow({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        for (var i = 0; i < 2; i++) ...[
-          Expanded(
-            child: CatchSkeleton.box(
-              height: CatchLayout.dashboardQuickActionSkeletonHeight,
-              radius: CatchRadius.md,
-            ),
-          ),
-          if (i == 0) gapW12,
-        ],
-      ],
-    );
-  }
-}
-
-class DashboardRecommendedLoadingSection extends StatelessWidget {
-  const DashboardRecommendedLoadingSection({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CatchSkeleton.text(width: CatchLayout.skeletonTextSectionWidth),
-        gapH12,
-        const CatchSkeletonList(
-          count: 2,
-          height: CatchLayout.dashboardRecommendedEventSkeletonHeight,
-        ),
-      ],
     );
   }
 }

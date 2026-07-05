@@ -1,4 +1,4 @@
-part of 'host_operations_screen.dart';
+part of '../host_operations_screen.dart';
 
 class HostOperationsHomeScreen extends ConsumerWidget {
   const HostOperationsHomeScreen({

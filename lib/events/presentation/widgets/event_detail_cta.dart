@@ -282,7 +282,10 @@ class EventDetailCta extends ConsumerWidget {
         note: dockState.priceNote,
         warn: dockState.priceWarn,
       ),
-      EventDetailBookingDockLeadingKind.booked => const BookedLeading(),
+      EventDetailBookingDockLeadingKind.booked => EventCtaStatusLeading(
+        icon: CatchIcons.checkCircleRounded,
+        label: "You're in!",
+      ),
       EventDetailBookingDockLeadingKind.waitlistOffer => WaitlistOfferLeading(
         expiresAt: dockState.waitlistOfferExpiresAt,
         isDeclining: dockState.isSecondaryLoading,
@@ -290,7 +293,10 @@ class EventDetailCta extends ConsumerWidget {
             ? () => runBookingDockAction(context, dockState.secondaryAction)
             : null,
       ),
-      EventDetailBookingDockLeadingKind.attended => const AttendedLeading(),
+      EventDetailBookingDockLeadingKind.attended => EventCtaStatusLeading(
+        icon: CatchIcons.directionsRunRounded,
+        label: 'Completed',
+      ),
     };
 
     return EventBookingDock(
@@ -441,8 +447,15 @@ class WaitlistOfferLeading extends StatelessWidget {
   }
 }
 
-class BookedLeading extends StatelessWidget {
-  const BookedLeading({super.key});
+class EventCtaStatusLeading extends StatelessWidget {
+  const EventCtaStatusLeading({
+    super.key,
+    required this.icon,
+    required this.label,
+  });
+
+  final IconData icon;
+  final String label;
 
   @override
   Widget build(BuildContext context) {
@@ -450,34 +463,9 @@ class BookedLeading extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
-          CatchIcons.checkCircleRounded,
-          color: t.primary,
-          size: CatchIcon.md,
-        ),
+        Icon(icon, color: t.primary, size: CatchIcon.md),
         gapW6,
-        Text("You're in!", style: CatchTextStyles.labelL(context)),
-      ],
-    );
-  }
-}
-
-class AttendedLeading extends StatelessWidget {
-  const AttendedLeading({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          CatchIcons.directionsRunRounded,
-          color: t.primary,
-          size: CatchIcon.md,
-        ),
-        gapW6,
-        Text('Completed', style: CatchTextStyles.labelL(context)),
+        Text(label, style: CatchTextStyles.labelL(context)),
       ],
     );
   }

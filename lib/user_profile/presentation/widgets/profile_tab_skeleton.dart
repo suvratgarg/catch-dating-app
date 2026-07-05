@@ -1,18 +1,12 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart'
-    show
-        CatchAspectRatio,
-        CatchIcon,
-        CatchLayout,
-        CatchOpacity,
-        CatchRadius,
-        CatchStroke,
-        CatchTokens;
+    show CatchAspectRatio, CatchInsets, CatchLayout, CatchRadius, CatchStroke;
+import 'package:catch_dating_app/core/widgets/catch_field.dart'
+    show CatchFieldRow;
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/profile_info_section.dart';
 import 'package:flutter/material.dart';
 
 class ProfileTabSkeletonSliverBody extends StatelessWidget {
@@ -21,7 +15,7 @@ class ProfileTabSkeletonSliverBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverPadding(
-      padding: profileTabBodyPadding,
+      padding: CatchInsets.formEditBodyRelaxed,
       sliver: SliverToBoxAdapter(
         child: Center(
           child: ConstrainedBox(
@@ -98,30 +92,12 @@ class ProfileInfoSkeletonSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSection.divided(
+    return CatchSection.fieldRows(
       title: title,
-      bodyGap: CatchSpacing.micro10,
-      child: Column(
-        children: [
-          for (var index = 0; index < rows; index++) ...[
-            const ProfileInfoSkeletonTile(),
-            if (index < rows - 1)
-              Builder(
-                builder: (context) {
-                  final t = CatchTokens.of(context);
-                  return Divider(
-                    height: 1,
-                    indent: CatchSpacing.s8,
-                    endIndent: CatchSpacing.s8,
-                    color: t.line.withValues(
-                      alpha: CatchOpacity.fieldRowDivider,
-                    ),
-                  );
-                },
-              ),
-          ],
-        ],
-      ),
+      children: [
+        for (var index = 0; index < rows; index++)
+          const ProfileInfoSkeletonTile(),
+      ],
     );
   }
 }
@@ -139,12 +115,12 @@ class ProfileInfoSkeletonTile extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: CatchStroke.hairline),
             child: CatchSkeleton.box(
-              width: CatchIcon.control,
-              height: CatchIcon.control,
+              width: CatchFieldRow.leadingSlotIconSize,
+              height: CatchFieldRow.leadingSlotIconSize,
               radius: CatchRadius.pill,
             ),
           ),
-          gapW12,
+          const SizedBox(width: CatchFieldRow.leadingSlotGap),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

@@ -28,8 +28,11 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
+import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/labs/design_fixtures/matches_chat_surface_fixtures.dart';
@@ -647,6 +650,13 @@ Widget chatsEmptyStateVariants(BuildContext context) {
           child: _PrimitiveReviewFrame(height: 360, child: ChatsEmptyState()),
         ),
         _StateCard(
+          label: 'host inbox empty',
+          child: _PrimitiveReviewFrame(
+            height: 360,
+            child: ChatsEmptyState.hostInbox(),
+          ),
+        ),
+        _StateCard(
           label: 'search empty',
           child: _PrimitiveReviewFrame(
             height: 360,
@@ -726,14 +736,14 @@ Widget chatMessageListRendererStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Sheet states',
-  type: ChatShareCardSheet,
+  type: CatchShareCardSheet,
   path: '[P1 product surfaces]/Matches and chat/Components',
 )
 Widget chatShareCardSheetStates(BuildContext context) {
   return _AppRoleBoundary(
     role: AppRole.consumer,
     child: _MatchesCatalog(
-      title: 'ChatShareCardSheet',
+      title: 'CatchShareCardSheet',
       contractId: 'sheet.messaging.chat_share_card',
       children: [
         _StateCard(
@@ -2021,10 +2031,17 @@ class _HostUnreadOnlyInbox extends StatelessWidget {
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            ...ChatsSliverHeader(
-              hostFilter: HostInboxFilter.unread,
-              hostUnreadCount: 0,
-              onHostFilterChanged: (_) {},
+            ...CatchSliverHeader(
+              title: const SizedBox.shrink(),
+              bottomHeight: chatsBrowseHeaderHeight(hasHostFilter: true),
+              bottom: ChatsBrowseHeader(
+                showSearchAction: true,
+                searchValue: '',
+                onSearchChanged: null,
+                hostFilter: HostInboxFilter.unread,
+                hostUnreadCount: 0,
+                onHostFilterChanged: (_) {},
+              ),
             ).buildSlivers(context),
             const ChatsList(hostFilter: HostInboxFilter.unread),
           ],
@@ -2139,11 +2156,20 @@ class _ShareCardPreview extends StatelessWidget {
       body: SafeArea(
         child: Align(
           alignment: Alignment.bottomCenter,
-          child: ChatShareCardSheet(
-            messages: messages,
-            currentUid: MatchesChatSurfaceFixtures.viewerUid,
-            event: event,
+          child: CatchShareCardSheet(
+            card: ChatShareCard(
+              messages: messages,
+              currentUid: MatchesChatSurfaceFixtures.viewerUid,
+              event: event,
+            ),
             share: ExternalShareController((_) async {}),
+            fileName: 'catch-chat-card.png',
+            buttonLabel: 'Share card',
+            footnote: 'Names, photos, and timestamps are hidden.',
+            subject: 'Catch chat card',
+            text: 'Shared from Catch.',
+            maxWidth: CatchLayout.chatShareCardWidth,
+            pixelRatio: CatchLayout.chatShareCardPixelRatio,
           ),
         ),
       ),
@@ -2447,7 +2473,7 @@ class _SuvbotResetActionRowsFrame extends StatelessWidget {
                           onTap: () {},
                         ),
                         if (index != actions.length - 1)
-                          Divider(height: 1, color: t.line),
+                          const CatchDivider.fieldRow(indent: 0),
                       ],
                     ],
                   ),

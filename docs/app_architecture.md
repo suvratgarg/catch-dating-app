@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.4.13
-updated: 2026-07-03
+version: 1.4.14
+updated: 2026-07-05
 owner: recursive_audit_loop
 status: active
 ---
@@ -483,7 +483,7 @@ For `NestedScrollView` plus pinned tab rows:
 
 | Surface | Direction |
 |---|---|
-| Home dashboard | Keep one `CustomScrollView` with `DashboardSliverHeader`; do not reintroduce Dashboard/Activity tabs without a product decision. |
+| Home dashboard | Keep one `CustomScrollView` with `CatchSliverHeader(title: DashboardHeaderContent(...))`; do not reintroduce Dashboard/Activity tabs without a product decision. |
 | Explore | Keep sliver-native. This remains the strongest mixed event/club discovery pattern. |
 | Chats list | Keep sliver shell; make populated body sliver-native only if list scale or tests demand it. |
 | Event detail | Keep sliver-native because the collapsing hero justifies it. |

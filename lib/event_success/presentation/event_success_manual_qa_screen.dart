@@ -27,6 +27,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_preference.d
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_hero_surface.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -493,14 +494,7 @@ class ManualQaHero extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchSurface(
-      gradient: LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [t.accent, t.ink],
-      ),
-      borderColor: t.surface.withValues(alpha: CatchOpacity.none),
-      padding: CatchInsets.contentRelaxed,
+    return EventSuccessHeroSurface(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -540,13 +534,15 @@ class ManualQaHero extends StatelessWidget {
             spacing: CatchSpacing.s2,
             runSpacing: CatchSpacing.s2,
             children: [
-              DarkPill(label: '${data.roster.bookedCount} booked'),
-              DarkPill(label: '${data.roster.checkedInCount} checked in'),
-              DarkPill(
+              EventSuccessDarkPill(label: '${data.roster.bookedCount} booked'),
+              EventSuccessDarkPill(
+                label: '${data.roster.checkedInCount} checked in',
+              ),
+              EventSuccessDarkPill(
                 label:
                     '${data.plan.structureConfig.revealCountdownSeconds}s reveal',
               ),
-              DarkPill(
+              EventSuccessDarkPill(
                 label:
                     !data.plan.hasModule(
                       EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
@@ -888,14 +884,14 @@ class AttendeeQaControls extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ManualQaToggleRow(
-              label: 'Micro-pods opt-out',
+            CatchField.toggle(
+              title: 'Micro-pods opt-out',
               value: microPodsOptedOut,
               onChanged: onMicroPodsOptOutChanged,
             ),
             gapH8,
-            ManualQaToggleRow(
-              label: 'Rotations opt-out',
+            CatchField.toggle(
+              title: 'Rotations opt-out',
               value: guidedRotationsOptedOut,
               onChanged: onGuidedRotationsOptOutChanged,
             ),
@@ -926,48 +922,6 @@ class ControlLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(label, style: CatchTextStyles.labelL(context));
-  }
-}
-
-class DarkPill extends StatelessWidget {
-  const DarkPill({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return CatchSurface(
-      backgroundColor: t.accentInk.withValues(
-        alpha: CatchOpacity.manualQaPillFill,
-      ),
-      borderColor: t.accentInk.withValues(
-        alpha: CatchOpacity.manualQaPillBorder,
-      ),
-      radius: CatchRadius.pill,
-      padding: CatchInsets.compactControlContent,
-      child: Text(
-        label,
-        style: CatchTextStyles.labelL(context, color: t.accentInk),
-      ),
-    );
-  }
-}
-
-class ManualQaToggleRow extends StatelessWidget {
-  const ManualQaToggleRow({
-    required this.label,
-    required this.value,
-    required this.onChanged,
-  });
-
-  final String label;
-  final bool value;
-  final ValueChanged<bool> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchField.toggle(title: label, value: value, onChanged: onChanged);
   }
 }
 

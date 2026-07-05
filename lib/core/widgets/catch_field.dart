@@ -4,7 +4,9 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
+import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
+import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:flutter/foundation.dart';
@@ -767,12 +769,12 @@ class _CatchFieldState extends State<CatchField> {
         if (widget.divider && !_active)
           Positioned(
             top: 0,
-            left: _hasLeadingSlot
-                ? CatchLayout.settingsRowDividerIconInset
-                : CatchSpacing.s4,
-            right: CatchSpacing.s4,
+            left:
+                _rowPadding.left +
+                (_hasLeadingSlot ? CatchFieldRow.textLaneInset : 0),
+            right: _rowPadding.right,
             child: ColoredBox(
-              color: t.line,
+              color: CatchDivider.colorFor(t, CatchDividerRole.fieldRow),
               child: const SizedBox(height: CatchStroke.hairline),
             ),
           ),
@@ -842,7 +844,7 @@ class _CatchFieldState extends State<CatchField> {
     if (widget.icon != null) {
       return Icon(
         widget.icon,
-        size: CatchIcon.md,
+        size: CatchFieldRow.leadingSlotIconSize,
         color:
             widget.iconColor ?? (_focused ? t.ink : _toneColor(t, muted: true)),
       );
@@ -852,7 +854,7 @@ class _CatchFieldState extends State<CatchField> {
       return IconTheme(
         data: IconThemeData(
           color: _hasError ? t.danger : t.ink2,
-          size: CatchIcon.md,
+          size: CatchFieldRow.leadingSlotIconSize,
         ),
         child: widget.prefixIcon!,
       );
@@ -866,7 +868,7 @@ class _CatchFieldState extends State<CatchField> {
     return IconTheme(
       data: IconThemeData(
         color: widget.enabled ? t.ink2 : t.ink3,
-        size: CatchIcon.md,
+        size: CatchFieldRow.leadingSlotIconSize,
       ),
       child: widget.prefixIcon!,
     );
@@ -1497,7 +1499,6 @@ class _CatchFieldState extends State<CatchField> {
     final labelOf = widget._selectItemLabel!;
     final label = value == null ? null : labelOf(value);
     final canOpen = widget.enabled && onChanged != null && values.isNotEmpty;
-    final menuBorderRadius = BorderRadius.circular(CatchRadius.sm);
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -1506,58 +1507,31 @@ class _CatchFieldState extends State<CatchField> {
             : null;
         return MenuAnchor(
           controller: _menuController,
-          style: MenuStyle(
-            backgroundColor: WidgetStatePropertyAll(tokens.surface),
-            elevation: const WidgetStatePropertyAll(CatchElevation.menu),
-            shadowColor: WidgetStatePropertyAll(tokens.overlay),
-            surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
-            shape: WidgetStatePropertyAll(
-              RoundedRectangleBorder(borderRadius: menuBorderRadius),
-            ),
-            padding: const WidgetStatePropertyAll(
-              EdgeInsets.symmetric(vertical: CatchSpacing.s1),
-            ),
+          // The panel itself is the shared CatchMenu surface; the anchor
+          // chrome stays transparent (same contract as CatchActionMenu).
+          style: const MenuStyle(
+            backgroundColor: WidgetStatePropertyAll(Colors.transparent),
+            elevation: WidgetStatePropertyAll(0),
+            shadowColor: WidgetStatePropertyAll(Colors.transparent),
+            surfaceTintColor: WidgetStatePropertyAll(Colors.transparent),
+            padding: WidgetStatePropertyAll(EdgeInsets.zero),
           ),
           menuChildren: [
-            for (final item in values)
-              SizedBox(
-                width: menuWidth,
-                child: MenuItemButton(
-                  style: ButtonStyle(
-                    minimumSize: WidgetStatePropertyAll(
-                      Size(0, _menuItemHeight),
-                    ),
-                    padding: const WidgetStatePropertyAll(
-                      EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
-                    ),
-                    foregroundColor: WidgetStatePropertyAll(tokens.ink),
-                    backgroundColor: WidgetStatePropertyAll(
-                      item == value ? tokens.primarySoft : Colors.transparent,
-                    ),
-                    overlayColor: WidgetStatePropertyAll(tokens.primarySoft),
-                    textStyle: WidgetStatePropertyAll(
-                      CatchTextStyles.bodyLead(context, color: tokens.ink),
-                    ),
+            CatchMenu<Object?>(
+              width: menuWidth,
+              items: [
+                for (final item in values)
+                  CatchMenuItem<Object?>(
+                    value: item,
+                    label: labelOf(item),
+                    selected: item == value,
                   ),
-                  trailingIcon: item == value
-                      ? Icon(
-                          CatchIcons.checkRounded,
-                          color: tokens.primary,
-                          size: CatchIcon.sm,
-                        )
-                      : null,
-                  onPressed: () {
-                    onChanged?.call(item);
-                    _menuController.close();
-                  },
-                  child: Text(
-                    labelOf(item),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.labelL(context, color: tokens.ink),
-                  ),
-                ),
-              ),
+              ],
+              onSelected: (item, _) {
+                onChanged?.call(item);
+                _menuController.close();
+              },
+            ),
           ],
           builder: (context, controller, child) {
             final selectHasLabel =
@@ -1770,13 +1744,6 @@ class _CatchFieldState extends State<CatchField> {
     };
   }
 
-  double get _menuItemHeight {
-    return switch (widget.size) {
-      CatchFieldSize.compact => CatchLayout.menuItemHeightCompact,
-      _ => CatchLayout.menuItemHeight,
-    };
-  }
-
   Object? _normalizedSelectValue(Object? value) {
     if (value == null) return null;
     final values = widget._selectValues;
@@ -1810,8 +1777,14 @@ class _CatchFieldState extends State<CatchField> {
   }
 
   EdgeInsets get _rowPadding {
+    final flush = CatchFieldInsetScope.flushOf(context);
     if (_compactTextEntry) {
-      return const EdgeInsets.symmetric(horizontal: CatchSpacing.s1);
+      return flush
+          ? EdgeInsets.zero
+          : const EdgeInsets.symmetric(horizontal: CatchSpacing.s1);
+    }
+    if (flush) {
+      return const EdgeInsets.symmetric(vertical: CatchSpacing.micro14);
     }
     return const EdgeInsets.fromLTRB(
       CatchSpacing.s4,
@@ -1841,6 +1814,34 @@ Duration _catchFieldMotionDuration(BuildContext context) {
   return disableAnimations == true ? Duration.zero : CatchMotion.fast;
 }
 
+/// Ambient contract for who owns a field row's horizontal gutter.
+///
+/// By default a [CatchField] row insets itself horizontally so it can sit
+/// directly on a background or inside an unpadded surface. A container that
+/// owns the horizontal gutter itself (e.g. [CatchSection.divided]) publishes
+/// `flush: true`, and every field row below it drops its own horizontal
+/// inset so content, trailing affordances, and container-drawn dividers all
+/// share the container's edges.
+class CatchFieldInsetScope extends InheritedWidget {
+  const CatchFieldInsetScope({
+    super.key,
+    required this.flush,
+    required super.child,
+  });
+
+  final bool flush;
+
+  static bool flushOf(BuildContext context) =>
+      context
+          .dependOnInheritedWidgetOfExactType<CatchFieldInsetScope>()
+          ?.flush ??
+      false;
+
+  @override
+  bool updateShouldNotify(CatchFieldInsetScope oldWidget) =>
+      flush != oldWidget.flush;
+}
+
 class CatchFieldRow extends StatelessWidget {
   const CatchFieldRow.standard({
     super.key,
@@ -1851,7 +1852,7 @@ class CatchFieldRow extends StatelessWidget {
     this.constraints = const BoxConstraints(),
     this.padding = _defaultPadding,
   }) : leadingTopPadding = CatchSpacing.micro2,
-       leadingGap = CatchSpacing.s3,
+       leadingGap = leadingSlotGap,
        trailingGap = CatchSpacing.s2;
 
   const CatchFieldRow.add({
@@ -1866,8 +1867,20 @@ class CatchFieldRow extends StatelessWidget {
          vertical: CatchSpacing.micro14,
        ),
        leadingTopPadding = 0,
-       leadingGap = CatchSpacing.s3,
+       leadingGap = leadingSlotGap,
        trailingGap = CatchSpacing.s2;
+
+  /// Render size of icons in the leading slot.
+  static const double leadingSlotIconSize = CatchIcon.md;
+
+  /// Gap between the leading slot and the content lane.
+  static const double leadingSlotGap = CatchSpacing.s3;
+
+  /// Horizontal distance from the row's padded edge to where the content
+  /// lane starts when a leading slot is present. Containers that draw
+  /// text-lane-aligned dividers derive their indent from this instead of
+  /// hardcoding it, so resizing the leading icon moves the dividers too.
+  static const double textLaneInset = CatchLayout.fieldRowTextLaneInset;
 
   static const _defaultPadding = EdgeInsets.fromLTRB(
     CatchSpacing.s4,
@@ -1892,22 +1905,36 @@ class CatchFieldRow extends StatelessWidget {
       constraints: constraints,
       child: Padding(
         padding: padding,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (leading != null) ...[
-              Padding(
-                padding: EdgeInsets.only(top: leadingTopPadding),
-                child: leading,
-              ),
-              SizedBox(width: leadingGap),
-            ],
-            Expanded(child: content),
-            if (trailing != null) ...[
-              SizedBox(width: trailingGap),
-              Flexible(child: trailing!),
-            ],
-          ],
+        child: LayoutBuilder(
+          builder: (context, rowConstraints) {
+            // The trailing slot is intrinsic so trailing affordances pin to
+            // the row's trailing edge; the content lane owns all remaining
+            // width. Capping the slot at half the row keeps long trailing
+            // values from starving the content lane on narrow rows.
+            final trailingMaxWidth = rowConstraints.hasBoundedWidth
+                ? rowConstraints.maxWidth / 2
+                : double.infinity;
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (leading != null) ...[
+                  Padding(
+                    padding: EdgeInsets.only(top: leadingTopPadding),
+                    child: leading,
+                  ),
+                  SizedBox(width: leadingGap),
+                ],
+                Expanded(child: content),
+                if (trailing != null) ...[
+                  SizedBox(width: trailingGap),
+                  ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: trailingMaxWidth),
+                    child: trailing,
+                  ),
+                ],
+              ],
+            );
+          },
         ),
       ),
     );
@@ -1953,7 +1980,9 @@ class CatchFieldTrailing extends StatelessWidget {
       builder: (context) {
         final t = CatchTokens.of(context);
         return ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 160),
+          constraints: const BoxConstraints(
+            maxWidth: CatchLayout.fieldTrailingValueMaxWidth,
+          ),
           child: Text(
             text,
             textAlign: TextAlign.right,

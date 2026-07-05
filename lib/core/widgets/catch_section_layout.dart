@@ -2,9 +2,14 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_divider.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart'
+    show CatchFieldInsetScope;
 import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
+
+export 'package:catch_dating_app/core/widgets/catch_divider.dart';
 
 /// Standard page body padding wrapper for non-sliver content.
 ///
@@ -217,10 +222,19 @@ class CatchSection extends StatelessWidget {
     this.first = false,
     this._variant = _CatchSectionVariant.divided,
     this.dividerColor,
+    this.dividerIndent = 0,
+    this.dividerRole = CatchDividerRole.section,
+    this.internalDividerRole = CatchDividerRole.fieldRow,
     this.titleColor,
     this.bodyGap = CatchSpacing.s3,
     this.padding,
+    this.backgroundColor,
+    this.borderColor,
+    this.tone = CatchSurfaceTone.surface,
+    this.elevation = CatchSurfaceElevation.card,
+    this.boxShadow,
     this.showInternalDividers = true,
+    this.footer,
     this.focused = false,
     this.hasError = false,
     this.children,
@@ -242,6 +256,9 @@ class CatchSection extends StatelessWidget {
     bool lead = false,
     bool first = false,
     Color? dividerColor,
+    double dividerIndent = 0,
+    CatchDividerRole dividerRole = CatchDividerRole.section,
+    CatchDividerRole internalDividerRole = CatchDividerRole.fieldRow,
     Color? titleColor,
     double bodyGap = CatchSpacing.s3,
     bool showInternalDividers = true,
@@ -256,9 +273,47 @@ class CatchSection extends StatelessWidget {
          first: first,
          variant: _CatchSectionVariant.divided,
          dividerColor: dividerColor,
+         dividerIndent: dividerIndent,
+         dividerRole: dividerRole,
+         internalDividerRole: internalDividerRole,
          titleColor: titleColor,
          bodyGap: bodyGap,
          showInternalDividers: showInternalDividers,
+         children: children,
+         child: child,
+       );
+
+  const CatchSection.fieldRows({
+    Key? key,
+    String? title,
+    Object? count,
+    ActivityKind? activityKind,
+    bool lead = false,
+    bool first = false,
+    Widget? footer,
+    Color? dividerColor,
+    CatchDividerRole dividerRole = CatchDividerRole.section,
+    Color? titleColor,
+    double bodyGap = CatchSpacing.micro10,
+    bool showInternalDividers = true,
+    List<Widget>? children,
+    Widget? child,
+  }) : this._(
+         key: key,
+         title: title,
+         count: count,
+         activityKind: activityKind,
+         lead: lead,
+         first: first,
+         variant: _CatchSectionVariant.divided,
+         dividerColor: dividerColor,
+         dividerIndent: CatchLayout.fieldRowTextLaneInset,
+         dividerRole: dividerRole,
+         internalDividerRole: CatchDividerRole.fieldRow,
+         titleColor: titleColor,
+         bodyGap: bodyGap,
+         showInternalDividers: showInternalDividers,
+         footer: footer,
          children: children,
          child: child,
        );
@@ -272,6 +327,11 @@ class CatchSection extends StatelessWidget {
     Color? titleColor,
     double bodyGap = CatchSpacing.s3,
     EdgeInsetsGeometry? padding,
+    Color? backgroundColor,
+    Color? borderColor,
+    CatchSurfaceTone tone = CatchSurfaceTone.surface,
+    CatchSurfaceElevation elevation = CatchSurfaceElevation.card,
+    List<BoxShadow>? boxShadow,
     bool showInternalDividers = true,
     bool focused = false,
     bool hasError = false,
@@ -287,6 +347,11 @@ class CatchSection extends StatelessWidget {
          titleColor: titleColor,
          bodyGap: bodyGap,
          padding: padding,
+         backgroundColor: backgroundColor,
+         borderColor: borderColor,
+         tone: tone,
+         elevation: elevation,
+         boxShadow: boxShadow,
          showInternalDividers: showInternalDividers,
          focused: focused,
          hasError: hasError,
@@ -330,10 +395,19 @@ class CatchSection extends StatelessWidget {
   final bool first;
   final _CatchSectionVariant _variant;
   final Color? dividerColor;
+  final double dividerIndent;
+  final CatchDividerRole dividerRole;
+  final CatchDividerRole internalDividerRole;
   final Color? titleColor;
   final double bodyGap;
   final EdgeInsetsGeometry? padding;
+  final Color? backgroundColor;
+  final Color? borderColor;
+  final CatchSurfaceTone tone;
+  final CatchSurfaceElevation elevation;
+  final List<BoxShadow>? boxShadow;
   final bool showInternalDividers;
+  final Widget? footer;
   final bool focused;
   final bool hasError;
   final List<Widget>? children;
@@ -341,11 +415,16 @@ class CatchSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return switch (_variant) {
+    final section = switch (_variant) {
       _CatchSectionVariant.divided => _buildDivided(context),
       _CatchSectionVariant.contained => _buildContained(context),
       _CatchSectionVariant.plain => _buildPlain(context),
     };
+    if (footer == null) return section;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [section, footer!],
+    );
   }
 
   Widget _buildDivided(BuildContext context) {
@@ -368,7 +447,10 @@ class CatchSection extends StatelessWidget {
           ),
           SizedBox(height: bodyGap),
         ],
-        _body(context, t),
+        // Divided sections own the horizontal gutter: field rows inside
+        // render flush so content, trailing affordances, and the section's
+        // dividers share the same edges.
+        CatchFieldInsetScope(flush: true, child: _body(context, t)),
       ],
     );
 
@@ -378,7 +460,11 @@ class CatchSection extends StatelessWidget {
       padding: const EdgeInsets.only(top: CatchSpacing.s6),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          border: Border(top: BorderSide(color: dividerColor ?? t.line)),
+          border: Border(
+            top: BorderSide(
+              color: dividerColor ?? CatchDivider.colorFor(t, dividerRole),
+            ),
+          ),
         ),
         child: Padding(
           padding: const EdgeInsets.only(top: CatchSpacing.s6),
@@ -392,9 +478,17 @@ class CatchSection extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchSectionFocusSurface(
       padding: padding ?? const EdgeInsets.all(CatchSpacing.s4),
+      backgroundColor: backgroundColor,
+      borderColor: borderColor,
+      tone: tone,
+      elevation: elevation,
+      boxShadow: boxShadow,
       focused: focused,
       hasError: hasError,
-      child: _sectionContent(context, t, contained: true),
+      child: CatchFieldInsetScope(
+        flush: true,
+        child: _sectionContent(context, t, contained: true),
+      ),
     );
   }
 
@@ -445,18 +539,22 @@ class CatchSection extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (hasTitle)
-                  Text(
-                    count == null ? displayTitle : '$displayTitle · $count',
-                    style: contained
-                        ? CatchTextStyles.sectionTitle(
-                            context,
-                            color: titleColor ?? t.ink,
-                          )
-                        : CatchKicker.styleOf(
+                  contained
+                      ? Text(
+                          count == null
+                              ? displayTitle
+                              : '$displayTitle · $count',
+                          style: CatchTextStyles.sectionTitle(
                             context,
                             color: titleColor ?? t.ink,
                           ),
-                  ),
+                        )
+                      : _buildCatchSectionKicker(
+                          context,
+                          text: displayTitle,
+                          count: count,
+                          color: titleColor ?? t.ink,
+                        ),
                 if (hasSubtitle) ...[
                   const SizedBox(height: CatchSpacing.s1),
                   Text(
@@ -495,11 +593,16 @@ class CatchSection extends StatelessWidget {
           if (i == 0 || !showInternalDividers)
             sectionChildren[i]
           else
-            DecoratedBox(
-              decoration: BoxDecoration(
-                border: Border(top: BorderSide(color: t.line)),
-              ),
-              child: sectionChildren[i],
+            Stack(
+              children: [
+                sectionChildren[i],
+                Positioned(
+                  top: 0,
+                  left: dividerIndent,
+                  right: 0,
+                  child: CatchDivider(role: internalDividerRole),
+                ),
+              ],
             ),
       ],
     );
@@ -511,12 +614,22 @@ class CatchSectionFocusSurface extends StatefulWidget {
     super.key,
     required this.child,
     required this.padding,
+    this.backgroundColor,
+    this.borderColor,
+    this.tone = CatchSurfaceTone.surface,
+    this.elevation = CatchSurfaceElevation.card,
+    this.boxShadow,
     required this.focused,
     required this.hasError,
   });
 
   final Widget child;
   final EdgeInsetsGeometry padding;
+  final Color? backgroundColor;
+  final Color? borderColor;
+  final CatchSurfaceTone tone;
+  final CatchSurfaceElevation elevation;
+  final List<BoxShadow>? boxShadow;
   final bool focused;
   final bool hasError;
 
@@ -540,16 +653,21 @@ class _CatchSectionFocusSurfaceState extends State<CatchSectionFocusSurface> {
         if (_descendantFocused == focused) return;
         setState(() => _descendantFocused = focused);
       },
-      child: CatchSurface.card(
+      child: CatchSurface(
+        role: CatchSurfaceRole.card,
         padding: widget.padding,
+        radius: CatchRadius.md,
+        tone: widget.tone,
+        elevation: widget.elevation,
+        backgroundColor: widget.backgroundColor,
         borderColor: widget.hasError
             ? t.danger
             : effectiveFocused
             ? t.primary
-            : null,
+            : widget.borderColor,
         boxShadow: effectiveFocused && !widget.hasError
             ? CatchElevation.focusRing(t)
-            : null,
+            : widget.boxShadow,
         child: widget.child,
       ),
     );

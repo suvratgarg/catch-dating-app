@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
@@ -134,7 +135,7 @@ class OnboardingPhotosStep extends StatelessWidget {
           onReorderPhoto: callbacks.onReorderPhoto,
         ),
         gapH16,
-        Divider(height: 1, color: t.line),
+        const CatchDivider.section(),
         gapH12,
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,

@@ -10,31 +10,9 @@ import 'package:catch_dating_app/explore/presentation/widgets/catch_cover_story.
 import 'package:catch_dating_app/explore/presentation/widgets/explore_city_picker.dart';
 import 'package:flutter/material.dart';
 
-const double _clubsBrowseHeaderHeight = CatchLayout.browseHeaderHeight;
-
-class ExploreSliverHeader extends CatchSliverHeader {
-  ExploreSliverHeader({
-    String query = '',
-    ValueChanged<String>? onQueryChanged,
-    bool showSearchField = true,
-    ExploreCityPickerState? cityPickerState,
-    ValueChanged<CityData>? onCitySelected,
-  }) : super(
-         title: const SizedBox.shrink(),
-         bottomHeight: _clubsBrowseHeaderHeight,
-         bottom: ExploreBrowseHeaderContent(
-           query: query,
-           onQueryChanged: onQueryChanged,
-           showSearchAction: showSearchField,
-           cityPickerState: cityPickerState,
-           onCitySelected: onCitySelected,
-         ),
-       );
-}
-
-/// Non-sliver browse header — same content as [ExploreSliverHeader] but
-/// embeddable inside a regular Column. Uses [CatchTopBar] with built-in
-/// search support instead of a custom animated search morph.
+/// Non-sliver browse header embeddable in [CatchSliverHeader.bottom] or a
+/// regular column. Uses [CatchTopBar] with built-in search support instead of
+/// a custom animated search morph.
 class ExploreBrowseHeaderContent extends StatelessWidget {
   const ExploreBrowseHeaderContent({
     super.key,
@@ -154,11 +132,9 @@ class _ExploreDiscoveryCoverHeaderState
       return ColoredBox(
         color: t.bg,
         child: Padding(
-          padding: EdgeInsets.fromLTRB(
-            CatchSpacing.s5,
-            topInset + CatchSpacing.s6,
-            CatchSpacing.s5,
-            CatchSpacing.s4,
+          padding: CatchInsets.pageBody.copyWith(
+            top: topInset + CatchSpacing.s6,
+            bottom: CatchSpacing.s4,
           ),
           child: CatchTopBar(
             leading: ExploreCityPicker(

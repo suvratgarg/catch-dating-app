@@ -8,7 +8,9 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/labs/design_fixtures/profile_surface_fixtures.dart';
@@ -38,8 +40,6 @@ import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor
     show ProfileHeightStepButton, ProfileHeightStepperControls;
 import 'package:catch_dating_app/user_profile/presentation/widgets/preview_tab.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/profile_info_section.dart'
-    show ProfileInfoRowFrame, ProfileInfoSection, profileTabBodyPadding;
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_insights_tab.dart'
     show ProfileInsightsTabSliverBody;
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_sliver_header.dart';
@@ -214,24 +214,6 @@ Widget profileScreenSelfTabBodyStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Profile unavailable body',
-  type: ProfileUnavailableBody,
-  path: '[P1 product surfaces]/Profiles/Sections',
-)
-Widget profileUnavailableBodyState(BuildContext context) {
-  return const _ProfileCatalog(
-    title: 'ProfileUnavailableBody',
-    contractId: 'screen.profile.self.unavailable_body',
-    children: [
-      _StateCard(
-        label: 'default',
-        child: _SectionFrame(height: 320, child: ProfileUnavailableBody()),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
   name: 'Insights sliver body states',
   type: ProfileInsightsTabSliverBody,
   path: '[P1 product surfaces]/Profiles/Sections',
@@ -269,7 +251,7 @@ Widget profileScreenSelfSectionStates(BuildContext context) {
           child: Column(
             children: const [
               Expanded(child: _ProfileHeaderPreview(initialIndex: 0)),
-              Divider(height: 1),
+              CatchDivider.section(),
               Expanded(child: _ProfileHeaderPreview(initialIndex: 1)),
             ],
           ),
@@ -479,8 +461,10 @@ Widget profileTabContentStates(BuildContext context) {
           child: ProfileTabContent(
             user: _viewer,
             uploadState: (loadingIndices: <int>{}, uploadError: null),
-            builder: (context, children) =>
-                ListView(padding: profileTabBodyPadding, children: children),
+            builder: (context, children) => ListView(
+              padding: CatchInsets.formEditBodyRelaxed,
+              children: children,
+            ),
           ),
         ),
       ),
@@ -576,66 +560,44 @@ Widget profileFieldRowStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Info section states',
-  type: ProfileInfoSection,
+  name: 'Field row section states',
+  type: CatchSection,
   path: '[P1 product surfaces]/Profiles/Sections',
 )
-Widget profileInfoSectionStates(BuildContext context) {
+Widget profileFieldRowSectionStates(BuildContext context) {
   return _ProfileCatalog(
-    title: 'ProfileInfoSection',
-    contractId: 'screen.profile.edit_tab.info_section',
+    title: 'CatchSection.fieldRows',
+    contractId: 'screen.profile.edit_tab.field_row_section',
     children: [
       _StateCard(
-        label: 'grouped section',
+        label: 'running section',
         child: _SectionFrame(
           height: 280,
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
-              ProfileInfoSection(
-                title: 'About you',
-                subtitle: '3 fields',
-                grouped: true,
-                fullBleedRows: true,
-                children: [
-                  for (final label in ['Display name', 'Instagram', 'Company'])
-                    CatchSurface(
-                      padding: CatchInsets.content,
-                      child: Text(
-                        label,
-                        style: CatchTextStyles.labelL(context),
-                      ),
-                    ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'ungrouped section',
-        child: _SectionFrame(
-          height: 220,
-          child: ListView(
-            padding: CatchInsets.content,
-            children: [
-              ProfileInfoSection(
+              CatchSection.fieldRows(
                 title: 'Running',
                 children: [
-                  CatchSurface(
-                    padding: CatchInsets.content,
-                    child: Text(
-                      'Preferred pace',
-                      style: CatchTextStyles.labelL(context),
-                    ),
+                  CatchField.nav(
+                    icon: CatchIcons.speedOutlined,
+                    title: 'Pace range',
+                    body: '9:00-9:00/km',
                   ),
-                  gapH8,
-                  CatchSurface(
-                    padding: CatchInsets.content,
-                    child: Text(
-                      'Weekend mornings',
-                      style: CatchTextStyles.labelL(context),
-                    ),
+                  CatchField.nav(
+                    icon: CatchIcons.straightenOutlined,
+                    title: 'Preferred distances',
+                    body: '5 km, 10 km, 21 km',
+                  ),
+                  CatchField.nav(
+                    icon: CatchIcons.directionsRunOutlined,
+                    title: 'Why I event',
+                    body: 'Weight loss',
+                  ),
+                  CatchField.nav(
+                    icon: CatchIcons.wbTwilightOutlined,
+                    title: 'Favorite event times',
+                    body: 'Early morning, Morning',
                   ),
                 ],
               ),
@@ -643,47 +605,62 @@ Widget profileInfoSectionStates(BuildContext context) {
           ),
         ),
       ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Info row frame states',
-  type: ProfileInfoRowFrame,
-  path: '[P1 product surfaces]/Profiles/Sections',
-)
-Widget profileInfoRowFrameStates(BuildContext context) {
-  return _ProfileCatalog(
-    title: 'ProfileInfoRowFrame',
-    contractId: 'screen.profile.edit_tab.info_row_frame',
-    children: [
       _StateCard(
-        label: 'standard and full bleed',
+        label: 'count and first section',
         child: _SectionFrame(
-          height: 220,
+          height: 260,
           child: ListView(
-            padding: CatchInsets.content,
+            padding: EdgeInsets.zero,
             children: [
-              ProfileInfoRowFrame(
-                fullBleed: false,
-                child: CatchSurface(
-                  padding: CatchInsets.content,
-                  child: Text(
-                    'Standard row frame',
-                    style: CatchTextStyles.labelL(context),
+              CatchSection.fieldRows(
+                title: 'Prompts',
+                count: '3 of 3 answered',
+                first: true,
+                children: [
+                  CatchField.nav(
+                    icon: CatchIcons.formatQuoteRounded,
+                    title: 'A perfect event with me looks like...',
+                    body: 'Catch me if you can',
                   ),
-                ),
+                  CatchField.nav(
+                    icon: CatchIcons.formatQuoteRounded,
+                    title: 'After an event, you can usually find me...',
+                    body: 'ABCD',
+                  ),
+                ],
               ),
-              gapH12,
-              ProfileInfoRowFrame(
-                fullBleed: true,
-                child: CatchSurface(
-                  padding: CatchInsets.content,
+            ],
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'footer slot',
+        child: _SectionFrame(
+          height: 260,
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              CatchSection.fieldRows(
+                title: 'Privacy & safety',
+                footer: Padding(
+                  padding: const EdgeInsets.only(top: CatchSpacing.s3),
                   child: Text(
-                    'Full-bleed row frame',
-                    style: CatchTextStyles.labelL(context),
+                    'Footer content stays below the field-row section.',
+                    style: CatchTextStyles.supporting(context),
                   ),
                 ),
+                children: [
+                  CatchField.read(
+                    icon: CatchIcons.shieldOutlined,
+                    title: 'Blocked users',
+                    valueText: '0',
+                  ),
+                  CatchField.read(
+                    icon: CatchIcons.visibilityOutlined,
+                    title: 'Who can see you',
+                    valueText: 'Runners on my events',
+                  ),
+                ],
               ),
             ],
           ),
@@ -1952,8 +1929,10 @@ class _SelfProfileTabBodyPreviewState extends State<_SelfProfileTabBodyPreview>
   Widget build(BuildContext context) {
     return NestedScrollView(
       headerSliverBuilder: (context, innerBoxIsScrolled) {
-        final headerSlivers = ProfileSliverHeader(
-          controller: _tabController,
+        final headerSlivers = CatchSliverHeader(
+          title: const ProfileTitle(),
+          bottomHeight: CatchLayout.tabRailHeight,
+          bottom: ProfileTabBar(controller: _tabController),
         ).buildSlivers(context);
         final collapsibleSlivers = headerSlivers.take(headerSlivers.length - 1);
         final pinnedSliver = headerSlivers.last;
@@ -2105,7 +2084,11 @@ class _ProfileHeaderPreviewState extends State<_ProfileHeaderPreview>
   Widget build(BuildContext context) {
     return CustomScrollView(
       slivers: [
-        ...ProfileSliverHeader(controller: _controller).buildSlivers(context),
+        ...CatchSliverHeader(
+          title: const ProfileTitle(),
+          bottomHeight: CatchLayout.tabRailHeight,
+          bottom: ProfileTabBar(controller: _controller),
+        ).buildSlivers(context),
         const SliverFillRemaining(
           hasScrollBody: false,
           child: Center(child: Text('Header review body')),

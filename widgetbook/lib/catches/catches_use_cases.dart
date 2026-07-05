@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import "package:catch_dating_app/core/widgets/catch_stat_column.dart";
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
@@ -725,30 +726,6 @@ Widget profileHeroWidgetStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Hero scrim states',
-  type: ProfileHeroScrim,
-  path: '[P1 product surfaces]/Catches/Sections',
-)
-Widget profileHeroScrimStates(BuildContext context) {
-  return const _CatchesCatalog(
-    title: 'ProfileHeroScrim',
-    contractId: 'screen.catches.profile.hero_scrim',
-    children: [
-      _StateCard(
-        label: 'dark gradient',
-        child: _SectionFrame(
-          height: 280,
-          child: DecoratedBox(
-            decoration: BoxDecoration(color: Color(0xFF111111)),
-            child: ProfileHeroScrim(base: Color(0xFF111111)),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
   name: 'Photo states',
   type: ProfilePhoto,
   path: '[P1 product surfaces]/Catches/Sections',
@@ -959,17 +936,17 @@ Widget profileRunningStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Running stat states',
-  type: RunningStat,
+  type: CatchStatColumn,
   path: '[P1 product surfaces]/Catches/Sections',
 )
 Widget runningStatStates(BuildContext context) {
   return const _CatchesCatalog(
-    title: 'RunningStat',
+    title: 'CatchStatColumn',
     contractId: 'screen.catches.profile.running_stat',
     children: [
       _StateCard(
         label: 'pace',
-        child: RunningStat(label: 'Pace', value: '5:30/km'),
+        child: CatchStatColumn(label: 'Pace', value: '5:30/km'),
       ),
     ],
   );

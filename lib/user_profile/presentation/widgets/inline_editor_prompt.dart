@@ -3,8 +3,11 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart'
+    show CatchIcon, CatchInsets, CatchRadius, CatchTokens;
+import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor_save.dart';
@@ -151,6 +154,16 @@ class _ProfileInlinePromptEntryEditorState
     if (saved && mounted) widget.onSaved();
   }
 
+  Future<void> _pickPrompt() async {
+    final selected = await showPromptPickerSheet(
+      context,
+      promptIds: widget.availablePromptIds,
+      selectedPromptId: _selectedPromptId,
+    );
+    if (selected == null || !mounted) return;
+    setState(() => _selectedPromptId = selected);
+  }
+
   @override
   Widget build(BuildContext context) {
     final selectedDefinition = profilePromptDefinition(_selectedPromptId);
@@ -158,9 +171,12 @@ class _ProfileInlinePromptEntryEditorState
 
     return CatchField.actions(
       icon: widget.icon,
-      title: widget.label,
+      // While editing, the header shows the live selected question and the
+      // answer lives only in the editable input below — the collapsed body
+      // is not duplicated alongside it.
+      title: widget.isExpanded ? selectedDefinition.title : widget.label,
       body: widget.isExpanded
-          ? widget.value
+          ? null
           : (widget.isAddAffordance ? '+ ${widget.value}' : widget.value),
       tone: widget.isAddAffordance
           ? CatchFieldTone.primary
@@ -180,7 +196,7 @@ class _ProfileInlinePromptEntryEditorState
       control: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (widget.isExpanded)
+          if (widget.isExpanded) ...[
             ProfileInlineTextValue(
               label: selectedDefinition.title,
               displayValue: widget.value,
@@ -195,23 +211,14 @@ class _ProfileInlinePromptEntryEditorState
               collapseStackedBlankLines: true,
               onSubmitted: (_) => _submit(),
             ),
-          if (widget.isExpanded) ...[
-            const SizedBox(height: CatchSpacing.s3),
-            const CatchFormFieldLabel(label: 'Prompt'),
             gapH8,
-            CatchField.select<String>(
-              title: 'Prompt',
-              values: widget.availablePromptIds,
-              value: _selectedPromptId,
-              itemLabel: (promptId) => profilePromptDefinition(promptId).title,
-              prefixIcon: Icon(CatchIcons.formatQuoteRounded),
-              showLabel: false,
-              onChanged: isSaving
-                  ? null
-                  : (promptId) {
-                      if (promptId == null) return;
-                      setState(() => _selectedPromptId = promptId);
-                    },
+            CatchTextButton(
+              key: const ValueKey('profile-inline-change-prompt'),
+              label: 'Change prompt',
+              tone: CatchTextButtonTone.neutral,
+              minimumSize: const Size(0, CatchSpacing.s8),
+              padding: EdgeInsets.zero,
+              onPressed: isSaving ? null : _pickPrompt,
             ),
             if (saveErrorBanner != null) ...[
               const SizedBox(height: CatchSpacing.s3),
@@ -222,6 +229,119 @@ class _ProfileInlinePromptEntryEditorState
       ),
       onCancel: _cancel,
       onSubmit: _submit,
+    );
+  }
+}
+
+/// Opens the prompt-question picker and resolves with the chosen prompt id,
+/// or null when dismissed.
+Future<String?> showPromptPickerSheet(
+  BuildContext context, {
+  required List<String> promptIds,
+  required String selectedPromptId,
+}) {
+  return showModalBottomSheet<String>(
+    context: context,
+    isScrollControlled: true,
+    useSafeArea: true,
+    backgroundColor: Colors.transparent,
+    builder: (_) => PromptPickerSheet(
+      promptIds: promptIds,
+      selectedPromptId: selectedPromptId,
+    ),
+  );
+}
+
+class PromptPickerSheet extends StatelessWidget {
+  const PromptPickerSheet({
+    super.key,
+    required this.promptIds,
+    required this.selectedPromptId,
+  });
+
+  final List<String> promptIds;
+  final String selectedPromptId;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchBottomSheetScaffold(
+      title: 'Prompt',
+      subtitle: 'Pick the question this answer responds to.',
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.sizeOf(context).height * 0.56,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (final promptId in promptIds)
+                PromptOptionTile(
+                  title: profilePromptDefinition(promptId).title,
+                  selected: promptId == selectedPromptId,
+                  onTap: () => Navigator.of(context).pop(promptId),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class PromptOptionTile extends StatelessWidget {
+  const PromptOptionTile({
+    super.key,
+    required this.title,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String title;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: 'Select prompt: $title',
+      child: Material(
+        color: selected ? t.primarySoft : Colors.transparent,
+        borderRadius: BorderRadius.circular(CatchRadius.sm),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: CatchInsets.listBody,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
+                    title,
+                    style: CatchTextStyles.bodyL(
+                      context,
+                      color: selected ? t.primary : t.ink,
+                    ),
+                  ),
+                ),
+                if (selected) ...[
+                  const SizedBox(width: CatchSpacing.s2),
+                  Icon(
+                    CatchIcons.checkRounded,
+                    size: CatchIcon.sm,
+                    color: t.primary,
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

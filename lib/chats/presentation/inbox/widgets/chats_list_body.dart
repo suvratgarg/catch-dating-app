@@ -1,10 +1,10 @@
+import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/widgets/chat_conversations_list.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/widgets/chat_conversations_list.dart';
 import 'package:flutter/material.dart';
 
 class ChatsListBody extends StatelessWidget {
@@ -31,11 +31,9 @@ class ChatsListBody extends StatelessWidget {
         if (threads.isNotEmpty && isHostApp)
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(
-                CatchSpacing.s5,
-                CatchSpacing.micro14,
-                CatchSpacing.s5,
-                CatchSpacing.s4,
+              padding: CatchInsets.pageBody.copyWith(
+                top: CatchSpacing.micro14,
+                bottom: CatchSpacing.s4,
               ),
               child: HostInboxBroadcastCard(
                 threadCount: viewModel.totalThreadCount,

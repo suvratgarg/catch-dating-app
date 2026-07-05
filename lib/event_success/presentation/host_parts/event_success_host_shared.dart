@@ -22,6 +22,30 @@ class EventSuccessTabPicker extends StatelessWidget {
   }
 }
 
+class EventSuccessHostTabBody extends StatelessWidget {
+  const EventSuccessHostTabBody({
+    required this.embedded,
+    required this.children,
+  });
+
+  final bool embedded;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    final shrinkWrap = embedded;
+    return ListView(
+      shrinkWrap: shrinkWrap,
+      primary: shrinkWrap ? false : null,
+      physics: embedded
+          ? const NeverScrollableScrollPhysics()
+          : const AlwaysScrollableScrollPhysics(),
+      padding: embedded ? EdgeInsets.zero : CatchInsets.contentRelaxed,
+      children: children,
+    );
+  }
+}
+
 extension on EventSuccessHostTab {
   String get label {
     return switch (this) {

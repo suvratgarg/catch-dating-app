@@ -71,7 +71,10 @@ class ExploreMapScreen extends ConsumerWidget {
             left: 0,
             child: SafeArea(
               child: Padding(
-                padding: const EdgeInsets.all(CatchSpacing.s5),
+                padding: CatchInsets.pageBody.copyWith(
+                  top: CatchSpacing.s5,
+                  bottom: CatchSpacing.s5,
+                ),
                 child: CatchIconButton(
                   variant: CatchIconButtonVariant.float,
                   tooltip: 'Back to Explore',

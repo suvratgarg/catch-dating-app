@@ -8,7 +8,7 @@ import 'package:go_router/go_router.dart';
 /// Opens a deep-link [route] through go_router, catching navigation failures
 /// and surfacing them as branded Catch error snackbars.
 ///
-/// Extracted from [ActivityScreen] and [ActivitySection]/[NotificationGroupWidget]
+/// Extracted from [ActivityScreen] and [ActivitySection]/[NotificationDayGroups]
 /// to avoid duplicating the error-handling boilerplate.
 void openNotificationRoute(BuildContext context, String route) {
   try {

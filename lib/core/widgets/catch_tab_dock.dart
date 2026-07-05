@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_count_badge.dart';
 import 'package:flutter/material.dart';
 
 class CatchTabDockItem<T> {
@@ -154,48 +154,6 @@ class CatchTabDockIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final glyph = Icon(icon, size: CatchLayout.tabDockIconSize, color: color);
-    if (badgeCount <= 0) return glyph;
-
-    final t = CatchTokens.of(context);
-    final label = badgeCount > 99 ? '99+' : '$badgeCount';
-
-    return SizedBox(
-      width: CatchLayout.appShellNavigationBadgeWidth,
-      height: CatchLayout.appShellNavigationBadgeHeight,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Align(alignment: Alignment.bottomCenter, child: glyph),
-          Positioned(
-            top: 0,
-            right: 1,
-            child: CatchSurface(
-              radius: CatchRadius.pill,
-              backgroundColor: t.primary,
-              borderColor: t.surface,
-              borderWidth: 1.5,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(minWidth: 17, minHeight: 17),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: CatchSpacing.s1,
-                    vertical: CatchStroke.hairline,
-                  ),
-                  child: Center(
-                    child: Text(
-                      label,
-                      style: CatchTextStyles.statusLabel(
-                        context,
-                        color: t.primaryInk,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+    return CatchCountBadge(count: badgeCount, child: glyph);
   }
 }

@@ -24,10 +24,12 @@ class DashboardHomeScreen extends StatelessWidget {
           label: 'Home',
           child: CustomScrollView(
             slivers: [
-              ...DashboardSliverHeader(
-                eyebrow: header.eyebrow,
-                title: header.title,
-                actions: [?notificationAction],
+              ...CatchSliverHeader(
+                title: DashboardHeaderContent(
+                  eyebrow: header.eyebrow,
+                  title: header.title,
+                  actions: [?notificationAction],
+                ),
               ).buildSlivers(context),
               dashboardSliver,
             ],

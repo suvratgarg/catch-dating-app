@@ -1,7 +1,7 @@
 ---
 doc_id: design_language
-version: 1.2.0
-updated: 2026-06-30
+version: 1.3.0
+updated: 2026-07-05
 owner: ui_elevation_initiative
 status: active — identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
 ---
@@ -176,6 +176,41 @@ system font.
 
 - **Light + dark, used intentionally** — light for browse/forms, dark for wow surfaces.
 - **Hairlines over boxes; generous whitespace; grid discipline.**
+
+### 7.1 Containment doctrine — when a surface earns a border
+
+Containers mark **objects and actions, never information**. A bordered or
+filled surface in product UI must pass at least one of:
+
+- **R1 · Collection object** — a peer in a set you browse or choose among
+  (feed tickets, club polaroids, recommendation cards, photo slots). The
+  container is the object's material; material marks type (events are
+  tickets, clubs are polaroids, people are plain cards).
+- **R2 · Actionable module** — tappable as a whole, or carrying a CTA
+  cluster owned by exactly this content (booking dock, callout card, task
+  card, QR panel).
+- **R3 · Plane change** — sheets, menus, overlays, docks, floating
+  controls. Elevation resets the rules; content inside starts flat again.
+- **R4 · Status tone** — the fill/border carries semantic state
+  (warning/error/success notices, primarySoft signal cards).
+- **R5 · List frame** — ONE hairline container around a stack of
+  divider-separated rows (the ReviewRow/ContactRow/HostRow pattern).
+  Never card-per-row.
+
+Everything else is an **attribute of the page's subject** and renders flat:
+kicker + typography + hairlines + spacing carry hierarchy.
+
+Additional rules:
+
+- **Depth ≤ 1.** A bordered surface never contains another bordered
+  surface; only a plane change (R3) resets the count.
+- **Exempt material classes:** chips/pills/badges (data-chip anatomy
+  includes its border), skeletons (mimics follow whatever their subject
+  does), and the immersive stage/paper/celebration grammars (their own
+  ratified languages).
+
+The audited application of this doctrine lives in
+`docs/design_parity/containment_audit.md`.
 - **Sizing:** constraints over constant heights/widths; min/max constraints, intrinsics,
   `Flexible`/`Expanded`, `AspectRatio`, content max-width clamp. Resilient to **Dynamic
   Type** (validate at text scale 1.0/1.5/2.0).

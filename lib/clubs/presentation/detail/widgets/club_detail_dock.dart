@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
@@ -14,8 +15,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// Membership role the [CatchClubDock] renders for.
-enum CatchClubDockState { guest, visitor, member, owner }
+/// Membership role the [ClubDetailDock] renders for.
+enum ClubDetailDockRole { guest, visitor, member, owner }
+
+@Deprecated('Use ClubDetailDockRole. Kept for one release during C4 migration.')
+typedef CatchClubDockState = ClubDetailDockRole;
 
 /// Design-system `ClubDock` (`components/clubs/ClubDock`): the persistent bottom
 /// bar of a club detail screen, stateful over membership role — BookingDock's
@@ -24,8 +28,8 @@ enum CatchClubDockState { guest, visitor, member, owner }
 /// shows the count + a notifications bell + a quiet "Joined" control; `owner`
 /// shows Manage + a New-event pair; `guest` shows an ink "Sign in to join". The
 /// mono [footnote] carries the state's quiet facts.
-class CatchClubDock extends StatelessWidget {
-  const CatchClubDock({
+class ClubDetailDock extends StatelessWidget {
+  const ClubDetailDock({
     super.key,
     required this.state,
     required this.activityKind,
@@ -44,7 +48,7 @@ class CatchClubDock extends StatelessWidget {
     this.onCreate,
   });
 
-  final CatchClubDockState state;
+  final ClubDetailDockRole state;
   final ActivityKind activityKind;
   final int? members;
   final String membersLabel;
@@ -62,57 +66,48 @@ class CatchClubDock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final activity = ActivityPalette.resolve(context, activityKind);
-    final showCount = members != null && state != CatchClubDockState.owner;
+    final t = CatchTokens.of(context);
+    final showCount = members != null && state != ClubDetailDockRole.owner;
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: t.surface,
-        border: Border(top: BorderSide(color: t.line)),
+    return CatchBottomDock(
+      padding: const EdgeInsets.fromLTRB(
+        CatchSpacing.micro18,
+        CatchSpacing.micro14,
+        CatchSpacing.micro18,
+        CatchSpacing.micro18,
       ),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.micro18,
-            CatchSpacing.micro14,
-            CatchSpacing.micro18,
-            CatchSpacing.micro18,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
             children: [
-              Row(
-                children: [
-                  if (showCount) ...[
-                    DockCount(members: members!, label: membersLabel),
-                    const SizedBox(width: CatchSpacing.s3),
-                  ],
-                  ..._controls(t, activity),
-                ],
-              ),
-              if (footnote != null && footnote!.isNotEmpty) ...[
-                const SizedBox(height: CatchSpacing.micro10),
-                Text(
-                  footnote!,
-                  textAlign: TextAlign.center,
-                  style: CatchTextStyles.monoLabel(
-                    context,
-                    color: t.ink3,
-                  ).copyWith(fontSize: 9),
-                ),
+              if (showCount) ...[
+                DockCount(members: members!, label: membersLabel),
+                const SizedBox(width: CatchSpacing.s3),
               ],
+              ..._controls(activity),
             ],
           ),
-        ),
+          if (footnote != null && footnote!.isNotEmpty) ...[
+            const SizedBox(height: CatchSpacing.micro10),
+            Text(
+              footnote!,
+              textAlign: TextAlign.center,
+              style: CatchTextStyles.monoLabel(
+                context,
+                color: t.ink3,
+              ).copyWith(fontSize: 9),
+            ),
+          ],
+        ],
       ),
     );
   }
 
-  List<Widget> _controls(CatchTokens t, CatchActivity activity) {
+  List<Widget> _controls(CatchActivity activity) {
     switch (state) {
-      case CatchClubDockState.guest:
+      case ClubDetailDockRole.guest:
         return [
           Expanded(
             child: CatchButton(
@@ -123,7 +118,7 @@ class CatchClubDock extends StatelessWidget {
             ),
           ),
         ];
-      case CatchClubDockState.visitor:
+      case ClubDetailDockRole.visitor:
         return [
           Expanded(
             child: CatchButton(
@@ -137,7 +132,7 @@ class CatchClubDock extends StatelessWidget {
             ),
           ),
         ];
-      case CatchClubDockState.member:
+      case ClubDetailDockRole.member:
         return [
           DockBell(
             active: notificationsEnabled,
@@ -158,7 +153,7 @@ class CatchClubDock extends StatelessWidget {
             ),
           ),
         ];
-      case CatchClubDockState.owner:
+      case ClubDetailDockRole.owner:
         return [
           Expanded(
             child: CatchButton(
@@ -184,6 +179,9 @@ class CatchClubDock extends StatelessWidget {
     }
   }
 }
+
+@Deprecated('Use ClubDetailDock. Kept for one release during C4 migration.')
+typedef CatchClubDock = ClubDetailDock;
 
 class DockCount extends StatelessWidget {
   const DockCount({super.key, required this.members, required this.label});
@@ -264,7 +262,7 @@ class DockBell extends StatelessWidget {
   }
 }
 
-/// Provider-backed [CatchClubDock] for the consumer club-detail screen. Computes
+/// Provider-backed [ClubDetailDock] for the consumer club-detail screen. Computes
 /// the membership state and wires Join / Leave / notification mutations and the
 /// guest sign-in route. (Owner state is host-app territory and not rendered
 /// here.)
@@ -289,17 +287,17 @@ class ClubMembershipDock extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = !isAuthenticated
-        ? CatchClubDockState.guest
+        ? ClubDetailDockRole.guest
         : isMember
-        ? CatchClubDockState.member
-        : CatchClubDockState.visitor;
+        ? ClubDetailDockRole.member
+        : ClubDetailDockRole.visitor;
     final footnote = switch (state) {
-      CatchClubDockState.visitor => 'FREE TO JOIN · LEAVE ANYTIME',
-      CatchClubDockState.member => 'MEMBER · MANAGE ANYTIME',
+      ClubDetailDockRole.visitor => 'FREE TO JOIN · LEAVE ANYTIME',
+      ClubDetailDockRole.member => 'MEMBER · MANAGE ANYTIME',
       _ => null,
     };
 
-    return CatchClubDock(
+    return ClubDetailDock(
       state: state,
       activityKind: club.hostDefaults.primaryActivityKind,
       members: club.memberCount,

@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 
@@ -15,43 +16,36 @@ class ClubDetailLoadingBody extends StatelessWidget {
 
     return ColoredBox(
       color: t.surface,
-      child: CustomScrollView(
+      child: const CustomScrollView(
         slivers: [
-          SliverToBoxAdapter(child: const ClubHeroLoadingSkeleton()),
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(
-              CatchLayout.detailScreenHorizontalPadding,
-              CatchLayout.detailScreenTopPadding,
-              CatchLayout.detailScreenHorizontalPadding,
-              CatchLayout.detailScreenBottomPadding,
-            ),
-            sliver: SliverList.list(
-              children: [
-                const ClubStatsLoadingSkeleton(),
-                CatchSectionStack(
-                  padding: const EdgeInsets.only(top: CatchSpacing.screenPt),
-                  children: [
-                    CatchSection.divided(
-                      title: 'Your hosts',
-                      first: true,
-                      child: const ClubHostLoadingSkeleton(),
-                    ),
-                    CatchSection.divided(
-                      title: 'About',
-                      child: const ClubTextLoadingSkeleton(lines: 3),
-                    ),
-                    CatchSection.divided(
-                      title: 'What we do',
-                      child: const ClubTagLoadingSkeleton(),
-                    ),
-                    CatchSection.divided(
-                      title: 'Upcoming',
-                      child: const ClubScheduleLoadingSkeleton(),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+          SliverToBoxAdapter(child: ClubHeroLoadingSkeleton()),
+          CatchDetailSliverSectionList(
+            gap: CatchSpacing.screenPt,
+            sections: [
+              ClubStatsLoadingSkeleton(),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  CatchSection.divided(
+                    title: 'About',
+                    first: true,
+                    child: ClubTextLoadingSkeleton(lines: 3),
+                  ),
+                  CatchSection.divided(
+                    title: 'What we do',
+                    child: CatchSkeletonChips(height: CatchSpacing.s8),
+                  ),
+                  CatchSection.divided(
+                    title: 'Your hosts',
+                    child: ClubHostLoadingSkeleton(),
+                  ),
+                  CatchSection.divided(
+                    title: 'Schedule',
+                    child: ClubScheduleLoadingSkeleton(),
+                  ),
+                ],
+              ),
+            ],
           ),
         ],
       ),
@@ -105,15 +99,15 @@ class ClubStatsLoadingSkeleton extends StatelessWidget {
     return CatchSurface(
       borderColor: t.line,
       padding: CatchInsets.tileContentCompact,
-      child: Row(
+      child: const Row(
         children: [
-          Expanded(child: const ClubStatLoadingSkeleton()),
-          const ClubStatsDividerSkeleton(),
-          Expanded(child: const ClubStatLoadingSkeleton()),
-          const ClubStatsDividerSkeleton(),
-          Expanded(child: const ClubStatLoadingSkeleton()),
-          const ClubStatsDividerSkeleton(),
-          Expanded(child: const ClubStatLoadingSkeleton()),
+          Expanded(child: ClubStatLoadingSkeleton()),
+          ClubStatsDividerSkeleton(),
+          Expanded(child: ClubStatLoadingSkeleton()),
+          ClubStatsDividerSkeleton(),
+          Expanded(child: ClubStatLoadingSkeleton()),
+          ClubStatsDividerSkeleton(),
+          Expanded(child: ClubStatLoadingSkeleton()),
         ],
       ),
     );
@@ -190,35 +184,6 @@ class ClubTextLoadingSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchSkeleton.textBlock(lines: lines);
-  }
-}
-
-class ClubTagLoadingSkeleton extends StatelessWidget {
-  const ClubTagLoadingSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: CatchSpacing.s2,
-      runSpacing: CatchSpacing.s2,
-      children: [
-        CatchSkeleton.box(
-          width: CatchSpacing.s16 + CatchSpacing.s6,
-          height: CatchSpacing.s8,
-          radius: CatchRadius.pill,
-        ),
-        CatchSkeleton.box(
-          width: CatchSpacing.s16 + CatchSpacing.s10,
-          height: CatchSpacing.s8,
-          radius: CatchRadius.pill,
-        ),
-        CatchSkeleton.box(
-          width: CatchSpacing.s16 + CatchSpacing.s4,
-          height: CatchSpacing.s8,
-          radius: CatchRadius.pill,
-        ),
-      ],
-    );
   }
 }
 

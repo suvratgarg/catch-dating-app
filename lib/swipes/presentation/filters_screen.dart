@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_controller.dart';
@@ -116,7 +117,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
         backgroundColor: t.bg,
         appBar: CatchTopBar(
           title: 'Filters',
-          leading: CatchTopBarIconAction(
+          leading: CatchIconAction(
             icon: CatchIcons.closeRounded,
             tooltip: 'Close filters',
             onPressed: () => context.pop(),
@@ -193,11 +194,9 @@ class FiltersContent extends StatelessWidget {
       children: [
         Expanded(
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(
-              CatchSpacing.s5,
-              CatchSpacing.s2,
-              CatchSpacing.s5,
-              CatchSpacing.s5,
+            padding: CatchInsets.pageBody.copyWith(
+              top: CatchSpacing.s2,
+              bottom: CatchSpacing.s5,
             ),
             children: [
               FiltersSection(
@@ -243,11 +242,9 @@ class FiltersContent extends StatelessWidget {
         ),
         CatchBottomDock(
           includeSafeArea: false,
-          padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.s5,
-            CatchSpacing.s3,
-            CatchSpacing.s5,
-            CatchSpacing.s5,
+          padding: CatchInsets.pageBody.copyWith(
+            top: CatchSpacing.s3,
+            bottom: CatchSpacing.s5,
           ),
           child: CatchButton(
             key: SwipeKeys.applyFiltersButton,
@@ -271,28 +268,24 @@ class FiltersContentSkeleton extends StatelessWidget {
       children: [
         Expanded(
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(
-              CatchSpacing.s5,
-              CatchSpacing.s2,
-              CatchSpacing.s5,
-              CatchSpacing.s5,
+            padding: CatchInsets.pageBody.copyWith(
+              top: CatchSpacing.s2,
+              bottom: CatchSpacing.s5,
             ),
             children: const [
               FiltersSection(title: 'Age', child: AgeFilterSkeleton()),
               FiltersSection(
                 title: 'Interested in',
-                child: GenderFilterSkeleton(),
+                child: CatchSkeletonChips(),
               ),
             ],
           ),
         ),
         CatchBottomDock(
           includeSafeArea: false,
-          padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.s5,
-            CatchSpacing.s3,
-            CatchSpacing.s5,
-            CatchSpacing.s5,
+          padding: CatchInsets.pageBody.copyWith(
+            top: CatchSpacing.s3,
+            bottom: CatchSpacing.s5,
           ),
           child: CatchSkeleton.box(
             width: double.infinity,
@@ -331,35 +324,6 @@ class AgeFilterSkeleton extends StatelessWidget {
               ],
             ),
           ],
-        ),
-      ],
-    );
-  }
-}
-
-class GenderFilterSkeleton extends StatelessWidget {
-  const GenderFilterSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: CatchSpacing.s2,
-      runSpacing: CatchSpacing.s2,
-      children: [
-        CatchSkeleton.box(
-          width: CatchSpacing.s16 + CatchSpacing.s7,
-          height: CatchSpacing.s9,
-          radius: CatchRadius.pill,
-        ),
-        CatchSkeleton.box(
-          width: CatchSpacing.s16 + CatchSpacing.s10,
-          height: CatchSpacing.s9,
-          radius: CatchRadius.pill,
-        ),
-        CatchSkeleton.box(
-          width: CatchSpacing.s16 + CatchSpacing.s4,
-          height: CatchSpacing.s9,
-          radius: CatchRadius.pill,
         ),
       ],
     );

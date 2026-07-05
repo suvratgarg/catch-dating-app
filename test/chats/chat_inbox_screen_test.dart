@@ -18,6 +18,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
@@ -360,11 +361,21 @@ void main() {
               builder: (context, ref, child) {
                 return CustomScrollView(
                   slivers: [
-                    ...ChatsSliverHeader(
-                      searchValue: ref.watch(chatSearchQueryProvider),
-                      onSearchChanged: ref
-                          .read(chatSearchQueryProvider.notifier)
-                          .setQuery,
+                    ...CatchSliverHeader(
+                      title: const SizedBox.shrink(),
+                      bottomHeight: chatsBrowseHeaderHeight(
+                        hasHostFilter: false,
+                      ),
+                      bottom: ChatsBrowseHeader(
+                        showSearchAction: true,
+                        searchValue: ref.watch(chatSearchQueryProvider),
+                        onSearchChanged: ref
+                            .read(chatSearchQueryProvider.notifier)
+                            .setQuery,
+                        hostFilter: null,
+                        hostUnreadCount: 0,
+                        onHostFilterChanged: null,
+                      ),
                     ).buildSlivers(context),
                     const SliverToBoxAdapter(child: SizedBox(height: 700)),
                   ],
@@ -471,6 +482,44 @@ void main() {
       ),
       findsOneWidget,
     );
+  });
+
+  testWidgets('host inbox empty state uses explicit attendee-query copy', (
+    tester,
+  ) async {
+    AppConfig.configureEntrypointRole(AppRole.host);
+    final matchRepository = _FakeMatchRepository(matches: const []);
+    final conversationRepository = _FakeConversationRepository();
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream.value('host-1')),
+          matchRepositoryProvider.overrideWithValue(matchRepository),
+          conversationRepositoryProvider.overrideWithValue(
+            conversationRepository,
+          ),
+          watchMatchesForUserProvider(
+            'host-1',
+          ).overrideWith((ref) => Stream.value(const [])),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: const ChatsListScreen(),
+        ),
+      ),
+    );
+
+    await pumpFeatureUi(tester);
+
+    expect(find.text('No attendee queries yet'), findsOneWidget);
+    expect(
+      find.text(
+        'Guest and attendee questions will appear here once people reach out about an event.',
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('No catches yet'), findsNothing);
   });
 
   testWidgets('shows search-specific empty copy when a query has no matches', (

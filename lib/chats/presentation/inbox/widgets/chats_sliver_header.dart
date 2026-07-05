@@ -4,35 +4,15 @@ import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:flutter/material.dart';
 
 const double _chatsBrowseHeaderHeight = CatchLayout.browseHeaderHeight;
-const double _hostInboxFilterHeight = CatchSpacing.s11;
+const double _hostInboxFilterHeight = CatchLayout.tabRailHeight;
 
-class ChatsSliverHeader extends CatchSliverHeader {
-  ChatsSliverHeader({
-    bool showSearchAction = true,
-    String searchValue = '',
-    ValueChanged<String>? onSearchChanged,
-    HostInboxFilter? hostFilter,
-    int hostUnreadCount = 0,
-    ValueChanged<HostInboxFilter>? onHostFilterChanged,
-  }) : super(
-         title: const SizedBox.shrink(),
-         bottomHeight:
-             _chatsBrowseHeaderHeight +
-             (hostFilter == null ? 0 : _hostInboxFilterHeight),
-         bottom: ChatsBrowseHeader(
-           showSearchAction: showSearchAction,
-           searchValue: searchValue,
-           onSearchChanged: onSearchChanged,
-           hostFilter: hostFilter,
-           hostUnreadCount: hostUnreadCount,
-           onHostFilterChanged: onHostFilterChanged,
-         ),
-       );
-}
+double chatsBrowseHeaderHeight({required bool hasHostFilter}) =>
+    _chatsBrowseHeaderHeight + (hasHostFilter ? _hostInboxFilterHeight : 0);
 
 class ChatsBrowseHeader extends StatefulWidget {
   const ChatsBrowseHeader({
@@ -119,29 +99,19 @@ class _ChatsBrowseHeaderState extends State<ChatsBrowseHeader> {
             searchSemanticLabel: isHostApp
                 ? 'Search attendees'
                 : 'Search chats',
-            searchCollapsedExtent: CatchLayout.browseHeaderSearchExtent,
           ),
         ),
         if (widget.hostFilter != null)
-          SizedBox(
-            height: _hostInboxFilterHeight,
-            child: Padding(
-              padding: CatchInsets.screenControlRow,
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: CatchOptionGroup<HostInboxFilter>(
-                  options: [
-                    const CatchOption(value: HostInboxFilter.all, label: 'All'),
-                    CatchOption(
-                      value: HostInboxFilter.unread,
-                      label: 'Unread · ${widget.hostUnreadCount}',
-                    ),
-                  ],
-                  selected: widget.hostFilter!,
-                  onChanged: widget.onHostFilterChanged,
-                ),
+          CatchTabRail<HostInboxFilter>(
+            options: [
+              const CatchOption(value: HostInboxFilter.all, label: 'All'),
+              CatchOption(
+                value: HostInboxFilter.unread,
+                label: 'Unread · ${widget.hostUnreadCount}',
               ),
-            ),
+            ],
+            selected: widget.hostFilter!,
+            onChanged: widget.onHostFilterChanged,
           ),
       ],
     );

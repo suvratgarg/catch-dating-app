@@ -33,6 +33,7 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_framework_error_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
+import 'package:catch_dating_app/core/widgets/catch_horizontal_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_journey_steps.dart';
 import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
@@ -48,6 +49,7 @@ import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_otp_code_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
+import 'package:catch_dating_app/core/widgets/catch_scrim.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_segmented_control.dart';
@@ -59,6 +61,7 @@ import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_dock.dart';
+import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -555,7 +558,10 @@ void main() {
     final valueLeft = tester.getTopLeft(find.text('Contact us')).dx;
 
     expect(valueText.textAlign, TextAlign.right);
-    expect(valueBox.width, lessThanOrEqualTo(160));
+    expect(
+      valueBox.width,
+      lessThanOrEqualTo(CatchLayout.fieldTrailingValueMaxWidth),
+    );
     expect(valueLeft, greaterThan(labelRight));
   });
 
@@ -583,6 +589,122 @@ void main() {
 
     expect(valueRight, lessThanOrEqualTo(fieldRight));
   });
+
+  testWidgets('CatchField row keeps its own horizontal gutter by default', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        SizedBox(
+          width: 360,
+          child: CatchField.read(
+            title: 'Notifications',
+            valueText: 'On',
+            icon: CatchIcons.helpOutline,
+          ),
+        ),
+      ),
+    );
+
+    final fieldRect = tester.getRect(find.byType(CatchField));
+    final iconRect = tester.getRect(find.byIcon(CatchIcons.helpOutline));
+    final labelLeft = tester.getTopLeft(find.text('Notifications')).dx;
+    final valueRight = tester.getTopRight(find.text('On')).dx;
+
+    expect(iconRect.left - fieldRect.left, CatchSpacing.s4);
+    expect(
+      labelLeft - fieldRect.left,
+      CatchSpacing.s4 + CatchFieldRow.textLaneInset,
+    );
+    expect(fieldRect.right - valueRight, CatchSpacing.s4);
+  });
+
+  testWidgets('CatchFieldInsetScope flush hands the gutter to the container', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        SizedBox(
+          width: 360,
+          child: CatchFieldInsetScope(
+            flush: true,
+            child: CatchField.read(
+              title: 'Notifications',
+              valueText: 'On',
+              icon: CatchIcons.helpOutline,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final fieldRect = tester.getRect(find.byType(CatchField));
+    final iconRect = tester.getRect(find.byIcon(CatchIcons.helpOutline));
+    final labelLeft = tester.getTopLeft(find.text('Notifications')).dx;
+    final valueRight = tester.getTopRight(find.text('On')).dx;
+
+    expect(iconRect.left, fieldRect.left);
+    expect(labelLeft - fieldRect.left, CatchFieldRow.textLaneInset);
+    expect(valueRight, fieldRect.right);
+  });
+
+  testWidgets(
+    'CatchSection.fieldRows renders rows flush with lane-aligned dividers',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          SizedBox(
+            width: 360,
+            child: CatchSection.fieldRows(
+              title: 'Details',
+              children: [
+                CatchField.read(
+                  title: 'First',
+                  valueText: 'A',
+                  icon: CatchIcons.helpOutline,
+                ),
+                CatchField.read(
+                  title: 'Second',
+                  valueText: 'B',
+                  icon: CatchIcons.schedule,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final sectionRect = tester.getRect(find.byType(CatchSection));
+      final firstIconRect = tester.getRect(find.byIcon(CatchIcons.helpOutline));
+      expect(firstIconRect.left, sectionRect.left);
+
+      final dividerRect = tester.getRect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is ColoredBox &&
+              widget.child is SizedBox &&
+              (widget.child as SizedBox).height == CatchStroke.hairline,
+        ),
+      );
+      expect(dividerRect.left - sectionRect.left, CatchFieldRow.textLaneInset);
+      expect(dividerRect.right, sectionRect.right);
+
+      final dividerBox = tester.widget<ColoredBox>(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is ColoredBox &&
+              widget.child is SizedBox &&
+              (widget.child as SizedBox).height == CatchStroke.hairline,
+        ),
+      );
+      expect(
+        dividerBox.color,
+        CatchTokens.sunsetLight.line.withValues(
+          alpha: CatchOpacity.fieldRowDivider,
+        ),
+      );
+    },
+  );
 
   testWidgets('CatchToggle emits the next value on tap', (tester) async {
     bool? nextValue;
@@ -965,6 +1087,67 @@ void main() {
     await tester.tap(find.text('Saved'));
     await tester.pump();
     expect(selected, 'saved');
+  });
+
+  testWidgets('CatchOptionGroup keeps option labels on a stable axis', (
+    tester,
+  ) async {
+    var selected = 'first';
+
+    await tester.pumpWidget(
+      _wrap(
+        StatefulBuilder(
+          builder: (context, setState) => CatchOptionGroup<String>(
+            selected: selected,
+            onChanged: (value) => setState(() => selected = value),
+            options: const [
+              CatchOption(value: 'first', label: 'First'),
+              CatchOption(value: 'second', label: 'Second'),
+            ],
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(
+      tester.getTopLeft(find.text('First')).dy,
+      closeTo(tester.getTopLeft(find.text('Second')).dy, 0.1),
+    );
+
+    await tester.tap(find.text('Second'));
+    await tester.pump(CatchMotion.fast);
+
+    expect(
+      tester.getTopLeft(find.text('First')).dy,
+      closeTo(tester.getTopLeft(find.text('Second')).dy, 0.1),
+    );
+  });
+
+  testWidgets('CatchTabRail aligns trailing actions with option labels', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        CatchTabRail<String>(
+          selected: 'all',
+          options: const [
+            CatchOption(value: 'all', label: 'All'),
+            CatchOption(value: 'saved', label: 'Saved'),
+          ],
+          trailing: SizedBox.square(
+            dimension: CatchLayout.iconButtonNavSize,
+            child: Icon(CatchIcons.tuneRounded),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final labelCenter = tester.getCenter(find.text('All'));
+    final iconCenter = tester.getCenter(find.byIcon(CatchIcons.tuneRounded));
+
+    expect((labelCenter.dy - iconCenter.dy).abs(), lessThan(8));
   });
 
   testWidgets('CatchOptionGroupItem renders mono uppercase label and tap', (
@@ -1362,7 +1545,7 @@ void main() {
     );
 
     expect(find.byType(CatchDetailHeroFallback), findsOneWidget);
-    expect(find.byType(CatchDetailHeroScrim), findsOneWidget);
+    expect(find.byType(CatchScrim), findsOneWidget);
 
     await tester.pumpWidget(
       _wrap(
@@ -1375,7 +1558,7 @@ void main() {
     );
 
     expect(find.byType(CatchDetailHeroFallback), findsOneWidget);
-    expect(find.byType(CatchDetailHeroScrim), findsNothing);
+    expect(find.byType(CatchScrim), findsNothing);
   });
 
   testWidgets('CatchEventThumbnail composes fallback and scrim renderers', (
@@ -1601,6 +1784,67 @@ void main() {
     expect(stack.padding, CatchInsets.pageBody);
     expect(find.byType(Divider), findsNothing);
     expect(find.text('SECOND'), findsOneWidget);
+  });
+
+  testWidgets('CatchHorizontalRail is embedded and chromeless by default', (
+    tester,
+  ) async {
+    const railKey = ValueKey('embedded-rail');
+
+    await tester.pumpWidget(
+      _wrap(
+        SizedBox(
+          key: railKey,
+          width: 360,
+          child: CatchHorizontalRail(
+            title: 'Recommended',
+            itemCount: 1,
+            itemBuilder: (context, index) =>
+                const SizedBox(width: 48, height: 48, child: Text('Item 1')),
+          ),
+        ),
+      ),
+    );
+
+    final railLeft = tester.getTopLeft(find.byKey(railKey)).dx;
+
+    expect(tester.getTopLeft(find.text('Recommended')).dx, railLeft);
+    expect(tester.getTopLeft(find.text('Item 1')).dx, railLeft);
+    expect(find.byType(CatchDivider), findsNothing);
+  });
+
+  testWidgets('CatchHorizontalRail fullBleed owns rail gutters and divider', (
+    tester,
+  ) async {
+    const railKey = ValueKey('full-bleed-rail');
+
+    await tester.pumpWidget(
+      _wrap(
+        SizedBox(
+          key: railKey,
+          width: 360,
+          child: CatchHorizontalRail(
+            title: 'Recommended',
+            itemCount: 1,
+            fullBleed: true,
+            itemBuilder: (context, index) =>
+                const SizedBox(width: 48, height: 48, child: Text('Item 1')),
+          ),
+        ),
+      ),
+    );
+
+    final railLeft = tester.getTopLeft(find.byKey(railKey)).dx;
+
+    expect(
+      tester.getTopLeft(find.text('Recommended')).dx - railLeft,
+      CatchSpacing.screenPx,
+    );
+    expect(
+      tester.getTopLeft(find.text('Item 1')).dx - railLeft,
+      CatchSpacing.screenPx,
+    );
+    expect(find.byType(CatchDivider), findsOneWidget);
   });
 
   testWidgets('CatchScreenBody owns the scrolling page gutter', (tester) async {
@@ -2061,6 +2305,41 @@ void main() {
       CatchElevation.focusRing(CatchTokens.sunsetLight),
     );
   });
+
+  testWidgets(
+    'CatchSection contained renders field rows flush to card padding',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          SizedBox(
+            width: 360,
+            child: CatchSection.contained(
+              child: CatchField.read(
+                title: 'Notifications',
+                valueText: 'On',
+                icon: CatchIcons.helpOutline,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final surfaceRect = tester.getRect(find.byType(CatchSurface));
+      final iconRect = tester.getRect(find.byIcon(CatchIcons.helpOutline));
+      final labelLeft = tester.getTopLeft(find.text('Notifications')).dx;
+      final valueRight = tester.getTopRight(find.text('On')).dx;
+
+      expect(iconRect.left, closeTo(surfaceRect.left + CatchSpacing.s4, 0.1));
+      expect(
+        labelLeft,
+        closeTo(
+          surfaceRect.left + CatchSpacing.s4 + CatchFieldRow.textLaneInset,
+          0.1,
+        ),
+      );
+      expect(valueRight, closeTo(surfaceRect.right - CatchSpacing.s4, 0.1));
+    },
+  );
 
   testWidgets('CatchSection contained error owns the danger state', (
     tester,
@@ -3119,6 +3398,9 @@ void main() {
       tester.widget<TextField>(find.byType(TextField)).controller!.text,
       'tempo',
     );
+    final textField = tester.widget<TextField>(find.byType(TextField));
+    expect(textField.decoration?.filled, isFalse);
+    expect(textField.decoration?.fillColor, Colors.transparent);
 
     await tester.tap(find.byType(TextField));
     await tester.pump();
@@ -3184,6 +3466,32 @@ void main() {
             builder: (context, setState) => SizedBox(
               width: 280,
               child: CatchSearchField(
+                key: searchFieldKey,
+                mode: CatchSearchFieldMode.expanding,
+                progress: 0.5,
+                maxWidth: 280,
+                value: query,
+                placeholder: 'Search clubs',
+                onChanged: (value) => setState(() => query = value),
+                onOpenSearch: () => opened = true,
+                onCloseSearch: () => closed = true,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.pump(CatchMotion.base);
+
+      expect(find.byType(TextField), findsOneWidget);
+
+      await tester.pumpWidget(
+        _wrap(
+          StatefulBuilder(
+            builder: (context, setState) => SizedBox(
+              width: 280,
+              child: CatchSearchField(
+                key: searchFieldKey,
                 mode: CatchSearchFieldMode.expanding,
                 progress: 1,
                 maxWidth: 280,
@@ -3455,7 +3763,7 @@ void main() {
     expect(find.text('Owner club'), findsOneWidget);
     expect(find.text('OWNER'), findsOneWidget);
     expect(find.byIcon(CatchIcons.check), findsOneWidget);
-    expect(find.byType(Divider), findsOneWidget);
+    expect(find.byType(CatchDivider), findsOneWidget);
     expect(find.byType(CatchMenuRow<String>), findsNWidgets(2));
 
     await tester.tap(find.text('Delete club'));
@@ -3530,7 +3838,7 @@ void main() {
     expect(find.byType(CatchMenu<String>), findsNothing);
   });
 
-  testWidgets('CatchField.select uses normal menu corners for flat triggers', (
+  testWidgets('CatchField.select opens the shared CatchMenu panel', (
     tester,
   ) async {
     CityOption? selected = cityOptionByName('ahmedabad');
@@ -3555,15 +3863,20 @@ void main() {
     await tester.tap(find.byIcon(CatchIcons.expandMoreRounded));
     await pumpFeatureUi(tester);
 
-    expect(find.byType(MenuItemButton), findsWidgets);
-    expect(
-      tester.widgetList<Material>(find.byType(Material)).any((material) {
-        final shape = material.shape;
-        return shape is RoundedRectangleBorder &&
-            shape.borderRadius == BorderRadius.circular(CatchRadius.sm);
-      }),
-      isTrue,
+    // Select renders through the shared CatchMenu panel, not raw Material
+    // menu items; the selected option carries the shared check affordance.
+    expect(find.byType(CatchMenu<Object?>), findsOneWidget);
+    expect(find.byType(MenuItemButton), findsNothing);
+    expect(find.byIcon(CatchIcons.check), findsOneWidget);
+
+    final other = defaultCityOptions.firstWhere(
+      (city) => city != cityOptionByName('ahmedabad'),
     );
+    await tester.tap(find.text(other.label));
+    await pumpFeatureUi(tester);
+
+    expect(selected, other);
+    expect(find.byType(CatchMenu<Object?>), findsNothing);
   });
 }
 

@@ -97,9 +97,23 @@ class _EventMapViewState extends ConsumerState<EventMapView> {
               );
 
               return viewModel.isEmpty
-                  ? const EventMapEmptyState()
+                  ? Center(
+                      child: CatchEmptyState(
+                        icon: CatchIcons.map,
+                        title: 'No mapped events yet',
+                        message:
+                            'Join clubs, book events, or save future events to see starting points here.',
+                      ),
+                    )
                   : !viewModel.hasPinnedEvents
-                  ? const EventMapNoPinnedEventsState()
+                  ? Center(
+                      child: CatchEmptyState(
+                        icon: CatchIcons.pinOutlined,
+                        title: 'No exact pins yet',
+                        message:
+                            'These events are visible, but none have pinned starting points.',
+                      ),
+                    )
                   : Stack(
                       children: [
                         Positioned.fill(
@@ -183,36 +197,4 @@ LocationCoordinate? _startingPointFor(Event? event) {
     latitude: event.effectiveStartingPointLat,
     longitude: event.effectiveStartingPointLng,
   );
-}
-
-class EventMapNoPinnedEventsState extends StatelessWidget {
-  const EventMapNoPinnedEventsState({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: CatchEmptyState(
-        icon: CatchIcons.pinOutlined,
-        title: 'No exact pins yet',
-        message:
-            'These events are visible, but none have pinned starting points.',
-      ),
-    );
-  }
-}
-
-class EventMapEmptyState extends StatelessWidget {
-  const EventMapEmptyState({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: CatchEmptyState(
-        icon: CatchIcons.map,
-        title: 'No mapped events yet',
-        message:
-            'Join clubs, book events, or save future events to see starting points here.',
-      ),
-    );
-  }
 }

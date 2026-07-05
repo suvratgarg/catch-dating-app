@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-07-02",
+  "updated": "2026-07-03",
   "source": "tool/web/check_react_component_governance.mjs",
   "limitation": "Known-family blocklist. Passing the scanner does not classify novel component shell families; reviewers must add new families when drift repeats.",
   "families": [
@@ -335,6 +335,20 @@
         "website"
       ],
       "guidance": "Use the surface FieldGrid/AdminFieldGrid primitive instead of rendering a field layout grid directly."
+    },
+    {
+      "family": "website-operational-step-rail",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use StepRail instead of rendering website operational step rail shells directly."
+    },
+    {
+      "family": "website-choice-controls",
+      "surfaces": [
+        "website"
+      ],
+      "guidance": "Use ChoiceChip, ChoiceChipGrid, and ChoiceCard instead of rendering website choice-control shells directly."
     },
     {
       "family": "admin-summary-metrics",

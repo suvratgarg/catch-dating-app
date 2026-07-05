@@ -723,34 +723,6 @@ Widget photoSlotStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Main badge states',
-  type: PhotoSlotMainBadge,
-  path: '[P3 utility surfaces]/Image uploads',
-)
-Widget photoSlotMainBadgeStates(BuildContext context) {
-  return const _UtilityCatalog(
-    title: 'PhotoSlotMainBadge',
-    contractId: 'component.image_uploads.photo_slot_main_badge',
-    children: [
-      _StateCard(
-        label: 'main badge',
-        child: Align(
-          alignment: Alignment.centerLeft,
-          child: PhotoSlotMainBadge(label: 'MAIN'),
-        ),
-      ),
-      _StateCard(
-        label: 'cover badge',
-        child: Align(
-          alignment: Alignment.centerLeft,
-          child: PhotoSlotMainBadge(label: 'Cover'),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
   name: 'Striped placeholder states',
   type: StripedPhotoPlaceholder,
   path: '[P3 utility surfaces]/Image uploads',
@@ -1390,22 +1362,6 @@ Widget calendarStatDividerStates(BuildContext context) {
         child: Center(child: CalendarStatDivider()),
       ),
     ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Empty message state',
-  type: CalendarMessage,
-  path: '[P3 utility surfaces]/Calendar/Components',
-)
-Widget calendarMessageStates(BuildContext context) {
-  return const _DeviceFrame(
-    child: Scaffold(
-      body: CalendarMessage(
-        title: 'No planned events yet',
-        body: 'Events you book or save will show up here by day and time.',
-      ),
-    ),
   );
 }
 
@@ -2104,30 +2060,6 @@ Widget reviewsHistoryListStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'History empty state',
-  type: ReviewsHistoryEmptyState,
-  path: '[P3 utility surfaces]/Reviews history',
-)
-Widget reviewsHistoryEmptyStateStates(BuildContext context) {
-  return const _UtilityCatalog(
-    title: 'ReviewsHistoryEmptyState',
-    contractId: 'screen.reviews.history.empty',
-    children: [
-      _StateCard(
-        label: 'signed out',
-        child: SizedBox(
-          height: 300,
-          child: ReviewsHistoryEmptyState(
-            title: 'Sign in to see reviews',
-            message: 'Your past event reviews will appear here.',
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
   name: 'History skeleton states',
   type: ReviewsHistorySkeleton,
   path: '[P3 utility surfaces]/Reviews history',
@@ -2774,40 +2706,6 @@ Widget paymentHistoryTileSkeletonStates(BuildContext context) {
     contractId: 'screen.payments.history.row_skeleton',
     children: [
       _StateCard(label: 'loading row', child: PaymentHistoryTileSkeleton()),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Empty states',
-  type: PaymentHistoryEmptyState,
-  path: '[P3 utility surfaces]/Payment history',
-)
-Widget paymentHistoryEmptyStateStates(BuildContext context) {
-  return _UtilityCatalog(
-    title: 'PaymentHistoryEmptyState',
-    contractId: 'screen.payments.history.empty',
-    children: [
-      _StateCard(
-        label: 'no payments',
-        child: _DeviceFrame(
-          child: PaymentHistoryEmptyState(
-            icon: CatchIcons.receiptLongOutlined,
-            title: 'No payments yet',
-            message: 'Event bookings and refunds will appear here.',
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'signed out',
-        child: _DeviceFrame(
-          child: PaymentHistoryEmptyState(
-            icon: CatchIcons.lockOutlineRounded,
-            title: 'Sign in required',
-            message: 'Sign in again to view payment history.',
-          ),
-        ),
-      ),
     ],
   );
 }

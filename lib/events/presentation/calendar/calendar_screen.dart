@@ -288,7 +288,20 @@ class CalendarAgendaSliverSection extends StatelessWidget {
     return switch (state) {
       CalendarAgendaEmptyState(:final title, :final body) =>
         SliverFillRemaining(
-          child: CalendarMessage(title: title, body: body),
+          child: Center(
+            child: CatchEmptyState(
+              icon: CatchIcons.calendarMonthOutlined,
+              title: title,
+              message: body,
+              iconSize: CatchLayout.calendarEmptyIconSize,
+              padding: CatchInsets.contentSpacious,
+              titleStyle: CatchTextStyles.titleL(context),
+              messageStyle: CatchTextStyles.proseM(
+                context,
+                color: CatchTokens.of(context).ink2,
+              ),
+            ),
+          ),
         ),
       CalendarAgendaClubNamesLoadingState(:final skeletonCount) =>
         EventAgendaSliverSkeleton(count: skeletonCount),
@@ -612,11 +625,9 @@ class CalendarStatsHeader extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s5,
-        CatchSpacing.micro2,
-        CatchSpacing.s5,
-        CatchSpacing.s3,
+      padding: CatchInsets.pageBody.copyWith(
+        top: CatchSpacing.micro2,
+        bottom: CatchSpacing.s3,
       ),
       child: Center(
         child: ConstrainedBox(
@@ -671,11 +682,9 @@ class CalendarStatsHeaderSkeleton extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s5,
-        CatchSpacing.micro2,
-        CatchSpacing.s5,
-        CatchSpacing.s3,
+      padding: CatchInsets.pageBody.copyWith(
+        top: CatchSpacing.micro2,
+        bottom: CatchSpacing.s3,
       ),
       child: Center(
         child: ConstrainedBox(
@@ -854,31 +863,6 @@ class CalendarStatDivider extends StatelessWidget {
         width: CatchStroke.hairline,
         height: CatchLayout.calendarStatDividerHeight,
         child: ColoredBox(color: t.line),
-      ),
-    );
-  }
-}
-
-class CalendarMessage extends StatelessWidget {
-  const CalendarMessage({super.key, required this.title, required this.body});
-
-  final String title;
-  final String body;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: CatchEmptyState(
-        icon: CatchIcons.calendarMonthOutlined,
-        title: title,
-        message: body,
-        iconSize: CatchLayout.calendarEmptyIconSize,
-        padding: CatchInsets.contentSpacious,
-        titleStyle: CatchTextStyles.titleL(context),
-        messageStyle: CatchTextStyles.proseM(
-          context,
-          color: CatchTokens.of(context).ink2,
-        ),
       ),
     );
   }

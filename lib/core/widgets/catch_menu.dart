@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 
@@ -54,12 +55,7 @@ class CatchMenu<T> extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           for (final indexed in items.indexed) ...[
-            if (indexed.$1 > 0)
-              Divider(
-                height: CatchStroke.hairline,
-                thickness: CatchStroke.hairline,
-                color: t.line,
-              ),
+            if (indexed.$1 > 0) const CatchDivider.fieldRow(indent: 0),
             CatchMenuRow<T>(item: indexed.$2, onSelected: onSelected),
           ],
         ],

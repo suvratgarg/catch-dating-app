@@ -194,7 +194,7 @@ class HostEventToolsPageIndicator extends StatelessWidget {
               borderRadius: BorderRadius.circular(CatchRadius.pill),
               child: LinearProgressIndicator(
                 value: progress,
-                minHeight: 6,
+                minHeight: CatchSpacing.micro6,
                 backgroundColor: t.line2.withValues(
                   alpha: CatchOpacity.pageDotInactive,
                 ),
@@ -237,7 +237,7 @@ class HostEventToolCard extends StatelessWidget {
 
     return EventActionCard(
       event: event,
-      radius: 22,
+      radius: CatchRadius.heroCard,
       backgroundColor: palette.background,
       borderColor: palette.border,
       gradientColors: palette.gradientColors,

@@ -152,11 +152,21 @@ class EventDetailSocialState {
     required this.showMemberContext,
     required this.renderAsHost,
     required this.hasReviewAccess,
+    this.isLoading = false,
   });
+
+  const EventDetailSocialState.loading()
+    : this(
+        showMemberContext: false,
+        renderAsHost: false,
+        hasReviewAccess: false,
+        isLoading: true,
+      );
 
   final bool showMemberContext;
   final bool renderAsHost;
   final bool hasReviewAccess;
+  final bool isLoading;
 }
 
 EventDetailSocialState eventDetailSocialStateFrom({

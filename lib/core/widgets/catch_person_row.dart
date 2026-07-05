@@ -3,6 +3,8 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_count_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:flutter/material.dart';
 
@@ -131,10 +133,7 @@ class CatchPersonRow extends StatelessWidget {
               top: 0,
               left: dividerInset,
               right: 0,
-              child: ColoredBox(
-                color: t.line.withValues(alpha: CatchOpacity.fieldRowDivider),
-                child: const SizedBox(height: CatchStroke.hairline),
-              ),
+              child: const CatchDivider(),
             ),
           Padding(
             padding: padding,
@@ -284,7 +283,7 @@ class CatchPersonUnreadCountPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final label = count > 99 ? '99+' : '$count';
+    final label = catchCountLabel(count);
 
     return Semantics(
       label: count == 1 ? 'Unread chat' : '$label unread chats',
@@ -350,7 +349,7 @@ class CatchPersonRosterLayout extends StatelessWidget {
             children: [
               Icon(
                 CatchIcons.directionsRunRounded,
-                size: 11,
+                size: CatchIcon.micro,
                 color: CatchTokens.of(context).ink3,
               ),
               gapW3,

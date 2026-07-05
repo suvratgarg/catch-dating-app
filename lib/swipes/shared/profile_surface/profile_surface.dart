@@ -121,11 +121,9 @@ class ProfileSurfaceSkeleton extends StatelessWidget {
           slivers: [
             const SliverToBoxAdapter(child: ProfileSurfaceHeroSkeleton()),
             SliverPadding(
-              padding: EdgeInsets.fromLTRB(
-                CatchSpacing.s5,
-                CatchSpacing.s7,
-                CatchSpacing.s5,
-                bottomPadding,
+              padding: CatchInsets.pageBody.copyWith(
+                top: CatchSpacing.s7,
+                bottom: bottomPadding,
               ),
               sliver: SliverList.list(
                 children: const [

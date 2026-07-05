@@ -11,6 +11,7 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
@@ -84,7 +85,10 @@ class ChatsList extends ConsumerWidget {
             const ChatsEmptyState.noHostSearchResults(),
           ChatsListEmptyKind.noUnreadQueries =>
             const ChatsEmptyState.noUnreadQueries(),
-          ChatsListEmptyKind.noThreads => const ChatsEmptyState(),
+          ChatsListEmptyKind.noThreads =>
+            AppConfig.appRole.isHost
+                ? const ChatsEmptyState.hostInbox()
+                : const ChatsEmptyState(),
         },
       ),
     };
@@ -155,18 +159,14 @@ class ChatPersonRowSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     return Stack(
       children: [
         if (divider)
-          Positioned(
+          const Positioned(
             top: 0,
             left: CatchLayout.chatListDividerInset,
             right: 0,
-            child: ColoredBox(
-              color: t.line.withValues(alpha: CatchOpacity.fieldRowDivider),
-              child: const SizedBox(height: CatchStroke.hairline),
-            ),
+            child: CatchDivider(),
           ),
         Padding(
           padding: CatchInsets.chatListTileVertical,

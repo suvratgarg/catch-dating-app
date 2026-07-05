@@ -61,9 +61,20 @@ class SavedEventsScreen extends ConsumerWidget {
               ),
               builder: (context, events) {
                 if (events.isEmpty) {
-                  return const SavedEventsMessage(
-                    title: 'No saved events yet',
-                    message: 'Save events you want to revisit before booking.',
+                  return Center(
+                    child: CatchEmptyState(
+                      icon: CatchIcons.bookmarkBorderRounded,
+                      title: 'No saved events yet',
+                      message:
+                          'Save events you want to revisit before booking.',
+                      iconSize: CatchLayout.calendarEmptyIconSize,
+                      padding: CatchInsets.contentSpacious,
+                      titleStyle: CatchTextStyles.titleL(context),
+                      messageStyle: CatchTextStyles.proseM(
+                        context,
+                        color: t.ink2,
+                      ),
+                    ),
                   );
                 }
 
@@ -214,31 +225,6 @@ class SavedEventsClubNamesErrorSliver extends StatelessWidget {
       error,
       context: AppErrorContext.event,
       onRetry: onRetry,
-    );
-  }
-}
-
-class SavedEventsMessage extends StatelessWidget {
-  const SavedEventsMessage({
-    super.key,
-    required this.title,
-    required this.message,
-  });
-
-  final String title;
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: CatchEmptyState(
-        icon: CatchIcons.bookmarkBorderRounded,
-        title: title,
-        message: message,
-        iconSize: CatchLayout.eventInfoTileExtent,
-        padding: CatchInsets.contentSpacious,
-        titleStyle: CatchTextStyles.titleL(context),
-      ),
     );
   }
 }

@@ -1,12 +1,9 @@
-// ignore_for_file: invalid_use_of_visible_for_testing_member
-
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/core/presentation/host_app_shell.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -63,24 +60,6 @@ Widget appShellNavigationBarState(BuildContext context) {
       currentIndex: 3,
       unreadCount: 12,
       onDestinationSelected: (_) {},
-    ),
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Navigation badge',
-  type: AppShellNavigationBadge,
-  path: '[App shell]',
-)
-Widget appShellNavigationBadgeState(BuildContext context) {
-  return _ShellCatalog(
-    title: 'AppShellNavigationBadge',
-    contractId: 'component.app_shell.navigation_badge',
-    child: Center(
-      child: AppShellNavigationBadge(
-        count: 12,
-        child: Icon(CatchIcons.chatBubbleOutlineRounded, size: 32),
-      ),
     ),
   );
 }

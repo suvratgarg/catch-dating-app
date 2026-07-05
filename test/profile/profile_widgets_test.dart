@@ -6,7 +6,9 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart' show CatchMotion;
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart'
+    show CatchLayout, CatchMotion, CatchStroke;
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
@@ -15,6 +17,7 @@ import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
@@ -27,6 +30,7 @@ import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor_prompt.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/preview_tab.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_insights_tab.dart';
@@ -683,6 +687,43 @@ void main() {
     expect(_profileInfoTile(_perfectRunPromptTitle), findsOneWidget);
   });
 
+  testWidgets('ProfileTab field rows honor fixed screen gutters', (
+    tester,
+  ) async {
+    final user = buildUser(name: 'Suvrat Garg');
+    await _pumpProfileTab(tester, user);
+
+    final displayNameTile = _profileInfoTile('Display name');
+    expect(displayNameTile, findsOneWidget);
+
+    final rowRect = tester.getRect(displayNameTile);
+    expect(rowRect.left, CatchSpacing.screenPx);
+    expect(rowRect.right, 390 - CatchSpacing.screenPx);
+
+    // Flush contract: within the fixed gutter the row content spans the full
+    // section width — the leading icon starts on the row's leading edge.
+    final leadingIcon = find
+        .descendant(of: displayNameTile, matching: find.byType(Icon))
+        .first;
+    expect(tester.getRect(leadingIcon).left, rowRect.left);
+
+    // Every section divider aligns to the field text lane (derived from the
+    // leading-slot metrics) and terminates on the row's trailing edge.
+    final dividers = find.byWidgetPredicate(
+      (widget) =>
+          widget is ColoredBox &&
+          widget.child is SizedBox &&
+          (widget.child as SizedBox).height == CatchStroke.hairline,
+    );
+    expect(dividers, findsWidgets);
+    for (final element in dividers.evaluate()) {
+      final box = element.renderObject! as RenderBox;
+      final dividerRect = box.localToGlobal(Offset.zero) & box.size;
+      expect(dividerRect.left - rowRect.left, CatchFieldRow.textLaneInset);
+      expect(dividerRect.right, rowRect.right);
+    }
+  });
+
   testWidgets(
     'ProfileTab edits display name and keeps legal identity readonly',
     (tester) async {
@@ -1034,17 +1075,31 @@ void main() {
     await _pumpProfileSheet(tester);
 
     await tester.tap(
-      find.descendant(of: promptEditor, matching: find.byType(MenuAnchor)),
+      find.byKey(const ValueKey('profile-inline-change-prompt')),
     );
-    await tester.pump();
+    await _pumpProfileSheet(tester);
 
     expect(
-      find.widgetWithText(MenuItemButton, _perfectRunPromptTitle),
+      find.widgetWithText(PromptOptionTile, _perfectRunPromptTitle),
       findsNothing,
     );
-    expect(find.widgetWithText(MenuItemButton, usedPrompt.title), findsNothing);
-    await tester.tap(find.widgetWithText(MenuItemButton, favoriteRoute.title));
-    await tester.pump();
+    expect(
+      find.widgetWithText(PromptOptionTile, usedPrompt.title),
+      findsNothing,
+    );
+    await tester.tap(
+      find.widgetWithText(PromptOptionTile, favoriteRoute.title),
+    );
+    await _pumpProfileSheet(tester);
+
+    // The expanded row header reflects the newly selected question live.
+    expect(
+      find.descendant(
+        of: promptEditor,
+        matching: find.text(favoriteRoute.title),
+      ),
+      findsOneWidget,
+    );
 
     await tester.enterText(
       find.descendant(of: promptEditor, matching: find.byType(EditableText)),
@@ -1774,8 +1829,10 @@ class _ProfileHeaderHarnessState extends State<_ProfileHeaderHarness>
         bottom: false,
         child: CustomScrollView(
           slivers: [
-            ...ProfileSliverHeader(
-              controller: _controller,
+            ...CatchSliverHeader(
+              title: const ProfileTitle(),
+              bottomHeight: CatchLayout.tabRailHeight,
+              bottom: ProfileTabBar(controller: _controller),
             ).buildSlivers(context),
             SliverList.builder(
               itemCount: 30,

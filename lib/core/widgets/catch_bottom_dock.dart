@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:flutter/material.dart';
 
 enum CatchBottomDockVariant { custom, cta }
@@ -95,7 +96,7 @@ class CatchBottomDock extends StatelessWidget {
     );
 
     if (!includeSafeArea) return dock;
-    return SafeArea(child: dock);
+    return SafeArea(top: false, child: dock);
   }
 }
 
@@ -137,7 +138,7 @@ class CatchBottomDockCta extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Divider(color: dividerColor ?? t.line, height: 1, thickness: 1),
+          CatchDivider.section(color: dividerColor),
           if (catchLine != null)
             Padding(
               padding: const EdgeInsets.fromLTRB(

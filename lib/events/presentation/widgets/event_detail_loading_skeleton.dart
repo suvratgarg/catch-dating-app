@@ -3,6 +3,8 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:flutter/material.dart';
 
@@ -332,12 +334,16 @@ class EventDetailMechanismSkeleton extends StatelessWidget {
 }
 
 class EventDetailSocialSkeleton extends StatelessWidget {
-  const EventDetailSocialSkeleton({super.key});
+  const EventDetailSocialSkeleton({super.key, this.surfaceStyle});
+
+  final EventDetailSurfaceStyle? surfaceStyle;
 
   @override
   Widget build(BuildContext context) {
     return CatchSection.divided(
       title: "Who's going",
+      dividerColor: surfaceStyle?.dividerColor,
+      titleColor: surfaceStyle?.headingColor,
       child: Row(
         children: [
           for (var index = 0; index < 4; index++) ...[
@@ -346,6 +352,75 @@ class EventDetailSocialSkeleton extends StatelessWidget {
           ],
           gapW16,
           Expanded(child: CatchSkeleton.text()),
+        ],
+      ),
+    );
+  }
+}
+
+class EventDetailCompanionSkeleton extends StatelessWidget {
+  const EventDetailCompanionSkeleton({super.key, required this.surfaceStyle});
+
+  final EventDetailSurfaceStyle surfaceStyle;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchSurface(
+      backgroundColor: surfaceStyle.surfaceBackground,
+      borderColor: surfaceStyle.borderColor,
+      padding: CatchInsets.tileContentCompact,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CatchSkeleton.circle(size: CatchIcon.control),
+          gapW12,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
+                gapH8,
+                CatchSkeleton.textBlock(lines: 2),
+                gapH12,
+                CatchSkeleton.box(
+                  width: double.infinity,
+                  height: CatchLayout.buttonLgHeight,
+                  radius: CatchRadius.pill,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class EventDetailHostsSkeleton extends StatelessWidget {
+  const EventDetailHostsSkeleton({super.key, this.surfaceStyle});
+
+  final EventDetailSurfaceStyle? surfaceStyle;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchSection.divided(
+      title: 'Your hosts',
+      dividerColor: surfaceStyle?.dividerColor,
+      titleColor: surfaceStyle?.headingColor,
+      child: Row(
+        children: [
+          CatchSkeleton.circle(size: CatchIcon.avatarLg),
+          gapW12,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CatchSkeleton.text(),
+                gapH8,
+                CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
+              ],
+            ),
+          ),
         ],
       ),
     );

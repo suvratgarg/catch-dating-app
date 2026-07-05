@@ -15,7 +15,8 @@ import 'package:flutter/material.dart';
 /// the brand glow, set [showGhostGlyph] false, pass [body] for a hook line).
 ///
 /// Dark is reserved for wow surfaces — never use this as a list row. The app
-/// shell owns the real status bar, so it is not embedded here.
+/// shell owns the real status bar. The background remains full-bleed, while
+/// chrome controls stay below the top safe area.
 class CatchCoverStory extends StatelessWidget {
   const CatchCoverStory({
     super.key,
@@ -110,11 +111,9 @@ class CatchCoverStory extends StatelessWidget {
               children: [
                 if (hasChrome) CoverStoryChrome(paper: paper, story: this),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    CatchSpacing.s5,
-                    CatchSpacing.s11,
-                    CatchSpacing.s5,
-                    CatchSpacing.s6,
+                  padding: CatchInsets.pageBody.copyWith(
+                    top: CatchSpacing.s11,
+                    bottom: CatchSpacing.s6,
                   ),
                   child: CoverStoryContent(
                     paper: paper,
@@ -139,12 +138,12 @@ class CoverStoryChrome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final topInset = MediaQuery.paddingOf(context).top;
+
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s5,
-        CatchSpacing.s3,
-        CatchSpacing.s5,
-        CatchSpacing.s0,
+      padding: CatchInsets.pageBody.copyWith(
+        top: topInset + CatchSpacing.s3,
+        bottom: CatchSpacing.s0,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

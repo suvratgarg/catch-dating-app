@@ -917,6 +917,9 @@ abstract final class CatchOpacity {
   /// Translucent fill for floating icon-button chrome over photos and maps.
   static const double iconButtonFloatFill = 0.90;
 
+  /// High-opacity fill for compact overlay pills on image/map surfaces.
+  static const double overlayPillFill = 0.93;
+
   /// High-opacity blur fill for the handoff bottom tab dock.
   static const double tabDockFill = 0.93;
 
@@ -954,6 +957,9 @@ abstract final class CatchOpacity {
 
   /// Mid-light image scrim stop for hero/photo gradients.
   static const double photoScrimMedium = 0.16;
+
+  /// Bottom-edge alpha for photo-frame scrims.
+  static const double photoFrameEdge = 0.18;
 
   /// Hairline border on subtle-tint containers (date pills, soft badges).
   static const double subtleBorder = 0.22;
@@ -1043,8 +1049,6 @@ abstract final class CatchOpacity {
   static const double arrivalCelebrationMidMultiplier = 0.85;
   static const double arrivalCelebrationLowMultiplier = 0.50;
   static const double manualQaHeroMeta = 0.86;
-  static const double manualQaPillFill = 0.14;
-  static const double manualQaPillBorder = 0.22;
   static const double hostDangerBorder = 0.45;
   static const double imageEditControlFill = 0.85;
   static const double revealAttendeePanelFill = 0.92;
@@ -1634,8 +1638,9 @@ abstract final class CatchLayout {
   static const double statStripLabelFontSize = 9.0;
   static const double fieldRowVerticalPadding = 13.0;
   static const double fieldActionBarWrapBreakpoint = 220.0;
-  static const double fieldRowDividerIconInset =
-      CatchIcon.control + CatchSpacing.s3;
+  static const double fieldRowTextLaneInset = CatchIcon.md + CatchSpacing.s3;
+  static const double fieldRowDividerIconInset = fieldRowTextLaneInset;
+  static const double fieldTrailingValueMaxWidth = 160.0;
   static const double searchFieldIconSize = 15.0;
   static const double searchFieldIconGap = 10.0;
   static const double searchFieldClearSize = 32.0;
@@ -1663,8 +1668,7 @@ abstract final class CatchLayout {
       CatchSpacing.micro10 + CatchStroke.hairline;
   static const double settingsRowVerticalPadding =
       CatchSpacing.s3 + CatchStroke.hairline;
-  static const double settingsRowDividerIconInset =
-      CatchIcon.row + CatchSpacing.s3;
+  static const double settingsRowDividerIconInset = fieldRowTextLaneInset;
   static const double settingsRowChevronIconSize = CatchIcon.xs;
   static const double clubProfileImagePickerExtent = 120.0;
   static const double clubCoverThumbnailExtent = 64.0;
@@ -1760,7 +1764,7 @@ abstract final class CatchLayout {
   // CoverStory (design-system components/explore/CoverStory).
   static const double exploreDiscoveryCoverHeight = 316.0;
   static const double coverStoryGhostGlyphSize = 210.0;
-  static const double coverStorySearchExtent = 38.0;
+  static const double coverStorySearchExtent = iconButtonNavSize;
   static const double coverStoryGhostRightInset = 34.0;
   static const double coverStoryGhostBottomInset = 14.0;
   // "Your hosts" HostCard (design-system components/events/HostCard).
@@ -1819,7 +1823,9 @@ abstract final class CatchLayout {
   static const double skeletonCardCompactHeight = 96.0;
   static const double skeletonTextHeight = CatchIcon.sm;
   static const double skeletonCircleExtent = CatchSpacing.s12;
-  static const double skeletonAvatarCompactExtent = 42.0;
+  static const double avatarRowExtent = 42.0;
+  static const double skeletonAvatarCompactExtent = avatarRowExtent;
+  static const double avatarIdentityExtent = 64.0;
   static const double skeletonMediaTileExtent = 52.0;
   static const double skeletonTextMicroWidth = 22.0;
   static const double skeletonTextTinyWidth = CatchSpacing.s3;
@@ -1872,6 +1878,7 @@ abstract final class CatchLayout {
   static const double tabDockItemGap = CatchSpacing.s1;
   static const double tabDockIconSize = 22.0;
   static const double tabDockLabelFontSize = 8.5;
+  static const double tabRailHeight = 48.0;
   static const double topBarHeight = 56.0;
   static const double topBarLargeHeight = 104.0;
   static const double hostEventManageTopBarHeight =

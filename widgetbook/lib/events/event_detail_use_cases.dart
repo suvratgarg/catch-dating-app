@@ -27,7 +27,6 @@ import 'package:catch_dating_app/events/data/event_participation_repository.dart
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/events/shared/event_check_in_celebration_screen.dart';
@@ -48,7 +47,7 @@ import 'package:catch_dating_app/events/presentation/widgets/event_detail_body.d
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_app_bar.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_optimistic_body.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_loading_skeleton.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_overview_section.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_social_section.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
@@ -339,14 +338,14 @@ Widget eventDetailScreenStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Legacy hero states',
-  type: LegacyEventHeroSurface,
+  name: 'Photo hero states',
+  type: EventPhotoHeroSurface,
   path: '[Event Detail]/Hero',
 )
-Widget eventDetailLegacyHeroSurfaceStates(BuildContext context) {
+Widget eventDetailPhotoHeroSurfaceStates(BuildContext context) {
   return _CatalogScreen(
-    title: 'LegacyEventHeroSurface',
-    catalogId: 'event_detail.hero.legacy_surface',
+    title: 'EventPhotoHeroSurface',
+    catalogId: 'event_detail.hero.photo_surface',
     children: [
       _StateCard(
         label: 'standard route hero',
@@ -354,7 +353,7 @@ Widget eventDetailLegacyHeroSurfaceStates(BuildContext context) {
           borderRadius: BorderRadius.circular(CatchRadius.lg),
           child: SizedBox(
             height: 280,
-            child: LegacyEventHeroSurface(event: _event),
+            child: EventPhotoHeroSurface(event: _event),
           ),
         ),
       ),
@@ -599,28 +598,106 @@ Widget eventWhatToExpectState(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Optimistic body states',
-  type: EventDetailOptimisticBody,
+  name: 'Initial event loading body states',
+  type: EventDetailBody,
   path: '[Event Detail]/Sections',
 )
-Widget eventDetailOptimisticBodyStates(BuildContext context) {
+Widget eventDetailInitialEventLoadingBodyStates(BuildContext context) {
   return _CatalogScreen(
-    title: 'EventDetailOptimisticBody',
-    catalogId: 'section.event.optimistic_body',
+    title: 'EventDetailBody initial loading',
+    catalogId: 'section.event.initial_loading_body',
     children: [
       _StateCard(
-        label: 'standard loading bridge',
+        label: 'standard fallback body',
         child: _DeviceFrame(
-          child: EventDetailOptimisticBody(event: _event, clubId: _clubId),
+          child: _EventScope(
+            event: _event,
+            child: EventDetailBody(
+              event: _event,
+              userProfile: null,
+              clubId: _clubId,
+              reviews: const [],
+              isAuthenticated: false,
+              sectionVisibility: eventDetailSectionVisibilityStateFrom(
+                event: _event,
+                participation: null,
+                isHostApp: false,
+                isHost: false,
+                now: _now,
+              ),
+              isSaved: false,
+              participation: null,
+              savePending: false,
+              onBack: _noop,
+              onShare: _noopContext,
+              showShareAction: false,
+              showAddToCalendar: false,
+              onAddToCalendar: _noopContext,
+              onToggleSaved: _noop,
+              companionState: const EventDetailCompanionState.hidden(),
+              hostState: const EventDetailHostState.loading(),
+              socialState: const EventDetailSocialState.loading(),
+              onLocationTap: _noop,
+              onOpenCompanion: _noop,
+              onRetryCompanion: _noop,
+              onViewClub: _noopString,
+              onMessageHost: _noopMessageHost,
+              onRetryHosts: _noop,
+              now: _now,
+            ),
+          ),
         ),
       ),
       _StateCard(
-        label: 'spotlight bridge',
+        label: 'spotlight fallback body',
         child: _DeviceFrame(
-          child: EventDetailOptimisticBody(
-            event: _event,
-            clubId: _clubId,
-            presentationMode: EventDetailPresentationMode.spotlightDark,
+          child: Builder(
+            builder: (context) {
+              final style = EventDetailSurfaceStyle.dark(
+                CatchTokens.of(context),
+              );
+              return ColoredBox(
+                color: style.pageBackground,
+                child: _EventScope(
+                  event: _event,
+                  child: EventDetailBody(
+                    event: _event,
+                    userProfile: null,
+                    clubId: _clubId,
+                    reviews: const [],
+                    isAuthenticated: false,
+                    sectionVisibility: eventDetailSectionVisibilityStateFrom(
+                      event: _event,
+                      participation: null,
+                      isHostApp: false,
+                      isHost: false,
+                      now: _now,
+                    ),
+                    isSaved: false,
+                    participation: null,
+                    savePending: false,
+                    surfaceStyle: style,
+                    onBack: _noop,
+                    onShare: _noopContext,
+                    showShareAction: false,
+                    showAddToCalendar: false,
+                    onAddToCalendar: _noopContext,
+                    onToggleSaved: _noop,
+                    companionState: const EventDetailCompanionState.hidden(),
+                    hostState: const EventDetailHostState.loading(),
+                    socialState: const EventDetailSocialState.loading(),
+                    onLocationTap: _noop,
+                    onOpenCompanion: _noop,
+                    onRetryCompanion: _noop,
+                    onViewClub: _noopString,
+                    onMessageHost: _noopMessageHost,
+                    onRetryHosts: _noop,
+                    now: _now,
+                    presentationMode: EventDetailPresentationMode.spotlightDark,
+                  ),
+                ),
+              );
+            },
           ),
         ),
       ),
@@ -629,26 +706,66 @@ Widget eventDetailOptimisticBodyStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Optimistic hosts skeleton',
-  type: OptimisticHostsSkeleton,
+  name: 'Event detail hosts skeleton',
+  type: EventDetailHostsSkeleton,
   path: '[Event Detail]/Sections',
 )
-Widget eventDetailOptimisticHostsSkeletonState(BuildContext context) {
+Widget eventDetailHostsSkeletonState(BuildContext context) {
   return const Padding(
     padding: CatchInsets.contentDense,
-    child: OptimisticHostsSkeleton(),
+    child: EventDetailHostsSkeleton(),
   );
 }
 
 @widgetbook.UseCase(
-  name: 'Optimistic social skeleton',
-  type: OptimisticSocialSkeleton,
+  name: 'Event detail companion skeleton',
+  type: EventDetailCompanionSkeleton,
   path: '[Event Detail]/Sections',
 )
-Widget eventDetailOptimisticSocialSkeletonState(BuildContext context) {
+Widget eventDetailCompanionSkeletonState(BuildContext context) {
+  return _CatalogScreen(
+    title: 'EventDetailCompanionSkeleton',
+    catalogId: 'section.event.companion_skeleton',
+    children: [
+      _StateCard(
+        label: 'light surface',
+        child: _DeviceFrame(
+          child: Padding(
+            padding: CatchInsets.content,
+            child: EventDetailCompanionSkeleton(
+              surfaceStyle: EventDetailSurfaceStyle.light(
+                CatchTokens.of(context),
+              ),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'ticket surface',
+        child: _DeviceFrame(
+          child: Padding(
+            padding: CatchInsets.content,
+            child: EventDetailCompanionSkeleton(
+              surfaceStyle: EventDetailSurfaceStyle.dark(
+                CatchTokens.of(context),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Event detail social skeleton',
+  type: EventDetailSocialSkeleton,
+  path: '[Event Detail]/Sections',
+)
+Widget eventDetailSocialSkeletonState(BuildContext context) {
   return const Padding(
     padding: CatchInsets.contentDense,
-    child: OptimisticSocialSkeleton(),
+    child: EventDetailSocialSkeleton(),
   );
 }
 
@@ -1176,22 +1293,6 @@ Widget eventShareCardStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Share meta row',
-  type: EventShareMetaRow,
-  path: '[Event Detail]/Cards',
-)
-Widget eventShareMetaRowState(BuildContext context) {
-  return Padding(
-    padding: CatchInsets.contentDense,
-    child: EventShareMetaRow(
-      icon: CatchIcons.calendarTodayOutlined,
-      label: _event.longDateLabel,
-      accent: CatchTokens.of(context).accent,
-    ),
-  );
-}
-
-@widgetbook.UseCase(
   name: 'Share pill',
   type: EventSharePill,
   path: '[Event Detail]/Cards',
@@ -1264,11 +1365,14 @@ Widget eventDetailBookingDockStates(BuildContext context) {
       ),
       _StateCard(
         label: 'booked',
-        child: const _DockFrame(
+        child: _DockFrame(
           child: EventBookingDock(
             label: 'Cancel booking',
             onPressed: _noop,
-            leadingContent: BookedLeading(),
+            leadingContent: EventCtaStatusLeading(
+              icon: CatchIcons.checkCircleRounded,
+              label: "You're in!",
+            ),
           ),
         ),
       ),
@@ -1294,16 +1398,16 @@ Widget eventDetailBookingDockStates(BuildContext context) {
       ),
       _StateCard(
         label: 'full / cancelled / past / attended',
-        child: const Column(
+        child: Column(
           children: [
-            _DockFrame(
+            const _DockFrame(
               child: EventBookingDock(
                 label: 'Spots for your gender are full',
                 onPressed: null,
               ),
             ),
             gapH12,
-            _DockFrame(
+            const _DockFrame(
               child: EventBookingDock(
                 label: 'This event has ended',
                 onPressed: null,
@@ -1314,7 +1418,10 @@ Widget eventDetailBookingDockStates(BuildContext context) {
               child: EventBookingDock(
                 label: 'You attended this event',
                 onPressed: null,
-                leadingContent: AttendedLeading(),
+                leadingContent: EventCtaStatusLeading(
+                  icon: CatchIcons.directionsRunRounded,
+                  label: 'Completed',
+                ),
               ),
             ),
           ],
@@ -1692,23 +1799,75 @@ Widget eventDetailCompanionEntryStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Invite loop card',
-  type: EventInviteLoopCard,
+  name: 'Callout card states',
+  type: EventDetailCalloutCard,
   path: '[Event Detail]/Sections',
 )
-Widget eventDetailInviteLoopCardStates(BuildContext context) {
+Widget eventDetailCalloutCardStates(BuildContext context) {
   return _CatalogScreen(
-    title: 'EventInviteLoopCard',
-    catalogId: 'section.event.invite_loop_card',
+    title: 'EventDetailCalloutCard',
+    catalogId: 'section.event.callout_card',
     children: [
       _StateCard(
-        label: 'light surface',
+        label: 'invite loop / light surface',
         child: _DeviceFrame(
           child: Padding(
             padding: CatchInsets.content,
-            child: EventInviteLoopCard(
-              event: _event,
-              onShare: _noopContext,
+            child: EventDetailCalloutCard(
+              leadingIcon: CatchIcons.platformShare(
+                platform: Theme.of(context).platform,
+              ),
+              title: 'Bring someone into the room',
+              body:
+                  'Your spot is booked. Invite a friend who would make this event better.',
+              actionLabel: 'Invite a friend',
+              actionIcon: CatchIcons.sendRounded,
+              onAction: _noopContext,
+              surfaceStyle: EventDetailSurfaceStyle.light(
+                CatchTokens.of(context),
+              ),
+              borderColor: CatchTokens.of(
+                context,
+              ).primary.withValues(alpha: CatchOpacity.eventDetailLightBorder),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'invite loop / ticket surface',
+        child: _DeviceFrame(
+          child: Padding(
+            padding: CatchInsets.content,
+            child: EventDetailCalloutCard(
+              leadingIcon: CatchIcons.platformShare(
+                platform: Theme.of(context).platform,
+              ),
+              title: 'Bring someone into the room',
+              body:
+                  'Your spot is booked. Invite a friend who would make this event better.',
+              actionLabel: 'Invite a friend',
+              actionIcon: CatchIcons.sendRounded,
+              onAction: _noopContext,
+              surfaceStyle: EventDetailSurfaceStyle.dark(
+                CatchTokens.of(context),
+              ),
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'companion / light surface',
+        child: _DeviceFrame(
+          child: Padding(
+            padding: CatchInsets.content,
+            child: EventDetailCalloutCard(
+              leadingIcon: CatchIcons.autoAwesomeOutlined,
+              title: 'Event companion',
+              body:
+                  'Check in, see your social prompt, and handle private follow-up after the event.',
+              actionLabel: 'Open companion',
+              actionIcon: CatchIcons.phoneIphoneRounded,
+              onAction: _noopContext,
               surfaceStyle: EventDetailSurfaceStyle.light(
                 CatchTokens.of(context),
               ),
@@ -1717,58 +1876,21 @@ Widget eventDetailInviteLoopCardStates(BuildContext context) {
         ),
       ),
       _StateCard(
-        label: 'ticket surface',
+        label: 'companion / ticket surface',
         child: _DeviceFrame(
           child: Padding(
             padding: CatchInsets.content,
-            child: EventInviteLoopCard(
-              event: _event,
-              onShare: _noopContext,
+            child: EventDetailCalloutCard(
+              leadingIcon: CatchIcons.autoAwesomeOutlined,
+              title: 'Event companion',
+              body:
+                  'Check in, see your social prompt, and handle private follow-up after the event.',
+              actionLabel: 'Open companion',
+              actionIcon: CatchIcons.phoneIphoneRounded,
+              onAction: _noopContext,
               surfaceStyle: EventDetailSurfaceStyle.dark(
                 CatchTokens.of(context),
               ),
-            ),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Companion card',
-  type: EventCompanionCard,
-  path: '[Event Detail]/Sections',
-)
-Widget eventDetailCompanionCardStates(BuildContext context) {
-  return _CatalogScreen(
-    title: 'EventCompanionCard',
-    catalogId: 'section.event.companion_card',
-    children: [
-      _StateCard(
-        label: 'light surface',
-        child: _DeviceFrame(
-          child: Padding(
-            padding: CatchInsets.content,
-            child: EventCompanionCard(
-              surfaceStyle: EventDetailSurfaceStyle.light(
-                CatchTokens.of(context),
-              ),
-              onOpen: _noop,
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'ticket surface',
-        child: _DeviceFrame(
-          child: Padding(
-            padding: CatchInsets.content,
-            child: EventCompanionCard(
-              surfaceStyle: EventDetailSurfaceStyle.dark(
-                CatchTokens.of(context),
-              ),
-              onOpen: _noop,
             ),
           ),
         ),
@@ -2216,37 +2338,6 @@ Widget eventMapViewStates(BuildContext context) {
       ),
     ],
   );
-}
-
-@widgetbook.UseCase(
-  name: 'Map empty states',
-  type: EventMapEmptyState,
-  path: '[Events]/Map',
-)
-Widget eventMapEmptyStates(BuildContext context) {
-  return const _CatalogScreen(
-    title: 'Event map empty states',
-    catalogId: 'screen.events.map.empty_states',
-    children: [
-      _StateCard(
-        label: 'no mapped events',
-        child: SizedBox(height: 220, child: EventMapEmptyState()),
-      ),
-      _StateCard(
-        label: 'no exact pins',
-        child: SizedBox(height: 220, child: EventMapNoPinnedEventsState()),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Map no-pinned state',
-  type: EventMapNoPinnedEventsState,
-  path: '[Events]/Map',
-)
-Widget eventMapNoPinnedEventsState(BuildContext context) {
-  return const SizedBox(height: 220, child: EventMapNoPinnedEventsState());
 }
 
 @widgetbook.UseCase(
@@ -2992,21 +3083,26 @@ Widget waitlistOfferLeadingState(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Booked leading',
-  type: BookedLeading,
+  name: 'Status leading states',
+  type: EventCtaStatusLeading,
   path: '[Event Detail]/Booking Dock',
 )
-Widget bookedLeadingState(BuildContext context) {
-  return const BookedLeading();
-}
-
-@widgetbook.UseCase(
-  name: 'Attended leading',
-  type: AttendedLeading,
-  path: '[Event Detail]/Booking Dock',
-)
-Widget attendedLeadingState(BuildContext context) {
-  return const AttendedLeading();
+Widget eventCtaStatusLeadingStates(BuildContext context) {
+  return Column(
+    mainAxisSize: MainAxisSize.min,
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      EventCtaStatusLeading(
+        icon: CatchIcons.checkCircleRounded,
+        label: "You're in!",
+      ),
+      gapH12,
+      EventCtaStatusLeading(
+        icon: CatchIcons.directionsRunRounded,
+        label: 'Completed',
+      ),
+    ],
+  );
 }
 
 class _EventScope extends StatelessWidget {

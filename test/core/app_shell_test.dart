@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/widgets/catch_count_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_dock.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -40,7 +41,7 @@ void main() {
       MaterialApp(
         theme: AppTheme.light,
         home: Center(
-          child: AppShellNavigationBadge(
+          child: CatchCountBadge(
             count: 3,
             child: Icon(CatchIcons.chatBubbleOutlineRounded),
           ),

@@ -27,7 +27,8 @@ import 'package:catch_dating_app/events/presentation/widgets/event_detail_body.d
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_app_bar.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_optimistic_body.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_loading_skeleton.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/shared/event_share_card.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
@@ -96,9 +97,16 @@ void main() {
         ],
       );
 
-      expect(find.byType(EventDetailOptimisticBody), findsOneWidget);
+      expect(find.byType(EventDetailBody), findsOneWidget);
+      expect(find.text(event.title), findsWidgets);
+      expect(find.byType(EventDetailHostsSkeleton), findsOneWidget);
+      expect(find.byType(EventDetailSocialSkeleton), findsOneWidget);
       expect(find.byType(CatchSkeleton), findsWidgets);
       expect(find.byType(CircularProgressIndicator), findsNothing);
+      expect(find.byTooltip('Share event'), findsNothing);
+      expect(find.byTooltip('Add to calendar'), findsNothing);
+      expect(find.byTooltip('Save event'), findsOneWidget);
+      expect(find.text('Sign in to book this event'), findsOneWidget);
     });
 
     testWidgets('renders the error state', (tester) async {
@@ -166,6 +174,100 @@ void main() {
       );
       expect(find.text('Attendance matters'), findsOneWidget);
       expect(find.text('Booking policy'), findsOneWidget);
+    });
+  });
+
+  group('Event Detail section loading states', () {
+    testWidgets('companion loading renders a callout skeleton', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => EventCompanionEntry(
+                state: const EventDetailCompanionState.loading(),
+                surfaceStyle: EventDetailSurfaceStyle.light(
+                  CatchTokens.of(context),
+                ),
+                onOpen: () {},
+                onRetry: () {},
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(EventDetailCompanionSkeleton), findsOneWidget);
+      expect(find.byType(CatchSkeleton), findsWidgets);
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+    });
+
+    testWidgets('hosts loading renders the shared hosts skeleton', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => EventDetailHostsSection(
+                event: buildEvent(),
+                state: const EventDetailHostState.loading(),
+                onViewClub: (_) {},
+                onMessageHost: (_, _) {},
+                onRetry: () {},
+                surfaceStyle: EventDetailSurfaceStyle.light(
+                  CatchTokens.of(context),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(EventDetailHostsSkeleton), findsOneWidget);
+      expect(find.text('YOUR HOSTS'), findsOneWidget);
+      expect(find.byType(CatchSkeleton), findsWidgets);
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+    });
+  });
+
+  group('EventDetailCalloutCard', () {
+    testWidgets('renders configured copy and forwards button context', (
+      tester,
+    ) async {
+      BuildContext? actionContext;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => EventDetailCalloutCard(
+                leadingIcon: CatchIcons.autoAwesomeOutlined,
+                title: 'Event companion',
+                body: 'Use the companion after the event.',
+                actionLabel: 'Open companion',
+                actionIcon: CatchIcons.phoneIphoneRounded,
+                onAction: (context) {
+                  actionContext = context;
+                },
+                surfaceStyle: EventDetailSurfaceStyle.light(
+                  CatchTokens.of(context),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Event companion'), findsOneWidget);
+      expect(find.text('Use the companion after the event.'), findsOneWidget);
+
+      await tester.tap(find.text('Open companion'));
+      await tester.pump();
+
+      expect(actionContext, isNotNull);
     });
   });
 
@@ -1154,9 +1256,9 @@ void main() {
         ],
       );
 
-      await _scrollEventDetailUntilVisible(tester, find.text('Reviews'));
+      await _scrollEventDetailUntilVisible(tester, find.text('REVIEWS'));
 
-      expect(find.text('Reviews'), findsOneWidget);
+      expect(find.text('REVIEWS'), findsOneWidget);
       expect(find.text('Write a review'), findsNothing);
       expect(find.text('Edit your review'), findsNothing);
     });

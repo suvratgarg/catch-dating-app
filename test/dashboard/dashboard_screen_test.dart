@@ -8,6 +8,7 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -19,6 +20,7 @@ import 'package:catch_dating_app/dashboard/presentation/notifications_list_state
 import 'package:catch_dating_app/dashboard/presentation/notifications_list_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_loading_widgets.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_rail.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/stride_card.dart';
 import 'package:catch_dating_app/dashboard/shared/quick_actions.dart';
@@ -260,7 +262,7 @@ void main() {
         find.text('Your catches unlock\nafter your first event.'),
         findsOneWidget,
       );
-      expect(find.byType(DashboardFull), findsNothing);
+      expect(find.byType(DashboardFullSliverBody), findsNothing);
     });
 
     testWidgets('keeps host tools out of the consumer empty state', (
@@ -364,8 +366,14 @@ void main() {
       expect(find.byType(DashboardFullSliverBody), findsOneWidget);
       expect(find.textContaining('Next event'), findsOneWidget);
       expect(find.text('Stride Social'), findsOneWidget);
-      expect(find.text('${DashboardFull.greeting()}, Subrath'), findsOneWidget);
-      expect(find.text('${DashboardFull.greeting()}, Manan'), findsNothing);
+      expect(
+        find.text('${dashboardGreeting(DateTime.now())}, Subrath'),
+        findsOneWidget,
+      );
+      expect(
+        find.text('${dashboardGreeting(DateTime.now())}, Manan'),
+        findsNothing,
+      );
       expect(find.byType(TabBar), findsNothing);
       expect(find.byTooltip('Notifications'), findsOneWidget);
     });
@@ -644,11 +652,27 @@ void main() {
       expect(find.text('Upcoming events'), findsNothing);
       expect(find.text('Recent updates'), findsNothing);
       expect(find.text('Catch'), findsNothing);
+
+      final todayField = find
+          .ancestor(
+            of: find.text(today.title),
+            matching: find.byType(CatchField),
+          )
+          .first;
+      final fieldRect = tester.getRect(todayField);
+      final leadingIcon = find
+          .descendant(of: todayField, matching: find.byType(Icon))
+          .first;
+      final viewWidth =
+          tester.view.physicalSize.width / tester.view.devicePixelRatio;
+      expect(fieldRect.left, CatchSpacing.screenPx);
+      expect(fieldRect.right, viewWidth - CatchSpacing.screenPx);
+      expect(tester.getRect(leadingIcon).left, fieldRect.left);
     });
   });
 
-  group('DashboardFull', () {
-    testWidgets('shows a loading card while attended events are loading', (
+  group('Dashboard full home shell', () {
+    testWidgets('shows a skeleton card while attended events are loading', (
       tester,
     ) async {
       final joinedClubIds = ['club-1'];
@@ -672,7 +696,7 @@ void main() {
           ],
           child: MaterialApp(
             theme: AppTheme.light,
-            home: DashboardFull(
+            home: _DashboardFullTestShell(
               user: user,
               followedClubIds: joinedClubIds,
               signedUpEvents: [buildEvent(bookedCount: 1)],
@@ -683,7 +707,7 @@ void main() {
 
       await tester.pump();
 
-      expect(find.text('Loading your recent events...'), findsOneWidget);
+      expect(find.byType(DashboardStrideLoadingCard), findsOneWidget);
     });
 
     testWidgets(
@@ -707,7 +731,7 @@ void main() {
             ],
             child: MaterialApp(
               theme: AppTheme.light,
-              home: DashboardFull(
+              home: _DashboardFullTestShell(
                 user: user,
                 followedClubIds: joinedClubIds,
                 signedUpEvents: [buildEvent(bookedCount: 1)],
@@ -746,7 +770,7 @@ void main() {
           ],
           child: MaterialApp(
             theme: AppTheme.light,
-            home: DashboardFull(
+            home: _DashboardFullTestShell(
               user: user,
               followedClubIds: joinedClubIds,
               signedUpEvents: [buildEvent(bookedCount: 1)],
@@ -757,13 +781,10 @@ void main() {
 
       await tester.pump();
 
-      await tester.drag(
-        find.byKey(DashboardFull.scrollViewKey),
-        const Offset(0, -500),
-      );
+      await tester.drag(_dashboardScrollView(), const Offset(0, -500));
       await tester.pump();
 
-      expect(find.text('Loading recommended events...'), findsOneWidget);
+      expect(find.byType(DashboardRecommendedLoadingSection), findsOneWidget);
     });
 
     testWidgets(
@@ -790,7 +811,7 @@ void main() {
             ],
             child: MaterialApp(
               theme: AppTheme.light,
-              home: DashboardFull(
+              home: _DashboardFullTestShell(
                 user: user,
                 followedClubIds: joinedClubIds,
                 signedUpEvents: [buildEvent(bookedCount: 1)],
@@ -800,10 +821,7 @@ void main() {
         );
 
         await _pumpDashboardUi(tester);
-        await tester.drag(
-          find.byKey(DashboardFull.scrollViewKey),
-          const Offset(0, -500),
-        );
+        await tester.drag(_dashboardScrollView(), const Offset(0, -500));
         await _pumpDashboardUi(tester);
 
         // Recommendations load failures now surface the canonical
@@ -861,7 +879,7 @@ void main() {
           ],
           child: MaterialApp(
             theme: AppTheme.light,
-            home: DashboardFull(
+            home: _DashboardFullTestShell(
               user: user,
               followedClubIds: joinedClubIds,
               signedUpEvents: [nextEvent],
@@ -877,10 +895,7 @@ void main() {
       expect(find.text('Start catching'), findsOneWidget);
       expect(find.byKey(EventFocusRail.pageIndicatorKey), findsOneWidget);
 
-      await tester.drag(
-        find.byKey(DashboardFull.scrollViewKey),
-        const Offset(0, -500),
-      );
+      await tester.drag(_dashboardScrollView(), const Offset(0, -500));
       await _pumpDashboardUi(tester);
 
       expect(find.text('Recommended for you'), findsOneWidget);
@@ -949,7 +964,7 @@ void main() {
           ],
           child: MaterialApp(
             theme: AppTheme.light,
-            home: DashboardFull(
+            home: _DashboardFullTestShell(
               user: user,
               followedClubIds: joinedClubIds,
               signedUpEvents: [nextEvent],
@@ -1096,7 +1111,7 @@ void main() {
           ],
           child: MaterialApp(
             theme: AppTheme.light,
-            home: DashboardFull(
+            home: _DashboardFullTestShell(
               user: user,
               followedClubIds: joinedClubIds,
               signedUpEvents: [nextEvent],
@@ -1107,14 +1122,16 @@ void main() {
 
       await _pumpDashboardUi(tester);
 
-      final greetingFinder = find.text('${DashboardFull.greeting()}, Subrath');
-      expect(greetingFinder, findsOneWidget);
-      expect(find.text('${DashboardFull.greeting()}, Manan'), findsNothing);
-
-      await tester.drag(
-        find.byKey(DashboardFull.scrollViewKey),
-        const Offset(0, -180),
+      final greetingFinder = find.text(
+        '${dashboardGreeting(DateTime.now())}, Subrath',
       );
+      expect(greetingFinder, findsOneWidget);
+      expect(
+        find.text('${dashboardGreeting(DateTime.now())}, Manan'),
+        findsNothing,
+      );
+
+      await tester.drag(_dashboardScrollView(), const Offset(0, -180));
       await _pumpDashboardUi(tester);
 
       expect(greetingFinder, findsNothing);
@@ -1153,7 +1170,7 @@ void main() {
           ],
           child: MaterialApp(
             theme: AppTheme.light,
-            home: DashboardFull(
+            home: _DashboardFullTestShell(
               user: user,
               followedClubIds: joinedClubIds,
               signedUpEvents: [nextEvent],
@@ -1201,7 +1218,7 @@ void main() {
           ],
           child: MaterialApp(
             theme: AppTheme.light,
-            home: DashboardFull(
+            home: _DashboardFullTestShell(
               user: user,
               followedClubIds: const [],
               signedUpEvents: [event],
@@ -1258,7 +1275,7 @@ void main() {
           ],
           child: MaterialApp(
             theme: AppTheme.light,
-            home: DashboardFull(
+            home: _DashboardFullTestShell(
               user: user,
               followedClubIds: const [],
               signedUpEvents: [event],
@@ -1314,7 +1331,7 @@ void main() {
           ],
           child: MaterialApp(
             theme: AppTheme.light,
-            home: DashboardFull(
+            home: _DashboardFullTestShell(
               user: user,
               followedClubIds: const [],
               signedUpEvents: [event],
@@ -1389,7 +1406,7 @@ void main() {
             ],
             child: MaterialApp(
               theme: AppTheme.light,
-              home: DashboardFull(
+              home: _DashboardFullTestShell(
                 user: user,
                 followedClubIds: const [],
                 signedUpEvents: [firstRun, secondRun],
@@ -1457,7 +1474,7 @@ void main() {
             ],
             child: MaterialApp(
               theme: AppTheme.light,
-              home: DashboardFull(
+              home: _DashboardFullTestShell(
                 user: user,
                 followedClubIds: const [],
                 signedUpEvents: const [],
@@ -1569,6 +1586,40 @@ QuickActions _testQuickActions() {
   );
 }
 
+class _DashboardFullTestShell extends ConsumerWidget {
+  const _DashboardFullTestShell({
+    required this.user,
+    required this.signedUpEvents,
+    required this.followedClubIds,
+  });
+
+  final UserProfile user;
+  final List<Event> signedUpEvents;
+  final List<String> followedClubIds;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final now = ref.watch(dashboardNowProvider);
+    final viewModel = ref.watch(
+      dashboardFullViewModelProvider(
+        signedUpEvents: signedUpEvents,
+        user: user,
+        uid: user.uid,
+        followedClubIds: followedClubIds,
+      ),
+    );
+
+    return DashboardHomeScreen(
+      header: DashboardHomeHeaderModel.full(user: user, now: now),
+      dashboardSliver: DashboardFullSliverBody(
+        viewModel: viewModel,
+        user: user,
+        followedClubIds: followedClubIds,
+      ),
+    );
+  }
+}
+
 class _FakeEventCheckInLocationService implements EventCheckInLocationService {
   const _FakeEventCheckInLocationService();
 
@@ -1644,6 +1695,8 @@ Finder _runFocusCardSurface(String title) {
     matching: find.byType(CatchSurface),
   );
 }
+
+Finder _dashboardScrollView() => find.byType(CustomScrollView);
 
 List _dashboardHostOverrides(
   UserProfile user, {

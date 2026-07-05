@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/dashboard/presentation/notification_route_util.dart';
 import 'package:catch_dating_app/dashboard/presentation/notifications_list_state.dart';
@@ -143,42 +144,31 @@ class NotificationDayGroups extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         for (final groupEntry in groups.indexed)
-          Padding(
-            padding: EdgeInsets.only(
-              top: groupEntry.$1 == 0 ? 0 : CatchSpacing.s2,
-            ),
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                border: groupEntry.$1 == 0
-                    ? const Border()
-                    : Border(top: BorderSide(color: t.line)),
-              ),
-              child: Padding(
-                padding: EdgeInsets.only(
-                  top: groupEntry.$1 == 0 ? 0 : CatchSpacing.micro18,
+          CatchSection.fieldRows(
+            title: groupEntry.$2.label,
+            first: groupEntry.$1 == 0,
+            bodyGap: CatchSpacing.s2,
+            children: [
+              for (final row in groupEntry.$2.rows)
+                NotificationRow(
+                  type: row.type,
+                  title: row.title,
+                  time: row.timeLabel,
+                  body: row.subtitle,
+                  unread: row.isUnread,
+                  onTap: row.route == null
+                      ? null
+                      : () =>
+                            (onOpenRoute ??
+                            (route) => openNotificationRoute(context, route))(
+                              row.route!,
+                            ),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      groupEntry.$2.label.toUpperCase(),
-                      style: CatchTextStyles.kicker(context, color: t.ink2),
-                    ),
-                    gapH8,
-                    NotificationGroupWidget(
-                      rows: groupEntry.$2.rows,
-                      onOpenRoute: onOpenRoute,
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            ],
           ),
       ],
     );
@@ -210,7 +200,6 @@ class NotificationRowSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final row = Padding(
       padding: CatchInsets.contentVerticalMedium,
       child: Row(
@@ -247,14 +236,11 @@ class NotificationRowSkeleton extends StatelessWidget {
     return Stack(
       children: [
         if (divider)
-          Positioned(
+          const Positioned(
             top: 0,
-            left: CatchIcon.md + CatchSpacing.s3,
+            left: 0,
             right: 0,
-            child: Divider(
-              height: 1,
-              color: t.line.withValues(alpha: CatchOpacity.subtleBorder),
-            ),
+            child: CatchDivider.fieldRow(),
           ),
         row,
       ],
@@ -270,7 +256,6 @@ class NotificationRow extends StatelessWidget {
     this.time = '',
     this.body = '',
     this.unread = false,
-    this.divider = false,
     this.onTap,
   });
 
@@ -279,7 +264,6 @@ class NotificationRow extends StatelessWidget {
   final String time;
   final String body;
   final bool unread;
-  final bool divider;
   final VoidCallback? onTap;
 
   @override
@@ -300,7 +284,6 @@ class NotificationRow extends StatelessWidget {
         titleMaxLines: 2,
         emphasis: CatchFieldEmphasis.title,
         showChevron: false,
-        divider: divider,
         action: timeLabel.isEmpty
             ? null
             : Text(
@@ -309,41 +292,6 @@ class NotificationRow extends StatelessWidget {
               ),
         onTap: onTap,
       ),
-    );
-  }
-}
-
-class NotificationGroupWidget extends StatelessWidget {
-  const NotificationGroupWidget({
-    super.key,
-    required this.rows,
-    this.onOpenRoute,
-  });
-
-  final List<NotificationRowDisplay> rows;
-  final ValueChanged<String>? onOpenRoute;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        for (final entry in rows.indexed)
-          NotificationRow(
-            type: entry.$2.type,
-            title: entry.$2.title,
-            time: entry.$2.timeLabel,
-            body: entry.$2.subtitle,
-            unread: entry.$2.isUnread,
-            divider: entry.$1 > 0,
-            onTap: entry.$2.route == null
-                ? null
-                : () =>
-                      (onOpenRoute ??
-                      (route) => openNotificationRoute(context, route))(
-                        entry.$2.route!,
-                      ),
-          ),
-      ],
     );
   }
 }

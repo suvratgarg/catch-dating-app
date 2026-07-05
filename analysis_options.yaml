@@ -11,6 +11,8 @@ analyzer:
     - packages/**/build/**
     - packages/phosphor_flutter/example/**
     - widgetbook/**
+    # Scanner fixtures are deliberately non-compliant seed files, not app code.
+    - tool/design/fixtures/**
     - '**/*.g.dart'
     - '**/*.freezed.dart'
 

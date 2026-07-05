@@ -3,6 +3,10 @@ import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/swipes/presentation/catches_hub_screen_state.dart';
@@ -159,5 +163,77 @@ void main() {
     expect(button.variant, CatchButtonVariant.light);
     expect(button.isInteractive, isFalse);
     expect(label.style?.color, CatchTokens.sunsetLight.ink);
+  });
+
+  testWidgets('Catches hub active window list uses section primitives', (
+    tester,
+  ) async {
+    final now = DateTime(2026, 6, 22, 12);
+    final rows = catchesHubRowsFromEvents([
+      buildEvent(
+        id: 'morning',
+        startTime: now.subtract(const Duration(hours: 5)),
+        endTime: now.subtract(const Duration(hours: 4)),
+        checkedInCount: 4,
+      ),
+      buildEvent(
+        id: 'evening',
+        startTime: now.subtract(const Duration(hours: 8)),
+        endTime: now.subtract(const Duration(hours: 7)),
+        checkedInCount: 7,
+      ),
+    ], now: now);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: Scaffold(
+          body: CatchesHubContent(
+            state: CatchesHubReady(uid: 'runner-1', rows: rows),
+            onOpenCatch: (_) {},
+            onOpenRecap: (_) {},
+          ),
+        ),
+      ),
+    );
+
+    final headerFinder = find.byWidgetPredicate(
+      (widget) =>
+          widget is CatchSectionHeader && widget.title == 'Open catch windows',
+    );
+    expect(headerFinder, findsOneWidget);
+
+    final header = tester.widget<CatchSectionHeader>(headerFinder);
+    final trailing = header.trailing as Text;
+
+    expect(trailing.data, '${rows.length}');
+    expect(find.byType(CatchSectionList), findsOneWidget);
+  });
+
+  testWidgets('Catches empty body centers below the header', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(390, 844);
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: Scaffold(body: CatchesHubEmptyState(onFindEvent: () {})),
+      ),
+    );
+    await tester.pump();
+
+    final headerRect = tester.getRect(find.byType(CatchesHubHeader));
+    final emptyRect = tester.getRect(find.byType(CatchEmptyState));
+    final noteRect = tester.getRect(find.byType(CatchSurface));
+    final emptyBodyRect = emptyRect.expandToInclude(noteRect);
+    final availableBodyCenterY = (headerRect.bottom + 844) / 2;
+
+    expect(emptyBodyRect.top - headerRect.bottom, greaterThan(100));
+    expect(
+      (emptyBodyRect.center.dy - availableBodyCenterY).abs(),
+      lessThan(36),
+    );
   });
 }

@@ -166,3 +166,43 @@ class CatchMetaEntry {
   final Color? iconColor;
   final Color? color;
 }
+
+/// A single icon + label metadata row.
+///
+/// One standard treatment: small tinted icon, one-line label in secondary
+/// ink. Pass [color] for a semantic icon tint and [labelColor] only when the
+/// label carries the same semantic color. For dot-separated multi-entry rows
+/// use [CatchMetaDotRow].
+class CatchMetaRow extends StatelessWidget {
+  const CatchMetaRow({
+    super.key,
+    required this.icon,
+    required this.label,
+    this.color,
+    this.labelColor,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color? color;
+  final Color? labelColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Row(
+      children: [
+        Icon(icon, size: CatchIcon.sm, color: color ?? t.primary),
+        gapW6,
+        Expanded(
+          child: Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: CatchTextStyles.labelM(context, color: labelColor ?? t.ink2),
+          ),
+        ),
+      ],
+    );
+  }
+}

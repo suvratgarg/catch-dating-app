@@ -63,7 +63,7 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
                     : 'Your feedback is saved',
                 style: CatchTextStyles.titleL(context),
               ),
-              const PrivacyBadge(_PrivacyAudience.catchPrivate),
+              const CatchPrivacyBadge(kind: CatchPrivacyBadgeKind.catchPrivate),
             ],
           ),
           gapH4,
@@ -189,12 +189,13 @@ class RatingRow extends StatelessWidget {
           child: Text(label, style: CatchTextStyles.sectionTitle(context)),
         ),
         for (var i = 1; i <= 5; i++)
-          FeedbackIconAction(
+          CatchIconAction(
+            size: CatchIconButton.defaultSize,
             tooltip: '$label $i',
             icon: i <= value
                 ? CatchIcons.starRounded
                 : CatchIcons.starBorderRounded,
-            color: i <= value ? t.gold : t.ink3,
+            foregroundColor: i <= value ? t.gold : t.ink3,
             onPressed: () => onChanged(i),
           ),
       ],
@@ -219,46 +220,22 @@ class CounterRow extends StatelessWidget {
             style: CatchTextStyles.sectionTitle(context),
           ),
         ),
-        FeedbackIconAction(
+        CatchIconAction(
+          size: CatchIconButton.defaultSize,
           tooltip: 'Decrease people met',
           icon: CatchIcons.removeCircleOutlineRounded,
-          color: value <= 0 ? t.ink3 : t.ink2,
+          foregroundColor: value <= 0 ? t.ink3 : t.ink2,
           onPressed: value <= 0 ? null : () => onChanged(value - 1),
         ),
         Text('$value', style: CatchTextStyles.sectionTitle(context)),
-        FeedbackIconAction(
+        CatchIconAction(
+          size: CatchIconButton.defaultSize,
           tooltip: 'Increase people met',
           icon: CatchIcons.addCircleOutlineRounded,
-          color: t.ink2,
+          foregroundColor: t.ink2,
           onPressed: () => onChanged(value + 1),
         ),
       ],
-    );
-  }
-}
-
-class FeedbackIconAction extends StatelessWidget {
-  const FeedbackIconAction({
-    super.key,
-    required this.tooltip,
-    required this.icon,
-    required this.color,
-    required this.onPressed,
-  });
-
-  final String tooltip;
-  final IconData icon;
-  final Color color;
-  final VoidCallback? onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return Tooltip(
-      message: tooltip,
-      child: CatchIconButton(
-        onTap: onPressed,
-        child: Icon(icon, size: CatchIcon.md, color: color),
-      ),
     );
   }
 }

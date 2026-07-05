@@ -15,8 +15,7 @@ import 'package:catch_dating_app/dashboard/data/dashboard_recommendations_reposi
 import 'package:catch_dating_app/dashboard/presentation/dashboard_event_focus_controller.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_stride_actions_controller.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_section_state_card.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_sliver_header.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_loading_widgets.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_rail.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/recommendations.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/stride_card.dart';
@@ -35,62 +34,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-class DashboardFull extends ConsumerWidget {
-  const DashboardFull({
-    super.key,
-    required this.user,
-    required this.signedUpEvents,
-    required this.followedClubIds,
-  });
-
-  static const scrollViewKey = ValueKey('dashboard-full-scroll-view');
-
-  final UserProfile user;
-  final List<Event> signedUpEvents;
-  final List<String> followedClubIds;
-
-  static String greeting([DateTime? now]) =>
-      dashboardGreeting(now ?? DateTime.now());
-
-  static String dayCity(String? city, {DateTime? now}) =>
-      dashboardDayCity(city, now: now ?? DateTime.now());
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final t = CatchTokens.of(context);
-    final now = ref.watch(dashboardNowProvider);
-    final header = DashboardHomeHeaderModel.full(user: user, now: now);
-    final viewModel = ref.watch(
-      dashboardFullViewModelProvider(
-        signedUpEvents: signedUpEvents,
-        user: user,
-        uid: user.uid,
-        followedClubIds: followedClubIds,
-      ),
-    );
-
-    return Scaffold(
-      backgroundColor: t.bg,
-      body: SafeArea(
-        child: CustomScrollView(
-          key: scrollViewKey,
-          slivers: [
-            ...DashboardSliverHeader(
-              eyebrow: header.eyebrow,
-              title: header.title,
-            ).buildSlivers(context),
-            DashboardFullSliverBody(
-              viewModel: viewModel,
-              user: user,
-              followedClubIds: followedClubIds,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 class DashboardFullSliverBody extends ConsumerStatefulWidget {
   const DashboardFullSliverBody({
@@ -195,12 +138,7 @@ class _DashboardFullSliverBodyState
     final clubs = clubsAsync.asData?.value ?? const [];
 
     if (clubs.isNotEmpty) {
-      return ClubAvatarRail(
-        clubs: clubs,
-        showDivider: false,
-        headerPadding: EdgeInsets.zero,
-        listPadding: EdgeInsets.zero,
-      );
+      return ClubAvatarRail(clubs: clubs);
     }
 
     return clubsAsync.isLoading
@@ -341,12 +279,7 @@ class _DashboardFullSliverBodyState
     recommendationsSection,
   }) {
     if (recommendationsSection.isLoading) {
-      return const [
-        DashboardSectionStateCard(
-          message: 'Loading recommended events...',
-          isLoading: true,
-        ),
-      ];
+      return const [DashboardRecommendedLoadingSection()];
     }
 
     final error = recommendationsSection.error;
@@ -386,7 +319,7 @@ class FollowedClubsRailSkeleton extends StatelessWidget {
               if (index > 0) const SizedBox(width: CatchSpacing.micro14),
               Column(
                 children: [
-                  CatchSkeleton.circle(size: 64),
+                  CatchSkeleton.circle(size: CatchLayout.avatarIdentityExtent),
                   const SizedBox(height: CatchSpacing.micro6),
                   CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
                 ],

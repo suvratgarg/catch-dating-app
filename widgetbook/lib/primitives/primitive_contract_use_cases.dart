@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/clubs/presentation/detail/widgets/catch_club_dock.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -16,6 +15,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_corner_sash.dart';
+import 'package:catch_dating_app/core/widgets/catch_count_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
 import 'package:catch_dating_app/core/widgets/catch_detail_hero_backdrop.dart';
 import 'package:catch_dating_app/core/widgets/catch_distance_ring.dart';
@@ -49,6 +49,7 @@ import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_privacy_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_scrim.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_segmented_control.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
@@ -57,10 +58,11 @@ import 'package:catch_dating_app/core/widgets/catch_status_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_dock.dart';
+import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_dock.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
-import 'package:catch_dating_app/core/widgets/event_ticket_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
 import 'package:catch_dating_app/dashboard/shared/quick_actions.dart';
@@ -117,6 +119,42 @@ Widget catchBadgeContractStates(BuildContext context) {
             icon: CatchIcons.infoOutlineRounded,
             borderColor: t.warning,
           ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchCountBadge,
+  path: '[Core primitives]/Status',
+)
+Widget catchCountBadgeContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'CatchCountBadge',
+    contractId: 'catch.badge.count_badge',
+    states: const ['hidden', 'count', 'overflow-count'],
+    children: [
+      _StateCard(
+        label: 'hidden',
+        child: CatchCountBadge(
+          count: 0,
+          child: Icon(CatchIcons.chatBubbleOutlineRounded),
+        ),
+      ),
+      _StateCard(
+        label: 'count',
+        child: CatchCountBadge(
+          count: 7,
+          child: Icon(CatchIcons.chatBubbleOutlineRounded),
+        ),
+      ),
+      _StateCard(
+        label: 'overflow-count',
+        child: CatchCountBadge(
+          count: 104,
+          child: Icon(CatchIcons.notificationsOutlined),
         ),
       ),
     ],
@@ -2873,7 +2911,7 @@ Widget catchPrivacyBadgeContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'host-visible',
-        child: CatchPrivacyBadge(kind: CatchPrivacyBadgeKind.host),
+        child: CatchPrivacyBadge(kind: CatchPrivacyBadgeKind.hostCanSee),
       ),
     ],
   );
@@ -4117,6 +4155,62 @@ Widget catchOptionGroupItemContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
+  type: CatchTabRail,
+  path: '[Core primitives]/Selection',
+)
+Widget catchTabRailContractStates(BuildContext context) {
+  const hostOptions = [
+    CatchOption(value: 'organizer', label: 'Organizer'),
+    CatchOption(value: 'edit', label: 'Edit'),
+    CatchOption(value: 'insights', label: 'Insights'),
+    CatchOption(value: 'preview', label: 'Preview'),
+  ];
+  const settingsOptions = [
+    CatchOption(value: 'edit', label: 'Edit'),
+    CatchOption(value: 'preview', label: 'Preview'),
+  ];
+
+  return _ContractScreen(
+    title: 'CatchTabRail',
+    contractId: 'catch.tab_rail',
+    states: const ['two-option', 'four-option', 'selected-middle'],
+    children: [
+      _StateCard(
+        label: 'two-option',
+        child: _FieldWidth(
+          child: CatchTabRail<String>(
+            selected: 'edit',
+            onChanged: _ignoreString,
+            options: settingsOptions,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'four-option',
+        child: _FieldWidth(
+          child: CatchTabRail<String>(
+            selected: 'organizer',
+            onChanged: _ignoreString,
+            options: hostOptions,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'selected-middle',
+        child: _FieldWidth(
+          child: CatchTabRail<String>(
+            selected: 'insights',
+            onChanged: _ignoreString,
+            options: hostOptions,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
   type: CatchSearchField,
   path: '[Core primitives]/Inputs',
 )
@@ -4998,100 +5092,6 @@ Widget catchPageDotsContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchClubDock,
-  path: '[Core primitives]/Product composites',
-)
-Widget catchClubDockContractStates(BuildContext context) {
-  return _ContractScreen(
-    title: 'CatchClubDock',
-    contractId: 'catch.club_dock',
-    states: const [
-      'guest',
-      'visitor',
-      'visitor-pending',
-      'member',
-      'member-bell-pending',
-      'owner',
-    ],
-    children: [
-      _StateCard(
-        label: 'guest',
-        child: _DockFrame(
-          child: CatchClubDock(
-            state: CatchClubDockState.guest,
-            activityKind: ActivityKind.socialRun,
-            footnote: 'Sign in to request access.',
-            onSignIn: _noop,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'visitor',
-        child: _DockFrame(
-          child: CatchClubDock(
-            state: CatchClubDockState.visitor,
-            activityKind: ActivityKind.pickleball,
-            members: 128,
-            footnote: 'Requests are approved by the host.',
-            onJoin: _noop,
-          ),
-        ),
-      ),
-      const _StateCard(
-        label: 'visitor-pending',
-        child: _DockFrame(
-          child: CatchClubDock(
-            state: CatchClubDockState.visitor,
-            activityKind: ActivityKind.dinner,
-            members: 42,
-            isJoinLoading: true,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'member',
-        child: _DockFrame(
-          child: CatchClubDock(
-            state: CatchClubDockState.member,
-            activityKind: ActivityKind.yoga,
-            members: 76,
-            footnote: 'You are a member.',
-            onBell: _noop,
-            onManage: _noop,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'member-bell-pending',
-        child: _DockFrame(
-          child: CatchClubDock(
-            state: CatchClubDockState.member,
-            activityKind: ActivityKind.socialRun,
-            members: 76,
-            notificationsEnabled: false,
-            isBellLoading: true,
-            onBell: _noop,
-            onManage: _noop,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'owner',
-        child: _DockFrame(
-          child: CatchClubDock(
-            state: CatchClubDockState.owner,
-            activityKind: ActivityKind.pubQuiz,
-            onManage: _noop,
-            onCreate: _noop,
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
   type: CatchBottomDock,
   path: '[Core primitives]/Product composites',
 )
@@ -5218,6 +5218,100 @@ Widget catchBottomDockCtaContractStates(BuildContext context) {
             catchLine: 'FREE TO JOIN',
             footnote: 'No charge until the host approves.',
             onPressed: _noop,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: ClubDetailDock,
+  path: '[Core primitives]/Product composites',
+)
+Widget clubDetailDockContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'ClubDetailDock',
+    contractId: 'catch.club_dock',
+    states: const [
+      'guest',
+      'visitor',
+      'visitor-pending',
+      'member',
+      'member-bell-pending',
+      'owner',
+    ],
+    children: [
+      _StateCard(
+        label: 'guest',
+        child: _DockFrame(
+          child: ClubDetailDock(
+            state: ClubDetailDockRole.guest,
+            activityKind: ActivityKind.socialRun,
+            footnote: 'Sign in to request access.',
+            onSignIn: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'visitor',
+        child: _DockFrame(
+          child: ClubDetailDock(
+            state: ClubDetailDockRole.visitor,
+            activityKind: ActivityKind.pickleball,
+            members: 128,
+            footnote: 'Requests are approved by the host.',
+            onJoin: _noop,
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'visitor-pending',
+        child: _DockFrame(
+          child: ClubDetailDock(
+            state: ClubDetailDockRole.visitor,
+            activityKind: ActivityKind.dinner,
+            members: 42,
+            isJoinLoading: true,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'member',
+        child: _DockFrame(
+          child: ClubDetailDock(
+            state: ClubDetailDockRole.member,
+            activityKind: ActivityKind.yoga,
+            members: 76,
+            footnote: 'You are a member.',
+            onBell: _noop,
+            onManage: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'member-bell-pending',
+        child: _DockFrame(
+          child: ClubDetailDock(
+            state: ClubDetailDockRole.member,
+            activityKind: ActivityKind.socialRun,
+            members: 76,
+            notificationsEnabled: false,
+            isBellLoading: true,
+            onBell: _noop,
+            onManage: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'owner',
+        child: _DockFrame(
+          child: ClubDetailDock(
+            state: ClubDetailDockRole.owner,
+            activityKind: ActivityKind.pubQuiz,
+            onManage: _noop,
+            onCreate: _noop,
           ),
         ),
       ),
@@ -5394,33 +5488,6 @@ Widget eventActivityStampContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: EventHeroSurface,
-  path: '[Core primitives]/Product composites',
-)
-Widget eventHeroSurfaceContractStates(BuildContext context) {
-  return _ContractScreen(
-    title: 'EventHeroSurface',
-    contractId: 'catch.event_card.hero_surface',
-    states: const ['wrapper'],
-    children: [
-      _StateCard(
-        label: 'wrapper',
-        child: EventHeroSurface(
-          tag: 'contract-event-hero-surface',
-          child: CatchSurface.card(
-            child: Text(
-              'Shared ticket Hero wrapper',
-              style: CatchTextStyles.bodyM(context),
-            ),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
   type: CatchGradedImage,
   path: '[Core primitives]/Media',
 )
@@ -5534,18 +5601,53 @@ Widget catchDetailHeroFallbackContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchDetailHeroScrim,
+  type: CatchScrim,
   path: '[Core primitives]/Media',
 )
-Widget catchDetailHeroScrimContractStates(BuildContext context) {
+Widget catchScrimContractStates(BuildContext context) {
   return const _ContractScreen(
-    title: 'CatchDetailHeroScrim',
+    title: 'CatchScrim',
     contractId: 'catch.detail_media.scrim',
-    states: ['vertical-gradient'],
+    states: ['detail-hero', 'photo-frame', 'hero-tint'],
     children: [
       _StateCard(
-        label: 'vertical-gradient',
-        child: SizedBox(width: 340, height: 180, child: CatchDetailHeroScrim()),
+        label: 'detail hero',
+        child: SizedBox(
+          width: 340,
+          height: 180,
+          child: DecoratedBox(
+            decoration: BoxDecoration(color: CatchTokens.editorialDark),
+            child: CatchScrim.detailHero(),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'photo frame',
+        child: SizedBox(
+          width: 180,
+          height: 220,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color(0xFF7C8F7A), Color(0xFF1A1A1A)],
+              ),
+            ),
+            child: CatchScrim.photoFrame(),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'profile hero tint',
+        child: SizedBox(
+          width: 180,
+          height: 240,
+          child: DecoratedBox(
+            decoration: BoxDecoration(color: Color(0xFF111111)),
+            child: CatchScrim.heroTint(base: Color(0xFF111111)),
+          ),
+        ),
       ),
     ],
   );
@@ -6665,13 +6767,12 @@ Widget notificationRowContractStates(BuildContext context) {
         ),
       ),
       _StateCard(
-        label: 'divider',
+        label: 'waitlist promotion',
         child: _NotificationFrame(
           child: NotificationRow(
             type: ActivityNotificationType.waitlistPromotion,
             title: 'You are off the waitlist',
             time: '1d',
-            divider: true,
             onTap: _noop,
           ),
         ),

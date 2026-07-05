@@ -194,7 +194,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  SettingsSection(
+                  CatchSection.fieldRows(
                     first: true,
                     title: 'Account',
                     footer: AccountProfileStatus(
@@ -245,7 +245,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ),
                   if (AppConfig.enableEventPolicyLab ||
                       AppConfig.enableEventSuccessPreview) ...[
-                    SettingsSection(
+                    CatchSection.fieldRows(
                       title: 'Development',
                       children: [
                         if (AppConfig.enableEventPolicyLab)
@@ -281,7 +281,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ],
                     ),
                   ],
-                  SettingsSection(
+                  CatchSection.fieldRows(
                     title: 'Notifications',
                     children: [
                       CatchField.toggle(
@@ -359,7 +359,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                     ],
                   ),
-                  SettingsSection(
+                  CatchSection.fieldRows(
                     title: 'Privacy & safety',
                     footer: BlockedAccountsSection(
                       state: state.blockedAccounts,
@@ -414,7 +414,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                     ],
                   ),
-                  SettingsSection(
+                  CatchSection.fieldRows(
                     title: 'About',
                     children: [
                       CatchField.nav(
@@ -440,9 +440,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                     ],
                   ),
-                  SettingsSection(
-                    title: '',
-                    hideTitle: true,
+                  CatchSection.fieldRows(
                     children: [
                       CatchField.nav(
                         key: SettingsKeys.signOutRow,
@@ -475,66 +473,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
         ),
       ),
-    );
-  }
-}
-
-class SettingsSection extends StatelessWidget {
-  const SettingsSection({
-    super.key,
-    required this.title,
-    required this.children,
-    this.first = false,
-    this.hideTitle = false,
-    this.footer,
-  });
-
-  final String title;
-  final List<Widget> children;
-  final bool first;
-  final bool hideTitle;
-  final Widget? footer;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final topPadding = hideTitle ? CatchSpacing.s3 : 18.0;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (!first) ...[
-          gapH8,
-          ColoredBox(
-            color: t.line,
-            child: const SizedBox(height: CatchStroke.hairline),
-          ),
-          SizedBox(height: topPadding),
-        ],
-        if (!hideTitle) ...[
-          Text(
-            title.toUpperCase(),
-            style: CatchTextStyles.kicker(context, color: t.ink2),
-          ),
-          gapH10,
-        ],
-        for (var i = 0; i < children.length; i++) ...[
-          if (i > 0)
-            Padding(
-              padding: const EdgeInsets.only(
-                left: CatchLayout.settingsRowDividerIconInset,
-              ),
-              child: ColoredBox(
-                color: t.line.withValues(
-                  alpha: CatchOpacity.profileInfoDivider,
-                ),
-                child: const SizedBox(height: CatchStroke.hairline),
-              ),
-            ),
-          children[i],
-        ],
-        ?footer,
-      ],
     );
   }
 }
@@ -598,10 +536,7 @@ class BlockedAccountsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        ColoredBox(
-          color: t.line.withValues(alpha: CatchOpacity.profileInfoDivider),
-          child: const SizedBox(height: CatchStroke.hairline),
-        ),
+        const CatchDivider(),
         switch (state.status) {
           SettingsBlockedAccountsStatus.loading =>
             const BlockedAccountsSkeleton(),
@@ -626,15 +561,13 @@ class BlockedAccountsSection extends StatelessWidget {
           ),
           SettingsBlockedAccountsStatus.content => Column(
             children: [
-              for (var i = 0; i < state.rows.length; i++) ...[
+              for (var i = 0; i < state.rows.length; i++)
                 BlockedAccountTile(
                   row: state.rows[i],
+                  divider: i > 0,
                   unblocking: unblocking,
                   onUnblock: onUnblock,
                 ),
-                if (i < state.rows.length - 1)
-                  Divider(color: t.line, height: 1),
-              ],
             ],
           ),
         },
@@ -685,14 +618,7 @@ class BlockedAccountsSkeleton extends StatelessWidget {
                 ),
               ],
             ),
-            if (index < 2) ...[
-              gapH12,
-              ColoredBox(
-                color: CatchTokens.of(context).line,
-                child: const SizedBox(height: CatchStroke.hairline),
-              ),
-              gapH12,
-            ],
+            if (index < 2) ...[gapH12, const CatchDivider(), gapH12],
           ],
         ],
       ),
@@ -704,11 +630,13 @@ class BlockedAccountTile extends StatelessWidget {
   const BlockedAccountTile({
     super.key,
     required this.row,
+    required this.divider,
     required this.unblocking,
     required this.onUnblock,
   });
 
   final SettingsBlockedAccountRow row;
+  final bool divider;
   final bool unblocking;
   final ValueChanged<String> onUnblock;
 
@@ -721,6 +649,7 @@ class BlockedAccountTile extends StatelessWidget {
         metaLine: row.metaLine,
         seed: row.seed,
       ),
+      divider: divider,
       trailing: CatchButton(
         key: SettingsKeys.unblockButton(row.uid),
         label: 'Unblock',

@@ -14,79 +14,33 @@ class DirectoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final sash = _membershipSashFor(isJoined: isJoined);
     final hasCoverImage = _hasCoverImage(club);
 
     return Semantics(
       button: onTap != null,
       label: 'Open ${club.name} club',
-      child: hasCoverImage
-          ? DirectoryPhotoCard(
-              club: club,
-              isJoined: isJoined,
-              sash: sash,
-              onTap: onTap,
-            )
-          : DirectoryIdentityCard(
-              club: club,
-              isJoined: isJoined,
-              sash: sash,
-              onTap: onTap,
-            ),
-    );
-  }
-}
-
-class DirectoryPhotoCard extends StatelessWidget {
-  const DirectoryPhotoCard({
-    super.key,
-    required this.club,
-    required this.isJoined,
-    required this.sash,
-    this.onTap,
-  });
-
-  final Club club;
-  final bool isJoined;
-  final _MembershipSash? sash;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final palette = ClubCoverVisualPalette.forClub(context, club);
-    final visibleTags = _visibleTags(club);
-
-    return CatchPolaroid(
-      onTap: onTap,
-      media: ClubPhotoMediaOverlay(club: club),
-      mediaOverlay: ClubPhotoChrome(club: club, sash: sash, palette: palette),
-      caption: _directoryCaption(club),
-      captionColor: t.ink3,
-      title: club.name,
-      subtitle: club.description,
-      showArrow: false,
-      footer: ClubDirectoryFooter(
+      child: DirectoryClubCard(
         club: club,
         isJoined: isJoined,
-        visibleTags: visibleTags,
+        hasCoverImage: hasCoverImage,
+        onTap: onTap,
       ),
     );
   }
 }
 
-class DirectoryIdentityCard extends StatelessWidget {
-  const DirectoryIdentityCard({
+class DirectoryClubCard extends StatelessWidget {
+  const DirectoryClubCard({
     super.key,
     required this.club,
     required this.isJoined,
-    required this.sash,
+    required this.hasCoverImage,
     this.onTap,
   });
 
   final Club club;
   final bool isJoined;
-  final _MembershipSash? sash;
+  final bool hasCoverImage;
   final VoidCallback? onTap;
 
   @override
@@ -94,15 +48,18 @@ class DirectoryIdentityCard extends StatelessWidget {
     final t = CatchTokens.of(context);
     final palette = ClubCoverVisualPalette.forClub(context, club);
     final visibleTags = _visibleTags(club);
+    final sash = _membershipSashFor(isJoined: isJoined);
 
     return CatchPolaroid(
       onTap: onTap,
-      media: ClubPolaroidArtwork(club: club),
+      media: hasCoverImage
+          ? ClubPhotoMediaOverlay(club: club)
+          : ClubPolaroidArtwork(club: club),
       mediaOverlay: ClubPhotoChrome(club: club, sash: sash, palette: palette),
       caption: _directoryCaption(club),
       captionColor: t.ink3,
       title: club.name,
-      titleMaxLines: 2,
+      titleMaxLines: hasCoverImage ? 1 : 2,
       subtitle: club.description,
       showArrow: false,
       footer: ClubDirectoryFooter(
@@ -142,7 +99,7 @@ class ClubPhotoChrome extends StatelessWidget {
     return Stack(
       fit: StackFit.expand,
       children: [
-        const ClubPhotoScrim(),
+        const CatchScrim.photoFrame(),
         Positioned(
           top: CatchSpacing.s3,
           left: CatchSpacing.s3,
@@ -174,34 +131,6 @@ class ClubPhotoChrome extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class ClubPhotoScrim extends StatelessWidget {
-  const ClubPhotoScrim({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return IgnorePointer(
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: const [0.0, 0.48, 1.0],
-            colors: [
-              CatchTokens.editorialDark.withValues(
-                alpha: CatchOpacity.photoScrimLight,
-              ),
-              Colors.transparent,
-              CatchTokens.editorialDark.withValues(
-                alpha: CatchOpacity.eventSuccessSubtleBorder,
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

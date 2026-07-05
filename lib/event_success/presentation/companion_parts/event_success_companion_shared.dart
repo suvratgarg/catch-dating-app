@@ -144,11 +144,9 @@ class CompanionPaperScaffold extends StatelessWidget {
       backgroundColor: t.bg,
       bottomNavigationBar: showSelfCheckIn
           ? SafeArea(
-              minimum: const EdgeInsets.fromLTRB(
-                CatchSpacing.screenPx,
-                CatchSpacing.s2,
-                CatchSpacing.screenPx,
-                CatchSpacing.s3,
+              minimum: CatchInsets.pageBody.copyWith(
+                top: CatchSpacing.s2,
+                bottom: CatchSpacing.s3,
               ),
               child: PaperSelfCheckInBar(
                 event: event,
@@ -169,11 +167,9 @@ class CompanionPaperScaffold extends StatelessWidget {
                     maxWidth: CatchLayout.maxContentWidth,
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      CatchSpacing.screenPx,
-                      CatchSpacing.s2,
-                      CatchSpacing.screenPx,
-                      CatchSpacing.s8,
+                    padding: CatchInsets.pageBody.copyWith(
+                      top: CatchSpacing.s2,
+                      bottom: CatchSpacing.s8,
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -557,27 +553,14 @@ class PaperTicketSerial extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final booked = event.bookedCount ?? 0;
     final capacity = event.capacityLimit;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'ADMIT ONE - NO ${booked.toString().padLeft(2, '0')} / $capacity',
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: CatchTextStyles.sectionTitle(context, color: t.ink3),
-        ),
-        gapH6,
-        Text(
-          _paperTicketCode(event),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: CatchTextStyles.labelL(context),
-        ),
-      ],
-    );
+    final label =
+        'ADMIT ONE - NO ${booked.toString().padLeft(2, '0')} / '
+        '$capacity';
+    final value = _paperTicketCode(event);
+
+    return PaperTicketDetail(label: label, value: value);
   }
 }
 
@@ -1177,7 +1160,7 @@ class StagePrivacyLine extends StatelessWidget {
         children: [
           Icon(
             CatchIcons.lockOutlineRounded,
-            size: 18,
+            size: CatchIcon.md,
             color: stageTheme.foreground.withValues(
               alpha: CatchOpacity.eventSuccessProminent,
             ),
@@ -1693,35 +1676,6 @@ class CompanionStageContentTransition extends StatelessWidget {
   }
 }
 
-/// Who else can see this card's data. Surfaces a consistent badge across
-/// questionnaire, wingman, and feedback so the attendee can tell at a glance
-/// what they're putting on the record.
-enum _PrivacyAudience { privateToYou, hostCanSee, catchPrivate }
-
-class PrivacyBadge extends StatelessWidget {
-  const PrivacyBadge(this.audience);
-
-  final _PrivacyAudience audience;
-
-  @override
-  Widget build(BuildContext context) {
-    return switch (audience) {
-      _PrivacyAudience.privateToYou => CatchBadge(
-        label: 'Private to you',
-        icon: CatchIcons.lockOutlineRounded,
-      ),
-      _PrivacyAudience.hostCanSee => CatchBadge(
-        label: 'Host can see',
-        icon: CatchIcons.visibilityOutlined,
-      ),
-      _PrivacyAudience.catchPrivate => CatchBadge(
-        label: 'Catch private',
-        icon: CatchIcons.shieldOutlined,
-      ),
-    };
-  }
-}
-
 /// Gives the wrapped widget a kinetic press response: scale down on tap-down,
 /// brief glow flare, then a spring-back to rest. Drop-in replacement for
 /// InkWell-style affordances on the stage where Material's ink ripple feels
@@ -1733,6 +1687,7 @@ class StageBouncyPress extends StatefulWidget {
     this.glowColor,
     this.borderRadius,
     this.semanticLabel,
+    this.selected,
   });
 
   final Widget child;
@@ -1740,6 +1695,7 @@ class StageBouncyPress extends StatefulWidget {
   final Color? glowColor;
   final BorderRadius? borderRadius;
   final String? semanticLabel;
+  final bool? selected;
 
   /// How deep the press depresses. 1.0 = no scale, 0 = scale to zero.
   /// Tuned for chips and small CTAs; keep static for now.
@@ -1794,6 +1750,7 @@ class _StageBouncyPressState extends State<StageBouncyPress>
       button: enabled,
       enabled: enabled,
       label: widget.semanticLabel,
+      selected: widget.selected,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTapDown: enabled ? (_) => setState(() => _down = true) : null,
@@ -1836,7 +1793,9 @@ class _StageBouncyPressState extends State<StageBouncyPress>
               ),
             );
           },
-          child: widget.child,
+          child: widget.semanticLabel == null
+              ? widget.child
+              : ExcludeSemantics(child: widget.child),
         ),
       ),
     );

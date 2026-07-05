@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -784,7 +785,7 @@ class EventPolicyDividerLine extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: CatchInsets.contentVertical,
-      child: Divider(height: 1, color: color),
+      child: CatchDivider.section(color: color),
     );
   }
 }

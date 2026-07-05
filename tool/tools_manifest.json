@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-07-03",
+  "updated": "2026-07-05",
   "tools": [
     {
       "id": "tool:runner",
@@ -2683,6 +2683,146 @@
         "node tool/design/check_screen_contract_hygiene.mjs --summary"
       ],
       "role": "finder"
+    },
+    {
+      "id": "design:screen-gutters",
+      "category": "design",
+      "path": "tool/design/check_screen_gutters.mjs",
+      "command": "node tool/design/check_screen_gutters.mjs --summary",
+      "safety": "local",
+      "status": "active",
+      "description": "Reports advisory EdgeInsets inventory and likely hand-rolled screen gutter candidates across presentation and contracted screen implementation files.",
+      "checks": [
+        "node --check tool/design/check_screen_gutters.mjs",
+        "node --test tool/design/check_screen_gutters.test.mjs",
+        "node tool/design/check_screen_gutters.mjs --summary --max 25"
+      ],
+      "role": "finder",
+      "rules": [
+        "SCREEN-GUTTER-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/check_screen_gutters.test.mjs",
+        "contains": [
+          "flags the known-bad horizontal screen gutter fixture",
+          "covers presentation widgets, not only screen files"
+        ]
+      }
+    },
+    {
+      "id": "design:section-dividers",
+      "category": "design",
+      "path": "tool/design/check_section_dividers.mjs",
+      "command": "node tool/design/check_section_dividers.mjs --summary",
+      "safety": "local",
+      "status": "active",
+      "description": "Reports raw Divider inventory, high-confidence CatchSection row-divider misuse, and thin feature-local CatchSection wrappers so row and section hairlines route through CatchDivider roles.",
+      "checks": [
+        "node --check tool/design/check_section_dividers.mjs",
+        "node --test tool/design/check_section_dividers.test.mjs",
+        "node tool/design/check_section_dividers.mjs --summary --max 25 --fail-on high"
+      ],
+      "role": "finder",
+      "rules": [
+        "DESIGN-PRIMITIVES-001",
+        "DESIGN-TOKENS-001",
+        "UI-LINT-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/check_section_dividers.test.mjs",
+        "contains": [
+          "flags caller-owned internalDividerColor on divided sections",
+          "flags raw dividers using old row divider opacities",
+          "flags thin feature wrappers around CatchSection field rows"
+        ]
+      }
+    },
+    {
+      "id": "design:section-headers",
+      "category": "design",
+      "path": "tool/design/check_section_headers.mjs",
+      "command": "node tool/design/check_section_headers.mjs --summary",
+      "safety": "local",
+      "status": "active",
+      "description": "Reports duplicate CatchSection titles and feature-local titled section/card shells so section header ownership routes through CatchSection or an explicit content primitive.",
+      "checks": [
+        "node --check tool/design/check_section_headers.mjs",
+        "node --test tool/design/check_section_headers.test.mjs",
+        "node tool/design/check_section_headers.mjs --summary --max 25 --fail-on high"
+      ],
+      "role": "finder",
+      "rules": [
+        "DESIGN-PRIMITIVES-001",
+        "UI-LINT-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/check_section_headers.test.mjs",
+        "contains": [
+          "flags a CatchSection title duplicated by a nested component header",
+          "honors explicit showHeader false on nested preview components",
+          "flags titled feature-local surface sections for review"
+        ]
+      }
+    },
+    {
+      "id": "design:rail-contracts",
+      "category": "design",
+      "path": "tool/design/check_rail_contracts.mjs",
+      "command": "node tool/design/check_rail_contracts.mjs --summary",
+      "safety": "local",
+      "status": "active",
+      "description": "Reports rail callers that manually zero divider/header/list chrome instead of using embedded defaults or fullBleed opt-in.",
+      "checks": [
+        "node --check tool/design/check_rail_contracts.mjs",
+        "node --test tool/design/check_rail_contracts.test.mjs",
+        "node tool/design/check_rail_contracts.mjs --summary --max 25 --fail-on high"
+      ],
+      "role": "finder",
+      "rules": [
+        "DESIGN-PRIMITIVES-001",
+        "SCREEN-GUTTER-001",
+        "UI-LINT-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/check_rail_contracts.test.mjs",
+        "contains": [
+          "flags old rail chrome zeroing in production code",
+          "allows embedded rail defaults",
+          "allows full-bleed rail opt-in"
+        ]
+      }
+    },
+    {
+      "id": "design:option-group-usage",
+      "category": "design",
+      "path": "tool/design/check_option_group_usage.mjs",
+      "command": "node tool/design/check_option_group_usage.mjs --summary",
+      "safety": "local",
+      "status": "active",
+      "description": "Reports production direct CatchOptionGroupItem usage so underline tabs route through CatchOptionGroup or CatchTabRail rather than forking divider, indicator, ink, and trailing alignment behavior.",
+      "checks": [
+        "node --check tool/design/check_option_group_usage.mjs",
+        "node --test tool/design/check_option_group_usage.test.mjs",
+        "node tool/design/check_option_group_usage.mjs --summary --max 25 --fail-on high"
+      ],
+      "role": "finder",
+      "rules": [
+        "DESIGN-PRIMITIVES-001",
+        "UI-LINT-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/check_option_group_usage.test.mjs",
+        "contains": [
+          "flags direct CatchOptionGroupItem usage in production feature code",
+          "allows the canonical CatchOptionGroup implementation",
+          "ignores direct item usage outside production lib sources"
+        ]
+      }
     },
     {
       "id": "design:reference-screens",

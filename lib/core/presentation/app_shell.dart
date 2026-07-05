@@ -8,12 +8,11 @@ import 'package:catch_dating_app/core/platform/adaptive_platform.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_count_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_dock.dart';
 import 'package:catch_dating_app/event_success/event_success_companion_launcher.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
@@ -274,7 +273,7 @@ class AppShellNavigationBar extends StatelessWidget {
   Widget _navigationIcon(IconData icon, {required int unreadCount}) {
     final child = Icon(icon);
     if (unreadCount <= 0) return child;
-    return AppShellNavigationBadge(count: unreadCount, child: child);
+    return CatchCountBadge(count: unreadCount, child: child);
   }
 }
 
@@ -334,62 +333,3 @@ List<AppShellNavigationItem> _consumerNavigationItems() => [
     cupertinoSelectedIcon: CupertinoIcons.person_fill,
   ),
 ];
-
-@visibleForTesting
-class AppShellNavigationBadge extends StatelessWidget {
-  const AppShellNavigationBadge({
-    super.key,
-    required this.count,
-    required this.child,
-  });
-
-  final int count;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    if (count <= 0) return child;
-
-    final t = CatchTokens.of(context);
-    final label = count > 99 ? '99+' : '$count';
-
-    return SizedBox(
-      width: CatchLayout.appShellNavigationBadgeWidth,
-      height: CatchLayout.appShellNavigationBadgeHeight,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Align(alignment: Alignment.bottomCenter, child: child),
-          Positioned(
-            top: 0,
-            right: 1,
-            child: CatchSurface(
-              radius: CatchRadius.pill,
-              backgroundColor: t.primary,
-              borderColor: t.surface,
-              borderWidth: 1.5,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(minWidth: 17, minHeight: 17),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: CatchSpacing.s1,
-                    vertical: CatchStroke.hairline,
-                  ),
-                  child: Center(
-                    child: Text(
-                      label,
-                      style: CatchTextStyles.statusLabel(
-                        context,
-                        color: t.primaryInk,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

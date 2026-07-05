@@ -53,6 +53,7 @@ import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_share_card_footer.dart';
 import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
@@ -761,7 +762,7 @@ Widget catchTopBarActionsCatalogStates(BuildContext context) {
           onBack: _noop,
           surface: true,
           actions: [
-            CatchTopBarIconAction(
+            CatchIconAction(
               icon: CatchIcons.savedOutlined,
               tooltip: 'Save',
               onPressed: _noop,
@@ -784,30 +785,30 @@ Widget catchTopBarActionsCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchTopBarIconAction,
+  type: CatchIconAction,
   path: '[Core catalog]/Navigation',
 )
-Widget catchTopBarIconActionCatalogStates(BuildContext context) {
+Widget catchIconActionCatalogStates(BuildContext context) {
   return _CatalogScreen(
-    title: 'CatchTopBarIconAction',
-    catalogId: 'core.widgets.catch_top_bar_icon_action',
+    title: 'CatchIconAction',
+    catalogId: 'core.widgets.catch_icon_action',
     children: [
       _StateCard(
         label: 'default / plain / disabled',
         child: _InlineWrap(
           children: [
-            CatchTopBarIconAction(
+            CatchIconAction(
               icon: CatchIcons.savedOutlined,
               tooltip: 'Save',
               onPressed: _noop,
             ),
-            CatchTopBarIconAction(
+            CatchIconAction(
               icon: CatchIcons.share,
               tooltip: 'Share',
               variant: CatchIconButtonVariant.plain,
               onPressed: _noop,
             ),
-            CatchTopBarIconAction(
+            CatchIconAction(
               icon: CatchIcons.moreHorizRounded,
               tooltip: 'Disabled',
               onPressed: null,
@@ -1887,32 +1888,6 @@ Widget eventTicketSurfaceCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: EventHeroSurface,
-  path: '[Core catalog]/Event cards',
-)
-Widget eventHeroSurfaceCatalogStates(BuildContext context) {
-  return _CatalogScreen(
-    title: 'EventHeroSurface',
-    catalogId: 'events.widgets.event_hero_surface',
-    children: [
-      _StateCard(
-        label: 'shared hero wrapper',
-        child: EventHeroSurface(
-          tag: 'widgetbook-event-hero-surface',
-          child: CatchSurface.card(
-            child: Text(
-              'Event cards use this wrapper for the shared ticket Hero flight.',
-              style: CatchTextStyles.bodyM(context),
-            ),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Catalog states',
   type: EventDetailHeroAppBar,
   path: '[Core catalog]/Event detail',
 )
@@ -2331,15 +2306,21 @@ Widget eventDetailBookingDockCatalogStates(BuildContext context) {
             CatchBottomDock.cta(
               label: 'Cancel booking',
               onPressed: _noop,
-              leadingContent: const BookedLeading(),
+              leadingContent: EventCtaStatusLeading(
+                icon: CatchIcons.checkCircleRounded,
+                label: "You're in!",
+              ),
             ),
             gapH12,
             CatchBottomDock.cta(label: 'Join waitlist', onPressed: _noop),
             gapH12,
-            const CatchBottomDock.cta(
+            CatchBottomDock.cta(
               label: 'You attended this event',
               onPressed: null,
-              leadingContent: AttendedLeading(),
+              leadingContent: EventCtaStatusLeading(
+                icon: CatchIcons.directionsRunRounded,
+                label: 'Completed',
+              ),
             ),
           ],
         ),
@@ -2701,6 +2682,30 @@ Widget catchShareCardSheetCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
+  type: CatchShareCardFooter,
+  path: '[Core catalog]/Sheets and footers',
+)
+Widget catchShareCardFooterCatalogStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'CatchShareCardFooter',
+    catalogId: 'core.widgets.catch_share_card_footer',
+    children: const [
+      _StateCard(
+        label: 'default',
+        child: CatchShareCardFooter(trailing: 'Curated singles event'),
+      ),
+      _StateCard(
+        label: 'long trailing',
+        child: CatchShareCardFooter(
+          trailing: 'Hosted by The Longest Possible Club Collective',
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
   type: CatchHorizontalRail,
   path: '[Core catalog]/Sections',
 )
@@ -2710,10 +2715,22 @@ Widget catchHorizontalRailCatalogStates(BuildContext context) {
     catalogId: 'core.widgets.catch_horizontal_rail',
     children: [
       _StateCard(
-        label: 'rail',
+        label: 'embedded rail',
         child: CatchHorizontalRail(
           title: 'Recommended',
           itemCount: 4,
+          height: 128,
+          itemBuilder: (context, index) =>
+              CatchSurface.card(width: 136, child: Text('Card ${index + 1}')),
+          trailing: CatchButton(label: 'More', onPressed: _noop),
+        ),
+      ),
+      _StateCard(
+        label: 'full-bleed rail',
+        child: CatchHorizontalRail(
+          title: 'Recommended',
+          itemCount: 4,
+          fullBleed: true,
           height: 128,
           itemBuilder: (context, index) =>
               CatchSurface.card(width: 136, child: Text('Card ${index + 1}')),
@@ -2764,6 +2781,11 @@ Widget catchSectionHeaderCatalogStates(BuildContext context) {
             CatchSectionHeader(
               title: 'Upcoming events',
               trailing: CatchTextButton(label: 'See all', onPressed: _noop),
+            ),
+            const CatchSectionHeader(
+              title: 'Host checklist',
+              subtitle:
+                  'Keep setup copy visible without creating a local header.',
             ),
             const CatchSectionHeader(
               title: 'metadata group',

@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
@@ -219,7 +220,15 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
                   draft.isModuleSelected(
                     EventSuccessModuleCatalog.guidedRotations.id,
                   ))
-                RotationCadenceChips(
+                SetupChoiceChips<int?>(
+                  label: 'Rotation cadence',
+                  options: const [
+                    CatchOption<int?>(value: null, label: 'No timed rotation'),
+                    CatchOption(value: 10, label: '10 min'),
+                    CatchOption(value: 15, label: '15 min'),
+                    CatchOption(value: 20, label: '20 min'),
+                    CatchOption(value: 30, label: '30 min'),
+                  ],
                   value: draft.structureConfig.rotationIntervalMinutes,
                   enabled: widget.editable,
                   onChanged: (interval) {
@@ -237,8 +246,14 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
                   draft.isModuleSelected(
                     EventSuccessModuleCatalog.liveReveal.id,
                   ))
-                RevealCountdownChips(
+                SetupChoiceChips<int>(
                   label: _revealCountdownLabel(draft),
+                  options: const [
+                    CatchOption(value: 0, label: 'Off'),
+                    CatchOption(value: 5, label: '5s'),
+                    CatchOption(value: 10, label: '10s'),
+                    CatchOption(value: 15, label: '15s'),
+                  ],
                   value: draft.structureConfig.revealCountdownSeconds,
                   enabled: widget.editable,
                   onChanged: (seconds) {
@@ -493,63 +508,22 @@ class FoundationLine extends StatelessWidget {
   }
 }
 
-/// Inline rotation-cadence chips rendered beneath the "Timed partner
-/// rotations" toggle in the During stage card.
-class RotationCadenceChips extends StatelessWidget {
-  const RotationCadenceChips({
-    required this.value,
-    required this.enabled,
-    required this.onChanged,
-  });
-
-  final int? value;
-  final bool enabled;
-  final ValueChanged<int?> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: _setupNestedControlPadding,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Rotation cadence', style: CatchTextStyles.labelM(context)),
-          gapH6,
-          Wrap(
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s2,
-            children: [
-              for (final interval in const <int?>[null, 10, 15, 20, 30])
-                CatchSelectChip(
-                  label: interval == null
-                      ? 'No timed rotation'
-                      : '$interval min',
-                  active: value == interval,
-                  enabled: enabled,
-                  onTap: enabled ? () => onChanged(interval) : null,
-                ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Inline reveal-countdown chips rendered beneath the synchronized-reveal
-/// toggle in the During stage card.
-class RevealCountdownChips extends StatelessWidget {
-  const RevealCountdownChips({
+/// Inline setup chips rendered beneath setup toggles in the During stage card.
+class SetupChoiceChips<T> extends StatelessWidget {
+  const SetupChoiceChips({
+    super.key,
     required this.label,
+    required this.options,
     required this.value,
     required this.enabled,
     required this.onChanged,
   });
 
   final String label;
-  final int value;
+  final List<CatchOption<T>> options;
+  final T value;
   final bool enabled;
-  final ValueChanged<int> onChanged;
+  final ValueChanged<T> onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -564,12 +538,12 @@ class RevealCountdownChips extends StatelessWidget {
             spacing: CatchSpacing.s2,
             runSpacing: CatchSpacing.s2,
             children: [
-              for (final seconds in const [0, 5, 10, 15])
+              for (final option in options)
                 CatchSelectChip(
-                  label: seconds == 0 ? 'Off' : '${seconds}s',
-                  active: value == seconds,
+                  label: option.label,
+                  active: value == option.value,
                   enabled: enabled,
-                  onTap: enabled ? () => onChanged(seconds) : null,
+                  onTap: enabled ? () => onChanged(option.value) : null,
                 ),
             ],
           ),

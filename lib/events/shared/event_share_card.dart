@@ -4,6 +4,8 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
+import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
+import 'package:catch_dating_app/core/widgets/catch_share_card_footer.dart';
 import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
@@ -161,22 +163,22 @@ class EventShareCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      EventShareMetaRow(
+                      CatchMetaRow(
                         icon: CatchIcons.calendarTodayOutlined,
                         label: event.longDateLabel,
-                        accent: visual.accent,
+                        color: visual.accent,
                       ),
                       gapH10,
-                      EventShareMetaRow(
+                      CatchMetaRow(
                         icon: CatchIcons.clock,
                         label: event.timeRangeLabel,
-                        accent: visual.accent,
+                        color: visual.accent,
                       ),
                       gapH10,
-                      EventShareMetaRow(
+                      CatchMetaRow(
                         icon: CatchIcons.locationOnOutlined,
                         label: event.locationName,
-                        accent: visual.accent,
+                        color: visual.accent,
                       ),
                       const Spacer(),
                       Wrap(
@@ -188,24 +190,8 @@ class EventShareCard extends StatelessWidget {
                         ],
                       ),
                       gapH14,
-                      Row(
-                        children: [
-                          Text(
-                            'CATCH',
-                            style: CatchTextStyles.kicker(
-                              context,
-                              color: t.ink,
-                            ),
-                          ),
-                          const Spacer(),
-                          Text(
-                            'Curated singles event',
-                            style: CatchTextStyles.labelS(
-                              context,
-                              color: t.ink2,
-                            ),
-                          ),
-                        ],
+                      const CatchShareCardFooter(
+                        trailing: 'Curated singles event',
                       ),
                     ],
                   ),
@@ -215,39 +201,6 @@ class EventShareCard extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class EventShareMetaRow extends StatelessWidget {
-  const EventShareMetaRow({
-    super.key,
-    required this.icon,
-    required this.label,
-    required this.accent,
-  });
-
-  final IconData icon;
-  final String label;
-  final Color accent;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Row(
-      children: [
-        Icon(icon, size: CatchIcon.sm, color: accent),
-        gapW8,
-        Expanded(
-          child: Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.labelS(context, color: t.ink2),
-          ),
-        ),
-      ],
     );
   }
 }

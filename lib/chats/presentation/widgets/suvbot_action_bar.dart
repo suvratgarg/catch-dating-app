@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
@@ -288,7 +289,6 @@ Future<void> _showResetSheet(
           subtitle: 'These actions only touch demo-owned data.',
           child: Builder(
             builder: (context) {
-              final t = CatchTokens.of(context);
               return Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -302,7 +302,7 @@ Future<void> _showResetSheet(
                       },
                     ),
                     if (index != actions.length - 1)
-                      Divider(height: 1, color: t.line),
+                      const CatchDivider.fieldRow(indent: 0),
                   ],
                 ],
               );

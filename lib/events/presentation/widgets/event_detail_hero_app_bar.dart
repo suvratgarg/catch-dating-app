@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/motion/catch_transitions.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -24,6 +25,7 @@ class EventDetailHeroAppBar extends StatelessWidget {
     required this.onToggleSaved,
     required this.showAddToCalendar,
     required this.onAddToCalendar,
+    this.showShareAction = true,
     this.presentationMode = EventDetailPresentationMode.standard,
     this.heroTag,
   });
@@ -36,6 +38,7 @@ class EventDetailHeroAppBar extends StatelessWidget {
   final VoidCallback onToggleSaved;
   final bool showAddToCalendar;
   final ValueChanged<BuildContext> onAddToCalendar;
+  final bool showShareAction;
   final EventDetailPresentationMode presentationMode;
   final Object? heroTag;
 
@@ -77,7 +80,7 @@ class EventDetailHeroAppBar extends StatelessWidget {
       ),
       leading: Padding(
         padding: CatchInsets.iconChipContent,
-        child: CatchTopBarIconAction(
+        child: CatchIconAction(
           icon: CatchIcons.backArrow,
           tooltip: 'Back',
           backgroundColor: overlayScrim,
@@ -86,20 +89,21 @@ class EventDetailHeroAppBar extends StatelessWidget {
         ),
       ),
       actions: [
-        Padding(
-          padding: CatchInsets.iconChipContent,
-          child: Builder(
-            builder: (buttonContext) => CatchTopBarIconAction(
-              icon: CatchIcons.platformShare(
-                platform: Theme.of(context).platform,
+        if (showShareAction)
+          Padding(
+            padding: CatchInsets.iconChipContent,
+            child: Builder(
+              builder: (buttonContext) => CatchIconAction(
+                icon: CatchIcons.platformShare(
+                  platform: Theme.of(context).platform,
+                ),
+                tooltip: 'Share event',
+                backgroundColor: overlayScrim,
+                onPressed: () => onShare(buttonContext),
+                foregroundColor: d.ink,
               ),
-              tooltip: 'Share event',
-              backgroundColor: overlayScrim,
-              onPressed: () => onShare(buttonContext),
-              foregroundColor: d.ink,
             ),
           ),
-        ),
         if (showAddToCalendar)
           Padding(
             padding: const EdgeInsets.only(
@@ -108,7 +112,7 @@ class EventDetailHeroAppBar extends StatelessWidget {
               right: CatchSpacing.s2,
             ),
             child: Builder(
-              builder: (buttonContext) => CatchTopBarIconAction(
+              builder: (buttonContext) => CatchIconAction(
                 icon: CatchIcons.calendarAdd,
                 tooltip: 'Add to calendar',
                 backgroundColor: overlayScrim,
@@ -123,7 +127,7 @@ class EventDetailHeroAppBar extends StatelessWidget {
             bottom: CatchSpacing.s2,
             right: CatchSpacing.s2,
           ),
-          child: CatchTopBarIconAction(
+          child: CatchIconAction(
             icon: isSaved ? CatchIcons.saved : CatchIcons.savedOutlined,
             tooltip: isSaved ? 'Unsave event' : 'Save event',
             backgroundColor: overlayScrim,
@@ -140,7 +144,7 @@ class EventDetailHeroAppBar extends StatelessWidget {
                 presentationMode: presentationMode,
                 heroTag: heroTag,
               )
-            : LegacyEventHeroSurface(event: event),
+            : EventPhotoHeroSurface(event: event),
       ),
     );
   }
@@ -168,8 +172,8 @@ double _expandedHeightFor({
       .toDouble();
 }
 
-class LegacyEventHeroSurface extends StatelessWidget {
-  const LegacyEventHeroSurface({super.key, required this.event});
+class EventPhotoHeroSurface extends StatelessWidget {
+  const EventPhotoHeroSurface({super.key, required this.event});
 
   final Event event;
 
@@ -234,7 +238,7 @@ class EventDetailTicketHeroSurface extends StatelessWidget {
     );
     final tag = heroTag;
     if (tag == null) return surface;
-    return EventHeroSurface(tag: tag, child: surface);
+    return catchHeroSurface(tag: tag, child: surface);
   }
 }
 
@@ -286,11 +290,9 @@ class EventDetailTicketSurface extends StatelessWidget {
                   CatchSpacing.s4,
                   CatchSpacing.s3,
                 )
-              : const EdgeInsets.fromLTRB(
-                  CatchSpacing.s5,
-                  CatchSpacing.s4,
-                  CatchSpacing.s5,
-                  CatchSpacing.s5,
+              : CatchInsets.pageBody.copyWith(
+                  top: CatchSpacing.s4,
+                  bottom: CatchSpacing.s5,
                 );
           final bodyWidth = constraints.maxWidth > bodyPadding.horizontal
               ? constraints.maxWidth - bodyPadding.horizontal

@@ -16,12 +16,14 @@ import "package:catch_dating_app/event_success/presentation/event_success_compan
 import "package:catch_dating_app/event_success/presentation/event_success_defaults_panel.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_event_preview_screen.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_feature_blocks.dart";
+import "package:catch_dating_app/event_success/presentation/event_success_hero_surface.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_host_screen.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_lab_screen.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_live_reveal_card.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_manual_qa_screen.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_questionnaire_config_editor.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_setup_body.dart";
+import "package:catch_dating_app/event_success/presentation/event_success_skeletons.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_structure_config_editor.dart";
 import "package:catch_dating_app/events/domain/event_participation_roster.dart";
 import "package:catch_dating_app/labs/design_fixtures/event_success_companion_fixtures.dart";
@@ -524,20 +526,6 @@ Widget eventSuccessStrictPreviewLine(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "PrivacyBadge",
-  type: PrivacyBadge,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
-)
-Widget eventSuccessStrictPrivacyBadge(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.companion,
-    componentName: "PrivacyBadge",
-  );
-}
-
-@widgetbook.UseCase(
   name: "PrivateAfterglowRecapCard",
   type: PrivateAfterglowRecapCard,
   path:
@@ -818,20 +806,6 @@ Widget eventSuccessStrictEventSuccessDefaultsPanel(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "EventPreviewCompanionSkeleton",
-  type: EventPreviewCompanionSkeleton,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Event preview folded states",
-)
-Widget eventSuccessStrictEventPreviewCompanionSkeleton(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.eventPreview,
-    componentName: "EventPreviewCompanionSkeleton",
-  );
-}
-
-@widgetbook.UseCase(
   name: "EventPreviewHero",
   type: EventPreviewHero,
   path:
@@ -856,76 +830,6 @@ Widget eventSuccessStrictEventPreviewHeroSkeleton(BuildContext context) {
     context,
     surface: _EventSuccessStrictSurface.eventPreview,
     componentName: "EventPreviewHeroSkeleton",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "EventPreviewLiveSkeleton",
-  type: EventPreviewLiveSkeleton,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Event preview folded states",
-)
-Widget eventSuccessStrictEventPreviewLiveSkeleton(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.eventPreview,
-    componentName: "EventPreviewLiveSkeleton",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "EventPreviewNotesSkeleton",
-  type: EventPreviewNotesSkeleton,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Event preview folded states",
-)
-Widget eventSuccessStrictEventPreviewNotesSkeleton(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.eventPreview,
-    componentName: "EventPreviewNotesSkeleton",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "EventPreviewReportSkeleton",
-  type: EventPreviewReportSkeleton,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Event preview folded states",
-)
-Widget eventSuccessStrictEventPreviewReportSkeleton(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.eventPreview,
-    componentName: "EventPreviewReportSkeleton",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "EventPreviewSectionSkeleton",
-  type: EventPreviewSectionSkeleton,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Event preview folded states",
-)
-Widget eventSuccessStrictEventPreviewSectionSkeleton(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.eventPreview,
-    componentName: "EventPreviewSectionSkeleton",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "EventPreviewSetupSkeleton",
-  type: EventPreviewSetupSkeleton,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Event preview folded states",
-)
-Widget eventSuccessStrictEventPreviewSetupSkeleton(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.eventPreview,
-    componentName: "EventPreviewSetupSkeleton",
   );
 }
 
@@ -1074,6 +978,50 @@ Widget eventSuccessStrictEventSuccessDarkPill(BuildContext context) {
     context,
     surface: _EventSuccessStrictSurface.featureBlocks,
     componentName: "EventSuccessDarkPill",
+  );
+}
+
+@widgetbook.UseCase(
+  name: "EventSuccessHeroSurface",
+  type: EventSuccessHeroSurface,
+  path:
+      "[P1 product surfaces]/Event Success strict coverage/Feature block folded states",
+)
+Widget eventSuccessStrictEventSuccessHeroSurface(BuildContext context) {
+  final t = CatchTokens.of(context);
+  return _StrictCoverageScaffold(
+    componentName: "EventSuccessHeroSurface",
+    child: EventSuccessHeroSurface(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Event success hero shell",
+            style: CatchTextStyles.headline(context, color: t.accentInk),
+          ),
+          gapH8,
+          Text(
+            "Shared accent-to-ink surface for preview, lab, and manual QA heroes.",
+            style: CatchTextStyles.bodyL(
+              context,
+              color: t.accentInk.withValues(
+                alpha: CatchOpacity.eventSuccessPreviewMeta,
+              ),
+            ),
+          ),
+          gapH16,
+          const Wrap(
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s2,
+            children: [
+              EventSuccessDarkPill(label: "Preview"),
+              EventSuccessDarkPill(label: "Lab"),
+              EventSuccessDarkPill(label: "Manual QA"),
+            ],
+          ),
+        ],
+      ),
+    ),
   );
 }
 
@@ -1288,6 +1236,20 @@ Widget eventSuccessStrictEventSuccessHostPanel(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: "EventSuccessHostTabBody",
+  type: EventSuccessHostTabBody,
+  path:
+      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
+)
+Widget eventSuccessStrictEventSuccessHostTabBody(BuildContext context) {
+  return _eventSuccessStrictPreview(
+    context,
+    surface: _EventSuccessStrictSurface.host,
+    componentName: "EventSuccessHostTabBody",
+  );
+}
+
+@widgetbook.UseCase(
   name: "EventSuccessHostSection",
   type: EventSuccessHostSection,
   path:
@@ -1312,20 +1274,6 @@ Widget eventSuccessStrictEventSuccessHostSectionSkeleton(BuildContext context) {
     context,
     surface: _EventSuccessStrictSurface.host,
     componentName: "EventSuccessHostSectionSkeleton",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "EventSuccessLiveRosterSkeleton",
-  type: EventSuccessLiveRosterSkeleton,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictEventSuccessLiveRosterSkeleton(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.host,
-    componentName: "EventSuccessLiveRosterSkeleton",
   );
 }
 
@@ -1432,20 +1380,6 @@ Widget eventSuccessStrictEventSuccessTabPicker(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "EventSuccessTabPickerSkeleton",
-  type: EventSuccessTabPickerSkeleton,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictEventSuccessTabPickerSkeleton(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.host,
-    componentName: "EventSuccessTabPickerSkeleton",
-  );
-}
-
-@widgetbook.UseCase(
   name: "GroupOverrideMemberEditor",
   type: GroupOverrideMemberEditor,
   path:
@@ -1544,20 +1478,6 @@ Widget eventSuccessStrictHostFunnelSummary(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "HostOverrideIconAction",
-  type: HostOverrideIconAction,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictHostOverrideIconAction(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.host,
-    componentName: "HostOverrideIconAction",
-  );
-}
-
-@widgetbook.UseCase(
   name: "HostReportSignalGrid",
   type: HostReportSignalGrid,
   path:
@@ -1638,20 +1558,6 @@ Widget eventSuccessStrictLiveNowPill(BuildContext context) {
     context,
     surface: _EventSuccessStrictSurface.host,
     componentName: "LiveNowPill",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "LiveSectionHeader",
-  type: LiveSectionHeader,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictLiveSectionHeader(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.host,
-    componentName: "LiveSectionHeader",
   );
 }
 
@@ -1820,20 +1726,6 @@ Widget eventSuccessStrictRotationsHostCard(BuildContext context) {
     context,
     surface: _EventSuccessStrictSurface.host,
     componentName: "RotationsHostCard",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "SetupSectionTitle",
-  type: SetupSectionTitle,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictSetupSectionTitle(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.host,
-    componentName: "SetupSectionTitle",
   );
 }
 
@@ -2442,20 +2334,6 @@ Widget eventSuccessStrictControlLabel(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "DarkPill",
-  type: DarkPill,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Manual QA folded states",
-)
-Widget eventSuccessStrictDarkPill(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.manualQa,
-    componentName: "DarkPill",
-  );
-}
-
-@widgetbook.UseCase(
   name: "EventSuccessManualQaScreen",
   type: EventSuccessManualQaScreen,
   path:
@@ -2522,20 +2400,6 @@ Widget eventSuccessStrictManualQaSideBySide(BuildContext context) {
     context,
     surface: _EventSuccessStrictSurface.manualQa,
     componentName: "ManualQaSideBySide",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "ManualQaToggleRow",
-  type: ManualQaToggleRow,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Manual QA folded states",
-)
-Widget eventSuccessStrictManualQaToggleRow(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.manualQa,
-    componentName: "ManualQaToggleRow",
   );
 }
 
@@ -2710,30 +2574,16 @@ Widget eventSuccessStrictRecommendationSwitch(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "RevealCountdownChips",
-  type: RevealCountdownChips,
+  name: "SetupChoiceChips",
+  type: SetupChoiceChips,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Setup body folded states",
 )
-Widget eventSuccessStrictRevealCountdownChips(BuildContext context) {
+Widget eventSuccessStrictSetupChoiceChips(BuildContext context) {
   return _eventSuccessStrictPreview(
     context,
     surface: _EventSuccessStrictSurface.setup,
-    componentName: "RevealCountdownChips",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "RotationCadenceChips",
-  type: RotationCadenceChips,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Setup body folded states",
-)
-Widget eventSuccessStrictRotationCadenceChips(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.setup,
-    componentName: "RotationCadenceChips",
+    componentName: "SetupChoiceChips",
   );
 }
 

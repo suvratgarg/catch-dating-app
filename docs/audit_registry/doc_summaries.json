@@ -1,6 +1,6 @@
 {
-  "version": "4.5.142",
-  "updated": "2026-07-03",
+  "version": "4.5.143",
+  "updated": "2026-07-05",
   "owner": "recursive_audit_loop",
   "summaries": {
     "PROJECT_CONTEXT.md": {
@@ -47,6 +47,17 @@
       ],
       "skip_when": [
         "A trivial one-off command does not touch repo workflow"
+      ]
+    },
+    "docs/ai_first_workflow_guide.md": {
+      "purpose": "Shareable companion guide explaining how Catch's agent entrypoint, context packs, docs registry, rules, scanners, lints, generated registries, audit receipts, CI gates, and readiness metrics combine into an AI-first workflow.",
+      "read_when": [
+        "Explaining the Catch AI-first workflow to another repo owner",
+        "Implementing a similar agent workflow pattern in a different repository",
+        "Looking for a high-level map before opening the canonical owner docs"
+      ],
+      "skip_when": [
+        "Making Catch-specific rule, scanner, architecture, release, design, or code changes; use the owner docs selected by the context pack instead"
       ]
     },
     "docs/agent_regression_ledger.json": {

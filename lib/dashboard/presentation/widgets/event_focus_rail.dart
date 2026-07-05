@@ -187,10 +187,13 @@ class _EventFocusRailState extends State<EventFocusRail> {
         ),
         if (items.length > 1) ...[
           gapH10,
-          EventFocusPageIndicator(
+          Center(
             key: EventFocusRail.pageIndicatorKey,
-            selectedIndex: _selectedIndex,
-            itemCount: items.length,
+            child: CatchPageDots(
+              selectedIndex: _selectedIndex,
+              itemCount: items.length,
+              semanticLabel: 'Event ${_selectedIndex + 1} of ${items.length}',
+            ),
           ),
         ],
         if (widget.checkInState.error != null)
@@ -300,28 +303,6 @@ class _EventFocusRailState extends State<EventFocusRail> {
       case EventFocusAction.addToCalendar:
         widget.actions.onAddToCalendar(item.event);
     }
-  }
-}
-
-class EventFocusPageIndicator extends StatelessWidget {
-  const EventFocusPageIndicator({
-    super.key,
-    required this.selectedIndex,
-    required this.itemCount,
-  });
-
-  final int selectedIndex;
-  final int itemCount;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: CatchPageDots(
-        selectedIndex: selectedIndex,
-        itemCount: itemCount,
-        semanticLabel: 'Event ${selectedIndex + 1} of $itemCount',
-      ),
-    );
   }
 }
 

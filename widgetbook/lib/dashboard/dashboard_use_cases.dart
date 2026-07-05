@@ -17,7 +17,7 @@ import 'package:catch_dating_app/dashboard/presentation/notifications_list_state
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_empty.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_section_state_card.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_loading_widgets.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_sliver_header.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/empty_hero_card.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_rail.dart';
@@ -502,20 +502,31 @@ Widget dashboardNotificationDayGroupsReview(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Grouped row content',
-  type: NotificationGroupWidget,
+  name: 'Row states',
+  type: NotificationRow,
   path: '[P1 product surfaces]/Dashboard activity',
 )
-Widget dashboardNotificationGroupWidgetReview(BuildContext context) {
+Widget dashboardNotificationRowReviewStates(BuildContext context) {
   final rows = _notificationDayGroups().first.rows;
   return _DashboardCatalog(
-    title: 'NotificationGroupWidget',
-    contractId: 'dashboard.activity.notification_group',
+    title: 'NotificationRow',
+    contractId: 'dashboard.activity.notification_row',
     children: [
       _StateCard(
         label: 'mixed read state',
         child: _DashboardPrimitiveFrame(
-          child: NotificationGroupWidget(rows: rows),
+          child: Column(
+            children: [
+              for (final row in rows)
+                NotificationRow(
+                  type: row.type,
+                  title: row.title,
+                  time: row.timeLabel,
+                  body: row.subtitle,
+                  unread: row.isUnread,
+                ),
+            ],
+          ),
         ),
       ),
     ],
@@ -612,22 +623,34 @@ Widget dashboardFollowedClubsRailSkeletonReview(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Full home',
-  type: DashboardFull,
+  type: DashboardHomeScreen,
   path: '[P1 product surfaces]/Dashboard home',
 )
 Widget dashboardFullReview(BuildContext context) {
   return _DashboardCatalog(
-    title: 'DashboardFull',
+    title: 'DashboardHomeScreen',
     contractId: 'dashboard.home.full',
     children: [
       _StateCard(
         label: 'booked event with recommendations',
         child: _DeviceFrame(
           child: _DashboardRouteScope(
-            child: DashboardFull(
-              user: _viewer,
-              signedUpEvents: [_nextEvent],
-              followedClubIds: const [],
+            child: DashboardHomeScreen(
+              header: DashboardHomeHeaderModel.full(
+                user: _viewer,
+                now: DashboardSurfaceFixtures.now,
+              ),
+              dashboardSliver: DashboardFullSliverBody(
+                viewModel: _dashboardFullViewModel(),
+                user: _viewer,
+                followedClubIds: const [],
+              ),
+              notificationAction: DashboardNotificationBellButton(
+                unreadCount: _notifications
+                    .where((notification) => notification.isUnread)
+                    .length,
+                onPressed: _noopTap,
+              ),
             ),
           ),
         ),
@@ -706,6 +729,44 @@ Widget dashboardHeaderContentReview(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Stride loading skeleton',
+  type: DashboardStrideLoadingCard,
+  path: '[P1 product surfaces]/Dashboard primitives',
+)
+Widget dashboardStrideLoadingCardReview(BuildContext context) {
+  return const _DashboardCatalog(
+    title: 'DashboardStrideLoadingCard',
+    contractId: 'dashboard.primitives.stride_loading_card',
+    children: [
+      _StateCard(
+        label: 'loading',
+        child: _DashboardPrimitiveFrame(child: DashboardStrideLoadingCard()),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Recommendations loading skeleton',
+  type: DashboardRecommendedLoadingSection,
+  path: '[P1 product surfaces]/Dashboard primitives',
+)
+Widget dashboardRecommendedLoadingSectionReview(BuildContext context) {
+  return const _DashboardCatalog(
+    title: 'DashboardRecommendedLoadingSection',
+    contractId: 'dashboard.primitives.recommendations_loading_section',
+    children: [
+      _StateCard(
+        label: 'loading',
+        child: _DashboardPrimitiveFrame(
+          child: DashboardRecommendedLoadingSection(),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Bell states',
   type: DashboardNotificationBellButton,
   path: '[P1 product surfaces]/Dashboard primitives',
@@ -739,37 +800,6 @@ Widget dashboardNotificationBellButtonReviewStates(BuildContext context) {
           child: DashboardNotificationBellButton(
             unreadCount: 124,
             onPressed: _noopTap,
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Review states',
-  type: DashboardSectionStateCard,
-  path: '[P1 product surfaces]/Dashboard primitives',
-)
-Widget dashboardSectionStateCardReviewStates(BuildContext context) {
-  return const _DashboardCatalog(
-    title: 'DashboardSectionStateCard',
-    contractId: 'dashboard.primitives.section_state_card',
-    children: [
-      _StateCard(
-        label: 'loading',
-        child: _DashboardPrimitiveFrame(
-          child: DashboardSectionStateCard(
-            message: 'Loading recommended events...',
-            isLoading: true,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'message',
-        child: _DashboardPrimitiveFrame(
-          child: DashboardSectionStateCard(
-            message: 'This section is temporarily unavailable.',
           ),
         ),
       ),
@@ -936,32 +966,6 @@ Widget dashboardEventFocusCardReviewStates(BuildContext context) {
             checkInState: EventFocusCheckInState.idle,
             onActionPressed: (_) {},
           ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Page indicator states',
-  type: EventFocusPageIndicator,
-  path: '[P1 product surfaces]/Dashboard home',
-)
-Widget dashboardEventFocusPageIndicatorReviewStates(BuildContext context) {
-  return const _DashboardCatalog(
-    title: 'EventFocusPageIndicator',
-    contractId: 'dashboard.home.event_focus_page_indicator',
-    children: [
-      _StateCard(
-        label: 'first of three',
-        child: _DashboardPrimitiveFrame(
-          child: EventFocusPageIndicator(selectedIndex: 0, itemCount: 3),
-        ),
-      ),
-      _StateCard(
-        label: 'middle of three',
-        child: _DashboardPrimitiveFrame(
-          child: EventFocusPageIndicator(selectedIndex: 1, itemCount: 3),
         ),
       ),
     ],

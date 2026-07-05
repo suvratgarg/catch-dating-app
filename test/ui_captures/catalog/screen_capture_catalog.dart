@@ -30,8 +30,8 @@ import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen_state.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
-import 'package:catch_dating_app/clubs/presentation/detail/widgets/catch_club_dock.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_body.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_dock.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
@@ -54,6 +54,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
+import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/dashboard/data/dashboard_recommendations_repository.dart';
@@ -1429,7 +1430,7 @@ class _FiltersContentCapture extends StatelessWidget {
       backgroundColor: t.bg,
       appBar: CatchTopBar(
         title: 'Filters',
-        leading: CatchTopBarIconAction(
+        leading: CatchIconAction(
           icon: CatchIcons.closeRounded,
           tooltip: 'Close filters',
           onPressed: _noopFiltersTap,
@@ -2475,13 +2476,13 @@ Widget _clubDetailMutationCapture({
   Object? mutationError,
 }) {
   final dockState = !isAuthenticated
-      ? CatchClubDockState.guest
+      ? ClubDetailDockRole.guest
       : isMember
-      ? CatchClubDockState.member
-      : CatchClubDockState.visitor;
+      ? ClubDetailDockRole.member
+      : ClubDetailDockRole.visitor;
   final footnote = switch (dockState) {
-    CatchClubDockState.visitor => 'FREE TO JOIN · LEAVE ANYTIME',
-    CatchClubDockState.member => 'MEMBER · MANAGE ANYTIME',
+    ClubDetailDockRole.visitor => 'FREE TO JOIN · LEAVE ANYTIME',
+    ClubDetailDockRole.member => 'MEMBER · MANAGE ANYTIME',
     _ => null,
   };
 
@@ -2511,7 +2512,7 @@ Widget _clubDetailMutationCapture({
         ),
       ],
     ),
-    bottomNavigationBar: CatchClubDock(
+    bottomNavigationBar: ClubDetailDock(
       state: dockState,
       activityKind: _clubDetailClub.hostDefaults.primaryActivityKind,
       members: _clubDetailClub.memberCount,
@@ -4910,9 +4911,17 @@ class _HostUnreadOnlyInboxCapture extends StatelessWidget {
         body: SafeArea(
           child: CustomScrollView(
             slivers: [
-              ...ChatsSliverHeader(
-                hostFilter: HostInboxFilter.unread,
-                onHostFilterChanged: (_) {},
+              ...CatchSliverHeader(
+                title: const SizedBox.shrink(),
+                bottomHeight: chatsBrowseHeaderHeight(hasHostFilter: true),
+                bottom: ChatsBrowseHeader(
+                  showSearchAction: true,
+                  searchValue: '',
+                  onSearchChanged: null,
+                  hostFilter: HostInboxFilter.unread,
+                  hostUnreadCount: 0,
+                  onHostFilterChanged: (_) {},
+                ),
               ).buildSlivers(context),
               const ChatsList(hostFilter: HostInboxFilter.unread),
             ],
@@ -5147,11 +5156,18 @@ class _ChatShareCardCapture extends StatelessWidget {
       body: SafeArea(
         child: Align(
           alignment: Alignment.bottomCenter,
-          child: ChatShareCardSheet(
-            messages: MatchesChatSurfaceFixtures.conversationMessages,
-            currentUid: MatchesChatSurfaceFixtures.viewerUid,
-            event: MatchesChatSurfaceFixtures.event,
+          child: CatchShareCardSheet(
+            card: ChatShareCard(
+              messages: MatchesChatSurfaceFixtures.conversationMessages,
+              currentUid: MatchesChatSurfaceFixtures.viewerUid,
+              event: MatchesChatSurfaceFixtures.event,
+            ),
             share: ExternalShareController((_) async {}),
+            fileName: 'catch-chat-card.png',
+            buttonLabel: 'Share card',
+            footnote: 'Names, photos, and timestamps are hidden.',
+            subject: 'Catch chat card',
+            text: 'Shared from Catch.',
           ),
         ),
       ),

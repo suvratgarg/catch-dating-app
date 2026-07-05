@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-01T09:24:27.687Z",
+  "generatedAt": "2026-07-05T10:11:29.324Z",
   "baseRef": "HEAD^",
   "baseStatus": "git-ref",
   "baseWarning": null,
@@ -10,667 +10,638 @@
     "policy": "New public widget classes need Widgetbook and widget catalog coverage. New private widget classes and Widget-returning helpers must be inlined/deleted, merged into an existing primitive, or promoted to public cataloged widgets."
   },
   "summary": {
-    "addedWidgetClasses": 54,
-    "addedPublicWidgetClasses": 54,
+    "addedWidgetClasses": 0,
+    "addedPublicWidgetClasses": 0,
     "addedPrivateWidgetClasses": 0,
     "addedWidgetReturningHelpers": 0,
-    "coveredNewWidgets": 54,
+    "movedWidgetClasses": 52,
+    "movedWidgetReturningHelpers": 8,
+    "coveredNewWidgets": 0,
     "unresolved": 0,
-    "widgetsByStatus": {
-      "covered": 54
-    },
+    "widgetsByStatus": {},
     "helpersByStatus": {},
     "issues": {}
   },
-  "addedWidgets": [
+  "movedWidgets": [
     {
-      "name": "ChatsListScreen",
+      "name": "HostAccountScreen",
       "baseClass": "ConsumerStatefulWidget",
       "visibility": "public",
-      "line": 17,
-      "file": "lib/chats/presentation/inbox/chat_inbox_screen.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+      "line": 3,
+      "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_account_screen.dart::HostAccountScreen::ConsumerStatefulWidget"
+      ]
     },
     {
-      "name": "HostBroadcastComposerSheet",
+      "name": "HostSettingsProfileSection",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "line": 95,
-      "file": "lib/chats/presentation/inbox/chat_inbox_screen.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+      "line": 173,
+      "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_account_screen.dart::HostSettingsProfileSection::StatelessWidget"
+      ]
     },
     {
-      "name": "ChatConversationsList",
+      "name": "HostSettingsProfileRows",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "line": 10,
-      "file": "lib/chats/presentation/inbox/widgets/chat_conversations_list.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+      "line": 235,
+      "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_account_screen.dart::HostSettingsProfileRows::StatelessWidget"
+      ]
     },
     {
-      "name": "ChatsEmptyState",
+      "name": "HostSettingsClubsSection",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "line": 8,
-      "file": "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+      "line": 301,
+      "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_account_screen.dart::HostSettingsClubsSection::StatelessWidget"
+      ]
     },
     {
-      "name": "ChatsListBody",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 10,
-      "file": "lib/chats/presentation/inbox/widgets/chats_list_body.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "HostInboxBroadcastCard",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 72,
-      "file": "lib/chats/presentation/inbox/widgets/chats_list_body.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "ChatsList",
-      "baseClass": "ConsumerWidget",
-      "visibility": "public",
-      "line": 19,
-      "file": "lib/chats/presentation/inbox/widgets/chats_list.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "ChatsListSkeleton",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 96,
-      "file": "lib/chats/presentation/inbox/widgets/chats_list.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "ChatPersonRowSkeleton",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 140,
-      "file": "lib/chats/presentation/inbox/widgets/chats_list.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "ChatsBrowseHeader",
-      "baseClass": "StatefulWidget",
-      "visibility": "public",
-      "line": 37,
-      "file": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "ClubContactSection",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 15,
-      "file": "lib/clubs/presentation/detail/widgets/club_contact_section.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "ClubHostSection",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 17,
-      "file": "lib/clubs/presentation/detail/widgets/club_host_section.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "ClubHostRow",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 76,
-      "file": "lib/clubs/presentation/detail/widgets/club_host_section.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "ClubPhotoStrip",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 9,
-      "file": "lib/clubs/presentation/detail/widgets/club_photo_strip.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "EventActivityBackdrop",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 181,
-      "file": "lib/core/widgets/event_activity_visuals.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "EventHeroSurface",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 11,
-      "file": "lib/core/widgets/event_ticket_surface.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "EventTicketPerforatedDivider",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 23,
-      "file": "lib/core/widgets/event_ticket_surface.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "EventActivityStamp",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 9,
-      "file": "lib/core/widgets/event_visual_atoms.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "EventClockMark",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 36,
-      "file": "lib/core/widgets/event_visual_atoms.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "EventStatusPill",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 88,
-      "file": "lib/core/widgets/event_visual_atoms.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "FirstHelloCheckInCard",
-      "baseClass": "StatefulWidget",
-      "visibility": "public",
-      "line": 16,
-      "file": "lib/event_success/presentation/companion_parts/event_success_companion_arrival_mission.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "MicroPodCard",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 32,
-      "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "RotationScheduleCard",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 192,
-      "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "SelfCheckInCard",
-      "baseClass": "StatefulWidget",
-      "visibility": "public",
-      "line": 488,
-      "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "CompatibilityQuestionnaireSection",
-      "baseClass": "StatefulWidget",
-      "visibility": "public",
-      "line": 14,
-      "file": "lib/event_success/presentation/companion_parts/event_success_companion_questionnaire.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "PaperSelfCheckInBar",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 727,
-      "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "WingmanRequestSection",
-      "baseClass": "StatefulWidget",
-      "visibility": "public",
-      "line": 14,
-      "file": "lib/event_success/presentation/companion_parts/event_success_companion_wingman.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "CalendarScreen",
-      "baseClass": "ConsumerStatefulWidget",
-      "visibility": "public",
-      "line": 27,
-      "file": "lib/events/presentation/calendar/calendar_screen.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "CalendarLoadingScreen",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 288,
-      "file": "lib/events/presentation/calendar/calendar_screen.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "CalendarDateHeader",
+      "name": "HostSettingsClubRows",
       "baseClass": "StatelessWidget",
       "visibility": "public",
       "line": 347,
-      "file": "lib/events/presentation/calendar/calendar_screen.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+      "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_account_screen.dart::HostSettingsClubRows::StatelessWidget"
+      ]
     },
     {
-      "name": "CalendarDateHeaderSkeleton",
+      "name": "HostProfileEditorSheet",
+      "baseClass": "ConsumerStatefulWidget",
+      "visibility": "public",
+      "line": 381,
+      "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_account_screen.dart::HostProfileEditorSheet::ConsumerStatefulWidget"
+      ]
+    },
+    {
+      "name": "HostClubInsightsPane",
+      "baseClass": "ConsumerStatefulWidget",
+      "visibility": "public",
+      "line": 3,
+      "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostClubInsightsPane::ConsumerStatefulWidget"
+      ]
+    },
+    {
+      "name": "HostAnalyticsControls",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "line": 409,
-      "file": "lib/events/presentation/calendar/calendar_screen.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+      "line": 129,
+      "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostAnalyticsControls::StatelessWidget"
+      ]
     },
     {
-      "name": "CalendarWeekStripSkeleton",
+      "name": "HostAnalyticsDateButton",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "line": 438,
-      "file": "lib/events/presentation/calendar/calendar_screen.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+      "line": 252,
+      "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostAnalyticsDateButton::StatelessWidget"
+      ]
     },
     {
-      "name": "CalendarTitleRow",
+      "name": "HostAnalyticsReportView",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "line": 460,
-      "file": "lib/events/presentation/calendar/calendar_screen.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+      "line": 299,
+      "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostAnalyticsReportView::StatelessWidget"
+      ]
     },
     {
-      "name": "CalendarStatsHeader",
+      "name": "HostAnalyticsTrendPanel",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "line": 537,
-      "file": "lib/events/presentation/calendar/calendar_screen.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+      "line": 350,
+      "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostAnalyticsTrendPanel::StatelessWidget"
+      ]
     },
     {
-      "name": "CalendarStatsHeaderSkeleton",
+      "name": "HostAnalyticsEventList",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "line": 598,
-      "file": "lib/events/presentation/calendar/calendar_screen.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+      "line": 420,
+      "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostAnalyticsEventList::StatelessWidget"
+      ]
     },
     {
-      "name": "CalendarStatSkeleton",
+      "name": "HostAnalyticsEventTile",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "line": 637,
-      "file": "lib/events/presentation/calendar/calendar_screen.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+      "line": 478,
+      "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostAnalyticsEventTile::StatelessWidget"
+      ]
     },
     {
-      "name": "CalendarWeekStrip",
+      "name": "HostAnalyticsReviewDiscoveryPanel",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "line": 653,
-      "file": "lib/events/presentation/calendar/calendar_screen.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+      "line": 618,
+      "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostAnalyticsReviewDiscoveryPanel::StatelessWidget"
+      ]
     },
     {
-      "name": "CalendarMonthGrid",
+      "name": "HostAuthRequiredScreen",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "line": 697,
-      "file": "lib/events/presentation/calendar/calendar_screen.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+      "line": 3,
+      "file": "lib/hosts/presentation/host_operations/host_auth_required_screen.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_auth_required_screen.dart::HostAuthRequiredScreen::StatelessWidget"
+      ]
     },
     {
-      "name": "CalendarStatDivider",
+      "name": "HostClubPreviewPane",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "line": 775,
-      "file": "lib/events/presentation/calendar/calendar_screen.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+      "line": 3,
+      "file": "lib/hosts/presentation/host_operations/host_club_preview.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostClubPreviewPane::StatelessWidget"
+      ]
     },
     {
-      "name": "CalendarMessage",
+      "name": "HostClubProfileCard",
+      "baseClass": "ConsumerStatefulWidget",
+      "visibility": "public",
+      "line": 3,
+      "file": "lib/hosts/presentation/host_operations/host_club_profile.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostClubProfileCard::ConsumerStatefulWidget"
+      ]
+    },
+    {
+      "name": "HostClubsScaffold",
+      "baseClass": "StatefulWidget",
+      "visibility": "public",
+      "line": 3,
+      "file": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostClubsScaffold::StatefulWidget"
+      ]
+    },
+    {
+      "name": "HostClubsScreen",
+      "baseClass": "ConsumerWidget",
+      "visibility": "public",
+      "line": 3,
+      "file": "lib/hosts/presentation/host_operations/host_clubs_screen.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_clubs_screen.dart::HostClubsScreen::ConsumerWidget"
+      ]
+    },
+    {
+      "name": "HostEventsClubCard",
+      "baseClass": "ConsumerWidget",
+      "visibility": "public",
+      "line": 3,
+      "file": "lib/hosts/presentation/host_operations/host_events_list.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostEventsClubCard::ConsumerWidget"
+      ]
+    },
+    {
+      "name": "HostEventsClubSection",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "line": 794,
-      "file": "lib/events/presentation/calendar/calendar_screen.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+      "line": 35,
+      "file": "lib/hosts/presentation/host_operations/host_events_list.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostEventsClubSection::StatelessWidget"
+      ]
     },
     {
-      "name": "EventLocationMapScreen",
+      "name": "HostEventRows",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "line": 155,
-      "file": "lib/events/presentation/event_location_map_screen.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+      "line": 100,
+      "file": "lib/hosts/presentation/host_operations/host_events_list.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostEventRows::StatelessWidget"
+      ]
     },
     {
-      "name": "EventDetailBody",
+      "name": "HostMetaRow",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "line": 142,
-      "file": "lib/events/presentation/widgets/event_detail_body.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+      "line": 148,
+      "file": "lib/hosts/presentation/host_operations/host_events_list.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostMetaRow::StatelessWidget"
+      ]
     },
     {
-      "name": "EventCompanionEntry",
+      "name": "HostEventsScaffold",
+      "baseClass": "StatefulWidget",
+      "visibility": "public",
+      "line": 3,
+      "file": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostEventsScaffold::StatefulWidget"
+      ]
+    },
+    {
+      "name": "HostInlineTextEntryEditor",
+      "baseClass": "ConsumerStatefulWidget",
+      "visibility": "public",
+      "line": 29,
+      "file": "lib/hosts/presentation/host_operations/host_inline_editors.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostInlineTextEntryEditor::ConsumerStatefulWidget"
+      ]
+    },
+    {
+      "name": "HostInlineOptionEditor",
+      "baseClass": "ConsumerStatefulWidget",
+      "visibility": "public",
+      "line": 216,
+      "file": "lib/hosts/presentation/host_operations/host_inline_editors.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostInlineOptionEditor::ConsumerStatefulWidget"
+      ]
+    },
+    {
+      "name": "HostInlineAgeRangeEditor",
+      "baseClass": "ConsumerStatefulWidget",
+      "visibility": "public",
+      "line": 341,
+      "file": "lib/hosts/presentation/host_operations/host_inline_editors.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostInlineAgeRangeEditor::ConsumerStatefulWidget"
+      ]
+    },
+    {
+      "name": "HostLoadingScreen",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "line": 369,
-      "file": "lib/events/presentation/widgets/event_detail_body.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+      "line": 3,
+      "file": "lib/hosts/presentation/host_operations/host_loading_screen.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_loading_screen.dart::HostLoadingScreen::StatelessWidget"
+      ]
     },
     {
-      "name": "EventDetailHostsSection",
+      "name": "HostOperationsHomeScreen",
+      "baseClass": "ConsumerWidget",
+      "visibility": "public",
+      "line": 3,
+      "file": "lib/hosts/presentation/host_operations/host_operations_home_screen.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_home_screen.dart::HostOperationsHomeScreen::ConsumerWidget"
+      ]
+    },
+    {
+      "name": "HostOperationsTopBar",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "line": 498,
-      "file": "lib/events/presentation/widgets/event_detail_body.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+      "line": 3,
+      "file": "lib/hosts/presentation/host_operations/host_operations_top_bar.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostOperationsTopBar::StatelessWidget"
+      ]
     },
     {
-      "name": "ExploreScreenEmptyState",
+      "name": "HostClubOrganizerOverviewController",
+      "baseClass": "ConsumerWidget",
+      "visibility": "public",
+      "line": 3,
+      "file": "lib/hosts/presentation/host_operations/host_organizer.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostClubOrganizerOverviewController::ConsumerWidget"
+      ]
+    },
+    {
+      "name": "HostClubOrganizerOverview",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "line": 159,
-      "file": "lib/explore/presentation/explore_screen.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+      "line": 50,
+      "file": "lib/hosts/presentation/host_operations/host_organizer.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostClubOrganizerOverview::StatelessWidget"
+      ]
     },
     {
-      "name": "ExploreClearAction",
+      "name": "HostOrganizerHeader",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 202,
+      "file": "lib/hosts/presentation/host_operations/host_organizer.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostOrganizerHeader::StatelessWidget"
+      ]
+    },
+    {
+      "name": "HostOrganizerMetricGrid",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 253,
+      "file": "lib/hosts/presentation/host_operations/host_organizer.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostOrganizerMetricGrid::StatelessWidget"
+      ]
+    },
+    {
+      "name": "HostOrganizerMetricRow",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 307,
+      "file": "lib/hosts/presentation/host_operations/host_organizer.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostOrganizerMetricRow::StatelessWidget"
+      ]
+    },
+    {
+      "name": "HostOrganizerTeamCard",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 355,
+      "file": "lib/hosts/presentation/host_operations/host_organizer.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostOrganizerTeamCard::StatelessWidget"
+      ]
+    },
+    {
+      "name": "HostOrganizerTeamRow",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 393,
+      "file": "lib/hosts/presentation/host_operations/host_organizer.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostOrganizerTeamRow::StatelessWidget"
+      ]
+    },
+    {
+      "name": "HostOrganizerTrendStrip",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 472,
+      "file": "lib/hosts/presentation/host_operations/host_organizer.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostOrganizerTrendStrip::StatelessWidget"
+      ]
+    },
+    {
+      "name": "HostProfileScreen",
+      "baseClass": "ConsumerStatefulWidget",
+      "visibility": "public",
+      "line": 3,
+      "file": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostProfileScreen::ConsumerStatefulWidget"
+      ]
+    },
+    {
+      "name": "HostProfileForm",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 217,
+      "file": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostProfileForm::StatelessWidget"
+      ]
+    },
+    {
+      "name": "HostProfileFields",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 269,
+      "file": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostProfileFields::StatelessWidget"
+      ]
+    },
+    {
+      "name": "HostTodayDashboardCard",
+      "baseClass": "ConsumerWidget",
+      "visibility": "public",
+      "line": 3,
+      "file": "lib/hosts/presentation/host_operations/host_today.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostTodayDashboardCard::ConsumerWidget"
+      ]
+    },
+    {
+      "name": "HostTodayDashboardSection",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 45,
+      "file": "lib/hosts/presentation/host_operations/host_today.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostTodayDashboardSection::StatelessWidget"
+      ]
+    },
+    {
+      "name": "HostTodayHeader",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 146,
+      "file": "lib/hosts/presentation/host_operations/host_today.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostTodayHeader::StatelessWidget"
+      ]
+    },
+    {
+      "name": "HostTodayClubPill",
       "baseClass": "StatelessWidget",
       "visibility": "public",
       "line": 199,
-      "file": "lib/explore/presentation/explore_screen.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+      "file": "lib/hosts/presentation/host_operations/host_today.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostTodayClubPill::StatelessWidget"
+      ]
     },
     {
-      "name": "ExploreEventsEmptySliver",
+      "name": "HostTodayLoadingBody",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "line": 643,
-      "file": "lib/explore/presentation/widgets/explore_events_section.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+      "line": 277,
+      "file": "lib/hosts/presentation/host_operations/host_today.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostTodayLoadingBody::StatelessWidget"
+      ]
     },
     {
-      "name": "ExploreDiscoveryCoverHeader",
-      "baseClass": "ConsumerStatefulWidget",
-      "visibility": "public",
-      "line": 93,
-      "file": "lib/explore/presentation/widgets/explore_header.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "CreateEventUnsavedChangesDialog",
+      "name": "HostTodayEventHero",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "line": 58,
-      "file": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+      "line": 295,
+      "file": "lib/hosts/presentation/host_operations/host_today.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostTodayEventHero::StatelessWidget"
+      ]
     },
     {
-      "name": "HostCreateEventRouteStateView",
-      "baseClass": "ConsumerWidget",
-      "visibility": "public",
-      "line": 40,
-      "file": "lib/hosts/presentation/event_management/host_create_event_screen.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "DraftDeleteConfirmationDialog",
+      "name": "HostTodayCountdownPill",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "line": 54,
-      "file": "lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+      "line": 410,
+      "file": "lib/hosts/presentation/host_operations/host_today.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostTodayCountdownPill::StatelessWidget"
+      ]
     },
     {
-      "name": "StepperFooter",
+      "name": "HostTodayHeroMetric",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "line": 7,
-      "file": "lib/hosts/presentation/widgets/stepper_footer.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+      "line": 438,
+      "file": "lib/hosts/presentation/host_operations/host_today.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostTodayHeroMetric::StatelessWidget"
+      ]
     },
     {
-      "name": "PublicProfileScreenBody",
+      "name": "HostTodayAvatarStack",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "line": 161,
-      "file": "lib/public_profile/presentation/public_profile_screen.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+      "line": 477,
+      "file": "lib/hosts/presentation/host_operations/host_today.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostTodayAvatarStack::StatelessWidget"
+      ]
     },
     {
-      "name": "SelfProfileTabBody",
+      "name": "HostTodayAvatarDot",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "line": 161,
-      "file": "lib/user_profile/presentation/profile_screen.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+      "line": 512,
+      "file": "lib/hosts/presentation/host_operations/host_today.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostTodayAvatarDot::StatelessWidget"
+      ]
+    },
+    {
+      "name": "HostTodayTaskCard",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 549,
+      "file": "lib/hosts/presentation/host_operations/host_today.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostTodayTaskCard::StatelessWidget"
+      ]
     }
   ],
+  "movedWidgetHelpers": [
+    {
+      "name": "_textEntry",
+      "owner": "_HostClubProfileCardState",
+      "ownerBaseClass": "ConsumerState<HostClubProfileCard>",
+      "visibility": "private",
+      "line": 210,
+      "scope": "class-method",
+      "file": "lib/hosts/presentation/host_operations/host_club_profile.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::_HostClubProfileCardState::_textEntry"
+      ]
+    },
+    {
+      "name": "_activityDefaultEntry",
+      "owner": "_HostClubProfileCardState",
+      "ownerBaseClass": "ConsumerState<HostClubProfileCard>",
+      "visibility": "private",
+      "line": 261,
+      "scope": "class-method",
+      "file": "lib/hosts/presentation/host_operations/host_club_profile.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::_HostClubProfileCardState::_activityDefaultEntry"
+      ]
+    },
+    {
+      "name": "_admissionDefaultEntry",
+      "owner": "_HostClubProfileCardState",
+      "ownerBaseClass": "ConsumerState<HostClubProfileCard>",
+      "visibility": "private",
+      "line": 301,
+      "scope": "class-method",
+      "file": "lib/hosts/presentation/host_operations/host_club_profile.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::_HostClubProfileCardState::_admissionDefaultEntry"
+      ]
+    },
+    {
+      "name": "_ageRangeDefaultEntry",
+      "owner": "_HostClubProfileCardState",
+      "ownerBaseClass": "ConsumerState<HostClubProfileCard>",
+      "visibility": "private",
+      "line": 349,
+      "scope": "class-method",
+      "file": "lib/hosts/presentation/host_operations/host_club_profile.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::_HostClubProfileCardState::_ageRangeDefaultEntry"
+      ]
+    },
+    {
+      "name": "_cancellationDefaultEntry",
+      "owner": "_HostClubProfileCardState",
+      "ownerBaseClass": "ConsumerState<HostClubProfileCard>",
+      "visibility": "private",
+      "line": 376,
+      "scope": "class-method",
+      "file": "lib/hosts/presentation/host_operations/host_club_profile.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::_HostClubProfileCardState::_cancellationDefaultEntry"
+      ]
+    },
+    {
+      "name": "_buildProfileBody",
+      "owner": "_HostProfileScreenState",
+      "ownerBaseClass": "ConsumerState<HostProfileScreen>",
+      "visibility": "private",
+      "line": 105,
+      "scope": "class-method",
+      "file": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::_HostProfileScreenState::_buildProfileBody"
+      ]
+    },
+    {
+      "name": "_buildProfileForm",
+      "owner": "_HostProfileScreenState",
+      "ownerBaseClass": "ConsumerState<HostProfileScreen>",
+      "visibility": "private",
+      "line": 150,
+      "scope": "class-method",
+      "file": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::_HostProfileScreenState::_buildProfileForm"
+      ]
+    },
+    {
+      "name": "_buildContent",
+      "owner": "HostTodayDashboardSection",
+      "ownerBaseClass": "StatelessWidget",
+      "visibility": "private",
+      "line": 115,
+      "scope": "class-method",
+      "file": "lib/hosts/presentation/host_operations/host_today.dart",
+      "previousKeys": [
+        "lib/hosts/presentation/host_operations_screen.dart::HostTodayDashboardSection::_buildContent"
+      ]
+    }
+  ],
+  "addedWidgets": [],
   "addedWidgetHelpers": []
 }

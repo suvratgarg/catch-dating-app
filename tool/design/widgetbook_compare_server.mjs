@@ -1135,7 +1135,7 @@ function buildCandidates() {
     right: findFirst(
       byName,
       "ExploreBrowseHeaderContent",
-      "ChatsSliverHeader",
+      "ChatsBrowseHeader",
     ),
     priority: "P1",
     tags: ["search", "header"],

@@ -22,7 +22,11 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_analytics_bar.dart';
+import 'package:catch_dating_app/core/widgets/catch_analytics_kit.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
@@ -93,11 +97,13 @@ import 'package:catch_dating_app/hosts/presentation/payments/host_payment_accoun
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/catch_roster_board.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_club_tools.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_empty_action_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_tools.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_payout_prompt.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_payout_prompt_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_picker_tile.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
@@ -288,11 +294,6 @@ HostProfile _hostProfileVariant(HostProfileStatus status) {
 )
 @widgetbook.UseCase(
   name: 'Covered by host home route states',
-  type: HostSectionLabel,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host home route states',
   type: HostTodayDashboardCard,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
@@ -314,11 +315,6 @@ HostProfile _hostProfileVariant(HostProfileStatus status) {
 @widgetbook.UseCase(
   name: 'Covered by host home route states',
   type: HostTodayLoadingBody,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host home route states',
-  type: HostTodayEmptyEvents,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 @widgetbook.UseCase(
@@ -353,7 +349,7 @@ HostProfile _hostProfileVariant(HostProfileStatus status) {
 )
 @widgetbook.UseCase(
   name: 'Covered by host home route states',
-  type: HostEmptyState,
+  type: HostEmptyActionCard,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 @widgetbook.UseCase(
@@ -584,6 +580,38 @@ Widget hostOperationsTopBarStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Picker states',
+  type: HostPickerTile,
+  path: '[P1 product surfaces]/Host operations/Controls',
+)
+Widget hostPickerTileStates(BuildContext context) {
+  return _HostCatalog(
+    title: 'HostPickerTile',
+    contractId: 'control.host.picker_tile',
+    children: [
+      _StateCard(
+        label: 'selected date',
+        child: HostPickerTile(
+          icon: CatchIcons.calendarTodayOutlined,
+          value: 'Fri, Jul 3',
+          placeholder: 'Select a date',
+          onTap: () {},
+        ),
+      ),
+      _StateCard(
+        label: 'placeholder',
+        child: HostPickerTile(
+          icon: CatchIcons.scheduleOutlined,
+          value: '',
+          placeholder: 'Select start time',
+          onTap: () {},
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Meta row states',
   type: HostMetaRow,
   path: '[P1 product surfaces]/Host operations/Sections',
@@ -616,44 +644,6 @@ Widget hostHomeMetaRowStates(BuildContext context) {
             club: _club.copyWith(area: '', location: ''),
             roleLabel: 'Owner',
             owner: true,
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Event row states',
-  type: HostEventRow,
-  path: '[P1 product surfaces]/Host operations/Sections',
-)
-Widget hostHomeEventRowStates(BuildContext context) {
-  return _HostCatalog(
-    title: 'HostEventRow',
-    contractId: 'section.host.home_event_row',
-    children: [
-      _StateCard(
-        label: 'first upcoming event',
-        child: _HostHomeSectionFrame(
-          child: HostEventRow(
-            row: HostHomeEventRowData(
-              event: HostOperationsFixtures.upcomingEvent,
-              divider: false,
-            ),
-            onTap: () {},
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'divided private event',
-        child: _HostHomeSectionFrame(
-          child: HostEventRow(
-            row: HostHomeEventRowData(
-              event: HostOperationsFixtures.privateEvent,
-              divider: true,
-            ),
-            onTap: () {},
           ),
         ),
       ),
@@ -788,16 +778,6 @@ Widget hostHomeEventSectionStates(BuildContext context) {
 )
 @widgetbook.UseCase(
   name: 'Skeleton states',
-  type: HostSettingsRowsSkeleton,
-  path: '[P1 product surfaces]/Host operations/Components',
-)
-@widgetbook.UseCase(
-  name: 'Skeleton states',
-  type: HostEventRowsSkeleton,
-  path: '[P1 product surfaces]/Host operations/Components',
-)
-@widgetbook.UseCase(
-  name: 'Skeleton states',
   type: HostAnalyticsReportSkeleton,
   path: '[P1 product surfaces]/Host operations/Components',
 )
@@ -808,7 +788,7 @@ Widget hostHomeEventSectionStates(BuildContext context) {
 )
 @widgetbook.UseCase(
   name: 'Skeleton states',
-  type: HostRosterSkeleton,
+  type: CatchSkeletonRows,
   path: '[P1 product surfaces]/Host operations/Components',
 )
 @widgetbook.UseCase(
@@ -837,9 +817,17 @@ Widget hostLoadingSkeletonCatalogStates(BuildContext context) {
         label: 'row and settings groups',
         child: Column(
           children: [
-            HostEventRowsSkeleton(count: 2),
+            CatchSkeletonRows(
+              leading: CatchSkeletonRowLeading.mediaTile,
+              count: 2,
+              divided: true,
+            ),
             gapH12,
-            HostSettingsRowsSkeleton(rowCount: 2),
+            CatchSkeletonRows(
+              leading: CatchSkeletonRowLeading.icon,
+              count: 2,
+              divided: true,
+            ),
           ],
         ),
       ),
@@ -849,7 +837,10 @@ Widget hostLoadingSkeletonCatalogStates(BuildContext context) {
           children: [
             HostAnalyticsReportSkeleton(),
             gapH12,
-            HostRosterSkeleton(count: 3),
+            CatchSkeletonRows(
+              count: 3,
+              titleWidth: CatchLayout.skeletonTextSectionWidth,
+            ),
             gapH12,
             HostInlineSkeletonIcon(),
           ],
@@ -1051,16 +1042,16 @@ Widget _hostAnalyticsExactCatalog(BuildContext context, String focus) {
 Widget _hostAnalyticsPreviewFor(String focus) {
   final report = HostOperationsFixtures.analyticsReport;
   return switch (focus) {
-    'HostAnalyticsBar' => const SizedBox(
+    'CatchAnalyticsBar' => const SizedBox(
       height: 96,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Expanded(child: HostAnalyticsBar(value: 18, maxValue: 42)),
+          Expanded(child: CatchAnalyticsBar(value: 18, maxValue: 42)),
           gapW8,
-          Expanded(child: HostAnalyticsBar(value: 32, maxValue: 42)),
+          Expanded(child: CatchAnalyticsBar(value: 32, maxValue: 42)),
           gapW8,
-          Expanded(child: HostAnalyticsBar(value: 42, maxValue: 42)),
+          Expanded(child: CatchAnalyticsBar(value: 42, maxValue: 42)),
         ],
       ),
     ),
@@ -1076,8 +1067,20 @@ Widget _hostAnalyticsPreviewFor(String focus) {
       onPickEndDate: () {},
       onClearEvent: () {},
     ),
-    'HostAnalyticsDataQualityPanel' => HostAnalyticsDataQualityPanel(
-      rows: report.dataQuality,
+    'CatchAnalyticsDataQualityList' => CatchAnalyticsDataQualityList(
+      rows: [
+        for (final row in report.dataQuality)
+          CatchDataQualityRowData(
+            status: switch (row.state) {
+              HostAnalyticsDataQualityState.ok => CatchMetricStatus.ready,
+              HostAnalyticsDataQualityState.partial =>
+                CatchMetricStatus.partial,
+              HostAnalyticsDataQualityState.missing =>
+                CatchMetricStatus.missing,
+            },
+            detail: row.detail,
+          ),
+      ],
     ),
     'HostAnalyticsDateButton' => HostAnalyticsDateButton(
       label: 'Start',
@@ -1096,16 +1099,6 @@ Widget _hostAnalyticsPreviewFor(String focus) {
       selected: true,
       onTap: () {},
     ),
-    'HostAnalyticsInlineStat' => const HostAnalyticsInlineStat(
-      label: 'Bookings',
-      value: '126',
-    ),
-    'HostAnalyticsMetricGrid' => HostAnalyticsMetricGrid(
-      metrics: report.summaryCards,
-    ),
-    'HostAnalyticsMetricTile' => HostAnalyticsMetricTile(
-      metric: report.summaryCards.first,
-    ),
     'HostAnalyticsReportView' => HostAnalyticsReportView(
       report: report,
       selectedEventId: report.topEvents.first.eventId,
@@ -1114,10 +1107,6 @@ Widget _hostAnalyticsPreviewFor(String focus) {
     ),
     'HostAnalyticsReviewDiscoveryPanel' => HostAnalyticsReviewDiscoveryPanel(
       report: report,
-    ),
-    'HostAnalyticsSection' => HostAnalyticsSection(
-      label: 'Section label',
-      child: HostAnalyticsMetricTile(metric: report.summaryCards.first),
     ),
     'HostAnalyticsTrendPanel' => HostAnalyticsTrendPanel(points: report.trend),
     _ => Text('No exact preview registered for $focus.'),
@@ -1146,11 +1135,17 @@ Widget _hostHomePreviewFor(String focus) {
   );
   final tasks = HostHomeTodayTaskData.forEvent(event);
   return switch (focus) {
-    'HostEmptyState' => const HostEmptyState(
+    'HostEmptyActionCard' => HostEmptyActionCard(
       title: 'No clubs yet',
       body: 'Create a club to start hosting events.',
+      actions: [
+        CatchButton(
+          label: 'Create club',
+          icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+          onPressed: () {},
+        ),
+      ],
     ),
-    'HostSectionLabel' => const HostSectionLabel(label: 'TODAY'),
     'HostTodayAvatarDot' => Builder(
       builder: (context) {
         final activity = ActivityPalette.resolve(
@@ -1205,11 +1200,6 @@ Widget _hostHomePreviewFor(String focus) {
       onCreateEvent: (_) {},
       onManageEvent: (_, _) {},
     ),
-    'HostTodayEmptyEvents' => HostTodayEmptyEvents(
-      club: club,
-      onCreateEvent: (_) {},
-      onViewEvents: () {},
-    ),
     'HostTodayEventHero' => HostTodayEventHero(event: event, onPressed: () {}),
     'HostTodayHeader' => HostTodayHeader(
       club: club,
@@ -1229,6 +1219,78 @@ Widget _hostHomePreviewFor(String focus) {
     ),
     _ => Text('No exact preview registered for $focus.'),
   };
+}
+
+@widgetbook.UseCase(
+  name: 'Action card states',
+  type: HostEmptyActionCard,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+Widget hostEmptyActionCardStates(BuildContext context) {
+  return _HostCatalog(
+    title: 'HostEmptyActionCard',
+    contractId: 'component.host.empty_action_card',
+    children: [
+      _StateCard(
+        label: 'single action',
+        child: _HostHomeSectionFrame(
+          child: HostEmptyActionCard(
+            title: 'Create your first club',
+            body:
+                'Create a club to publish events, manage attendees, and run Event Success.',
+            actions: [
+              CatchButton(
+                label: 'Create club',
+                icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+                onPressed: () {},
+              ),
+            ],
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'two actions',
+        child: _HostHomeSectionFrame(
+          child: HostEmptyActionCard(
+            title: 'No active events yet',
+            body:
+                'Create an event for ${HostOperationsFixtures.primaryClub.name} to start filling the host dashboard.',
+            actions: [
+              CatchButton(
+                label: 'New event',
+                icon: Icon(CatchIcons.addRounded, size: CatchIcon.sm),
+                onPressed: () {},
+              ),
+              CatchButton(
+                label: 'Events',
+                variant: CatchButtonVariant.secondary,
+                size: CatchButtonSize.sm,
+                onPressed: () {},
+              ),
+            ],
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'pending action',
+        child: _HostHomeSectionFrame(
+          child: HostEmptyActionCard(
+            title: 'No host profile yet',
+            body:
+                'Create a professional host identity before editing profile details.',
+            actions: [
+              CatchButton(
+                label: 'Create host profile',
+                icon: Icon(CatchIcons.businessOutlined, size: CatchIcon.md),
+                isLoading: true,
+                onPressed: null,
+              ),
+            ],
+          ),
+        ),
+      ),
+    ],
+  );
 }
 
 Widget _hostClubExactCatalog(BuildContext context, String focus) {
@@ -1292,10 +1354,6 @@ Widget _hostClubPreviewFor(String focus) {
       isOwner: true,
       onPreviewClub: (_) {},
     ),
-    'HostClubTabRail' => HostClubTabRail(
-      selected: HostClubTab.organizer,
-      onChanged: (_) {},
-    ),
     'HostEventsClubCard' => HostEventsClubCard(
       club: club,
       currentUid: _hostUid,
@@ -1331,9 +1389,6 @@ Widget _hostClubPreviewFor(String focus) {
       activeEventCount: events.where((event) => !event.isCancelled).length,
     ),
     'HostOrganizerMetricRow' => HostOrganizerMetricRow(items: metricItems),
-    'HostOrganizerMetricTile' => HostOrganizerMetricTile(
-      item: metricItems.first,
-    ),
     'HostOrganizerPayoutPrompt' => HostOrganizerPayoutPrompt(
       state: const HostOrganizerPayoutPromptState.setupRequired(),
       onManagePayouts: () {},
@@ -1343,10 +1398,6 @@ Widget _hostClubPreviewFor(String focus) {
         uid: _hostUid,
         onManagePayouts: () {},
       ),
-    'HostOrganizerSectionHeader' => const HostOrganizerSectionHeader(
-      label: 'Team',
-      actionLabel: 'Manage',
-    ),
     'HostOrganizerTeamCard' => HostOrganizerTeamCard(
       profiles: team,
       currentUid: _hostUid,
@@ -1391,7 +1442,6 @@ Widget _hostClubPreviewFor(String focus) {
       onTransfer: () {},
       onRemove: () {},
     ),
-    'HostTrendKpi' => const HostTrendKpi(value: '188', label: 'Members'),
     _ => Text('No exact preview registered for $focus.'),
   };
 }
@@ -1558,13 +1608,6 @@ Widget _hostEventManagePreviewFor(String focus) {
       onCopyInviteLink: (_, _) {},
       onDisableInviteLink: (_) {},
     ),
-    'HostManageMetaItem' => Builder(
-      builder: (context) => HostManageMetaItem(
-        icon: CatchIcons.groupsOutlined,
-        label: '11 / 12 spots',
-        color: CatchTokens.of(context).ink2,
-      ),
-    ),
     'HostManageMetaRow' => HostManageMetaRow(event: event),
     'HostManageSectionPicker' => HostManageSectionPicker(
       selectedSection: HostEventManageSection.setup,
@@ -1707,7 +1750,7 @@ Widget _hostSettingsPreviewFor(String focus) {
     'HostSettingsClubRows' => const _DeviceFrame(
       child: _HostSettingsClubsFrame(),
     ),
-    'HostSettingsClubsEmptyState' => const _DeviceFrame(
+    'HostSettingsClubsEmpty' => const _DeviceFrame(
       child: _HostSettingsClubsFrame(clubs: []),
     ),
     'HostSettingsProfileRows' => _DeviceFrame(
@@ -1762,11 +1805,6 @@ String _hostComponentSlug(String name) {
 )
 @widgetbook.UseCase(
   name: 'Covered by host clubs route states',
-  type: HostClubTabRail,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
   type: HostClubOrganizerOverview,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
@@ -1802,16 +1840,6 @@ String _hostComponentSlug(String name) {
 )
 @widgetbook.UseCase(
   name: 'Covered by host clubs route states',
-  type: HostOrganizerMetricTile,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostOrganizerSectionHeader,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
   type: HostOrganizerTeamCard,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
@@ -1825,487 +1853,6 @@ String _hostComponentSlug(String name) {
   type: HostOrganizerTrendStrip,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostTrendKpi,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostClubProfileCard,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostClubInsightsPane,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostAnalyticsControls,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostAnalyticsDateButton,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostAnalyticsReportView,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostAnalyticsMetricGrid,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostAnalyticsMetricTile,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostAnalyticsTrendPanel,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostAnalyticsBar,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostAnalyticsEventList,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostAnalyticsEventTile,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostAnalyticsReviewDiscoveryPanel,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostAnalyticsDataQualityPanel,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostAnalyticsInlineStat,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostAnalyticsSection,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostInlineTextEntryEditor,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostInlineOptionEditor,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostInlineAgeRangeEditor,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostClubPreviewPane,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostPaymentAccountCard,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostPaymentAccountControllerCard,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostPaymentAccountContentCard,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostPaymentAccountLoadingCard,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostPaymentAccountErrorCard,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostTeamManagementSection,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host clubs route states',
-  type: HostTeamOwnerHostRow,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Route states',
-  type: HostClubsScreen,
-  path: '[P1 product surfaces]/Host operations',
-)
-Widget hostClubsRouteStates(BuildContext context) {
-  return _HostCatalog(
-    title: 'HostClubsScreen',
-    contractId: 'screen.host.clubs',
-    children: [
-      _StateCard(
-        label: 'auth required',
-        child: const _DeviceFrame(
-          child: _HostShellScope(uid: null, child: HostClubsScreen()),
-        ),
-      ),
-      _StateCard(
-        label: 'clubs loading',
-        child: _DeviceFrame(
-          child: _HostShellScope(
-            hostedClubsStream:
-                HostOperationsFixtures.loadingStream<List<Club>>(),
-            child: const HostClubsScreen(),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'clubs error',
-        child: _DeviceFrame(
-          child: _HostShellScope(
-            ownedClubsStream: HostOperationsFixtures.errorStream<List<Club>>(
-              'Owned clubs failed',
-            ),
-            child: const HostClubsScreen(),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'clubs offline',
-        child: _DeviceFrame(
-          child: _HostShellScope(
-            ownedClubsStream: Stream<List<Club>>.error(
-              obviousOfflineException(),
-              StackTrace.empty,
-            ),
-            child: const HostClubsScreen(),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'empty clubs',
-        child: const _DeviceFrame(
-          child: _HostShellScope(
-            hostedClubs: [],
-            ownedClubs: [],
-            child: HostClubsScreen(),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'owner and co-host clubs',
-        child: const _DeviceFrame(
-          child: _HostShellScope(child: HostClubsScreen()),
-        ),
-      ),
-      _StateCard(
-        label: 'co-host limited edit',
-        child: _DeviceFrame(
-          child: _HostShellScope(
-            hostedClubs: [HostOperationsFixtures.coHostedClub],
-            ownedClubs: const [],
-            child: HostClubsScreen(
-              initialClubId: HostOperationsFixtures.coHostedClub.id,
-              initialTab: HostClubTab.edit,
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'inline edit pending',
-        child: const _DeviceFrame(
-          child: _HostClubsMutationPreview(
-            mode: _HostClubsMutationPreviewMode.inlinePending,
-            child: _HostShellScope(
-              child: HostClubsScreen(initialExpandedEditField: 'name'),
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'inline edit error',
-        child: const _DeviceFrame(
-          child: _HostClubsMutationPreview(
-            mode: _HostClubsMutationPreviewMode.inlineError,
-            child: _HostShellScope(
-              child: HostClubsScreen(initialExpandedEditField: 'name'),
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'inline edit offline',
-        child: const _DeviceFrame(
-          child: _HostClubsMutationPreview(
-            mode: _HostClubsMutationPreviewMode.inlineOffline,
-            child: _HostShellScope(
-              child: HostClubsScreen(initialExpandedEditField: 'name'),
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'insights report',
-        child: const _DeviceFrame(
-          child: _HostShellScope(
-            child: HostClubsScreen(initialTab: HostClubTab.insights),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'insights loading',
-        child: const _DeviceFrame(
-          child: _HostShellScope(
-            analyticsRepository: _HostLoadingAnalyticsRepository(),
-            child: HostClubsScreen(initialTab: HostClubTab.insights),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'insights error',
-        child: _DeviceFrame(
-          child: _HostShellScope(
-            analyticsRepository: HostFixtureAnalyticsRepository(
-              error: StateError('Widgetbook host analytics failed'),
-            ),
-            child: const HostClubsScreen(initialTab: HostClubTab.insights),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'insights offline',
-        child: _DeviceFrame(
-          child: _HostShellScope(
-            analyticsRepository: HostFixtureAnalyticsRepository(
-              error: obviousOfflineException(),
-            ),
-            child: const HostClubsScreen(initialTab: HostClubTab.insights),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'preview tab',
-        child: const _DeviceFrame(
-          child: _HostShellScope(
-            child: HostClubsScreen(initialTab: HostClubTab.preview),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'payout loading',
-        child: const _DeviceFrame(
-          child: _HostShellScope(
-            paymentAccountValue: AsyncLoading<HostPaymentAccount?>(),
-            child: HostClubsScreen(initialTab: HostClubTab.edit),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'payout ready',
-        child: const _DeviceFrame(
-          child: _HostShellScope(
-            paymentAccountValue: AsyncData<HostPaymentAccount?>(
-              HostOperationsFixtures.readyPaymentAccount,
-            ),
-            child: HostClubsScreen(initialTab: HostClubTab.edit),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'payout restricted',
-        child: const _DeviceFrame(
-          child: _HostShellScope(
-            paymentAccountValue: AsyncData<HostPaymentAccount?>(
-              HostOperationsFixtures.restrictedPaymentAccount,
-            ),
-            child: HostClubsScreen(initialTab: HostClubTab.edit),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'payout error',
-        child: _DeviceFrame(
-          child: _HostShellScope(
-            paymentAccountValue: AsyncError<HostPaymentAccount?>(
-              StateError('Widgetbook payout status failed'),
-              StackTrace.empty,
-            ),
-            child: const HostClubsScreen(initialTab: HostClubTab.edit),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'payout offline',
-        child: _DeviceFrame(
-          child: _HostShellScope(
-            paymentAccountValue: AsyncError<HostPaymentAccount?>(
-              obviousOfflineException(),
-              StackTrace.empty,
-            ),
-            child: const HostClubsScreen(initialTab: HostClubTab.edit),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'payout setup pending',
-        child: const _DeviceFrame(
-          child: _HostClubsMutationPreview(
-            mode: _HostClubsMutationPreviewMode.payoutSetupPending,
-            child: _HostShellScope(
-              child: HostClubsScreen(initialTab: HostClubTab.edit),
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'payout setup error',
-        child: const _DeviceFrame(
-          child: _HostClubsMutationPreview(
-            mode: _HostClubsMutationPreviewMode.payoutSetupError,
-            child: _HostShellScope(
-              child: HostClubsScreen(initialTab: HostClubTab.edit),
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'payout setup offline',
-        child: const _DeviceFrame(
-          child: _HostClubsMutationPreview(
-            mode: _HostClubsMutationPreviewMode.payoutSetupOffline,
-            child: _HostShellScope(
-              child: HostClubsScreen(initialTab: HostClubTab.edit),
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'payout refresh pending',
-        child: const _DeviceFrame(
-          child: _HostClubsMutationPreview(
-            mode: _HostClubsMutationPreviewMode.payoutRefreshPending,
-            child: _HostShellScope(
-              paymentAccountValue: AsyncData<HostPaymentAccount?>(
-                HostOperationsFixtures.readyPaymentAccount,
-              ),
-              child: HostClubsScreen(initialTab: HostClubTab.edit),
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'payout refresh error',
-        child: const _DeviceFrame(
-          child: _HostClubsMutationPreview(
-            mode: _HostClubsMutationPreviewMode.payoutRefreshError,
-            child: _HostShellScope(
-              paymentAccountValue: AsyncData<HostPaymentAccount?>(
-                HostOperationsFixtures.readyPaymentAccount,
-              ),
-              child: HostClubsScreen(initialTab: HostClubTab.edit),
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'payout refresh offline',
-        child: const _DeviceFrame(
-          child: _HostClubsMutationPreview(
-            mode: _HostClubsMutationPreviewMode.payoutRefreshOffline,
-            child: _HostShellScope(
-              paymentAccountValue: AsyncData<HostPaymentAccount?>(
-                HostOperationsFixtures.readyPaymentAccount,
-              ),
-              child: HostClubsScreen(initialTab: HostClubTab.edit),
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'host team pending',
-        child: const _DeviceFrame(
-          child: _HostClubsMutationPreview(
-            mode: _HostClubsMutationPreviewMode.teamPending,
-            child: _HostShellScope(child: _HostTeamSectionPreview()),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'host team error',
-        child: const _DeviceFrame(
-          child: _HostClubsMutationPreview(
-            mode: _HostClubsMutationPreviewMode.teamError,
-            child: _HostShellScope(child: _HostTeamSectionPreview()),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'host team offline',
-        child: const _DeviceFrame(
-          child: _HostClubsMutationPreview(
-            mode: _HostClubsMutationPreviewMode.teamOffline,
-            child: _HostShellScope(child: _HostTeamSectionPreview()),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'text scale 2.0',
-        child: const _DeviceFrame(
-          child: _MediaOverride(
-            textScaler: TextScaler.linear(2),
-            child: _HostShellScope(child: HostClubsScreen()),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'reduced motion',
-        child: const _DeviceFrame(
-          child: _MediaOverride(
-            disableAnimations: true,
-            child: _HostShellScope(child: HostClubsScreen()),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'dark theme',
-        child: const _DeviceFrame(
-          child: _HostShellScope(
-            themeMode: ThemeMode.dark,
-            child: HostClubsScreen(),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
 @widgetbook.UseCase(
   name: 'Add host sheet states',
   type: HostTeamAddHostSheet,
@@ -2392,17 +1939,7 @@ Widget hostTeamHostActionDialogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Covered by host settings route states',
-  type: HostSettingsSection,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host settings route states',
   type: HostSettingsProfileRows,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host settings route states',
-  type: HostSettingsClubsEmptyState,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 @widgetbook.UseCase(
@@ -2687,41 +2224,6 @@ Widget hostSettingsClubsStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Tab states',
-  type: HostSettingsTabRail,
-  path: '[P2 host surfaces]/Host settings',
-)
-Widget hostSettingsTabStates(BuildContext context) {
-  return _HostCatalog(
-    title: 'HostSettingsTabRail',
-    contractId: 'section.host.settings.top_bar_tabs',
-    children: [
-      _StateCard(
-        label: 'edit selected',
-        child: const _DeviceFrame(
-          child: _HostSettingsTabFrame(selected: HostSettingsMode.edit),
-        ),
-      ),
-      _StateCard(
-        label: 'preview selected',
-        child: const _DeviceFrame(
-          child: _HostSettingsTabFrame(selected: HostSettingsMode.preview),
-        ),
-      ),
-      _StateCard(
-        label: 'text scale 2.0',
-        child: const _DeviceFrame(
-          child: _MediaOverride(
-            textScaler: TextScaler.linear(2),
-            child: _HostSettingsTabFrame(selected: HostSettingsMode.edit),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
   name: 'Route states',
   type: HostProfileScreen,
   path: '[P2 host surfaces]/Host profile',
@@ -2917,39 +2419,6 @@ Widget hostProfileFieldStates(BuildContext context) {
           child: _HostProfileFieldsFrame(
             profile: _hostProfileVariant(HostProfileStatus.active),
             showStatus: false,
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Missing states',
-  type: HostProfileMissingState,
-  path: '[P2 host surfaces]/Host profile',
-)
-Widget hostProfileMissingStates(BuildContext context) {
-  return _HostCatalog(
-    title: 'HostProfileMissingState',
-    contractId: 'section.host.profile.missing_state',
-    children: [
-      _StateCard(
-        label: 'ready to create',
-        child: const _DeviceFrame(child: _HostProfileMissingFrame()),
-      ),
-      _StateCard(
-        label: 'create pending',
-        child: const _DeviceFrame(
-          child: _HostProfileMissingFrame(creating: true),
-        ),
-      ),
-      _StateCard(
-        label: 'text scale 2.0',
-        child: const _DeviceFrame(
-          child: _MediaOverride(
-            textScaler: TextScaler.linear(2),
-            child: _HostProfileMissingFrame(),
           ),
         ),
       ),
@@ -4896,762 +4365,6 @@ Widget readOnlyHostedEventScheduleCardCatalogStates(BuildContext context) {
   type: HostManageMetaRow,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
-@widgetbook.UseCase(
-  name: 'Covered by host event manage route states',
-  type: HostManageMetaItem,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host event manage route states',
-  type: HostManageSectionPicker,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host event manage route states',
-  type: HostPrivateAccessCard,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host event manage route states',
-  type: HostPrivateAccessShell,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host event manage route states',
-  type: HostPrivateAccessBody,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host event manage route states',
-  type: HostInviteLinksList,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host event manage route states',
-  type: HostInviteLinkRow,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host event manage route states',
-  type: HostFullCapacityApron,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host event manage route states',
-  type: HostFullCapacityBanner,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host event manage route states',
-  type: HostCapacityTile,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host event manage route states',
-  type: HostEventActionsSection,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host event manage route states',
-  type: HostActionRow,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host event manage route states',
-  type: HostEventSummaryCard,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host event manage route states',
-  type: HostEventSummaryRow,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host event manage route states',
-  type: HostEventAttendancePanel,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host event manage route states',
-  type: HostEventParticipantsPanel,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host event manage route states',
-  type: HostEventParticipantsList,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host event manage route states',
-  type: HostParticipationLifecycleBoard,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host event manage route states',
-  type: HostRosterSearchBar,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host event manage route states',
-  type: HostRosterFilterHeader,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host event manage route states',
-  type: HostWaitlistBulkOfferAction,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host event manage route states',
-  type: HostExportReportButton,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Route and section states',
-  type: HostEventManageRouteScreen,
-  path: '[P1 product surfaces]/Host operations',
-)
-Widget hostEventManageRouteAndSectionStates(BuildContext context) {
-  final eventSuccessNow = DateTime(2026, 6, 1, 18);
-  final eventSuccessLivePlan =
-      EventSuccessPlan.defaultForEvent(
-        _privateEvent,
-        now: eventSuccessNow,
-      ).copyWith(
-        activeStepIndex: 1,
-        status: EventSuccessPlanStatus.live,
-        frozenAt: eventSuccessNow,
-      );
-  final eventSuccessReportPlan = eventSuccessLivePlan.copyWith(
-    activeStepIndex: 3,
-    status: EventSuccessPlanStatus.complete,
-    completedAt: eventSuccessNow.add(const Duration(hours: 2)),
-  );
-  final eventSuccessCheckInPlan = _hostManageLivePlanForModule(
-    event: _privateEvent,
-    now: eventSuccessNow,
-    moduleId: EventSuccessModuleCatalog.checkIn.id,
-  );
-  final eventSuccessCuePlan = _hostManageLivePlanForModule(
-    event: _privateEvent,
-    now: eventSuccessNow,
-    moduleId: EventSuccessModuleCatalog.socialMissions.id,
-  );
-  final eventSuccessHostOverridePlan = _hostManageLivePlanForModule(
-    event: _privateEvent,
-    now: eventSuccessNow,
-    moduleId: EventSuccessModuleCatalog.microPods.id,
-  );
-  final eventSuccessRevealEvent = _hostManageLiveRevealEvent(_privateEvent);
-  final eventSuccessRevealPlan =
-      _hostManageLivePlanForModule(
-        event: eventSuccessRevealEvent,
-        now: eventSuccessNow,
-        moduleId: EventSuccessModuleCatalog.liveReveal.id,
-      ).copyWith(
-        revealStatus: EventSuccessRevealStatus.revealed,
-        activeRevealRoundIndex: 0,
-        revealStartedAt: eventSuccessNow.subtract(const Duration(minutes: 2)),
-      );
-  final microPodAssignments = _hostManageMicroPodAssignments(
-    event: _privateEvent,
-    now: eventSuccessNow,
-  );
-  final hostOverrideAssignments = _hostManageMicroPodAssignments(
-    event: _privateEvent,
-    now: eventSuccessNow,
-    source: 'host_override_v1',
-  );
-  final rotationAssignments = _hostManageRotationAssignments(
-    event: _privateEvent,
-    now: eventSuccessNow,
-  );
-  final wingmanRequests = _hostManageWingmanRequests(
-    event: _privateEvent,
-    now: eventSuccessNow,
-  );
-
-  return _HostCatalog(
-    title: 'HostEventManageRouteScreen',
-    contractId: 'screen.host.event.manage',
-    children: [
-      _StateCard(
-        label: 'route loading',
-        child: _DeviceFrame(
-          child: _HostManageRouteScope(
-            clubValue: const AsyncLoading<Club?>(),
-            eventValue: const AsyncLoading<Event?>(),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'initial event fallback',
-        child: const _DeviceFrame(
-          child: _HostManageRouteScope(eventValue: AsyncLoading<Event?>()),
-        ),
-      ),
-      _StateCard(
-        label: 'route error',
-        child: _DeviceFrame(
-          child: _HostManageRouteScope(
-            clubValue: AsyncError<Club?>(
-              StateError('Club fetch failed'),
-              StackTrace.empty,
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'route offline',
-        child: _DeviceFrame(
-          child: _HostManageRouteScope(
-            clubValue: AsyncError<Club?>(
-              obviousOfflineException(),
-              StackTrace.empty,
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'event not found',
-        child: const _DeviceFrame(
-          child: _HostManageRouteScope(eventValue: AsyncData<Event?>(null)),
-        ),
-      ),
-      _StateCard(
-        label: 'unauthorized user',
-        child: const _DeviceFrame(
-          child: _HostManageRouteScope(uid: 'design-host-not-on-team'),
-        ),
-      ),
-      _StateCard(
-        label: 'setup / private access',
-        child: const _DeviceFrame(
-          child: _HostManageRouteScope(
-            initialSection: HostEventManageSection.setup,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'full / waitlist apron',
-        child: _DeviceFrame(
-          child: _HostManageRouteScope(
-            club: HostOperationsFixtures.dinnerClub,
-            event: HostOperationsFixtures.fullEvent,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'live console',
-        child: const _DeviceFrame(
-          child: _HostManageRouteScope(
-            initialSection: HostEventManageSection.live,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'attendance mutation pending',
-        child: const _DeviceFrame(
-          child: _HostManageAttendanceMutationRoutePreview(
-            mode: _HostManageAttendanceMutationPreviewMode.pending,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'attendance mutation error',
-        child: const _DeviceFrame(
-          child: _HostManageAttendanceMutationRoutePreview(
-            mode: _HostManageAttendanceMutationPreviewMode.error,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'live unavailable',
-        child: const _DeviceFrame(
-          child: _HostManageRouteScope(
-            initialSection: HostEventManageSection.live,
-            planValue: AsyncData<EventSuccessPlan?>(null),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'live plan loading',
-        child: const _DeviceFrame(
-          child: _HostManageRouteScope(
-            initialSection: HostEventManageSection.live,
-            planValue: AsyncLoading<EventSuccessPlan?>(),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'live plan error',
-        child: _DeviceFrame(
-          child: _HostManageRouteScope(
-            initialSection: HostEventManageSection.live,
-            planValue: AsyncError<EventSuccessPlan?>(
-              StateError('Event Success setup failed'),
-              StackTrace.empty,
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'live plan offline',
-        child: _DeviceFrame(
-          child: _HostManageRouteScope(
-            initialSection: HostEventManageSection.live,
-            planValue: AsyncError<EventSuccessPlan?>(
-              obviousOfflineException(),
-              StackTrace.empty,
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'live wingman requests',
-        child: _DeviceFrame(
-          child: _HostManageRouteScope(
-            initialSection: HostEventManageSection.live,
-            planValue: AsyncData<EventSuccessPlan?>(eventSuccessLivePlan),
-            wingmanRequests: wingmanRequests,
-            wingmanProfiles: _hostManageProfilesFor([
-              for (final request in wingmanRequests) ...[
-                request.requesterUid,
-                request.targetUid,
-              ],
-            ]),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'live check-in QR',
-        child: _DeviceFrame(
-          child: _HostManageRouteScope(
-            initialSection: HostEventManageSection.live,
-            planValue: AsyncData<EventSuccessPlan?>(eventSuccessCheckInPlan),
-            child: _hostManageLiveSectionPreview(
-              event: _privateEvent,
-              liveRoster: const SizedBox.shrink(),
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'live conversation cues',
-        child: _DeviceFrame(
-          child: _HostManageRouteScope(
-            initialSection: HostEventManageSection.live,
-            planValue: AsyncData<EventSuccessPlan?>(eventSuccessCuePlan),
-            child: _hostManageLiveSectionPreview(event: _privateEvent),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'live micro-pods assigned',
-        child: _DeviceFrame(
-          child: _HostManageRouteScope(
-            initialSection: HostEventManageSection.live,
-            planValue: AsyncData<EventSuccessPlan?>(eventSuccessLivePlan),
-            assignments: microPodAssignments,
-            assignmentPeerProfiles: _hostManageProfilesFor(
-              _hostManageAssignmentParticipantUids(microPodAssignments),
-            ),
-            preferences: _hostManagePreferences(
-              event: _privateEvent,
-              now: eventSuccessNow,
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'live reveal round revealed',
-        child: _DeviceFrame(
-          child: _HostManageRouteScope(
-            event: eventSuccessRevealEvent,
-            initialSection: HostEventManageSection.live,
-            planValue: AsyncData<EventSuccessPlan?>(eventSuccessRevealPlan),
-            assignments: microPodAssignments,
-            assignmentPeerProfiles: _hostManageProfilesFor(
-              _hostManageAssignmentParticipantUids(microPodAssignments),
-            ),
-            preferences: _hostManagePreferences(
-              event: eventSuccessRevealEvent,
-              now: eventSuccessNow,
-            ),
-            child: _hostManageLiveSectionPreview(
-              event: eventSuccessRevealEvent,
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'live host override edited',
-        child: _DeviceFrame(
-          child: _HostManageRouteScope(
-            initialSection: HostEventManageSection.live,
-            planValue: AsyncData<EventSuccessPlan?>(
-              eventSuccessHostOverridePlan,
-            ),
-            assignments: hostOverrideAssignments,
-            assignmentPeerProfiles: _hostManageProfilesFor(
-              _hostManageAssignmentParticipantUids(hostOverrideAssignments),
-            ),
-            preferences: _hostManagePreferences(
-              event: _privateEvent,
-              now: eventSuccessNow,
-            ),
-            child: _hostManageLiveSectionPreview(event: _privateEvent),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'live guided rotations assigned',
-        child: _DeviceFrame(
-          child: _HostManageRouteScope(
-            initialSection: HostEventManageSection.live,
-            planValue: AsyncData<EventSuccessPlan?>(eventSuccessLivePlan),
-            rotationAssignments: rotationAssignments,
-            rotationPeerProfiles: _hostManageProfilesFor(
-              _hostManageAssignmentParticipantUids(rotationAssignments),
-            ),
-            preferences: _hostManagePreferences(
-              event: _privateEvent,
-              now: eventSuccessNow,
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'report workspace',
-        child: const _DeviceFrame(
-          child: _HostManageRouteScope(
-            initialSection: HostEventManageSection.report,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'report scorecard loading',
-        child: _DeviceFrame(
-          child: _HostManageRouteScope(
-            initialSection: HostEventManageSection.report,
-            planValue: AsyncData<EventSuccessPlan?>(eventSuccessReportPlan),
-            scorecardValue: const AsyncLoading<EventSuccessScorecard?>(),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'report scorecard error',
-        child: _DeviceFrame(
-          child: _HostManageRouteScope(
-            initialSection: HostEventManageSection.report,
-            planValue: AsyncData<EventSuccessPlan?>(eventSuccessReportPlan),
-            scorecardValue: AsyncError<EventSuccessScorecard?>(
-              StateError('Scorecard failed'),
-              StackTrace.empty,
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'report scorecard offline',
-        child: _DeviceFrame(
-          child: _HostManageRouteScope(
-            initialSection: HostEventManageSection.report,
-            planValue: AsyncData<EventSuccessPlan?>(eventSuccessReportPlan),
-            scorecardValue: AsyncError<EventSuccessScorecard?>(
-              obviousOfflineException(),
-              StackTrace.empty,
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'report export pending',
-        child: const _DeviceFrame(
-          child: _HostManageReportExportMutationPreview(
-            mode: _HostManageReportExportMutationPreviewMode.pending,
-            child: _HostManageRouteScope(
-              initialSection: HostEventManageSection.report,
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'report export error',
-        child: const _DeviceFrame(
-          child: _HostManageReportExportMutationPreview(
-            mode: _HostManageReportExportMutationPreviewMode.error,
-            child: _HostManageRouteScope(
-              initialSection: HostEventManageSection.report,
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'attendance loading',
-        child: const _DeviceFrame(
-          child: _HostManageRouteScope(
-            attendanceValue: AsyncLoading<AttendanceSheetViewModel?>(),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'attendance error',
-        child: _DeviceFrame(
-          child: _HostManageRouteScope(
-            attendanceValue: AsyncError<AttendanceSheetViewModel?>(
-              StateError('Attendance failed'),
-              StackTrace.empty,
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'attendance empty',
-        child: const _DeviceFrame(
-          child: _HostManageRouteScope(
-            attendanceValue: AsyncData<AttendanceSheetViewModel?>(null),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'attendee profiles loading',
-        child: const _DeviceFrame(
-          child: _HostManageRouteScope(
-            attendeeProfilesValue:
-                AsyncLoading<Map<String, (String, String?)>>(),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'attendee profiles error',
-        child: _DeviceFrame(
-          child: _HostManageRouteScope(
-            attendeeProfilesValue: AsyncError<Map<String, (String, String?)>>(
-              StateError('Profile lookup failed'),
-              StackTrace.empty,
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'filtered roster empty',
-        child: const _DeviceFrame(
-          child: _HostManageRouteScope(
-            initialParticipantSearchQuery: 'no matching guest',
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'private access loading',
-        child: const _DeviceFrame(
-          child: _HostManageRouteScope(
-            privateAccessValue: AsyncLoading<EventPrivateAccess?>(),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'private access error',
-        child: _DeviceFrame(
-          child: _HostManageRouteScope(
-            privateAccessValue: AsyncError<EventPrivateAccess?>(
-              StateError('Private access failed'),
-              StackTrace.empty,
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'private access offline',
-        child: _DeviceFrame(
-          child: _HostManageRouteScope(
-            privateAccessValue: AsyncError<EventPrivateAccess?>(
-              obviousOfflineException(),
-              StackTrace.empty,
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'private access missing code',
-        child: _DeviceFrame(
-          child: _HostManageRouteScope(
-            privateAccessValue: AsyncData<EventPrivateAccess?>(
-              HostOperationsFixtures.privateAccess.copyWith(inviteCode: ''),
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'invite links loading',
-        child: const _DeviceFrame(
-          child: _HostManageRouteScope(
-            inviteLinksValue: AsyncLoading<List<EventInviteLink>>(),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'invite links error',
-        child: _DeviceFrame(
-          child: _HostManageRouteScope(
-            inviteLinksValue: AsyncError<List<EventInviteLink>>(
-              StateError('Invite links failed'),
-              StackTrace.empty,
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'invite links offline',
-        child: _DeviceFrame(
-          child: _HostManageRouteScope(
-            inviteLinksValue: AsyncError<List<EventInviteLink>>(
-              obviousOfflineException(),
-              StackTrace.empty,
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'invite links empty',
-        child: const _DeviceFrame(
-          child: _HostManageRouteScope(
-            inviteLinksValue: AsyncData<List<EventInviteLink>>(
-              <EventInviteLink>[],
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'invite links disabled row',
-        child: _DeviceFrame(
-          child: _HostManageRouteScope(
-            inviteLinksValue: AsyncData<List<EventInviteLink>>(
-              _hostManageDisabledInviteLinks,
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'invite links long label source',
-        child: _DeviceFrame(
-          child: _HostManageRouteScope(
-            inviteLinksValue: AsyncData<List<EventInviteLink>>(
-              _hostManageLongLabelInviteLinks,
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'invite link action pending',
-        child: const _DeviceFrame(
-          child: _HostManageInviteLinkMutationPreview(
-            mode: _HostManageInviteLinkMutationPreviewMode.pending,
-            child: _HostManageRouteScope(),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'invite link action error',
-        child: const _DeviceFrame(
-          child: _HostManageInviteLinkMutationPreview(
-            mode: _HostManageInviteLinkMutationPreviewMode.error,
-            child: _HostManageRouteScope(),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'private link share pending',
-        child: const _DeviceFrame(
-          child: _HostManagePrivateLinkShareMutationPreview(
-            mode: _HostManagePrivateLinkShareMutationPreviewMode.pending,
-            child: _HostManageRouteScope(),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'private link share error',
-        child: const _DeviceFrame(
-          child: _HostManagePrivateLinkShareMutationPreview(
-            mode: _HostManagePrivateLinkShareMutationPreviewMode.error,
-            child: _HostManageRouteScope(),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'host actions / edit event',
-        child: const _DeviceFrame(child: _HostManageRouteScope()),
-      ),
-      _StateCard(
-        label: 'cancel action pending',
-        child: const _DeviceFrame(
-          child: _HostManageActionMutationPreview(
-            mode: _HostManageActionMutationPreviewMode.cancelPending,
-            child: _HostManageRouteScope(),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'cancel action error',
-        child: const _DeviceFrame(
-          child: _HostManageActionMutationPreview(
-            mode: _HostManageActionMutationPreviewMode.cancelError,
-            child: _HostManageRouteScope(),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'delete action pending',
-        child: _DeviceFrame(
-          child: _HostManageActionMutationPreview(
-            mode: _HostManageActionMutationPreviewMode.deletePending,
-            child: _HostManageRouteScope(
-              event: HostOperationsFixtures.unusedEvent,
-              participations: <EventParticipation>[],
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'delete action error',
-        child: _DeviceFrame(
-          child: _HostManageActionMutationPreview(
-            mode: _HostManageActionMutationPreviewMode.deleteError,
-            child: _HostManageRouteScope(
-              event: HostOperationsFixtures.unusedEvent,
-              participations: <EventParticipation>[],
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'text scale 2.0',
-        child: const _DeviceFrame(
-          child: _MediaOverride(
-            textScaler: TextScaler.linear(2),
-            child: _HostManageRouteScope(),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'reduced motion',
-        child: const _DeviceFrame(
-          child: _MediaOverride(
-            disableAnimations: true,
-            child: _HostManageRouteScope(),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'dark theme',
-        child: const _DeviceFrame(
-          child: _HostManageRouteScope(themeMode: ThemeMode.dark),
-        ),
-      ),
-    ],
-  );
-}
-
 // Exact host coverage entries. These point narrow promoted classes at the
 // catalog route/component state that renders the owning workflow.
 @widgetbook.UseCase(
@@ -5688,11 +4401,11 @@ Widget hostStrictHostActionRowCatalogStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostAnalyticsBar,
+  type: CatchAnalyticsBar,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
-Widget hostStrictHostAnalyticsBarCatalogStates(BuildContext context) =>
-    _hostAnalyticsExactCatalog(context, 'HostAnalyticsBar');
+Widget hostStrictCatchAnalyticsBarCatalogStates(BuildContext context) =>
+    _hostAnalyticsExactCatalog(context, 'CatchAnalyticsBar');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -5704,12 +4417,12 @@ Widget hostStrictHostAnalyticsControlsCatalogStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostAnalyticsDataQualityPanel,
+  type: CatchAnalyticsDataQualityList,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
-Widget hostStrictHostAnalyticsDataQualityPanelCatalogStates(
+Widget hostStrictCatchAnalyticsDataQualityListCatalogStates(
   BuildContext context,
-) => _hostAnalyticsExactCatalog(context, 'HostAnalyticsDataQualityPanel');
+) => _hostAnalyticsExactCatalog(context, 'CatchAnalyticsDataQualityList');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -5737,30 +4450,6 @@ Widget hostStrictHostAnalyticsEventTileCatalogStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostAnalyticsInlineStat,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostAnalyticsInlineStatCatalogStates(BuildContext context) =>
-    _hostAnalyticsExactCatalog(context, 'HostAnalyticsInlineStat');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostAnalyticsMetricGrid,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostAnalyticsMetricGridCatalogStates(BuildContext context) =>
-    _hostAnalyticsExactCatalog(context, 'HostAnalyticsMetricGrid');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostAnalyticsMetricTile,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostAnalyticsMetricTileCatalogStates(BuildContext context) =>
-    _hostAnalyticsExactCatalog(context, 'HostAnalyticsMetricTile');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
   type: HostAnalyticsReportSkeleton,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
@@ -5784,14 +4473,6 @@ Widget hostStrictHostAnalyticsReportViewCatalogStates(BuildContext context) =>
 Widget hostStrictHostAnalyticsReviewDiscoveryPanelCatalogStates(
   BuildContext context,
 ) => _hostAnalyticsExactCatalog(context, 'HostAnalyticsReviewDiscoveryPanel');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostAnalyticsSection,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostAnalyticsSectionCatalogStates(BuildContext context) =>
-    _hostAnalyticsExactCatalog(context, 'HostAnalyticsSection');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -5876,19 +4557,11 @@ Widget hostStrictHostClubsScreenCatalogStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostClubTabRail,
+  type: HostEmptyActionCard,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
-Widget hostStrictHostClubTabRailCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostClubTabRail');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostEmptyState,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostEmptyStateCatalogStates(BuildContext context) =>
-    _hostHomeExactCatalog(context, 'HostEmptyState');
+Widget hostStrictHostEmptyActionCardCatalogStates(BuildContext context) =>
+    _hostHomeExactCatalog(context, 'HostEmptyActionCard');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -5939,14 +4612,6 @@ Widget hostStrictHostEventParticipantsPanelCatalogStates(
 )
 Widget hostStrictHostEventRowsCatalogStates(BuildContext context) =>
     hostHomeEventSectionStates(context);
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostEventRowsSkeleton,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostEventRowsSkeletonCatalogStates(BuildContext context) =>
-    hostLoadingSkeletonCatalogStates(context);
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -6076,453 +4741,6 @@ Widget hostStrictHostInviteLinksListCatalogStates(BuildContext context) =>
 )
 Widget hostStrictHostLoadingScreenCatalogStates(BuildContext context) =>
     hostHomeRouteStates(context);
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostManageMetaItem,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostManageMetaItemCatalogStates(BuildContext context) =>
-    _hostEventManageExactCatalog(context, 'HostManageMetaItem');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostManageMetaRow,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostManageMetaRowCatalogStates(BuildContext context) =>
-    _hostEventManageExactCatalog(context, 'HostManageMetaRow');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostManageSectionPicker,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostManageSectionPickerCatalogStates(BuildContext context) =>
-    _hostEventManageExactCatalog(context, 'HostManageSectionPicker');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostOperationsHomeScreen,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostOperationsHomeScreenCatalogStates(BuildContext context) =>
-    hostHomeRouteStates(context);
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostOrganizerHeader,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostOrganizerHeaderCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostOrganizerHeader');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostOrganizerMetricGrid,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostOrganizerMetricGridCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostOrganizerMetricGrid');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostOrganizerMetricRow,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostOrganizerMetricRowCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostOrganizerMetricRow');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostOrganizerMetricTile,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostOrganizerMetricTileCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostOrganizerMetricTile');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostOrganizerPayoutPrompt,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostOrganizerPayoutPromptCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostOrganizerPayoutPrompt');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostOrganizerPayoutPromptController,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostOrganizerPayoutPromptControllerCatalogStates(
-  BuildContext context,
-) => _hostClubExactCatalog(context, 'HostOrganizerPayoutPromptController');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostOrganizerSectionHeader,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostOrganizerSectionHeaderCatalogStates(
-  BuildContext context,
-) => _hostClubExactCatalog(context, 'HostOrganizerSectionHeader');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostOrganizerTeamCard,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostOrganizerTeamCardCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostOrganizerTeamCard');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostOrganizerTeamRow,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostOrganizerTeamRowCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostOrganizerTeamRow');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostOrganizerTrendStrip,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostOrganizerTrendStripCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostOrganizerTrendStrip');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostParticipationLifecycleBoard,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostParticipationLifecycleBoardCatalogStates(
-  BuildContext context,
-) => _hostEventManageExactCatalog(context, 'HostParticipationLifecycleBoard');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostPaymentAccountCard,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostPaymentAccountCardCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostPaymentAccountCard');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostPaymentAccountControllerCard,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostPaymentAccountControllerCardCatalogStates(
-  BuildContext context,
-) => _hostClubExactCatalog(context, 'HostPaymentAccountControllerCard');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostPaymentAccountContentCard,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostPaymentAccountContentCardCatalogStates(
-  BuildContext context,
-) => _hostClubExactCatalog(context, 'HostPaymentAccountContentCard');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostPaymentAccountErrorCard,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostPaymentAccountErrorCardCatalogStates(
-  BuildContext context,
-) => _hostClubExactCatalog(context, 'HostPaymentAccountErrorCard');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostPaymentAccountLoadingCard,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostPaymentAccountLoadingCardCatalogStates(
-  BuildContext context,
-) => _hostClubExactCatalog(context, 'HostPaymentAccountLoadingCard');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostPrivateAccessBody,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostPrivateAccessBodyCatalogStates(BuildContext context) =>
-    _hostEventManageExactCatalog(context, 'HostPrivateAccessBody');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostPrivateAccessCard,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostPrivateAccessCardCatalogStates(BuildContext context) =>
-    _hostEventManageExactCatalog(context, 'HostPrivateAccessCard');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostPrivateAccessShell,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostPrivateAccessShellCatalogStates(BuildContext context) =>
-    _hostEventManageExactCatalog(context, 'HostPrivateAccessShell');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostProfileEditorSheet,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostProfileEditorSheetCatalogStates(BuildContext context) =>
-    _hostSettingsExactCatalog(context, 'HostProfileEditorSheet');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostRosterFilterHeader,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostRosterFilterHeaderCatalogStates(BuildContext context) =>
-    _hostEventManageExactCatalog(context, 'HostRosterFilterHeader');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostRosterSearchBar,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostRosterSearchBarCatalogStates(BuildContext context) =>
-    _hostEventManageExactCatalog(context, 'HostRosterSearchBar');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostRosterSkeleton,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostRosterSkeletonCatalogStates(BuildContext context) =>
-    hostLoadingSkeletonCatalogStates(context);
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostSectionLabel,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostSectionLabelCatalogStates(BuildContext context) =>
-    _hostHomeExactCatalog(context, 'HostSectionLabel');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostSettingsClubRows,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostSettingsClubRowsCatalogStates(BuildContext context) =>
-    _hostSettingsExactCatalog(context, 'HostSettingsClubRows');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostSettingsClubsEmptyState,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostSettingsClubsEmptyStateCatalogStates(
-  BuildContext context,
-) => _hostSettingsExactCatalog(context, 'HostSettingsClubsEmptyState');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostSettingsProfileRows,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostSettingsProfileRowsCatalogStates(BuildContext context) =>
-    _hostSettingsExactCatalog(context, 'HostSettingsProfileRows');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostSettingsRowsSkeleton,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostSettingsRowsSkeletonCatalogStates(BuildContext context) =>
-    hostLoadingSkeletonCatalogStates(context);
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostStatChip,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostStatChipCatalogStates(BuildContext context) =>
-    hostToolCardCatalogStates(context);
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostSummarySkeleton,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostSummarySkeletonCatalogStates(BuildContext context) =>
-    hostLoadingSkeletonCatalogStates(context);
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostTabRailSkeleton,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostTabRailSkeletonCatalogStates(BuildContext context) =>
-    hostLoadingSkeletonCatalogStates(context);
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostTeamManagementSection,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostTeamManagementSectionCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostTeamManagementSection');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostTeamOwnerHostRow,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostTeamOwnerHostRowCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostTeamOwnerHostRow');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostTodayAvatarDot,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostTodayAvatarDotCatalogStates(BuildContext context) =>
-    _hostHomeExactCatalog(context, 'HostTodayAvatarDot');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostTodayAvatarStack,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostTodayAvatarStackCatalogStates(BuildContext context) =>
-    _hostHomeExactCatalog(context, 'HostTodayAvatarStack');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostTodayClubPill,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostTodayClubPillCatalogStates(BuildContext context) =>
-    _hostHomeExactCatalog(context, 'HostTodayClubPill');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostTodayCountdownPill,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostTodayCountdownPillCatalogStates(BuildContext context) =>
-    _hostHomeExactCatalog(context, 'HostTodayCountdownPill');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostTodayDashboardCard,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostTodayDashboardCardCatalogStates(BuildContext context) =>
-    _hostHomeExactCatalog(context, 'HostTodayDashboardCard');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostTodayDashboardSection,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostTodayDashboardSectionCatalogStates(BuildContext context) =>
-    _hostHomeExactCatalog(context, 'HostTodayDashboardSection');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostTodayEmptyEvents,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostTodayEmptyEventsCatalogStates(BuildContext context) =>
-    _hostHomeExactCatalog(context, 'HostTodayEmptyEvents');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostTodayEventHero,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostTodayEventHeroCatalogStates(BuildContext context) =>
-    _hostHomeExactCatalog(context, 'HostTodayEventHero');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostTodayHeader,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostTodayHeaderCatalogStates(BuildContext context) =>
-    _hostHomeExactCatalog(context, 'HostTodayHeader');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostTodayHeroMetric,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostTodayHeroMetricCatalogStates(BuildContext context) =>
-    _hostHomeExactCatalog(context, 'HostTodayHeroMetric');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostTodayLoadingBody,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostTodayLoadingBodyCatalogStates(BuildContext context) =>
-    _hostHomeExactCatalog(context, 'HostTodayLoadingBody');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostTodayTaskCard,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostTodayTaskCardCatalogStates(BuildContext context) =>
-    _hostHomeExactCatalog(context, 'HostTodayTaskCard');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostTrendKpi,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostTrendKpiCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostTrendKpi');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostWaitlistBulkOfferAction,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostWaitlistBulkOfferActionCatalogStates(
-  BuildContext context,
-) => _hostEventManageExactCatalog(context, 'HostWaitlistBulkOfferAction');
-
-const _createEventSteps = <int, String>{
-  0: 'wizard basics step',
-  1: 'wizard location step',
-  2: 'wizard schedule step',
-  3: 'wizard policy step',
-  4: 'wizard Event Success step',
-};
-
-enum _HostCreateEventMutationPreviewMode {
-  saveDraftPending,
-  saveDraftError,
-  submitPending,
-  submitError,
-  submitOffline,
-}
-
-class _HostCreateEventMutationPreview extends ConsumerStatefulWidget {
-  const _HostCreateEventMutationPreview({
-    required this.mode,
-    required this.child,
-  });
-
-  final _HostCreateEventMutationPreviewMode mode;
-  final Widget child;
-
-  @override
-  ConsumerState<_HostCreateEventMutationPreview> createState() =>
-      _HostCreateEventMutationPreviewState();
-}
 
 class _HostCreateEventMutationPreviewState
     extends ConsumerState<_HostCreateEventMutationPreview> {
@@ -7357,27 +5575,6 @@ class _HostHomeScaffoldFrame extends StatelessWidget {
   }
 }
 
-class _HostSettingsTabFrame extends StatelessWidget {
-  const _HostSettingsTabFrame({required this.selected});
-
-  final HostSettingsMode selected;
-
-  @override
-  Widget build(BuildContext context) {
-    return _ThemedHostPreview(
-      themeMode: ThemeMode.light,
-      child: Scaffold(
-        appBar: CatchTopBar(
-          title: 'Host profile',
-          showBackButton: false,
-          border: true,
-          bottom: HostSettingsTabRail(selected: selected, onChanged: (_) {}),
-        ),
-      ),
-    );
-  }
-}
-
 class _HostProfileFormFrame extends StatefulWidget {
   const _HostProfileFormFrame({
     required this.profile,
@@ -7540,31 +5737,6 @@ class _HostProfileFieldsFrameState extends State<_HostProfileFieldsFrame> {
                   bioController: _bioController,
                 ),
               ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _HostProfileMissingFrame extends StatelessWidget {
-  const _HostProfileMissingFrame({this.creating = false});
-
-  final bool creating;
-
-  @override
-  Widget build(BuildContext context) {
-    return _ThemedHostPreview(
-      themeMode: ThemeMode.light,
-      child: Builder(
-        builder: (context) {
-          final t = CatchTokens.of(context);
-          return Scaffold(
-            backgroundColor: t.bg,
-            body: HostProfileMissingState(
-              creating: creating,
-              onCreateProfile: () {},
             ),
           );
         },
@@ -8802,7 +6974,6 @@ class _HostManageRouteScope extends StatelessWidget {
     this.participations,
     this.initialSection = HostEventManageSection.setup,
     this.initialParticipantSearchQuery = '',
-    this.themeMode = ThemeMode.light,
   });
 
   final Widget? child;
@@ -8827,7 +6998,6 @@ class _HostManageRouteScope extends StatelessWidget {
   final List<EventParticipation>? participations;
   final HostEventManageSection initialSection;
   final String initialParticipantSearchQuery;
-  final ThemeMode themeMode;
 
   @override
   Widget build(BuildContext context) {
@@ -8949,7 +7119,7 @@ class _HostManageRouteScope extends StatelessWidget {
             ).overrideWith((ref) async => wingmanProfiles),
         ],
         child: _ThemedHostPreview(
-          themeMode: themeMode,
+          themeMode: ThemeMode.light,
           child:
               child ??
               HostEventManageRouteScreen(

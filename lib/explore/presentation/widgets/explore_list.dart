@@ -1,18 +1,15 @@
-import 'package:catch_dating_app/clubs/clubs.dart'
-    show ClubMembershipController;
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
+import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_body.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/explore_empty_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -58,33 +55,36 @@ class ExploreList extends ConsumerWidget {
                   filters: filters,
                 ),
               )
-            : CatchMutationErrorListener(
-                mutation: ClubMembershipController.joinMutation,
-                child: ExploreBody(
-                  feedAsync: feedAsync,
-                  clubsViewModel: value,
-                  filters: filters,
-                  searchQuery: query,
-                  onRetryFeed: () =>
-                      ref.invalidate(exploreFeedViewModelProvider),
-                  onRetryClubs: () {
-                    ref.invalidate(exploreClubsViewModelProvider);
-                    ref.invalidate(exploreSourceClubsProvider);
-                  },
-                  onClearSearch: () =>
-                      ref.read(exploreSearchQueryProvider.notifier).clear(),
-                  onClearFilters: () =>
-                      ref.read(exploreFiltersProvider.notifier).clear(),
-                  onSetTimeFilter: (filter) => ref
-                      .read(exploreFiltersProvider.notifier)
-                      .setTimeFilter(filter),
-                  onActivitySelected: (activityKind) => ref
-                      .read(exploreFiltersProvider.notifier)
-                      .toggleActivityTag(activityKind.name),
-                  onEventSelected: (_, _) {},
-                  onExternalEventOpened: (_) {},
-                  includeJoinedClubsRail: includeJoinedClubsRail,
-                  includeClubDirectory: includeClubDirectory,
+            : Builder(
+                builder: (context) => SliverMainAxisGroup(
+                  slivers: buildExploreBodySlivers(
+                    context: context,
+                    feedAsync: feedAsync,
+                    clubsViewModel: value,
+                    filters: filters,
+                    searchQuery: query,
+                    onRetryFeed: () =>
+                        ref.invalidate(exploreFeedViewModelProvider),
+                    onRetryClubs: () {
+                      ref.invalidate(exploreClubsViewModelProvider);
+                      ref.invalidate(exploreSourceClubsProvider);
+                    },
+                    onClearSearch: () =>
+                        ref.read(exploreSearchQueryProvider.notifier).clear(),
+                    onClearFilters: () =>
+                        ref.read(exploreFiltersProvider.notifier).clear(),
+                    onSetTimeFilter: (filter) => ref
+                        .read(exploreFiltersProvider.notifier)
+                        .setTimeFilter(filter),
+                    onActivitySelected: (activityKind) => ref
+                        .read(exploreFiltersProvider.notifier)
+                        .toggleActivityTag(activityKind.name),
+                    onEventSelected: (_, _) {},
+                    onExternalEventOpened: (_) {},
+                    includeJoinedClubsRail: includeJoinedClubsRail,
+                    includeClubDirectory: includeClubDirectory,
+                    pinnedExploreDayHeaders: false,
+                  ),
                 ),
               ),
     };
@@ -107,42 +107,78 @@ class ExploreListEmptyState extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final hasFilters = filters.hasActiveFilters;
     if (hasSearch && hasFilters) {
-      return ExploreEmptyState.noFilteredSearchResults(
-        action: ExploreClearAction(
-          clearSearch: true,
-          clearFilters: true,
-          icon: CatchIcons.closeRounded,
-          onClearSearch: () =>
-              ref.read(exploreSearchQueryProvider.notifier).clear(),
-          onClearFilters: () =>
-              ref.read(exploreFiltersProvider.notifier).clear(),
+      return Center(
+        child: Padding(
+          padding: CatchInsets.contentRelaxed,
+          child: CatchEmptyState(
+            icon: CatchIcons.groupsOutlined,
+            title: 'No clubs match this search',
+            message:
+                'Clear the search or filters to bring nearby clubs back into view.',
+            action: ExploreClearAction(
+              clearSearch: true,
+              clearFilters: true,
+              icon: CatchIcons.closeRounded,
+              onClearSearch: () =>
+                  ref.read(exploreSearchQueryProvider.notifier).clear(),
+              onClearFilters: () =>
+                  ref.read(exploreFiltersProvider.notifier).clear(),
+            ),
+          ),
         ),
       );
     }
     if (hasSearch) {
-      return ExploreEmptyState.noSearchResults(
-        hasFilters: false,
-        action: ExploreClearAction(
-          clearSearch: true,
-          clearFilters: false,
-          icon: CatchIcons.closeRounded,
-          onClearSearch: () =>
-              ref.read(exploreSearchQueryProvider.notifier).clear(),
+      return Center(
+        child: Padding(
+          padding: CatchInsets.contentRelaxed,
+          child: CatchEmptyState(
+            icon: CatchIcons.groupsOutlined,
+            title: 'No clubs match this search',
+            message: 'Try another club, neighborhood, host, or tag.',
+            action: ExploreClearAction(
+              clearSearch: true,
+              clearFilters: false,
+              icon: CatchIcons.closeRounded,
+              onClearSearch: () =>
+                  ref.read(exploreSearchQueryProvider.notifier).clear(),
+            ),
+          ),
         ),
       );
     }
     if (hasFilters) {
-      return ExploreEmptyState.noFilterResults(
-        action: ExploreClearAction(
-          clearSearch: false,
-          clearFilters: true,
-          icon: CatchIcons.closeRounded,
-          onClearFilters: () =>
-              ref.read(exploreFiltersProvider.notifier).clear(),
+      return Center(
+        child: Padding(
+          padding: CatchInsets.contentRelaxed,
+          child: CatchEmptyState(
+            icon: CatchIcons.groupsOutlined,
+            title: 'No clubs match these filters',
+            message:
+                'Clear one or more filters to bring nearby clubs back into view.',
+            action: ExploreClearAction(
+              clearSearch: false,
+              clearFilters: true,
+              icon: CatchIcons.closeRounded,
+              onClearFilters: () =>
+                  ref.read(exploreFiltersProvider.notifier).clear(),
+            ),
+          ),
         ),
       );
     }
-    return ExploreEmptyState(cityLabel: cityLabel);
+    return Center(
+      child: Padding(
+        padding: CatchInsets.contentRelaxed,
+        child: CatchEmptyState(
+          icon: CatchIcons.groupsOutlined,
+          title: 'No clubs in $cityLabel yet',
+          message:
+              'Try another city from the location control, or create the first '
+              'club when you are ready to host.',
+        ),
+      ),
+    );
   }
 }
 

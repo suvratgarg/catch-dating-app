@@ -8,9 +8,7 @@ class SetupTab extends StatefulWidget {
     required this.planIsPersisted,
     required this.actionState,
     required this.onSaveSetup,
-    required this.shrinkWrap,
-    required this.physics,
-    required this.padding,
+    required this.embedded,
   });
 
   final Event event;
@@ -19,9 +17,7 @@ class SetupTab extends StatefulWidget {
   final EventSuccessSetupActionState actionState;
   final Future<void> Function(EventSuccessSetupSaveRequest request)?
   onSaveSetup;
-  final bool shrinkWrap;
-  final ScrollPhysics physics;
-  final EdgeInsetsGeometry padding;
+  final bool embedded;
 
   @override
   State<SetupTab> createState() => _SetupTabState();
@@ -100,11 +96,8 @@ class _SetupTabState extends State<SetupTab> {
     );
     final presentedDraft = _resolvedDraft;
 
-    return ListView(
-      shrinkWrap: widget.shrinkWrap,
-      primary: widget.shrinkWrap ? false : null,
-      physics: widget.physics,
-      padding: widget.padding,
+    return EventSuccessHostTabBody(
+      embedded: widget.embedded,
       children: [
         if (unsavedFrozen) ...[
           NoticeCard(
@@ -149,7 +142,9 @@ class _SetupTabState extends State<SetupTab> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SetupSectionTitle(
+              const CatchSectionHeader(
+                heavy: true,
+                padding: EdgeInsets.zero,
                 title: 'Recommended setup',
                 subtitle:
                     'Review the essentials first. Format controls and advanced timing stay available below.',
@@ -355,33 +350,6 @@ EventRunOfShowStep? _activeRunOfShowStep(EventSuccessRuntime runtime) {
   if (index <= 0) return steps.first;
   if (index >= steps.length) return steps.last;
   return steps[index];
-}
-
-class SetupSectionTitle extends StatelessWidget {
-  const SetupSectionTitle({
-    super.key,
-    required this.title,
-    required this.subtitle,
-  });
-
-  final String title;
-  final String subtitle;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: CatchTextStyles.titleL(context)),
-        gapH4,
-        Text(
-          subtitle,
-          style: CatchTextStyles.supporting(context, color: t.ink2),
-        ),
-      ],
-    );
-  }
 }
 
 class UnsavedChangesPill extends StatelessWidget {

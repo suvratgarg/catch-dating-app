@@ -17,6 +17,7 @@ import 'package:catch_dating_app/core/widgets/catch_activity_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/reviews/shared/reviews_section.dart';
@@ -24,9 +25,6 @@ import 'package:flutter/material.dart';
 
 typedef ClubEventSelectionHandler = void Function(Event event);
 
-const EdgeInsets _clubDetailSectionStackPadding = EdgeInsets.only(
-  top: CatchSpacing.screenPt,
-);
 const EdgeInsets _clubActivityTilePadding = EdgeInsets.symmetric(
   horizontal: CatchSpacing.s4,
   vertical: CatchSpacing.s3,
@@ -53,10 +51,11 @@ class ClubDetailBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    const sectionGap = SizedBox(height: CatchLayout.detailScreenSectionGap);
     final club = state.club;
     final tags = visibleClubTags(club, limit: 6);
     final nextEvent = state.nextEvent;
+    final showTrailingSections =
+        state.showReviews || state.contactActions.isNotEmpty;
 
     return ColoredBox(
       color: t.surface,
@@ -68,95 +67,92 @@ class ClubDetailBody extends StatelessWidget {
             locationLabel: _clubHeroLocationLabel(club, nextEvent),
             onShareClub: onShareClub,
           ),
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(
-              CatchLayout.detailScreenHorizontalPadding,
-              CatchLayout.detailScreenTopPadding,
-              CatchLayout.detailScreenHorizontalPadding,
-              0,
-            ),
-            sliver: SliverList.list(
-              children: [
-                if (nextEvent != null) ...[
-                  ClubNextRunBanner(
-                    event: nextEvent,
-                    onTap: onEventSelected == null
-                        ? null
-                        : () => onEventSelected!(nextEvent),
-                  ),
-                  gapH16,
-                ],
-                CatchMetricStrip(items: _clubMetricItems(club)),
-                CatchSectionStack(
-                  padding: _clubDetailSectionStackPadding,
-                  children: [
-                    CatchSection.divided(
-                      title: 'About',
-                      first: true,
-                      child: Text(
-                        club.description,
-                        style: CatchTextStyles.bodyLead(
-                          context,
-                          color: t.ink,
-                        ).copyWith(fontWeight: FontWeight.w400),
-                      ),
+          CatchDetailSliverSectionList(
+            gap: CatchSpacing.screenPt,
+            bottomPadding: 0,
+            sections: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (nextEvent != null) ...[
+                    ClubNextRunBanner(
+                      event: nextEvent,
+                      onTap: onEventSelected == null
+                          ? null
+                          : () => onEventSelected!(nextEvent),
                     ),
-                    if (tags.isNotEmpty)
-                      CatchSection.divided(
-                        title: 'What we do',
-                        child: ClubActivitySection(club: club, tags: tags),
-                      ),
-                    if (club.clubPhotos.isNotEmpty)
-                      CatchSection.divided(
-                        title: 'From the club',
-                        child: ClubPhotoStrip(club: club),
-                      ),
-                    CatchSection.divided(
-                      title: 'Your hosts',
-                      count: club.displayHostProfiles.length,
-                      child: ClubHostSection(
-                        club: club,
-                        canViewProfile: onViewHostProfile != null,
-                        isMessageHostPending: state.isMessageHostPending,
-                        messageableHostUids: state.messageableHostUids,
-                        onViewProfile: onViewHostProfile,
-                        onMessageHost: onMessageHost,
-                      ),
-                    ),
-                    if (state.contactActions.isNotEmpty)
-                      CatchSection.divided(
-                        title: 'Get in touch',
-                        child: ClubContactSection(
-                          actions: state.contactActions,
-                          showTitle: false,
-                          onContactSelected: onContactSelected,
-                        ),
-                      ),
+                    gapH16,
                   ],
-                ),
-                sectionGap,
-              ],
-            ),
+                  CatchMetricStrip(items: _clubMetricItems(club)),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  CatchSection.divided(
+                    title: 'About',
+                    first: true,
+                    child: Text(
+                      club.description,
+                      style: CatchTextStyles.proseL(context, color: t.ink),
+                    ),
+                  ),
+                  if (tags.isNotEmpty)
+                    CatchSection.divided(
+                      title: 'What we do',
+                      child: ClubActivitySection(club: club, tags: tags),
+                    ),
+                  if (club.clubPhotos.isNotEmpty)
+                    CatchSection.divided(
+                      title: 'From the club',
+                      child: ClubPhotoStrip(club: club),
+                    ),
+                  CatchSection.divided(
+                    title: 'Your hosts',
+                    count: club.displayHostProfiles.length,
+                    child: ClubHostSection(
+                      club: club,
+                      canViewProfile: onViewHostProfile != null,
+                      isMessageHostPending: state.isMessageHostPending,
+                      messageableHostUids: state.messageableHostUids,
+                      onViewProfile: onViewHostProfile,
+                      onMessageHost: onMessageHost,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
           ClubScheduleSection(
             events: state.upcomingEvents,
             isHost: state.isHost,
             onEventSelected: onEventSelected,
+            bottomPadding: showTrailingSections
+                ? 0
+                : CatchLayout.detailScreenBottomPadding,
           ),
-          if (state.showReviews)
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(
-                CatchLayout.detailScreenHorizontalPadding,
-                0,
-                CatchLayout.detailScreenHorizontalPadding,
-                CatchLayout.detailScreenBottomPadding,
-              ),
-              sliver: SliverToBoxAdapter(
-                child: ClubReviewsSection(
-                  reviews: state.reviews,
-                  currentUid: state.uid,
-                ),
-              ),
+          if (showTrailingSections)
+            CatchDetailSliverSectionList(
+              topPadding: 0,
+              sections: [
+                if (state.showReviews)
+                  CatchSection.divided(
+                    title: 'Reviews',
+                    child: ClubReviewsSection(
+                      reviews: state.reviews,
+                      currentUid: state.uid,
+                    ),
+                  ),
+                if (state.contactActions.isNotEmpty)
+                  CatchSection.divided(
+                    title: 'Get in touch',
+                    child: ClubContactSection(
+                      actions: state.contactActions,
+                      showTitle: false,
+                      onContactSelected: onContactSelected,
+                    ),
+                  ),
+              ],
             ),
         ],
       ),
@@ -223,47 +219,33 @@ class ClubNextRunBanner extends StatelessWidget {
     return Semantics(
       button: onTap != null,
       label: _nextRunLabel(event),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(CatchRadius.md),
-          child: Ink(
-            decoration: BoxDecoration(
-              color: activity.soft,
-              borderRadius: BorderRadius.circular(CatchRadius.md),
-            ),
-            child: Padding(
-              padding: _clubActivityTilePadding,
-              child: Row(
-                children: [
-                  Icon(
-                    activity.glyph,
-                    size: CatchIcon.sm,
-                    color: activity.deep,
-                  ),
-                  gapW10,
-                  Expanded(
-                    child: Text(
-                      _nextRunLabel(event),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: CatchTextStyles.monoLabelS(
-                        context,
-                        color: activity.deep,
-                      ).copyWith(fontWeight: FontWeight.w700),
-                    ),
-                  ),
-                  gapW10,
-                  Icon(
-                    CatchIcons.arrowForwardRounded,
-                    size: CatchIcon.sm,
-                    color: activity.deep,
-                  ),
-                ],
+      child: CatchSurface(
+        onTap: onTap,
+        radius: CatchRadius.md,
+        padding: _clubActivityTilePadding,
+        backgroundColor: activity.soft,
+        child: Row(
+          children: [
+            Icon(activity.glyph, size: CatchIcon.sm, color: activity.deep),
+            gapW10,
+            Expanded(
+              child: Text(
+                _nextRunLabel(event),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: CatchTextStyles.monoLabelS(
+                  context,
+                  color: activity.deep,
+                ),
               ),
             ),
-          ),
+            gapW10,
+            Icon(
+              CatchIcons.arrowForwardRounded,
+              size: CatchIcon.sm,
+              color: activity.deep,
+            ),
+          ],
         ),
       ),
     );

@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/external_links.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
+    show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
@@ -12,8 +14,6 @@ import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/safety/presentation/settings_keys.dart';
 import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
-    show UpdateUserProfilePatch;
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -40,6 +40,24 @@ void main() {
     expect(find.byKey(SettingsKeys.showOnMapSwitch), findsOneWidget);
     expect(find.byKey(SettingsKeys.weeklyDigestSwitch), findsOneWidget);
     expect(_topBarMaterial(tester).color, CatchTokens.sunsetLight.bg);
+  });
+
+  testWidgets('settings rows align to the section text lane', (tester) async {
+    final container = _settingsContainer(
+      user: buildUser(phoneNumber: '+919876543210'),
+      blockedUsers: const [],
+    );
+    addTearDown(container.dispose);
+
+    await _pumpSettings(tester, container);
+
+    final sectionLeft = tester.getTopLeft(find.text('ACCOUNT')).dx;
+    final rowTextLeft = tester.getTopLeft(find.text('Phone number')).dx;
+
+    expect(
+      rowTextLeft - sectionLeft,
+      moreOrLessEquals(CatchFieldRow.textLaneInset, epsilon: 0.5),
+    );
   });
 
   testWidgets('renders profile provider loading state without blank rows', (

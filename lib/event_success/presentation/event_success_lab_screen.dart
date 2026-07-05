@@ -11,6 +11,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_coach.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_feature_blocks.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_hero_surface.dart';
 import 'package:flutter/material.dart';
 
 const EdgeInsets _labRunStepContentGap = EdgeInsets.only(
@@ -19,11 +20,9 @@ const EdgeInsets _labRunStepContentGap = EdgeInsets.only(
 const EdgeInsets _labLayerHeaderPadding = EdgeInsets.only(top: CatchSpacing.s2);
 const EdgeInsets _labBulletItemGap = EdgeInsets.only(bottom: CatchSpacing.s1);
 const EdgeInsets _labBulletDotInset = EdgeInsets.only(top: CatchSpacing.s2);
-const EdgeInsets _labSectionPadding = EdgeInsets.fromLTRB(
-  CatchSpacing.s5,
-  CatchSpacing.s4,
-  CatchSpacing.s5,
-  0,
+final EdgeInsets _labSectionPadding = CatchInsets.pageBody.copyWith(
+  top: CatchSpacing.s4,
+  bottom: 0,
 );
 
 /// Work-in-progress preview for the event success layer.
@@ -127,14 +126,7 @@ class LabHero extends StatelessWidget {
           constraints: const BoxConstraints(
             maxWidth: CatchLayout.maxContentWidth,
           ),
-          child: CatchSurface(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [t.accent, t.ink],
-            ),
-            borderColor: t.surface.withValues(alpha: CatchOpacity.none),
-            padding: CatchInsets.contentRelaxed,
+          child: EventSuccessHeroSurface(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

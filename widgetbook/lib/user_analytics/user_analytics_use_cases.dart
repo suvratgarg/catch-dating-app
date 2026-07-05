@@ -4,6 +4,9 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_analytics_bar.dart';
+import 'package:catch_dating_app/core/widgets/catch_analytics_kit.dart';
+import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
 import 'package:catch_dating_app/labs/design_fixtures/profile_surface_fixtures.dart';
 import 'package:catch_dating_app/user_analytics/data/user_analytics_repository.dart';
 import 'package:catch_dating_app/user_analytics/shared/user_analytics_panel.dart';
@@ -118,59 +121,6 @@ Widget userAnalyticsReportSkeleton(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Metric grid states',
-  type: UserAnalyticsMetricGrid,
-  path: '[P1 product surfaces]/User analytics',
-)
-Widget userAnalyticsMetricGridStates(BuildContext context) {
-  return _UserAnalyticsCatalog(
-    title: 'UserAnalyticsMetricGrid',
-    contractId: 'component.profile.user_analytics.metric_grid',
-    children: [
-      _StateCard(
-        label: 'summary cards',
-        child: UserAnalyticsMetricGrid(
-          metrics: ProfileSurfaceFixtures.analyticsReport.summaryCards,
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Metric tile states',
-  type: UserAnalyticsMetricTile,
-  path: '[P1 product surfaces]/User analytics',
-)
-Widget userAnalyticsMetricTileStates(BuildContext context) {
-  return _UserAnalyticsCatalog(
-    title: 'UserAnalyticsMetricTile',
-    contractId: 'component.profile.user_analytics.metric_tile',
-    children: [
-      _StateCard(
-        label: 'ready',
-        child: UserAnalyticsMetricTile(
-          metric: ProfileSurfaceFixtures.analyticsReport.summaryCards.first,
-        ),
-      ),
-      _StateCard(
-        label: 'partial',
-        child: UserAnalyticsMetricTile(
-          metric: ProfileSurfaceFixtures.analyticsReport.summaryCards.last,
-        ),
-      ),
-      _StateCard(
-        label: 'missing',
-        child: UserAnalyticsMetricTile(
-          metric:
-              ProfileSurfaceFixtures.emptyAnalyticsReport.summaryCards.first,
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
   name: 'Trend panel states',
   type: UserAnalyticsTrendPanel,
   path: '[P1 product surfaces]/User analytics',
@@ -192,12 +142,12 @@ Widget userAnalyticsTrendPanelStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Bar states',
-  type: UserAnalyticsBar,
+  type: CatchAnalyticsBar,
   path: '[P1 product surfaces]/User analytics',
 )
 Widget userAnalyticsBarStates(BuildContext context) {
   return const _UserAnalyticsCatalog(
-    title: 'UserAnalyticsBar',
+    title: 'CatchAnalyticsBar',
     contractId: 'component.profile.user_analytics.bar',
     children: [
       _StateCard(
@@ -207,13 +157,13 @@ Widget userAnalyticsBarStates(BuildContext context) {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Expanded(child: UserAnalyticsBar(value: 0, maxValue: 12)),
+              Expanded(child: CatchAnalyticsBar(value: 0, maxValue: 12)),
               SizedBox(width: CatchSpacing.micro6),
-              Expanded(child: UserAnalyticsBar(value: 3, maxValue: 12)),
+              Expanded(child: CatchAnalyticsBar(value: 3, maxValue: 12)),
               SizedBox(width: CatchSpacing.micro6),
-              Expanded(child: UserAnalyticsBar(value: 8, maxValue: 12)),
+              Expanded(child: CatchAnalyticsBar(value: 8, maxValue: 12)),
               SizedBox(width: CatchSpacing.micro6),
-              Expanded(child: UserAnalyticsBar(value: 12, maxValue: 12)),
+              Expanded(child: CatchAnalyticsBar(value: 12, maxValue: 12)),
             ],
           ),
         ),
@@ -264,62 +214,31 @@ Widget userAnalyticsTipRowStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Data quality panel states',
-  type: UserAnalyticsDataQualityPanel,
+  type: CatchAnalyticsDataQualityList,
   path: '[P1 product surfaces]/User analytics',
 )
 Widget userAnalyticsDataQualityPanelStates(BuildContext context) {
   return _UserAnalyticsCatalog(
-    title: 'UserAnalyticsDataQualityPanel',
+    title: 'CatchAnalyticsDataQualityList',
     contractId: 'component.profile.user_analytics.data_quality_panel',
     children: [
       _StateCard(
         label: 'quality rows',
-        child: UserAnalyticsDataQualityPanel(
-          rows: ProfileSurfaceFixtures.analyticsReport.dataQuality,
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Data quality row states',
-  type: UserAnalyticsDataQualityRow,
-  path: '[P1 product surfaces]/User analytics',
-)
-Widget userAnalyticsDataQualityRowStates(BuildContext context) {
-  final rows = ProfileSurfaceFixtures.analyticsReport.dataQuality;
-  return _UserAnalyticsCatalog(
-    title: 'UserAnalyticsDataQualityRow',
-    contractId: 'component.profile.user_analytics.data_quality_row',
-    children: [
-      _StateCard(
-        label: 'ready',
-        child: UserAnalyticsDataQualityRow(row: rows[0]),
-      ),
-      _StateCard(
-        label: 'partial',
-        child: UserAnalyticsDataQualityRow(row: rows[1]),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Section states',
-  type: UserAnalyticsSection,
-  path: '[P1 product surfaces]/User analytics',
-)
-Widget userAnalyticsSectionStates(BuildContext context) {
-  return const _UserAnalyticsCatalog(
-    title: 'UserAnalyticsSection',
-    contractId: 'component.profile.user_analytics.section',
-    children: [
-      _StateCard(
-        label: 'labeled child',
-        child: UserAnalyticsSection(
-          label: 'Suggestions',
-          child: UserAnalyticsInlineStat(label: 'Caught you', value: '38'),
+        child: CatchAnalyticsDataQualityList(
+          rows: [
+            for (final row
+                in ProfileSurfaceFixtures.analyticsReport.dataQuality)
+              CatchDataQualityRowData(
+                status: switch (row.state) {
+                  UserAnalyticsDataQualityState.ok => CatchMetricStatus.ready,
+                  UserAnalyticsDataQualityState.partial =>
+                    CatchMetricStatus.partial,
+                  UserAnalyticsDataQualityState.missing =>
+                    CatchMetricStatus.missing,
+                },
+                detail: row.detail,
+              ),
+          ],
         ),
       ),
     ],
@@ -328,17 +247,17 @@ Widget userAnalyticsSectionStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Inline stat states',
-  type: UserAnalyticsInlineStat,
+  type: CatchStatColumn,
   path: '[P1 product surfaces]/User analytics',
 )
 Widget userAnalyticsInlineStatStates(BuildContext context) {
   return const _UserAnalyticsCatalog(
-    title: 'UserAnalyticsInlineStat',
+    title: 'CatchStatColumn',
     contractId: 'component.profile.user_analytics.inline_stat',
     children: [
       _StateCard(
         label: 'count',
-        child: UserAnalyticsInlineStat(label: 'Mutual catches', value: '9'),
+        child: CatchStatColumn(label: 'Mutual catches', value: '9'),
       ),
     ],
   );

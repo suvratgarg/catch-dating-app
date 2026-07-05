@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/motion/catch_transitions.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -239,7 +240,7 @@ class CatchEventCard extends StatelessWidget {
     );
     return heroTag == null
         ? card
-        : EventHeroSurface(tag: heroTag!, child: card);
+        : catchHeroSurface(tag: heroTag!, child: card);
   }
 
   Widget _buildSpotlight(BuildContext context) {
@@ -364,7 +365,7 @@ class CatchEventCard extends StatelessWidget {
     );
     return heroTag == null
         ? card
-        : EventHeroSurface(tag: heroTag!, child: card);
+        : catchHeroSurface(tag: heroTag!, child: card);
   }
 
   Widget _buildCompact(BuildContext context) {
@@ -448,7 +449,7 @@ class CatchEventCard extends StatelessWidget {
     );
     return heroTag == null
         ? card
-        : EventHeroSurface(tag: heroTag!, child: card);
+        : catchHeroSurface(tag: heroTag!, child: card);
   }
 }
 

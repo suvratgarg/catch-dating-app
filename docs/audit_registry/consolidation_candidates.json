@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-30T22:11:28.087905+00:00",
+  "generated_at": "2026-07-05T03:13:48.576984+00:00",
   "total_candidates": 1,
   "candidates": [
     {
@@ -10,16 +10,16 @@
       "is_widget": false,
       "sites": [
         {
-          "file": "lib/swipes/presentation/profile_redesign/catch_profile_view.dart",
-          "line": 223,
+          "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
+          "line": 210,
           "signature": "class ProfilePhoto extends StatelessWidget {",
-          "body_hash": "097bf9f99c7d5b54"
+          "body_hash": "b4a62e0adb852bed"
         },
         {
           "file": "lib/user_profile/domain/profile_photo.dart",
-          "line": 11,
+          "line": 10,
           "signature": "abstract class ProfilePhoto with _$ProfilePhoto {",
-          "body_hash": "24add457f45f0136"
+          "body_hash": "7a9e218881708876"
         }
       ],
       "suggestion": "Same class 'ProfilePhoto' appears in 2 files with different implementations. Triage before consolidation.",

@@ -17,7 +17,6 @@ import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_edit_tab_state.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_photo_intent_factory.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/profile_info_section.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -46,7 +45,7 @@ class ProfileTab extends ConsumerWidget {
       builder: (context, children) => ListView(
         key: scrollViewKey,
         physics: physics,
-        padding: profileTabBodyPadding,
+        padding: CatchInsets.formEditBodyRelaxed,
         children: [
           Center(
             child: ConstrainedBox(
@@ -84,7 +83,7 @@ class ProfileTabSliverBody extends ConsumerWidget {
       user: user,
       uploadState: uploadState,
       builder: (context, children) => SliverPadding(
-        padding: profileTabBodyPadding,
+        padding: CatchInsets.formEditBodyRelaxed,
         sliver: SliverToBoxAdapter(
           child: Center(
             child: ConstrainedBox(
@@ -212,18 +211,14 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
               );
             },
           ),
-          ProfileInfoSection(
+          CatchSection.fieldRows(
             title: 'Prompts',
-            subtitle:
+            count:
                 '${editState.completedPromptCount} of $maxProfilePromptAnswers answered',
-            grouped: true,
-            fullBleedRows: true,
             children: prompts,
           ),
-          ProfileInfoSection(
+          CatchSection.fieldRows(
             title: 'About you',
-            grouped: true,
-            fullBleedRows: true,
             children: [
               for (final row in editState.aboutSectionRows)
                 ProfileFieldRow(
@@ -235,10 +230,8 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
                 ),
             ],
           ),
-          ProfileInfoSection(
+          CatchSection.fieldRows(
             title: 'Running',
-            grouped: true,
-            fullBleedRows: true,
             children: [
               for (final row in editState.runningRows)
                 ProfileFieldRow(
@@ -250,10 +243,8 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
                 ),
             ],
           ),
-          ProfileInfoSection(
+          CatchSection.fieldRows(
             title: 'Lifestyle',
-            grouped: true,
-            fullBleedRows: true,
             children: [
               for (final row in editState.lifestyleRows)
                 ProfileFieldRow(

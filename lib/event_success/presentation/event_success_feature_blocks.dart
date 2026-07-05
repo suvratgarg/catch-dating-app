@@ -943,30 +943,3 @@ class EventSuccessMetricPill extends StatelessWidget {
     );
   }
 }
-
-class EventSuccessDarkPill extends StatelessWidget {
-  const EventSuccessDarkPill({
-    super.key,
-    required this.label,
-    this.foregroundColor,
-  });
-
-  final String label;
-  final Color? foregroundColor;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = foregroundColor ?? CatchTokens.editorialLight;
-    return CatchSurface(
-      radius: CatchRadius.pill,
-      backgroundColor: CatchTokens.editorialLight.withValues(
-        alpha: CatchOpacity.revealSurfaceFill,
-      ),
-      borderColor: CatchTokens.editorialLight.withValues(
-        alpha: CatchOpacity.eventSuccessSubtleBorder,
-      ),
-      padding: CatchInsets.compactControlContent,
-      child: Text(label, style: CatchTextStyles.labelL(context, color: color)),
-    );
-  }
-}

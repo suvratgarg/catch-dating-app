@@ -10,8 +10,8 @@ import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.da
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen_state.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_membership_controller.dart';
-import 'package:catch_dating_app/clubs/presentation/detail/widgets/catch_club_dock.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_body.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_dock.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_hero_app_bar.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_schedule_section.dart';
 import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_list_tile.dart';
@@ -30,11 +30,14 @@ import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/external_event.dart';
@@ -136,7 +139,7 @@ Future<void> _pumpClubUi(WidgetTester tester) async {
   await pumpFeatureUi(tester);
 }
 
-ExploreBody _exploreBody({
+Widget _exploreBodySliverGroup({
   required ExploreViewModel clubsViewModel,
   AsyncValue<ExploreFeedViewModel> feedAsync = const AsyncData(
     ExploreFeedViewModel(items: []),
@@ -156,22 +159,28 @@ ExploreBody _exploreBody({
   bool includeJoinedClubsRail = true,
   bool includeClubDirectory = true,
 }) {
-  return ExploreBody(
-    feedAsync: feedAsync,
-    clubsViewModel: clubsViewModel,
-    filters: filters,
-    searchQuery: searchQuery,
-    clubSectionError: clubSectionError,
-    onRetryFeed: onRetryFeed,
-    onRetryClubs: onRetryClubs,
-    onClearSearch: onClearSearch,
-    onClearFilters: onClearFilters,
-    onSetTimeFilter: onSetTimeFilter,
-    onActivitySelected: onActivitySelected,
-    onEventSelected: onEventSelected,
-    onExternalEventOpened: onExternalEventOpened,
-    includeJoinedClubsRail: includeJoinedClubsRail,
-    includeClubDirectory: includeClubDirectory,
+  return Builder(
+    builder: (context) => SliverMainAxisGroup(
+      slivers: buildExploreBodySlivers(
+        context: context,
+        feedAsync: feedAsync,
+        clubsViewModel: clubsViewModel,
+        filters: filters,
+        searchQuery: searchQuery,
+        clubSectionError: clubSectionError,
+        onRetryFeed: onRetryFeed,
+        onRetryClubs: onRetryClubs,
+        onClearSearch: onClearSearch,
+        onClearFilters: onClearFilters,
+        onSetTimeFilter: onSetTimeFilter,
+        onActivitySelected: onActivitySelected,
+        onEventSelected: onEventSelected,
+        onExternalEventOpened: onExternalEventOpened,
+        includeJoinedClubsRail: includeJoinedClubsRail,
+        includeClubDirectory: includeClubDirectory,
+        pinnedExploreDayHeaders: false,
+      ),
+    ),
   );
 }
 
@@ -432,7 +441,7 @@ void main() {
       'ClubsContent renders personal rail and mixed discovery cards',
       (tester) async {
         await _pumpClubsSlivers(tester, [
-          _exploreBody(
+          _exploreBodySliverGroup(
             includeClubDirectory: false,
             clubsViewModel: ExploreViewModel(
               joinedClubs: [
@@ -533,7 +542,7 @@ void main() {
       expect(find.text('8 going · 4 spots left'), findsOneWidget);
     });
 
-    testWidgets('ExploreBody keeps feed visible when club section fails', (
+    testWidgets('Explore body slivers keep feed visible when clubs fail', (
       tester,
     ) async {
       final club = buildClub(id: 'club-feed-only', name: 'Pace Social');
@@ -554,7 +563,7 @@ void main() {
       );
 
       await _pumpClubsSlivers(tester, [
-        _exploreBody(
+        _exploreBodySliverGroup(
           clubsViewModel: const ExploreViewModel(joinedClubs: [], allClubs: []),
           feedAsync: AsyncData(
             ExploreFeedViewModel(
@@ -643,27 +652,22 @@ void main() {
         clubId: club.id,
         meetingPoint: 'People Plaza',
       );
+      final item = ExploreEventItem(
+        event: event,
+        club: club,
+        availability: resolveViewerEventAvailability(
+          event: event,
+          userProfile: null,
+          now: DateTime.now(),
+        ),
+        status: EventTileStatus.open,
+      );
 
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
             exploreFeedViewModelProvider.overrideWithValue(
-              AsyncData(
-                ExploreFeedViewModel(
-                  items: [
-                    ExploreEventItem(
-                      event: event,
-                      club: club,
-                      availability: resolveViewerEventAvailability(
-                        event: event,
-                        userProfile: null,
-                        now: DateTime.now(),
-                      ),
-                      status: EventTileStatus.open,
-                    ),
-                  ],
-                ),
-              ),
+              AsyncData(ExploreFeedViewModel(items: [item])),
             ),
           ],
           child: MaterialApp(
@@ -672,7 +676,7 @@ void main() {
               data: const MediaQueryData(
                 padding: EdgeInsets.only(top: topInset),
               ),
-              child: Scaffold(body: _exploreCoverHeader()),
+              child: Scaffold(body: _exploreCoverHeader(featuredItem: item)),
             ),
           ),
         ),
@@ -684,6 +688,13 @@ void main() {
         tester.getSize(find.byType(ExploreDiscoveryCoverHeader)).height,
         greaterThan(topInset),
       );
+
+      final searchIcon = find.byIcon(CatchIcons.searchRounded);
+      expect(searchIcon, findsOneWidget);
+      final searchHitTargetTop =
+          tester.getCenter(searchIcon).dy -
+          CatchLayout.coverStorySearchExtent / 2;
+      expect(searchHitTargetTop, greaterThanOrEqualTo(topInset));
     });
 
     testWidgets('ExploreDiscoveryCoverHeader uses compact row without hero', (
@@ -754,6 +765,14 @@ void main() {
       expect(find.byType(CatchCoverStory), findsNothing);
       expect(_topLevelSearchField(), findsOneWidget);
       expect(find.byType(TextField), findsOneWidget);
+      expect(
+        tester.getSize(find.byType(ExploreCityPicker)).height,
+        CatchIconButton.navSize,
+      );
+      expect(
+        tester.getSize(_topLevelSearchField()).height,
+        CatchIconButton.navSize,
+      );
       expect(find.text(event.title), findsNothing);
     });
 
@@ -1300,11 +1319,15 @@ void main() {
               body: Builder(
                 builder: (context) => CustomScrollView(
                   slivers: [
-                    ...ExploreSliverHeader(
-                      query: container.read(exploreSearchQueryProvider),
-                      onQueryChanged: (value) => container
-                          .read(exploreSearchQueryProvider.notifier)
-                          .setQuery(value),
+                    ...CatchSliverHeader(
+                      title: const SizedBox.shrink(),
+                      bottomHeight: CatchLayout.browseHeaderHeight,
+                      bottom: ExploreBrowseHeaderContent(
+                        query: container.read(exploreSearchQueryProvider),
+                        onQueryChanged: (value) => container
+                            .read(exploreSearchQueryProvider.notifier)
+                            .setQuery(value),
+                      ),
                     ).buildSlivers(context),
                     const SliverToBoxAdapter(child: SizedBox(height: 700)),
                   ],
@@ -1334,7 +1357,7 @@ void main() {
       expect(_topLevelSearchField(), findsOneWidget);
       expect(
         tester.getSize(_topLevelSearchField()).width,
-        lessThanOrEqualTo(CatchLayout.browseHeaderSearchExtent),
+        lessThanOrEqualTo(CatchIconButton.navSize),
       );
       expect(find.byType(TextField), findsNothing);
 
@@ -1346,10 +1369,7 @@ void main() {
       await tester.pump(midSearchMorphFrame);
 
       final morphingSearchWidth = tester.getSize(_topLevelSearchField()).width;
-      expect(
-        morphingSearchWidth,
-        greaterThan(CatchLayout.browseHeaderSearchExtent),
-      );
+      expect(morphingSearchWidth, greaterThan(CatchIconButton.navSize));
 
       await _pumpClubUi(tester);
 
@@ -1357,7 +1377,7 @@ void main() {
       expect(expandedSearchWidth, greaterThanOrEqualTo(morphingSearchWidth));
       expect(
         tester.getSize(_topLevelSearchField()).height,
-        greaterThanOrEqualTo(CatchLayout.browseHeaderSearchExtent),
+        CatchIconButton.navSize,
       );
       expect(find.byIcon(CatchIcons.arrowBackRounded), findsNothing);
       expect(find.byIcon(CatchIcons.keyboardHideRounded), findsNothing);
@@ -1385,7 +1405,7 @@ void main() {
       expect(_topLevelSearchField(), findsOneWidget);
       expect(
         tester.getSize(_topLevelSearchField()).width,
-        lessThanOrEqualTo(CatchLayout.browseHeaderSearchExtent),
+        lessThanOrEqualTo(CatchIconButton.navSize),
       );
       expect(find.byType(TextField), findsNothing);
     });
@@ -1476,7 +1496,11 @@ void main() {
             builder: (_, _) => Scaffold(
               body: Builder(
                 builder: (context) => CustomScrollView(
-                  slivers: ExploreSliverHeader().buildSlivers(context),
+                  slivers: const CatchSliverHeader(
+                    title: SizedBox.shrink(),
+                    bottomHeight: CatchLayout.browseHeaderHeight,
+                    bottom: ExploreBrowseHeaderContent(),
+                  ).buildSlivers(context),
                 ),
               ),
             ),
@@ -2470,12 +2494,28 @@ void main() {
           find.byType(CustomScrollView),
         );
         expect(scrollView.slivers[2], isA<ClubScheduleSection>());
-        expect(scrollView.slivers[3], isA<SliverPadding>());
+        expect(scrollView.slivers[3], isA<CatchDetailSliverSectionList>());
+        final trailingSections =
+            scrollView.slivers[3] as CatchDetailSliverSectionList;
+        expect(
+          trailingSections.sections.whereType<CatchSection>().map(
+            (section) => section.title,
+          ),
+          contains('Reviews'),
+        );
 
-        await tester.drag(find.byType(CustomScrollView), const Offset(0, -900));
-        await _pumpClubUi(tester);
+        for (
+          var i = 0;
+          i < 12 && find.text('Most recent.').evaluate().isEmpty;
+          i++
+        ) {
+          await tester.drag(
+            find.byType(CustomScrollView),
+            const Offset(0, -400),
+          );
+          await _pumpClubUi(tester);
+        }
 
-        expect(find.text('Reviews'), findsOneWidget);
         expect(find.text('Most recent.'), findsOneWidget);
         expect(find.text('Second recent.'), findsOneWidget);
         expect(find.text('Third recent.'), findsOneWidget);
@@ -2658,10 +2698,7 @@ void main() {
         final morphingSearchWidth = tester
             .getSize(_topLevelSearchField())
             .width;
-        expect(
-          morphingSearchWidth,
-          greaterThan(CatchLayout.browseHeaderSearchExtent),
-        );
+        expect(morphingSearchWidth, greaterThan(CatchIconButton.navSize));
 
         await _pumpClubUi(tester);
 
@@ -2994,6 +3031,11 @@ void main() {
       expect(find.byIcon(CatchIcons.tuneRounded), findsOneWidget);
       expect(find.text('Filters'), findsNothing);
       expect(find.text('1'), findsOneWidget);
+
+      final iconCenter = tester.getCenter(find.byIcon(CatchIcons.tuneRounded));
+      final badgeCenter = tester.getCenter(find.text('1'));
+      expect(badgeCenter.dx, greaterThan(iconCenter.dx));
+      expect(badgeCenter.dy, lessThan(iconCenter.dy));
     });
 
     testWidgets('ExploreScreen map pill opens the map route', (tester) async {

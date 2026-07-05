@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/explore/presentation/explore_filter_logic.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
@@ -46,8 +47,6 @@ class ExploreFilterRail extends StatelessWidget {
   final ValueChanged<String>? onToggleArea;
   final VoidCallback? onClearFilters;
 
-  static const double _optionGap = CatchSpacing.s3;
-
   static const List<CatchOption<ExploreTimeFilter>> _timeOptions = [
     CatchOption(value: ExploreTimeFilter.tonight, label: 'Tonight'),
     CatchOption(value: ExploreTimeFilter.weekend, label: 'Weekend'),
@@ -60,45 +59,17 @@ class ExploreFilterRail extends StatelessWidget {
     final t = CatchTokens.of(context);
     final railState = state ?? ExploreFilterRailState.from(filters);
 
-    return ColoredBox(
-      color: backgroundColor ?? t.bg,
-      child: Padding(
-        padding: CatchInsets.screenControlRail,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(color: t.line)),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      for (final option in _timeOptions) ...[
-                        if (option != _timeOptions.first)
-                          const SizedBox(width: _optionGap),
-                        ExploreRailLabel(
-                          label: option.label,
-                          selected: option.value == filters.timeFilter,
-                          onTap: () => onTimeFilterSelected?.call(option.value),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-              gapW12,
-              ExploreFilterGlyphButton(
-                key: const ValueKey('explore-filter-button'),
-                activeCount: railState.activeCount,
-                semanticLabel: railState.filterButtonSemanticLabel,
-                onTap: () => _showExploreFilterSheet(context),
-              ),
-            ],
-          ),
-        ),
+    return CatchTabRail<ExploreTimeFilter>(
+      selected: filters.timeFilter,
+      onChanged: onTimeFilterSelected,
+      options: _timeOptions,
+      scrollable: true,
+      backgroundColor: backgroundColor ?? t.bg,
+      trailing: ExploreFilterGlyphButton(
+        key: const ValueKey('explore-filter-button'),
+        activeCount: railState.activeCount,
+        semanticLabel: railState.filterButtonSemanticLabel,
+        onTap: () => _showExploreFilterSheet(context),
       ),
     );
   }
@@ -118,55 +89,6 @@ class ExploreFilterRail extends StatelessWidget {
         onToggleActivityTag: onToggleActivityTag,
         onToggleArea: onToggleArea,
         onClearFilters: onClearFilters,
-      ),
-    );
-  }
-}
-
-class ExploreRailLabel extends StatelessWidget {
-  const ExploreRailLabel({
-    super.key,
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final foreground = selected ? t.ink : t.ink3;
-
-    return Semantics(
-      button: true,
-      selected: selected,
-      child: InkWell(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: CatchMotion.fast,
-          curve: CatchMotion.standardCurve,
-          padding: EdgeInsets.only(
-            bottom: selected ? CatchSpacing.micro10 : CatchSpacing.s3,
-          ),
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: selected ? t.ink : Colors.transparent,
-                width: CatchSpacing.micro3,
-              ),
-            ),
-          ),
-          child: Text(
-            label,
-            maxLines: 1,
-            softWrap: false,
-            style: CatchTextStyles.labelL(context, color: foreground),
-            textAlign: TextAlign.start,
-          ),
-        ),
       ),
     );
   }
@@ -193,21 +115,26 @@ class ExploreFilterGlyphButton extends StatelessWidget {
       child: Semantics(
         button: true,
         label: semanticLabel,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(CatchRadius.pill),
-          child: SizedBox(
-            width: CatchLayout.iconButtonSize,
-            height: CatchLayout.browseHeaderSearchExtent,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(CatchRadius.pill),
             child: CatchIconBadge(
               label: '$activeCount',
               isLabelVisible: activeCount > 0,
               backgroundColor: t.ink,
               foregroundColor: t.surface,
-              child: Icon(
-                CatchIcons.tuneRounded,
-                color: t.ink,
-                size: CatchIcon.md,
+              offset: const Offset(-4, 4),
+              child: SizedBox.square(
+                dimension: CatchLayout.iconButtonNavSize,
+                child: Center(
+                  child: Icon(
+                    CatchIcons.tuneRounded,
+                    color: t.ink,
+                    size: CatchIcon.md,
+                  ),
+                ),
               ),
             ),
           ),

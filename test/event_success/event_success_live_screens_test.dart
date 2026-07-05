@@ -11,6 +11,7 @@ import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_arrival_mission.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
@@ -19,6 +20,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_structure.da
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/event_success/event_success_companion_clock.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen_state.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
@@ -43,6 +45,56 @@ import '../events/events_test_helpers.dart'
 import '../test_pump_helpers.dart';
 
 void main() {
+  testWidgets('question progress rail uses stage press without Material ink', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    try {
+      var selectedQuestion = -1;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: Center(
+              child: SizedBox(
+                width: 320,
+                child: QuestionProgressRail(
+                  activeIndex: 1,
+                  answeredCount: 2,
+                  questionCount: 3,
+                  onSelect: (index) => selectedQuestion = index,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(StageBouncyPress), findsNWidgets(3));
+      expect(find.byType(InkWell), findsNothing);
+      final activeNode = find.semantics.byLabel('Question 2').evaluate().single;
+      expect(
+        activeNode,
+        matchesSemantics(
+          label: 'Question 2',
+          hasSelectedState: true,
+          isSelected: true,
+          isButton: true,
+          hasEnabledState: true,
+          isEnabled: true,
+          hasTapAction: true,
+        ),
+      );
+
+      await tester.tap(find.text('3'));
+
+      expect(selectedQuestion, 2);
+    } finally {
+      semantics.dispose();
+    }
+  });
+
   testWidgets('host screen exposes setup live mode and report tabs', (
     tester,
   ) async {
@@ -462,6 +514,142 @@ void main() {
       ).retryIntent,
       EventSuccessHostRetryIntent.scorecard,
     );
+  });
+
+  test(
+    'companion route state resolves core loading messages and ready data',
+    () {
+      final event = buildEvent(id: 'event-companion-route-state');
+      final plan = EventSuccessPlan.defaultForEvent(
+        event,
+        now: event.startTime,
+      );
+      final profile = buildUser();
+      final participation = buildEventParticipation(
+        event: event,
+        uid: 'runner-1',
+      );
+
+      final loading = EventSuccessCompanionRouteState.resolveCore(
+        eventState: const CatchAsyncState<Event?>.loading(),
+        initialEvent: null,
+        uidState: const CatchAsyncState<String?>.data('runner-1'),
+        profileState: null,
+        participationState: null,
+        planState: CatchAsyncState<EventSuccessPlan?>.data(plan),
+        referenceNow: event.startTime,
+      );
+      expect(loading.status, EventSuccessCompanionRouteStatus.loading);
+
+      final signedOut = EventSuccessCompanionRouteState.resolveCore(
+        eventState: CatchAsyncState<Event?>.data(event),
+        initialEvent: null,
+        uidState: const CatchAsyncState<String?>.data(null),
+        profileState: null,
+        participationState: null,
+        planState: CatchAsyncState<EventSuccessPlan?>.data(plan),
+        referenceNow: event.startTime,
+      );
+      expect(signedOut.status, EventSuccessCompanionRouteStatus.message);
+      expect(signedOut.message?.title, 'Sign in required');
+
+      final missingPlan = EventSuccessCompanionRouteState.resolveCore(
+        eventState: CatchAsyncState<Event?>.data(event),
+        initialEvent: null,
+        uidState: const CatchAsyncState<String?>.data('runner-1'),
+        profileState: CatchAsyncState<UserProfile?>.data(profile),
+        participationState: CatchAsyncState<EventParticipation?>.data(
+          participation,
+        ),
+        planState: const CatchAsyncState<EventSuccessPlan?>.data(null),
+        referenceNow: event.startTime,
+      );
+      expect(missingPlan.status, EventSuccessCompanionRouteStatus.message);
+      expect(missingPlan.message?.title, 'Companion not available');
+
+      final ready = EventSuccessCompanionRouteState.resolveCore(
+        eventState: CatchAsyncState<Event?>.data(event),
+        initialEvent: null,
+        uidState: const CatchAsyncState<String?>.data('runner-1'),
+        profileState: CatchAsyncState<UserProfile?>.data(profile),
+        participationState: CatchAsyncState<EventParticipation?>.data(
+          participation,
+        ),
+        planState: CatchAsyncState<EventSuccessPlan?>.data(plan),
+        referenceNow: event.startTime,
+      );
+      expect(ready.status, EventSuccessCompanionRouteStatus.ready);
+      expect(ready.event, event);
+      expect(ready.uid, 'runner-1');
+      expect(ready.profile, profile);
+      expect(ready.participation, participation);
+      expect(ready.plan, plan);
+    },
+  );
+
+  test('companion route state maps moment loading and retry intent', () {
+    final event = buildEvent(id: 'event-companion-moment-state');
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
+    final profile = buildUser();
+    final participation = buildEventParticipation(
+      event: event,
+      uid: 'runner-1',
+    );
+    final ready =
+        EventSuccessCompanionRouteState.resolveCore(
+              eventState: CatchAsyncState<Event?>.data(event),
+              initialEvent: null,
+              uidState: const CatchAsyncState<String?>.data('runner-1'),
+              profileState: CatchAsyncState<UserProfile?>.data(profile),
+              participationState: CatchAsyncState<EventParticipation?>.data(
+                participation,
+              ),
+              planState: CatchAsyncState<EventSuccessPlan?>.data(plan),
+              referenceNow: event.startTime,
+            )
+            .withArrivalMission(
+              const CatchAsyncState<EventSuccessArrivalMission?>.data(null),
+            )
+            .withCompatibilityResponse(
+              const CatchAsyncState<EventSuccessCompatibilityResponse?>.data(
+                null,
+              ),
+            );
+
+    final loading = ready.withMomentData(
+      feedbackState: const CatchAsyncState<EventSuccessFeedback?>.loading(),
+      preferenceState: const CatchAsyncState<EventSuccessPreference?>.data(
+        null,
+      ),
+      wingmanCandidatesState: const CatchAsyncState<List<PublicProfile>>.data(
+        [],
+      ),
+      wingmanRequestState:
+          const CatchAsyncState<EventSuccessWingmanRequest?>.data(null),
+      assignmentState: const CatchAsyncState<EventSuccessAssignment?>.data(
+        null,
+      ),
+      rotationState: const CatchAsyncState<EventSuccessAssignment?>.data(null),
+    );
+    expect(loading.status, EventSuccessCompanionRouteStatus.loading);
+
+    final error = StateError('preference failed');
+    final failed = ready.withMomentData(
+      feedbackState: const CatchAsyncState<EventSuccessFeedback?>.data(null),
+      preferenceState: CatchAsyncState<EventSuccessPreference?>.error(error),
+      wingmanCandidatesState: const CatchAsyncState<List<PublicProfile>>.data(
+        [],
+      ),
+      wingmanRequestState:
+          const CatchAsyncState<EventSuccessWingmanRequest?>.data(null),
+      assignmentState: const CatchAsyncState<EventSuccessAssignment?>.data(
+        null,
+      ),
+      rotationState: const CatchAsyncState<EventSuccessAssignment?>.data(null),
+    );
+    expect(failed.status, EventSuccessCompanionRouteStatus.error);
+    expect(failed.error, error);
+    expect(failed.retryIntent, EventSuccessCompanionRetryIntent.preference);
   });
 
   testWidgets('host report is hidden when host analytics is disabled', (
@@ -1497,7 +1685,7 @@ void main() {
         400,
         scrollable: findPrimaryScrollable(),
       );
-      expect(find.text('Host can see'), findsOneWidget);
+      expect(find.text('HOST CAN SEE'), findsOneWidget);
       expect(find.text('Rhea'), findsOneWidget);
 
       await tester.scrollUntilVisible(

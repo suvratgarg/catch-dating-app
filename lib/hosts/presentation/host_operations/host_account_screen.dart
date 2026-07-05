@@ -1,4 +1,4 @@
-part of 'host_operations_screen.dart';
+part of '../host_operations_screen.dart';
 
 class HostAccountScreen extends ConsumerStatefulWidget {
   const HostAccountScreen({super.key});
@@ -63,7 +63,7 @@ class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {
             showBackButton: false,
             border: true,
             actions: [
-              CatchTopBarIconAction(
+              CatchIconAction(
                 tooltip: 'Sign out',
                 icon: CatchIcons.logoutRounded,
                 onPressed: actions.canSignOut
@@ -71,9 +71,13 @@ class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {
                     : null,
               ),
             ],
-            bottom: HostSettingsTabRail(
+            bottom: CatchTabRail<HostSettingsMode>(
               selected: _selectedTab,
               onChanged: (tab) => setState(() => _selectedTab = tab),
+              options: const [
+                CatchOption(value: HostSettingsMode.edit, label: 'Edit'),
+                CatchOption(value: HostSettingsMode.preview, label: 'Preview'),
+              ],
             ),
           ),
           body: ListView(
@@ -166,78 +170,6 @@ class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {
   }
 }
 
-class HostSettingsTabRail extends StatelessWidget
-    implements PreferredSizeWidget {
-  const HostSettingsTabRail({
-    super.key,
-    required this.selected,
-    required this.onChanged,
-  });
-
-  final HostSettingsMode selected;
-  final ValueChanged<HostSettingsMode> onChanged;
-
-  @override
-  Size get preferredSize => const Size.fromHeight(48);
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: preferredSize.height,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          CatchSpacing.s5,
-          0,
-          CatchSpacing.s5,
-          CatchSpacing.s2,
-        ),
-        child: CatchOptionGroup<HostSettingsMode>(
-          selected: selected,
-          onChanged: onChanged,
-          options: const [
-            CatchOption(value: HostSettingsMode.edit, label: 'Edit'),
-            CatchOption(value: HostSettingsMode.preview, label: 'Preview'),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class HostSettingsSection extends StatelessWidget {
-  const HostSettingsSection({
-    super.key,
-    required this.label,
-    required this.children,
-    this.first = false,
-  });
-
-  final String label;
-  final List<Widget> children;
-  final bool first;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Padding(
-      padding: EdgeInsets.only(top: first ? 0 : CatchSpacing.s2),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (!first) ...[
-            Divider(color: t.line, height: 1, thickness: 1),
-            gapH18,
-          ],
-          Text(label, style: CatchTextStyles.kicker(context, color: t.ink2)),
-          gapH10,
-          ...children,
-        ],
-      ),
-    );
-  }
-}
-
 class HostSettingsProfileSection extends StatelessWidget {
   const HostSettingsProfileSection({
     super.key,
@@ -259,14 +191,17 @@ class HostSettingsProfileSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return switch (state) {
-      HostSettingsProfileLoading() => const HostSettingsRowsSkeleton(),
+      HostSettingsProfileLoading() => const CatchSkeletonRows(
+        leading: CatchSkeletonRowLeading.icon,
+        divided: true,
+      ),
       HostSettingsProfileError(:final error) => CatchErrorState.fromError(
         error,
         context: AppErrorContext.profile,
         onRetry: onRetry,
       ),
-      HostSettingsProfileMissing() => HostSettingsSection(
-        label: 'Profile',
+      HostSettingsProfileMissing() => CatchSection.fieldRows(
+        title: 'Profile',
         first: true,
         children: [
           CatchField.nav(
@@ -315,8 +250,8 @@ class HostSettingsProfileRows extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        HostSettingsSection(
-          label: 'Profile',
+        CatchSection.fieldRows(
+          title: 'Profile',
           first: true,
           children: [
             CatchField.nav(
@@ -332,7 +267,6 @@ class HostSettingsProfileRows extends StatelessWidget {
                   ? profile.roleTitle!.trim()
                   : 'Add role title',
               icon: CatchIcons.cardMembershipOutlined,
-              divider: true,
               onTap: canEdit ? onEditProfile : null,
               showChevron: canEdit,
             ),
@@ -340,13 +274,12 @@ class HostSettingsProfileRows extends StatelessWidget {
               title: 'Status',
               valueText: hostProfileStatusLabel(profile.status),
               icon: CatchIcons.checkCircleOutlineRounded,
-              divider: true,
               showChevron: false,
             ),
           ],
         ),
-        HostSettingsSection(
-          label: 'Bio',
+        CatchSection.fieldRows(
+          title: 'Bio',
           children: [
             CatchField.nav(
               title: 'About you as a host',
@@ -381,19 +314,25 @@ class HostSettingsClubsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return HostSettingsSection(
-      label: 'Clubs you host',
+    final t = CatchTokens.of(context);
+    return CatchSection.fieldRows(
+      title: 'Clubs you host',
       children: [
         switch (state) {
-          HostSettingsClubsLoading() => const HostSettingsRowsSkeleton(
-            rowCount: 2,
+          HostSettingsClubsLoading() => const CatchSkeletonRows(
+            leading: CatchSkeletonRowLeading.icon,
+            count: 2,
+            divided: true,
           ),
           HostSettingsClubsError(:final error) => CatchErrorState.fromError(
             error,
             context: AppErrorContext.club,
             onRetry: onRetry,
           ),
-          HostSettingsClubsEmpty() => const HostSettingsClubsEmptyState(),
+          HostSettingsClubsEmpty() => Text(
+            'No host clubs yet.',
+            style: CatchTextStyles.supporting(context, color: t.ink2),
+          ),
           HostSettingsClubsContent(:final clubs) => HostSettingsClubRows(
             actions: actions,
             clubs: clubs,
@@ -401,19 +340,6 @@ class HostSettingsClubsSection extends StatelessWidget {
           ),
         },
       ],
-    );
-  }
-}
-
-class HostSettingsClubsEmptyState extends StatelessWidget {
-  const HostSettingsClubsEmptyState({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Text(
-      'No host clubs yet.',
-      style: CatchTextStyles.supporting(context, color: t.ink2),
     );
   }
 }

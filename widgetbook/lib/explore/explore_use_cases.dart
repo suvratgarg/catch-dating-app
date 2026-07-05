@@ -12,6 +12,8 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
+import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -26,7 +28,6 @@ import 'package:catch_dating_app/explore/presentation/widgets/catch_cover_story.
 import 'package:catch_dating_app/explore/presentation/widgets/catch_cross_paths_card.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_body.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_city_picker.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/explore_empty_state.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_event_type_browse_grid.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_events_section.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_filter_rail.dart';
@@ -316,30 +317,43 @@ Widget exploreScreenStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Skeleton list states',
+  type: ExploreSkeletonList,
+  path: '[Explore]/Sections',
+)
+Widget exploreSkeletonListStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreSkeletonList',
+    catalogId: 'section.explore.skeleton_list',
+    children: [
+      _StateCard(
+        label: 'route loading stack',
+        child: const _DeviceFrame(
+          height: 360,
+          child: SingleChildScrollView(
+            padding: CatchInsets.pageBody,
+            child: ExploreSkeletonList(),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Body sliver states',
-  type: ExploreBody,
+  type: ExploreList,
   path: '[Explore]/Sections',
 )
 Widget exploreBodyStates(BuildContext context) {
   return _CatalogScreen(
-    title: 'ExploreBody',
-    catalogId: 'section.explore.body',
+    title: 'buildExploreBodySlivers',
+    catalogId: 'section.explore.body_slivers',
     children: [
       _StateCard(
         label: 'mixed body',
         child: _SliverFrame(
-          child: _ExploreScope(
-            child: CustomScrollView(
-              slivers: [
-                ExploreBody(
-                  viewModel: ExploreViewModel.partition(
-                    clubs: _clubs,
-                    joinedClubIds: _joinedClubIds,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          child: _ExploreScope(child: const _ExploreBodySliverPreview()),
         ),
       ),
     ],
@@ -1163,30 +1177,47 @@ Widget exploreFilterRailStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Rail label states',
-  type: ExploreRailLabel,
+  name: 'Filter option item states',
+  type: CatchOptionGroupItem,
   path: '[Explore]/Controls',
 )
-Widget exploreRailLabelStates(BuildContext context) {
+Widget exploreFilterOptionItemStates(BuildContext context) {
   return _CatalogScreen(
-    title: 'ExploreRailLabel',
-    catalogId: 'control.explore.filter_rail_label',
+    title: 'CatchOptionGroupItem',
+    catalogId: 'control.explore.filter_option_item',
     children: [
       _StateCard(
         label: 'time scope options',
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ExploreRailLabel(label: 'Tonight', selected: true, onTap: _noop),
+            CatchOptionGroupItem<ExploreTimeFilter>(
+              option: const CatchOption(
+                value: ExploreTimeFilter.tonight,
+                label: 'Tonight',
+              ),
+              selected: true,
+              onTap: _noop,
+            ),
             gapW12,
-            ExploreRailLabel(label: 'Weekend', selected: false, onTap: _noop),
+            CatchOptionGroupItem<ExploreTimeFilter>(
+              option: const CatchOption(
+                value: ExploreTimeFilter.weekend,
+                label: 'Weekend',
+              ),
+              selected: false,
+              onTap: _noop,
+            ),
           ],
         ),
       ),
       _StateCard(
         label: 'long copy',
-        child: ExploreRailLabel(
-          label: 'This week',
+        child: CatchOptionGroupItem<ExploreTimeFilter>(
+          option: const CatchOption(
+            value: ExploreTimeFilter.thisWeek,
+            label: 'This week',
+          ),
           selected: false,
           onTap: _noop,
         ),
@@ -1315,44 +1346,45 @@ Widget exploreEventsSectionStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Cross paths surface states',
-  type: CrossPathsSurface,
+  name: 'Cross paths card states',
+  type: CatchCrossPathsCard,
   path: '[Explore]/Cards',
 )
-Widget crossPathsSurfaceStates(BuildContext context) {
-  final t = CatchTokens.of(context);
+Widget catchCrossPathsCardStates(BuildContext context) {
   return _CatalogScreen(
-    title: 'CrossPathsSurface',
-    catalogId: 'card.explore.cross_paths.surface',
+    title: 'CatchCrossPathsCard',
+    catalogId: 'card.explore.cross_paths',
     children: [
       _StateCard(
-        label: 'raised postcard chrome',
+        label: 'postcard',
         child: SizedBox(
           width: 340,
-          child: CrossPathsSurface(
-            borderColor: t.line2,
-            radius: CatchSpacing.micro6,
-            elevation: CatchSurfaceShadow.raised,
-            child: Padding(
-              padding: CatchInsets.content,
-              child: Text(
-                'I am going for coffee after the run.',
-                style: CatchTextStyles.profileAnswer(context),
-              ),
-            ),
+          child: CatchCrossPathsCard(
+            activityKind: ActivityKind.socialRun,
+            quote: 'I am going for coffee after the run.',
+            displayName: 'Neha',
+            age: 29,
+            meta: 'Bandra · 2 km away',
+            kicker: 'Crossed paths',
+            onJoin: _noop,
+            onLike: _noop,
           ),
         ),
       ),
       _StateCard(
-        label: 'clipped photo-row chrome',
+        label: 'photo row',
         child: SizedBox(
           width: 340,
-          height: 120,
-          child: CrossPathsSurface(
-            borderColor: t.line,
-            radius: CatchRadius.md,
-            clip: true,
-            child: ColoredBox(color: t.primarySoft),
+          child: CatchCrossPathsCard(
+            activityKind: ActivityKind.dinner,
+            quote: 'Ask me about the dessert menu.',
+            displayName: 'Maya',
+            age: 31,
+            meta: 'Fort · Host friend',
+            kicker: 'Also going',
+            variant: CatchCrossPathsVariant.photo,
+            onJoin: _noop,
+            onLike: _noop,
           ),
         ),
       ),
@@ -1724,43 +1756,58 @@ Widget exploreEventsLoadingSliverStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Empty states',
-  type: ExploreEmptyState,
+  type: CatchEmptyState,
   path: '[Explore]/Sections',
 )
 Widget exploreEmptyStateStates(BuildContext context) {
   return _CatalogScreen(
-    title: 'ExploreEmptyState',
+    title: 'Explore empty states',
     catalogId: 'section.explore.empty_error',
     children: [
       _StateCard(
         label: 'empty city',
-        child: ExploreEmptyState(
-          cityLabel: 'Mumbai',
+        child: CatchEmptyState(
+          icon: CatchIcons.groupsOutlined,
+          title: 'No clubs in Mumbai yet',
+          message:
+              'Try another city from the location control, or create the first '
+              'club when you are ready to host.',
           action: _secondaryAction('Try another city'),
         ),
       ),
       _StateCard(
         label: 'search only',
-        child: ExploreEmptyState.noSearchResults(
-          hasFilters: false,
+        child: CatchEmptyState(
+          icon: CatchIcons.groupsOutlined,
+          title: 'No clubs match this search',
+          message: 'Try another club, neighborhood, host, or tag.',
           action: _secondaryAction('Clear search'),
         ),
       ),
       _StateCard(
         label: 'filter only',
-        child: ExploreEmptyState.noFilterResults(
+        child: CatchEmptyState(
+          icon: CatchIcons.groupsOutlined,
+          title: 'No clubs match these filters',
+          message:
+              'Clear one or more filters to bring nearby clubs back into view.',
           action: _secondaryAction('Clear filters'),
         ),
       ),
       _StateCard(
         label: 'search plus filters',
-        child: ExploreEmptyState.noFilteredSearchResults(
+        child: CatchEmptyState(
+          icon: CatchIcons.groupsOutlined,
+          title: 'No clubs match this search',
+          message:
+              'Clear the search or filters to bring nearby clubs back into view.',
           action: _secondaryAction('Clear search and filters'),
         ),
       ),
       _StateCard(
         label: 'offline copy candidate',
-        child: ExploreEmptyState.generic(
+        child: CatchEmptyState(
+          icon: CatchIcons.groupsOutlined,
           title: 'Explore is offline',
           message:
               'Check your connection and try again to reload clubs and events.',
@@ -2399,6 +2446,41 @@ class _FilterSeed {
 class _NoDeviceLocation extends DeviceLocation {
   @override
   Future<LocationCoordinate?> build() async => null;
+}
+
+class _ExploreBodySliverPreview extends ConsumerWidget {
+  const _ExploreBodySliverPreview();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final filters = ref.watch(exploreFiltersProvider);
+    return CustomScrollView(
+      slivers: buildExploreBodySlivers(
+        context: context,
+        feedAsync: ref.watch(exploreFeedViewModelProvider),
+        clubsViewModel: ExploreViewModel.partition(
+          clubs: _clubs,
+          joinedClubIds: _joinedClubIds,
+        ),
+        filters: filters,
+        searchQuery: ref.watch(exploreSearchQueryProvider).trim(),
+        onRetryFeed: () => ref.invalidate(exploreFeedViewModelProvider),
+        onClearSearch: () =>
+            ref.read(exploreSearchQueryProvider.notifier).clear(),
+        onClearFilters: () => ref.read(exploreFiltersProvider.notifier).clear(),
+        onSetTimeFilter: (filter) =>
+            ref.read(exploreFiltersProvider.notifier).setTimeFilter(filter),
+        onActivitySelected: (activityKind) => ref
+            .read(exploreFiltersProvider.notifier)
+            .toggleActivityTag(activityKind.name),
+        onEventSelected: (_, _) {},
+        onExternalEventOpened: (_) {},
+        includeJoinedClubsRail: true,
+        includeClubDirectory: true,
+        pinnedExploreDayHeaders: false,
+      ),
+    );
+  }
 }
 
 class _ExploreEventsSliverPreview extends ConsumerWidget {

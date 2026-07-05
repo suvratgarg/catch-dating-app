@@ -1,3 +1,4 @@
+import "package:catch_dating_app/core/widgets/catch_meta_row.dart";
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
@@ -7,7 +8,7 @@ import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen_state.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
-import 'package:catch_dating_app/clubs/presentation/detail/widgets/catch_club_dock.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_dock.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_contact_section.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_body.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_skeleton.dart';
@@ -29,6 +30,8 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/shared/reviews_section.dart';
@@ -474,15 +477,18 @@ Widget clubTextLoadingSkeletonStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Tag skeleton states',
-  type: ClubTagLoadingSkeleton,
+  type: CatchSkeletonChips,
   path: '[Club Detail]/Loading',
 )
 Widget clubTagLoadingSkeletonStates(BuildContext context) {
   return const _CatalogScreen(
-    title: 'ClubTagLoadingSkeleton',
+    title: 'CatchSkeletonChips',
     catalogId: 'loading.club.detail.tags',
     children: [
-      _StateCard(label: 'three chips', child: ClubTagLoadingSkeleton()),
+      _StateCard(
+        label: 'three chips',
+        child: CatchSkeletonChips(height: CatchSpacing.s8),
+      ),
     ],
   );
 }
@@ -535,6 +541,92 @@ Widget clubMembershipDockStates(BuildContext context) {
             isMutating: false,
             pushNotificationsEnabled: true,
             isPushMutating: true,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Dock states',
+  type: ClubDetailDock,
+  path: '[Club Detail]/Dock',
+)
+Widget clubDetailDockStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ClubDetailDock',
+    catalogId: 'section.club.detail_dock',
+    children: [
+      _StateCard(
+        label: 'guest',
+        child: _DockFrame(
+          child: ClubDetailDock(
+            state: ClubDetailDockRole.guest,
+            activityKind: ActivityKind.socialRun,
+            footnote: 'Sign in to request access.',
+            onSignIn: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'visitor',
+        child: _DockFrame(
+          child: ClubDetailDock(
+            state: ClubDetailDockRole.visitor,
+            activityKind: ActivityKind.pickleball,
+            members: 128,
+            footnote: 'Requests are approved by the host.',
+            onJoin: _noop,
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'visitor pending',
+        child: _DockFrame(
+          child: ClubDetailDock(
+            state: ClubDetailDockRole.visitor,
+            activityKind: ActivityKind.dinner,
+            members: 42,
+            isJoinLoading: true,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'member',
+        child: _DockFrame(
+          child: ClubDetailDock(
+            state: ClubDetailDockRole.member,
+            activityKind: ActivityKind.yoga,
+            members: 76,
+            footnote: 'You are a member.',
+            onBell: _noop,
+            onManage: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'member bell pending',
+        child: _DockFrame(
+          child: ClubDetailDock(
+            state: ClubDetailDockRole.member,
+            activityKind: ActivityKind.socialRun,
+            members: 76,
+            notificationsEnabled: false,
+            isBellLoading: true,
+            onBell: _noop,
+            onManage: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'owner',
+        child: _DockFrame(
+          child: ClubDetailDock(
+            state: ClubDetailDockRole.owner,
+            activityKind: ActivityKind.pubQuiz,
+            onManage: _noop,
+            onCreate: _noop,
           ),
         ),
       ),
@@ -618,7 +710,7 @@ Widget clubAvatarRailStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'joined clubs',
-        child: ClubAvatarRail(clubs: [_club, _minimalClub], showDivider: false),
+        child: ClubAvatarRail(clubs: [_club, _minimalClub]),
       ),
     ],
   );
@@ -755,49 +847,35 @@ Widget directoryCardStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Directory photo card states',
-  type: DirectoryPhotoCard,
+  name: 'Directory club card states',
+  type: DirectoryClubCard,
   path: '[Club Discovery]/Cards',
 )
-Widget directoryPhotoCardStates(BuildContext context) {
+Widget directoryClubCardStates(BuildContext context) {
   return _CatalogScreen(
-    title: 'DirectoryPhotoCard',
-    catalogId: 'card.club.directory_photo',
+    title: 'DirectoryClubCard',
+    catalogId: 'card.club.directory_club',
     children: [
       _StateCard(
-        label: 'joinable',
+        label: 'photo / joinable',
         child: _ClubDiscoveryFrame(
           child: _ClubDirectoryPreviewScope(
-            child: DirectoryPhotoCard(
+            child: DirectoryClubCard(
               club: _logoClub,
               isJoined: false,
-              sash: null,
+              hasCoverImage: true,
             ),
           ),
         ),
       ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Directory identity card states',
-  type: DirectoryIdentityCard,
-  path: '[Club Discovery]/Cards',
-)
-Widget directoryIdentityCardStates(BuildContext context) {
-  return _CatalogScreen(
-    title: 'DirectoryIdentityCard',
-    catalogId: 'card.club.directory_identity',
-    children: [
       _StateCard(
-        label: 'no cover',
+        label: 'identity / joined',
         child: _ClubDiscoveryFrame(
           child: _ClubDirectoryPreviewScope(
-            child: DirectoryIdentityCard(
+            child: DirectoryClubCard(
               club: _minimalClub,
-              isJoined: false,
-              sash: null,
+              isJoined: true,
+              hasCoverImage: false,
             ),
           ),
         ),
@@ -971,29 +1049,6 @@ Widget clubPhotoChromeStates(BuildContext context) {
               ClubPhotoMediaOverlay(club: _club),
               ClubPhotoChrome(club: _logoClub, sash: null, palette: palette),
             ],
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Photo scrim states',
-  type: ClubPhotoScrim,
-  path: '[Club Discovery]/Atoms',
-)
-Widget clubPhotoScrimStates(BuildContext context) {
-  return _CatalogScreen(
-    title: 'ClubPhotoScrim',
-    catalogId: 'atom.club.photo_scrim',
-    children: const [
-      _StateCard(
-        label: 'gradient',
-        child: _ClubMediaFrame(
-          child: DecoratedBox(
-            decoration: BoxDecoration(color: CatchTokens.editorialDark),
-            child: ClubPhotoScrim(),
           ),
         ),
       ),
@@ -1212,32 +1267,6 @@ Widget clubHostIdentityLineStates(BuildContext context) {
       _StateCard(
         label: 'fallback avatar',
         child: ClubHostIdentityLine(hostName: _minimalClub.displayHostName),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Host avatar states',
-  type: ClubHostAvatar,
-  path: '[Club Discovery]/Atoms',
-)
-Widget clubHostAvatarStates(BuildContext context) {
-  return _CatalogScreen(
-    title: 'ClubHostAvatar',
-    catalogId: 'atom.club.host_avatar',
-    children: [
-      _StateCard(
-        label: 'photo',
-        child: ClubHostAvatar(
-          name: _club.displayHostName,
-          imageUrl: _club.hostAvatarUrl,
-          size: 56,
-        ),
-      ),
-      const _StateCard(
-        label: 'initials',
-        child: ClubHostAvatar(name: 'Ana Rao', size: 56),
       ),
     ],
   );
@@ -1651,24 +1680,24 @@ Widget clubShareArtworkStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Share meta row states',
-  type: ClubShareMetaRow,
+  type: CatchMetaRow,
   path: '[Club Detail]/Cards',
 )
 Widget clubShareMetaRowStates(BuildContext context) {
   return _CatalogScreen(
-    title: 'ClubShareMetaRow',
+    title: 'CatchMetaRow',
     catalogId: 'card.club.share.meta_row',
     children: [
       _StateCard(
         label: 'location',
-        child: ClubShareMetaRow(
+        child: CatchMetaRow(
           icon: CatchIcons.locationOnOutlined,
           label: 'Bandra, Mumbai',
         ),
       ),
       _StateCard(
         label: 'member count',
-        child: ClubShareMetaRow(
+        child: CatchMetaRow(
           icon: CatchIcons.group,
           label: clubMemberCountLabel(_club),
         ),
@@ -1724,11 +1753,19 @@ Widget clubReviewsSectionStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'published reviews',
-        child: ClubReviewsSection(reviews: _reviews, currentUid: _viewerUid),
+        child: CatchSection.divided(
+          title: 'Reviews',
+          first: true,
+          child: ClubReviewsSection(reviews: _reviews, currentUid: _viewerUid),
+        ),
       ),
       const _StateCard(
         label: 'empty',
-        child: ClubReviewsSection(reviews: [], currentUid: _viewerUid),
+        child: CatchSection.divided(
+          title: 'Reviews',
+          first: true,
+          child: ClubReviewsSection(reviews: [], currentUid: _viewerUid),
+        ),
       ),
     ],
   );
@@ -1797,13 +1834,13 @@ class _ClubComposedPreview extends StatelessWidget {
     final previewEvents = events ?? _events;
     final previewReviews = reviews ?? _reviews;
     final state = !isAuthenticated
-        ? CatchClubDockState.guest
+        ? ClubDetailDockRole.guest
         : isMember
-        ? CatchClubDockState.member
-        : CatchClubDockState.visitor;
+        ? ClubDetailDockRole.member
+        : ClubDetailDockRole.visitor;
     final footnote = switch (state) {
-      CatchClubDockState.visitor => 'FREE TO JOIN · LEAVE ANYTIME',
-      CatchClubDockState.member => 'MEMBER · MANAGE ANYTIME',
+      ClubDetailDockRole.visitor => 'FREE TO JOIN · LEAVE ANYTIME',
+      ClubDetailDockRole.member => 'MEMBER · MANAGE ANYTIME',
       _ => null,
     };
 
@@ -1833,10 +1870,10 @@ class _ClubComposedPreview extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar: CatchClubDock(
+      bottomNavigationBar: ClubDetailDock(
         state: state,
         activityKind: previewClub.hostDefaults.primaryActivityKind,
-        members: state == CatchClubDockState.owner
+        members: state == ClubDetailDockRole.owner
             ? null
             : previewClub.memberCount,
         notificationsEnabled: true,

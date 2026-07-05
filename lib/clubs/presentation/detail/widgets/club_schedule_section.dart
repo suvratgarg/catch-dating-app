@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/shared/event_agenda_list.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
@@ -13,34 +13,39 @@ class ClubScheduleSection extends StatelessWidget {
     required this.events,
     this.isHost = false,
     this.onEventSelected,
+    this.bottomPadding = CatchLayout.detailScreenBottomPadding,
   });
 
   final List<Event> events;
   final bool isHost;
   final ValueChanged<Event>? onEventSelected;
+  final double bottomPadding;
 
   @override
   Widget build(BuildContext context) {
     return SliverMainAxisGroup(
       slivers: [
-        SliverPadding(
-          padding: const EdgeInsets.fromLTRB(
+        const SliverPadding(
+          padding: EdgeInsets.fromLTRB(
             CatchLayout.detailScreenHorizontalPadding,
             0,
             CatchLayout.detailScreenHorizontalPadding,
-            CatchLayout.detailScreenSectionTitleBottomGap,
+            0,
           ),
           sliver: SliverToBoxAdapter(
-            child: Text('Schedule', style: CatchTextStyles.titleL(context)),
+            child: CatchSection.divided(
+              title: 'Schedule',
+              child: SizedBox.shrink(),
+            ),
           ),
         ),
         if (events.isEmpty)
           SliverPadding(
-            padding: const EdgeInsets.fromLTRB(
+            padding: EdgeInsets.fromLTRB(
               CatchLayout.detailScreenHorizontalPadding,
               0,
               CatchLayout.detailScreenHorizontalPadding,
-              CatchLayout.detailScreenBottomPadding,
+              bottomPadding,
             ),
             sliver: SliverToBoxAdapter(
               child: CatchEmptyState(
@@ -49,14 +54,6 @@ class ClubScheduleSection extends StatelessWidget {
                 message:
                     'Future events will appear here once the host publishes one.',
                 layout: CatchEmptyStateLayout.inline,
-                iconSize: CatchIcon.row,
-                iconContainerSize: 44,
-                padding: CatchInsets.content,
-                titleStyle: CatchTextStyles.sectionTitle(context),
-                messageStyle: CatchTextStyles.supporting(
-                  context,
-                  color: CatchTokens.of(context).ink2,
-                ),
               ),
             ),
           )
@@ -66,11 +63,11 @@ class ClubScheduleSection extends StatelessWidget {
             badgeLabel: isHost ? 'HOSTED' : 'VIEW',
             statusBuilder: isHost ? (_) => EventTileStatus.hosted : null,
             onEventSelected: onEventSelected,
-            padding: const EdgeInsets.fromLTRB(
+            padding: EdgeInsets.fromLTRB(
               CatchLayout.detailScreenHorizontalPadding,
               0,
               CatchLayout.detailScreenHorizontalPadding,
-              CatchLayout.detailScreenBottomPadding,
+              bottomPadding,
             ),
           ),
       ],

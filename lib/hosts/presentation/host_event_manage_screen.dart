@@ -13,11 +13,13 @@ import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_segmented_control.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
@@ -186,11 +188,9 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(sectionPickerHeight),
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(
-              CatchSpacing.s5,
-              CatchSpacing.s0,
-              CatchSpacing.s5,
-              CatchSpacing.s2,
+            padding: CatchInsets.pageBody.copyWith(
+              top: CatchSpacing.s0,
+              bottom: CatchSpacing.s2,
             ),
             child: HostManageSectionPicker(
               selectedSection: screenState.selectedSection,
@@ -603,7 +603,7 @@ class HostManageMetaRow extends StatelessWidget {
       children: [
         Expanded(
           flex: 5,
-          child: HostManageMetaItem(
+          child: CatchMetaRow(
             icon: CatchIcons.calendarTodayOutlined,
             label:
                 '${event.shortDateLabel} · ${EventFormatters.time(event.startTime)}',
@@ -613,7 +613,7 @@ class HostManageMetaRow extends StatelessWidget {
         gapW12,
         Expanded(
           flex: 4,
-          child: HostManageMetaItem(
+          child: CatchMetaRow(
             icon: CatchIcons.pinOutlined,
             label: event.locationName,
             color: t.ink2,
@@ -622,41 +622,10 @@ class HostManageMetaRow extends StatelessWidget {
         gapW12,
         Expanded(
           flex: 3,
-          child: HostManageMetaItem(
+          child: CatchMetaRow(
             icon: CatchIcons.groupsOutlined,
             label: event.spotsLabel,
             color: t.ink2,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class HostManageMetaItem extends StatelessWidget {
-  const HostManageMetaItem({
-    super.key,
-    required this.icon,
-    required this.label,
-    required this.color,
-  });
-
-  final IconData icon;
-  final String label;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, size: CatchIcon.badge, color: color),
-        gapW4,
-        Expanded(
-          child: Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.supporting(context, color: color),
           ),
         ),
       ],
@@ -1454,7 +1423,7 @@ class HostEventActionsSection extends StatelessWidget {
           style: CatchTextStyles.monoLabel(context, color: t.ink2),
         ),
         gapH10,
-        Divider(color: t.line, height: 1),
+        const CatchDivider.section(),
         if (actionError != null) ...[
           gapH12,
           CatchErrorBanner.fromError(
@@ -1591,7 +1560,7 @@ class HostActionRow extends StatelessWidget {
               ),
             ),
             if (showDivider)
-              Divider(color: t.line, height: 1, indent: CatchSpacing.s8),
+              const CatchDivider.fieldRow(indent: CatchSpacing.s8),
           ],
         ),
       ),
@@ -1715,7 +1684,11 @@ class HostEventSummaryRow extends StatelessWidget {
             );
           },
         ),
-        if (showDivider) ...[gapH12, Divider(color: t.line, height: 1), gapH12],
+        if (showDivider) ...[
+          gapH12,
+          const CatchDivider.fieldRow(indent: 0),
+          gapH12,
+        ],
       ],
     );
   }

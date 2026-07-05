@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
 import 'package:flutter/material.dart';
 
@@ -16,29 +17,30 @@ class CatchHorizontalRail extends StatelessWidget {
     required this.itemCount,
     required this.itemBuilder,
     this.trailing,
-    this.showDivider = true,
+    this.fullBleed = false,
+    bool? showDivider,
     this.height = CatchLayout.horizontalRailHeight,
     this.spacing = CatchSpacing.s3,
-    this.headerPadding = _defaultHeaderPadding,
-    this.listPadding = const EdgeInsets.symmetric(horizontal: CatchSpacing.s5),
-  });
+    EdgeInsets? headerPadding,
+    EdgeInsetsGeometry? listPadding,
+  }) : showDivider = showDivider ?? fullBleed,
+       headerPadding =
+           headerPadding ??
+           (fullBleed ? CatchInsets.sectionHeader : EdgeInsets.zero),
+       listPadding =
+           listPadding ??
+           (fullBleed ? CatchInsets.pageHorizontal : EdgeInsets.zero);
 
   final String title;
   final int itemCount;
   final IndexedWidgetBuilder itemBuilder;
   final Widget? trailing;
+  final bool fullBleed;
   final bool showDivider;
   final double? height;
   final double spacing;
   final EdgeInsets headerPadding;
   final EdgeInsetsGeometry listPadding;
-
-  static const _defaultHeaderPadding = EdgeInsets.fromLTRB(
-    CatchSpacing.s5,
-    CatchSpacing.micro14,
-    CatchSpacing.s5,
-    CatchSpacing.s2,
-  );
 
   @override
   Widget build(BuildContext context) {
@@ -53,12 +55,9 @@ class CatchHorizontalRail extends StatelessWidget {
         ),
         _buildRail(context),
         if (showDivider)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s5),
-            child: Divider(
-              color: CatchTokens.of(context).line,
-              height: CatchLayout.horizontalRailDividerHeight,
-            ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: CatchSpacing.screenPx),
+            child: CatchDivider.section(),
           ),
       ],
     );

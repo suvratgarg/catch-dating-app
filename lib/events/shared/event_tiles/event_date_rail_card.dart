@@ -1,12 +1,12 @@
 import 'dart:math' as math;
 
+import 'package:catch_dating_app/core/motion/catch_transitions.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_mono_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
-import 'package:catch_dating_app/core/widgets/event_ticket_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_capacity_labels.dart';
@@ -209,7 +209,7 @@ class EventDateRailCard extends StatelessWidget {
           );
     return heroTag == null
         ? card
-        : EventHeroSurface(tag: heroTag!, child: card);
+        : catchHeroSurface(tag: heroTag!, child: card);
   }
 }
 

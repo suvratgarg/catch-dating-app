@@ -42,17 +42,36 @@ const currentSnapshot = scanSnapshot({
 const widgetbookNames = readWidgetbookNames();
 const catalogSource = fs.readFileSync(fromRepo("docs/widget_catalog.md"), "utf8");
 
-const addedWidgets = currentSnapshot.widgetClasses
-  .filter((entry) => !baseSnapshot.widgetClassKeys.has(widgetClassKey(entry)))
+const newWidgetClassCandidates = currentSnapshot.widgetClasses.filter(
+  (entry) => !baseSnapshot.widgetClassKeys.has(widgetClassKey(entry)),
+);
+const movedWidgets = newWidgetClassCandidates
+  .filter((entry) => isMovedWidgetClass(entry, baseSnapshot, currentSnapshot))
+  .map((entry) => withMoveMetadata(entry, baseSnapshot.widgetClassIdentityToKeys, widgetClassIdentityKey))
+  .sort(compareByFileLine);
+const addedWidgets = newWidgetClassCandidates
+  .filter((entry) => !isMovedWidgetClass(entry, baseSnapshot, currentSnapshot))
   .map((entry) => classifyWidget(entry))
   .sort(compareByFileLine);
 
-const addedWidgetHelpers = currentSnapshot.widgetHelpers
-  .filter((entry) => !baseSnapshot.widgetHelperKeys.has(widgetHelperKey(entry)))
+const newWidgetHelperCandidates = currentSnapshot.widgetHelpers.filter(
+  (entry) => !baseSnapshot.widgetHelperKeys.has(widgetHelperKey(entry)),
+);
+const movedWidgetHelpers = newWidgetHelperCandidates
+  .filter((entry) => isMovedWidgetHelper(entry, baseSnapshot, currentSnapshot))
+  .map((entry) => withMoveMetadata(entry, baseSnapshot.widgetHelperIdentityToKeys, widgetHelperIdentityKey))
+  .sort(compareByFileLine);
+const addedWidgetHelpers = newWidgetHelperCandidates
+  .filter((entry) => !isMovedWidgetHelper(entry, baseSnapshot, currentSnapshot))
   .map(classifyWidgetHelper)
   .sort(compareByFileLine);
 
-const summary = summarize({addedWidgets, addedWidgetHelpers});
+const summary = summarize({
+  addedWidgets,
+  addedWidgetHelpers,
+  movedWidgets,
+  movedWidgetHelpers,
+});
 const report = {
   generatedAt: new Date().toISOString(),
   baseRef,
@@ -66,6 +85,8 @@ const report = {
       "New public widget classes need Widgetbook and widget catalog coverage. New private widget classes and Widget-returning helpers must be inlined/deleted, merged into an existing primitive, or promoted to public cataloged widgets.",
   },
   summary,
+  movedWidgets,
+  movedWidgetHelpers,
   addedWidgets,
   addedWidgetHelpers,
 };
@@ -111,6 +132,16 @@ function scanSnapshot({files, readFile}) {
     widgetHelpers,
     widgetClassKeys: new Set(widgetClasses.map(widgetClassKey)),
     widgetHelperKeys: new Set(widgetHelpers.map(widgetHelperKey)),
+    widgetClassIdentityToKeys: groupKeys(
+      widgetClasses,
+      widgetClassIdentityKey,
+      widgetClassKey,
+    ),
+    widgetHelperIdentityToKeys: groupKeys(
+      widgetHelpers,
+      widgetHelperIdentityKey,
+      widgetHelperKey,
+    ),
   };
 }
 
@@ -223,7 +254,12 @@ function recommendationForWidget(entry, issues) {
   return "Covered by Widgetbook and docs/widget_catalog.md.";
 }
 
-function summarize({addedWidgets, addedWidgetHelpers}) {
+function summarize({
+  addedWidgets,
+  addedWidgetHelpers,
+  movedWidgets,
+  movedWidgetHelpers,
+}) {
   const widgetsByStatus = countBy(addedWidgets, (entry) => entry.status);
   const helpersByStatus = countBy(addedWidgetHelpers, (entry) => entry.status);
   const issues = countIssues([...addedWidgets, ...addedWidgetHelpers]);
@@ -236,6 +272,8 @@ function summarize({addedWidgets, addedWidgetHelpers}) {
     addedPublicWidgetClasses: addedWidgets.filter((entry) => entry.visibility === "public").length,
     addedPrivateWidgetClasses: addedWidgets.filter((entry) => entry.visibility === "private").length,
     addedWidgetReturningHelpers: addedWidgetHelpers.length,
+    movedWidgetClasses: movedWidgets.length,
+    movedWidgetReturningHelpers: movedWidgetHelpers.length,
     coveredNewWidgets: addedWidgets.filter((entry) => entry.status === "covered").length,
     unresolved,
     widgetsByStatus,
@@ -252,6 +290,8 @@ function printSummary(report, outputPath) {
   console.log(`    private: ${summary.addedPrivateWidgetClasses}`);
   console.log(`    covered: ${summary.coveredNewWidgets}`);
   console.log(`  Added Widget-returning helpers: ${summary.addedWidgetReturningHelpers}`);
+  console.log(`  Moved widget classes: ${summary.movedWidgetClasses}`);
+  console.log(`  Moved Widget-returning helpers: ${summary.movedWidgetReturningHelpers}`);
   console.log(`  Unresolved items: ${summary.unresolved}`);
   console.log(`  Issues: ${JSON.stringify(summary.issues)}`);
   if (!shouldNoWrite) console.log(`Report written to: ${outputPath}`);
@@ -396,8 +436,58 @@ function widgetClassKey(entry) {
   return `${entry.file}::${entry.name}::${entry.baseClass}`;
 }
 
+function widgetClassIdentityKey(entry) {
+  return `${entry.name}::${entry.baseClass}`;
+}
+
 function widgetHelperKey(entry) {
   return `${entry.file}::${entry.owner ?? "<top-level>"}::${entry.name}`;
+}
+
+function widgetHelperIdentityKey(entry) {
+  return `${entry.owner ?? "<top-level>"}::${entry.name}::${entry.scope}`;
+}
+
+function isMovedWidgetClass(entry, baseSnapshot, currentSnapshot) {
+  return isMovedByIdentity({
+    entry,
+    baseIdentityToKeys: baseSnapshot.widgetClassIdentityToKeys,
+    currentKeys: currentSnapshot.widgetClassKeys,
+    identityFor: widgetClassIdentityKey,
+  });
+}
+
+function isMovedWidgetHelper(entry, baseSnapshot, currentSnapshot) {
+  return isMovedByIdentity({
+    entry,
+    baseIdentityToKeys: baseSnapshot.widgetHelperIdentityToKeys,
+    currentKeys: currentSnapshot.widgetHelperKeys,
+    identityFor: widgetHelperIdentityKey,
+  });
+}
+
+function isMovedByIdentity({entry, baseIdentityToKeys, currentKeys, identityFor}) {
+  const baseKeys = baseIdentityToKeys.get(identityFor(entry));
+  if (!baseKeys) return false;
+  return baseKeys.some((key) => !currentKeys.has(key));
+}
+
+function withMoveMetadata(entry, baseIdentityToKeys, identityFor) {
+  return {
+    ...entry,
+    previousKeys: baseIdentityToKeys.get(identityFor(entry)) ?? [],
+  };
+}
+
+function groupKeys(values, identityFor, keyFor) {
+  const grouped = new Map();
+  for (const value of values) {
+    const identity = identityFor(value);
+    const rows = grouped.get(identity) ?? [];
+    rows.push(keyFor(value));
+    grouped.set(identity, rows);
+  }
+  return grouped;
 }
 
 function compareByFileLine(a, b) {
