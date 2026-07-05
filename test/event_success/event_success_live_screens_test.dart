@@ -43,6 +43,56 @@ import '../events/events_test_helpers.dart'
 import '../test_pump_helpers.dart';
 
 void main() {
+  testWidgets('question progress rail uses stage press without Material ink', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    try {
+      var selectedQuestion = -1;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: Center(
+              child: SizedBox(
+                width: 320,
+                child: QuestionProgressRail(
+                  activeIndex: 1,
+                  answeredCount: 2,
+                  questionCount: 3,
+                  onSelect: (index) => selectedQuestion = index,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(StageBouncyPress), findsNWidgets(3));
+      expect(find.byType(InkWell), findsNothing);
+      final activeNode = find.semantics.byLabel('Question 2').evaluate().single;
+      expect(
+        activeNode,
+        matchesSemantics(
+          label: 'Question 2',
+          hasSelectedState: true,
+          isSelected: true,
+          isButton: true,
+          hasEnabledState: true,
+          isEnabled: true,
+          hasTapAction: true,
+        ),
+      );
+
+      await tester.tap(find.text('3'));
+
+      expect(selectedQuestion, 2);
+    } finally {
+      semantics.dispose();
+    }
+  });
+
   testWidgets('host screen exposes setup live mode and report tabs', (
     tester,
   ) async {

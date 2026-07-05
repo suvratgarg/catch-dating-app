@@ -1687,6 +1687,7 @@ class StageBouncyPress extends StatefulWidget {
     this.glowColor,
     this.borderRadius,
     this.semanticLabel,
+    this.selected,
   });
 
   final Widget child;
@@ -1694,6 +1695,7 @@ class StageBouncyPress extends StatefulWidget {
   final Color? glowColor;
   final BorderRadius? borderRadius;
   final String? semanticLabel;
+  final bool? selected;
 
   /// How deep the press depresses. 1.0 = no scale, 0 = scale to zero.
   /// Tuned for chips and small CTAs; keep static for now.
@@ -1748,6 +1750,7 @@ class _StageBouncyPressState extends State<StageBouncyPress>
       button: enabled,
       enabled: enabled,
       label: widget.semanticLabel,
+      selected: widget.selected,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTapDown: enabled ? (_) => setState(() => _down = true) : null,
@@ -1790,7 +1793,9 @@ class _StageBouncyPressState extends State<StageBouncyPress>
               ),
             );
           },
-          child: widget.child,
+          child: widget.semanticLabel == null
+              ? widget.child
+              : ExcludeSemantics(child: widget.child),
         ),
       ),
     );

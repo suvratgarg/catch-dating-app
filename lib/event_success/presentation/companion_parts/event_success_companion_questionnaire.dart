@@ -255,29 +255,27 @@ class QuestionProgressRail extends StatelessWidget {
         for (var index = 0; index < questionCount; index++) ...[
           Tooltip(
             message: 'Question ${index + 1}',
-            child: Semantics(
-              button: true,
+            child: StageBouncyPress(
+              borderRadius: BorderRadius.circular(CatchRadius.pill),
+              glowColor: t.primary,
+              semanticLabel: 'Question ${index + 1}',
               selected: index == activeIndex,
-              label: 'Question ${index + 1}',
-              child: InkWell(
-                borderRadius: BorderRadius.circular(CatchRadius.pill),
-                onTap: () => onSelect(index),
-                child: CatchSurface(
-                  width: CatchLayout.questionnaireDotExtent,
-                  height: CatchLayout.questionnaireDotExtent,
-                  radius: CatchRadius.pill,
-                  backgroundColor: index == activeIndex
-                      ? t.primary
-                      : index < answeredCount
-                      ? t.primarySoft
-                      : t.surface,
-                  borderColor: t.line,
-                  child: Text(
-                    '${index + 1}',
-                    style: CatchTextStyles.labelS(
-                      context,
-                      color: index == activeIndex ? t.surface : t.ink2,
-                    ),
+              onTap: () => onSelect(index),
+              child: CatchSurface(
+                width: CatchLayout.questionnaireDotExtent,
+                height: CatchLayout.questionnaireDotExtent,
+                radius: CatchRadius.pill,
+                backgroundColor: index == activeIndex
+                    ? t.primary
+                    : index < answeredCount
+                    ? t.primarySoft
+                    : t.surface,
+                borderColor: t.line,
+                child: Text(
+                  '${index + 1}',
+                  style: CatchTextStyles.labelS(
+                    context,
+                    color: index == activeIndex ? t.surface : t.ink2,
                   ),
                 ),
               ),
