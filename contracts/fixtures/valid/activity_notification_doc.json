@@ -11,6 +11,7 @@
   "matchId": "runner-1_runner-2",
   "eventId": "event-1",
   "clubId": null,
+  "postId": null,
   "actorUid": "runner-2",
   "actorName": "Runner Two"
 }

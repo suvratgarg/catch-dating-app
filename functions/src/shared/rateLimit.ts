@@ -82,6 +82,7 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   disableEventInviteLink: {maxRequests: 20, windowMs: 60 * 1000},
   joinClub: {maxRequests: 30, windowMs: 60 * 1000},
   leaveClub: {maxRequests: 30, windowMs: 60 * 1000},
+  createClubPost: {maxRequests: 10, windowMs: 60 * 1000},
   addClubHost: {maxRequests: 20, windowMs: 60 * 1000},
   removeClubHost: {maxRequests: 20, windowMs: 60 * 1000},
   archiveClub: {maxRequests: 10, windowMs: 60 * 1000},

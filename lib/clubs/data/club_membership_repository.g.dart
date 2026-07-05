@@ -294,3 +294,52 @@ final class WatchClubMembershipFamily extends $Family
   @override
   String toString() => r'watchClubMembershipProvider';
 }
+
+@ProviderFor(currentUserFollowedClubIds)
+final currentUserFollowedClubIdsProvider =
+    CurrentUserFollowedClubIdsProvider._();
+
+final class CurrentUserFollowedClubIdsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<Set<String>>,
+          AsyncValue<Set<String>>,
+          AsyncValue<Set<String>>
+        >
+    with $Provider<AsyncValue<Set<String>>> {
+  CurrentUserFollowedClubIdsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'currentUserFollowedClubIdsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$currentUserFollowedClubIdsHash();
+
+  @$internal
+  @override
+  $ProviderElement<AsyncValue<Set<String>>> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  AsyncValue<Set<String>> create(Ref ref) {
+    return currentUserFollowedClubIds(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AsyncValue<Set<String>> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<AsyncValue<Set<String>>>(value),
+    );
+  }
+}
+
+String _$currentUserFollowedClubIdsHash() =>
+    r'e5e4c6a9273db441397b74a35876969498099962';

@@ -52,6 +52,25 @@ final class FirebaseAnalyticsReporter implements AnalyticsReporter {
   }
 }
 
+final class NoOpAnalyticsReporter implements AnalyticsReporter {
+  const NoOpAnalyticsReporter();
+
+  @override
+  Future<void> setCollectionEnabled(bool enabled) async {}
+
+  @override
+  Future<void> logEvent(String name, {Map<String, Object>? parameters}) async {}
+
+  @override
+  Future<void> logScreenView({
+    required String screenName,
+    String? screenClass,
+  }) async {}
+
+  @override
+  Future<void> setUserId(String? userId) async {}
+}
+
 // keepalive: analytics facade keeps user/session attribution stable across
 // navigation and background event emission.
 @Riverpod(keepAlive: true)
@@ -60,9 +79,9 @@ AppAnalytics appAnalytics(Ref ref) => AppAnalytics();
 /// Vendor-neutral analytics facade for product and navigation events.
 class AppAnalytics {
   AppAnalytics({AnalyticsReporter? reporter, bool? shouldCollect})
-    : _reporter =
-          reporter ?? FirebaseAnalyticsReporter(FirebaseAnalytics.instance),
-      _shouldCollect = shouldCollect ?? _defaultShouldCollect;
+    : _shouldCollect = shouldCollect ?? _defaultShouldCollect,
+      _reporter =
+          reporter ?? _defaultReporter(shouldCollect ?? _defaultShouldCollect);
 
   final AnalyticsReporter _reporter;
   final bool _shouldCollect;
@@ -70,6 +89,11 @@ class AppAnalytics {
 
   static bool get _defaultShouldCollect {
     return AppConfig.shouldCollectObservability;
+  }
+
+  static AnalyticsReporter _defaultReporter(bool shouldCollect) {
+    if (!shouldCollect) return const NoOpAnalyticsReporter();
+    return FirebaseAnalyticsReporter(FirebaseAnalytics.instance);
   }
 
   Future<void> initialize() async {
@@ -199,6 +223,12 @@ abstract final class AnalyticsEvents {
   static const clubJoined = 'club_joined';
   static const exploreEventOpened = 'explore_event_opened';
   static const exploreMapEventSelected = 'explore_map_event_selected';
+  static const homeOpened = 'home_opened';
+  static const homeModuleImpression = 'home_module_impression';
+  static const homeActionTap = 'home_action_tap';
+  static const clubPostCreated = 'club_post_created';
+  static const clubPostImpression = 'club_post_impression';
+  static const clubPostOpen = 'club_post_open';
   static const eventViewed = 'event_viewed';
   static const eventBookingStarted = 'event_booking_started';
   static const eventBooked = 'event_booked';
@@ -233,6 +263,10 @@ abstract final class AnalyticsParameters {
   static const availabilityStatus = 'availability_status';
   static const exploreSource = 'explore_source';
   static const distanceKm = 'distance_km';
+  static const homeState = 'state';
+  static const homeModule = 'module';
+  static const homeAction = 'action';
+  static const surface = 'surface';
   static const matchId = 'match_id';
 
   // Backend error context. Values must be non-PII.

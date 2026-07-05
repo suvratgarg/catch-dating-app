@@ -1,7 +1,7 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.2.3
-updated: 2026-06-30
+version: 1.2.4
+updated: 2026-07-05
 owner: recursive_audit_loop
 status: active
 ---
@@ -85,6 +85,7 @@ should be repairable from edge/source documents.
 | `setReviewResponse` | Callable | Claimed organizer review UI | `reviews/{reviewId}.ownerResponse` | Server-owned owner response on public review documents. Only claimed hosts for the owning club can write responses; app and website render the canonical review snapshot. |
 | `joinClub` | Callable | `ClubsRepository.joinClub` | `clubMemberships/{clubId_uid}`, `clubs/{clubId}.memberCount` | Multi-doc membership mutation; does not mirror membership into user or club arrays. `syncClubMemberStats` repairs the parent count from active membership edges after any membership write. |
 | `leaveClub` | Callable | `ClubsRepository.leaveClub` | `clubMemberships/{clubId_uid}`, `clubs/{clubId}.memberCount` | Rejects host leaving their own club; does not mirror membership into user or club arrays. `syncClubMemberStats` repairs the parent count from active membership edges after any membership write. |
+| `createClubPost` | Callable | `ClubPostsRepository.createPost` | `clubs/{clubId}/posts/{postId}`, `notifications/{uid}/items/{notificationId}`, FCM to active club members with club-update pushes enabled | Host-only follower update seam. Validates generated payload schema, verifies host authority, checks optional linked event belongs to the same club, enforces three active posts per rolling seven days, writes the canonical server-owned post, and fans out deterministic `clubUpdate_${postId}` activity. |
 | `syncClubMemberStats` | Firestore trigger on `clubMemberships/{membershipId}` write | Backend | `clubs/{clubId}.memberCount` | Recomputes active membership count from edge documents. This makes duplicate trigger delivery safe and repairs stale callable-era or manually drifted parent projections. |
 | `archiveClub` | Callable | Backend-ready; host UI queued | `clubs/{clubId}.status/archived/archivedAt/archiveReason` | Host-only archive seam for clubs with history. Prevent browse/search usage once client filters are added; hard delete is reserved for unused clubs. |
 | `deleteClub` | Callable | Backend-ready; host/admin UI queued | `clubs/{clubId}` delete, host `clubMemberships/{clubId_uid}` delete, `clubHostClaims/{uid}` delete | Host-only hard delete for never-used clubs. Rejects clubs with events, payments, reviews, or non-host members; releases the one-club host claim only after the hard delete is allowed. |
@@ -139,6 +140,7 @@ should be repairable from edge/source documents.
 | `clubMemberships/{clubId_uid}` | Event-club membership callables | Direct client writes denied. |
 | `clubHostClaims/{uid}` | `createClub` callable | Server-only host lock; direct client reads/writes denied. |
 | `clubs/{clubId}` writes | Event-club create/update/archive/delete callables plus review-stat trigger | Direct client writes denied. |
+| `clubs/{clubId}/posts/{postId}` | `createClubPost` callable | Authenticated clients can read; direct writes denied. |
 | `users/{uid}.deleted`, `deletedAt` | Account deletion callable | Direct client writes denied. |
 | `clubs/{clubId}.memberCount` | Event-club membership callables plus `syncClubMemberStats` repair trigger | Direct client writes denied. |
 | `clubs/{clubId}.rating`, `reviewCount` | `syncClubReviewStats` trigger | Direct client writes denied. |
@@ -186,6 +188,7 @@ read by updating only `readAt`.
 | Event schedule/location change | `updateEvent` callable best-effort fan-out after the event update commits. | Yes, deterministic `eventUpdated_${eventId}` item for signed-up and waitlisted participants. | Yes when `prefsRunStatusUpdates != false` and token exists. | Implemented. |
 | Event cancellation | `cancelEvent` callable best-effort fan-out after the event status update commits. | Yes, deterministic `eventCancelled_${eventId}` item for signed-up and waitlisted participants. | Yes when `prefsRunStatusUpdates != false` and token exists. | Implemented; exposed from Host Manage with confirmation and retained-history copy. |
 | New event posted by followed club | `createEvent` callable best-effort fan-out after the event commits | Yes, deterministic `clubUpdate_${eventId}` item for active club members, excluding the host. | Two-tier: activity for active members; push only when membership `pushNotificationsEnabled == true`, `prefsClubUpdates != false`, and token exists. | Implemented. |
+| New follower post by followed club | `createClubPost` callable best-effort fan-out after the post commits | Yes, deterministic `clubUpdate_${postId}` item for active club members, excluding the host, with `postId` routing metadata. | Two-tier: activity for active members; push only when membership `pushNotificationsEnabled == true`, `prefsClubUpdates != false`, and token exists. | Implemented behind the `ENABLE_CLUB_POSTS` app flag. |
 
 When adding a new producer, write the timeline item through
 `functions/src/shared/notifications.ts`, keep IDs deterministic where the

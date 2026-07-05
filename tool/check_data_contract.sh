@@ -72,10 +72,11 @@ flutter analyze \
   lib/core/schema_contracts/generated/schemas \
   lib/clubs/data/clubs_repository.dart \
   lib/clubs/data/club_callable_responses.dart \
+  lib/clubs/data/club_posts_repository.dart \
   lib/hosts/presentation/club_management/create/create_club_controller.dart \
   lib/reviews/data/reviews_repository.dart \
   lib/reviews/data/review_callable_adapters.dart \
-  lib/reviews/presentation/reviews_section.dart \
+  lib/reviews/shared/reviews_section.dart \
   lib/events/data/event_repository.dart \
   lib/events/data/event_callable_adapters.dart \
   lib/events/data/event_callable_responses.dart \

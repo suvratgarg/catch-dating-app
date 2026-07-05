@@ -15,6 +15,33 @@ final class CreateClubCallableResponse {
   final String clubId;
 }
 
+final class CreateClubPostCallableResponse {
+  const CreateClubPostCallableResponse({
+    required this.postId,
+    required this.remainingWeeklyQuota,
+  });
+
+  factory CreateClubPostCallableResponse.fromCallableData(Object? data) {
+    if (data case final Map<Object?, Object?> map) {
+      final postId = map['postId'] as String?;
+      final remainingWeeklyQuota = map['remainingWeeklyQuota'] as int?;
+      if (postId != null && postId.isNotEmpty && remainingWeeklyQuota != null) {
+        return CreateClubPostCallableResponse(
+          postId: postId,
+          remainingWeeklyQuota: remainingWeeklyQuota,
+        );
+      }
+    }
+
+    throw StateError(
+      'createClubPost response was missing postId or remainingWeeklyQuota.',
+    );
+  }
+
+  final String postId;
+  final int remainingWeeklyQuota;
+}
+
 final class StartClubHostConversationCallableResponse {
   const StartClubHostConversationCallableResponse({required this.matchId});
 

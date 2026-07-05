@@ -637,6 +637,12 @@ service cloud.firestore {
       // Club deletion needs backend cleanup of events, memberships, reviews, and
       // images before it can be safely exposed.
       allow delete: if false;
+
+    }
+
+    match /clubs/{clubId}/posts/{postId} {
+      allow read: if isAuthed();
+      allow write: if false;
     }
 
     // ── Swipes helper ─────────────────────────────────────────────────────────

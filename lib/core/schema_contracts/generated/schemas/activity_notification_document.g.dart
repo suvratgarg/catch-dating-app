@@ -142,6 +142,15 @@ const schemaActivityNotificationDocumentSchema = <String, Object?>{
       'maxLength': 180,
       'x-catch-ownership': 'server-only',
     },
+    'postId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 180,
+      'x-catch-ownership': 'server-only',
+    },
     'actorUid': <String, Object?>{
       'type': <Object?>[
         'string',
