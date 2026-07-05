@@ -140,6 +140,16 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Dock',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'ClubDetailDock',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Dock states',
+                builder: _widgetbook_workspace_clubs_club_detail_use_cases
+                    .clubDetailDockStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'DockBell',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -2453,17 +2463,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchBottomDockCtaContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchClubDock',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchClubDockContractStates,
               ),
             ],
           ),

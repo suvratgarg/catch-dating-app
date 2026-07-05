@@ -96,7 +96,7 @@ class CatchBottomDock extends StatelessWidget {
     );
 
     if (!includeSafeArea) return dock;
-    return SafeArea(child: dock);
+    return SafeArea(top: false, child: dock);
   }
 }
 

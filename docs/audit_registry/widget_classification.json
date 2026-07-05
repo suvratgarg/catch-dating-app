@@ -24,16 +24,16 @@
       "widget-state": 108
     },
     "byDecision": {
-      "keep-canonical-contract": 171,
-      "keep-public-cataloged": 782,
+      "keep-canonical-contract": 170,
+      "keep-public-cataloged": 783,
       "keep-widget-state": 108,
       "review-catalog-coverage": 38,
       "review-promote-or-consolidate": 15,
       "review-promote-or-inline": 2
     },
     "byCatalogStatus": {
-      "cataloged": 715,
-      "contracted": 171,
+      "cataloged": 716,
+      "contracted": 170,
       "not-applicable": 108,
       "route-covered": 81,
       "uncataloged": 41
@@ -924,104 +924,6 @@
       "flags": []
     },
     {
-      "name": "CatchClubDock",
-      "file": "lib/clubs/presentation/detail/widgets/catch_club_dock.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.club_dock",
-      "publicApi": true,
-      "catalogStatus": "contracted",
-      "contractId": "catch.club_dock",
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-canonical-contract",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": [
-        "primitive-imports-provider-layer",
-        "primitive-imports-routing-layer"
-      ]
-    },
-    {
-      "name": "ClubMembershipDock",
-      "file": "lib/clubs/presentation/detail/widgets/catch_club_dock.dart",
-      "classKind": "widget",
-      "baseClass": "ConsumerWidget",
-      "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.club_membership_dock",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": [
-        "primitive-imports-provider-layer",
-        "primitive-imports-routing-layer"
-      ]
-    },
-    {
-      "name": "DockBell",
-      "file": "lib/clubs/presentation/detail/widgets/catch_club_dock.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.clubs.dock_bell",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "DockCount",
-      "file": "lib/clubs/presentation/detail/widgets/catch_club_dock.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.clubs.dock_count",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
       "name": "ClubContactSection",
       "file": "lib/clubs/presentation/detail/widgets/club_contact_section.dart",
       "classKind": "widget",
@@ -1098,6 +1000,104 @@
       "visibility": "public",
       "role": "feature-adapter",
       "canonicalFamily": "feature.clubs.club_next_run_banner",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "feature-display-models",
+      "stateOwnership": "feature-display-state",
+      "asyncOwnership": "display-state-only",
+      "layoutOwnership": "feature-section-layout",
+      "actionOwnership": "feature-callbacks",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "ClubDetailDock",
+      "file": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.club_detail_dock",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": [
+        "primitive-imports-provider-layer",
+        "primitive-imports-routing-layer"
+      ]
+    },
+    {
+      "name": "ClubMembershipDock",
+      "file": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
+      "classKind": "widget",
+      "baseClass": "ConsumerWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.club_membership_dock",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": [
+        "primitive-imports-provider-layer",
+        "primitive-imports-routing-layer"
+      ]
+    },
+    {
+      "name": "DockBell",
+      "file": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "feature-adapter",
+      "canonicalFamily": "feature.clubs.dock_bell",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "feature-display-models",
+      "stateOwnership": "feature-display-state",
+      "asyncOwnership": "display-state-only",
+      "layoutOwnership": "feature-section-layout",
+      "actionOwnership": "feature-callbacks",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "DockCount",
+      "file": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "feature-adapter",
+      "canonicalFamily": "feature.clubs.dock_count",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,

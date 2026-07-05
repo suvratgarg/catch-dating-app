@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-05T02:18:23.239Z",
+  "generatedAt": "2026-07-05T02:38:11.411Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
@@ -3745,12 +3745,12 @@
         "[P1 product surfaces]/Dashboard activity"
       ],
       "labels": [
-        "divider",
         "long-copy",
         "mixed read state",
         "non-navigable",
         "read",
         "unread",
+        "waitlist promotion",
         "with-body"
       ],
       "review": {
@@ -3782,8 +3782,8 @@
               "normalizedLabel": "with body"
             },
             {
-              "label": "divider",
-              "normalizedLabel": "divider"
+              "label": "waitlist promotion",
+              "normalizedLabel": "waitlist promotion"
             },
             {
               "label": "non-navigable",
@@ -7544,12 +7544,12 @@
         "[P1 product surfaces]/Dashboard activity"
       ],
       "labels": [
-        "divider",
         "long-copy",
         "mixed read state",
         "non-navigable",
         "read",
         "unread",
+        "waitlist promotion",
         "with-body"
       ],
       "review": {
@@ -7581,8 +7581,8 @@
               "normalizedLabel": "with body"
             },
             {
-              "label": "divider",
-              "normalizedLabel": "divider"
+              "label": "waitlist promotion",
+              "normalizedLabel": "waitlist promotion"
             },
             {
               "label": "non-navigable",
@@ -8875,63 +8875,6 @@
       ]
     },
     {
-      "component": "CatchClubDock",
-      "useCaseCount": 1,
-      "stateCardCount": 6,
-      "paths": [
-        "[Core primitives]/Product composites"
-      ],
-      "labels": [
-        "guest",
-        "member",
-        "member-bell-pending",
-        "owner",
-        "visitor",
-        "visitor-pending"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Contract states",
-          "functionName": "catchClubDockContractStates",
-          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
-          "path": "[Core primitives]/Product composites",
-          "stateCardCount": 6,
-          "stateCards": [
-            {
-              "label": "guest",
-              "normalizedLabel": "guest"
-            },
-            {
-              "label": "visitor",
-              "normalizedLabel": "visitor"
-            },
-            {
-              "label": "visitor-pending",
-              "normalizedLabel": "visitor pending"
-            },
-            {
-              "label": "member",
-              "normalizedLabel": "member"
-            },
-            {
-              "label": "member-bell-pending",
-              "normalizedLabel": "member bell pending"
-            },
-            {
-              "label": "owner",
-              "normalizedLabel": "owner"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "CatchCodeInput",
       "useCaseCount": 1,
       "stateCardCount": 6,
@@ -9211,6 +9154,63 @@
             {
               "label": "no-gutter",
               "normalizedLabel": "no gutter"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "ClubDetailDock",
+      "useCaseCount": 1,
+      "stateCardCount": 6,
+      "paths": [
+        "[Club Detail]/Dock"
+      ],
+      "labels": [
+        "guest",
+        "member",
+        "member bell pending",
+        "owner",
+        "visitor",
+        "visitor pending"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Dock states",
+          "functionName": "clubDetailDockStates",
+          "file": "widgetbook/lib/clubs/club_detail_use_cases.dart",
+          "path": "[Club Detail]/Dock",
+          "stateCardCount": 6,
+          "stateCards": [
+            {
+              "label": "guest",
+              "normalizedLabel": "guest"
+            },
+            {
+              "label": "visitor",
+              "normalizedLabel": "visitor"
+            },
+            {
+              "label": "visitor pending",
+              "normalizedLabel": "visitor pending"
+            },
+            {
+              "label": "member",
+              "normalizedLabel": "member"
+            },
+            {
+              "label": "member bell pending",
+              "normalizedLabel": "member bell pending"
+            },
+            {
+              "label": "owner",
+              "normalizedLabel": "owner"
             }
           ]
         }

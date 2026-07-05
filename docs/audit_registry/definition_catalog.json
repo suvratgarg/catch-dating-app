@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-07-05T02:18:46.448628+00:00",
+  "generated_at": "2026-07-05T02:38:40.240705+00:00",
   "repo_root": "/Users/suvratgarg/Development/catch-dating-app/catch_dating_app",
   "total_files_scanned": 735,
-  "total_definitions": 3737,
+  "total_definitions": 3739,
   "file_manifest": [
     {
       "file": "lib/activity/domain/activity_taxonomy.dart",
@@ -340,11 +340,6 @@
       "definition_count": 1
     },
     {
-      "file": "lib/clubs/presentation/detail/widgets/catch_club_dock.dart",
-      "line_count": 342,
-      "definition_count": 5
-    },
-    {
       "file": "lib/clubs/presentation/detail/widgets/club_contact_section.dart",
       "line_count": 65,
       "definition_count": 4
@@ -353,6 +348,11 @@
       "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
       "line_count": 334,
       "definition_count": 9
+    },
+    {
+      "file": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
+      "line_count": 340,
+      "definition_count": 7
     },
     {
       "file": "lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart",
@@ -5523,54 +5523,6 @@
       "body_hash": "6a5860a47a9e6cfc"
     },
     {
-      "name": "CatchClubDockState",
-      "kind": "enum",
-      "file": "lib/clubs/presentation/detail/widgets/catch_club_dock.dart",
-      "line": 18,
-      "signature": "enum CatchClubDockState { guest, visitor, member, owner }",
-      "body_hash": "60dae9701e4c0916"
-    },
-    {
-      "name": "CatchClubDock",
-      "kind": "class",
-      "file": "lib/clubs/presentation/detail/widgets/catch_club_dock.dart",
-      "line": 27,
-      "signature": "class CatchClubDock extends StatelessWidget {",
-      "superclass": "StatelessWidget",
-      "is_widget": true,
-      "body_hash": "df5239b6c5113920"
-    },
-    {
-      "name": "DockCount",
-      "kind": "class",
-      "file": "lib/clubs/presentation/detail/widgets/catch_club_dock.dart",
-      "line": 188,
-      "signature": "class DockCount extends StatelessWidget {",
-      "superclass": "StatelessWidget",
-      "is_widget": true,
-      "body_hash": "b3f5516f121c0f87"
-    },
-    {
-      "name": "DockBell",
-      "kind": "class",
-      "file": "lib/clubs/presentation/detail/widgets/catch_club_dock.dart",
-      "line": 222,
-      "signature": "class DockBell extends StatelessWidget {",
-      "superclass": "StatelessWidget",
-      "is_widget": true,
-      "body_hash": "363ee0b94a78ff0e"
-    },
-    {
-      "name": "ClubMembershipDock",
-      "kind": "class",
-      "file": "lib/clubs/presentation/detail/widgets/catch_club_dock.dart",
-      "line": 271,
-      "signature": "class ClubMembershipDock extends ConsumerWidget {",
-      "superclass": "ConsumerWidget",
-      "is_widget": true,
-      "body_hash": "05252b5cdf1bf5be"
-    },
-    {
       "name": "ClubContactActionHandler",
       "kind": "typedef",
       "file": "lib/clubs/presentation/detail/widgets/club_contact_section.dart",
@@ -5687,6 +5639,70 @@
       "superclass": "StatelessWidget",
       "is_widget": true,
       "body_hash": "ad07b8e9042569b8"
+    },
+    {
+      "name": "ClubDetailDockRole",
+      "kind": "enum",
+      "file": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
+      "line": 19,
+      "signature": "enum ClubDetailDockRole { guest, visitor, member, owner }",
+      "body_hash": "67c5302c561a6f34"
+    },
+    {
+      "name": "CatchClubDockState",
+      "kind": "typedef",
+      "file": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
+      "line": 22,
+      "signature": "typedef CatchClubDockState = ClubDetailDockRole;",
+      "body_hash": "ac92369ac2419a23"
+    },
+    {
+      "name": "ClubDetailDock",
+      "kind": "class",
+      "file": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
+      "line": 31,
+      "signature": "class ClubDetailDock extends StatelessWidget {",
+      "superclass": "StatelessWidget",
+      "is_widget": true,
+      "body_hash": "a4e5e56a9f40f956"
+    },
+    {
+      "name": "CatchClubDock",
+      "kind": "typedef",
+      "file": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
+      "line": 184,
+      "signature": "typedef CatchClubDock = ClubDetailDock;",
+      "body_hash": "ecb216c88cf6d6ab"
+    },
+    {
+      "name": "DockCount",
+      "kind": "class",
+      "file": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
+      "line": 186,
+      "signature": "class DockCount extends StatelessWidget {",
+      "superclass": "StatelessWidget",
+      "is_widget": true,
+      "body_hash": "b3f5516f121c0f87"
+    },
+    {
+      "name": "DockBell",
+      "kind": "class",
+      "file": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
+      "line": 220,
+      "signature": "class DockBell extends StatelessWidget {",
+      "superclass": "StatelessWidget",
+      "is_widget": true,
+      "body_hash": "363ee0b94a78ff0e"
+    },
+    {
+      "name": "ClubMembershipDock",
+      "kind": "class",
+      "file": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
+      "line": 269,
+      "signature": "class ClubMembershipDock extends ConsumerWidget {",
+      "superclass": "ConsumerWidget",
+      "is_widget": true,
+      "body_hash": "626e23d8b0488c59"
     },
     {
       "name": "ClubDetailLoadingBody",
@@ -9147,7 +9163,7 @@
       "signature": "class CatchBottomDock extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "518e524b39dfd7b0"
+      "body_hash": "43e4039e58addf02"
     },
     {
       "name": "CatchBottomDockCta",

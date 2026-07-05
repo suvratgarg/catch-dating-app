@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.585
+version: 2.5.586
 updated: 2026-07-05
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,14 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.586
+
+- Renamed the Club Detail bottom dock from `CatchClubDock` to
+  `ClubDetailDock`, moved its file to `club_detail_dock.dart`, and rebuilt its
+  outer chrome on `CatchBottomDock`. The full state matrix now lives under the
+  Club Detail Widgetbook dock group rather than Core primitives, while
+  deprecated typedefs preserve the old public symbol for one release.
 
 ### 2.5.585
 
@@ -6333,9 +6341,10 @@ Generated 2026-05-06.
 | `ExploreFilterGlyphButton` | `lib/explore/presentation/widgets/explore_filter_rail.dart:126` | Pinned filter glyph button used inside `ExploreFilterRail`. Receives active-count copy, semantic label, and tap callback, then renders the tune icon with `CatchIconBadge` so filter state stays visible without giving the leaf provider access. |
 | `ExploreFilterSheet` | `lib/explore/presentation/widgets/explore_filter_rail.dart:171` | Public Explore filter-sheet content opened by `ExploreFilterRail` and rendered directly in Widgetbook. It keeps distance and joined-club controls on the same `exploreFiltersProvider` seam as the rail and uses `CatchBottomSheetScaffold`, `CatchButton`, and `CatchSelectChip` instead of a feature-local sheet shell. |
 | `ExploreSelectedEventLead` | `lib/explore/presentation/widgets/explore_peek_rail.dart:237` | Consumer selected-pin lead for the Explore map sheet. Receives the selected `ExploreEventItem` and spotlight id, branches between spotlight and ticket card treatments, and keeps event-detail route opening inside the map lead boundary instead of a private widget-returning helper. |
-| `ClubMembershipDock` | `lib/clubs/presentation/detail/widgets/catch_club_dock.dart:270` | Consumer club detail membership dock. Calls `ClubMembershipController` for join/leave/notification actions and renders through the canonical `CatchClubDock` primitive. |
-| `DockCount` | `lib/clubs/presentation/detail/widgets/catch_club_dock.dart:191` | Compact numeric count block used inside the club dock. Renders the member/going number with the shared numeric text style and quiet uppercase label while the parent dock decides whether counts apply to the current membership state. |
-| `DockBell` | `lib/clubs/presentation/detail/widgets/catch_club_dock.dart:225` | Club notification bell action used by the member dock state. Receives active/loading/accent inputs explicitly, renders active and inactive notification glyphs through `CatchIconButton`, and swaps to `CatchLoadingIndicator` during push-notification mutation work. |
+| `ClubDetailDock` | `lib/clubs/presentation/detail/widgets/club_detail_dock.dart:31` | Provider-free Club Detail bottom dock renderer. Delegates sticky footer chrome, top divider, padding, and bottom safe-area handling to `CatchBottomDock`, while owning guest/visitor/member/owner button composition, optional member count, notification bell, activity accent, and footnote copy. Deprecated `CatchClubDock` and `CatchClubDockState` typedefs remain for one release only. |
+| `ClubMembershipDock` | `lib/clubs/presentation/detail/widgets/club_detail_dock.dart:270` | Consumer club detail membership dock. Calls `ClubMembershipController` for join/leave/notification actions and renders through the feature-owned `ClubDetailDock` renderer. |
+| `DockCount` | `lib/clubs/presentation/detail/widgets/club_detail_dock.dart:191` | Compact numeric count block used inside the club dock. Renders the member/going number with the shared numeric text style and quiet uppercase label while the parent dock decides whether counts apply to the current membership state. |
+| `DockBell` | `lib/clubs/presentation/detail/widgets/club_detail_dock.dart:225` | Club notification bell action used by the member dock state. Receives active/loading/accent inputs explicitly, renders active and inactive notification glyphs through `CatchIconButton`, and swaps to `CatchLoadingIndicator` during push-notification mutation work. |
 | `MutationErrorSnackbarListener` | `lib/core/widgets/mutation_error_snackbar_listener.dart:13` | Watches a Riverpod `Mutation` and shows a `SnackBar` on error transition. Used for transient mutation errors such as join/leave club failures. |
 
 ### StatelessWidget

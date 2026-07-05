@@ -8,7 +8,7 @@ import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen_state.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
-import 'package:catch_dating_app/clubs/presentation/detail/widgets/catch_club_dock.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_dock.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_contact_section.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_body.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_skeleton.dart';
@@ -541,6 +541,92 @@ Widget clubMembershipDockStates(BuildContext context) {
             isMutating: false,
             pushNotificationsEnabled: true,
             isPushMutating: true,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Dock states',
+  type: ClubDetailDock,
+  path: '[Club Detail]/Dock',
+)
+Widget clubDetailDockStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ClubDetailDock',
+    catalogId: 'section.club.detail_dock',
+    children: [
+      _StateCard(
+        label: 'guest',
+        child: _DockFrame(
+          child: ClubDetailDock(
+            state: ClubDetailDockRole.guest,
+            activityKind: ActivityKind.socialRun,
+            footnote: 'Sign in to request access.',
+            onSignIn: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'visitor',
+        child: _DockFrame(
+          child: ClubDetailDock(
+            state: ClubDetailDockRole.visitor,
+            activityKind: ActivityKind.pickleball,
+            members: 128,
+            footnote: 'Requests are approved by the host.',
+            onJoin: _noop,
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'visitor pending',
+        child: _DockFrame(
+          child: ClubDetailDock(
+            state: ClubDetailDockRole.visitor,
+            activityKind: ActivityKind.dinner,
+            members: 42,
+            isJoinLoading: true,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'member',
+        child: _DockFrame(
+          child: ClubDetailDock(
+            state: ClubDetailDockRole.member,
+            activityKind: ActivityKind.yoga,
+            members: 76,
+            footnote: 'You are a member.',
+            onBell: _noop,
+            onManage: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'member bell pending',
+        child: _DockFrame(
+          child: ClubDetailDock(
+            state: ClubDetailDockRole.member,
+            activityKind: ActivityKind.socialRun,
+            members: 76,
+            notificationsEnabled: false,
+            isBellLoading: true,
+            onBell: _noop,
+            onManage: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'owner',
+        child: _DockFrame(
+          child: ClubDetailDock(
+            state: ClubDetailDockRole.owner,
+            activityKind: ActivityKind.pubQuiz,
+            onManage: _noop,
+            onCreate: _noop,
           ),
         ),
       ),
@@ -1748,13 +1834,13 @@ class _ClubComposedPreview extends StatelessWidget {
     final previewEvents = events ?? _events;
     final previewReviews = reviews ?? _reviews;
     final state = !isAuthenticated
-        ? CatchClubDockState.guest
+        ? ClubDetailDockRole.guest
         : isMember
-        ? CatchClubDockState.member
-        : CatchClubDockState.visitor;
+        ? ClubDetailDockRole.member
+        : ClubDetailDockRole.visitor;
     final footnote = switch (state) {
-      CatchClubDockState.visitor => 'FREE TO JOIN · LEAVE ANYTIME',
-      CatchClubDockState.member => 'MEMBER · MANAGE ANYTIME',
+      ClubDetailDockRole.visitor => 'FREE TO JOIN · LEAVE ANYTIME',
+      ClubDetailDockRole.member => 'MEMBER · MANAGE ANYTIME',
       _ => null,
     };
 
@@ -1784,10 +1870,10 @@ class _ClubComposedPreview extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar: CatchClubDock(
+      bottomNavigationBar: ClubDetailDock(
         state: state,
         activityKind: previewClub.hostDefaults.primaryActivityKind,
-        members: state == CatchClubDockState.owner
+        members: state == ClubDetailDockRole.owner
             ? null
             : previewClub.memberCount,
         notificationsEnabled: true,

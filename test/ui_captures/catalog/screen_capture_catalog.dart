@@ -30,8 +30,8 @@ import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen_state.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
-import 'package:catch_dating_app/clubs/presentation/detail/widgets/catch_club_dock.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_body.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_dock.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
@@ -2476,13 +2476,13 @@ Widget _clubDetailMutationCapture({
   Object? mutationError,
 }) {
   final dockState = !isAuthenticated
-      ? CatchClubDockState.guest
+      ? ClubDetailDockRole.guest
       : isMember
-      ? CatchClubDockState.member
-      : CatchClubDockState.visitor;
+      ? ClubDetailDockRole.member
+      : ClubDetailDockRole.visitor;
   final footnote = switch (dockState) {
-    CatchClubDockState.visitor => 'FREE TO JOIN · LEAVE ANYTIME',
-    CatchClubDockState.member => 'MEMBER · MANAGE ANYTIME',
+    ClubDetailDockRole.visitor => 'FREE TO JOIN · LEAVE ANYTIME',
+    ClubDetailDockRole.member => 'MEMBER · MANAGE ANYTIME',
     _ => null,
   };
 
@@ -2512,7 +2512,7 @@ Widget _clubDetailMutationCapture({
         ),
       ],
     ),
-    bottomNavigationBar: CatchClubDock(
+    bottomNavigationBar: ClubDetailDock(
       state: dockState,
       activityKind: _clubDetailClub.hostDefaults.primaryActivityKind,
       members: _clubDetailClub.memberCount,
