@@ -434,7 +434,7 @@ not widget-ify it. The synthetic visual fill is debug-gated and harmless.
 File: `lib/swipes/presentation/swipe_hub_screen.dart`. Overall: clean state
 dispatch and token usage; findings are title-voice drift.
 
-### H1. 'Open catch windows' hand-rolled section header `[codex]`
+### H1. 'Open catch windows' hand-rolled section header `[done e78a8614e]`
 
 `CatchesHubContent` builds `Row(Text('Open catch windows', titleL), Text
 ('$count', mono))` by hand while the same screen uses `CatchSectionHeader`
@@ -443,6 +443,11 @@ above it. Replace with the section primitive that owns a title + count
 kicker+count chrome — match whichever the G1 voice dictates for in-body
 list headers). The manual `for (...) gapH12` interleave below it becomes
 `CatchSectionList(gap: CatchSpacing.s3, ...)`.
+
+Done: `CatchesHubContent` now uses `CatchSectionHeader` for the active-window
+title/count row and `CatchSectionList(gap: CatchSpacing.s3)` for attended
+event row spacing. The follow-up widget test asserts those primitives are in
+the rendered Catches Hub composition.
 
 ### H2. `PillStat` — lexicon note
 
