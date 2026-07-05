@@ -5363,30 +5363,6 @@ Widget catchEventCardContractStates(BuildContext context) {
         ),
       ),
       const _StateCard(
-        label: 'spotlight',
-        child: CatchEventCard.spotlight(
-          title: 'Trivia without awkward tables',
-          supportingLabel: 'The Daily, Bandra',
-          timeLabel: '8:00 PM',
-          countdownLabel: 'Tuesday',
-          priceLabel: '₹600',
-          capacityLabel: '12 going',
-          activityKind: ActivityKind.pubQuiz,
-        ),
-      ),
-      const _StateCard(
-        label: 'compact',
-        child: CatchEventCard.compact(
-          title: 'Sunday flow',
-          subtitle: 'Yoga House',
-          timeLabel: '10:00 AM',
-          countdownLabel: 'Sun',
-          priceLabel: '₹500',
-          capacityLabel: '8 left',
-          activityKind: ActivityKind.yoga,
-        ),
-      ),
-      const _StateCard(
         label: 'long-copy',
         child: SizedBox(
           width: 320,
@@ -5399,32 +5375,6 @@ Widget catchEventCardContractStates(BuildContext context) {
             capacityLabel: '18 going',
             activityKind: ActivityKind.socialRun,
           ),
-        ),
-      ),
-      const _StateCard(
-        label: 'hero-transition',
-        child: CatchEventCard.spotlight(
-          title: 'Dinner at the long table',
-          supportingLabel: 'Bandra',
-          timeLabel: '8:30 PM',
-          countdownLabel: 'Friday',
-          priceLabel: '₹1,200',
-          capacityLabel: '2 left',
-          activityKind: ActivityKind.dinner,
-          heroTag: 'contract-event-card',
-          visualHeroTag: 'contract-event-card-visual',
-        ),
-      ),
-      const _StateCard(
-        label: 'activity-art',
-        child: CatchEventCard.compact(
-          title: 'Open court',
-          subtitle: 'Padel ladder',
-          timeLabel: '6:00 PM',
-          countdownLabel: 'Today',
-          priceLabel: '₹800',
-          capacityLabel: '6 left',
-          activityKind: ActivityKind.pickleball,
         ),
       ),
     ],

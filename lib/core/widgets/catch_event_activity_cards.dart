@@ -12,8 +12,8 @@ import 'package:flutter/material.dart';
 
 /// Production event card backed by the shared activity visual schema.
 ///
-/// Use named constructors instead of separate public card classes so Explore,
-/// Dashboard, and map-sheet event cards share one configurable component API.
+/// Use the ticket constructor for recommendation-style event cards that need
+/// the shared activity backdrop, ticket edge, and event metadata atoms.
 class CatchEventCard extends StatelessWidget {
   const CatchEventCard.ticket({
     super.key,

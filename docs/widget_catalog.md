@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.594
+version: 2.5.595
 updated: 2026-07-06
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,17 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.595
+
+- Retired the dropped-direction Explore map peek rail, selected-pin lead,
+  compact event row family, and alternate event-card constructors from the live
+  catalog. Event discovery now keeps recommendation cards on the single ticket
+  card contract, while the map-selection follow-up is tracked in
+  `event_club_profile_parity_handoff.md` as a DateTicket implementation.
+- Removed the retired event-card states from Widgetbook primitive/catalog
+  coverage so the component contract no longer advertises constructors that do
+  not exist in `CatchEventCard`.
 
 ### 2.5.594
 
@@ -836,13 +847,6 @@ a feature section here only when auditing that feature's widget surface.
   inside `BookingConflictSheet`, including exact Widgetbook coverage for
   activity-colored and fallback visual states. The classification scanner's
   private widget review count drops without changing booking-conflict behavior.
-
-### 2.5.497
-
-- Promoted `EventCompactDatePill` as the public cataloged date renderer used by
-  `EventCompactRow`, with exact Widgetbook coverage. The classification
-  scanner's private widget review count drops without changing compact event row
-  behavior.
 
 ### 2.5.496
 
@@ -2712,8 +2716,7 @@ a feature section here only when auditing that feature's widget surface.
   `ExploreMapScreen` route.
 - Explore's featured-event spotlight renders only in
   `ExploreDiscoveryCoverHeader` when the header has a featured event. The body
-  `ExploreEventsSection` no longer renders a duplicate `CatchCoverStory`; the
-  map-sheet selected-lead path still uses `CatchEventCard.spotlight`.
+  `ExploreEventsSection` no longer renders a duplicate `CatchCoverStory`.
 
 ### 2.5.278
 
@@ -3800,13 +3803,13 @@ a feature section here only when auditing that feature's widget surface.
 
 - Event detail routes now carry a source-aware presentation mode. Explore
   date-rail/ticket cards open the detail screen in a light ticket presentation,
-  while featured/spotlight event cards open a dark spotlight presentation that
+  while the featured-event path opens a dark spotlight presentation that
   preserves the black lower-card body after navigation.
 - Added shared event-ticket transition primitives in
   `event_ticket_surface.dart`: full-card Hero wrapping, ticket clipping
-  constants, and the reusable perforated divider. `CatchEventCard.ticket`,
-  `CatchEventCard.spotlight`, and `EventDateRailCard` can now participate in
-  full-surface card-to-detail transitions.
+  constants, and the reusable perforated divider. The ticket event card and
+  `EventDateRailCard` can participate in full-surface card-to-detail
+  transitions.
 - Event detail sections now accept an `EventDetailSurfaceStyle` so the same
   overview, stats, when/where, invite, and roster widgets can render on the
   standard light page or the spotlight-dark page without inverting the global
@@ -3815,29 +3818,26 @@ a feature section here only when auditing that feature's widget surface.
 ### 2.5.158
 
 - Added the missing event depiction primitives: `EventActionCard` for booked
-  event and host-operation lifecycle cards, `EventCompactRow` for dense
-  tappable event rows, and `EventDateMarker` for calendar day/week event
-  markers.
+  event and host-operation lifecycle cards, plus `EventDateMarker` for calendar
+  day/week event markers.
 - `EventFocusRail`, `HostEventToolCard`, `ActivitySection` upcoming-event rows,
   and the Calendar date header now render through those shared primitives
   instead of private one-off card/date-cell widgets.
 - Retired `EventHeroTile`, `EventTileStatusBadge`, and `EventTileFactWrap`.
-  Spotlight events stay on `CatchEventCard.spotlight`, ticket surfaces stay on
-  `CatchEventCard.ticket`, and agenda/list rows stay on `EventDateRailCard`.
+  Ticket surfaces stay on the ticket event card, and agenda/list rows stay on
+  `EventDateRailCard`.
 
 ### 2.5.157
 
-- Retired `CatchEventCardHero`. The full-bleed photo hero card was a
-  pre-spotlight Explore refactor artifact with no remaining production callers;
-  featured events now use `CatchEventCard.spotlight` and map/rail events use
-  `CatchEventCard.ticket`.
+- Retired the full-bleed event-card hero artifact from an earlier Explore
+  refactor; featured events moved to the spotlight presentation and map/rail
+  events moved to the ticket presentation.
 
 ### 2.5.156
 
-- Retired `CatchEventCardPeek`. The Explore map sheet now uses
-  `CatchEventCard.ticket` for the nearby rail and for selected non-spotlight
-  pins, while preserving `CatchEventCard.spotlight` only when the selected pin
-  is the feed's actual featured event.
+- Retired the old peek-card event variant. The Explore map sheet moved its
+  nearby rail and selected-pin work onto the ticket presentation at the time;
+  the later map-selection handoff replaces that dropped direction entirely.
 
 ### 2.5.155
 
@@ -3950,9 +3950,8 @@ a feature section here only when auditing that feature's widget surface.
 
 - Production Explore now uses the activity-coded event-card direction from the
   concept lab. `EventActivityVisualSpec` centralizes the mutable `ActivityKind`
-  palette/backdrop/icon mapping, `CatchEventCard.ticket` and
-  `CatchEventCard.spotlight` render the production feed and selected-pin cards,
-  `EventPhotoHeader` prefers the same activity artwork, and
+  palette/backdrop/icon mapping, the ticket event card renders production
+  recommendation cards, `EventPhotoHeader` prefers the same activity artwork, and
   `ExploreEventTypeBrowseGrid` adds bottom-of-page activity filtering.
 
 ### 2.5.139
@@ -4051,10 +4050,10 @@ a feature section here only when auditing that feature's widget surface.
   `CatchDaySectionHeaderDelegate` headers in the primary sheet, while the
   compatibility `ExploreEventsSection` wrapper keeps inline headers when nested
   under `SliverMainAxisGroup`.
-- The Explore map sheet lead is now `buildExploreMapSheetLeadSlivers`: selected
-  pin cards share their photo into event detail, collapsed summaries switch from
-  city label to `Map area` after a meaningful pan, and the sheet chrome uses the
-  shared `CatchDraggableSheetShell` primitive instead of a feature-local shell.
+- The legacy Explore map sheet lead rendered selected-pin cards, collapsed
+  summaries switched from city label to `Map area` after a meaningful pan, and
+  the sheet chrome moved to the shared `CatchDraggableSheetShell` primitive
+  instead of a feature-local shell.
 - Event discovery now avoids eager signed/saved event-detail watches by loading
   missing personal events through the batched `watchEventsByIdsProvider` seam.
 
@@ -4079,10 +4078,9 @@ a feature section here only when auditing that feature's widget surface.
 
 ### 2.5.124
 
-- `ExplorePeekRail` now uses a semantic `InkWell` action for the compact
-  "See all" control, with a stable widget key and tooltip. The change clears
-  the widget cleanup scanner's only Explore tappable hit while preserving the
-  compact peek-state layout.
+- The legacy Explore map peek rail used a semantic `InkWell` action for the
+  compact "See all" control, with a stable widget key and tooltip. That surface
+  has since been retired by the event/club/profile parity handoff.
 
 ### 2.5.123
 
@@ -4659,7 +4657,7 @@ a feature section here only when auditing that feature's widget surface.
 - Event card architecture now uses a small tile catalog under
   `lib/events/presentation/widgets/event_tiles/`: `EventTileData`,
   `EventDateRailCard`, `EventAgendaTile`, `EventActionCard`,
-  `EventCompactRow`, and `EventDateMarker`.
+  and `EventDateMarker`.
 - Calendar, Saved events, club schedules, Explore list rows, and Map browse
   cards now render through shared card primitives while their providers/view
   models own club-name and relationship-state lookup.
@@ -5841,8 +5839,7 @@ Generated 2026-05-06.
 | `CatchDaySectionHeader` | `lib/core/widgets/catch_day_section_header.dart:11` | Sticky day-section header for chronological feeds. Use `CatchDaySectionHeaderDelegate` when the parent owns a flat `CustomScrollView` and pinned day headers are needed; the delegate binds the child height to its sliver extent so pinned geometry stays valid under constrained sheets. |
 | `CatchDaySectionHeaderCount` | `lib/core/widgets/catch_day_section_header.dart:60` | Direct animated count renderer used by `CatchDaySectionHeader`. Keeps the numeric meta style, count-keyed switcher, and slide/fade count transition reviewable without a private widget-returning helper. |
 | `CatchStatusBar` | `lib/core/widgets/catch_status_bar.dart:8` | Handoff `StatusBar`: phone-frame iOS status row with bold mono time, Phosphor fill signal/wifi/battery glyphs, light/dark tone support, and optional surface fill for mock frames and design previews. |
-| `CatchEventCard.ticket` | `lib/core/widgets/catch_event_activity_cards.dart:17` | Ticket-style production event card backed by `EventActivityVisualSpec`. Used by Dashboard recommendations, Explore selected non-spotlight map pins, and the Explore nearby map rail so each event type shares the same activity-coded backdrop, shared `EventClockMark`, shared `EventStatusPill`, centralized capacity copy, and optional full-card Hero transition into event detail. |
-| `CatchEventCard.spotlight` | `lib/core/widgets/catch_event_activity_cards.dart:133` | Large activity-art production event card for featured Explore items and selected map pins only when the selected pin is the feed's actual featured event. Reuses `EventActivityBackdrop`, supports optional visual or full-card Hero tags for card-to-detail transitions, and keeps non-open states in the kicker slot. |
+| `CatchEventCard.ticket` | `lib/core/widgets/catch_event_activity_cards.dart:17` | Ticket-style production event card backed by `EventActivityVisualSpec`. Used by Explore recommendations so each event type shares the same activity-coded backdrop, shared `EventClockMark`, shared `EventStatusPill`, centralized capacity copy, and optional full-card Hero transition into event detail. |
 | `CatchEventThumbnail` | `lib/core/widgets/catch_event_thumbnail.dart:17` | Shared event image primitive. Renders uploaded photos by default, falls back to `EventActivityBackdrop`, supports `preferActivityArtwork` for surfaces that should stay color-coded by event type even when a photo exists, and exposes fallback icon/pattern tuning for large hero bands. |
 | `CatchEventThumbnailActivityFallback` | `lib/core/widgets/catch_event_thumbnail.dart:91` | Direct activity-art fallback renderer used by `CatchEventThumbnail` for no-photo, loading, and failed-photo states. Receives activity kind and fallback icon/pattern tuning explicitly so thumbnail fallback anatomy is reviewable without private widget helpers. |
 | `CatchEventThumbnailScrimOverlay` | `lib/core/widgets/catch_event_thumbnail.dart:120` | Direct event-thumbnail scrim renderer for bottom and full overlays. Keeps thumbnail text-protection gradients cataloged separately from the parent image/fallback selection logic. |
@@ -6394,7 +6391,6 @@ Generated 2026-05-06.
 | `ExploreFilterRail` | `lib/explore/presentation/widgets/explore_filter_rail.dart:21` | Handoff Explore scope/filter rail. Renders visible time scopes through `CatchOptionGroupItem` in a horizontally safe lane, keeps the filter glyph pinned to the right with an active-count badge, and leaves selected time mutation at the rail boundary. Secondary distance/joined filters stay in a tokenized `CatchBottomSheetScaffold` with handoff `SelectChip` choices. The rail stays backed by `exploreFiltersProvider` and can receive transparent/opaque background colors from the floating map chrome. |
 | `ExploreFilterGlyphButton` | `lib/explore/presentation/widgets/explore_filter_rail.dart:126` | Pinned filter glyph button used inside `ExploreFilterRail`. Receives active-count copy, semantic label, and tap callback, then renders the tune icon with `CatchIconBadge` so filter state stays visible without giving the leaf provider access. |
 | `ExploreFilterSheet` | `lib/explore/presentation/widgets/explore_filter_rail.dart:171` | Public Explore filter-sheet content opened by `ExploreFilterRail` and rendered directly in Widgetbook. It keeps distance and joined-club controls on the same `exploreFiltersProvider` seam as the rail and uses `CatchBottomSheetScaffold`, `CatchButton`, and `CatchSelectChip` instead of a feature-local sheet shell. |
-| `ExploreSelectedEventLead` | `lib/explore/presentation/widgets/explore_peek_rail.dart:237` | Consumer selected-pin lead for the Explore map sheet. Receives the selected `ExploreEventItem` and spotlight id, branches between spotlight and ticket card treatments, and keeps event-detail route opening inside the map lead boundary instead of a private widget-returning helper. |
 | `ClubDetailDock` | `lib/clubs/presentation/detail/widgets/club_detail_dock.dart:31` | Provider-free Club Detail bottom dock renderer. Delegates sticky footer chrome, top divider, padding, and bottom safe-area handling to `CatchBottomDock`, while owning guest/visitor/member/owner button composition, optional member count, notification bell, activity accent, and footnote copy. Deprecated `CatchClubDock` and `CatchClubDockState` typedefs remain for one release only. |
 | `ClubMembershipDock` | `lib/clubs/presentation/detail/widgets/club_detail_dock.dart:270` | Consumer club detail membership dock. Calls `ClubMembershipController` for join/leave/notification actions and renders through the feature-owned `ClubDetailDock` renderer. |
 | `DockCount` | `lib/clubs/presentation/detail/widgets/club_detail_dock.dart:191` | Compact numeric count block used inside the club dock. Renders the member/going number with the shared numeric text style and quiet uppercase label while the parent dock decides whether counts apply to the current membership state. |
@@ -6430,10 +6426,6 @@ Generated 2026-05-06.
 | `MoreActivityTypesRow` | `lib/explore/presentation/widgets/explore_event_type_browse_grid.dart:261` | Collapsed overflow row for Browse by activity. Shows `+ n MORE TYPES`, forward affordance, and semantic expand label. |
 | `ActivityDot` | `lib/explore/presentation/widgets/explore_event_type_browse_grid.dart:309` | Fixed-size pill-radius activity accent dot rendered through `CatchSurface` so Browse by activity rows use tokenized shape and sizing. |
 | `EventTypeBrowseSkeleton` | `lib/explore/presentation/widgets/explore_event_type_browse_grid.dart:327` | Loading placeholder for the Browse by activity grid with kicker text skeleton plus two stable row skeletons. |
-| `ExplorePeekRail` | `lib/explore/presentation/widgets/explore_peek_rail.dart:13` | Lead sliver builder for the Explore map sheet. `buildExploreMapSheetLeadSlivers` renders aggregate count/scope copy in collapsed mode, a selected-pin lead that branches between `CatchEventCard.ticket` and `CatchEventCard.spotlight` based on the feed's featured event id, and the nearby horizontal rail with `CatchEventCard.ticket` items, spatial reordering, and a semantic "See all" action in unselected half/full mode. |
-| `CollapsedMapSummary` | `lib/explore/presentation/widgets/explore_peek_rail.dart:191` | Collapsed Explore map sheet summary. Receives count, scope label, and active filters, derives concise title/scope copy through `ExploreCollapsedMapSummaryState`, and renders centered one-line text inside the sheet lead padding. |
-| `ExploreEventTicketCard` | `lib/explore/presentation/widgets/explore_peek_rail.dart:300` | Ticket-style Explore map event card used for selected pins and the nearby peek rail. Converts an `ExploreEventItem` into `ExploreMapEventTicketState`, then delegates title, time, countdown, price, capacity, status, hero tag, width, and tap handling to `CatchEventCard.ticket`. |
-| `PeekRailSkeleton` | `lib/explore/presentation/widgets/explore_peek_rail.dart:543` | Loading skeleton for the Explore map nearby rail. Reserves the lead title and two horizontal ticket-card placeholders with the same rail height/spacing as the loaded peek rail. |
 | `ClubDiscoverList` | `lib/clubs/presentation/discovery/widgets/club_discover_list.dart:8` | Club directory section of Explore with a real `SliverList` of directory cards. Passes joined and hosted club IDs separately so host-owned clubs are not mislabeled as ordinary joined clubs. |
 | `ClubIdentityAtoms` | `lib/clubs/presentation/shared/club_identity_atoms.dart:11` | Shared club-card identity helpers and widgets: member-count label, tag filtering, member seal, tag wrap, hosted-by line, host avatar, host role badge, and rating pill. Use this before adding club-card-local member labels, tag wraps, host rows, or rating chips. |
 | `ClubListTile` | `lib/clubs/presentation/discovery/widgets/club_list_tile.dart:33` | Club tile rendered as directory card or avatar chip. Directory cards now use the productionized concept-lab club language and shared club identity atoms: image-backed clubs get a bounded photo card with member seal, centrally themed `CatchTextStyles.clubDisplay` title, tags, host row, and role sash; no-image clubs get an identity card that reuses the shared fallback palette. Display-only tile rendering does not watch provider state; only the join button owns the mutation provider. |
@@ -6590,8 +6582,6 @@ Generated 2026-05-06.
 | `EventActionCard` | `lib/events/presentation/widgets/event_tiles/event_action_card.dart:11` | Shared full-width lifecycle/action event card. Renders status badges, optional carousel position/accessory, title/subtitle, structured `CatchMetaDotRow` lines, and full-width action buttons for attendee focus and host-operation cards without owning routing or mutations. |
 | `EventActionCardHeader` | `lib/events/presentation/widgets/event_tiles/event_action_card.dart:170` | Public header renderer used by `EventActionCard`. Lays out action-card badges plus optional index label without owning event state or actions. |
 | `EventActionCardActions` | `lib/events/presentation/widgets/event_tiles/event_action_card.dart:209` | Public action-stack renderer used by `EventActionCard`. Maps typed `EventActionCardAction` inputs into full-width Catch buttons, preserving loading, semantics, variant, accent, key, and callback behavior. |
-| `EventCompactRow` | `lib/events/presentation/widgets/event_tiles/event_compact_row.dart:14` | Dense tappable event row with date pill, event title, location subtitle, shared meta row, optional status badge, and chevron. Used where an event needs to be represented inside compact activity/notification surfaces. |
-| `EventCompactDatePill` | `lib/events/presentation/widgets/event_tiles/event_compact_row.dart:122` | Public fixed-size month/day pill renderer used by `EventCompactRow`. Receives a caller-provided accent color, applies the shared compact date-pill dimensions, and owns only the visual month/day treatment. |
 | `EventDateMarker` | `lib/events/presentation/widgets/event_tiles/event_date_marker.dart:9` | Shared calendar week/month day marker with selected, today, disabled, and has-event-dot states. Calendar date cells use this instead of local one-off day widgets. |
 | `WeekMarker` | `lib/events/presentation/widgets/event_tiles/event_date_marker.dart:56` | Public week-strip renderer used by `EventDateMarker`. Renders weekday/day labels, active ink fill, event dot, tappable semantics, and optional label override for calendar week rows without owning date selection. |
 | `MonthMarker` | `lib/events/presentation/widgets/event_tiles/event_date_marker.dart:126` | Public month-grid renderer used by `EventDateMarker`. Renders selected/today/disabled month-cell states, preserves disabled-cell geometry with invisible text, and exposes tappable semantics only when enabled. |

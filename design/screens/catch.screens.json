@@ -2065,7 +2065,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "ExploreScreen composes Scaffold, SafeArea, browse chrome, filter rail, CustomScrollView slivers, membership mutation listener, mixed event/club feed, empty/error states, and floating map count pill; route provider-wave branch precedence, empty-state derivation, and map count label now route through ExploreDiscoveryScreenState, which delegates body loading/error/content/empty branches to ExploreScreenBodyState and map label derivation to ExploreMapLauncherState. Browse/search-open chrome labels and search expansion policy route through ExploreChromeState, city-trigger chrome labels/icons route through ExploreCityTriggerState, filter active-count/sheet-option copy routes through ExploreFilterRailState and ExploreFilterSheetState, cover-story copy routes through ExploreCoverStoryState, mixed-feed card ordering routes through ExploreFeedSectionState, event/external/club feed row labels route through ExploreEventRowState, ExploreExternalEventRowState, and ExploreClubCardState, and map sheet summary/peek ticket labels route through ExploreCollapsedMapSummaryState, ExplorePeekRailState, and ExploreMapEventTicketState. ExploreMapScreen is a child route that reuses the event map view model.",
+        "currentLayout": "ExploreScreen composes Scaffold, SafeArea, browse chrome, filter rail, CustomScrollView slivers, membership mutation listener, mixed event/club feed, empty/error states, and floating map count pill; route provider-wave branch precedence, empty-state derivation, and map count label now route through ExploreDiscoveryScreenState, which delegates body loading/error/content/empty branches to ExploreScreenBodyState and map label derivation to ExploreMapLauncherState. Browse/search-open chrome labels and search expansion policy route through ExploreChromeState, city-trigger chrome labels/icons route through ExploreCityTriggerState, filter active-count/sheet-option copy routes through ExploreFilterRailState and ExploreFilterSheetState, cover-story copy routes through ExploreCoverStoryState, and mixed-feed card ordering plus event/external/club row labels route through ExploreFeedSectionState, ExploreEventRowState, ExploreExternalEventRowState, and ExploreClubCardState. ExploreMapScreen is a child route that reuses the event map view model; the retired map peek-rail summary/ticket adapters are no longer part of the active composition.",
         "targetLayout": "ExploreScreen should map provider state into an ExploreDiscoveryScreenState and compose registered sections: browse chrome, scope/filter rail, cover story, day ticket feed, club interleaves, cross-paths card, event type browse grid, map launcher, empty/error states, and map route sheet/overlay.",
         "sections": [
           {
@@ -2165,7 +2165,7 @@
             "previewIds": [
               "ExploreEventsSection/Feed states"
             ],
-            "migration": "ExploreFeedSectionState now owns mixed feed card selection, result-count copy, club intermix ranking, and This Week promotion. ExploreCoverStoryState owns cover-story kicker, title, CTA, time/price, and attendance copy with an injected clock for tests. ExploreChromeState owns search-open chrome labels and cover/header display policy. ExploreEventRowState owns event row kicker, supporting, price, capacity, and status labels. ExploreExternalEventRowState owns external event source/supporting/time-price/action/read-only labels. ExploreClubCardState owns club member/caption/supporting/action/tag labels for the mixed feed polaroid and row. DateTicket/EventTicket handoff roles map to the registered catch.event_card ticket/card family and ExploreMapEventTicketState owns map/peek ticket labels. ClubPolaroid stays screen-section local through ExploreClubPolaroidCard plus ClubPolaroidArtwork until a second screen needs the same card contract. CrossPathsCard maps to the registered catch.cross_paths_card contract but is catalog-only for Explore feed until product adds a live person-card feed item."
+            "migration": "ExploreFeedSectionState now owns mixed feed card selection, result-count copy, club intermix ranking, and This Week promotion. ExploreCoverStoryState owns cover-story kicker, title, CTA, time/price, and attendance copy with an injected clock for tests. ExploreChromeState owns search-open chrome labels and cover/header display policy. ExploreEventRowState owns event row kicker, supporting, price, capacity, and status labels. ExploreExternalEventRowState owns external event source/supporting/time-price/action/read-only labels. ExploreClubCardState owns club member/caption/supporting/action/tag labels for the mixed feed polaroid and row. DateTicket/EventTicket handoff roles map to the registered event-card/date-ticket families; the retired map/peek ticket adapters are deleted and replacement selected-card coverage is tracked by handoff item 1.B5. ClubPolaroid stays screen-section local through ExploreClubPolaroidCard plus ClubPolaroidArtwork until a second screen needs the same card contract. CrossPathsCard maps to the registered catch.cross_paths_card contract but is catalog-only for Explore feed until product adds a live person-card feed item."
           },
           {
             "id": "section.explore.cover_story",
@@ -2240,7 +2240,7 @@
               "file": "lib/explore/presentation/explore_map_screen.dart",
               "symbol": "ExploreMapScreen"
             },
-            "currentOwner": "ExploreMapScreen, ExploreCollapsedMapSummaryState, ExplorePeekRailState, and ExploreMapEventTicketState",
+            "currentOwner": "ExploreMapScreen and EventMapView",
             "targetOwner": "registered Explore map route adapter",
             "dependencies": [
               "catch.count_pill",
@@ -2256,11 +2256,9 @@
               "distance_ring"
             ],
             "previewIds": [
-              "ExploreMapScreen/Map route states",
-              "ExploreMapSheetLead/Map sheet lead states",
-              "ExplorePeekRailContent/Peek rail states"
+              "ExploreMapScreen/Map route states"
             ],
-            "migration": "ExploreCollapsedMapSummaryState owns collapsed sheet count/scope copy, ExplorePeekRailState owns nearby rail title/action labels, and ExploreMapEventTicketState owns selected/peek ticket copy. Widgetbook now covers route, collapsed sheet summary, selected event lead, nearby rail, loading/error, and text-scale lead states. Deterministic map captures cover ready, selected-pin, distance-ring, loading, and error states. Remaining work: define map dynamic-region masking, keep EventMapView as the map primitive, and move route chrome/provider-wave data into an adapter."
+            "migration": "The dropped Explore map peek-rail lead and selected-pin ticket widgets were retired in the event/club/profile parity handoff. Widgetbook currently covers the ExploreMapScreen route states only. Remaining work: build the new selected-map-card state, add its Widgetbook/test coverage, define map dynamic-region masking, keep EventMapView as the map primitive, and move route chrome/provider-wave data into an adapter."
           },
           {
             "id": "section.explore.empty_error",

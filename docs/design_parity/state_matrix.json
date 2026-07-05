@@ -1537,7 +1537,6 @@
           "implementationPaths": [
             "lib/explore/presentation/explore_map_screen.dart",
             "lib/explore/presentation/explore_feed_view_model.dart",
-            "lib/explore/presentation/widgets/explore_peek_rail.dart",
             "lib/events/presentation/event_map_screen.dart",
             "lib/events/presentation/event_map_view_model.dart"
           ],
@@ -1638,8 +1637,8 @@
             },
             {
               "id": "DP-EXPLORE-MAP-002",
-              "status": "closed",
-              "nextAction": "Closed by Widgetbook states for ExploreMapScreen route states, ExploreMapSheetLead collapsed/selected/nearby/loading/error/text-scale states, and ExplorePeekRailContent nearby/selected states."
+              "status": "open",
+              "nextAction": "ExploreMapScreen route states remain covered. The retired map lead/peek rail states were deleted by the event/club/profile parity handoff; selected-card replacement coverage is tracked as handoff item 1.B5."
             }
           ]
         }

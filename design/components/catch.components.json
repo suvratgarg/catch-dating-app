@@ -8166,14 +8166,12 @@
       "name": "CatchEventCard",
       "status": "active",
       "kind": "composite",
-      "summary": "Canonical event card surface for ticket, spotlight, and compact event presentations backed by shared activity visuals and event media states.",
+      "summary": "Canonical ticket-style event card surface backed by shared activity visuals and event media atoms.",
       "dart": {
         "symbol": "CatchEventCard",
         "file": "lib/core/widgets/catch_event_activity_cards.dart",
         "constructors": [
-          "CatchEventCard.ticket",
-          "CatchEventCard.spotlight",
-          "CatchEventCard.compact"
+          "CatchEventCard.ticket"
         ]
       },
       "design": {
@@ -8203,14 +8201,8 @@
           {
             "name": "subtitle",
             "type": "string",
-            "required": false,
-            "dartType": "String?"
-          },
-          {
-            "name": "supportingLabel",
-            "type": "string",
-            "required": false,
-            "dartType": "String?"
+            "required": true,
+            "dartType": "String"
           },
           {
             "name": "timeLabel",
@@ -8267,10 +8259,22 @@
             "dartType": "String?"
           },
           {
+            "name": "clockTime",
+            "type": "object",
+            "required": false,
+            "dartType": "TimeOfDay?"
+          },
+          {
             "name": "width",
             "type": "number",
             "required": false,
             "dartType": "double?"
+          },
+          {
+            "name": "heroTag",
+            "type": "object",
+            "required": false,
+            "dartType": "Object?"
           },
           {
             "name": "onTap",
@@ -8282,11 +8286,7 @@
         "states": [
           "ticket",
           "ticket-status",
-          "spotlight",
-          "compact",
-          "long-copy",
-          "hero-transition",
-          "activity-art"
+          "long-copy"
         ],
         "slots": [],
         "tokens": [
@@ -8303,7 +8303,6 @@
           "theme.light.color.surface"
         ],
         "dartRoles": [
-          "CatchEventCardVariant",
           "ActivityKind",
           "EventActivityVisualSpec",
           "EventActivityBackdrop",

@@ -1,14 +1,14 @@
 {
-  "generatedAt": "2026-07-05T19:05:37.922Z",
+  "generatedAt": "2026-07-05T21:34:02.776Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
-    "useCases": 867,
-    "components": 836,
-    "stateCards": 1733,
-    "reviewCandidates": 39,
+    "useCases": 860,
+    "components": 829,
+    "stateCards": 1713,
+    "reviewCandidates": 38,
     "oversizedUseCases": 42,
     "multiUseCaseComponents": 30
   },
@@ -2811,103 +2811,6 @@
             {
               "label": "text scale 2.0",
               "normalizedLabel": "text scale 2 0"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "CatchEventCard",
-      "useCaseCount": 2,
-      "stateCardCount": 10,
-      "paths": [
-        "[Core catalog]/Event cards",
-        "[Core primitives]/Product composites"
-      ],
-      "labels": [
-        "activity-art",
-        "compact",
-        "hero-transition",
-        "long-copy",
-        "spotlight",
-        "ticket",
-        "ticket / status / compact width",
-        "ticket-status"
-      ],
-      "review": {
-        "needsReview": true,
-        "reasons": [
-          "duplicate-state-labels",
-          "split-across-use-cases"
-        ],
-        "duplicateLabels": [
-          {
-            "label": "spotlight",
-            "count": 2
-          },
-          {
-            "label": "compact",
-            "count": 2
-          }
-        ],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Catalog states",
-          "functionName": "catchEventCardCatalogStates",
-          "file": "widgetbook/lib/primitives/core_catalog_use_cases.dart",
-          "path": "[Core catalog]/Event cards",
-          "stateCardCount": 3,
-          "stateCards": [
-            {
-              "label": "ticket / status / compact width",
-              "normalizedLabel": "ticket status compact width"
-            },
-            {
-              "label": "spotlight",
-              "normalizedLabel": "spotlight"
-            },
-            {
-              "label": "compact",
-              "normalizedLabel": "compact"
-            }
-          ]
-        },
-        {
-          "name": "Contract states",
-          "functionName": "catchEventCardContractStates",
-          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
-          "path": "[Core primitives]/Product composites",
-          "stateCardCount": 7,
-          "stateCards": [
-            {
-              "label": "ticket",
-              "normalizedLabel": "ticket"
-            },
-            {
-              "label": "ticket-status",
-              "normalizedLabel": "ticket status"
-            },
-            {
-              "label": "spotlight",
-              "normalizedLabel": "spotlight"
-            },
-            {
-              "label": "compact",
-              "normalizedLabel": "compact"
-            },
-            {
-              "label": "long-copy",
-              "normalizedLabel": "long copy"
-            },
-            {
-              "label": "hero-transition",
-              "normalizedLabel": "hero transition"
-            },
-            {
-              "label": "activity-art",
-              "normalizedLabel": "activity art"
             }
           ]
         }
@@ -6725,103 +6628,6 @@
       ]
     },
     {
-      "component": "CatchEventCard",
-      "useCaseCount": 2,
-      "stateCardCount": 10,
-      "paths": [
-        "[Core catalog]/Event cards",
-        "[Core primitives]/Product composites"
-      ],
-      "labels": [
-        "activity-art",
-        "compact",
-        "hero-transition",
-        "long-copy",
-        "spotlight",
-        "ticket",
-        "ticket / status / compact width",
-        "ticket-status"
-      ],
-      "review": {
-        "needsReview": true,
-        "reasons": [
-          "duplicate-state-labels",
-          "split-across-use-cases"
-        ],
-        "duplicateLabels": [
-          {
-            "label": "spotlight",
-            "count": 2
-          },
-          {
-            "label": "compact",
-            "count": 2
-          }
-        ],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Catalog states",
-          "functionName": "catchEventCardCatalogStates",
-          "file": "widgetbook/lib/primitives/core_catalog_use_cases.dart",
-          "path": "[Core catalog]/Event cards",
-          "stateCardCount": 3,
-          "stateCards": [
-            {
-              "label": "ticket / status / compact width",
-              "normalizedLabel": "ticket status compact width"
-            },
-            {
-              "label": "spotlight",
-              "normalizedLabel": "spotlight"
-            },
-            {
-              "label": "compact",
-              "normalizedLabel": "compact"
-            }
-          ]
-        },
-        {
-          "name": "Contract states",
-          "functionName": "catchEventCardContractStates",
-          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
-          "path": "[Core primitives]/Product composites",
-          "stateCardCount": 7,
-          "stateCards": [
-            {
-              "label": "ticket",
-              "normalizedLabel": "ticket"
-            },
-            {
-              "label": "ticket-status",
-              "normalizedLabel": "ticket status"
-            },
-            {
-              "label": "spotlight",
-              "normalizedLabel": "spotlight"
-            },
-            {
-              "label": "compact",
-              "normalizedLabel": "compact"
-            },
-            {
-              "label": "long-copy",
-              "normalizedLabel": "long copy"
-            },
-            {
-              "label": "hero-transition",
-              "normalizedLabel": "hero transition"
-            },
-            {
-              "label": "activity-art",
-              "normalizedLabel": "activity art"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "AuthScreen",
       "useCaseCount": 1,
       "stateCardCount": 10,
@@ -9435,63 +9241,6 @@
       ]
     },
     {
-      "component": "ExploreMapSheetLead",
-      "useCaseCount": 1,
-      "stateCardCount": 6,
-      "paths": [
-        "[Explore]/Sections"
-      ],
-      "labels": [
-        "collapsed summary",
-        "error lead",
-        "loading rail",
-        "nearby rail lead",
-        "selected event lead",
-        "text scale 2.0"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Map sheet lead states",
-          "functionName": "exploreMapSheetLeadStates",
-          "file": "widgetbook/lib/explore/explore_use_cases.dart",
-          "path": "[Explore]/Sections",
-          "stateCardCount": 6,
-          "stateCards": [
-            {
-              "label": "collapsed summary",
-              "normalizedLabel": "collapsed summary"
-            },
-            {
-              "label": "selected event lead",
-              "normalizedLabel": "selected event lead"
-            },
-            {
-              "label": "nearby rail lead",
-              "normalizedLabel": "nearby rail lead"
-            },
-            {
-              "label": "loading rail",
-              "normalizedLabel": "loading rail"
-            },
-            {
-              "label": "error lead",
-              "normalizedLabel": "error lead"
-            },
-            {
-              "label": "text scale 2.0",
-              "normalizedLabel": "text scale 2 0"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "HostEventsClubSection",
       "useCaseCount": 1,
       "stateCardCount": 6,
@@ -11073,6 +10822,63 @@
             {
               "label": "with-retry",
               "normalizedLabel": "with retry"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchEventCard",
+      "useCaseCount": 2,
+      "stateCardCount": 4,
+      "paths": [
+        "[Core catalog]/Event cards",
+        "[Core primitives]/Product composites"
+      ],
+      "labels": [
+        "long-copy",
+        "ticket",
+        "ticket / status / compact width",
+        "ticket-status"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Catalog states",
+          "functionName": "catchEventCardCatalogStates",
+          "file": "widgetbook/lib/primitives/core_catalog_use_cases.dart",
+          "path": "[Core catalog]/Event cards",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "ticket / status / compact width",
+              "normalizedLabel": "ticket status compact width"
+            }
+          ]
+        },
+        {
+          "name": "Contract states",
+          "functionName": "catchEventCardContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Product composites",
+          "stateCardCount": 3,
+          "stateCards": [
+            {
+              "label": "ticket",
+              "normalizedLabel": "ticket"
+            },
+            {
+              "label": "ticket-status",
+              "normalizedLabel": "ticket status"
+            },
+            {
+              "label": "long-copy",
+              "normalizedLabel": "long copy"
             }
           ]
         }
@@ -17840,43 +17646,6 @@
       ]
     },
     {
-      "component": "CollapsedMapSummary",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[Explore]/Sections"
-      ],
-      "labels": [
-        "default city scope",
-        "filtered map area"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Collapsed map summary",
-          "functionName": "collapsedMapSummaryStates",
-          "file": "widgetbook/lib/explore/explore_use_cases.dart",
-          "path": "[Explore]/Sections",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "default city scope",
-              "normalizedLabel": "default city scope"
-            },
-            {
-              "label": "filtered map area",
-              "normalizedLabel": "filtered map area"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "CounterRow",
       "useCaseCount": 1,
       "stateCardCount": 2,
@@ -19468,43 +19237,6 @@
       ]
     },
     {
-      "component": "ExploreEventTicketCard",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[Explore]/Sections"
-      ],
-      "labels": [
-        "map pick",
-        "selected with width"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Event ticket card",
-          "functionName": "exploreEventTicketCardStates",
-          "file": "widgetbook/lib/explore/explore_use_cases.dart",
-          "path": "[Explore]/Sections",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "map pick",
-              "normalizedLabel": "map pick"
-            },
-            {
-              "label": "selected with width",
-              "normalizedLabel": "selected with width"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "ExploreExternalEventRow",
       "useCaseCount": 1,
       "stateCardCount": 2,
@@ -19727,43 +19459,6 @@
       ]
     },
     {
-      "component": "ExplorePeekRailContent",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[Explore]/Sections"
-      ],
-      "labels": [
-        "nearby rail",
-        "selected event"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Peek rail states",
-          "functionName": "explorePeekRailContentStates",
-          "file": "widgetbook/lib/explore/explore_use_cases.dart",
-          "path": "[Explore]/Sections",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "nearby rail",
-              "normalizedLabel": "nearby rail"
-            },
-            {
-              "label": "selected event",
-              "normalizedLabel": "selected event"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "ExploreScreenEmptyState",
       "useCaseCount": 1,
       "stateCardCount": 2,
@@ -19795,43 +19490,6 @@
             {
               "label": "search plus filters",
               "normalizedLabel": "search plus filters"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "ExploreSelectedEventLead",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[Explore]/Sections"
-      ],
-      "labels": [
-        "spotlight",
-        "ticket"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Selected event lead",
-          "functionName": "exploreSelectedEventLeadStates",
-          "file": "widgetbook/lib/explore/explore_use_cases.dart",
-          "path": "[Explore]/Sections",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "ticket",
-              "normalizedLabel": "ticket"
-            },
-            {
-              "label": "spotlight",
-              "normalizedLabel": "spotlight"
             }
           ]
         }
@@ -24083,7 +23741,7 @@
         "[Core catalog]/Loading"
       ],
       "labels": [
-        "branded boot surface"
+        "boot surface before delayed spinner"
       ],
       "review": {
         "needsReview": false,
@@ -24100,8 +23758,8 @@
           "stateCardCount": 1,
           "stateCards": [
             {
-              "label": "branded boot surface",
-              "normalizedLabel": "branded boot surface"
+              "label": "boot surface before delayed spinner",
+              "normalizedLabel": "boot surface before delayed spinner"
             }
           ]
         }
@@ -26572,6 +26230,38 @@
       ]
     },
     {
+      "component": "HostClubEditorLoadingScreen",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[P1 product surfaces]/Host operations"
+      ],
+      "labels": [
+        "form-shaped skeleton"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Loading state",
+          "functionName": "hostClubEditorLoadingScreenState",
+          "file": "widgetbook/lib/hosts/host_operations_use_cases.dart",
+          "path": "[P1 product surfaces]/Host operations",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "form-shaped skeleton",
+              "normalizedLabel": "form shaped skeleton"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "HostCreateEventRouteStateView",
       "useCaseCount": 1,
       "stateCardCount": 1,
@@ -27238,38 +26928,6 @@
             {
               "label": "provider wired",
               "normalizedLabel": "provider wired"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "PeekRailSkeleton",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[Explore]/Sections"
-      ],
-      "labels": [
-        "loading rail"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Peek rail skeleton",
-          "functionName": "peekRailSkeletonStates",
-          "file": "widgetbook/lib/explore/explore_use_cases.dart",
-          "path": "[Explore]/Sections",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "loading rail",
-              "normalizedLabel": "loading rail"
             }
           ]
         }
@@ -30317,56 +29975,6 @@
         {
           "name": "Visual atom clock",
           "functionName": "eventClockMarkState",
-          "file": "widgetbook/lib/events/event_detail_use_cases.dart",
-          "path": "[Events]/Tiles",
-          "stateCardCount": 0,
-          "stateCards": []
-        }
-      ]
-    },
-    {
-      "component": "EventCompactDatePill",
-      "useCaseCount": 1,
-      "stateCardCount": 0,
-      "paths": [
-        "[Events]/Tiles"
-      ],
-      "labels": [],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Compact date pill",
-          "functionName": "eventCompactDatePillState",
-          "file": "widgetbook/lib/events/event_detail_use_cases.dart",
-          "path": "[Events]/Tiles",
-          "stateCardCount": 0,
-          "stateCards": []
-        }
-      ]
-    },
-    {
-      "component": "EventCompactRow",
-      "useCaseCount": 1,
-      "stateCardCount": 0,
-      "paths": [
-        "[Events]/Tiles"
-      ],
-      "labels": [],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Compact row",
-          "functionName": "eventCompactRowState",
           "file": "widgetbook/lib/events/event_detail_use_cases.dart",
           "path": "[Events]/Tiles",
           "stateCardCount": 0,
