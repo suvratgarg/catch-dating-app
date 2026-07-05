@@ -1,15 +1,15 @@
 {
-  "generatedAt": "2026-07-05T12:31:40.345Z",
+  "generatedAt": "2026-07-05T19:05:37.922Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
-    "useCases": 873,
-    "components": 842,
-    "stateCards": 1756,
-    "reviewCandidates": 40,
-    "oversizedUseCases": 43,
+    "useCases": 867,
+    "components": 836,
+    "stateCards": 1733,
+    "reviewCandidates": 39,
+    "oversizedUseCases": 42,
     "multiUseCaseComponents": 30
   },
   "reviewCandidates": [
@@ -1197,112 +1197,6 @@
       ]
     },
     {
-      "component": "DashboardScreen",
-      "useCaseCount": 1,
-      "stateCardCount": 15,
-      "paths": [
-        "[P1 product surfaces]/Dashboard home"
-      ],
-      "labels": [
-        "activity permission",
-        "booked events error",
-        "booked events loading",
-        "empty start",
-        "full dashboard",
-        "memberships error",
-        "memberships loading",
-        "notification action no unread",
-        "profile error",
-        "profile loading",
-        "recent activity loading",
-        "recommendations error",
-        "recommendations loading",
-        "reduced motion",
-        "text scale 2.0"
-      ],
-      "review": {
-        "needsReview": true,
-        "reasons": [
-          "large-state-matrix"
-        ],
-        "duplicateLabels": [],
-        "oversizedUseCases": [
-          "dashboardScreenStates"
-        ]
-      },
-      "useCases": [
-        {
-          "name": "Screen states",
-          "functionName": "dashboardScreenStates",
-          "file": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
-          "path": "[P1 product surfaces]/Dashboard home",
-          "stateCardCount": 15,
-          "stateCards": [
-            {
-              "label": "profile loading",
-              "normalizedLabel": "profile loading"
-            },
-            {
-              "label": "profile error",
-              "normalizedLabel": "profile error"
-            },
-            {
-              "label": "empty start",
-              "normalizedLabel": "empty start"
-            },
-            {
-              "label": "memberships loading",
-              "normalizedLabel": "memberships loading"
-            },
-            {
-              "label": "memberships error",
-              "normalizedLabel": "memberships error"
-            },
-            {
-              "label": "booked events loading",
-              "normalizedLabel": "booked events loading"
-            },
-            {
-              "label": "booked events error",
-              "normalizedLabel": "booked events error"
-            },
-            {
-              "label": "full dashboard",
-              "normalizedLabel": "full dashboard"
-            },
-            {
-              "label": "notification action no unread",
-              "normalizedLabel": "notification action no unread"
-            },
-            {
-              "label": "recent activity loading",
-              "normalizedLabel": "recent activity loading"
-            },
-            {
-              "label": "activity permission",
-              "normalizedLabel": "activity permission"
-            },
-            {
-              "label": "recommendations loading",
-              "normalizedLabel": "recommendations loading"
-            },
-            {
-              "label": "recommendations error",
-              "normalizedLabel": "recommendations error"
-            },
-            {
-              "label": "text scale 2.0",
-              "normalizedLabel": "text scale 2 0"
-            },
-            {
-              "label": "reduced motion",
-              "normalizedLabel": "reduced motion"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "EditHostedEventRouteScreen",
       "useCaseCount": 1,
       "stateCardCount": 14,
@@ -2398,6 +2292,92 @@
       ]
     },
     {
+      "component": "DashboardScreen",
+      "useCaseCount": 1,
+      "stateCardCount": 11,
+      "paths": [
+        "[P1 product surfaces]/Dashboard home"
+      ],
+      "labels": [
+        "booked events error",
+        "booked events loading",
+        "empty start",
+        "full dashboard",
+        "memberships error",
+        "memberships loading",
+        "notification action no unread",
+        "profile error",
+        "profile loading",
+        "reduced motion",
+        "text scale 2.0"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "large-state-matrix"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": [
+          "dashboardScreenStates"
+        ]
+      },
+      "useCases": [
+        {
+          "name": "Screen states",
+          "functionName": "dashboardScreenStates",
+          "file": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
+          "path": "[P1 product surfaces]/Dashboard home",
+          "stateCardCount": 11,
+          "stateCards": [
+            {
+              "label": "profile loading",
+              "normalizedLabel": "profile loading"
+            },
+            {
+              "label": "profile error",
+              "normalizedLabel": "profile error"
+            },
+            {
+              "label": "empty start",
+              "normalizedLabel": "empty start"
+            },
+            {
+              "label": "memberships loading",
+              "normalizedLabel": "memberships loading"
+            },
+            {
+              "label": "memberships error",
+              "normalizedLabel": "memberships error"
+            },
+            {
+              "label": "booked events loading",
+              "normalizedLabel": "booked events loading"
+            },
+            {
+              "label": "booked events error",
+              "normalizedLabel": "booked events error"
+            },
+            {
+              "label": "full dashboard",
+              "normalizedLabel": "full dashboard"
+            },
+            {
+              "label": "notification action no unread",
+              "normalizedLabel": "notification action no unread"
+            },
+            {
+              "label": "text scale 2.0",
+              "normalizedLabel": "text scale 2 0"
+            },
+            {
+              "label": "reduced motion",
+              "normalizedLabel": "reduced motion"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "EventDetailScreen",
       "useCaseCount": 1,
       "stateCardCount": 11,
@@ -3333,82 +3313,6 @@
             {
               "label": "reduced motion",
               "normalizedLabel": "reduced motion"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "DashboardStrideSection",
-      "useCaseCount": 1,
-      "stateCardCount": 9,
-      "paths": [
-        "[P1 product surfaces]/Dashboard primitives"
-      ],
-      "labels": [
-        "connect pending",
-        "connected activity",
-        "connected empty week",
-        "error with retry",
-        "health connect install",
-        "install pending",
-        "loading",
-        "permission action",
-        "unsupported long copy"
-      ],
-      "review": {
-        "needsReview": true,
-        "reasons": [
-          "large-state-matrix"
-        ],
-        "duplicateLabels": [],
-        "oversizedUseCases": [
-          "dashboardStrideSectionReviewStates"
-        ]
-      },
-      "useCases": [
-        {
-          "name": "Review states",
-          "functionName": "dashboardStrideSectionReviewStates",
-          "file": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
-          "path": "[P1 product surfaces]/Dashboard primitives",
-          "stateCardCount": 9,
-          "stateCards": [
-            {
-              "label": "connected activity",
-              "normalizedLabel": "connected activity"
-            },
-            {
-              "label": "loading",
-              "normalizedLabel": "loading"
-            },
-            {
-              "label": "error with retry",
-              "normalizedLabel": "error with retry"
-            },
-            {
-              "label": "permission action",
-              "normalizedLabel": "permission action"
-            },
-            {
-              "label": "connect pending",
-              "normalizedLabel": "connect pending"
-            },
-            {
-              "label": "health connect install",
-              "normalizedLabel": "health connect install"
-            },
-            {
-              "label": "install pending",
-              "normalizedLabel": "install pending"
-            },
-            {
-              "label": "connected empty week",
-              "normalizedLabel": "connected empty week"
-            },
-            {
-              "label": "unsupported long copy",
-              "normalizedLabel": "unsupported long copy"
             }
           ]
         }
@@ -5201,112 +5105,6 @@
       ]
     },
     {
-      "component": "DashboardScreen",
-      "useCaseCount": 1,
-      "stateCardCount": 15,
-      "paths": [
-        "[P1 product surfaces]/Dashboard home"
-      ],
-      "labels": [
-        "activity permission",
-        "booked events error",
-        "booked events loading",
-        "empty start",
-        "full dashboard",
-        "memberships error",
-        "memberships loading",
-        "notification action no unread",
-        "profile error",
-        "profile loading",
-        "recent activity loading",
-        "recommendations error",
-        "recommendations loading",
-        "reduced motion",
-        "text scale 2.0"
-      ],
-      "review": {
-        "needsReview": true,
-        "reasons": [
-          "large-state-matrix"
-        ],
-        "duplicateLabels": [],
-        "oversizedUseCases": [
-          "dashboardScreenStates"
-        ]
-      },
-      "useCases": [
-        {
-          "name": "Screen states",
-          "functionName": "dashboardScreenStates",
-          "file": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
-          "path": "[P1 product surfaces]/Dashboard home",
-          "stateCardCount": 15,
-          "stateCards": [
-            {
-              "label": "profile loading",
-              "normalizedLabel": "profile loading"
-            },
-            {
-              "label": "profile error",
-              "normalizedLabel": "profile error"
-            },
-            {
-              "label": "empty start",
-              "normalizedLabel": "empty start"
-            },
-            {
-              "label": "memberships loading",
-              "normalizedLabel": "memberships loading"
-            },
-            {
-              "label": "memberships error",
-              "normalizedLabel": "memberships error"
-            },
-            {
-              "label": "booked events loading",
-              "normalizedLabel": "booked events loading"
-            },
-            {
-              "label": "booked events error",
-              "normalizedLabel": "booked events error"
-            },
-            {
-              "label": "full dashboard",
-              "normalizedLabel": "full dashboard"
-            },
-            {
-              "label": "notification action no unread",
-              "normalizedLabel": "notification action no unread"
-            },
-            {
-              "label": "recent activity loading",
-              "normalizedLabel": "recent activity loading"
-            },
-            {
-              "label": "activity permission",
-              "normalizedLabel": "activity permission"
-            },
-            {
-              "label": "recommendations loading",
-              "normalizedLabel": "recommendations loading"
-            },
-            {
-              "label": "recommendations error",
-              "normalizedLabel": "recommendations error"
-            },
-            {
-              "label": "text scale 2.0",
-              "normalizedLabel": "text scale 2 0"
-            },
-            {
-              "label": "reduced motion",
-              "normalizedLabel": "reduced motion"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "EditHostedEventRouteScreen",
       "useCaseCount": 1,
       "stateCardCount": 14,
@@ -6402,6 +6200,92 @@
       ]
     },
     {
+      "component": "DashboardScreen",
+      "useCaseCount": 1,
+      "stateCardCount": 11,
+      "paths": [
+        "[P1 product surfaces]/Dashboard home"
+      ],
+      "labels": [
+        "booked events error",
+        "booked events loading",
+        "empty start",
+        "full dashboard",
+        "memberships error",
+        "memberships loading",
+        "notification action no unread",
+        "profile error",
+        "profile loading",
+        "reduced motion",
+        "text scale 2.0"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "large-state-matrix"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": [
+          "dashboardScreenStates"
+        ]
+      },
+      "useCases": [
+        {
+          "name": "Screen states",
+          "functionName": "dashboardScreenStates",
+          "file": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
+          "path": "[P1 product surfaces]/Dashboard home",
+          "stateCardCount": 11,
+          "stateCards": [
+            {
+              "label": "profile loading",
+              "normalizedLabel": "profile loading"
+            },
+            {
+              "label": "profile error",
+              "normalizedLabel": "profile error"
+            },
+            {
+              "label": "empty start",
+              "normalizedLabel": "empty start"
+            },
+            {
+              "label": "memberships loading",
+              "normalizedLabel": "memberships loading"
+            },
+            {
+              "label": "memberships error",
+              "normalizedLabel": "memberships error"
+            },
+            {
+              "label": "booked events loading",
+              "normalizedLabel": "booked events loading"
+            },
+            {
+              "label": "booked events error",
+              "normalizedLabel": "booked events error"
+            },
+            {
+              "label": "full dashboard",
+              "normalizedLabel": "full dashboard"
+            },
+            {
+              "label": "notification action no unread",
+              "normalizedLabel": "notification action no unread"
+            },
+            {
+              "label": "text scale 2.0",
+              "normalizedLabel": "text scale 2 0"
+            },
+            {
+              "label": "reduced motion",
+              "normalizedLabel": "reduced motion"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "EventDetailScreen",
       "useCaseCount": 1,
       "stateCardCount": 11,
@@ -7337,82 +7221,6 @@
             {
               "label": "reduced motion",
               "normalizedLabel": "reduced motion"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "DashboardStrideSection",
-      "useCaseCount": 1,
-      "stateCardCount": 9,
-      "paths": [
-        "[P1 product surfaces]/Dashboard primitives"
-      ],
-      "labels": [
-        "connect pending",
-        "connected activity",
-        "connected empty week",
-        "error with retry",
-        "health connect install",
-        "install pending",
-        "loading",
-        "permission action",
-        "unsupported long copy"
-      ],
-      "review": {
-        "needsReview": true,
-        "reasons": [
-          "large-state-matrix"
-        ],
-        "duplicateLabels": [],
-        "oversizedUseCases": [
-          "dashboardStrideSectionReviewStates"
-        ]
-      },
-      "useCases": [
-        {
-          "name": "Review states",
-          "functionName": "dashboardStrideSectionReviewStates",
-          "file": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
-          "path": "[P1 product surfaces]/Dashboard primitives",
-          "stateCardCount": 9,
-          "stateCards": [
-            {
-              "label": "connected activity",
-              "normalizedLabel": "connected activity"
-            },
-            {
-              "label": "loading",
-              "normalizedLabel": "loading"
-            },
-            {
-              "label": "error with retry",
-              "normalizedLabel": "error with retry"
-            },
-            {
-              "label": "permission action",
-              "normalizedLabel": "permission action"
-            },
-            {
-              "label": "connect pending",
-              "normalizedLabel": "connect pending"
-            },
-            {
-              "label": "health connect install",
-              "normalizedLabel": "health connect install"
-            },
-            {
-              "label": "install pending",
-              "normalizedLabel": "install pending"
-            },
-            {
-              "label": "connected empty week",
-              "normalizedLabel": "connected empty week"
-            },
-            {
-              "label": "unsupported long copy",
-              "normalizedLabel": "unsupported long copy"
             }
           ]
         }
@@ -9855,63 +9663,6 @@
       ]
     },
     {
-      "component": "QuickActions",
-      "useCaseCount": 1,
-      "stateCardCount": 6,
-      "paths": [
-        "[Core primitives]/Product composites"
-      ],
-      "labels": [
-        "disabled-action",
-        "empty",
-        "long-copy",
-        "multi-action-wrap",
-        "payment-confirmation",
-        "two-actions"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Contract states",
-          "functionName": "quickActionsContractStates",
-          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
-          "path": "[Core primitives]/Product composites",
-          "stateCardCount": 6,
-          "stateCards": [
-            {
-              "label": "two-actions",
-              "normalizedLabel": "two actions"
-            },
-            {
-              "label": "disabled-action",
-              "normalizedLabel": "disabled action"
-            },
-            {
-              "label": "payment-confirmation",
-              "normalizedLabel": "payment confirmation"
-            },
-            {
-              "label": "multi-action-wrap",
-              "normalizedLabel": "multi action wrap"
-            },
-            {
-              "label": "long-copy",
-              "normalizedLabel": "long copy"
-            },
-            {
-              "label": "empty",
-              "normalizedLabel": "empty"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "CatchActivityMapPin",
       "useCaseCount": 2,
       "stateCardCount": 5,
@@ -11119,7 +10870,7 @@
       "useCaseCount": 1,
       "stateCardCount": 5,
       "paths": [
-        "[P1 product surfaces]/Dashboard primitives"
+        "[P1 product surfaces]/Explore primitives"
       ],
       "labels": [
         "event fallback factory",
@@ -11139,7 +10890,7 @@
           "name": "Review states",
           "functionName": "dashboardRecommendCardReviewStates",
           "file": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
-          "path": "[P1 product surfaces]/Dashboard primitives",
+          "path": "[P1 product surfaces]/Explore primitives",
           "stateCardCount": 5,
           "stateCards": [
             {
@@ -17793,6 +17544,80 @@
       ]
     },
     {
+      "component": "ClubPostHomeCard",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[P1 product surfaces]/Dashboard home"
+      ],
+      "labels": [
+        "club fallback",
+        "linked event"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Card states",
+          "functionName": "dashboardClubPostHomeCardReviewStates",
+          "file": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
+          "path": "[P1 product surfaces]/Dashboard home",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "linked event",
+              "normalizedLabel": "linked event"
+            },
+            {
+              "label": "club fallback",
+              "normalizedLabel": "club fallback"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "ClubPostsHomeSection",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[P1 product surfaces]/Dashboard home"
+      ],
+      "labels": [
+        "home module",
+        "single card"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Club post states",
+          "functionName": "dashboardClubPostsHomeSectionReviewStates",
+          "file": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
+          "path": "[P1 product surfaces]/Dashboard home",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "home module",
+              "normalizedLabel": "home module"
+            },
+            {
+              "label": "single card",
+              "normalizedLabel": "single card"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "ClubProfileImageTile",
       "useCaseCount": 1,
       "stateCardCount": 2,
@@ -18453,43 +18278,6 @@
             {
               "label": "notification action",
               "normalizedLabel": "notification action"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "DashboardQuickActionTile",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[P1 product surfaces]/Dashboard primitives"
-      ],
-      "labels": [
-        "disabled",
-        "enabled"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Tile states",
-          "functionName": "dashboardQuickActionTileReviewStates",
-          "file": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
-          "path": "[P1 product surfaces]/Dashboard primitives",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "enabled",
-              "normalizedLabel": "enabled"
-            },
-            {
-              "label": "disabled",
-              "normalizedLabel": "disabled"
             }
           ]
         }
@@ -21746,43 +21534,6 @@
             {
               "label": "last step loading",
               "normalizedLabel": "last step loading"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "StrideCard",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[P1 product surfaces]/Dashboard primitives"
-      ],
-      "labels": [
-        "connected",
-        "permission CTA"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Card states",
-          "functionName": "dashboardStrideCardReviewStates",
-          "file": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
-          "path": "[P1 product surfaces]/Dashboard primitives",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "connected",
-              "normalizedLabel": "connected"
-            },
-            {
-              "label": "permission CTA",
-              "normalizedLabel": "permission cta"
             }
           ]
         }
@@ -25765,70 +25516,6 @@
       ]
     },
     {
-      "component": "DashboardRecommendedLoadingSection",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[P1 product surfaces]/Dashboard primitives"
-      ],
-      "labels": [
-        "loading"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Recommendations loading skeleton",
-          "functionName": "dashboardRecommendedLoadingSectionReview",
-          "file": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
-          "path": "[P1 product surfaces]/Dashboard primitives",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "loading",
-              "normalizedLabel": "loading"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "DashboardStrideLoadingCard",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[P1 product surfaces]/Dashboard primitives"
-      ],
-      "labels": [
-        "loading"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Stride loading skeleton",
-          "functionName": "dashboardStrideLoadingCardReview",
-          "file": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
-          "path": "[P1 product surfaces]/Dashboard primitives",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "loading",
-              "normalizedLabel": "loading"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "DraftDeleteConfirmationDialog",
       "useCaseCount": 1,
       "stateCardCount": 1,
@@ -26655,38 +26342,6 @@
             {
               "label": "default",
               "normalizedLabel": "default"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "FollowedClubsRailSkeleton",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[P1 product surfaces]/Dashboard home"
-      ],
-      "labels": [
-        "loading clubs"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Followed clubs skeleton",
-          "functionName": "dashboardFollowedClubsRailSkeletonReview",
-          "file": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
-          "path": "[P1 product surfaces]/Dashboard home",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "loading clubs",
-              "normalizedLabel": "loading clubs"
             }
           ]
         }
@@ -28937,7 +28592,7 @@
       "useCaseCount": 1,
       "stateCardCount": 1,
       "paths": [
-        "[P1 product surfaces]/Dashboard home"
+        "[P1 product surfaces]/Explore feed"
       ],
       "labels": [
         "ranked events"
@@ -28953,7 +28608,7 @@
           "name": "Recommendation rail",
           "functionName": "dashboardRecommendationsReview",
           "file": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
-          "path": "[P1 product surfaces]/Dashboard home",
+          "path": "[P1 product surfaces]/Explore feed",
           "stateCardCount": 1,
           "stateCards": [
             {
@@ -29151,38 +28806,6 @@
             {
               "label": "interactive picker",
               "normalizedLabel": "interactive picker"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "StrideBarColumn",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[P1 product surfaces]/Dashboard primitives"
-      ],
-      "labels": [
-        "weekly columns"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Bar states",
-          "functionName": "dashboardStrideBarColumnReviewStates",
-          "file": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
-          "path": "[P1 product surfaces]/Dashboard primitives",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "weekly columns",
-              "normalizedLabel": "weekly columns"
             }
           ]
         }

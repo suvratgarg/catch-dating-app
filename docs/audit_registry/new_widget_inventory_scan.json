@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-05T10:11:29.324Z",
+  "generatedAt": "2026-07-05T19:42:07.953Z",
   "baseRef": "HEAD^",
   "baseStatus": "git-ref",
   "baseWarning": null,
@@ -10,638 +10,80 @@
     "policy": "New public widget classes need Widgetbook and widget catalog coverage. New private widget classes and Widget-returning helpers must be inlined/deleted, merged into an existing primitive, or promoted to public cataloged widgets."
   },
   "summary": {
-    "addedWidgetClasses": 0,
-    "addedPublicWidgetClasses": 0,
+    "addedWidgetClasses": 3,
+    "addedPublicWidgetClasses": 3,
     "addedPrivateWidgetClasses": 0,
     "addedWidgetReturningHelpers": 0,
-    "movedWidgetClasses": 52,
-    "movedWidgetReturningHelpers": 8,
-    "coveredNewWidgets": 0,
+    "movedWidgetClasses": 2,
+    "movedWidgetReturningHelpers": 0,
+    "coveredNewWidgets": 3,
     "unresolved": 0,
-    "widgetsByStatus": {},
+    "widgetsByStatus": {
+      "covered": 3
+    },
     "helpersByStatus": {},
     "issues": {}
   },
   "movedWidgets": [
     {
-      "name": "HostAccountScreen",
-      "baseClass": "ConsumerStatefulWidget",
-      "visibility": "public",
-      "line": 3,
-      "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_account_screen.dart::HostAccountScreen::ConsumerStatefulWidget"
-      ]
-    },
-    {
-      "name": "HostSettingsProfileSection",
+      "name": "RecommendCard",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "line": 173,
-      "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
+      "line": 16,
+      "file": "lib/explore/presentation/widgets/recommend_card.dart",
       "previousKeys": [
-        "lib/hosts/presentation/host_account_screen.dart::HostSettingsProfileSection::StatelessWidget"
+        "lib/dashboard/presentation/widgets/recommend_card.dart::RecommendCard::StatelessWidget"
       ]
     },
     {
-      "name": "HostSettingsProfileRows",
+      "name": "Recommendations",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "line": 235,
-      "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
+      "line": 7,
+      "file": "lib/explore/presentation/widgets/recommendations.dart",
       "previousKeys": [
-        "lib/hosts/presentation/host_account_screen.dart::HostSettingsProfileRows::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostSettingsClubsSection",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 301,
-      "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_account_screen.dart::HostSettingsClubsSection::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostSettingsClubRows",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 347,
-      "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_account_screen.dart::HostSettingsClubRows::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostProfileEditorSheet",
-      "baseClass": "ConsumerStatefulWidget",
-      "visibility": "public",
-      "line": 381,
-      "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_account_screen.dart::HostProfileEditorSheet::ConsumerStatefulWidget"
-      ]
-    },
-    {
-      "name": "HostClubInsightsPane",
-      "baseClass": "ConsumerStatefulWidget",
-      "visibility": "public",
-      "line": 3,
-      "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostClubInsightsPane::ConsumerStatefulWidget"
-      ]
-    },
-    {
-      "name": "HostAnalyticsControls",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 129,
-      "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostAnalyticsControls::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostAnalyticsDateButton",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 252,
-      "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostAnalyticsDateButton::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostAnalyticsReportView",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 299,
-      "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostAnalyticsReportView::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostAnalyticsTrendPanel",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 350,
-      "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostAnalyticsTrendPanel::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostAnalyticsEventList",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 420,
-      "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostAnalyticsEventList::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostAnalyticsEventTile",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 478,
-      "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostAnalyticsEventTile::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostAnalyticsReviewDiscoveryPanel",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 618,
-      "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostAnalyticsReviewDiscoveryPanel::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostAuthRequiredScreen",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 3,
-      "file": "lib/hosts/presentation/host_operations/host_auth_required_screen.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_auth_required_screen.dart::HostAuthRequiredScreen::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostClubPreviewPane",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 3,
-      "file": "lib/hosts/presentation/host_operations/host_club_preview.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostClubPreviewPane::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostClubProfileCard",
-      "baseClass": "ConsumerStatefulWidget",
-      "visibility": "public",
-      "line": 3,
-      "file": "lib/hosts/presentation/host_operations/host_club_profile.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostClubProfileCard::ConsumerStatefulWidget"
-      ]
-    },
-    {
-      "name": "HostClubsScaffold",
-      "baseClass": "StatefulWidget",
-      "visibility": "public",
-      "line": 3,
-      "file": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostClubsScaffold::StatefulWidget"
-      ]
-    },
-    {
-      "name": "HostClubsScreen",
-      "baseClass": "ConsumerWidget",
-      "visibility": "public",
-      "line": 3,
-      "file": "lib/hosts/presentation/host_operations/host_clubs_screen.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_clubs_screen.dart::HostClubsScreen::ConsumerWidget"
-      ]
-    },
-    {
-      "name": "HostEventsClubCard",
-      "baseClass": "ConsumerWidget",
-      "visibility": "public",
-      "line": 3,
-      "file": "lib/hosts/presentation/host_operations/host_events_list.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostEventsClubCard::ConsumerWidget"
-      ]
-    },
-    {
-      "name": "HostEventsClubSection",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 35,
-      "file": "lib/hosts/presentation/host_operations/host_events_list.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostEventsClubSection::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostEventRows",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 100,
-      "file": "lib/hosts/presentation/host_operations/host_events_list.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostEventRows::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostMetaRow",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 148,
-      "file": "lib/hosts/presentation/host_operations/host_events_list.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostMetaRow::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostEventsScaffold",
-      "baseClass": "StatefulWidget",
-      "visibility": "public",
-      "line": 3,
-      "file": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostEventsScaffold::StatefulWidget"
-      ]
-    },
-    {
-      "name": "HostInlineTextEntryEditor",
-      "baseClass": "ConsumerStatefulWidget",
-      "visibility": "public",
-      "line": 29,
-      "file": "lib/hosts/presentation/host_operations/host_inline_editors.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostInlineTextEntryEditor::ConsumerStatefulWidget"
-      ]
-    },
-    {
-      "name": "HostInlineOptionEditor",
-      "baseClass": "ConsumerStatefulWidget",
-      "visibility": "public",
-      "line": 216,
-      "file": "lib/hosts/presentation/host_operations/host_inline_editors.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostInlineOptionEditor::ConsumerStatefulWidget"
-      ]
-    },
-    {
-      "name": "HostInlineAgeRangeEditor",
-      "baseClass": "ConsumerStatefulWidget",
-      "visibility": "public",
-      "line": 341,
-      "file": "lib/hosts/presentation/host_operations/host_inline_editors.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostInlineAgeRangeEditor::ConsumerStatefulWidget"
-      ]
-    },
-    {
-      "name": "HostLoadingScreen",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 3,
-      "file": "lib/hosts/presentation/host_operations/host_loading_screen.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_loading_screen.dart::HostLoadingScreen::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostOperationsHomeScreen",
-      "baseClass": "ConsumerWidget",
-      "visibility": "public",
-      "line": 3,
-      "file": "lib/hosts/presentation/host_operations/host_operations_home_screen.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_home_screen.dart::HostOperationsHomeScreen::ConsumerWidget"
-      ]
-    },
-    {
-      "name": "HostOperationsTopBar",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 3,
-      "file": "lib/hosts/presentation/host_operations/host_operations_top_bar.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostOperationsTopBar::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostClubOrganizerOverviewController",
-      "baseClass": "ConsumerWidget",
-      "visibility": "public",
-      "line": 3,
-      "file": "lib/hosts/presentation/host_operations/host_organizer.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostClubOrganizerOverviewController::ConsumerWidget"
-      ]
-    },
-    {
-      "name": "HostClubOrganizerOverview",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 50,
-      "file": "lib/hosts/presentation/host_operations/host_organizer.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostClubOrganizerOverview::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostOrganizerHeader",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 202,
-      "file": "lib/hosts/presentation/host_operations/host_organizer.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostOrganizerHeader::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostOrganizerMetricGrid",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 253,
-      "file": "lib/hosts/presentation/host_operations/host_organizer.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostOrganizerMetricGrid::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostOrganizerMetricRow",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 307,
-      "file": "lib/hosts/presentation/host_operations/host_organizer.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostOrganizerMetricRow::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostOrganizerTeamCard",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 355,
-      "file": "lib/hosts/presentation/host_operations/host_organizer.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostOrganizerTeamCard::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostOrganizerTeamRow",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 393,
-      "file": "lib/hosts/presentation/host_operations/host_organizer.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostOrganizerTeamRow::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostOrganizerTrendStrip",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 472,
-      "file": "lib/hosts/presentation/host_operations/host_organizer.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostOrganizerTrendStrip::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostProfileScreen",
-      "baseClass": "ConsumerStatefulWidget",
-      "visibility": "public",
-      "line": 3,
-      "file": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostProfileScreen::ConsumerStatefulWidget"
-      ]
-    },
-    {
-      "name": "HostProfileForm",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 217,
-      "file": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostProfileForm::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostProfileFields",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 269,
-      "file": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostProfileFields::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostTodayDashboardCard",
-      "baseClass": "ConsumerWidget",
-      "visibility": "public",
-      "line": 3,
-      "file": "lib/hosts/presentation/host_operations/host_today.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostTodayDashboardCard::ConsumerWidget"
-      ]
-    },
-    {
-      "name": "HostTodayDashboardSection",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 45,
-      "file": "lib/hosts/presentation/host_operations/host_today.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostTodayDashboardSection::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostTodayHeader",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 146,
-      "file": "lib/hosts/presentation/host_operations/host_today.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostTodayHeader::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostTodayClubPill",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 199,
-      "file": "lib/hosts/presentation/host_operations/host_today.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostTodayClubPill::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostTodayLoadingBody",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 277,
-      "file": "lib/hosts/presentation/host_operations/host_today.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostTodayLoadingBody::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostTodayEventHero",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 295,
-      "file": "lib/hosts/presentation/host_operations/host_today.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostTodayEventHero::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostTodayCountdownPill",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 410,
-      "file": "lib/hosts/presentation/host_operations/host_today.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostTodayCountdownPill::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostTodayHeroMetric",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 438,
-      "file": "lib/hosts/presentation/host_operations/host_today.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostTodayHeroMetric::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostTodayAvatarStack",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 477,
-      "file": "lib/hosts/presentation/host_operations/host_today.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostTodayAvatarStack::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostTodayAvatarDot",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 512,
-      "file": "lib/hosts/presentation/host_operations/host_today.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostTodayAvatarDot::StatelessWidget"
-      ]
-    },
-    {
-      "name": "HostTodayTaskCard",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 549,
-      "file": "lib/hosts/presentation/host_operations/host_today.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostTodayTaskCard::StatelessWidget"
+        "lib/dashboard/presentation/widgets/recommendations.dart::Recommendations::StatelessWidget"
       ]
     }
   ],
-  "movedWidgetHelpers": [
+  "movedWidgetHelpers": [],
+  "addedWidgets": [
     {
-      "name": "_textEntry",
-      "owner": "_HostClubProfileCardState",
-      "ownerBaseClass": "ConsumerState<HostClubProfileCard>",
-      "visibility": "private",
-      "line": 210,
-      "scope": "class-method",
-      "file": "lib/hosts/presentation/host_operations/host_club_profile.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::_HostClubProfileCardState::_textEntry"
-      ]
+      "name": "DashboardScreen",
+      "baseClass": "ConsumerStatefulWidget",
+      "visibility": "public",
+      "line": 32,
+      "file": "lib/dashboard/presentation/dashboard_screen.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
     },
     {
-      "name": "_activityDefaultEntry",
-      "owner": "_HostClubProfileCardState",
-      "ownerBaseClass": "ConsumerState<HostClubProfileCard>",
-      "visibility": "private",
-      "line": 261,
-      "scope": "class-method",
-      "file": "lib/hosts/presentation/host_operations/host_club_profile.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::_HostClubProfileCardState::_activityDefaultEntry"
-      ]
+      "name": "ClubPostsHomeSection",
+      "baseClass": "ConsumerWidget",
+      "visibility": "public",
+      "line": 14,
+      "file": "lib/dashboard/presentation/widgets/club_posts_home_section.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
     },
     {
-      "name": "_admissionDefaultEntry",
-      "owner": "_HostClubProfileCardState",
-      "ownerBaseClass": "ConsumerState<HostClubProfileCard>",
-      "visibility": "private",
-      "line": 301,
-      "scope": "class-method",
-      "file": "lib/hosts/presentation/host_operations/host_club_profile.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::_HostClubProfileCardState::_admissionDefaultEntry"
-      ]
-    },
-    {
-      "name": "_ageRangeDefaultEntry",
-      "owner": "_HostClubProfileCardState",
-      "ownerBaseClass": "ConsumerState<HostClubProfileCard>",
-      "visibility": "private",
-      "line": 349,
-      "scope": "class-method",
-      "file": "lib/hosts/presentation/host_operations/host_club_profile.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::_HostClubProfileCardState::_ageRangeDefaultEntry"
-      ]
-    },
-    {
-      "name": "_cancellationDefaultEntry",
-      "owner": "_HostClubProfileCardState",
-      "ownerBaseClass": "ConsumerState<HostClubProfileCard>",
-      "visibility": "private",
-      "line": 376,
-      "scope": "class-method",
-      "file": "lib/hosts/presentation/host_operations/host_club_profile.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::_HostClubProfileCardState::_cancellationDefaultEntry"
-      ]
-    },
-    {
-      "name": "_buildProfileBody",
-      "owner": "_HostProfileScreenState",
-      "ownerBaseClass": "ConsumerState<HostProfileScreen>",
-      "visibility": "private",
-      "line": 105,
-      "scope": "class-method",
-      "file": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::_HostProfileScreenState::_buildProfileBody"
-      ]
-    },
-    {
-      "name": "_buildProfileForm",
-      "owner": "_HostProfileScreenState",
-      "ownerBaseClass": "ConsumerState<HostProfileScreen>",
-      "visibility": "private",
-      "line": 150,
-      "scope": "class-method",
-      "file": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::_HostProfileScreenState::_buildProfileForm"
-      ]
-    },
-    {
-      "name": "_buildContent",
-      "owner": "HostTodayDashboardSection",
-      "ownerBaseClass": "StatelessWidget",
-      "visibility": "private",
-      "line": 115,
-      "scope": "class-method",
-      "file": "lib/hosts/presentation/host_operations/host_today.dart",
-      "previousKeys": [
-        "lib/hosts/presentation/host_operations_screen.dart::HostTodayDashboardSection::_buildContent"
-      ]
+      "name": "ClubPostHomeCard",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 55,
+      "file": "lib/dashboard/presentation/widgets/club_posts_home_section.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
     }
   ],
-  "addedWidgets": [],
   "addedWidgetHelpers": []
 }

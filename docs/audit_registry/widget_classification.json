@@ -10,33 +10,33 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1113,
-    "widgetClasses": 1005,
-    "stateClasses": 108,
-    "publicClasses": 1003,
-    "privateClasses": 110,
+    "total": 1108,
+    "widgetClasses": 999,
+    "stateClasses": 109,
+    "publicClasses": 997,
+    "privateClasses": 111,
     "byRole": {
       "atom": 57,
-      "composition": 341,
-      "feature-adapter": 332,
+      "composition": 337,
+      "feature-adapter": 330,
       "pattern": 16,
       "screen": 259,
-      "widget-state": 108
+      "widget-state": 109
     },
     "byDecision": {
       "keep-canonical-contract": 170,
-      "keep-public-cataloged": 763,
-      "keep-widget-state": 108,
-      "review-catalog-coverage": 55,
+      "keep-public-cataloged": 756,
+      "keep-widget-state": 109,
+      "review-catalog-coverage": 56,
       "review-promote-or-consolidate": 15,
       "review-promote-or-inline": 2
     },
     "byCatalogStatus": {
-      "cataloged": 716,
+      "cataloged": 709,
       "contracted": 170,
-      "not-applicable": 108,
+      "not-applicable": 109,
       "route-covered": 61,
-      "uncataloged": 58
+      "uncataloged": 59
     }
   },
   "widgets": [
@@ -1022,16 +1022,16 @@
       "baseClass": "StatelessWidget",
       "visibility": "public",
       "role": "composition",
-      "canonicalFamily": "catch.club_detail_dock",
+      "canonicalFamily": "catch.club_dock",
       "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
+      "catalogStatus": "contracted",
+      "contractId": "catch.club_dock",
       "allowedDependencyLevel": "primitives-and-slots",
       "stateOwnership": "slot-state-only",
       "asyncOwnership": "none",
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
+      "decision": "keep-canonical-contract",
       "remediationOptions": [
         "keepPublicCataloged",
         "mergeIntoCanonical"
@@ -6791,6 +6791,29 @@
       "flags": []
     },
     {
+      "name": "_DashboardScreenState",
+      "file": "lib/dashboard/presentation/dashboard_screen.dart",
+      "classKind": "widget-state",
+      "baseClass": "ConsumerState<DashboardScreen>",
+      "visibility": "private",
+      "role": "widget-state",
+      "canonicalFamily": "state.dashboard_screen",
+      "publicApi": false,
+      "catalogStatus": "not-applicable",
+      "contractId": null,
+      "allowedDependencyLevel": "owning-widget-state",
+      "stateOwnership": "owning-widget-state",
+      "asyncOwnership": "owning-widget-state",
+      "layoutOwnership": "owning-widget-state",
+      "actionOwnership": "owning-widget-state",
+      "decision": "keep-widget-state",
+      "remediationOptions": [
+        "moveStateToController",
+        "routeThroughScreenState"
+      ],
+      "flags": []
+    },
+    {
       "name": "DashboardFocusLoadingCard",
       "file": "lib/dashboard/presentation/dashboard_screen.dart",
       "classKind": "widget",
@@ -6863,7 +6886,7 @@
       "name": "DashboardScreen",
       "file": "lib/dashboard/presentation/dashboard_screen.dart",
       "classKind": "widget",
-      "baseClass": "ConsumerWidget",
+      "baseClass": "ConsumerStatefulWidget",
       "visibility": "public",
       "role": "screen",
       "canonicalFamily": "screen.dashboard_screen",
@@ -7050,6 +7073,61 @@
       "flags": []
     },
     {
+      "name": "ClubPostHomeCard",
+      "file": "lib/dashboard/presentation/widgets/club_posts_home_section.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.club_post_home_card",
+      "publicApi": true,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-catalog-coverage",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "primitive-imports-data-layer",
+        "primitive-imports-provider-layer",
+        "public-widget-missing-widgetbook"
+      ]
+    },
+    {
+      "name": "ClubPostsHomeSection",
+      "file": "lib/dashboard/presentation/widgets/club_posts_home_section.dart",
+      "classKind": "widget",
+      "baseClass": "ConsumerWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.club_posts_home_section",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": [
+        "primitive-imports-data-layer",
+        "primitive-imports-provider-layer"
+      ]
+    },
+    {
       "name": "DashboardEmptySliverBody",
       "file": "lib/dashboard/presentation/widgets/dashboard_empty.dart",
       "classKind": "widget",
@@ -7121,75 +7199,6 @@
         "primitive-imports-provider-layer",
         "primitive-imports-routing-layer"
       ]
-    },
-    {
-      "name": "FollowedClubsRailSkeleton",
-      "file": "lib/dashboard/presentation/widgets/dashboard_full.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.dashboard.followed_clubs_rail_skeleton",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "DashboardRecommendedLoadingSection",
-      "file": "lib/dashboard/presentation/widgets/dashboard_loading_widgets.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.dashboard_recommended_loading_section",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "DashboardStrideLoadingCard",
-      "file": "lib/dashboard/presentation/widgets/dashboard_loading_widgets.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.dashboard_stride_loading_card",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
     },
     {
       "name": "DashboardHeaderContent",
@@ -7325,169 +7334,6 @@
       "layoutOwnership": "slot-layout",
       "actionOwnership": "callbacks-only",
       "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "RecommendCard",
-      "file": "lib/dashboard/presentation/widgets/recommend_card.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.recommend_card",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": [
-        "primitive-imports-routing-layer"
-      ]
-    },
-    {
-      "name": "Recommendations",
-      "file": "lib/dashboard/presentation/widgets/recommendations.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.dashboard.recommendations",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "DashboardStrideSection",
-      "file": "lib/dashboard/presentation/widgets/stride_card.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.dashboard_stride_section",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "StrideBarColumn",
-      "file": "lib/dashboard/presentation/widgets/stride_card.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.dashboard.stride_bar_column",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "StrideCard",
-      "file": "lib/dashboard/presentation/widgets/stride_card.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.stride_card",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "DashboardQuickActionTile",
-      "file": "lib/dashboard/shared/quick_actions.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.dashboard_quick_action_tile",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "QuickActions",
-      "file": "lib/dashboard/shared/quick_actions.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.quick_actions",
-      "publicApi": true,
-      "catalogStatus": "contracted",
-      "contractId": "catch.quick_actions",
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-canonical-contract",
       "remediationOptions": [
         "keepPublicCataloged",
         "mergeIntoCanonical"
@@ -17095,6 +16941,55 @@
       "flags": []
     },
     {
+      "name": "RecommendCard",
+      "file": "lib/explore/presentation/widgets/recommend_card.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.recommend_card",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": [
+        "primitive-imports-data-layer",
+        "primitive-imports-routing-layer"
+      ]
+    },
+    {
+      "name": "Recommendations",
+      "file": "lib/explore/presentation/widgets/recommendations.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "feature-adapter",
+      "canonicalFamily": "feature.explore.recommendations",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "feature-display-models",
+      "stateOwnership": "feature-display-state",
+      "asyncOwnership": "display-state-only",
+      "layoutOwnership": "feature-section-layout",
+      "actionOwnership": "feature-callbacks",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
       "name": "UpdateRequiredContent",
       "file": "lib/force_update/presentation/update_required_screen.dart",
       "classKind": "widget",
@@ -20456,7 +20351,10 @@
         "keepPublicCataloged",
         "mergeIntoCanonical"
       ],
-      "flags": []
+      "flags": [
+        "primitive-imports-data-layer",
+        "primitive-imports-provider-layer"
+      ]
     },
     {
       "name": "HostStatChip",

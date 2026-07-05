@@ -65,7 +65,6 @@ import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_d
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
-import 'package:catch_dating_app/dashboard/shared/quick_actions.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/catch_cover_story.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/catch_cross_paths_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/catch_roster_board.dart';
@@ -5776,111 +5775,6 @@ Widget catchActivityMapPinContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: QuickActions,
-  path: '[Core primitives]/Product composites',
-)
-Widget quickActionsContractStates(BuildContext context) {
-  return _ContractScreen(
-    title: 'QuickActions',
-    contractId: 'catch.quick_actions',
-    states: const [
-      'two-actions',
-      'disabled-action',
-      'payment-confirmation',
-      'multi-action-wrap',
-      'long-copy',
-      'empty',
-    ],
-    children: [
-      _StateCard(
-        label: 'two-actions',
-        child: SizedBox(
-          width: 360,
-          child: QuickActions(actions: _contractQuickActions.take(2).toList()),
-        ),
-      ),
-      _StateCard(
-        label: 'disabled-action',
-        child: SizedBox(
-          width: 360,
-          child: QuickActions(
-            actions: [
-              DashboardQuickAction(
-                icon: CatchIcons.calendarMonthOutlined,
-                label: 'Calendar',
-              ),
-              DashboardQuickAction(
-                icon: CatchIcons.bookmarkBorderRounded,
-                label: 'Saved events',
-              ),
-            ],
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'payment-confirmation',
-        child: SizedBox(
-          width: 360,
-          child: QuickActions(
-            actions: [
-              DashboardQuickAction(
-                icon: CatchIcons.calendarMonthOutlined,
-                label: 'Add to calendar',
-                onPressed: _noop,
-              ),
-              DashboardQuickAction(
-                icon: CatchIcons.directionsOutlined,
-                label: 'Get directions',
-                onPressed: _noop,
-              ),
-              DashboardQuickAction(
-                icon: CatchIcons.platformShare(
-                  platform: Theme.of(context).platform,
-                ),
-                label: 'Invite friend',
-                onPressed: _noop,
-              ),
-            ],
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'multi-action-wrap',
-        child: SizedBox(
-          width: 360,
-          child: QuickActions(actions: _contractQuickActions),
-        ),
-      ),
-      _StateCard(
-        label: 'long-copy',
-        child: SizedBox(
-          width: 260,
-          child: QuickActions(
-            actions: [
-              DashboardQuickAction(
-                icon: CatchIcons.calendarMonthOutlined,
-                label: 'A very long dashboard action label',
-                onPressed: _noop,
-              ),
-              DashboardQuickAction(
-                icon: CatchIcons.bookmarkBorderRounded,
-                label: 'Saved events',
-                onPressed: _noop,
-              ),
-            ],
-          ),
-        ),
-      ),
-      const _StateCard(
-        label: 'empty',
-        child: SizedBox(width: 360, child: QuickActions(actions: [])),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
   type: CatchCoverStory,
   path: '[Core primitives]/Product composites',
 )
@@ -6836,29 +6730,6 @@ final _contractTabDockItems = [
 const _contractDialogActions = [
   CatchDialogAction(label: 'Cancel', value: false),
   CatchDialogAction(label: 'Confirm', value: true, isDefault: true),
-];
-
-final _contractQuickActions = [
-  DashboardQuickAction(
-    icon: CatchIcons.calendarMonthOutlined,
-    label: 'Calendar',
-    onPressed: _noop,
-  ),
-  DashboardQuickAction(
-    icon: CatchIcons.bookmarkBorderRounded,
-    label: 'Saved events',
-    onPressed: _noop,
-  ),
-  DashboardQuickAction(
-    icon: CatchIcons.groupAddOutlined,
-    label: 'Invite friends',
-    onPressed: _noop,
-  ),
-  DashboardQuickAction(
-    icon: CatchIcons.tuneRounded,
-    label: 'Preferences',
-    onPressed: _noop,
-  ),
 ];
 
 class CatchAdaptivePickerHarness extends StatefulWidget {

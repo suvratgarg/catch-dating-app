@@ -1054,7 +1054,7 @@ Widget catchStartupLoadingScreenCatalogStates(BuildContext context) {
     catalogId: 'core.widgets.catch_startup_loading_screen',
     children: const [
       _StateCard(
-        label: 'branded boot surface',
+        label: 'boot surface before delayed spinner',
         child: _PhoneFrame(height: 360, child: CatchStartupLoadingScreen()),
       ),
     ],

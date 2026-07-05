@@ -58,7 +58,6 @@ import 'package:catch_dating_app/events/shared/event_share_card.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_stats_grid.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_action_card.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_agenda_tile.dart';
-import 'package:catch_dating_app/events/shared/event_tiles/event_compact_row.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_date_marker.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_date_rail_card.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tile_data.dart';
@@ -2665,27 +2664,6 @@ Widget eventActionCardActionsState(BuildContext context) {
         ),
       ],
     ),
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Compact row',
-  type: EventCompactRow,
-  path: '[Events]/Tiles',
-)
-Widget eventCompactRowState(BuildContext context) {
-  return EventCompactRow(event: _event, statusLabel: 'Saved', onTap: _noop);
-}
-
-@widgetbook.UseCase(
-  name: 'Compact date pill',
-  type: EventCompactDatePill,
-  path: '[Events]/Tiles',
-)
-Widget eventCompactDatePillState(BuildContext context) {
-  return EventCompactDatePill(
-    date: _event.startTime,
-    accent: CatchTokens.of(context).accent,
   );
 }
 

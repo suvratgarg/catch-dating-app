@@ -343,11 +343,11 @@ the DS source); edit-tab work (composition audit + flush contract own it).
 # Completion checklist (goal mode — flip with commit hashes)
 
 Part 1 — Events/Map
-- [ ] 1.A1 peek-rail system deleted (types re-homed)
-- [ ] 1.A2 spotlight variant deleted
-- [ ] 1.A3 compact variant deleted
-- [ ] 1.A4 EventCompactRow (+DatePill if orphaned) deleted
-- [ ] 1.A5 ledger entries recorded
+- [x] 1.A1 peek-rail system deleted (types re-homed) (3e4274430)
+- [x] 1.A2 spotlight variant deleted (3e4274430)
+- [x] 1.A3 compact variant deleted (3e4274430)
+- [x] 1.A4 EventCompactRow (+DatePill if orphaned) deleted (3e4274430)
+- [x] 1.A5 ledger entries recorded (3e4274430)
 - [ ] 1.B1 selection/navigation split (other consumers preserved)
 - [ ] 1.B2 DateTicket selected card (kicker helper reused, notchBg if needed)
 - [ ] 1.B3 pin parity vs DS MapPin (tokens, flag label)
