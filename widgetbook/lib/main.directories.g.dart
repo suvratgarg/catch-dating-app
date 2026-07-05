@@ -3082,6 +3082,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'EventPhotoHeroSurface',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Photo hero states',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventDetailPhotoHeroSurfaceStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'HeroActivityBadge',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3098,16 +3108,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Time chip states',
                 builder: _widgetbook_workspace_events_event_detail_use_cases
                     .eventDetailHeroTimeChipStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'LegacyEventHeroSurface',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Legacy hero states',
-                builder: _widgetbook_workspace_events_event_detail_use_cases
-                    .eventDetailLegacyHeroSurfaceStates,
               ),
             ],
           ),

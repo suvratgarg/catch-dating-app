@@ -144,7 +144,7 @@ class EventDetailHeroAppBar extends StatelessWidget {
                 presentationMode: presentationMode,
                 heroTag: heroTag,
               )
-            : LegacyEventHeroSurface(event: event),
+            : EventPhotoHeroSurface(event: event),
       ),
     );
   }
@@ -172,8 +172,8 @@ double _expandedHeightFor({
       .toDouble();
 }
 
-class LegacyEventHeroSurface extends StatelessWidget {
-  const LegacyEventHeroSurface({super.key, required this.event});
+class EventPhotoHeroSurface extends StatelessWidget {
+  const EventPhotoHeroSurface({super.key, required this.event});
 
   final Event event;
 

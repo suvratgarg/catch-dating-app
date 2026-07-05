@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-05T00:02:53.393Z",
+  "generatedAt": "2026-07-05T00:47:37.762Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
@@ -25898,6 +25898,38 @@
       ]
     },
     {
+      "component": "EventPhotoHeroSurface",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[Event Detail]/Hero"
+      ],
+      "labels": [
+        "standard route hero"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Photo hero states",
+          "functionName": "eventDetailPhotoHeroSurfaceStates",
+          "file": "widgetbook/lib/events/event_detail_use_cases.dart",
+          "path": "[Event Detail]/Hero",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "standard route hero",
+              "normalizedLabel": "standard route hero"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "EventPolicyCancellationRows",
       "useCaseCount": 1,
       "stateCardCount": 1,
@@ -26724,38 +26756,6 @@
             {
               "label": "timeline rows",
               "normalizedLabel": "timeline rows"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "LegacyEventHeroSurface",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[Event Detail]/Hero"
-      ],
-      "labels": [
-        "standard route hero"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Legacy hero states",
-          "functionName": "eventDetailLegacyHeroSurfaceStates",
-          "file": "widgetbook/lib/events/event_detail_use_cases.dart",
-          "path": "[Event Detail]/Hero",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "standard route hero",
-              "normalizedLabel": "standard route hero"
             }
           ]
         }

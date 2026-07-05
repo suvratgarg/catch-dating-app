@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-05T00:05:15.019196+00:00",
+  "generated_at": "2026-07-05T00:49:19.369263+00:00",
   "repo_root": "/Users/suvratgarg/Development/catch-dating-app/catch_dating_app",
   "total_files_scanned": 735,
   "total_definitions": 3738,
@@ -21402,7 +21402,7 @@
       "signature": "class EventDetailHeroAppBar extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "1dc616ac80daa71a"
+      "body_hash": "11ee2b9c1c1cf8fc"
     },
     {
       "name": "_expandedHeightFor",
@@ -21414,14 +21414,14 @@
       "body_hash": "d0cdf1744949eee1"
     },
     {
-      "name": "LegacyEventHeroSurface",
+      "name": "EventPhotoHeroSurface",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
       "line": 175,
-      "signature": "class LegacyEventHeroSurface extends StatelessWidget {",
+      "signature": "class EventPhotoHeroSurface extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "6e185ea42585ecd9"
+      "body_hash": "aa5ae2fb44842943"
     },
     {
       "name": "EventDetailTicketHeroSurface",

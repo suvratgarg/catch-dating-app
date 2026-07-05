@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.582
+version: 2.5.583
 updated: 2026-07-05
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.583
+
+- Renamed the live standard Event Detail hero surface from
+  `LegacyEventHeroSurface` to `EventPhotoHeroSurface`. The widget remains the
+  non-ticket presentation path used by `EventDetailHeroAppBar`; the change
+  removes a false "legacy" label without changing behavior.
 
 ### 2.5.582
 
@@ -662,7 +669,7 @@ a feature section here only when auditing that feature's widget surface.
 
 ### 2.5.509
 
-- Promoted `LegacyEventHeroSurface`, `EventDetailTicketHeroSurface`,
+- Promoted `EventPhotoHeroSurface`, `EventDetailTicketHeroSurface`,
   `EventDetailTicketSurface`, `HeroActivityBadge`, and `HeroTimeChip` as public
   cataloged renderers used by `EventDetailHeroAppBar`, with exact Widgetbook
   coverage. The classification scanner's private widget review count drops by
@@ -6444,7 +6451,7 @@ Generated 2026-05-06.
 | `GuestBookCta` | `lib/events/presentation/widgets/event_detail_body.dart:296` | Guest-only Event Detail booking dock CTA. Renders the sign-in-to-book action inside the light or dark footer surface while the route/body owner supplies the navigation callback. |
 | `EventDetailHostsSection` | `lib/events/presentation/widgets/event_detail_body.dart:332` | Provider-free Event Detail host section adapter. Switches explicit `EventDetailHostState` into hidden/loading/error/content rendering, renders `EventDetailHostsSkeleton` while host data resolves, renders `EventDetailHostCard` from preformatted display data, and delegates View club, Message host, and retry effects to route callbacks. Widgetbook covers hidden, loading, content, and error states. |
 | `EventDetailHeroAppBar` | `lib/events/presentation/widgets/event_detail_hero_app_bar.dart:10` | Event detail hero app bar. Uses the shared event photo header for standard routes and a full-bleed ticket-mode visual band for card-opened routes; both paths prefer uploaded photos and fall back to activity artwork. Standard and ticket/spotlight expanded heights resolve through named `CatchLayout.eventDetailHero*` constants; ticket mode keeps the perforated ticket seam, shares the event display font with cards, and owns floating back/save actions plus optional share/calendar actions without adding the club-detail viewport-curve inset. |
-| `LegacyEventHeroSurface` | `lib/events/presentation/widgets/event_detail_hero_app_bar.dart:171` | Standard event-detail hero surface used by `EventDetailHeroAppBar` for non-ticket routes. Composes the uploaded-photo header with the activity badge and display-title overlay while keeping route actions in the sliver app bar. Widgetbook covers the exact surface state directly. |
+| `EventPhotoHeroSurface` | `lib/events/presentation/widgets/event_detail_hero_app_bar.dart:171` | Standard event-detail photo hero surface used by `EventDetailHeroAppBar` for non-ticket routes. Composes the uploaded-photo header with the activity badge and display-title overlay while keeping route actions in the sliver app bar. Widgetbook covers the exact surface state directly. |
 | `EventDetailTicketHeroSurface` | `lib/events/presentation/widgets/event_detail_hero_app_bar.dart:217` | Ticket-mode hero transition adapter used by `EventDetailHeroAppBar`. Wraps `EventDetailTicketSurface` in `catchHeroSurface` only when a route-provided hero tag exists, so direct ticket rendering and card-to-detail Hero flights stay separated. Widgetbook covers ticket and spotlight transition-target states. |
 | `EventDetailTicketSurface` | `lib/events/presentation/widgets/event_detail_hero_app_bar.dart:241` | Full-bleed ticket hero body for ticket and spotlight event-detail presentations. Owns the activity thumbnail/scrim band, perforated divider, event display title, subtitle, compact-flight layout, and dark/light body colors. Widgetbook covers ticket and spotlight body states directly. |
 | `HeroActivityBadge` | `lib/events/presentation/widgets/event_detail_hero_app_bar.dart:410` | Frosted activity badge used by both standard and ticket event-detail heroes. Receives a resolved `EventActivityVisualSpec` so activity icon/label mapping remains centralized in `event_activity_visuals.dart`. Widgetbook covers run, dinner, and pickleball badge states. |

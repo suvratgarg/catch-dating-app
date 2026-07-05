@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-05T00:05:02.543Z",
+  "generatedAt": "2026-07-05T00:49:07.365Z",
   "decisionLedgerPath": "docs/design_parity/widgetbook_widget_decisions.json",
   "total": 984,
   "stats": {
@@ -7939,11 +7939,11 @@
     {
       "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
       "line": 175,
-      "name": "LegacyEventHeroSurface",
+      "name": "EventPhotoHeroSurface",
       "base": "StatelessWidget",
       "area": "events",
       "visibility": "public",
-      "publicName": "LegacyEventHeroSurface",
+      "publicName": "EventPhotoHeroSurface",
       "exactNameMatched": true,
       "publicNameMatched": true,
       "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",

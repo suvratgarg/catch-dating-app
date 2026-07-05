@@ -338,14 +338,14 @@ Widget eventDetailScreenStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Legacy hero states',
-  type: LegacyEventHeroSurface,
+  name: 'Photo hero states',
+  type: EventPhotoHeroSurface,
   path: '[Event Detail]/Hero',
 )
-Widget eventDetailLegacyHeroSurfaceStates(BuildContext context) {
+Widget eventDetailPhotoHeroSurfaceStates(BuildContext context) {
   return _CatalogScreen(
-    title: 'LegacyEventHeroSurface',
-    catalogId: 'event_detail.hero.legacy_surface',
+    title: 'EventPhotoHeroSurface',
+    catalogId: 'event_detail.hero.photo_surface',
     children: [
       _StateCard(
         label: 'standard route hero',
@@ -353,7 +353,7 @@ Widget eventDetailLegacyHeroSurfaceStates(BuildContext context) {
           borderRadius: BorderRadius.circular(CatchRadius.lg),
           child: SizedBox(
             height: 280,
-            child: LegacyEventHeroSurface(event: _event),
+            child: EventPhotoHeroSurface(event: _event),
           ),
         ),
       ),
