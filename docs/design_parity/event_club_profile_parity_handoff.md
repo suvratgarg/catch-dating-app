@@ -174,6 +174,12 @@ navigate with hero transition; background tap = dismiss; no peek rail or
 spotlight anywhere; the map card is byte-identical to the feed's
 `EventDateRailCard` (modulo `notchBg`); net widget count negative.
 
+Status: B1/B2/B4 and the selected-card/test portion of B5 are implemented
+and covered by focused widget tests plus Widgetbook route states. B3 remains
+open: real map pins still need DS `MapPin` visual parity (resting/selected
+sizes plus uppercase activity/time flag), so do not close the full Part 1B
+acceptance until that primitive-level pin work lands.
+
 Out of scope (recorded): dashboard CoverStory moment; the companion
 ticket-tear animation (design gap, companion exercise).
 

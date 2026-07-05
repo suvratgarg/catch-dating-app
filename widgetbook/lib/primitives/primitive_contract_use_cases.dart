@@ -5327,15 +5327,7 @@ Widget catchEventCardContractStates(BuildContext context) {
   return _ContractScreen(
     title: 'CatchEventCard',
     contractId: 'catch.event_card',
-    states: const [
-      'ticket',
-      'ticket-status',
-      'spotlight',
-      'compact',
-      'long-copy',
-      'hero-transition',
-      'activity-art',
-    ],
+    states: const ['ticket', 'ticket-status', 'long-copy'],
     children: [
       const _StateCard(
         label: 'ticket',

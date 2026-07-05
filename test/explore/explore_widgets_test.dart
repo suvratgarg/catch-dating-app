@@ -28,7 +28,6 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
@@ -3122,27 +3121,273 @@ void main() {
         ),
         findsOneWidget,
       );
+      expect(find.byType(EventDateRailCard), findsOneWidget);
+      expect(find.text('BANDRA MAP CLUB'), findsOneWidget);
     });
 
-    test('explore map summary switches to map area after a large pan', () {
-      final mumbai = _testCities.first;
-
-      expect(exploreMapScopeLabel(city: mumbai, cameraCenter: null), 'Mumbai');
-      expect(
-        exploreMapScopeLabel(
-          city: mumbai,
-          cameraCenter: const LocationCoordinate(19.08, 72.88),
-        ),
-        'Mumbai',
+    testWidgets('ExploreMapScreen selects pin before navigating from card', (
+      tester,
+    ) async {
+      final club = buildClub(id: 'club-map-nav', name: 'Race Course Road Club');
+      final event = event_test.buildEvent(
+        id: 'event-map-nav',
+        clubId: club.id,
+        meetingPoint: 'Race Course Road main gate',
+        startingPointLat: 19.0608,
+        startingPointLng: 72.8365,
+        startTime: DateTime.now().add(const Duration(days: 1)),
       );
-      expect(
-        exploreMapScopeLabel(
-          city: mumbai,
-          cameraCenter: const LocationCoordinate(19.45, 73.35),
+      final router = GoRouter(
+        initialLocation: '/',
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (_, _) =>
+                const ExploreMapScreen(enableNetworkTiles: false),
+          ),
+          GoRoute(
+            path: '/events/:clubId/:eventId',
+            name: Routes.eventDetailScreen.name,
+            builder: (_, state) {
+              final extra = state.extra as EventDetailRouteExtra?;
+              return Text(
+                [
+                  'Event ${state.pathParameters['eventId']}',
+                  extra?.transition.name,
+                  extra?.heroTag,
+                ].whereType<Object>().join(' · '),
+                textDirection: TextDirection.ltr,
+              );
+            },
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            cityListProvider.overrideWith((ref) async => _testCities),
+            deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+            exploreFeedViewModelProvider.overrideWithValue(
+              AsyncData(
+                ExploreFeedViewModel(
+                  items: [
+                    ExploreEventItem(
+                      event: event,
+                      club: club,
+                      status: EventTileStatus.open,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+          child: MaterialApp.router(
+            theme: AppTheme.light,
+            routerConfig: router,
+          ),
         ),
-        'Map area',
+      );
+      await _pumpClubUi(tester);
+
+      expect(find.byType(EventDateRailCard), findsNothing);
+      expect(find.textContaining('Event event-map-nav'), findsNothing);
+
+      await tester.tap(
+        find.bySemanticsLabel('Select Race Course Road main gate'),
+      );
+      await tester.pump(CatchMotion.fast);
+
+      expect(find.byType(EventDateRailCard), findsOneWidget);
+      expect(find.text(event.title), findsOneWidget);
+      expect(find.textContaining('Event event-map-nav'), findsNothing);
+
+      await tester.tap(find.text(event.title));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text(
+          'Event event-map-nav · mapSelectedCard · event-ticket-map-event-map-nav',
+        ),
+        findsOneWidget,
       );
     });
+
+    testWidgets('ExploreMapScreen background tap dismisses selected card', (
+      tester,
+    ) async {
+      final club = buildClub(id: 'club-map-clear', name: 'Map Clear Club');
+      final event = event_test.buildEvent(
+        id: 'event-map-clear',
+        clubId: club.id,
+        meetingPoint: 'Clearable Pin Point',
+        startingPointLat: 19.0608,
+        startingPointLng: 72.8365,
+        startTime: DateTime.now().add(const Duration(days: 1)),
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            cityListProvider.overrideWith((ref) async => _testCities),
+            deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+            exploreFeedViewModelProvider.overrideWithValue(
+              AsyncData(
+                ExploreFeedViewModel(
+                  items: [
+                    ExploreEventItem(
+                      event: event,
+                      club: club,
+                      status: EventTileStatus.open,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const ExploreMapScreen(enableNetworkTiles: false),
+          ),
+        ),
+      );
+      await _pumpClubUi(tester);
+
+      await tester.tap(find.bySemanticsLabel('Select Clearable Pin Point'));
+      await tester.pump(CatchMotion.fast);
+      expect(find.byType(EventDateRailCard), findsOneWidget);
+
+      await tester.tapAt(const Offset(24, 220));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(EventDateRailCard), findsNothing);
+    });
+
+    testWidgets(
+      'ExploreMapScreen clears selected card when feed refresh drops event',
+      (tester) async {
+        var showSelectedEvent = true;
+        final club = buildClub(
+          id: 'club-map-refresh',
+          name: 'Map Refresh Club',
+        );
+        final event = event_test.buildEvent(
+          id: 'event-map-refresh',
+          clubId: club.id,
+          meetingPoint: 'Refresh Pin Point',
+          startingPointLat: 19.0608,
+          startingPointLng: 72.8365,
+          startTime: DateTime.now().add(const Duration(days: 1)),
+        );
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              cityListProvider.overrideWith((ref) async => _testCities),
+              deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+              exploreFeedViewModelProvider.overrideWith((ref) {
+                return AsyncData(
+                  ExploreFeedViewModel(
+                    items: showSelectedEvent
+                        ? [
+                            ExploreEventItem(
+                              event: event,
+                              club: club,
+                              status: EventTileStatus.open,
+                            ),
+                          ]
+                        : const <ExploreEventItem>[],
+                  ),
+                );
+              }),
+            ],
+            child: MaterialApp(
+              theme: AppTheme.light,
+              home: const ExploreMapScreen(enableNetworkTiles: false),
+            ),
+          ),
+        );
+        await _pumpClubUi(tester);
+
+        await tester.tap(find.bySemanticsLabel('Select Refresh Pin Point'));
+        await tester.pump(CatchMotion.fast);
+        expect(find.byType(EventDateRailCard), findsOneWidget);
+
+        final ProviderContainer container = ProviderScope.containerOf(
+          tester.element(find.byType(ExploreMapScreen)),
+        );
+        showSelectedEvent = false;
+        container.invalidate(exploreFeedViewModelProvider);
+        await tester.pump();
+        await tester.pumpAndSettle();
+
+        expect(find.byType(EventDateRailCard), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'ExploreMapScreen clears selected card when selected event loses its pin',
+      (tester) async {
+        var showExactPin = true;
+        final club = buildClub(id: 'club-map-pin-loss', name: 'Map Pin Club');
+        final pinnedEvent = event_test.buildEvent(
+          id: 'event-map-pin-loss',
+          clubId: club.id,
+          meetingPoint: 'Pin Loss Point',
+          startingPointLat: 19.0608,
+          startingPointLng: 72.8365,
+          startTime: DateTime.now().add(const Duration(days: 1)),
+        );
+        final unpinnedEvent = event_test.buildEvent(
+          id: pinnedEvent.id,
+          clubId: club.id,
+          meetingPoint: pinnedEvent.meetingPoint,
+          startTime: pinnedEvent.startTime,
+          endTime: pinnedEvent.endTime,
+        );
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              cityListProvider.overrideWith((ref) async => _testCities),
+              deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+              exploreFeedViewModelProvider.overrideWith((ref) {
+                return AsyncData(
+                  ExploreFeedViewModel(
+                    items: [
+                      ExploreEventItem(
+                        event: showExactPin ? pinnedEvent : unpinnedEvent,
+                        club: club,
+                        status: EventTileStatus.open,
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            ],
+            child: MaterialApp(
+              theme: AppTheme.light,
+              home: const ExploreMapScreen(enableNetworkTiles: false),
+            ),
+          ),
+        );
+        await _pumpClubUi(tester);
+
+        await tester.tap(find.bySemanticsLabel('Select Pin Loss Point'));
+        await tester.pump(CatchMotion.fast);
+        expect(find.byType(EventDateRailCard), findsOneWidget);
+
+        final ProviderContainer container = ProviderScope.containerOf(
+          tester.element(find.byType(ExploreMapScreen)),
+        );
+        showExactPin = false;
+        container.invalidate(exploreFeedViewModelProvider);
+        await tester.pump();
+        await tester.pumpAndSettle();
+
+        expect(find.byType(EventDateRailCard), findsNothing);
+      },
+    );
 
     testWidgets('ExploreScreen shows Explore-specific error copy', (
       tester,

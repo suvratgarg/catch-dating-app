@@ -24,22 +24,26 @@ class EventMapView extends ConsumerStatefulWidget {
     this.enableNetworkTiles = true,
     this.overlay,
     this.onEventSelected,
+    this.onSelectionCleared,
     this.onCameraCenterChanged,
     this.onDistanceRingTapped,
     this.viewModel,
     this.onRetry,
     this.distanceRingRadiusKm,
+    this.selectedEventId,
     this.initialSelectedEventId,
   });
 
   final bool enableNetworkTiles;
   final Widget? overlay;
   final ValueChanged<Event>? onEventSelected;
+  final VoidCallback? onSelectionCleared;
   final ValueChanged<LocationCoordinate>? onCameraCenterChanged;
   final VoidCallback? onDistanceRingTapped;
   final AsyncValue<EventMapViewModel>? viewModel;
   final VoidCallback? onRetry;
   final double? distanceRingRadiusKm;
+  final String? selectedEventId;
   final String? initialSelectedEventId;
 
   @override
@@ -88,7 +92,8 @@ class _EventMapViewState extends ConsumerState<EventMapView> {
                   () => ref.invalidate(eventMapViewModelProvider),
             ),
             builder: (context, viewModel) {
-              final selectedEvent = viewModel.selectedEvent(_selectedEventId);
+              final selectedEventId = _effectiveSelectedEventId;
+              final selectedEvent = viewModel.selectedEvent(selectedEventId);
               final selectedEventCenter = _startingPointFor(selectedEvent);
               final mapCenter = resolveEventMapInitialCenter(
                 deviceLocation: deviceLocation,
@@ -120,12 +125,13 @@ class _EventMapViewState extends ConsumerState<EventMapView> {
                           child: EventPinsMap(
                             items: viewModel.effectivePinnedItems,
                             initialCenter: mapCenter,
-                            selectedEventId: _selectedEventId,
+                            selectedEventId: selectedEventId,
                             selectedEventCenter: selectedEventCenter,
                             enableNetworkTiles: widget.enableNetworkTiles,
                             userLocation: deviceLocation,
                             distanceRingRadiusKm: widget.distanceRingRadiusKm,
                             onEventSelected: _selectEvent,
+                            onMapTapped: _clearSelection,
                             onCameraCenterChanged: widget.onCameraCenterChanged,
                             onDistanceRingTapped: widget.onDistanceRingTapped,
                           ),
@@ -141,9 +147,25 @@ class _EventMapViewState extends ConsumerState<EventMapView> {
   }
 
   void _selectEvent(Event event) {
-    setState(() => _selectedEventId = event.id);
+    if (!_usesExternalSelection) {
+      setState(() => _selectedEventId = event.id);
+    }
     widget.onEventSelected?.call(event);
   }
+
+  void _clearSelection() {
+    if (_effectiveSelectedEventId == null) return;
+    if (!_usesExternalSelection) {
+      setState(() => _selectedEventId = null);
+    }
+    widget.onSelectionCleared?.call();
+  }
+
+  bool get _usesExternalSelection =>
+      widget.selectedEventId != null || widget.onSelectionCleared != null;
+
+  String? get _effectiveSelectedEventId =>
+      _usesExternalSelection ? widget.selectedEventId : _selectedEventId;
 }
 
 class EventMapLoadingBody extends StatelessWidget {

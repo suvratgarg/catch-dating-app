@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-05T21:34:02.776Z",
+  "generatedAt": "2026-07-05T22:53:23.009Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
@@ -7,7 +7,7 @@
   "summary": {
     "useCases": 860,
     "components": 829,
-    "stateCards": 1713,
+    "stateCards": 1715,
     "reviewCandidates": 38,
     "oversizedUseCases": 42,
     "multiUseCaseComponents": 30
@@ -8480,6 +8480,68 @@
       ]
     },
     {
+      "component": "ExploreMapScreen",
+      "useCaseCount": 1,
+      "stateCardCount": 7,
+      "paths": [
+        "[Explore]/Sections"
+      ],
+      "labels": [
+        "distance ring active",
+        "empty",
+        "error",
+        "loading",
+        "no exact pins",
+        "pins ready",
+        "selected event card"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Map route states",
+          "functionName": "exploreMapRouteStates",
+          "file": "widgetbook/lib/explore/explore_use_cases.dart",
+          "path": "[Explore]/Sections",
+          "stateCardCount": 7,
+          "stateCards": [
+            {
+              "label": "pins ready",
+              "normalizedLabel": "pins ready"
+            },
+            {
+              "label": "selected event card",
+              "normalizedLabel": "selected event card"
+            },
+            {
+              "label": "loading",
+              "normalizedLabel": "loading"
+            },
+            {
+              "label": "empty",
+              "normalizedLabel": "empty"
+            },
+            {
+              "label": "no exact pins",
+              "normalizedLabel": "no exact pins"
+            },
+            {
+              "label": "error",
+              "normalizedLabel": "error"
+            },
+            {
+              "label": "distance ring active",
+              "normalizedLabel": "distance ring active"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "ExploreScreen",
       "useCaseCount": 1,
       "stateCardCount": 7,
@@ -10349,58 +10411,6 @@
             {
               "label": "text only no image action",
               "normalizedLabel": "text only no image action"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "ExploreMapScreen",
-      "useCaseCount": 1,
-      "stateCardCount": 5,
-      "paths": [
-        "[Explore]/Sections"
-      ],
-      "labels": [
-        "distance ring active",
-        "empty",
-        "error",
-        "loading",
-        "pins ready"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Map route states",
-          "functionName": "exploreMapRouteStates",
-          "file": "widgetbook/lib/explore/explore_use_cases.dart",
-          "path": "[Explore]/Sections",
-          "stateCardCount": 5,
-          "stateCards": [
-            {
-              "label": "pins ready",
-              "normalizedLabel": "pins ready"
-            },
-            {
-              "label": "loading",
-              "normalizedLabel": "loading"
-            },
-            {
-              "label": "empty",
-              "normalizedLabel": "empty"
-            },
-            {
-              "label": "error",
-              "normalizedLabel": "error"
-            },
-            {
-              "label": "distance ring active",
-              "normalizedLabel": "distance ring active"
             }
           ]
         }

@@ -1931,7 +1931,7 @@
           "id": "map_route",
           "kind": "populated",
           "status": "captured",
-          "source": "ExploreMapScreen derives EventMapViewModel from exploreFeedViewModelProvider, opens Event Detail from pins, and cycles distance filters.",
+          "source": "ExploreMapScreen derives EventMapViewModel from exploreFeedViewModelProvider, selects pins into a bottom EventDateRailCard, opens Event Detail from the selected card with the map hero tag, and cycles distance filters.",
           "captureIds": [
             "explore_map",
             "explore_map_selected_pin",
@@ -1943,7 +1943,7 @@
           "tests": [
             "test/explore/explore_widgets_test.dart"
           ],
-          "nextAction": "Map ready, selected-pin, and distance-ring captures are registered; define dynamic-region masks before strict/advisory map pixel comparison."
+          "nextAction": "Map ready, selected-card, and distance-ring captures are registered; define dynamic-region masks before strict/advisory map pixel comparison. DS MapPin parity remains tracked by handoff item 1.B3."
         },
         {
           "id": "pins_ready",
@@ -1966,7 +1966,7 @@
           "id": "selected_pin",
           "kind": "populated",
           "status": "captured",
-          "source": "ExploreMapScreen can seed an initial selected event id for deterministic map captures while production taps still open Event Detail.",
+          "source": "ExploreMapScreen can seed an initial selected event id for deterministic captures; production pin taps select the pin and render the bottom EventDateRailCard without navigating until the card is tapped.",
           "captureIds": [
             "explore_map_selected_pin"
           ],
@@ -1976,7 +1976,7 @@
           "tests": [
             "test/explore/explore_widgets_test.dart"
           ],
-          "nextAction": "Selected-pin capture is registered; continue route-provider-wave extraction under the broader Explore screen-boundary adapter."
+          "nextAction": "Selected-card route behavior is covered by widget tests for preselect, pin tap, card navigation, background dismissal, dropped feed items, and lost exact pins. DS MapPin parity remains tracked by handoff item 1.B3."
         },
         {
           "id": "large_pan_scope",
@@ -1990,6 +1990,16 @@
             "test/explore/explore_widgets_test.dart"
           ],
           "nextAction": "Distance-ring capture is registered; add large-pan camera-region masks before strict map visual comparison."
+        },
+        {
+          "id": "no_exact_pins",
+          "kind": "empty",
+          "status": "captured",
+          "source": "ExploreMapScreen delegates no-exact-pin feed data to EventMapView's shared no-pins empty branch while keeping the route chrome and deterministic Widgetbook fixture.",
+          "previewIds": [
+            "ExploreMapScreen/Map route states"
+          ],
+          "nextAction": "Keep no-exact-pin route coverage aligned with EventMapView; add a screenshot capture only if map empty-state parity needs pixel review."
         },
         {
           "id": "map_loading",
@@ -2258,7 +2268,7 @@
             "previewIds": [
               "ExploreMapScreen/Map route states"
             ],
-            "migration": "The dropped Explore map peek-rail lead and selected-pin ticket widgets were retired in the event/club/profile parity handoff. Widgetbook currently covers the ExploreMapScreen route states only. Remaining work: build the new selected-map-card state, add its Widgetbook/test coverage, define map dynamic-region masking, keep EventMapView as the map primitive, and move route chrome/provider-wave data into an adapter."
+            "migration": "The dropped Explore map peek-rail lead and selected-pin ticket widgets were retired in the event/club/profile parity handoff. ExploreMapScreen now owns selected-pin route state and renders the selected event through the canonical EventDateRailCard overlay; Widgetbook covers ready, selected-card, loading, empty, no-exact-pin, error, and distance-ring route states. Remaining work: DS MapPin visual parity, map dynamic-region masking, keeping EventMapView as the map primitive, and moving route chrome/provider-wave data into an adapter."
           },
           {
             "id": "section.explore.empty_error",

@@ -376,6 +376,10 @@ class ExploreEventRowState {
   final String? statusLabel;
 }
 
+String exploreEventMapKicker(ExploreEventItem item) {
+  return _joinExploreLabels([item.club.name, item.distanceFromUserLabel]);
+}
+
 class ExploreExternalEventRowState {
   const ExploreExternalEventRowState({
     required this.sourceLabel,

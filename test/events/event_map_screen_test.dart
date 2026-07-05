@@ -134,6 +134,54 @@ void main() {
     expect(map.selectedEventCenter, const LocationCoordinate(22.75, 75.9));
   });
 
+  testWidgets('background tap clears selected map marker', (tester) async {
+    final firstRun = buildEvent(
+      id: 'first-event',
+      meetingPoint: 'Race Course Road main gate',
+      startingPointLat: 22.72,
+      startingPointLng: 75.86,
+    );
+    final secondRun = buildEvent(
+      id: 'second-event',
+      meetingPoint: 'Vijay Nagar main gate',
+      startingPointLat: 22.75,
+      startingPointLng: 75.9,
+    );
+
+    await pumpEventsTestApp(
+      tester,
+      const EventMapView(
+        enableNetworkTiles: false,
+        initialSelectedEventId: 'second-event',
+      ),
+      overrides: [
+        eventMapViewModelProvider.overrideWith(
+          (ref) => AsyncData(
+            EventMapViewModel(
+              events: [firstRun, secondRun],
+              pinnedEvents: [firstRun, secondRun],
+            ),
+          ),
+        ),
+        deviceLocationProvider.overrideWith(() => _FakeDeviceLocation(null)),
+        selectedExploreCityProvider.overrideWithValue(_mumbai),
+      ],
+    );
+
+    expect(
+      tester.widget<EventPinsMap>(find.byType(EventPinsMap)).selectedEventId,
+      'second-event',
+    );
+
+    await tester.tapAt(const Offset(24, 220));
+    await tester.pump();
+
+    expect(
+      tester.widget<EventPinsMap>(find.byType(EventPinsMap)).selectedEventId,
+      isNull,
+    );
+  });
+
   testWidgets('event pin maps use Google default map styling', (tester) async {
     final event = buildEvent(
       id: 'styled-event',

@@ -1975,6 +1975,18 @@ Widget exploreMapRouteStates(BuildContext context) {
         ),
       ),
       _StateCard(
+        label: 'selected event card',
+        child: _DeviceFrame(
+          height: 520,
+          child: _ExploreScope(
+            child: ExploreMapScreen(
+              enableNetworkTiles: false,
+              initialSelectedEventId: _feedItems.first.event.id,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
         label: 'loading',
         child: _DeviceFrame(
           height: 420,
@@ -1990,6 +2002,29 @@ Widget exploreMapRouteStates(BuildContext context) {
           height: 420,
           child: _ExploreScope(
             feed: const AsyncData(ExploreFeedViewModel(items: [])),
+            child: const ExploreMapScreen(enableNetworkTiles: false),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'no exact pins',
+        child: _DeviceFrame(
+          height: 420,
+          child: _ExploreScope(
+            feed: AsyncData(
+              ExploreFeedViewModel(
+                items: [
+                  ExploreEventItem(
+                    event: _feedItems.first.event.copyWith(
+                      meetingLocation: null,
+                    ),
+                    club: _feedItems.first.club,
+                    availability: _feedItems.first.availability,
+                    distanceFromUserKm: _feedItems.first.distanceFromUserKm,
+                  ),
+                ],
+              ),
+            ),
             child: const ExploreMapScreen(enableNetworkTiles: false),
           ),
         ),

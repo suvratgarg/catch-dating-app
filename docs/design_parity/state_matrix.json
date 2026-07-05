@@ -1578,7 +1578,7 @@
               "tests": [
                 "test/explore/explore_widgets_test.dart"
               ],
-              "notes": "ExploreMapScreen derives pins from ExploreFeedViewModel and has deterministic ready, selected-pin, and distance-ring captures."
+              "notes": "ExploreMapScreen derives pins from ExploreFeedViewModel and has deterministic ready, selected-card, and distance-ring captures."
             },
             {
               "id": "selected_pin",
@@ -1590,7 +1590,7 @@
               "tests": [
                 "test/explore/explore_widgets_test.dart"
               ],
-              "notes": "ExploreMapScreen seeds an initial selected event id for deterministic map capture while production pin taps still route to Event Detail."
+              "notes": "ExploreMapScreen seeds an initial selected event id for deterministic map capture; production pin taps now select the visible pin and show the bottom EventDateRailCard. Card taps route to Event Detail with the map hero tag, and tests cover background dismissal plus feed refresh clearing."
             },
             {
               "id": "large_pan_scope",
@@ -1603,6 +1603,15 @@
                 "test/explore/explore_widgets_test.dart"
               ],
               "notes": "Distance-ring capture seeds user location plus an active distance filter in the deterministic map placeholder."
+            },
+            {
+              "id": "no_exact_pins",
+              "kind": "empty",
+              "status": "captured",
+              "previewIds": [
+                "ExploreMapScreen/Map route states"
+              ],
+              "notes": "Widgetbook covers the no-exact-pins route branch by feeding events without exact coordinates through ExploreMapScreen and EventMapView."
             },
             {
               "id": "map_loading",
@@ -1637,8 +1646,8 @@
             },
             {
               "id": "DP-EXPLORE-MAP-002",
-              "status": "open",
-              "nextAction": "ExploreMapScreen route states remain covered. The retired map lead/peek rail states were deleted by the event/club/profile parity handoff; selected-card replacement coverage is tracked as handoff item 1.B5."
+              "status": "closed",
+              "nextAction": "Closed by the selected EventDateRailCard route state, Widgetbook coverage for ready/selected/loading/empty/no-exact-pins/error/distance-ring branches, and widget tests for preselect, pin-tap selection, card navigation, background dismissal, feed-drop clearing, and lost-pin clearing. DS MapPin visual parity remains separate handoff item 1.B3."
             }
           ]
         }

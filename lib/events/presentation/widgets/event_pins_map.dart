@@ -25,6 +25,7 @@ class EventPinsMap extends StatefulWidget {
     this.userLocation,
     this.distanceRingRadiusKm,
     this.onEventSelected,
+    this.onMapTapped,
     this.onCameraCenterChanged,
     this.onDistanceRingTapped,
   });
@@ -39,6 +40,7 @@ class EventPinsMap extends StatefulWidget {
   final LocationCoordinate? userLocation;
   final double? distanceRingRadiusKm;
   final ValueChanged<Event>? onEventSelected;
+  final VoidCallback? onMapTapped;
   final ValueChanged<LocationCoordinate>? onCameraCenterChanged;
   final VoidCallback? onDistanceRingTapped;
 
@@ -101,6 +103,7 @@ class _EventPinsMapState extends State<EventPinsMap> {
         userLocation: widget.userLocation,
         distanceRingRadiusKm: widget.distanceRingRadiusKm,
         onEventSelected: onEventSelected,
+        onMapTapped: widget.onMapTapped,
       );
     }
 
@@ -111,6 +114,7 @@ class _EventPinsMapState extends State<EventPinsMap> {
         for (final group in markerGroups) _markerFor(group, onEventSelected),
       },
       circles: _mapCircles(context),
+      onTap: widget.onMapTapped == null ? null : (_) => widget.onMapTapped!(),
       onCameraMove: _handleCameraMove,
       onCameraIdle: _handleCameraIdle,
       onMapCreated: (controller) {
@@ -310,6 +314,7 @@ class EventPinsMapPlaceholder extends StatelessWidget {
     required this.userLocation,
     required this.distanceRingRadiusKm,
     required this.onEventSelected,
+    this.onMapTapped,
   });
 
   final List<EventMapItem> items;
@@ -318,6 +323,7 @@ class EventPinsMapPlaceholder extends StatelessWidget {
   final LocationCoordinate? userLocation;
   final double? distanceRingRadiusKm;
   final ValueChanged<Event>? onEventSelected;
+  final VoidCallback? onMapTapped;
 
   @override
   Widget build(BuildContext context) {
@@ -332,76 +338,82 @@ class EventPinsMapPlaceholder extends StatelessWidget {
           final markerTop = constraints.maxHeight * 0.32;
           final markerWidth = constraints.maxWidth / (items.length + 1);
 
-          return Stack(
-            children: [
-              Positioned.fill(
-                child: CustomPaint(
-                  painter: _EventPinsMapPlaceholderPainter(
-                    backgroundColor: t.primarySoft,
-                    waterColor: t.primary.withValues(
-                      alpha: CatchOpacity.mapDistanceRingFill,
-                    ),
-                    parkColor: t.success.withValues(
-                      alpha: CatchOpacity.photoScrimLight,
-                    ),
-                    roadColor: t.ink.withValues(
-                      alpha: CatchOpacity.photoScrimMedium,
-                    ),
-                    minorRoadColor: t.ink.withValues(
-                      alpha: CatchOpacity.photoScrimLight,
-                    ),
-                    routeColor: t.primary.withValues(
-                      alpha: CatchOpacity.mapDistanceRingStroke,
-                    ),
-                    dotColor: t.ink.withValues(alpha: CatchOpacity.warningFill),
-                  ),
-                ),
-              ),
-              if (showDistanceRing)
+          return GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: onMapTapped,
+            child: Stack(
+              children: [
                 Positioned.fill(
-                  child: IgnorePointer(
-                    child: CustomPaint(
-                      painter: _EventPinsMapDistanceRingPainter(
-                        fillColor: t.primary.withValues(
-                          alpha: CatchOpacity.mapDistanceRingFill,
-                        ),
-                        strokeColor: t.primary.withValues(
-                          alpha: CatchOpacity.mapDistanceRingStroke,
-                        ),
+                  child: CustomPaint(
+                    painter: _EventPinsMapPlaceholderPainter(
+                      backgroundColor: t.primarySoft,
+                      waterColor: t.primary.withValues(
+                        alpha: CatchOpacity.mapDistanceRingFill,
+                      ),
+                      parkColor: t.success.withValues(
+                        alpha: CatchOpacity.photoScrimLight,
+                      ),
+                      roadColor: t.ink.withValues(
+                        alpha: CatchOpacity.photoScrimMedium,
+                      ),
+                      minorRoadColor: t.ink.withValues(
+                        alpha: CatchOpacity.photoScrimLight,
+                      ),
+                      routeColor: t.primary.withValues(
+                        alpha: CatchOpacity.mapDistanceRingStroke,
+                      ),
+                      dotColor: t.ink.withValues(
+                        alpha: CatchOpacity.warningFill,
                       ),
                     ),
                   ),
                 ),
-              for (final indexed in items.indexed)
-                Positioned(
-                  left:
-                      (markerWidth * (indexed.$1 + 1)) -
-                      _placeholderPinSize / 2,
-                  top:
-                      markerTop +
-                      (indexed.$1.isEven ? 0 : CatchSpacing.s6) -
-                      _placeholderPinSize / 2,
-                  child: Semantics(
-                    button: onEventSelected != null,
-                    selected: selectedEventId == indexed.$2.event.id,
-                    label: onEventSelected == null
-                        ? '${indexed.$2.event.locationName} location'
-                        : 'Select ${indexed.$2.event.locationName}',
-                    child: GestureDetector(
-                      onTap: onEventSelected == null
-                          ? null
-                          : () => onEventSelected!(indexed.$2.event),
-                      child: Icon(
-                        markerIcon,
-                        color: selectedEventId == indexed.$2.event.id
-                            ? t.primary
-                            : t.ink,
-                        size: _placeholderPinSize,
+                if (showDistanceRing)
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      child: CustomPaint(
+                        painter: _EventPinsMapDistanceRingPainter(
+                          fillColor: t.primary.withValues(
+                            alpha: CatchOpacity.mapDistanceRingFill,
+                          ),
+                          strokeColor: t.primary.withValues(
+                            alpha: CatchOpacity.mapDistanceRingStroke,
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-            ],
+                for (final indexed in items.indexed)
+                  Positioned(
+                    left:
+                        (markerWidth * (indexed.$1 + 1)) -
+                        _placeholderPinSize / 2,
+                    top:
+                        markerTop +
+                        (indexed.$1.isEven ? 0 : CatchSpacing.s6) -
+                        _placeholderPinSize / 2,
+                    child: Semantics(
+                      button: onEventSelected != null,
+                      selected: selectedEventId == indexed.$2.event.id,
+                      label: onEventSelected == null
+                          ? '${indexed.$2.event.locationName} location'
+                          : 'Select ${indexed.$2.event.locationName}',
+                      child: GestureDetector(
+                        onTap: onEventSelected == null
+                            ? null
+                            : () => onEventSelected!(indexed.$2.event),
+                        child: Icon(
+                          markerIcon,
+                          color: selectedEventId == indexed.$2.event.id
+                              ? t.primary
+                              : t.ink,
+                          size: _placeholderPinSize,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           );
         },
       ),
