@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-05T01:49:48.220Z",
+  "generatedAt": "2026-07-05T02:18:34.631Z",
   "decisionLedgerPath": "docs/design_parity/widgetbook_widget_decisions.json",
   "total": 984,
   "stats": {
@@ -826,7 +826,7 @@
     },
     {
       "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-      "line": 32,
+      "line": 33,
       "name": "ClubDetailBody",
       "base": "StatelessWidget",
       "area": "clubs",
@@ -840,7 +840,7 @@
     },
     {
       "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-      "line": 211,
+      "line": 209,
       "name": "ClubNextRunBanner",
       "base": "StatelessWidget",
       "area": "clubs",
@@ -854,7 +854,7 @@
     },
     {
       "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-      "line": 278,
+      "line": 262,
       "name": "ClubActivitySection",
       "base": "StatelessWidget",
       "area": "clubs",

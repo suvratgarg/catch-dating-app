@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.584
+version: 2.5.585
 updated: 2026-07-05
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,12 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.585
+
+- Moved `ClubNextRunBanner` onto `CatchSurface` for its tappable tile shell and
+  removed the remaining off-token font-weight overrides from the Club Detail
+  About copy and next-run label.
 
 ### 2.5.584
 
@@ -6389,7 +6395,7 @@ Generated 2026-05-06.
 | `ClubHeroModule` | `lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart:230` | Provider-free Club Detail hero module used inside `ClubHeroAppBar`'s flexible space. Receives computed media height, kicker, and location copy, owns the curved media frame, `CatchDetailHeroBackdrop`, expanded club title, and location row without route actions or provider reads. |
 | `ClubContactAction` | `lib/clubs/presentation/detail/club_detail_screen_state.dart:14` | Typed contact-row intent emitted by `ClubDetailBodyState`. Encodes Instagram, phone, and email labels/URIs plus whether the link should open externally so `ClubDetailScreen` can own the platform link side effect. |
 | `ClubDetailBody` | `lib/clubs/presentation/detail/widgets/club_detail_body.dart:74` | Scrollable public club detail body on a white page surface: hero, optional next-run banner, stats apron, then detail-list `CatchSection`s for About, What we do, From the club, Your hosts, sliver-native Schedule, Reviews, and footer-position Get in touch. The body is a reusable renderer: it receives typed callbacks for share, schedule taps, host profile/message actions, and contact links instead of reading GoRouter or external link/share providers itself. For Host Club Detail parity, it passes the next event address into `ClubHeroAppBar`, renders activity-kind chips before generic tags, uses regular-weight About copy, splits additional generic tags onto a follow-up wrap row, keeps the current public-preview contract, and leaves operational Add event, Edit club, payouts, and host-team editing in Host Operations unless a future design contract moves them here. |
-| `ClubNextRunBanner` | `lib/clubs/presentation/detail/widgets/club_detail_body.dart:205` | Optional next-run banner shown near the top of Club Detail when the club has an upcoming event. Uses activity pigment, event date/time copy from `EventFormatters`, tap semantics, and a forward affordance while navigation remains an injected callback. |
+| `ClubNextRunBanner` | `lib/clubs/presentation/detail/widgets/club_detail_body.dart:205` | Optional next-run banner shown near the top of Club Detail when the club has an upcoming event. Uses `CatchSurface` for the tappable tile shell, activity pigment, event date/time copy from `EventFormatters`, tap semantics, token typography, and a forward affordance while navigation remains an injected callback. |
 | `ClubActivitySection` | `lib/clubs/presentation/detail/widgets/club_detail_body.dart:275` | Activity/tag renderer for the Club Detail "What we do" section. Promotes supported activity kinds into `CatchActivityChip`s, keeps the primary activity highlighted, and renders remaining generic tags through neutral `ClubTagWrap` rows. |
 | `ClubHostSection` | `lib/clubs/presentation/detail/widgets/club_host_section.dart:17` | Provider-free Club Detail hosts section. Receives the club, profile-view affordance, pending message flag, and precomputed messageable host ids from `ClubDetailBodyState`; renders owner/host rows without reading providers or deciding app-role policy. |
 | `ClubHostRow` | `lib/clubs/presentation/detail/widgets/club_host_section.dart:72` | Provider-free host row used by `ClubHostSection`. Renders avatar/name/owner badge, public-profile or view-profile meta, optional message icon, and optional chevron from explicit display inputs. |

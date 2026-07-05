@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-05T01:50:05.336640+00:00",
+  "generated_at": "2026-07-05T02:18:46.448628+00:00",
   "repo_root": "/Users/suvratgarg/Development/catch-dating-app/catch_dating_app",
   "total_files_scanned": 735,
   "total_definitions": 3737,
@@ -351,7 +351,7 @@
     },
     {
       "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-      "line_count": 350,
+      "line_count": 334,
       "definition_count": 9
     },
     {
@@ -5610,7 +5610,7 @@
       "name": "ClubEventSelectionHandler",
       "kind": "typedef",
       "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-      "line": 25,
+      "line": 26,
       "signature": "typedef ClubEventSelectionHandler = void Function(Event event);",
       "body_hash": "10f4c7f2e27d832f"
     },
@@ -5618,7 +5618,7 @@
       "name": "_clubActivityTilePadding",
       "kind": "constant",
       "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-      "line": 27,
+      "line": 28,
       "signature": "const EdgeInsets _clubActivityTilePadding = EdgeInsets.symmetric(",
       "body_hash": "6162fcfd8b10c9b0"
     },
@@ -5626,17 +5626,17 @@
       "name": "ClubDetailBody",
       "kind": "class",
       "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-      "line": 32,
+      "line": 33,
       "signature": "class ClubDetailBody extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "61b29c19519f3612"
+      "body_hash": "ff47735ed1ca0f99"
     },
     {
       "name": "_clubMetricItems",
       "kind": "function",
       "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-      "line": 165,
+      "line": 163,
       "signature": "List<CatchMetricStripItem> _clubMetricItems(Club club) {",
       "return_type": "List<CatchMetricStripItem>",
       "body_hash": "fbc4b1d85c3c3311"
@@ -5645,7 +5645,7 @@
       "name": "_clubEstablishedLabel",
       "kind": "function",
       "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-      "line": 177,
+      "line": 175,
       "signature": "String _clubEstablishedLabel(Club club) {",
       "return_type": "String",
       "body_hash": "0978195dc83b9760"
@@ -5654,7 +5654,7 @@
       "name": "_clubHeroLocationLabel",
       "kind": "function",
       "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-      "line": 197,
+      "line": 195,
       "signature": "String _clubHeroLocationLabel(Club club, Event? nextEvent) {",
       "return_type": "String",
       "body_hash": "93f6dd5839c9a838"
@@ -5663,17 +5663,17 @@
       "name": "ClubNextRunBanner",
       "kind": "class",
       "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-      "line": 211,
+      "line": 209,
       "signature": "class ClubNextRunBanner extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "505b9b77c778c0ad"
+      "body_hash": "5482b54a7e69788b"
     },
     {
       "name": "_nextRunLabel",
       "kind": "function",
       "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-      "line": 271,
+      "line": 255,
       "signature": "String _nextRunLabel(Event event) {",
       "return_type": "String",
       "body_hash": "725bf711ef8f37ba"
@@ -5682,7 +5682,7 @@
       "name": "ClubActivitySection",
       "kind": "class",
       "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-      "line": 278,
+      "line": 262,
       "signature": "class ClubActivitySection extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,

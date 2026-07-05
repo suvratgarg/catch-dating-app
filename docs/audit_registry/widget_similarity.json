@@ -63,42 +63,42 @@
     },
     {
       "hammingBucket": "40-44",
-      "pairs": 470,
+      "pairs": 472,
       "jaccardMin": 0.0303,
-      "jaccardMean": 0.2277,
+      "jaccardMean": 0.2274,
       "jaccardMax": 0.5
     },
     {
       "hammingBucket": "45-49",
-      "pairs": 1077,
+      "pairs": 1079,
       "jaccardMin": 0,
-      "jaccardMean": 0.1543,
+      "jaccardMean": 0.1545,
       "jaccardMax": 0.4902
     },
     {
       "hammingBucket": "50-54",
-      "pairs": 2210,
+      "pairs": 2209,
       "jaccardMin": 0,
       "jaccardMean": 0.1029,
       "jaccardMax": 0.4412
     },
     {
       "hammingBucket": "55-59",
-      "pairs": 3301,
+      "pairs": 3300,
       "jaccardMin": 0,
       "jaccardMean": 0.0646,
       "jaccardMax": 0.3256
     },
     {
       "hammingBucket": "60-64",
-      "pairs": 3314,
+      "pairs": 3313,
       "jaccardMin": 0,
       "jaccardMean": 0.0385,
       "jaccardMax": 0.2381
     },
     {
       "hammingBucket": "65-69",
-      "pairs": 1883,
+      "pairs": 1882,
       "jaccardMin": 0,
       "jaccardMean": 0.0251,
       "jaccardMax": 0.2143
@@ -3227,7 +3227,7 @@
       "simhash128": "7dc9d929c8a5c9bf3e46c41ff06fdd21",
       "tokenStreamLength": 100,
       "coarseTokenStreamLength": 100,
-      "usageCountRaw": 309,
+      "usageCountRaw": 310,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": true
     },
@@ -4041,11 +4041,11 @@
       "name": "ClubNextRunBanner",
       "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
       "role": "feature-adapter",
-      "shapeHash": "9c194f25fc9444dbb589446f65365fa6d37f114ec84c3730b6255afc3d5ac2d6",
-      "coarseShapeHash": "aa30d5ec64f325bc6424d5e7cb56a57742cd6f5dfad83ca6f969107b6f0d1b42",
-      "simhash128": "650a7f99b1a77e1a31cf8d15fd82f320",
-      "tokenStreamLength": 44,
-      "coarseTokenStreamLength": 44,
+      "shapeHash": "5e58bd4f7e834046695881c5b569d846d11c71f315b65a15f5c998d48f9df4c0",
+      "coarseShapeHash": "3df3c19c1bbb05518d82852983cd31d91e34f0f5de9542e21f5cf909fea34832",
+      "simhash128": "21413e9d10f7173a2dcbad147d01f1b4",
+      "tokenStreamLength": 33,
+      "coarseTokenStreamLength": 33,
       "usageCountRaw": 4,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false

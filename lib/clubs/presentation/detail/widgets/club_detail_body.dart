@@ -17,6 +17,7 @@ import 'package:catch_dating_app/core/widgets/catch_activity_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/reviews/shared/reviews_section.dart';
@@ -93,10 +94,7 @@ class ClubDetailBody extends StatelessWidget {
                     first: true,
                     child: Text(
                       club.description,
-                      style: CatchTextStyles.bodyLead(
-                        context,
-                        color: t.ink,
-                      ).copyWith(fontWeight: FontWeight.w400),
+                      style: CatchTextStyles.proseL(context, color: t.ink),
                     ),
                   ),
                   if (tags.isNotEmpty)
@@ -221,47 +219,33 @@ class ClubNextRunBanner extends StatelessWidget {
     return Semantics(
       button: onTap != null,
       label: _nextRunLabel(event),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(CatchRadius.md),
-          child: Ink(
-            decoration: BoxDecoration(
-              color: activity.soft,
-              borderRadius: BorderRadius.circular(CatchRadius.md),
-            ),
-            child: Padding(
-              padding: _clubActivityTilePadding,
-              child: Row(
-                children: [
-                  Icon(
-                    activity.glyph,
-                    size: CatchIcon.sm,
-                    color: activity.deep,
-                  ),
-                  gapW10,
-                  Expanded(
-                    child: Text(
-                      _nextRunLabel(event),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: CatchTextStyles.monoLabelS(
-                        context,
-                        color: activity.deep,
-                      ).copyWith(fontWeight: FontWeight.w700),
-                    ),
-                  ),
-                  gapW10,
-                  Icon(
-                    CatchIcons.arrowForwardRounded,
-                    size: CatchIcon.sm,
-                    color: activity.deep,
-                  ),
-                ],
+      child: CatchSurface(
+        onTap: onTap,
+        radius: CatchRadius.md,
+        padding: _clubActivityTilePadding,
+        backgroundColor: activity.soft,
+        child: Row(
+          children: [
+            Icon(activity.glyph, size: CatchIcon.sm, color: activity.deep),
+            gapW10,
+            Expanded(
+              child: Text(
+                _nextRunLabel(event),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: CatchTextStyles.monoLabelS(
+                  context,
+                  color: activity.deep,
+                ),
               ),
             ),
-          ),
+            gapW10,
+            Icon(
+              CatchIcons.arrowForwardRounded,
+              size: CatchIcon.sm,
+              color: activity.deep,
+            ),
+          ],
         ),
       ),
     );
