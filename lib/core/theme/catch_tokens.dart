@@ -1454,6 +1454,7 @@ abstract final class CatchMotion {
   static const Duration ambientLoop = Duration(seconds: 16);
   static const Duration pulse = Duration(milliseconds: 700);
   static const Duration skeletonShimmer = Duration(milliseconds: 1200);
+  static const Duration startupIndicatorDelay = Duration(milliseconds: 600);
   static const Duration welcomeReel = Duration(milliseconds: 3000);
   static const Duration welcomeLandingReveal = Duration(milliseconds: 1400);
   static const Duration welcomeNonFocusFade = Duration(milliseconds: 500);
@@ -1864,6 +1865,7 @@ abstract final class CatchLayout {
   static const double skeletonStatusPillWidth = 82.0;
   static const double startupLogoExtent = 96.0;
   static const double startupIndicatorExtent = CatchSpacing.s7;
+  static const double startupIndicatorOffsetY = 76.0;
   static const double stepHeaderProgressHeight = 2.0;
   static const double statusBarTopPadding = CatchSpacing.micro14;
   static const double statusBarHorizontalPadding = CatchSpacing.s7;
@@ -1917,6 +1919,7 @@ abstract final class CatchLayout {
   static const double clubDirectorySkeletonLongChipWidth = 96.0;
   static const double clubDirectorySkeletonFooterWidth = 140.0;
   static const double clubDirectorySkeletonActionWidth = 70.0;
+  static const double clubEditorPhotoSkeletonHeight = 132.0;
   static const double recommendationRailGap = 10.0;
   static const double heroSignalChipHorizontalPadding = 11.0;
   static const double heroSignalChipVerticalPadding = 7.0;

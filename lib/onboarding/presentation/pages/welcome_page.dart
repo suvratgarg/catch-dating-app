@@ -491,6 +491,7 @@ class ReelRow extends StatelessWidget {
       decoration: inFocus ? TextDecoration.underline : TextDecoration.none,
       decorationColor: pigment,
       decorationThickness: 4,
+      decorationStyle: TextDecorationStyle.solid,
     );
 
     return SizedBox(
@@ -594,6 +595,7 @@ abstract final class _WelcomeType {
     height: 1.02,
     color: color,
     width: CatchLayout.welcomeVoiceWidth,
+    letterSpacing: -0.5,
   );
 
   static TextStyle body(Color color) => CatchFonts.voice(

@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 1.7.8
-updated: 2026-06-30
+version: 1.7.9
+updated: 2026-07-06
 owner: recursive_audit_loop
 status: active
 ---
@@ -11,6 +11,15 @@ status: active
 This is the durable owner for CI gates, Firebase deployment ordering, and
 release-readiness evidence. It replaces dated one-off runbooks and should stay
 short enough to be read before a deploy.
+
+## Native Splash Assets
+
+The native splash is generated from the `flutter_native_splash:` block in
+`pubspec.yaml`; edit that config and run `dart run flutter_native_splash:create`
+instead of hand-editing platform drawables/storyboards. Before regenerating,
+verify the configured splash image is a transparent mark that composites cleanly
+on both `#F4F4F1` and `#0F0E10`; a baked app-icon tile is not an acceptable
+native splash image.
 
 ## Required PR Checks
 

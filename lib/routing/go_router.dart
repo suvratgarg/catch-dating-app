@@ -11,7 +11,8 @@ import 'package:catch_dating_app/core/motion/catch_transitions.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/core/presentation/host_app_shell.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
 import 'package:catch_dating_app/event_policies/presentation/event_policy_lab_screen.dart';
@@ -300,7 +301,7 @@ GoRouter goRouter(Ref ref) {
       GoRoute(
         path: Routes.loadingScreen.path,
         name: Routes.loadingScreen.name,
-        builder: (context, state) => const CatchStartupLoadingScreen(),
+        builder: (context, state) => const _RouteLoadingScreen(),
       ),
       GoRoute(
         path: Routes.startScreen.path,
@@ -578,6 +579,35 @@ GoRouter goRouter(Ref ref) {
         ),
     ],
   );
+}
+
+class _RouteLoadingScreen extends StatelessWidget {
+  const _RouteLoadingScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Scaffold(
+      backgroundColor: t.bg,
+      body: SafeArea(
+        child: Padding(
+          padding: CatchInsets.pageBody,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              CatchSkeleton.text(width: CatchLayout.skeletonTextPageTitleWidth),
+              const SizedBox(height: CatchSpacing.s5),
+              const CatchSkeletonRows(
+                leading: CatchSkeletonRowLeading.mediaTile,
+                divided: true,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 StatefulShellRoute _hostShellRoute(AppAnalytics analytics) {

@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/app.dart';
+import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
@@ -21,12 +21,16 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 Future<void> runCatchApp({required AppRole appRole}) async {
   AppConfig.configureEntrypointRole(appRole);
 
-  WidgetsFlutterBinding.ensureInitialized();
+  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  if (!kIsWeb) {
+    FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  }
   await _lockDeviceOrientation();
   final remoteConfigError = await _initializeFirebaseServices();
 
