@@ -1,18 +1,26 @@
+import 'package:catch_dating_app/clubs/data/club_posts_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/shared/club_action_keys.dart';
+import 'package:catch_dating_app/core/analytics/app_analytics.dart';
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_tools.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HostClubManagementPanel extends StatelessWidget {
   const HostClubManagementPanel({
@@ -139,6 +147,36 @@ class HostClubManagementPanel extends StatelessWidget {
                   icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
                   fullWidth: true,
                 ),
+                if (AppConfig.enableClubPosts) ...[
+                  gapH10,
+                  Consumer(
+                    builder: (context, ref, child) {
+                      final quotaAsync = ref.watch(
+                        watchClubPostRemainingWeeklyQuotaProvider(club.id),
+                      );
+                      final remainingQuota =
+                          quotaAsync.asData?.value ??
+                          ClubPostsRepository.weeklyQuota;
+                      final quotaExhausted = remainingQuota <= 0;
+                      return CatchButton(
+                        label: quotaExhausted
+                            ? 'Post quota used'
+                            : 'Post update',
+                        onPressed: quotaExhausted
+                            ? null
+                            : () => _showClubPostComposer(
+                                context: context,
+                                ref: ref,
+                                club: club,
+                                remainingQuota: remainingQuota,
+                              ),
+                        icon: Icon(CatchIcons.megaphone, size: CatchIcon.md),
+                        variant: CatchButtonVariant.secondary,
+                        fullWidth: true,
+                      );
+                    },
+                  ),
+                ],
                 gapH10,
                 CatchButton(
                   key: ClubActionKeys.editButton,
@@ -154,6 +192,108 @@ class HostClubManagementPanel extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+Future<void> _showClubPostComposer({
+  required BuildContext context,
+  required WidgetRef ref,
+  required Club club,
+  required int remainingQuota,
+}) async {
+  final controller = TextEditingController();
+  Object? error;
+  var pending = false;
+
+  try {
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            final text = controller.text.trim();
+            final canSubmit = !pending && remainingQuota > 0 && text.isNotEmpty;
+
+            return CatchBottomSheetScaffold(
+              title: 'Post to followers',
+              subtitle:
+                  '$remainingQuota of ${ClubPostsRepository.weeklyQuota} posts left this week.',
+              keyboardSafe: true,
+              action: CatchButton(
+                label: pending ? 'Posting...' : 'Post update',
+                onPressed: canSubmit
+                    ? () async {
+                        setSheetState(() {
+                          pending = true;
+                          error = null;
+                        });
+                        try {
+                          await ref
+                              .read(clubPostsRepositoryProvider)
+                              .createPost(clubId: club.id, text: text);
+                          ref
+                              .read(appAnalyticsProvider)
+                              .logEvent(
+                                AnalyticsEvents.clubPostCreated,
+                                parameters: {
+                                  AnalyticsParameters.clubId: club.id,
+                                },
+                              );
+                          if (!sheetContext.mounted) return;
+                          Navigator.of(sheetContext).pop();
+                          if (!context.mounted) return;
+                          showCatchSnackBar(context, 'Posted to followers.');
+                        } catch (caught) {
+                          setSheetState(() {
+                            pending = false;
+                            error = caught;
+                          });
+                        }
+                      }
+                    : null,
+                fullWidth: true,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CatchField.input(
+                    title: 'Update',
+                    controller: controller,
+                    placeholder:
+                        'Share a route note, meetup detail, or club update.',
+                    keyboardType: TextInputType.multiline,
+                    textInputAction: TextInputAction.newline,
+                    textCapitalization: TextCapitalization.sentences,
+                    maxLines: 5,
+                    minLines: 3,
+                    inputFormatters: [LengthLimitingTextInputFormatter(500)],
+                    helperText:
+                        '${500 - controller.text.length} characters left',
+                    onChanged: (_) => setSheetState(() {}),
+                  ),
+                  if (error != null) ...[
+                    gapH10,
+                    Text(
+                      'Could not post this update. Please try again.',
+                      style: CatchTextStyles.supporting(
+                        context,
+                        color: CatchTokens.of(context).danger,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  } finally {
+    controller.dispose();
   }
 }
 

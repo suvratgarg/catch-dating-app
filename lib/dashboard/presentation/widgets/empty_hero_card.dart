@@ -8,15 +8,16 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class EmptyHeroCard extends StatelessWidget {
-  const EmptyHeroCard({super.key, this.fullBleed = false});
+  const EmptyHeroCard({super.key, this.fullBleed = false, this.onFindEvent});
 
   final bool fullBleed;
+  final VoidCallback? onFindEvent;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final content = EmptyHeroContent(
-      onFindEvent: () => context.go(Routes.exploreScreen.path),
+      onFindEvent: onFindEvent ?? () => context.go(Routes.exploreScreen.path),
       showWelcomeEyebrow: fullBleed,
     );
 

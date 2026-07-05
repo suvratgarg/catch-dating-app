@@ -461,8 +461,8 @@ class EventFocusItem {
       kind == EventFocusKind.checkIn || canSwipe || needsReview;
 
   int get priority {
-    if (kind == EventFocusKind.checkIn) return 0;
-    if (canSwipe) return 1;
+    if (canSwipe) return 0;
+    if (kind == EventFocusKind.checkIn) return 1;
     if (needsReview) return 2;
     return 3;
   }

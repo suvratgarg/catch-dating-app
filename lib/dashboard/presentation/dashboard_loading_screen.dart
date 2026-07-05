@@ -23,14 +23,7 @@ class DashboardLoadingScreen extends StatelessWidget {
                   child: const CatchSectionStack(
                     padding: CatchInsets.pageBodyUnderHeader,
                     gap: CatchSpacing.micro18,
-                    children: [
-                      DashboardFocusLoadingCard(),
-                      DashboardStrideLoadingCard(),
-                      CatchSkeletonBoxRow(
-                        height: CatchLayout.dashboardQuickActionSkeletonHeight,
-                      ),
-                      DashboardRecommendedLoadingSection(),
-                    ],
+                    children: [DashboardFocusLoadingCard()],
                   ),
                 ),
               ),

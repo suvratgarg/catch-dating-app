@@ -331,7 +331,7 @@ final class ExploreFiltersProvider
   }
 }
 
-String _$exploreFiltersHash() => r'0893aca903bdd33a179d425d3726e3017ec5347d';
+String _$exploreFiltersHash() => r'e4a55030a36ae2e70090280c68b15e1bf1ffc724';
 
 abstract class _$ExploreFilters extends $Notifier<ExploreFilterSelection> {
   ExploreFilterSelection build();
@@ -531,4 +531,4 @@ final class ExploreClubsViewModelProvider
 }
 
 String _$exploreClubsViewModelHash() =>
-    r'770d70dbc0a70bde55bacd4a34c21841a1bf059b';
+    r'1275ba8c1df2b92628c3f788d88c623ab997d974';

@@ -298,67 +298,6 @@ void main() {
       expect(sheetState.activeCount, 1);
     });
 
-    test('ExploreCollapsedMapSummaryState derives map scope copy', () {
-      final state = ExploreCollapsedMapSummaryState.from(
-        count: 4,
-        scopeLabel: 'Mumbai',
-        filters: const ExploreFilterSelection(
-          timeFilter: ExploreTimeFilter.thisWeek,
-          distanceFilter: ExploreDistanceFilter.threeKm,
-          highRatedOnly: true,
-          activityTag: 'dinner',
-        ),
-      );
-
-      expect(state.title, '4 events nearby');
-      expect(
-        state.scopeLabel,
-        'Mumbai · This week · within 3 km · high rated · dinner',
-      );
-
-      final loading = ExploreCollapsedMapSummaryState.from(
-        count: null,
-        scopeLabel: 'Mumbai',
-        filters: const ExploreFilterSelection(),
-      );
-      expect(loading.title, 'Finding events nearby');
-    });
-
-    test('ExplorePeekRailState derives nearby rail labels', () {
-      final single = ExplorePeekRailState.from(itemCount: 1);
-      expect(single.title, '1 event near you');
-      expect(single.seeAllLabel, 'See all nearby events');
-      expect(single.seeAllButtonLabel, 'See all');
-
-      final multiple = ExplorePeekRailState.from(itemCount: 3);
-      expect(multiple.title, '3 events near you');
-    });
-
-    test('ExploreMapEventTicketState derives map ticket labels', () {
-      final club = buildClub(id: 'map-club', name: 'Map Club');
-      final item = _exploreItem(
-        id: 'map-event',
-        club: club,
-        startTime: DateTime(2026, 7, 3, 18),
-        bookedCount: 12,
-        distanceFromUserKm: 2.4,
-      );
-
-      final state = ExploreMapEventTicketState.from(
-        item,
-        now: DateTime(2026, 7, 2, 10),
-      );
-
-      expect(state.title, item.event.title);
-      expect(state.subtitle, 'Map Club · Start');
-      expect(state.timeLabel, '6:00 PM');
-      expect(state.countdownLabel, 'Tomorrow');
-      expect(state.priceLabel, 'Free');
-      expect(state.capacityLabel, isNotEmpty);
-      expect(state.statusLabel, '2.4 km away');
-      expect(state.spotlightKicker, '2.4 km away');
-    });
-
     test('ExploreCoverStoryState derives provider-free cover copy', () {
       final club = buildClub(id: 'cover-club', name: 'Cover Club');
       final item = _exploreItem(
@@ -887,6 +826,28 @@ void main() {
       expect(filtered.map((club) => club.id), ['matching-club']);
     });
 
+    test('applyExploreFilters supports the Following club lens', () {
+      final now = DateTime(2026, 1, 1, 8);
+      final followedClub = buildClub(
+        id: 'followed-club',
+        nextEventAt: now.add(const Duration(days: 2)),
+      );
+      final joinedOnlyClub = buildClub(
+        id: 'joined-only-club',
+        nextEventAt: now.add(const Duration(days: 2)),
+      );
+
+      final filtered = applyExploreFilters(
+        clubs: [followedClub, joinedOnlyClub],
+        filters: const ExploreFilterSelection(followingOnly: true),
+        joinedClubIds: {'followed-club', 'joined-only-club'},
+        followedClubIds: {'followed-club'},
+        now: now,
+      );
+
+      expect(filtered.map((club) => club.id), ['followed-club']);
+    });
+
     test('applyExploreFilters uses the selected time window', () {
       final now = DateTime(2026, 5, 26, 10);
       final tonightClub = buildClub(
@@ -1217,6 +1178,43 @@ void main() {
         );
       },
     );
+
+    test('promotes followed-club events into the first Explore page', () {
+      final now = DateTime(2026, 5, 26, 8);
+      final neutralClub = buildClub(id: 'neutral-club');
+      final followedClub = buildClub(id: 'followed-club');
+      final items = [
+        for (var index = 0; index < 10; index++)
+          _exploreItem(
+            id: 'neutral-$index',
+            club: neutralClub,
+            startTime: now.add(Duration(hours: index)),
+          ),
+        _exploreItem(
+          id: 'followed-a',
+          club: followedClub,
+          startTime: now.add(const Duration(hours: 12)),
+        ),
+        _exploreItem(
+          id: 'followed-b',
+          club: followedClub,
+          startTime: now.add(const Duration(hours: 13)),
+        ),
+      ];
+
+      final ranked = promoteFollowedClubItemsForExplore(
+        items,
+        followedClubIds: {'followed-club'},
+      );
+
+      final firstPageIds = ranked.take(10).map((item) => item.event.id);
+      expect(firstPageIds, containsAll(['followed-a', 'followed-b']));
+      expect(
+        ranked.map((item) => item.event.id).toSet(),
+        hasLength(ranked.length),
+      );
+      expect(ranked, hasLength(items.length));
+    });
 
     test(
       'exploreFeedViewModelProvider keeps external supply separate',

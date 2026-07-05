@@ -5,12 +5,12 @@ class DashboardHomeScreen extends StatelessWidget {
     super.key,
     required this.header,
     required this.dashboardSliver,
-    this.notificationAction,
+    this.actions = const <Widget>[],
   });
 
   final DashboardHomeHeaderModel header;
   final Widget dashboardSliver;
-  final Widget? notificationAction;
+  final List<Widget> actions;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,7 @@ class DashboardHomeScreen extends StatelessWidget {
                 title: DashboardHeaderContent(
                   eyebrow: header.eyebrow,
                   title: header.title,
-                  actions: [?notificationAction],
+                  actions: actions,
                 ),
               ).buildSlivers(context),
               dashboardSliver,

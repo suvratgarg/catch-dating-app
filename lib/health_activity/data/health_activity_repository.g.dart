@@ -58,8 +58,14 @@ String _$healthActivityRepositoryHash() =>
     r'6cd2567e5be103c8311de684aaea0e42e7d7eaaf';
 
 @ProviderFor(weeklyActivity)
+@Deprecated(
+  'Home no longer renders weekly activity; retained for insights/compatibility.',
+)
 final weeklyActivityProvider = WeeklyActivityProvider._();
 
+@Deprecated(
+  'Home no longer renders weekly activity; retained for insights/compatibility.',
+)
 final class WeeklyActivityProvider
     extends
         $FunctionalProvider<
@@ -96,4 +102,4 @@ final class WeeklyActivityProvider
   }
 }
 
-String _$weeklyActivityHash() => r'b23a66750d37828d99d657f27a180e6888f7f14f';
+String _$weeklyActivityHash() => r'40bf156a6c00c99302ce6e2c85ea8417632e3396';

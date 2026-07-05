@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -19,11 +19,9 @@ import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/notifications_list_state.dart';
 import 'package:catch_dating_app/dashboard/presentation/notifications_list_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/club_posts_home_section.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_loading_widgets.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_rail.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/stride_card.dart';
-import 'package:catch_dating_app/dashboard/shared/quick_actions.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/events/data/event_calendar_links.dart';
@@ -32,7 +30,6 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
-import 'package:catch_dating_app/health_activity/domain/runner_activity.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
 import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
@@ -148,6 +145,7 @@ void main() {
           overrides: [
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
             membershipsOverride(user, const []),
+            uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
             _activityNotificationsOverride(user),
             watchSignedUpEventsProvider(
               user.uid,
@@ -177,6 +175,7 @@ void main() {
           overrides: [
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
             membershipsOverride(user, const []),
+            uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
             _activityNotificationsOverride(user),
             watchSignedUpEventsProvider(user.uid).overrideWithValue(
               AsyncError<List<Event>>(Exception('boom'), StackTrace.empty),
@@ -234,7 +233,7 @@ void main() {
       expect(find.text('Try again'), findsOneWidget);
     });
 
-    testWidgets('shows the empty dashboard when there are no booked events', (
+    testWidgets('shows the in-body idle CTA when there are no live modules', (
       tester,
     ) async {
       final user = buildUser();
@@ -248,6 +247,13 @@ void main() {
             watchSignedUpEventsProvider(
               user.uid,
             ).overrideWithValue(const AsyncData<List<Event>>([])),
+            watchAttendedEventsProvider(
+              user.uid,
+            ).overrideWithValue(const AsyncData<List<Event>>([])),
+            watchReviewsByUserProvider(
+              user.uid,
+            ).overrideWithValue(const AsyncData<List<Review>>([])),
+            uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
           ],
           child: MaterialApp(
             theme: AppTheme.light,
@@ -262,7 +268,87 @@ void main() {
         find.text('Your catches unlock\nafter your first event.'),
         findsOneWidget,
       );
-      expect(find.byType(DashboardFullSliverBody), findsNothing);
+      expect(find.byType(DashboardFullSliverBody), findsOneWidget);
+    });
+
+    testWidgets('logs idle home open, module impression, and CTA tap', (
+      tester,
+    ) async {
+      final user = buildUser();
+      final reporter = _FakeAnalyticsReporter();
+      final router = GoRouter(
+        initialLocation: Routes.dashboardScreen.path,
+        routes: [
+          GoRoute(
+            path: Routes.dashboardScreen.path,
+            builder: (_, _) => const DashboardScreen(),
+          ),
+          GoRoute(
+            path: Routes.exploreScreen.path,
+            builder: (_, _) => const Scaffold(body: Text('Explore screen')),
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            appAnalyticsProvider.overrideWithValue(
+              AppAnalytics(reporter: reporter, shouldCollect: true),
+            ),
+            watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
+            membershipsOverride(user, const []),
+            _activityNotificationsOverride(user),
+            watchSignedUpEventsProvider(
+              user.uid,
+            ).overrideWithValue(const AsyncData<List<Event>>([])),
+            watchAttendedEventsProvider(
+              user.uid,
+            ).overrideWithValue(const AsyncData<List<Event>>([])),
+            watchReviewsByUserProvider(
+              user.uid,
+            ).overrideWithValue(const AsyncData<List<Review>>([])),
+            uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
+          ],
+          child: MaterialApp.router(
+            theme: AppTheme.light,
+            routerConfig: router,
+          ),
+        ),
+      );
+
+      await _pumpDashboardUi(tester);
+
+      expect(
+        reporter.events,
+        contains(
+          const _AnalyticsEventCall(AnalyticsEvents.homeOpened, {
+            AnalyticsParameters.homeState: 'idle',
+          }),
+        ),
+      );
+      expect(
+        reporter.events,
+        contains(
+          const _AnalyticsEventCall(AnalyticsEvents.homeModuleImpression, {
+            AnalyticsParameters.homeModule: 'idle_cta',
+          }),
+        ),
+      );
+
+      await tester.tap(find.text('Find an event near me'));
+      await _pumpDashboardUi(tester);
+
+      expect(find.text('Explore screen'), findsOneWidget);
+      expect(
+        reporter.events,
+        contains(
+          const _AnalyticsEventCall(AnalyticsEvents.homeActionTap, {
+            AnalyticsParameters.homeModule: 'idle_cta',
+            AnalyticsParameters.homeAction: 'find_event',
+          }),
+        ),
+      );
     });
 
     testWidgets('keeps host tools out of the consumer empty state', (
@@ -289,6 +375,9 @@ void main() {
             watchAttendedEventsProvider(
               user.uid,
             ).overrideWithValue(const AsyncData<List<Event>>([])),
+            watchReviewsByUserProvider(
+              user.uid,
+            ).overrideWithValue(const AsyncData<List<Review>>([])),
             dashboardRecommendedEventsProvider(
               recommendationsQueryFor(user.uid, const []),
             ).overrideWithValue(noRecommendationCandidates),
@@ -312,7 +401,7 @@ void main() {
         find.text('Your catches unlock\nafter your first event.'),
         findsOneWidget,
       );
-      expect(find.byType(DashboardFullSliverBody), findsNothing);
+      expect(find.byType(DashboardFullSliverBody), findsOneWidget);
       expect(find.text('Host event'), findsNothing);
       expect(find.text('Attendance open'), findsNothing);
       expect(find.text('Take attendance'), findsNothing);
@@ -378,7 +467,7 @@ void main() {
       expect(find.byTooltip('Notifications'), findsOneWidget);
     });
 
-    testWidgets('dashboard body renders followed clubs with horizontal rail', (
+    testWidgets('dashboard body omits the legacy followed clubs rail', (
       tester,
     ) async {
       final joinedClub = buildClub(name: 'Home Run Club');
@@ -405,11 +494,7 @@ void main() {
             home: Scaffold(
               body: CustomScrollView(
                 slivers: [
-                  DashboardFullSliverBody(
-                    viewModel: viewModel,
-                    user: user,
-                    followedClubIds: [joinedClub.id],
-                  ),
+                  DashboardFullSliverBody(viewModel: viewModel, user: user),
                 ],
               ),
             ),
@@ -418,13 +503,68 @@ void main() {
       );
       await _pumpDashboardUi(tester);
 
-      expect(find.text('Your clubs'), findsOneWidget);
-      expect(find.text('Home Run Club'), findsOneWidget);
+      expect(find.text('Your clubs'), findsNothing);
+      expect(find.text('Home Run Club'), findsNothing);
+      expect(
+        find.text('Your catches unlock\nafter your first event.'),
+        findsOneWidget,
+      );
     });
 
-    testWidgets('keeps empty start free of notification tab chrome', (
+    testWidgets('club posts home section renders unread post cards', (
       tester,
     ) async {
+      final joinedClub = club_test.buildClub(name: 'Race Course Road Runners');
+      final user = buildUser();
+      final notifications = [
+        _activityNotification(
+          id: 'club-post-1',
+          uid: user.uid,
+          type: ActivityNotificationType.clubUpdate,
+          title: 'New update from Race Course Road Runners',
+          body: 'Meet ten minutes early at the main gate.',
+          clubId: joinedClub.id,
+          postId: 'post-1',
+          eventId: 'event-1',
+        ),
+      ];
+      var opened = false;
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            watchClubsByIdsProvider(
+              ClubsByIdQuery([joinedClub.id]),
+            ).overrideWith((ref) => Stream.value([joinedClub])),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: Scaffold(
+              body: ClubPostsHomeSection(
+                notifications: notifications,
+                onOpenPost: (_) => opened = true,
+              ),
+            ),
+          ),
+        ),
+      );
+      await _pumpDashboardUi(tester);
+
+      expect(find.text('CLUB UPDATES', findRichText: true), findsOneWidget);
+      expect(find.text('RACE COURSE ROAD RUNNERS'), findsOneWidget);
+      expect(
+        find.text('Meet ten minutes early at the main gate.'),
+        findsOneWidget,
+      );
+      expect(find.text('Linked event'), findsOneWidget);
+
+      await tester.tap(find.text('Meet ten minutes early at the main gate.'));
+      await _pumpDashboardUi(tester);
+
+      expect(opened, isTrue);
+    });
+
+    testWidgets('keeps signed-in idle free of old tab chrome', (tester) async {
       final user = buildUser();
 
       await tester.pumpWidget(
@@ -432,6 +572,7 @@ void main() {
           overrides: [
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
             membershipsOverride(user, const []),
+            uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
             _activityNotificationsOverride(user, [
               _activityNotification(id: 'unread-1', uid: user.uid),
               _activityNotification(id: 'unread-2', uid: user.uid),
@@ -457,8 +598,8 @@ void main() {
       expect(find.byType(TabBar), findsNothing);
       expect(find.text('Dashboard'), findsNothing);
       expect(find.text('Activity'), findsNothing);
-      expect(find.byTooltip('Notifications'), findsNothing);
-      expect(find.text('2'), findsNothing);
+      expect(find.byTooltip('Notifications'), findsOneWidget);
+      expect(find.text('2'), findsOneWidget);
       expect(
         find.text('Your catches unlock\nafter your first event.'),
         findsOneWidget,
@@ -589,7 +730,7 @@ void main() {
     testWidgets('notifications screen renders grouped notification rows', (
       tester,
     ) async {
-      final now = DateTime.now();
+      final now = DateTime.now().subtract(const Duration(minutes: 5));
       final today = _activityNotification(
         id: 'today',
         uid: 'runner-1',
@@ -603,7 +744,7 @@ void main() {
         type: ActivityNotificationType.waitlistPromotion,
         title: 'A spot opened up',
         body: "You're off the waitlist for Saturday's Sundowner 5K.",
-        createdAt: now.subtract(const Duration(days: 1, hours: 1)),
+        createdAt: now.subtract(const Duration(days: 1)),
         readAt: now,
       );
       final thisWeek = _activityNotification(
@@ -642,13 +783,23 @@ void main() {
 
       expect(find.text('Activity'), findsOneWidget);
       expect(find.text('TODAY', findRichText: true), findsOneWidget);
-      expect(find.text('YESTERDAY', findRichText: true), findsOneWidget);
-      expect(find.text('THIS WEEK', findRichText: true), findsOneWidget);
       expect(find.text(today.title), findsOneWidget);
       expect(find.text(today.body), findsOneWidget);
+
+      await tester.scrollUntilVisible(
+        find.text('YESTERDAY', findRichText: true),
+        120,
+      );
+      expect(find.text('YESTERDAY', findRichText: true), findsOneWidget);
       expect(find.text(yesterday.title), findsOneWidget);
+
+      await tester.scrollUntilVisible(
+        find.text('THIS WEEK', findRichText: true),
+        120,
+      );
+      expect(find.text('THIS WEEK', findRichText: true), findsOneWidget);
       expect(find.text(thisWeek.title), findsOneWidget);
-      expect(find.byType(NotificationRow), findsNWidgets(3));
+      expect(find.byType(NotificationRow), findsWidgets);
       expect(find.text('Upcoming events'), findsNothing);
       expect(find.text('Recent updates'), findsNothing);
       expect(find.text('Catch'), findsNothing);
@@ -672,11 +823,12 @@ void main() {
   });
 
   group('Dashboard full home shell', () {
-    testWidgets('shows a skeleton card while attended events are loading', (
+    testWidgets('keeps the focus rail while attended enrichment is loading', (
       tester,
     ) async {
       final joinedClubIds = ['club-1'];
       final user = buildUser();
+      final event = buildEvent(id: 'booked-event', bookedCount: 1);
 
       await tester.pumpWidget(
         ProviderScope(
@@ -699,7 +851,7 @@ void main() {
             home: _DashboardFullTestShell(
               user: user,
               followedClubIds: joinedClubIds,
-              signedUpEvents: [buildEvent(bookedCount: 1)],
+              signedUpEvents: [event],
             ),
           ),
         ),
@@ -707,64 +859,28 @@ void main() {
 
       await tester.pump();
 
-      expect(find.byType(DashboardStrideLoadingCard), findsOneWidget);
+      expect(find.byType(EventFocusRail), findsOneWidget);
+      expect(find.text(event.title), findsOneWidget);
+      expect(find.text('Your activity · this week'), findsNothing);
     });
 
-    testWidgets(
-      'surfaces attended-events errors instead of hiding the section',
-      (tester) async {
-        final joinedClubIds = ['club-1'];
-        final user = buildUser();
-
-        await tester.pumpWidget(
-          ProviderScope(
-            overrides: [
-              watchAttendedEventsProvider(user.uid).overrideWithValue(
-                AsyncError<List<Event>>(Exception('boom'), StackTrace.empty),
-              ),
-              dashboardRecommendedEventsProvider(
-                recommendationsQueryFor(user.uid, joinedClubIds),
-              ).overrideWith(
-                (ref) async => const <DashboardEventRecommendationCandidate>[],
-              ),
-              ..._dashboardHostOverrides(user),
-            ],
-            child: MaterialApp(
-              theme: AppTheme.light,
-              home: _DashboardFullTestShell(
-                user: user,
-                followedClubIds: joinedClubIds,
-                signedUpEvents: [buildEvent(bookedCount: 1)],
-              ),
-            ),
-          ),
-        );
-
-        await tester.pump();
-
-        // Errors now route through the canonical CatchInlineErrorState with
-        // mapped copy + retry (ERROR-UI-002), not a fixed hidden message.
-        expect(find.text('Dashboard unavailable'), findsOneWidget);
-        expect(find.text('Try again'), findsOneWidget);
-      },
-    );
-
-    testWidgets('shows a loading card while recommendations are loading', (
+    testWidgets('keeps live focus content when attended enrichment fails', (
       tester,
     ) async {
       final joinedClubIds = ['club-1'];
       final user = buildUser();
+      final event = buildEvent(id: 'booked-event', bookedCount: 1);
 
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            watchAttendedEventsProvider(
-              user.uid,
-            ).overrideWithValue(const AsyncData<List<Event>>([])),
+            watchAttendedEventsProvider(user.uid).overrideWithValue(
+              AsyncError<List<Event>>(Exception('boom'), StackTrace.empty),
+            ),
             dashboardRecommendedEventsProvider(
               recommendationsQueryFor(user.uid, joinedClubIds),
-            ).overrideWithValue(
-              const AsyncLoading<List<DashboardEventRecommendationCandidate>>(),
+            ).overrideWith(
+              (ref) async => const <DashboardEventRecommendationCandidate>[],
             ),
             ..._dashboardHostOverrides(user),
           ],
@@ -773,7 +889,7 @@ void main() {
             home: _DashboardFullTestShell(
               user: user,
               followedClubIds: joinedClubIds,
-              signedUpEvents: [buildEvent(bookedCount: 1)],
+              signedUpEvents: [event],
             ),
           ),
         ),
@@ -781,57 +897,12 @@ void main() {
 
       await tester.pump();
 
-      await tester.drag(_dashboardScrollView(), const Offset(0, -500));
-      await tester.pump();
-
-      expect(find.byType(DashboardRecommendedLoadingSection), findsOneWidget);
+      expect(find.byType(EventFocusRail), findsOneWidget);
+      expect(find.text(event.title), findsOneWidget);
+      expect(find.text('Dashboard unavailable'), findsNothing);
     });
 
-    testWidgets(
-      'surfaces recommendation errors instead of hiding the section',
-      (tester) async {
-        final joinedClubIds = ['club-1'];
-        final user = buildUser();
-
-        await tester.pumpWidget(
-          ProviderScope(
-            overrides: [
-              watchAttendedEventsProvider(
-                user.uid,
-              ).overrideWith((ref) => Stream.value(const [])),
-              dashboardRecommendedEventsProvider(
-                recommendationsQueryFor(user.uid, joinedClubIds),
-              ).overrideWithValue(
-                AsyncError<List<DashboardEventRecommendationCandidate>>(
-                  Exception('boom'),
-                  StackTrace.empty,
-                ),
-              ),
-              ..._dashboardHostOverrides(user),
-            ],
-            child: MaterialApp(
-              theme: AppTheme.light,
-              home: _DashboardFullTestShell(
-                user: user,
-                followedClubIds: joinedClubIds,
-                signedUpEvents: [buildEvent(bookedCount: 1)],
-              ),
-            ),
-          ),
-        );
-
-        await _pumpDashboardUi(tester);
-        await tester.drag(_dashboardScrollView(), const Offset(0, -500));
-        await _pumpDashboardUi(tester);
-
-        // Recommendations load failures now surface the canonical
-        // CatchInlineErrorState with mapped copy + retry (ERROR-UI-002).
-        expect(find.text('Dashboard unavailable'), findsOneWidget);
-        expect(find.text('Try again'), findsOneWidget);
-      },
-    );
-
-    testWidgets('renders active swipe and recommendations on the happy path', (
+    testWidgets('renders the catch window before booked events', (
       tester,
     ) async {
       final now = DateTime.now();
@@ -848,16 +919,6 @@ void main() {
         startTime: now.subtract(const Duration(hours: 4)),
         endTime: now.subtract(const Duration(hours: 2)),
       );
-      final recommendedRun = buildEvent(
-        id: 'recommended-event',
-        meetingPoint: 'Race Course Road main gate',
-        distanceKm: 12,
-        priceInPaise: 15000,
-        bookedCount: 4,
-        capacityLimit: 12,
-        pace: PaceLevel.moderate,
-        startTime: now.add(const Duration(days: 1)),
-      );
 
       await tester.pumpWidget(
         ProviderScope(
@@ -865,16 +926,6 @@ void main() {
             watchAttendedEventsProvider(
               user.uid,
             ).overrideWithValue(AsyncData<List<Event>>([swipeRun])),
-            dashboardRecommendedEventsProvider(
-              recommendationsQueryFor(user.uid, joinedClubIds),
-            ).overrideWithValue(
-              AsyncData<List<DashboardEventRecommendationCandidate>>([
-                recommendationCandidate(
-                  recommendedRun,
-                  clubName: 'Bandra Club',
-                ),
-              ]),
-            ),
             ..._dashboardHostOverrides(user),
           ],
           child: MaterialApp(
@@ -894,192 +945,10 @@ void main() {
       expect(find.textContaining('After the event'), findsOneWidget);
       expect(find.text('Start catching'), findsOneWidget);
       expect(find.byKey(EventFocusRail.pageIndicatorKey), findsOneWidget);
-
-      await tester.drag(_dashboardScrollView(), const Offset(0, -500));
-      await _pumpDashboardUi(tester);
-
-      expect(find.text('Recommended for you'), findsOneWidget);
-      expect(
-        find.text(recommendedRun.title, skipOffstage: false),
-        findsOneWidget,
-      );
-      // RecommendCard subtitle combines club + meeting point on one line.
-      expect(
-        find.text(
-          'Bandra Club · Race Course Road main gate',
-          skipOffstage: false,
-        ),
-        findsOneWidget,
-      );
-      // Activity summary and capacity stay visible in the ticket meta line.
-      expect(
-        find.text('12km · Moderate · 4 going · 8 left', skipOffstage: false),
-        findsOneWidget,
-      );
-      expect(find.text('₹150', skipOffstage: false), findsOneWidget);
-      // The recommender reason rides as the ticket media label.
-      expect(find.text('FITS YOUR PACE', skipOffstage: false), findsOneWidget);
+      expect(find.text(nextEvent.title), findsNothing);
     });
 
-    testWidgets('shows connected weekly running activity from health data', (
-      tester,
-    ) async {
-      final joinedClubIds = ['club-1'];
-      final user = buildUser();
-      final nextEvent = buildEvent(
-        id: 'next-event',
-        bookedCount: 1,
-        startTime: DateTime.now().add(const Duration(hours: 3)),
-      );
-
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            watchAttendedEventsProvider(
-              user.uid,
-            ).overrideWithValue(const AsyncData<List<Event>>([])),
-            weeklyActivityProvider.overrideWithValue(
-              AsyncData(
-                WeeklyActivitySnapshot.connected(
-                  referenceDate: DateTime.now(),
-                  platformLabel: 'Apple Health',
-                  activities: [
-                    PhysicalActivity(
-                      stableId: 'health-event',
-                      provider: PhysicalActivityProvider.appleHealth,
-                      type: ActivityKind.running,
-                      startTime: DateTime.now(),
-                      endTime: DateTime.now().add(const Duration(hours: 1)),
-                      distanceMeters: 6400,
-                      sourceName: 'Apple Watch',
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            dashboardRecommendedEventsProvider(
-              recommendationsQueryFor(user.uid, joinedClubIds),
-            ).overrideWithValue(noRecommendationCandidates),
-            ..._dashboardHostOverrides(user, includeWeeklyActivity: false),
-          ],
-          child: MaterialApp(
-            theme: AppTheme.light,
-            home: _DashboardFullTestShell(
-              user: user,
-              followedClubIds: joinedClubIds,
-              signedUpEvents: [nextEvent],
-            ),
-          ),
-        ),
-      );
-
-      await _pumpDashboardUi(tester);
-
-      expect(find.text('Your activity · this week'), findsOneWidget);
-      expect(find.text('6.4'), findsOneWidget);
-      expect(find.text('km · 60 min · 1 activity'), findsOneWidget);
-      expect(find.text('From Apple Health'), findsOneWidget);
-    });
-
-    testWidgets('shows a health permission action on the stride card', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: AppTheme.light,
-          home: Scaffold(
-            body: StrideCard(
-              snapshot: WeeklyActivitySnapshot.permissionRequired(
-                referenceDate: DateTime(2026, 5, 13),
-                platformLabel: 'Apple Health',
-              ),
-              onConnect: () {},
-            ),
-          ),
-        ),
-      );
-
-      expect(find.text('Connect Apple Health'), findsOneWidget);
-      expect(
-        find.text('Connect Apple Health to include activity outside Catch.'),
-        findsOneWidget,
-      );
-    });
-
-    testWidgets('stride section renders injected action and busy states', (
-      tester,
-    ) async {
-      var connectCalls = 0;
-      var installCalls = 0;
-      final actions = DashboardStrideSectionActions(
-        onRetry: () {},
-        onConnect: () => connectCalls += 1,
-        onInstallHealthConnect: () => installCalls += 1,
-      );
-
-      Future<void> pumpSection(
-        WeeklyActivitySnapshot snapshot, {
-        DashboardStrideActionState actionState =
-            DashboardStrideActionState.idle,
-      }) {
-        return tester.pumpWidget(
-          MaterialApp(
-            theme: AppTheme.light,
-            home: Scaffold(
-              body: DashboardStrideSection(
-                section: DashboardSectionModel.data(snapshot),
-                actions: actions,
-                actionState: actionState,
-              ),
-            ),
-          ),
-        );
-      }
-
-      await pumpSection(
-        WeeklyActivitySnapshot.permissionRequired(
-          referenceDate: DateTime(2026, 5, 13),
-          platformLabel: 'Apple Health',
-        ),
-      );
-      await tester.tap(find.text('Connect Apple Health'));
-      expect(connectCalls, 1);
-
-      await pumpSection(
-        WeeklyActivitySnapshot.permissionRequired(
-          referenceDate: DateTime(2026, 5, 13),
-          platformLabel: 'Apple Health',
-        ),
-        actionState: const DashboardStrideActionState(isConnecting: true),
-      );
-      expect(find.text('Connecting...'), findsOneWidget);
-      await tester.tap(find.text('Connecting...'));
-      expect(connectCalls, 1);
-
-      await pumpSection(
-        WeeklyActivitySnapshot.needsHealthConnect(
-          referenceDate: DateTime(2026, 5, 13),
-        ),
-      );
-      await tester.tap(find.text('Install Health Connect'));
-      expect(installCalls, 1);
-
-      await pumpSection(
-        WeeklyActivitySnapshot.needsHealthConnect(
-          referenceDate: DateTime(2026, 5, 13),
-        ),
-        actionState: const DashboardStrideActionState(
-          isInstallingHealthConnect: true,
-        ),
-      );
-      expect(find.text('Opening...'), findsOneWidget);
-      await tester.tap(find.text('Opening...'));
-      expect(installCalls, 1);
-    });
-
-    testWidgets('scrolls the greeting header away with dashboard content', (
-      tester,
-    ) async {
+    testWidgets('uses the display name in the greeting header', (tester) async {
       tester.view.devicePixelRatio = 1.0;
       tester.view.physicalSize = const Size(390, 560);
       addTearDown(tester.view.resetDevicePixelRatio);
@@ -1131,10 +1000,7 @@ void main() {
         findsNothing,
       );
 
-      await tester.drag(_dashboardScrollView(), const Offset(0, -180));
-      await _pumpDashboardUi(tester);
-
-      expect(greetingFinder, findsNothing);
+      expect(find.byType(DashboardFullSliverBody), findsOneWidget);
     });
 
     testWidgets('does not render a profile shortcut in the dashboard header', (
@@ -1493,97 +1359,6 @@ void main() {
       },
     );
   });
-
-  group('QuickActions', () {
-    testWidgets('shows all primary dashboard actions', (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: AppTheme.light,
-          home: Scaffold(body: _testQuickActions()),
-        ),
-      );
-
-      expect(find.text('Soon'), findsNothing);
-      expect(find.text('Browse events'), findsNothing);
-      expect(find.text('Map view'), findsNothing);
-      expect(find.text('Calendar'), findsOneWidget);
-      expect(find.text('Saved events'), findsOneWidget);
-    });
-
-    testWidgets('keeps primary action tiles visually consistent', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: AppTheme.light,
-          home: Scaffold(body: _testQuickActions()),
-        ),
-      );
-
-      final calendarSize = tester.getSize(_quickActionSurface('Calendar'));
-      final savedSize = tester.getSize(_quickActionSurface('Saved events'));
-
-      expect(savedSize.height, calendarSize.height);
-      expect(savedSize.width, calendarSize.width);
-    });
-
-    testWidgets('navigates for all primary actions', (tester) async {
-      final router = GoRouter(
-        initialLocation: '/',
-        routes: [
-          GoRoute(
-            path: '/',
-            builder: (context, _) => Scaffold(
-              body: QuickActions(
-                actions: dashboardQuickActions(
-                  onCalendarPressed: () =>
-                      context.push(Routes.calendarScreen.path),
-                  onSavedEventsPressed: () =>
-                      context.push(Routes.savedEventsScreen.path),
-                ),
-              ),
-            ),
-          ),
-          GoRoute(
-            path: Routes.calendarScreen.path,
-            builder: (_, _) => const Scaffold(body: Text('Calendar screen')),
-          ),
-          GoRoute(
-            path: Routes.savedEventsScreen.path,
-            builder: (_, _) =>
-                const Scaffold(body: Text('Saved events screen')),
-          ),
-        ],
-      );
-
-      await tester.pumpWidget(
-        MaterialApp.router(theme: AppTheme.light, routerConfig: router),
-      );
-      await _pumpDashboardUi(tester);
-
-      await tester.tap(find.text('Calendar'));
-      await _pumpDashboardUi(tester);
-
-      expect(find.text('Calendar screen'), findsOneWidget);
-
-      router.go('/');
-      await _pumpDashboardUi(tester);
-
-      await tester.tap(find.text('Saved events'));
-      await _pumpDashboardUi(tester);
-
-      expect(find.text('Saved events screen'), findsOneWidget);
-    });
-  });
-}
-
-QuickActions _testQuickActions() {
-  return QuickActions(
-    actions: dashboardQuickActions(
-      onCalendarPressed: () {},
-      onSavedEventsPressed: () {},
-    ),
-  );
 }
 
 class _DashboardFullTestShell extends ConsumerWidget {
@@ -1614,10 +1389,62 @@ class _DashboardFullTestShell extends ConsumerWidget {
       dashboardSliver: DashboardFullSliverBody(
         viewModel: viewModel,
         user: user,
-        followedClubIds: followedClubIds,
       ),
     );
   }
+}
+
+final class _AnalyticsEventCall {
+  const _AnalyticsEventCall(this.name, this.parameters);
+
+  final String name;
+  final Map<String, Object>? parameters;
+
+  @override
+  bool operator ==(Object other) {
+    if (other is! _AnalyticsEventCall) return false;
+    if (other.name != name) return false;
+    final otherParameters = other.parameters;
+    final theseParameters = parameters;
+    if (identical(otherParameters, theseParameters)) return true;
+    if (otherParameters == null || theseParameters == null) return false;
+    if (otherParameters.length != theseParameters.length) return false;
+    for (final entry in theseParameters.entries) {
+      if (otherParameters[entry.key] != entry.value) return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    name,
+    Object.hashAllUnordered([
+      for (final entry
+          in parameters?.entries ?? const <MapEntry<String, Object>>[])
+        Object.hash(entry.key, entry.value),
+    ]),
+  );
+}
+
+final class _FakeAnalyticsReporter implements AnalyticsReporter {
+  final events = <_AnalyticsEventCall>[];
+
+  @override
+  Future<void> setCollectionEnabled(bool enabled) async {}
+
+  @override
+  Future<void> logEvent(String name, {Map<String, Object>? parameters}) async {
+    events.add(_AnalyticsEventCall(name, parameters));
+  }
+
+  @override
+  Future<void> logScreenView({
+    required String screenName,
+    String? screenClass,
+  }) async {}
+
+  @override
+  Future<void> setUserId(String? userId) async {}
 }
 
 class _FakeEventCheckInLocationService implements EventCheckInLocationService {
@@ -1663,6 +1490,9 @@ ActivityNotification _activityNotification({
   ActivityNotificationType type = ActivityNotificationType.match,
   String title = "It's a catch",
   String body = 'You and Runner Two matched. Say hi!',
+  String? clubId,
+  String? postId,
+  String? eventId,
   DateTime? createdAt,
   DateTime? readAt,
 }) {
@@ -1674,19 +1504,15 @@ ActivityNotification _activityNotification({
     body: body,
     createdAt: createdAt ?? DateTime(2026, 5, 16, 10),
     readAt: readAt,
-    matchId: 'match-1',
+    matchId: type == ActivityNotificationType.match ? 'match-1' : null,
+    eventId: eventId,
+    clubId: clubId,
+    postId: postId,
   );
 }
 
 Future<void> _pumpDashboardUi(WidgetTester tester) async {
   await pumpFeatureUi(tester);
-}
-
-Finder _quickActionSurface(String label) {
-  return find.ancestor(
-    of: find.text(label),
-    matching: find.byType(CatchSurface),
-  );
 }
 
 Finder _runFocusCardSurface(String title) {
@@ -1695,8 +1521,6 @@ Finder _runFocusCardSurface(String title) {
     matching: find.byType(CatchSurface),
   );
 }
-
-Finder _dashboardScrollView() => find.byType(CustomScrollView);
 
 List _dashboardHostOverrides(
   UserProfile user, {

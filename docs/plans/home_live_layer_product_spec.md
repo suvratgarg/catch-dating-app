@@ -1,9 +1,9 @@
 ---
 doc_id: home_live_layer_product_spec
-version: 1.0.0
+version: 1.0.1
 updated: 2026-07-05
 owner: product (approved direction 2026-07-05)
-status: ready-for-implementation
+status: implemented-behind-flag
 ---
 
 # Home = The Live Layer — Product Spec
@@ -138,6 +138,11 @@ on the first Explore page; the lens filters correctly; no duplicate cards.
 
 Gate everything on `AppConfig.enableClubPosts`
 (`bool.fromEnvironment`, same pattern as `enablePushMessaging`).
+
+Status 2026-07-05: implemented behind `ENABLE_CLUB_POSTS`. Contract schemas,
+callable, fanout notification payloads, host composer entry point, home unread
+post module, analytics events, Widgetbook coverage, and data-contract checks
+are wired. Production rollout remains gated by the compile-time flag.
 
 ### 2.1 Data contract `[codex]`
 

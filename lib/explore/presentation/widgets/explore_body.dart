@@ -5,13 +5,16 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/explore/data/explore_recommendations_repository.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_event_type_browse_grid.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_events_section.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/recommendations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'
-    show AsyncData, AsyncValue;
+    show AsyncData, AsyncError, AsyncLoading, AsyncValue;
 
 /// Returns the slivers that make up the Explore feed body — mixed event/club
 /// discovery feed, optional legacy club rails, and browse prompts — as a flat
@@ -20,6 +23,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart'
 List<Widget> buildExploreBodySlivers({
   required BuildContext context,
   required AsyncValue<ExploreFeedViewModel> feedAsync,
+  AsyncValue<List<ExploreEventRecommendation>>? recommendationsAsync,
   required ExploreFilterSelection filters,
   required String searchQuery,
   VoidCallback? onRetryFeed,
@@ -64,6 +68,38 @@ List<Widget> buildExploreBodySlivers({
       joinedClubIds: viewModel?.joinedClubIds ?? const {},
       pinnedDayHeaders: pinnedExploreDayHeaders,
     ),
+    if (recommendationsAsync != null)
+      switch (recommendationsAsync) {
+        AsyncLoading() => const SliverToBoxAdapter(
+          child: Padding(
+            padding: CatchInsets.pageBody,
+            child: CatchSkeletonList(
+              count: 2,
+              height: CatchLayout.dashboardRecommendedEventSkeletonHeight,
+            ),
+          ),
+        ),
+        AsyncError(:final error) => SliverToBoxAdapter(
+          child: Padding(
+            padding: CatchInsets.pageBody,
+            child: CatchInlineErrorState.fromError(
+              error,
+              context: AppErrorContext.explore,
+              onRetry: onRetryFeed,
+              compact: true,
+            ),
+          ),
+        ),
+        AsyncData(:final value) =>
+          value.isEmpty
+              ? const SliverToBoxAdapter(child: SizedBox.shrink())
+              : SliverToBoxAdapter(
+                  child: Padding(
+                    padding: CatchInsets.pageBody,
+                    child: Recommendations(recommendations: value),
+                  ),
+                ),
+      },
     if (clubSectionError != null)
       SliverToBoxAdapter(
         child: Padding(

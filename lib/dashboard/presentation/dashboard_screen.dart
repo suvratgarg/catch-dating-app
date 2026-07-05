@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
+import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -8,13 +9,11 @@ import 'package:catch_dating_app/core/widgets/catch_count_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
-import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_empty.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_loading_widgets.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_sliver_header.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -30,12 +29,22 @@ part 'dashboard_error_screen.dart';
 part 'dashboard_home_screen.dart';
 part 'dashboard_loading_screen.dart';
 
-class DashboardScreen extends ConsumerWidget {
+class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends ConsumerState<DashboardScreen> {
+  String? _lastLoggedHomeState;
+  final Set<String> _loggedModuleImpressions = <String>{};
+
+  @override
+  Widget build(BuildContext context) {
+    final now = ref.watch(dashboardNowProvider);
     final state = ref.watch(dashboardHomeScreenStateProvider);
+    _logHomeAnalytics(state, now: now);
 
     return switch (state.status) {
       DashboardHomeScreenStatus.loading => const DashboardLoadingScreen(),
@@ -66,11 +75,68 @@ class DashboardScreen extends ConsumerWidget {
         dashboardSliver: DashboardFullSliverBody(
           viewModel: state.viewModel!,
           user: state.user!,
-          followedClubIds: state.followedClubIds,
         ),
-        notificationAction: NotificationsAction(uid: state.notificationUid!),
+        actions: [
+          Consumer(
+            builder: (context, ref, child) {
+              return CatchIconAction(
+                icon: CatchIcons.calendarMonthOutlined,
+                tooltip: 'Calendar',
+                onPressed: () {
+                  ref
+                      .read(appAnalyticsProvider)
+                      .logEvent(
+                        AnalyticsEvents.homeActionTap,
+                        parameters: {
+                          AnalyticsParameters.homeModule: 'header',
+                          AnalyticsParameters.homeAction: 'calendar',
+                        },
+                      );
+                  context.push(Routes.calendarScreen.path);
+                },
+              );
+            },
+          ),
+          NotificationsAction(uid: state.notificationUid!),
+        ],
       ),
     };
+  }
+
+  void _logHomeAnalytics(
+    DashboardHomeScreenState state, {
+    required DateTime now,
+  }) {
+    if (state.status == DashboardHomeScreenStatus.loading ||
+        state.status == DashboardHomeScreenStatus.error) {
+      return;
+    }
+
+    final analytics = ref.read(appAnalyticsProvider);
+    final liveState = dashboardHomeLiveStateFor(state, now: now);
+    final stateValue = liveState.analyticsValue;
+    if (_lastLoggedHomeState != stateValue) {
+      _lastLoggedHomeState = stateValue;
+      analytics.logEvent(
+        AnalyticsEvents.homeOpened,
+        parameters: {AnalyticsParameters.homeState: stateValue},
+      );
+    }
+
+    for (final module in dashboardHomeModuleImpressionsFor(state)) {
+      final key = '$stateValue:$module';
+      if (!_loggedModuleImpressions.add(key)) continue;
+      analytics.logEvent(
+        AnalyticsEvents.homeModuleImpression,
+        parameters: {AnalyticsParameters.homeModule: module},
+      );
+      if (module == 'club_posts') {
+        analytics.logEvent(
+          AnalyticsEvents.clubPostImpression,
+          parameters: {AnalyticsParameters.surface: 'home'},
+        );
+      }
+    }
   }
 }
 
@@ -92,7 +158,18 @@ class NotificationsAction extends ConsumerWidget {
 
     return DashboardNotificationBellButton(
       unreadCount: unreadCount,
-      onPressed: () => context.pushNamed(Routes.notificationsScreen.name),
+      onPressed: () {
+        ref
+            .read(appAnalyticsProvider)
+            .logEvent(
+              AnalyticsEvents.homeActionTap,
+              parameters: {
+                AnalyticsParameters.homeModule: 'header',
+                AnalyticsParameters.homeAction: 'notifications',
+              },
+            );
+        context.pushNamed(Routes.notificationsScreen.name);
+      },
     );
   }
 }
