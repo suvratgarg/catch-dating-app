@@ -1,16 +1,16 @@
 {
-  "generatedAt": "2026-07-05T02:38:11.411Z",
+  "generatedAt": "2026-07-05T03:20:16.421Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
-    "useCases": 870,
-    "components": 842,
-    "stateCards": 1748,
-    "reviewCandidates": 38,
+    "useCases": 871,
+    "components": 841,
+    "stateCards": 1749,
+    "reviewCandidates": 39,
     "oversizedUseCases": 43,
-    "multiUseCaseComponents": 27
+    "multiUseCaseComponents": 29
   },
   "reviewCandidates": [
     {
@@ -3731,6 +3731,89 @@
             {
               "label": "event title missing",
               "normalizedLabel": "event title missing"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchCrossPathsCard",
+      "useCaseCount": 2,
+      "stateCardCount": 7,
+      "paths": [
+        "[Core primitives]/Product composites",
+        "[Explore]/Cards"
+      ],
+      "labels": [
+        "long-copy",
+        "no-photo-fallback",
+        "photo row",
+        "photo-row",
+        "postcard",
+        "with-like"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "duplicate-state-labels",
+          "split-across-use-cases"
+        ],
+        "duplicateLabels": [
+          {
+            "label": "postcard",
+            "count": 2
+          },
+          {
+            "label": "photo row",
+            "count": 2
+          }
+        ],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchCrossPathsCardContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Product composites",
+          "stateCardCount": 5,
+          "stateCards": [
+            {
+              "label": "postcard",
+              "normalizedLabel": "postcard"
+            },
+            {
+              "label": "photo-row",
+              "normalizedLabel": "photo row"
+            },
+            {
+              "label": "no-photo-fallback",
+              "normalizedLabel": "no photo fallback"
+            },
+            {
+              "label": "with-like",
+              "normalizedLabel": "with like"
+            },
+            {
+              "label": "long-copy",
+              "normalizedLabel": "long copy"
+            }
+          ]
+        },
+        {
+          "name": "Cross paths card states",
+          "functionName": "catchCrossPathsCardStates",
+          "file": "widgetbook/lib/explore/explore_use_cases.dart",
+          "path": "[Explore]/Cards",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "postcard",
+              "normalizedLabel": "postcard"
+            },
+            {
+              "label": "photo row",
+              "normalizedLabel": "photo row"
             }
           ]
         }
@@ -7536,6 +7619,89 @@
       ]
     },
     {
+      "component": "CatchCrossPathsCard",
+      "useCaseCount": 2,
+      "stateCardCount": 7,
+      "paths": [
+        "[Core primitives]/Product composites",
+        "[Explore]/Cards"
+      ],
+      "labels": [
+        "long-copy",
+        "no-photo-fallback",
+        "photo row",
+        "photo-row",
+        "postcard",
+        "with-like"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "duplicate-state-labels",
+          "split-across-use-cases"
+        ],
+        "duplicateLabels": [
+          {
+            "label": "postcard",
+            "count": 2
+          },
+          {
+            "label": "photo row",
+            "count": 2
+          }
+        ],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchCrossPathsCardContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Product composites",
+          "stateCardCount": 5,
+          "stateCards": [
+            {
+              "label": "postcard",
+              "normalizedLabel": "postcard"
+            },
+            {
+              "label": "photo-row",
+              "normalizedLabel": "photo row"
+            },
+            {
+              "label": "no-photo-fallback",
+              "normalizedLabel": "no photo fallback"
+            },
+            {
+              "label": "with-like",
+              "normalizedLabel": "with like"
+            },
+            {
+              "label": "long-copy",
+              "normalizedLabel": "long copy"
+            }
+          ]
+        },
+        {
+          "name": "Cross paths card states",
+          "functionName": "catchCrossPathsCardStates",
+          "file": "widgetbook/lib/explore/explore_use_cases.dart",
+          "path": "[Explore]/Cards",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "postcard",
+              "normalizedLabel": "postcard"
+            },
+            {
+              "label": "photo row",
+              "normalizedLabel": "photo row"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "NotificationRow",
       "useCaseCount": 2,
       "stateCardCount": 7,
@@ -10028,58 +10194,6 @@
             {
               "label": "truncated",
               "normalizedLabel": "truncated"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "CatchCrossPathsCard",
-      "useCaseCount": 1,
-      "stateCardCount": 5,
-      "paths": [
-        "[Core primitives]/Product composites"
-      ],
-      "labels": [
-        "long-copy",
-        "no-photo-fallback",
-        "photo-row",
-        "postcard",
-        "with-like"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Contract states",
-          "functionName": "catchCrossPathsCardContractStates",
-          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
-          "path": "[Core primitives]/Product composites",
-          "stateCardCount": 5,
-          "stateCards": [
-            {
-              "label": "postcard",
-              "normalizedLabel": "postcard"
-            },
-            {
-              "label": "photo-row",
-              "normalizedLabel": "photo row"
-            },
-            {
-              "label": "no-photo-fallback",
-              "normalizedLabel": "no photo fallback"
-            },
-            {
-              "label": "with-like",
-              "normalizedLabel": "with like"
-            },
-            {
-              "label": "long-copy",
-              "normalizedLabel": "long copy"
             }
           ]
         }
@@ -13040,6 +13154,57 @@
             {
               "label": "compact",
               "normalizedLabel": "compact"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "ExploreList",
+      "useCaseCount": 2,
+      "stateCardCount": 3,
+      "paths": [
+        "[Explore]/Sections"
+      ],
+      "labels": [
+        "empty search",
+        "mixed body",
+        "provider-backed list"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Body sliver states",
+          "functionName": "exploreBodyStates",
+          "file": "widgetbook/lib/explore/explore_use_cases.dart",
+          "path": "[Explore]/Sections",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "mixed body",
+              "normalizedLabel": "mixed body"
+            }
+          ]
+        },
+        {
+          "name": "List sliver states",
+          "functionName": "exploreListStates",
+          "file": "widgetbook/lib/explore/explore_use_cases.dart",
+          "path": "[Explore]/Sections",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "provider-backed list",
+              "normalizedLabel": "provider backed list"
+            },
+            {
+              "label": "empty search",
+              "normalizedLabel": "empty search"
             }
           ]
         }
@@ -18065,43 +18230,6 @@
       ]
     },
     {
-      "component": "CrossPathsSurface",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[Explore]/Cards"
-      ],
-      "labels": [
-        "clipped photo-row chrome",
-        "raised postcard chrome"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Cross paths surface states",
-          "functionName": "crossPathsSurfaceStates",
-          "file": "widgetbook/lib/explore/explore_use_cases.dart",
-          "path": "[Explore]/Cards",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "raised postcard chrome",
-              "normalizedLabel": "raised postcard chrome"
-            },
-            {
-              "label": "clipped photo-row chrome",
-              "normalizedLabel": "clipped photo row chrome"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "DashboardHeaderContent",
       "useCaseCount": 1,
       "stateCardCount": 2,
@@ -19576,43 +19704,6 @@
             {
               "label": "active filters",
               "normalizedLabel": "active filters"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "ExploreList",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[Explore]/Sections"
-      ],
-      "labels": [
-        "empty search",
-        "provider-backed list"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "List sliver states",
-          "functionName": "exploreListStates",
-          "file": "widgetbook/lib/explore/explore_use_cases.dart",
-          "path": "[Explore]/Sections",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "provider-backed list",
-              "normalizedLabel": "provider backed list"
-            },
-            {
-              "label": "empty search",
-              "normalizedLabel": "empty search"
             }
           ]
         }
@@ -26218,38 +26309,6 @@
       ]
     },
     {
-      "component": "ExploreBody",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[Explore]/Sections"
-      ],
-      "labels": [
-        "mixed body"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Body sliver states",
-          "functionName": "exploreBodyStates",
-          "file": "widgetbook/lib/explore/explore_use_cases.dart",
-          "path": "[Explore]/Sections",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "mixed body",
-              "normalizedLabel": "mixed body"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "ExploreEventsLoadingSliver",
       "useCaseCount": 1,
       "stateCardCount": 1,
@@ -26276,6 +26335,38 @@
             {
               "label": "bounded skeleton",
               "normalizedLabel": "bounded skeleton"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "ExploreSkeletonList",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[Explore]/Sections"
+      ],
+      "labels": [
+        "route loading stack"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Skeleton list states",
+          "functionName": "exploreSkeletonListStates",
+          "file": "widgetbook/lib/explore/explore_use_cases.dart",
+          "path": "[Explore]/Sections",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "route loading stack",
+              "normalizedLabel": "route loading stack"
             }
           ]
         }

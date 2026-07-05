@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-07-05T02:38:40.240705+00:00",
+  "generated_at": "2026-07-05T03:13:48.424758+00:00",
   "repo_root": "/Users/suvratgarg/Development/catch-dating-app/catch_dating_app",
   "total_files_scanned": 735,
-  "total_definitions": 3739,
+  "total_definitions": 3735,
   "file_manifest": [
     {
       "file": "lib/activity/domain/activity_taxonomy.dart",
@@ -2226,8 +2226,8 @@
     },
     {
       "file": "lib/explore/presentation/explore_screen.dart",
-      "line_count": 524,
-      "definition_count": 5
+      "line_count": 460,
+      "definition_count": 4
     },
     {
       "file": "lib/explore/presentation/explore_screen_state.dart",
@@ -2246,13 +2246,13 @@
     },
     {
       "file": "lib/explore/presentation/widgets/catch_cross_paths_card.dart",
-      "line_count": 347,
-      "definition_count": 7
+      "line_count": 316,
+      "definition_count": 5
     },
     {
       "file": "lib/explore/presentation/widgets/explore_body.dart",
-      "line_count": 167,
-      "definition_count": 2
+      "line_count": 98,
+      "definition_count": 1
     },
     {
       "file": "lib/explore/presentation/widgets/explore_city_picker.dart",
@@ -2301,7 +2301,7 @@
     },
     {
       "file": "lib/explore/presentation/widgets/explore_list.dart",
-      "line_count": 271,
+      "line_count": 277,
       "definition_count": 4
     },
     {
@@ -23301,23 +23301,13 @@
       "signature": "class ExploreScreen extends ConsumerWidget {",
       "superclass": "ConsumerWidget",
       "is_widget": true,
-      "body_hash": "8cf54db796ecdf79"
-    },
-    {
-      "name": "ExploreChrome",
-      "kind": "class",
-      "file": "lib/explore/presentation/explore_screen.dart",
-      "line": 320,
-      "signature": "class ExploreChrome extends StatelessWidget {",
-      "superclass": "StatelessWidget",
-      "is_widget": true,
-      "body_hash": "6e68f3dfe39ee288"
+      "body_hash": "e74d69ce3e7e28a4"
     },
     {
       "name": "ExploreScreenEmptyState",
       "kind": "class",
       "file": "lib/explore/presentation/explore_screen.dart",
-      "line": 388,
+      "line": 324,
       "signature": "class ExploreScreenEmptyState extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -23327,7 +23317,7 @@
       "name": "ExploreClearAction",
       "kind": "class",
       "file": "lib/explore/presentation/explore_screen.dart",
-      "line": 466,
+      "line": 402,
       "signature": "class ExploreClearAction extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -23337,7 +23327,7 @@
       "name": "ExploreSkeletonList",
       "kind": "class",
       "file": "lib/explore/presentation/explore_screen.dart",
-      "line": 508,
+      "line": 444,
       "signature": "class ExploreSkeletonList extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -24091,31 +24081,13 @@
       "signature": "class CatchCrossPathsCard extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "c17ae387b4af1f50"
-    },
-    {
-      "name": "CatchSurfaceShadow",
-      "kind": "enum",
-      "file": "lib/explore/presentation/widgets/catch_cross_paths_card.dart",
-      "line": 191,
-      "signature": "enum CatchSurfaceShadow { card, raised }",
-      "body_hash": "c4b0b2b586408329"
-    },
-    {
-      "name": "CrossPathsSurface",
-      "kind": "class",
-      "file": "lib/explore/presentation/widgets/catch_cross_paths_card.dart",
-      "line": 193,
-      "signature": "class CrossPathsSurface extends StatelessWidget {",
-      "superclass": "StatelessWidget",
-      "is_widget": true,
-      "body_hash": "48e3fbd653b4d5dd"
+      "body_hash": "3c02e5595279c872"
     },
     {
       "name": "CrossPathsPortrait",
       "kind": "class",
       "file": "lib/explore/presentation/widgets/catch_cross_paths_card.dart",
-      "line": 225,
+      "line": 194,
       "signature": "class CrossPathsPortrait extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -24125,7 +24097,7 @@
       "name": "CrossPathsPolaroidRail",
       "kind": "class",
       "file": "lib/explore/presentation/widgets/catch_cross_paths_card.dart",
-      "line": 250,
+      "line": 219,
       "signature": "class CrossPathsPolaroidRail extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -24135,27 +24107,17 @@
       "name": "CrossPathsCtaRow",
       "kind": "class",
       "file": "lib/explore/presentation/widgets/catch_cross_paths_card.dart",
-      "line": 318,
+      "line": 287,
       "signature": "class CrossPathsCtaRow extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
       "body_hash": "4b7b64d6d36dd591"
     },
     {
-      "name": "ExploreBody",
-      "kind": "class",
-      "file": "lib/explore/presentation/widgets/explore_body.dart",
-      "line": 16,
-      "signature": "class ExploreBody extends StatelessWidget {",
-      "superclass": "StatelessWidget",
-      "is_widget": true,
-      "body_hash": "f7f530cef17031b9"
-    },
-    {
       "name": "buildExploreBodySlivers",
       "kind": "function",
       "file": "lib/explore/presentation/widgets/explore_body.dart",
-      "line": 89,
+      "line": 20,
       "signature": "List<Widget> buildExploreBodySlivers({",
       "return_type": "List<Widget>",
       "body_hash": "3288aac1d336ecd3"
@@ -24616,13 +24578,13 @@
       "signature": "class ExploreList extends ConsumerWidget {",
       "superclass": "ConsumerWidget",
       "is_widget": true,
-      "body_hash": "13b382d81166c516"
+      "body_hash": "16ac1099d0d5bc6c"
     },
     {
       "name": "ExploreListEmptyState",
       "kind": "class",
       "file": "lib/explore/presentation/widgets/explore_list.dart",
-      "line": 94,
+      "line": 100,
       "signature": "class ExploreListEmptyState extends ConsumerWidget {",
       "superclass": "ConsumerWidget",
       "is_widget": true,
@@ -24632,7 +24594,7 @@
       "name": "ClubDirectorySkeletonList",
       "kind": "class",
       "file": "lib/explore/presentation/widgets/explore_list.dart",
-      "line": 185,
+      "line": 191,
       "signature": "class ClubDirectorySkeletonList extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -24642,7 +24604,7 @@
       "name": "ClubDirectorySkeletonCard",
       "kind": "class",
       "file": "lib/explore/presentation/widgets/explore_list.dart",
-      "line": 202,
+      "line": 208,
       "signature": "class ClubDirectorySkeletonCard extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,

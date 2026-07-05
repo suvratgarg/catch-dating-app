@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-05T02:39:47.310Z",
+  "generatedAt": "2026-07-05T03:31:47.711Z",
   "baseRef": "HEAD^",
   "baseStatus": "git-ref",
   "baseWarning": null,
@@ -10,67 +10,16 @@
     "policy": "New public widget classes need Widgetbook and widget catalog coverage. New private widget classes and Widget-returning helpers must be inlined/deleted, merged into an existing primitive, or promoted to public cataloged widgets."
   },
   "summary": {
-    "addedWidgetClasses": 4,
-    "addedPublicWidgetClasses": 4,
+    "addedWidgetClasses": 0,
+    "addedPublicWidgetClasses": 0,
     "addedPrivateWidgetClasses": 0,
     "addedWidgetReturningHelpers": 0,
-    "coveredNewWidgets": 4,
+    "coveredNewWidgets": 0,
     "unresolved": 0,
-    "widgetsByStatus": {
-      "covered": 4
-    },
+    "widgetsByStatus": {},
     "helpersByStatus": {},
     "issues": {}
   },
-  "addedWidgets": [
-    {
-      "name": "ClubDetailDock",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 31,
-      "file": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "DockCount",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 186,
-      "file": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "DockBell",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 220,
-      "file": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "ClubMembershipDock",
-      "baseClass": "ConsumerWidget",
-      "visibility": "public",
-      "line": 269,
-      "file": "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    }
-  ],
+  "addedWidgets": [],
   "addedWidgetHelpers": []
 }

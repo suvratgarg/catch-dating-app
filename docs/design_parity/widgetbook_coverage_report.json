@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-07-05T02:38:23.675Z",
+  "generatedAt": "2026-07-05T03:31:31.142Z",
   "decisionLedgerPath": "docs/design_parity/widgetbook_widget_decisions.json",
-  "total": 984,
+  "total": 981,
   "stats": {
-    "PUBLIC_ALREADY_CATALOGED_NAME_MATCH": 862,
-    "PUBLIC_NEEDS_CATALOG_OR_REPLACE": 120,
+    "PUBLIC_ALREADY_CATALOGED_NAME_MATCH": 861,
+    "PUBLIC_NEEDS_CATALOG_OR_REPLACE": 118,
     "PRIVATE_NEEDS_RENAME_OR_REPLACE": 2
   },
   "decisionStats": {},
@@ -66,11 +66,11 @@
     },
     {
       "area": "explore",
-      "total": 54,
-      "publicAlreadyCataloged": 52,
+      "total": 51,
+      "publicAlreadyCataloged": 51,
       "privateNameMatchNeedsDecision": 0,
       "privateNeedsRenameOrReplace": 0,
-      "publicNeedsCatalogOrReplace": 2,
+      "publicNeedsCatalogOrReplace": 0,
       "replacedWithCatalogEntry": 0,
       "promotedToWidgetbookCatalog": 0,
       "deletedOrMergedDuplicate": 0
@@ -8792,21 +8792,7 @@
     },
     {
       "file": "lib/explore/presentation/explore_screen.dart",
-      "line": 320,
-      "name": "ExploreChrome",
-      "base": "StatelessWidget",
-      "area": "explore",
-      "visibility": "public",
-      "publicName": "ExploreChrome",
-      "exactNameMatched": false,
-      "publicNameMatched": false,
-      "mechanicalStatus": "PUBLIC_NEEDS_CATALOG_OR_REPLACE",
-      "decision": null,
-      "status": "PUBLIC_NEEDS_CATALOG_OR_REPLACE"
-    },
-    {
-      "file": "lib/explore/presentation/explore_screen.dart",
-      "line": 388,
+      "line": 324,
       "name": "ExploreScreenEmptyState",
       "base": "StatelessWidget",
       "area": "explore",
@@ -8820,7 +8806,7 @@
     },
     {
       "file": "lib/explore/presentation/explore_screen.dart",
-      "line": 466,
+      "line": 402,
       "name": "ExploreClearAction",
       "base": "StatelessWidget",
       "area": "explore",
@@ -8834,17 +8820,17 @@
     },
     {
       "file": "lib/explore/presentation/explore_screen.dart",
-      "line": 508,
+      "line": 444,
       "name": "ExploreSkeletonList",
       "base": "StatelessWidget",
       "area": "explore",
       "visibility": "public",
       "publicName": "ExploreSkeletonList",
-      "exactNameMatched": false,
-      "publicNameMatched": false,
-      "mechanicalStatus": "PUBLIC_NEEDS_CATALOG_OR_REPLACE",
+      "exactNameMatched": true,
+      "publicNameMatched": true,
+      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
       "decision": null,
-      "status": "PUBLIC_NEEDS_CATALOG_OR_REPLACE"
+      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
     },
     {
       "file": "lib/explore/presentation/widgets/catch_cover_story.dart",
@@ -8904,21 +8890,7 @@
     },
     {
       "file": "lib/explore/presentation/widgets/catch_cross_paths_card.dart",
-      "line": 193,
-      "name": "CrossPathsSurface",
-      "base": "StatelessWidget",
-      "area": "explore",
-      "visibility": "public",
-      "publicName": "CrossPathsSurface",
-      "exactNameMatched": true,
-      "publicNameMatched": true,
-      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
-      "decision": null,
-      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
-    },
-    {
-      "file": "lib/explore/presentation/widgets/catch_cross_paths_card.dart",
-      "line": 225,
+      "line": 194,
       "name": "CrossPathsPortrait",
       "base": "StatelessWidget",
       "area": "explore",
@@ -8932,7 +8904,7 @@
     },
     {
       "file": "lib/explore/presentation/widgets/catch_cross_paths_card.dart",
-      "line": 250,
+      "line": 219,
       "name": "CrossPathsPolaroidRail",
       "base": "StatelessWidget",
       "area": "explore",
@@ -8946,26 +8918,12 @@
     },
     {
       "file": "lib/explore/presentation/widgets/catch_cross_paths_card.dart",
-      "line": 318,
+      "line": 287,
       "name": "CrossPathsCtaRow",
       "base": "StatelessWidget",
       "area": "explore",
       "visibility": "public",
       "publicName": "CrossPathsCtaRow",
-      "exactNameMatched": true,
-      "publicNameMatched": true,
-      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
-      "decision": null,
-      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
-    },
-    {
-      "file": "lib/explore/presentation/widgets/explore_body.dart",
-      "line": 16,
-      "name": "ExploreBody",
-      "base": "StatelessWidget",
-      "area": "explore",
-      "visibility": "public",
-      "publicName": "ExploreBody",
       "exactNameMatched": true,
       "publicNameMatched": true,
       "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
@@ -9380,7 +9338,7 @@
     },
     {
       "file": "lib/explore/presentation/widgets/explore_list.dart",
-      "line": 19,
+      "line": 16,
       "name": "ExploreList",
       "base": "ConsumerWidget",
       "area": "explore",

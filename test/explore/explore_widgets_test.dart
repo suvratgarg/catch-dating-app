@@ -33,6 +33,7 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -138,7 +139,7 @@ Future<void> _pumpClubUi(WidgetTester tester) async {
   await pumpFeatureUi(tester);
 }
 
-ExploreBody _exploreBody({
+Widget _exploreBodySliverGroup({
   required ExploreViewModel clubsViewModel,
   AsyncValue<ExploreFeedViewModel> feedAsync = const AsyncData(
     ExploreFeedViewModel(items: []),
@@ -158,22 +159,28 @@ ExploreBody _exploreBody({
   bool includeJoinedClubsRail = true,
   bool includeClubDirectory = true,
 }) {
-  return ExploreBody(
-    feedAsync: feedAsync,
-    clubsViewModel: clubsViewModel,
-    filters: filters,
-    searchQuery: searchQuery,
-    clubSectionError: clubSectionError,
-    onRetryFeed: onRetryFeed,
-    onRetryClubs: onRetryClubs,
-    onClearSearch: onClearSearch,
-    onClearFilters: onClearFilters,
-    onSetTimeFilter: onSetTimeFilter,
-    onActivitySelected: onActivitySelected,
-    onEventSelected: onEventSelected,
-    onExternalEventOpened: onExternalEventOpened,
-    includeJoinedClubsRail: includeJoinedClubsRail,
-    includeClubDirectory: includeClubDirectory,
+  return Builder(
+    builder: (context) => SliverMainAxisGroup(
+      slivers: buildExploreBodySlivers(
+        context: context,
+        feedAsync: feedAsync,
+        clubsViewModel: clubsViewModel,
+        filters: filters,
+        searchQuery: searchQuery,
+        clubSectionError: clubSectionError,
+        onRetryFeed: onRetryFeed,
+        onRetryClubs: onRetryClubs,
+        onClearSearch: onClearSearch,
+        onClearFilters: onClearFilters,
+        onSetTimeFilter: onSetTimeFilter,
+        onActivitySelected: onActivitySelected,
+        onEventSelected: onEventSelected,
+        onExternalEventOpened: onExternalEventOpened,
+        includeJoinedClubsRail: includeJoinedClubsRail,
+        includeClubDirectory: includeClubDirectory,
+        pinnedExploreDayHeaders: false,
+      ),
+    ),
   );
 }
 
@@ -434,7 +441,7 @@ void main() {
       'ClubsContent renders personal rail and mixed discovery cards',
       (tester) async {
         await _pumpClubsSlivers(tester, [
-          _exploreBody(
+          _exploreBodySliverGroup(
             includeClubDirectory: false,
             clubsViewModel: ExploreViewModel(
               joinedClubs: [
@@ -535,7 +542,7 @@ void main() {
       expect(find.text('8 going · 4 spots left'), findsOneWidget);
     });
 
-    testWidgets('ExploreBody keeps feed visible when club section fails', (
+    testWidgets('Explore body slivers keep feed visible when clubs fail', (
       tester,
     ) async {
       final club = buildClub(id: 'club-feed-only', name: 'Pace Social');
@@ -556,7 +563,7 @@ void main() {
       );
 
       await _pumpClubsSlivers(tester, [
-        _exploreBody(
+        _exploreBodySliverGroup(
           clubsViewModel: const ExploreViewModel(joinedClubs: [], allClubs: []),
           feedAsync: AsyncData(
             ExploreFeedViewModel(
@@ -2487,12 +2494,28 @@ void main() {
           find.byType(CustomScrollView),
         );
         expect(scrollView.slivers[2], isA<ClubScheduleSection>());
-        expect(scrollView.slivers[3], isA<SliverPadding>());
+        expect(scrollView.slivers[3], isA<CatchDetailSliverSectionList>());
+        final trailingSections =
+            scrollView.slivers[3] as CatchDetailSliverSectionList;
+        expect(
+          trailingSections.sections.whereType<CatchSection>().map(
+            (section) => section.title,
+          ),
+          contains('Reviews'),
+        );
 
-        await tester.drag(find.byType(CustomScrollView), const Offset(0, -900));
-        await _pumpClubUi(tester);
+        for (
+          var i = 0;
+          i < 12 && find.text('Most recent.').evaluate().isEmpty;
+          i++
+        ) {
+          await tester.drag(
+            find.byType(CustomScrollView),
+            const Offset(0, -400),
+          );
+          await _pumpClubUi(tester);
+        }
 
-        expect(find.text('Reviews'), findsOneWidget);
         expect(find.text('Most recent.'), findsOneWidget);
         expect(find.text('Second recent.'), findsOneWidget);
         expect(find.text('Third recent.'), findsOneWidget);

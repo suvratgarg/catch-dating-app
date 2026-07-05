@@ -255,20 +255,24 @@ class ExploreScreen extends ConsumerWidget {
               key: const ValueKey('explore-list-scroll-view'),
               slivers: [
                 SliverToBoxAdapter(
-                  child: ExploreChrome(
+                  child: ExploreDiscoveryCoverHeader(
                     cityPickerState: cityPickerState,
                     query: query,
                     featuredItem: featuredItem,
-                    filters: filters,
-                    filterRailState: filterRailState,
-                    filterSheetState: filterSheetState,
-                    onQueryChanged: (value) => ref
-                        .read(exploreSearchQueryProvider.notifier)
-                        .setQuery(value),
                     onCitySelected: (selectedCity) => ref
                         .read(selectedExploreCityProvider.notifier)
                         .setCity(selectedCity),
+                    onQueryChanged: (value) => ref
+                        .read(exploreSearchQueryProvider.notifier)
+                        .setQuery(value),
                     onFeaturedEventSelected: openFeaturedEvent,
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: ExploreFilterRail(
+                    filters: filters,
+                    state: filterRailState,
+                    sheetState: filterSheetState,
                     onTimeFilterSelected: (filter) => ref
                         .read(exploreFiltersProvider.notifier)
                         .setTimeFilter(filter),
@@ -313,74 +317,6 @@ class ExploreScreen extends ConsumerWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class ExploreChrome extends StatelessWidget {
-  const ExploreChrome({
-    super.key,
-    required this.cityPickerState,
-    required this.query,
-    required this.featuredItem,
-    required this.filters,
-    required this.filterRailState,
-    required this.filterSheetState,
-    required this.onQueryChanged,
-    required this.onCitySelected,
-    required this.onFeaturedEventSelected,
-    required this.onTimeFilterSelected,
-    required this.onDistanceFilterSelected,
-    required this.onToggleJoinedOnly,
-    required this.onToggleHighRatedOnly,
-    required this.onToggleActivityTag,
-    required this.onToggleArea,
-    required this.onClearFilters,
-  });
-
-  final ExploreCityPickerState cityPickerState;
-  final String query;
-  final ExploreEventItem? featuredItem;
-  final ExploreFilterSelection filters;
-  final ExploreFilterRailState filterRailState;
-  final ExploreFilterSheetState filterSheetState;
-  final ValueChanged<String> onQueryChanged;
-  final ValueChanged<CityData> onCitySelected;
-  final ValueChanged<ExploreEventItem> onFeaturedEventSelected;
-  final ValueChanged<ExploreTimeFilter> onTimeFilterSelected;
-  final ValueChanged<ExploreDistanceFilter> onDistanceFilterSelected;
-  final VoidCallback onToggleJoinedOnly;
-  final VoidCallback onToggleHighRatedOnly;
-  final ValueChanged<String> onToggleActivityTag;
-  final ValueChanged<String> onToggleArea;
-  final VoidCallback onClearFilters;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        ExploreDiscoveryCoverHeader(
-          query: query,
-          featuredItem: featuredItem,
-          cityPickerState: cityPickerState,
-          onCitySelected: onCitySelected,
-          onQueryChanged: onQueryChanged,
-          onFeaturedEventSelected: onFeaturedEventSelected,
-        ),
-        ExploreFilterRail(
-          filters: filters,
-          state: filterRailState,
-          sheetState: filterSheetState,
-          onTimeFilterSelected: onTimeFilterSelected,
-          onDistanceFilterSelected: onDistanceFilterSelected,
-          onToggleJoinedOnly: onToggleJoinedOnly,
-          onToggleHighRatedOnly: onToggleHighRatedOnly,
-          onToggleActivityTag: onToggleActivityTag,
-          onToggleArea: onToggleArea,
-          onClearFilters: onClearFilters,
-        ),
-      ],
     );
   }
 }

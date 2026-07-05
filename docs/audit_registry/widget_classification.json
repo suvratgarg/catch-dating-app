@@ -10,32 +10,32 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1116,
-    "widgetClasses": 1008,
+    "total": 1113,
+    "widgetClasses": 1005,
     "stateClasses": 108,
-    "publicClasses": 1006,
+    "publicClasses": 1003,
     "privateClasses": 110,
     "byRole": {
       "atom": 57,
-      "composition": 320,
-      "feature-adapter": 315,
+      "composition": 319,
+      "feature-adapter": 314,
       "pattern": 16,
-      "screen": 300,
+      "screen": 299,
       "widget-state": 108
     },
     "byDecision": {
       "keep-canonical-contract": 170,
-      "keep-public-cataloged": 783,
+      "keep-public-cataloged": 780,
       "keep-widget-state": 108,
       "review-catalog-coverage": 38,
       "review-promote-or-consolidate": 15,
       "review-promote-or-inline": 2
     },
     "byCatalogStatus": {
-      "cataloged": 716,
+      "cataloged": 715,
       "contracted": 170,
       "not-applicable": 108,
-      "route-covered": 81,
+      "route-covered": 79,
       "uncataloged": 41
     }
   },
@@ -15819,29 +15819,6 @@
       "flags": []
     },
     {
-      "name": "ExploreChrome",
-      "file": "lib/explore/presentation/explore_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.explore_chrome",
-      "publicApi": true,
-      "catalogStatus": "route-covered",
-      "contractId": null,
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
       "name": "ExploreClearAction",
       "file": "lib/explore/presentation/explore_screen.dart",
       "classKind": "widget",
@@ -15919,7 +15896,7 @@
       "role": "screen",
       "canonicalFamily": "screen.explore_skeleton_list",
       "publicApi": true,
-      "catalogStatus": "route-covered",
+      "catalogStatus": "cataloged",
       "contractId": null,
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
@@ -16093,54 +16070,6 @@
         "mergeIntoCanonical"
       ],
       "flags": []
-    },
-    {
-      "name": "CrossPathsSurface",
-      "file": "lib/explore/presentation/widgets/catch_cross_paths_card.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.explore.cross_paths_surface",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "ExploreBody",
-      "file": "lib/explore/presentation/widgets/explore_body.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.explore_body",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": [
-        "primitive-imports-provider-layer"
-      ]
     },
     {
       "name": "_ExploreCityPickerState",

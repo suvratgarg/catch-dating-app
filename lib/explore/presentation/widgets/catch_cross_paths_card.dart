@@ -59,10 +59,11 @@ class CatchCrossPathsCard extends StatelessWidget {
     final activity = ActivityPalette.resolve(context, activityKind);
 
     if (variant == CatchCrossPathsVariant.photo) {
-      return CrossPathsSurface(
+      return CatchSurface(
         borderColor: t.line,
         radius: CatchRadius.md,
-        clip: true,
+        elevation: CatchSurfaceElevation.card,
+        clipBehavior: Clip.antiAlias,
         child: IntrinsicHeight(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -126,10 +127,10 @@ class CatchCrossPathsCard extends StatelessWidget {
     }
 
     // Postcard variant.
-    return CrossPathsSurface(
+    return CatchSurface(
       borderColor: t.line2,
       radius: CatchSpacing.micro6,
-      elevation: CatchSurfaceShadow.raised,
+      elevation: CatchSurfaceElevation.raised,
       child: Padding(
         padding: const EdgeInsets.all(CatchSpacing.s4),
         child: IntrinsicHeight(
@@ -184,38 +185,6 @@ class CatchCrossPathsCard extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-enum CatchSurfaceShadow { card, raised }
-
-class CrossPathsSurface extends StatelessWidget {
-  const CrossPathsSurface({
-    super.key,
-    required this.child,
-    required this.borderColor,
-    required this.radius,
-    this.elevation = CatchSurfaceShadow.card,
-    this.clip = false,
-  });
-
-  final Widget child;
-  final Color borderColor;
-  final double radius;
-  final CatchSurfaceShadow elevation;
-  final bool clip;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchSurface(
-      radius: radius,
-      borderColor: borderColor,
-      boxShadow: elevation == CatchSurfaceShadow.raised
-          ? CatchElevation.raised
-          : CatchElevation.card,
-      clipBehavior: clip ? Clip.antiAlias : Clip.none,
-      child: child,
     );
   }
 }

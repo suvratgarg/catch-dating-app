@@ -3821,6 +3821,16 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Cards',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'CatchCrossPathsCard',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Cross paths card states',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .catchCrossPathsCardStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CrossPathsCtaRow',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3847,16 +3857,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Cross paths portrait states',
                 builder: _widgetbook_workspace_explore_explore_use_cases
                     .crossPathsPortraitStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CrossPathsSurface',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Cross paths surface states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
-                    .crossPathsSurfaceStates,
               ),
             ],
           ),
@@ -4191,16 +4191,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ExploreBody',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Body sliver states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
-                    .exploreBodyStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'ExploreBrowseHeaderContent',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -4284,6 +4274,11 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'ExploreList',
             useCases: [
               _widgetbook.WidgetbookUseCase(
+                name: 'Body sliver states',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .exploreBodyStates,
+              ),
+              _widgetbook.WidgetbookUseCase(
                 name: 'List sliver states',
                 builder: _widgetbook_workspace_explore_explore_use_cases
                     .exploreListStates,
@@ -4347,6 +4342,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Selected event lead',
                 builder: _widgetbook_workspace_explore_explore_use_cases
                     .exploreSelectedEventLeadStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ExploreSkeletonList',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Skeleton list states',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .exploreSkeletonListStates,
               ),
             ],
           ),

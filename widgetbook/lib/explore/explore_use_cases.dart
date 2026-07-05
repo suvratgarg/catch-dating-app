@@ -317,30 +317,43 @@ Widget exploreScreenStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Skeleton list states',
+  type: ExploreSkeletonList,
+  path: '[Explore]/Sections',
+)
+Widget exploreSkeletonListStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'ExploreSkeletonList',
+    catalogId: 'section.explore.skeleton_list',
+    children: [
+      _StateCard(
+        label: 'route loading stack',
+        child: const _DeviceFrame(
+          height: 360,
+          child: SingleChildScrollView(
+            padding: CatchInsets.pageBody,
+            child: ExploreSkeletonList(),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Body sliver states',
-  type: ExploreBody,
+  type: ExploreList,
   path: '[Explore]/Sections',
 )
 Widget exploreBodyStates(BuildContext context) {
   return _CatalogScreen(
-    title: 'ExploreBody',
-    catalogId: 'section.explore.body',
+    title: 'buildExploreBodySlivers',
+    catalogId: 'section.explore.body_slivers',
     children: [
       _StateCard(
         label: 'mixed body',
         child: _SliverFrame(
-          child: _ExploreScope(
-            child: CustomScrollView(
-              slivers: [
-                ExploreBody(
-                  viewModel: ExploreViewModel.partition(
-                    clubs: _clubs,
-                    joinedClubIds: _joinedClubIds,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          child: _ExploreScope(child: const _ExploreBodySliverPreview()),
         ),
       ),
     ],
@@ -1333,44 +1346,45 @@ Widget exploreEventsSectionStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Cross paths surface states',
-  type: CrossPathsSurface,
+  name: 'Cross paths card states',
+  type: CatchCrossPathsCard,
   path: '[Explore]/Cards',
 )
-Widget crossPathsSurfaceStates(BuildContext context) {
-  final t = CatchTokens.of(context);
+Widget catchCrossPathsCardStates(BuildContext context) {
   return _CatalogScreen(
-    title: 'CrossPathsSurface',
-    catalogId: 'card.explore.cross_paths.surface',
+    title: 'CatchCrossPathsCard',
+    catalogId: 'card.explore.cross_paths',
     children: [
       _StateCard(
-        label: 'raised postcard chrome',
+        label: 'postcard',
         child: SizedBox(
           width: 340,
-          child: CrossPathsSurface(
-            borderColor: t.line2,
-            radius: CatchSpacing.micro6,
-            elevation: CatchSurfaceShadow.raised,
-            child: Padding(
-              padding: CatchInsets.content,
-              child: Text(
-                'I am going for coffee after the run.',
-                style: CatchTextStyles.profileAnswer(context),
-              ),
-            ),
+          child: CatchCrossPathsCard(
+            activityKind: ActivityKind.socialRun,
+            quote: 'I am going for coffee after the run.',
+            displayName: 'Neha',
+            age: 29,
+            meta: 'Bandra · 2 km away',
+            kicker: 'Crossed paths',
+            onJoin: _noop,
+            onLike: _noop,
           ),
         ),
       ),
       _StateCard(
-        label: 'clipped photo-row chrome',
+        label: 'photo row',
         child: SizedBox(
           width: 340,
-          height: 120,
-          child: CrossPathsSurface(
-            borderColor: t.line,
-            radius: CatchRadius.md,
-            clip: true,
-            child: ColoredBox(color: t.primarySoft),
+          child: CatchCrossPathsCard(
+            activityKind: ActivityKind.dinner,
+            quote: 'Ask me about the dessert menu.',
+            displayName: 'Maya',
+            age: 31,
+            meta: 'Fort · Host friend',
+            kicker: 'Also going',
+            variant: CatchCrossPathsVariant.photo,
+            onJoin: _noop,
+            onLike: _noop,
           ),
         ),
       ),
@@ -2432,6 +2446,41 @@ class _FilterSeed {
 class _NoDeviceLocation extends DeviceLocation {
   @override
   Future<LocationCoordinate?> build() async => null;
+}
+
+class _ExploreBodySliverPreview extends ConsumerWidget {
+  const _ExploreBodySliverPreview();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final filters = ref.watch(exploreFiltersProvider);
+    return CustomScrollView(
+      slivers: buildExploreBodySlivers(
+        context: context,
+        feedAsync: ref.watch(exploreFeedViewModelProvider),
+        clubsViewModel: ExploreViewModel.partition(
+          clubs: _clubs,
+          joinedClubIds: _joinedClubIds,
+        ),
+        filters: filters,
+        searchQuery: ref.watch(exploreSearchQueryProvider).trim(),
+        onRetryFeed: () => ref.invalidate(exploreFeedViewModelProvider),
+        onClearSearch: () =>
+            ref.read(exploreSearchQueryProvider.notifier).clear(),
+        onClearFilters: () => ref.read(exploreFiltersProvider.notifier).clear(),
+        onSetTimeFilter: (filter) =>
+            ref.read(exploreFiltersProvider.notifier).setTimeFilter(filter),
+        onActivitySelected: (activityKind) => ref
+            .read(exploreFiltersProvider.notifier)
+            .toggleActivityTag(activityKind.name),
+        onEventSelected: (_, _) {},
+        onExternalEventOpened: (_) {},
+        includeJoinedClubsRail: true,
+        includeClubDirectory: true,
+        pinnedExploreDayHeaders: false,
+      ),
+    );
+  }
 }
 
 class _ExploreEventsSliverPreview extends ConsumerWidget {
