@@ -1,6 +1,6 @@
 ---
 doc_id: composition_audit
-version: 0.1.5
+version: 0.1.6
 updated: 2026-07-05
 owner: design_parity_review
 status: active
@@ -48,7 +48,8 @@ Standing doctrine (owner-approved 2026-07-05):
 
 Screen queue (working order): Dashboard ✅ → Event Detail ✅ → Club Detail ✅
 → Explore ✅ → Catches/Swipe Hub ✅ → Chats/Inbox ✅ → Profile ✅ →
-Host Operations ✅ → Event Success ✅.
+Host Operations ✅ → Event Success ✅ → Calendar/Saved Events ✅ →
+Payment/Review History ✅.
 
 ---
 
@@ -675,7 +676,133 @@ the production component it is meant to exercise.
 
 ---
 
-## Screens 10+ — pending
+## Screen 10 — Calendar and Saved Events (audited 2026-07-05)
 
-Remaining candidates: Calendar, Saved Events, Payments/Reviews history. Audits
-append here, same format.
+Files: `lib/events/presentation/calendar/calendar_screen.dart`,
+`lib/events/presentation/calendar/calendar_screen_state.dart`,
+`lib/events/presentation/calendar/calendar_loading_screen.dart`,
+`lib/events/presentation/saved_events_screen.dart`,
+`lib/events/presentation/saved_events_state.dart`, and
+`lib/events/shared/event_agenda_list.dart`.
+
+Overall: these two routes are the healthiest examples in the remaining tail.
+Both keep provider waves at the route edge, use provider-free display-state
+adapters (`CalendarHomeState`, `CalendarAgendaSectionState`,
+`SavedEventsListState`), and converge on the shared `EventAgendaSliverList`
+for dated event rows. Widgetbook/capture coverage exercises the real screens,
+including loading, empty, error, secondary club-name lookup loading/error,
+text-scale, reduced-motion, and light/dark states.
+
+### CA1. Calendar's date header is real product grammar — keep
+
+`CalendarDateHeader`, `CalendarWeekStrip`, `CalendarMonthGrid`,
+`CalendarStatsHeader`, and `CalendarLoadingScreen` look large in one file, but
+they are not pass-through wrappers around a generic section. The header owns
+route-local interaction state: selected day, collapsed/expanded month mode,
+drag-to-expand/collapse, seeded capture states, and scroll-to-day reveal
+alignment. `CalendarLoadingScreen` mirrors the same pinned-header/stats/agenda
+sliver geometry; it is a skeleton twin of the production route, not a parallel
+screen shell.
+
+### CA2. Agenda rows correctly share one primitive
+
+Calendar and Saved Events both pass typed row/display data into
+`EventAgendaSliverList`. Calendar supplies explicit `EventAgendaRow` values so
+JOINED/SAVED/CANCELLED status and keyed date groups stay deterministic; Saved
+Events supplies ordering, SAVED/PAST badge labels, and tile statuses through
+`SavedEventsListState`. This is the desired ADAPTS → CONFIGURES split. Do not
+force date groups through `CatchSection`; dated agenda groups are list
+structure, not top-level page sections.
+
+### CA3. Saved Events' small header widgets are provider-free sections — keep
+
+`SavedEventsHeaderSliver`, `SavedEventsAgendaSliver`, `SavedEventsLoading`,
+`SavedEventsError`, and `SavedEventsClubNamesErrorSliver` add narrow sliver or
+state-shape value and are covered as public catalog entries. No dead parallel
+shell or feature-local section system was found.
+
+### CA4. Positive calibration
+
+The design contracts for `screen.calendar.home` and
+`screen.saved_events.list` still list design-reference exports as blocked, but
+their implementation/capture/test state is structurally ready for visual
+comparison once references exist. No Codex work order for this audit pass.
+
+---
+
+## Screen 11 — Review History (audited 2026-07-05)
+
+Files: `lib/reviews/presentation/reviews_history_screen.dart`,
+`lib/reviews/presentation/reviews_history_state.dart`, and
+`lib/reviews/presentation/reviews_history_view_model.dart`.
+
+Overall: clean route-edge composition. `ReviewsHistoryScreen` owns provider
+reads and edit-sheet launch, `ReviewsHistoryState` owns access/loading/error/
+empty/content decisions plus retry target and row display data, and
+`ReviewsHistoryBody` switches that typed state into provider-free renderers.
+Rows reuse the shared `ReviewCard` content primitive rather than inventing a
+history-specific review shell.
+
+### RH1. Loading/list shells are intentional mirrors — keep
+
+`ReviewsHistoryList` and `ReviewsHistorySkeleton` both use the same relaxed
+page padding and row gap. The skeleton rows mimic `ReviewHistoryItem` and
+`ReviewCard` anatomy with shared `CatchSkeleton`/`CatchSurface` pieces. This is
+not enough repetition to justify a new public history-list primitive.
+
+### RH2. No section wrapper drift
+
+Review History is a simple list under `CatchTopBar`, not a section stack. It
+does not hand-roll section titles, dividers, gutters, or `CatchSection`
+equivalents. Empty and error branches route through `CatchEmptyState` and
+`CatchErrorState` via the state adapter. No Codex work order for this audit
+pass.
+
+---
+
+## Screen 12 — Payment History (audited 2026-07-05)
+
+Files: `lib/payments/presentation/payment_history_screen.dart`,
+`lib/payments/presentation/payment_history_state.dart`, and
+`lib/payments/presentation/payment_history_view_model.dart`.
+
+Overall: also acceptable for this composition pass. `PaymentHistoryScreen`
+owns uid access and the route shell, `PaymentHistoryListController` adapts the
+payment-history provider, `paymentHistoryViewModelProvider` performs the
+batched event-title display join, and `PaymentHistoryList`/`PaymentHistoryTile`
+render provider-free rows. The receipt detail sheet is provider-free and uses
+`CatchBottomSheetScaffold`, `CatchBadge`, `CatchField.read`, and shared support
+snackbar plumbing.
+
+### PH1. Row-list dividers are local list geometry — keep for now
+
+`PaymentHistoryList` and `PaymentHistorySkeleton` both constrain rows to
+`CatchLayout.maxContentWidth` and separate them with `CatchDivider.fieldRow`.
+That is hand placement, but it is not a rogue section system: there is no
+section title, no page gutter override, and no duplicated `CatchSection`
+contract. A shared ledger/list primitive is only warranted if another
+transaction-style history screen appears with the same row geometry.
+
+### PH2. Watch threshold — promote only on a second ledger list
+
+If another receipt/transaction/audit-history screen repeats
+Payment History's max-width row lane + field-row dividers + amount/status
+trailing column, promote a single cataloged ledger-list primitive then. Until
+there is a second production consumer, adding a new primitive would be a
+wrapper for local geometry rather than a root fix.
+
+### PH3. Positive calibration
+
+The design contract for `screen.payments.history` already captures uid loading,
+signed-out, uid errors/offline, payment loading/error/offline, empty, populated,
+receipt sheet, failed-signup recovery, support snackbar, missing event-title,
+text-scale, and reduced-motion states. No Codex work order for this audit pass.
+
+---
+
+## Tail Audit Closure
+
+The remaining Calendar, Saved Events, Payment History, and Review History
+surfaces are audited. The only open item in this document is S4's watch-level
+Event Success fixture-action cleanup; it is not a blocking product-screen
+composition defect.
