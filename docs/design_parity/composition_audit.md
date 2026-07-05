@@ -467,7 +467,7 @@ title-block watch item.
 Files: `lib/chats/presentation/inbox/**`. Overall: the cleanest feature in
 the audit — small files, primitives used directly.
 
-### T1. `ChatsEmptyState` decides host copy by comparing a default string `[codex]`
+### T1. `ChatsEmptyState` decides host copy by comparing a default string `[done 2f1076a1f]`
 
 `isHostApp && title == 'No catches yet'` substitutes host copy only when the
 title still equals the guest default — a string-sentinel that silently
@@ -475,6 +475,12 @@ breaks the moment the default copy is edited. Replace with an explicit
 variant: a `ChatsEmptyState.hostInbox()` named constructor (or an enum
 role) chosen by the caller that knows `AppConfig.appRole`; the build method
 stops inspecting copy.
+
+Done: `ChatsEmptyState` now exposes explicit named constructors for consumer,
+host inbox, search-empty, host-search-empty, and unread-query states. It no
+longer imports `AppConfig` or compares title strings; `ChatsList` selects
+`ChatsEmptyState.hostInbox()` at the host no-thread branch. Tests and Widgetbook
+cover the host inbox empty variant.
 
 ### T2. Positive calibration
 
