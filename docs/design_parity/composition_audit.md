@@ -1,6 +1,6 @@
 ---
 doc_id: composition_audit
-version: 0.1.3
+version: 0.1.4
 updated: 2026-07-05
 owner: design_parity_review
 status: active
@@ -555,7 +555,7 @@ through shared listeners/banners, and the immersive companion stage has a
 deliberate grammar that should not be forced into ordinary `CatchSection`
 rules.
 
-### S1. Companion route orchestration is inline, unlike the host adapter `[codex]`
+### S1. Companion route orchestration is inline, unlike the host adapter `[done d73aa82b6]`
 
 `EventSuccessCompanionRouteScreen` runs three provider waves inline: event/auth/
 profile/participation/plan, then arrival mission/compatibility, then moment-
@@ -574,6 +574,14 @@ with focused tests. Keep `CompanionLoading/Error/Message` as renderers unless
 the adapter makes one redundant. Acceptance: no UI copy or state-order change;
 existing route Widgetbook states still cover event-not-found, sign-in-required,
 no-booking, plan-missing, offline/error, loading, and ready moments.
+
+Done: `EventSuccessCompanionRouteState` now owns the companion route's loading,
+message, error, and ready decisions across the core, arrival/compatibility, and
+moment-specific provider waves. `EventSuccessCompanionRouteScreen` still owns
+provider watches, retry invalidation, mutation listeners, controller writes,
+and live-effect callbacks, but branch selection and retry-intent mapping moved
+into the typed adapter with focused tests covering core gates and moment retry
+priority. Existing companion renderers and UI copy remain unchanged.
 
 ### S2. Host tab bodies repeat the scroll-shell contract `[done f4926e262]`
 
