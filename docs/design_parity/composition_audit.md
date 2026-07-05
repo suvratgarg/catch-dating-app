@@ -1,6 +1,6 @@
 ---
 doc_id: composition_audit
-version: 0.1.2
+version: 0.1.3
 updated: 2026-07-05
 owner: design_parity_review
 status: active
@@ -575,7 +575,7 @@ the adapter makes one redundant. Acceptance: no UI copy or state-order change;
 existing route Widgetbook states still cover event-not-found, sign-in-required,
 no-booking, plan-missing, offline/error, loading, and ready moments.
 
-### S2. Host tab bodies repeat the scroll-shell contract `[codex]`
+### S2. Host tab bodies repeat the scroll-shell contract `[done f4926e262]`
 
 `EventSuccessHostPanel` computes `shrinkWrap`, `physics`, and `padding` once
 from `embedded`, then passes those three knobs into `SetupTab`, `LiveTab`, and
@@ -592,6 +592,14 @@ mechanical if done as a pure shell extraction: no section reordering, no visual
 spacing changes, and no controller changes. Acceptance: the existing
 `event_success_live_screens_test.dart` host-panel coverage still passes, and
 Widgetbook strict states for setup/live/report keep rendering the same branches.
+
+Done: `EventSuccessHostTabBody` now owns the embedded/standalone `ListView`
+contract once. `SetupTab`, `LiveTab`, and `ReportTab` pass only ordered child
+lists plus `embedded`; the old `shrinkWrap`/`physics`/`padding` prop chain and
+the repeated branch-local scroll shells are gone without changing branch order,
+copy, or controller ownership. Widgetbook, the widget catalog, widget
+classification, new-widget inventory, and variant inventory now cover the
+public shell.
 
 ### S3. `QuestionProgressRail` uses Material ink inside the stage grammar `[done 929cf34a7]`
 
