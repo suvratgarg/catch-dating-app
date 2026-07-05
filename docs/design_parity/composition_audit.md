@@ -531,11 +531,14 @@ This is a module, not a screen file. Split by surface into
 and part-file wiring only, tests/widgetbook repointed. Do this as its own
 commit so review diffs stay readable.
 
-### O2. `HostSectionLabel` is dead — delete `[codex]`
+### O2. `HostSectionLabel` host-local wrapper — delete `[done 4af0dd57d]`
 
-Zero constructions anywhere (WO-018 marked it delete-if-orphaned; the
-orphaning happened, the deletion did not). Remove the class and any
-widgetbook block.
+The original "zero constructions" note was stale by implementation time: two
+real host sections still used the wrapper. Both were migrated to
+`CatchSection.plain`, whose header path now reuses the canonical
+`CatchKicker`/count renderer shared by divided sections. The host-local wrapper
+and its Widgetbook block were then deleted, and generated widget classification
+plus Widgetbook coverage were refreshed.
 
 ---
 
