@@ -229,12 +229,11 @@ third-occurrence review point if another callout shape converges.
 hosts uses `EventDetailHostsSkeleton`, and companion uses
 `EventDetailCompanionSkeleton`.
 
-### E4. `LegacyEventHeroSurface` `[codex]`
+### E4. `LegacyEventHeroSurface` `[done 6e1199a92]`
 
-`event_detail_hero_app_bar.dart:172` — anything named Legacy in the blessed
-slice needs a verdict. Check usages: if only non-ticket presentation modes
-use it and those modes still ship, keep but rename to what it actually is
-(e.g. `EventPhotoHeroSurface`); if unreachable, delete.
+Fixed in `6e1199a92`: the surface is still the live non-ticket presentation
+path, so it was kept and renamed to `EventPhotoHeroSurface`. Widgetbook and
+the widget catalog now use the photo-surface name; no behavior changed.
 
 ### E5. Positive calibration
 
