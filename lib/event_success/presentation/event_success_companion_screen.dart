@@ -322,10 +322,114 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
       planState: _catchAsyncState(planAsync),
       referenceNow: referenceNow,
     );
+
+    VoidCallback companionRouteRetryCallback(
+      EventSuccessCompanionRouteState state,
+    ) {
+      return () {
+        switch (state.retryIntent) {
+          case EventSuccessCompanionRetryIntent.event:
+            ref.invalidate(watchEventProvider(eventId));
+          case EventSuccessCompanionRetryIntent.uid:
+            ref.invalidate(uidProvider);
+          case EventSuccessCompanionRetryIntent.profile:
+            ref.invalidate(watchUserProfileProvider);
+          case EventSuccessCompanionRetryIntent.participation:
+            final uid = state.uid;
+            if (uid != null) {
+              ref.invalidate(watchEventParticipationProvider(eventId, uid));
+            }
+          case EventSuccessCompanionRetryIntent.plan:
+            ref.invalidate(watchEventSuccessPlanProvider(eventId));
+          case EventSuccessCompanionRetryIntent.arrivalMission:
+            final uid = state.uid;
+            if (uid != null) {
+              ref.invalidate(
+                watchUserEventSuccessArrivalMissionProvider(
+                  eventId: eventId,
+                  uid: uid,
+                ),
+              );
+            }
+          case EventSuccessCompanionRetryIntent.compatibility:
+            final uid = state.uid;
+            if (uid != null) {
+              ref.invalidate(
+                watchUserEventSuccessCompatibilityResponseProvider(
+                  eventId: eventId,
+                  uid: uid,
+                ),
+              );
+            }
+          case EventSuccessCompanionRetryIntent.feedback:
+            final uid = state.uid;
+            if (uid != null) {
+              ref.invalidate(
+                watchUserEventSuccessFeedbackProvider(
+                  eventId: eventId,
+                  uid: uid,
+                ),
+              );
+            }
+          case EventSuccessCompanionRetryIntent.assignment:
+            final uid = state.uid;
+            if (uid != null) {
+              ref.invalidate(
+                watchUserEventSuccessAssignmentProvider(
+                  eventId: eventId,
+                  uid: uid,
+                ),
+              );
+            }
+          case EventSuccessCompanionRetryIntent.rotationAssignment:
+            final uid = state.uid;
+            if (uid != null) {
+              ref.invalidate(
+                watchUserEventSuccessRotationAssignmentProvider(
+                  eventId: eventId,
+                  uid: uid,
+                ),
+              );
+            }
+          case EventSuccessCompanionRetryIntent.preference:
+            final uid = state.uid;
+            if (uid != null) {
+              ref.invalidate(
+                watchUserEventSuccessPreferenceProvider(
+                  eventId: eventId,
+                  uid: uid,
+                ),
+              );
+            }
+          case EventSuccessCompanionRetryIntent.wingmanRequest:
+            final uid = state.uid;
+            if (uid != null) {
+              ref.invalidate(
+                watchUserEventSuccessWingmanRequestProvider(
+                  eventId: eventId,
+                  uid: uid,
+                ),
+              );
+            }
+          case EventSuccessCompanionRetryIntent.wingmanCandidates:
+            final profile = state.profile;
+            if (profile != null) {
+              ref.invalidate(
+                wingmanRequestCandidatesProvider(
+                  eventId: eventId,
+                  currentUser: profile,
+                ),
+              );
+            }
+          case null:
+            break;
+        }
+      };
+    }
+
     final coreGate = _buildCompanionRouteGate(
       routeState,
-      ref,
-      eventId: eventId,
+      onRetry: companionRouteRetryCallback(routeState),
     );
     if (coreGate != null) return coreGate;
 
@@ -351,8 +455,7 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
     );
     final arrivalGate = _buildCompanionRouteGate(
       routeState,
-      ref,
-      eventId: eventId,
+      onRetry: companionRouteRetryCallback(routeState),
     );
     if (arrivalGate != null) return arrivalGate;
 
@@ -376,8 +479,7 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
     );
     final compatibilityGate = _buildCompanionRouteGate(
       routeState,
-      ref,
-      eventId: eventId,
+      onRetry: companionRouteRetryCallback(routeState),
     );
     if (compatibilityGate != null) return compatibilityGate;
 
@@ -449,8 +551,7 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
     );
     final momentGate = _buildCompanionRouteGate(
       routeState,
-      ref,
-      eventId: eventId,
+      onRetry: companionRouteRetryCallback(routeState),
     );
     if (momentGate != null) return momentGate;
 
@@ -642,9 +743,8 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
 }
 
 Widget? _buildCompanionRouteGate(
-  EventSuccessCompanionRouteState state,
-  WidgetRef ref, {
-  required String eventId,
+  EventSuccessCompanionRouteState state, {
+  required VoidCallback onRetry,
 }) {
   return switch (state.status) {
     EventSuccessCompanionRouteStatus.loading => const CompanionLoading(),
@@ -655,105 +755,8 @@ Widget? _buildCompanionRouteGate(
     EventSuccessCompanionRouteStatus.error => CompanionError(
       error: state.error!,
       errorContext: state.errorContext!,
-      onRetry: _companionRouteRetryCallback(ref, state, eventId: eventId),
+      onRetry: onRetry,
     ),
     EventSuccessCompanionRouteStatus.ready => null,
-  };
-}
-
-VoidCallback _companionRouteRetryCallback(
-  WidgetRef ref,
-  EventSuccessCompanionRouteState state, {
-  required String eventId,
-}) {
-  return () {
-    switch (state.retryIntent) {
-      case EventSuccessCompanionRetryIntent.event:
-        ref.invalidate(watchEventProvider(eventId));
-      case EventSuccessCompanionRetryIntent.uid:
-        ref.invalidate(uidProvider);
-      case EventSuccessCompanionRetryIntent.profile:
-        ref.invalidate(watchUserProfileProvider);
-      case EventSuccessCompanionRetryIntent.participation:
-        final uid = state.uid;
-        if (uid != null) {
-          ref.invalidate(watchEventParticipationProvider(eventId, uid));
-        }
-      case EventSuccessCompanionRetryIntent.plan:
-        ref.invalidate(watchEventSuccessPlanProvider(eventId));
-      case EventSuccessCompanionRetryIntent.arrivalMission:
-        final uid = state.uid;
-        if (uid != null) {
-          ref.invalidate(
-            watchUserEventSuccessArrivalMissionProvider(
-              eventId: eventId,
-              uid: uid,
-            ),
-          );
-        }
-      case EventSuccessCompanionRetryIntent.compatibility:
-        final uid = state.uid;
-        if (uid != null) {
-          ref.invalidate(
-            watchUserEventSuccessCompatibilityResponseProvider(
-              eventId: eventId,
-              uid: uid,
-            ),
-          );
-        }
-      case EventSuccessCompanionRetryIntent.feedback:
-        final uid = state.uid;
-        if (uid != null) {
-          ref.invalidate(
-            watchUserEventSuccessFeedbackProvider(eventId: eventId, uid: uid),
-          );
-        }
-      case EventSuccessCompanionRetryIntent.assignment:
-        final uid = state.uid;
-        if (uid != null) {
-          ref.invalidate(
-            watchUserEventSuccessAssignmentProvider(eventId: eventId, uid: uid),
-          );
-        }
-      case EventSuccessCompanionRetryIntent.rotationAssignment:
-        final uid = state.uid;
-        if (uid != null) {
-          ref.invalidate(
-            watchUserEventSuccessRotationAssignmentProvider(
-              eventId: eventId,
-              uid: uid,
-            ),
-          );
-        }
-      case EventSuccessCompanionRetryIntent.preference:
-        final uid = state.uid;
-        if (uid != null) {
-          ref.invalidate(
-            watchUserEventSuccessPreferenceProvider(eventId: eventId, uid: uid),
-          );
-        }
-      case EventSuccessCompanionRetryIntent.wingmanRequest:
-        final uid = state.uid;
-        if (uid != null) {
-          ref.invalidate(
-            watchUserEventSuccessWingmanRequestProvider(
-              eventId: eventId,
-              uid: uid,
-            ),
-          );
-        }
-      case EventSuccessCompanionRetryIntent.wingmanCandidates:
-        final profile = state.profile;
-        if (profile != null) {
-          ref.invalidate(
-            wingmanRequestCandidatesProvider(
-              eventId: eventId,
-              currentUser: profile,
-            ),
-          );
-        }
-      case null:
-        break;
-    }
   };
 }
