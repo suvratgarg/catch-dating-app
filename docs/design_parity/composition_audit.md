@@ -283,7 +283,7 @@ Done: `ClubScheduleSection` renders its Schedule title through
 `ClubDetailBody`, and `ClubReviewsSection` is now content-only rather than
 growing a new `showHeader` flag.
 
-### C3. `ClubNextRunBanner` raw control + typography drift `[codex]`
+### C3. `ClubNextRunBanner` raw control + typography drift `[done 2fdd413b8]`
 
 Hand-rolls `Material + InkWell + Ink(BoxDecoration)` — replace with
 `CatchSurface(onTap:, backgroundColor: activity.soft, radius: md)`. Its
@@ -293,6 +293,10 @@ are off-token faux weights: use the existing text style whose weight matches
 (check `CatchTextStyles` for a strong mono label and a reading-body style);
 if none exists, escalate with a proposed style name — do not keep copyWith
 weights.
+
+Done: `ClubNextRunBanner` now uses `CatchSurface` for the tappable tile shell,
+its label uses `CatchTextStyles.monoLabelS` directly, and the Club Detail About
+copy uses `CatchTextStyles.proseL` instead of overriding `bodyLead`'s weight.
 
 ### C4. `CatchClubDock` — wrong shell, wrong name `[codex]`
 
