@@ -354,11 +354,11 @@ Part 1 — Events/Map
 - [x] 1.A3 compact variant deleted (3e4274430)
 - [x] 1.A4 EventCompactRow (+DatePill if orphaned) deleted (3e4274430)
 - [x] 1.A5 ledger entries recorded (3e4274430)
-- [ ] 1.B1 selection/navigation split (other consumers preserved)
-- [ ] 1.B2 DateTicket selected card (kicker helper reused, notchBg if needed)
+- [x] 1.B1 selection/navigation split (other consumers preserved) (6254440c8)
+- [x] 1.B2 DateTicket selected card (kicker helper reused, notchBg if needed) (6254440c8)
 - [ ] 1.B3 pin parity vs DS MapPin (tokens, flag label)
-- [ ] 1.B4 refresh-safe selection
-- [ ] 1.B5 tests + widgetbook states
+- [x] 1.B4 refresh-safe selection (6254440c8)
+- [x] 1.B5 tests + widgetbook states (selected-card/no-exact-pin coverage; DS pin parity remains 1.B3) (6254440c8)
 Part 2 — Clubs
 - [ ] 2.0 aligned/deviation verifies receipted (StatStrip delta, contact links)
 - [ ] 2.1 hero variants (polaroid default, masthead, unreachable full) + skeleton + appshots
