@@ -252,7 +252,7 @@ reviews), but the screen predates the detail grammar: it hand-rolls the
 section scaffolding the core already owns, mixes title systems, and carries
 typography drift.
 
-### C1. Adopt `CatchDetailSliverSectionList` `[codex]`
+### C1. Adopt `CatchDetailSliverSectionList` `[done ea3f105ef]`
 
 `ClubDetailBody` hand-assembles `SliverPadding(fromLTRB(detailScreen*
 tokens))` + nested `CatchSectionStack` + a local `sectionGap` SizedBox + two
@@ -264,13 +264,24 @@ About → Get in touch, reviews); the schedule's `EventAgendaSliverList` is a
 true sliver and stays a sibling sliver, but its title and paddings come from
 the same tokens/primitives as everything else (see C2).
 
-### C2. Section-title unification (G1 applied) `[codex]` (approved 2026-07-05)
+Done: `ClubDetailBody` now uses `CatchDetailSliverSectionList` for the loaded
+body's identity band and box-section stack, and `ClubDetailLoadingBody` uses the
+same detail-list primitive for the skeleton section rhythm. Schedule remains a
+true sliver sibling, with its final bottom padding controlled by whether trailing
+detail sections exist.
+
+### C2. Section-title unification (G1 applied) `[done ea3f105ef]` (approved 2026-07-05)
 
 'Schedule' (`ClubScheduleSection`, bare `Text(titleL)`) and 'Reviews'
 (`ClubReviewsSection` via titleL header) move to the CatchSection kicker
 voice used by the other five sections on this screen. For the schedule this
 means a sliver-compatible section header built from the same kicker
 primitive (`CatchSection` title chrome), not a bespoke Text.
+
+Done: `ClubScheduleSection` renders its Schedule title through
+`CatchSection.divided`, Reviews is wrapped by `CatchSection.divided` from
+`ClubDetailBody`, and `ClubReviewsSection` is now content-only rather than
+growing a new `showHeader` flag.
 
 ### C3. `ClubNextRunBanner` raw control + typography drift `[codex]`
 
@@ -291,19 +302,26 @@ DockCount/DockBell content). LEXICON: `Catch*` is reserved for core
 primitives; this is a clubs feature widget — rename to `ClubDetailDock`
 (with the usual deprecated typedef for one release if usages are wide).
 
-### C5. Schedule empty state over-tuning `[codex]`
+### C5. Schedule empty state over-tuning `[done ea3f105ef]`
 
 `ClubScheduleSection`'s `CatchEmptyState` hand-tunes six knobs including raw
 `iconContainerSize: 44`. Use the empty-state defaults; if the inline layout
 genuinely needs a smaller container, use the nearest token and keep at most
 the `layout:` knob. Raw 44 must not survive.
 
-### C6. IA polish `[codex]` (approved 2026-07-05)
+Done: `ClubScheduleSection` now relies on `CatchEmptyState` inline defaults and
+keeps only the `layout: CatchEmptyStateLayout.inline` configuration.
+
+### C6. IA polish `[done ea3f105ef]` (approved 2026-07-05)
 
 'Get in touch' (contact rows) currently sits between Hosts and Schedule.
 It is footer-type content — propose moving it below Reviews as the last
 section, so the mid-page flow reads About → What we do → Photos → Hosts →
 Schedule → Reviews → Get in touch. Pure reorder, no widget changes.
+
+Done: `Get in touch` now renders after Reviews as the final trailing detail
+section while Schedule keeps the normal detail-screen bottom gutter only when
+there are no trailing sections.
 
 ### C7. Positive calibration
 
