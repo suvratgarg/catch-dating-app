@@ -25,6 +25,7 @@ class EventDetailHeroAppBar extends StatelessWidget {
     required this.onToggleSaved,
     required this.showAddToCalendar,
     required this.onAddToCalendar,
+    this.showShareAction = true,
     this.presentationMode = EventDetailPresentationMode.standard,
     this.heroTag,
   });
@@ -37,6 +38,7 @@ class EventDetailHeroAppBar extends StatelessWidget {
   final VoidCallback onToggleSaved;
   final bool showAddToCalendar;
   final ValueChanged<BuildContext> onAddToCalendar;
+  final bool showShareAction;
   final EventDetailPresentationMode presentationMode;
   final Object? heroTag;
 
@@ -87,20 +89,21 @@ class EventDetailHeroAppBar extends StatelessWidget {
         ),
       ),
       actions: [
-        Padding(
-          padding: CatchInsets.iconChipContent,
-          child: Builder(
-            builder: (buttonContext) => CatchIconAction(
-              icon: CatchIcons.platformShare(
-                platform: Theme.of(context).platform,
+        if (showShareAction)
+          Padding(
+            padding: CatchInsets.iconChipContent,
+            child: Builder(
+              builder: (buttonContext) => CatchIconAction(
+                icon: CatchIcons.platformShare(
+                  platform: Theme.of(context).platform,
+                ),
+                tooltip: 'Share event',
+                backgroundColor: overlayScrim,
+                onPressed: () => onShare(buttonContext),
+                foregroundColor: d.ink,
               ),
-              tooltip: 'Share event',
-              backgroundColor: overlayScrim,
-              onPressed: () => onShare(buttonContext),
-              foregroundColor: d.ink,
             ),
           ),
-        ),
         if (showAddToCalendar)
           Padding(
             padding: const EdgeInsets.only(

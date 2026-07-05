@@ -334,12 +334,16 @@ class EventDetailMechanismSkeleton extends StatelessWidget {
 }
 
 class EventDetailSocialSkeleton extends StatelessWidget {
-  const EventDetailSocialSkeleton({super.key});
+  const EventDetailSocialSkeleton({super.key, this.surfaceStyle});
+
+  final EventDetailSurfaceStyle? surfaceStyle;
 
   @override
   Widget build(BuildContext context) {
     return CatchSection.divided(
       title: "Who's going",
+      dividerColor: surfaceStyle?.dividerColor,
+      titleColor: surfaceStyle?.headingColor,
       child: Row(
         children: [
           for (var index = 0; index < 4; index++) ...[

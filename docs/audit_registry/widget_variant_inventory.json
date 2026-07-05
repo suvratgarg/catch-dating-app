@@ -1,16 +1,16 @@
 {
-  "generatedAt": "2026-07-04T23:08:58.051Z",
+  "generatedAt": "2026-07-05T00:02:53.393Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
     "useCases": 870,
-    "components": 843,
+    "components": 842,
     "stateCards": 1748,
     "reviewCandidates": 38,
     "oversizedUseCases": 43,
-    "multiUseCaseComponents": 26
+    "multiUseCaseComponents": 27
   },
   "reviewCandidates": [
     {
@@ -9869,6 +9869,67 @@
       ]
     },
     {
+      "component": "EventDetailBody",
+      "useCaseCount": 2,
+      "stateCardCount": 5,
+      "paths": [
+        "[Event Detail]/Sections"
+      ],
+      "labels": [
+        "companion available",
+        "hidden",
+        "invite loop available",
+        "spotlight fallback body",
+        "standard fallback body"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Initial event loading body states",
+          "functionName": "eventDetailInitialEventLoadingBodyStates",
+          "file": "widgetbook/lib/events/event_detail_use_cases.dart",
+          "path": "[Event Detail]/Sections",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "standard fallback body",
+              "normalizedLabel": "standard fallback body"
+            },
+            {
+              "label": "spotlight fallback body",
+              "normalizedLabel": "spotlight fallback body"
+            }
+          ]
+        },
+        {
+          "name": "Prompt states",
+          "functionName": "eventDetailPromptBodyStates",
+          "file": "widgetbook/lib/events/event_detail_use_cases.dart",
+          "path": "[Event Detail]/Sections",
+          "stateCardCount": 3,
+          "stateCards": [
+            {
+              "label": "hidden",
+              "normalizedLabel": "hidden"
+            },
+            {
+              "label": "companion available",
+              "normalizedLabel": "companion available"
+            },
+            {
+              "label": "invite loop available",
+              "normalizedLabel": "invite loop available"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "CatchActivityArt",
       "useCaseCount": 1,
       "stateCardCount": 5,
@@ -14539,48 +14600,6 @@
       ]
     },
     {
-      "component": "EventDetailBody",
-      "useCaseCount": 1,
-      "stateCardCount": 3,
-      "paths": [
-        "[Event Detail]/Sections"
-      ],
-      "labels": [
-        "companion available",
-        "hidden",
-        "invite loop available"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Prompt states",
-          "functionName": "eventDetailPromptBodyStates",
-          "file": "widgetbook/lib/events/event_detail_use_cases.dart",
-          "path": "[Event Detail]/Sections",
-          "stateCardCount": 3,
-          "stateCards": [
-            {
-              "label": "hidden",
-              "normalizedLabel": "hidden"
-            },
-            {
-              "label": "companion available",
-              "normalizedLabel": "companion available"
-            },
-            {
-              "label": "invite loop available",
-              "normalizedLabel": "invite loop available"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "EventDetailOverviewSection",
       "useCaseCount": 1,
       "stateCardCount": 3,
@@ -18632,43 +18651,6 @@
             {
               "label": "ticket and spotlight modes",
               "normalizedLabel": "ticket and spotlight modes"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "EventDetailOptimisticBody",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[Event Detail]/Sections"
-      ],
-      "labels": [
-        "spotlight bridge",
-        "standard loading bridge"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Optimistic body states",
-          "functionName": "eventDetailOptimisticBodyStates",
-          "file": "widgetbook/lib/events/event_detail_use_cases.dart",
-          "path": "[Event Detail]/Sections",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "standard loading bridge",
-              "normalizedLabel": "standard loading bridge"
-            },
-            {
-              "label": "spotlight bridge",
-              "normalizedLabel": "spotlight bridge"
             }
           ]
         }

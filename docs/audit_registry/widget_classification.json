@@ -1,7 +1,7 @@
 {
   "$schema": "./widget_classification.schema.json",
   "version": 1,
-  "updated": "2026-07-04",
+  "updated": "2026-07-05",
   "sourceOfTruth": {
     "scope": "Generated inventory for production Flutter widget and widget-state classes under lib/**. Widgetbook/test scaffolds are intentionally out of scope.",
     "canonicalContracts": "design/components/catch.components.json owns canonical global component contracts and governance metadata.",
@@ -10,14 +10,14 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1117,
-    "widgetClasses": 1009,
+    "total": 1116,
+    "widgetClasses": 1008,
     "stateClasses": 108,
-    "publicClasses": 1007,
+    "publicClasses": 1006,
     "privateClasses": 110,
     "byRole": {
       "atom": 57,
-      "composition": 321,
+      "composition": 320,
       "feature-adapter": 315,
       "pattern": 16,
       "screen": 300,
@@ -25,14 +25,14 @@
     },
     "byDecision": {
       "keep-canonical-contract": 171,
-      "keep-public-cataloged": 783,
+      "keep-public-cataloged": 782,
       "keep-widget-state": 108,
       "review-catalog-coverage": 38,
       "review-promote-or-consolidate": 15,
       "review-promote-or-inline": 2
     },
     "byCatalogStatus": {
-      "cataloged": 716,
+      "cataloged": 715,
       "contracted": 171,
       "not-applicable": 108,
       "route-covered": 81,
@@ -14800,31 +14800,6 @@
       ],
       "flags": [
         "public-widget-missing-widgetbook"
-      ]
-    },
-    {
-      "name": "EventDetailOptimisticBody",
-      "file": "lib/events/presentation/widgets/event_detail_optimistic_body.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.event_detail_optimistic_body",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": [
-        "primitive-imports-routing-layer"
       ]
     },
     {

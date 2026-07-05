@@ -28,7 +28,6 @@ import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.da
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_app_bar.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_loading_skeleton.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_optimistic_body.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/shared/event_share_card.dart';
@@ -98,9 +97,16 @@ void main() {
         ],
       );
 
-      expect(find.byType(EventDetailOptimisticBody), findsOneWidget);
+      expect(find.byType(EventDetailBody), findsOneWidget);
+      expect(find.text(event.title), findsWidgets);
+      expect(find.byType(EventDetailHostsSkeleton), findsOneWidget);
+      expect(find.byType(EventDetailSocialSkeleton), findsOneWidget);
       expect(find.byType(CatchSkeleton), findsWidgets);
       expect(find.byType(CircularProgressIndicator), findsNothing);
+      expect(find.byTooltip('Share event'), findsNothing);
+      expect(find.byTooltip('Add to calendar'), findsNothing);
+      expect(find.byTooltip('Save event'), findsOneWidget);
+      expect(find.text('Sign in to book this event'), findsOneWidget);
     });
 
     testWidgets('renders the error state', (tester) async {

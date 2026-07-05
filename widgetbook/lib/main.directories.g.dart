@@ -3210,6 +3210,11 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'EventDetailBody',
             useCases: [
               _widgetbook.WidgetbookUseCase(
+                name: 'Initial event loading body states',
+                builder: _widgetbook_workspace_events_event_detail_use_cases
+                    .eventDetailInitialEventLoadingBodyStates,
+              ),
+              _widgetbook.WidgetbookUseCase(
                 name: 'Prompt states',
                 builder: _widgetbook_workspace_events_event_detail_use_cases
                     .eventDetailPromptBodyStates,
@@ -3253,16 +3258,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Event detail hosts skeleton',
                 builder: _widgetbook_workspace_events_event_detail_use_cases
                     .eventDetailHostsSkeletonState,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'EventDetailOptimisticBody',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Optimistic body states',
-                builder: _widgetbook_workspace_events_event_detail_use_cases
-                    .eventDetailOptimisticBodyStates,
               ),
             ],
           ),

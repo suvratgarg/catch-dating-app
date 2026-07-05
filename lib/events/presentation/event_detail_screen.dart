@@ -23,7 +23,6 @@ import 'package:catch_dating_app/events/presentation/event_detail_view_model.dar
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_body.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_loading_skeleton.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_optimistic_body.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/shared/event_share_card.dart';
@@ -262,13 +261,92 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
     }
 
     if (vmAsync.isLoading && _initialEventMatchesRoute) {
-      return EventDetailOptimisticBody(
-        event: widget.initialEvent!,
-        clubId: widget.clubId,
+      final event = widget.initialEvent!;
+      final now = DateTime.now();
+      final sectionVisibility = eventDetailSectionVisibilityStateFrom(
+        event: event,
+        participation: null,
+        isHostApp: isHostApp,
+        isHost: false,
+        now: now,
+      );
+      final isSpotlightDark =
+          widget.presentationMode == EventDetailPresentationMode.spotlightDark;
+      final style = _eventDetailSurfaceStyle(
+        context,
         presentationMode: widget.presentationMode,
-        heroTag: widget.heroTag,
-        inviteCode: widget.inviteCode,
-        inviteLinkId: widget.inviteLinkId,
+      );
+
+      return Scaffold(
+        backgroundColor: style.pageBackground,
+        body: EventDetailBody(
+          event: event,
+          userProfile: null,
+          clubId: widget.clubId,
+          reviews: const [],
+          isAuthenticated: false,
+          sectionVisibility: sectionVisibility,
+          isSaved: false,
+          participation: null,
+          savePending: false,
+          surfaceStyle: style,
+          onBack: () => Navigator.of(context).pop(),
+          onShare: (_) {},
+          showShareAction: false,
+          showAddToCalendar: false,
+          onAddToCalendar: (_) {},
+          onToggleSaved: () => _openEventSignIn(
+            context,
+            clubId: widget.clubId,
+            eventId: event.id,
+            inviteCode: widget.inviteCode,
+            inviteLinkId: widget.inviteLinkId,
+          ),
+          companionState: const EventDetailCompanionState.hidden(),
+          hostState: const EventDetailHostState.loading(),
+          socialState: const EventDetailSocialState.loading(),
+          onLocationTap: event.hasExactStartingPoint
+              ? () => context.pushNamed(
+                  Routes.eventLocationMapScreen.name,
+                  pathParameters: {'eventId': event.id},
+                )
+              : null,
+          onOpenCompanion: () {},
+          onRetryCompanion: () =>
+              ref.invalidate(watchEventSuccessPlanProvider(event.id)),
+          onViewClub: (clubId) => context.pushNamed(
+            Routes.clubDetailScreen.name,
+            pathParameters: {'clubId': clubId},
+          ),
+          onMessageHost: (clubId, hostUid) => unawaited(
+            _messageHost(context, clubId: clubId, hostUid: hostUid),
+          ),
+          onRetryHosts: () => ref.invalidate(fetchClubProvider(widget.clubId)),
+          inviteCode: widget.inviteCode,
+          inviteLinkId: widget.inviteLinkId,
+          now: now,
+          presentationMode: widget.presentationMode,
+          heroTag: widget.heroTag,
+        ),
+        bottomNavigationBar: _eventDetailBottomNavigationBar(
+          event: event,
+          userProfile: null,
+          clubId: widget.clubId,
+          isAuthenticated: false,
+          participation: null,
+          inviteCode: widget.inviteCode,
+          inviteLinkId: widget.inviteLinkId,
+          now: now,
+          darkSurface: isSpotlightDark,
+          sectionVisibility: sectionVisibility,
+          onGuestBook: () => _openEventSignIn(
+            context,
+            clubId: widget.clubId,
+            eventId: event.id,
+            inviteCode: widget.inviteCode,
+            inviteLinkId: widget.inviteLinkId,
+          ),
+        ),
       );
     }
 

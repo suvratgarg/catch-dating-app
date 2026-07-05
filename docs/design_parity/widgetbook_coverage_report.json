@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-07-04T23:08:57.925Z",
+  "generatedAt": "2026-07-05T00:05:02.543Z",
   "decisionLedgerPath": "docs/design_parity/widgetbook_widget_decisions.json",
-  "total": 985,
+  "total": 984,
   "stats": {
-    "PUBLIC_ALREADY_CATALOGED_NAME_MATCH": 863,
+    "PUBLIC_ALREADY_CATALOGED_NAME_MATCH": 862,
     "PUBLIC_NEEDS_CATALOG_OR_REPLACE": 120,
     "PRIVATE_NEEDS_RENAME_OR_REPLACE": 2
   },
@@ -44,8 +44,8 @@
     },
     {
       "area": "events",
-      "total": 117,
-      "publicAlreadyCataloged": 101,
+      "total": 116,
+      "publicAlreadyCataloged": 100,
       "privateNameMatchNeedsDecision": 0,
       "privateNeedsRenameOrReplace": 0,
       "publicNeedsCatalogOrReplace": 16,
@@ -7322,7 +7322,7 @@
     },
     {
       "file": "lib/events/presentation/event_detail_screen.dart",
-      "line": 39,
+      "line": 38,
       "name": "EventDetailScreen",
       "base": "ConsumerStatefulWidget",
       "area": "events",
@@ -7616,7 +7616,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_body.dart",
-      "line": 184,
+      "line": 187,
       "name": "EventDetailCalloutCard",
       "base": "StatelessWidget",
       "area": "events",
@@ -7630,7 +7630,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_body.dart",
-      "line": 256,
+      "line": 259,
       "name": "EventCompanionEntry",
       "base": "StatelessWidget",
       "area": "events",
@@ -7644,7 +7644,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_body.dart",
-      "line": 296,
+      "line": 299,
       "name": "GuestBookCta",
       "base": "StatelessWidget",
       "area": "events",
@@ -7658,7 +7658,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_body.dart",
-      "line": 332,
+      "line": 335,
       "name": "EventDetailHostsSection",
       "base": "StatelessWidget",
       "area": "events",
@@ -7938,7 +7938,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
-      "line": 172,
+      "line": 175,
       "name": "LegacyEventHeroSurface",
       "base": "StatelessWidget",
       "area": "events",
@@ -7952,7 +7952,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
-      "line": 218,
+      "line": 221,
       "name": "EventDetailTicketHeroSurface",
       "base": "StatelessWidget",
       "area": "events",
@@ -7966,7 +7966,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
-      "line": 242,
+      "line": 245,
       "name": "EventDetailTicketSurface",
       "base": "StatelessWidget",
       "area": "events",
@@ -7980,7 +7980,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
-      "line": 410,
+      "line": 413,
       "name": "HeroActivityBadge",
       "base": "StatelessWidget",
       "area": "events",
@@ -7994,7 +7994,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
-      "line": 444,
+      "line": 447,
       "name": "HeroTimeChip",
       "base": "StatelessWidget",
       "area": "events",
@@ -8148,7 +8148,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_loading_skeleton.dart",
-      "line": 357,
+      "line": 361,
       "name": "EventDetailCompanionSkeleton",
       "base": "StatelessWidget",
       "area": "events",
@@ -8162,7 +8162,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_loading_skeleton.dart",
-      "line": 395,
+      "line": 399,
       "name": "EventDetailHostsSkeleton",
       "base": "StatelessWidget",
       "area": "events",
@@ -8176,7 +8176,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_loading_skeleton.dart",
-      "line": 426,
+      "line": 430,
       "name": "EventDetailLoadingCta",
       "base": "StatelessWidget",
       "area": "events",
@@ -8187,20 +8187,6 @@
       "mechanicalStatus": "PUBLIC_NEEDS_CATALOG_OR_REPLACE",
       "decision": null,
       "status": "PUBLIC_NEEDS_CATALOG_OR_REPLACE"
-    },
-    {
-      "file": "lib/events/presentation/widgets/event_detail_optimistic_body.dart",
-      "line": 24,
-      "name": "EventDetailOptimisticBody",
-      "base": "StatelessWidget",
-      "area": "events",
-      "visibility": "public",
-      "publicName": "EventDetailOptimisticBody",
-      "exactNameMatched": true,
-      "publicNameMatched": true,
-      "mechanicalStatus": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH",
-      "decision": null,
-      "status": "PUBLIC_ALREADY_CATALOGED_NAME_MATCH"
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_overview_section.dart",
@@ -8274,7 +8260,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_social_section.dart",
-      "line": 15,
+      "line": 16,
       "name": "EventDetailSocialSection",
       "base": "StatelessWidget",
       "area": "events",
@@ -8288,7 +8274,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_social_section.dart",
-      "line": 76,
+      "line": 81,
       "name": "GuestWhoIsGoing",
       "base": "StatelessWidget",
       "area": "events",

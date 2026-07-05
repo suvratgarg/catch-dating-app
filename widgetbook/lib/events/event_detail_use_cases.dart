@@ -48,7 +48,6 @@ import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.da
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_app_bar.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_loading_skeleton.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_optimistic_body.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_overview_section.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_social_section.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
@@ -599,28 +598,106 @@ Widget eventWhatToExpectState(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Optimistic body states',
-  type: EventDetailOptimisticBody,
+  name: 'Initial event loading body states',
+  type: EventDetailBody,
   path: '[Event Detail]/Sections',
 )
-Widget eventDetailOptimisticBodyStates(BuildContext context) {
+Widget eventDetailInitialEventLoadingBodyStates(BuildContext context) {
   return _CatalogScreen(
-    title: 'EventDetailOptimisticBody',
-    catalogId: 'section.event.optimistic_body',
+    title: 'EventDetailBody initial loading',
+    catalogId: 'section.event.initial_loading_body',
     children: [
       _StateCard(
-        label: 'standard loading bridge',
+        label: 'standard fallback body',
         child: _DeviceFrame(
-          child: EventDetailOptimisticBody(event: _event, clubId: _clubId),
+          child: _EventScope(
+            event: _event,
+            child: EventDetailBody(
+              event: _event,
+              userProfile: null,
+              clubId: _clubId,
+              reviews: const [],
+              isAuthenticated: false,
+              sectionVisibility: eventDetailSectionVisibilityStateFrom(
+                event: _event,
+                participation: null,
+                isHostApp: false,
+                isHost: false,
+                now: _now,
+              ),
+              isSaved: false,
+              participation: null,
+              savePending: false,
+              onBack: _noop,
+              onShare: _noopContext,
+              showShareAction: false,
+              showAddToCalendar: false,
+              onAddToCalendar: _noopContext,
+              onToggleSaved: _noop,
+              companionState: const EventDetailCompanionState.hidden(),
+              hostState: const EventDetailHostState.loading(),
+              socialState: const EventDetailSocialState.loading(),
+              onLocationTap: _noop,
+              onOpenCompanion: _noop,
+              onRetryCompanion: _noop,
+              onViewClub: _noopString,
+              onMessageHost: _noopMessageHost,
+              onRetryHosts: _noop,
+              now: _now,
+            ),
+          ),
         ),
       ),
       _StateCard(
-        label: 'spotlight bridge',
+        label: 'spotlight fallback body',
         child: _DeviceFrame(
-          child: EventDetailOptimisticBody(
-            event: _event,
-            clubId: _clubId,
-            presentationMode: EventDetailPresentationMode.spotlightDark,
+          child: Builder(
+            builder: (context) {
+              final style = EventDetailSurfaceStyle.dark(
+                CatchTokens.of(context),
+              );
+              return ColoredBox(
+                color: style.pageBackground,
+                child: _EventScope(
+                  event: _event,
+                  child: EventDetailBody(
+                    event: _event,
+                    userProfile: null,
+                    clubId: _clubId,
+                    reviews: const [],
+                    isAuthenticated: false,
+                    sectionVisibility: eventDetailSectionVisibilityStateFrom(
+                      event: _event,
+                      participation: null,
+                      isHostApp: false,
+                      isHost: false,
+                      now: _now,
+                    ),
+                    isSaved: false,
+                    participation: null,
+                    savePending: false,
+                    surfaceStyle: style,
+                    onBack: _noop,
+                    onShare: _noopContext,
+                    showShareAction: false,
+                    showAddToCalendar: false,
+                    onAddToCalendar: _noopContext,
+                    onToggleSaved: _noop,
+                    companionState: const EventDetailCompanionState.hidden(),
+                    hostState: const EventDetailHostState.loading(),
+                    socialState: const EventDetailSocialState.loading(),
+                    onLocationTap: _noop,
+                    onOpenCompanion: _noop,
+                    onRetryCompanion: _noop,
+                    onViewClub: _noopString,
+                    onMessageHost: _noopMessageHost,
+                    onRetryHosts: _noop,
+                    now: _now,
+                    presentationMode: EventDetailPresentationMode.spotlightDark,
+                  ),
+                ),
+              );
+            },
           ),
         ),
       ),

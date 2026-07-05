@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-07-04T23:09:00.800610+00:00",
+  "generated_at": "2026-07-05T00:05:15.019196+00:00",
   "repo_root": "/Users/suvratgarg/Development/catch-dating-app/catch_dating_app",
-  "total_files_scanned": 736,
-  "total_definitions": 3739,
+  "total_files_scanned": 735,
+  "total_definitions": 3738,
   "file_manifest": [
     {
       "file": "lib/activity/domain/activity_taxonomy.dart",
@@ -1951,12 +1951,12 @@
     },
     {
       "file": "lib/events/presentation/event_detail_display_state.dart",
-      "line_count": 179,
+      "line_count": 189,
       "definition_count": 10
     },
     {
       "file": "lib/events/presentation/event_detail_screen.dart",
-      "line_count": 508,
+      "line_count": 586,
       "definition_count": 8
     },
     {
@@ -2021,7 +2021,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_body.dart",
-      "line_count": 394,
+      "line_count": 397,
       "definition_count": 7
     },
     {
@@ -2036,18 +2036,13 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
-      "line_count": 491,
+      "line_count": 494,
       "definition_count": 8
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_loading_skeleton.dart",
-      "line_count": 447,
+      "line_count": 451,
       "definition_count": 14
-    },
-    {
-      "file": "lib/events/presentation/widgets/event_detail_optimistic_body.dart",
-      "line_count": 110,
-      "definition_count": 1
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_overview_section.dart",
@@ -2056,7 +2051,7 @@
     },
     {
       "file": "lib/events/presentation/widgets/event_detail_social_section.dart",
-      "line_count": 125,
+      "line_count": 130,
       "definition_count": 2
     },
     {
@@ -20345,13 +20340,13 @@
       "line": 150,
       "signature": "class EventDetailSocialState {",
       "is_widget": false,
-      "body_hash": "de191955b0d66fa6"
+      "body_hash": "686c9a4aeb83aa52"
     },
     {
       "name": "eventDetailSocialStateFrom",
       "kind": "function",
       "file": "lib/events/presentation/event_detail_display_state.dart",
-      "line": 162,
+      "line": 172,
       "signature": "EventDetailSocialState eventDetailSocialStateFrom({",
       "return_type": "EventDetailSocialState",
       "body_hash": "5a9a35a6442c9560"
@@ -20360,7 +20355,7 @@
       "name": "EventDetailScreen",
       "kind": "class",
       "file": "lib/events/presentation/event_detail_screen.dart",
-      "line": 39,
+      "line": 38,
       "signature": "class EventDetailScreen extends ConsumerStatefulWidget {",
       "superclass": "ConsumerStatefulWidget",
       "is_widget": true,
@@ -20370,17 +20365,17 @@
       "name": "_EventDetailScreenState",
       "kind": "class",
       "file": "lib/events/presentation/event_detail_screen.dart",
-      "line": 63,
+      "line": 62,
       "signature": "class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {",
       "superclass": "ConsumerState<EventDetailScreen>",
       "is_widget": false,
-      "body_hash": "2c3205ab6c562e3b"
+      "body_hash": "cce255d58845ddb0"
     },
     {
       "name": "_eventDetailSurfaceStyle",
       "kind": "function",
       "file": "lib/events/presentation/event_detail_screen.dart",
-      "line": 367,
+      "line": 445,
       "signature": "EventDetailSurfaceStyle _eventDetailSurfaceStyle(",
       "return_type": "EventDetailSurfaceStyle",
       "body_hash": "015e1eee2851b190"
@@ -20389,7 +20384,7 @@
       "name": "_eventDetailBottomNavigationBar",
       "kind": "function",
       "file": "lib/events/presentation/event_detail_screen.dart",
-      "line": 381,
+      "line": 459,
       "signature": "Widget? _eventDetailBottomNavigationBar({",
       "return_type": "Widget?",
       "body_hash": "5908c63f58708c73"
@@ -20398,7 +20393,7 @@
       "name": "_openEventSignIn",
       "kind": "function",
       "file": "lib/events/presentation/event_detail_screen.dart",
-      "line": 416,
+      "line": 494,
       "signature": "void _openEventSignIn(",
       "return_type": "void",
       "body_hash": "8893f3917ac5852f"
@@ -20407,7 +20402,7 @@
       "name": "_shareEvent",
       "kind": "function",
       "file": "lib/events/presentation/event_detail_screen.dart",
-      "line": 438,
+      "line": 516,
       "signature": "Future<void> _shareEvent(",
       "return_type": "Future<void>",
       "body_hash": "c344b2937bd4b35c"
@@ -20416,7 +20411,7 @@
       "name": "_addEventToCalendar",
       "kind": "function",
       "file": "lib/events/presentation/event_detail_screen.dart",
-      "line": 454,
+      "line": 532,
       "signature": "Future<void> _addEventToCalendar(",
       "return_type": "Future<void>",
       "body_hash": "895c16f085b36e2d"
@@ -20425,7 +20420,7 @@
       "name": "_canAddEventToCalendar",
       "kind": "function",
       "file": "lib/events/presentation/event_detail_screen.dart",
-      "line": 490,
+      "line": 568,
       "signature": "bool _canAddEventToCalendar({",
       "return_type": "bool",
       "body_hash": "51ea99cc158f6805"
@@ -21022,13 +21017,13 @@
       "signature": "class EventDetailBody extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "de9af78ab5181b64"
+      "body_hash": "ccf6efa46e81a1c5"
     },
     {
       "name": "EventDetailCalloutCard",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_body.dart",
-      "line": 184,
+      "line": 187,
       "signature": "class EventDetailCalloutCard extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -21038,7 +21033,7 @@
       "name": "EventCompanionEntry",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_body.dart",
-      "line": 256,
+      "line": 259,
       "signature": "class EventCompanionEntry extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -21048,7 +21043,7 @@
       "name": "GuestBookCta",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_body.dart",
-      "line": 296,
+      "line": 299,
       "signature": "class GuestBookCta extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -21058,7 +21053,7 @@
       "name": "EventDetailHostsSection",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_body.dart",
-      "line": 332,
+      "line": 335,
       "signature": "class EventDetailHostsSection extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -21407,13 +21402,13 @@
       "signature": "class EventDetailHeroAppBar extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "d01f83f648bc2d74"
+      "body_hash": "1dc616ac80daa71a"
     },
     {
       "name": "_expandedHeightFor",
       "kind": "function",
       "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
-      "line": 150,
+      "line": 153,
       "signature": "double _expandedHeightFor({",
       "return_type": "double",
       "body_hash": "d0cdf1744949eee1"
@@ -21422,7 +21417,7 @@
       "name": "LegacyEventHeroSurface",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
-      "line": 172,
+      "line": 175,
       "signature": "class LegacyEventHeroSurface extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -21432,7 +21427,7 @@
       "name": "EventDetailTicketHeroSurface",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
-      "line": 218,
+      "line": 221,
       "signature": "class EventDetailTicketHeroSurface extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -21442,7 +21437,7 @@
       "name": "EventDetailTicketSurface",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
-      "line": 242,
+      "line": 245,
       "signature": "class EventDetailTicketSurface extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -21452,7 +21447,7 @@
       "name": "HeroActivityBadge",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
-      "line": 410,
+      "line": 413,
       "signature": "class HeroActivityBadge extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -21462,7 +21457,7 @@
       "name": "HeroTimeChip",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
-      "line": 444,
+      "line": 447,
       "signature": "class HeroTimeChip extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -21472,7 +21467,7 @@
       "name": "_heroSubtitle",
       "kind": "function",
       "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
-      "line": 482,
+      "line": 485,
       "signature": "String _heroSubtitle(Event event) {",
       "return_type": "String",
       "body_hash": "8389ed2a06b2ab83"
@@ -21584,13 +21579,13 @@
       "signature": "class EventDetailSocialSkeleton extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "c15ec938397b36e3"
+      "body_hash": "7821192f25ba38cb"
     },
     {
       "name": "EventDetailCompanionSkeleton",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_loading_skeleton.dart",
-      "line": 357,
+      "line": 361,
       "signature": "class EventDetailCompanionSkeleton extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -21600,7 +21595,7 @@
       "name": "EventDetailHostsSkeleton",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_loading_skeleton.dart",
-      "line": 395,
+      "line": 399,
       "signature": "class EventDetailHostsSkeleton extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
@@ -21610,21 +21605,11 @@
       "name": "EventDetailLoadingCta",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_loading_skeleton.dart",
-      "line": 426,
+      "line": 430,
       "signature": "class EventDetailLoadingCta extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
       "body_hash": "7a49ce8244f7638c"
-    },
-    {
-      "name": "EventDetailOptimisticBody",
-      "kind": "class",
-      "file": "lib/events/presentation/widgets/event_detail_optimistic_body.dart",
-      "line": 24,
-      "signature": "class EventDetailOptimisticBody extends StatelessWidget {",
-      "superclass": "StatelessWidget",
-      "is_widget": true,
-      "body_hash": "cf674cfc9825d40f"
     },
     {
       "name": "EventDetailOverviewSection",
@@ -21761,17 +21746,17 @@
       "name": "EventDetailSocialSection",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_social_section.dart",
-      "line": 15,
+      "line": 16,
       "signature": "class EventDetailSocialSection extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,
-      "body_hash": "28a27d256a6c21b9"
+      "body_hash": "0b172e89b2624617"
     },
     {
       "name": "GuestWhoIsGoing",
       "kind": "class",
       "file": "lib/events/presentation/widgets/event_detail_social_section.dart",
-      "line": 76,
+      "line": 81,
       "signature": "class GuestWhoIsGoing extends StatelessWidget {",
       "superclass": "StatelessWidget",
       "is_widget": true,

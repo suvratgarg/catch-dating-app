@@ -37,6 +37,7 @@ class EventDetailBody extends StatelessWidget {
     required this.savePending,
     required this.onBack,
     required this.onShare,
+    this.showShareAction = true,
     required this.showAddToCalendar,
     required this.onAddToCalendar,
     required this.onToggleSaved,
@@ -69,6 +70,7 @@ class EventDetailBody extends StatelessWidget {
   final bool savePending;
   final VoidCallback onBack;
   final ValueChanged<BuildContext> onShare;
+  final bool showShareAction;
   final bool showAddToCalendar;
   final ValueChanged<BuildContext> onAddToCalendar;
   final VoidCallback onToggleSaved;
@@ -112,6 +114,7 @@ class EventDetailBody extends StatelessWidget {
           savePending: savePending,
           onBack: onBack,
           onShare: onShare,
+          showShareAction: showShareAction,
           showAddToCalendar: showAddToCalendar,
           onAddToCalendar: onAddToCalendar,
           presentationMode: presentationMode,
