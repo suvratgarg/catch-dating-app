@@ -1,6 +1,6 @@
 ---
 doc_id: composition_audit
-version: 0.1.4
+version: 0.1.5
 updated: 2026-07-05
 owner: design_parity_review
 status: active
@@ -48,7 +48,7 @@ Standing doctrine (owner-approved 2026-07-05):
 
 Screen queue (working order): Dashboard ✅ → Event Detail ✅ → Club Detail ✅
 → Explore ✅ → Catches/Swipe Hub ✅ → Chats/Inbox ✅ → Profile ✅ →
-Host Operations (structural pass; O1 open) → Event Success ✅.
+Host Operations ✅ → Event Success ✅.
 
 ---
 
@@ -515,14 +515,16 @@ ratified in the consolidation ledger.
 
 ## Screen 8 — Host Operations (audited 2026-07-05, structural pass)
 
-File: `lib/hosts/presentation/host_operations_screen.dart` — **54 classes,
-~4,500 lines, three route screens** (HostProfileScreen, HostEventsScaffold,
-HostClubsScaffold) plus the today-dashboard, organizer, insights, and
-analytics surfaces in one file. Widget-level composition inside it is
-largely sound after the WO-018/020/021 absorptions (spot-checked: the
-organizer metric grid/row chain, team card/row, analytics panels).
+File: `lib/hosts/presentation/host_operations_screen.dart` now acts as the
+public host-operations library header. The implementation is split into
+surface-owned part files under `lib/hosts/presentation/host_operations/`,
+covering profile, home/events, clubs, today, organizer, analytics, inline
+editors, preview, loading/auth, and shared route providers. Widget-level
+composition inside it is largely sound after the WO-018/020/021 absorptions
+(spot-checked: the organizer metric grid/row chain, team card/row, analytics
+panels).
 
-### O1. Split the module `[codex]`
+### O1. Split the module `[done 9e04dcd47]`
 
 This is a module, not a screen file. Split by surface into
 `lib/hosts/presentation/host_operations/` (e.g. `host_profile_screen.dart`,
@@ -531,6 +533,17 @@ This is a module, not a screen file. Split by surface into
 `host_analytics/*.dart`) with pure file moves — no widget changes, imports
 and part-file wiring only, tests/widgetbook repointed. Do this as its own
 commit so review diffs stay readable.
+
+Done: `host_operations_screen.dart` is now a 93-line library header with
+imports, exports, part directives, and shared host-operation type aliases. The
+old route parts moved into `host_operations/`, and the former monolith was
+split into focused part files for route screens, selected-club scaffolds,
+top-bar chrome, today dashboard, event rows, organizer overview, club profile,
+analytics, inline editors, preview, and route-provider glue. No widget bodies
+were intentionally changed. The new-widget inventory scanner is now move-aware,
+so this structural split records 52 moved widget classes and 8 moved
+Widget-returning helpers with 0 new or unresolved items instead of producing
+false catalog/Widgetbook failures.
 
 ### O2. `HostSectionLabel` host-local wrapper — delete `[done 4af0dd57d]`
 

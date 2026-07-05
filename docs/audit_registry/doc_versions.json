@@ -184,7 +184,7 @@
   },
   "composition_audit": {
     "path": "docs/design_parity/composition_audit.md",
-    "version": "0.1.4",
+    "version": "0.1.5",
     "updated": "2026-07-05",
     "status": "active",
     "read_policy": "Use for screen-by-screen widget-composition audits, PASS-THROUGH/DISTORTS/NEUTRALIZES findings, Codex-ready cleanup work orders, positive calibration notes, and remaining composition-audit queue state."
