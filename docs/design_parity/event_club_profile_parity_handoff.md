@@ -214,6 +214,24 @@ StatStrip · Section · SectionStack · Chip`; contracts under
   from domain; rows act as real links (Instagram deep link / `tel:` /
   `mailto:`); rows stay ink-only.
 
+## 2.0 Verification Receipt
+
+- `CatchMetricStrip` vs DS `StatStrip`: aligned on the flat bordered row,
+  no-ticket treatment, `t.line` border/dividers, mono value role, 2-4 item
+  range, and Club Detail's zero-rating em dash. Recorded delta: app labels use
+  `CatchTextStyles.supporting` while the DS prompt specifies a 9px mono kicker.
+  Leave unchanged here; treat as a future component-contract decision, not a
+  Club Detail spot fix.
+- `ClubNextRunBanner`: kept as a ratified app addition above the fold; current
+  code keeps it as a `CatchSurface` activity-pigment event tile with injected
+  navigation and Widgetbook coverage.
+- `ClubContactSection`: kept on `CatchField.nav` rows. Verified current code
+  renders typed `ClubContactAction` labels verbatim, keeps link side effects at
+  the route edge, launches Instagram externally through
+  `https://instagram.com/{handle}`, and launches phone/email through `tel:` and
+  `mailto:` URIs. Row chrome remains field grammar with ink icons and no
+  chevron.
+
 ## Work items
 
 - **2.1 Club hero variants (approved 2026-07-05).** DS ClubHero has three

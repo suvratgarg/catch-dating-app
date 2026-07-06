@@ -474,6 +474,24 @@ void main() {
         ClubContactActionKind.phone,
         ClubContactActionKind.email,
       ]);
+      expect(state.contactActions.map((action) => action.label), [
+        '@stridesocial',
+        '+15551234567',
+        'hello@stridesocial.test',
+      ]);
+      final instagramAction = state.contactActions[0];
+      expect(instagramAction.uri.scheme, 'https');
+      expect(instagramAction.uri.host, 'instagram.com');
+      expect(instagramAction.uri.path, '/stridesocial');
+      expect(instagramAction.openExternally, isTrue);
+      final phoneAction = state.contactActions[1];
+      expect(phoneAction.uri.scheme, 'tel');
+      expect(phoneAction.uri.path, '+15551234567');
+      expect(phoneAction.openExternally, isFalse);
+      final emailAction = state.contactActions[2];
+      expect(emailAction.uri.scheme, 'mailto');
+      expect(emailAction.uri.path, 'hello@stridesocial.test');
+      expect(emailAction.openExternally, isFalse);
       expect(state.showReviews, isTrue);
       expect(state.messageableHostUids, {'owner-1', 'host-2'});
       expect(state.canMessageHost('runner-1'), isFalse);
