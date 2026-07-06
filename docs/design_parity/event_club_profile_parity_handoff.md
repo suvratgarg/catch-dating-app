@@ -449,7 +449,7 @@ Part 1 — Events/Map
 Part 2 — Clubs
 - [x] 2.0 aligned/deviation verifies receipted (StatStrip delta, contact links) (0747b0021)
 - [x] 2.1 hero variants (polaroid default, masthead, unreachable full) + skeleton + appshots (`0b39a5793`)
-- [ ] 2.2 schedule DateTickets (badges/empty/nav preserved)
+- [x] 2.2 schedule DateTickets (badges/empty/nav preserved) (`257b52d8a`)
 - [ ] 2.3 ClubIndexRow condensed tier + directory migration + skeletons (+ ClubListTile ledger if orphaned)
 - [ ] 2.4 owner seal = activity accent + meta format
 - [ ] 2.5 star-size token + ClubPhotos contract check
