@@ -611,9 +611,9 @@ Part 2 — Clubs
 - [x] 2.5 star-size token + ClubPhotos contract check (`0e24e097f`)
 Part 3 — Profiles
 - [x] 3.1 sunsetDark → editorialDark (values verified first) (`db4cb49cc`)
-- [ ] 3.2 verification checklist receipted line-by-line
-- [ ] 3.3 D1 crumbs receipted
+- [x] 3.2 verification checklist receipted line-by-line (`17323c7d8`)
+- [x] 3.3 D1 crumbs receipted (`17323c7d8`)
 Finish
-- [ ] full analyze clean; readiness 100/100; scanners green
-- [ ] widget_catalog + doc_versions + passes.jsonl stamps per part
-- [ ] consolidation ledger updated for every widget deletion
+- [x] full analyze clean; readiness 100/100; scanners green (`17323c7d8`)
+- [x] widget_catalog + doc_versions + passes.jsonl stamps per part (`17323c7d8`)
+- [x] consolidation ledger updated for every widget deletion (`17323c7d8`)
