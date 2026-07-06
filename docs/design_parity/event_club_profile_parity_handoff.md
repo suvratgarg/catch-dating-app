@@ -437,6 +437,31 @@ variant's product trigger; the dense-list escalation path (resolved by 2.3).
   --reporter expanded`; Widgetbook club-use-case analyzer; widget
   classification/check; new-widget inventory check; widget cleanup scanner.
 
+## 2.5 Verification Receipt
+
+- Review aggregate stars and per-review card stars now use the design-system
+  `CatchIcon.rating` role instead of raw `12` / `14` icon sizes. The sibling
+  `StarRatingPicker` remains intentionally large and tappable.
+- `CreateClubPhotosPicker` already routed through `OrderedPhotoPicker` for the
+  needed club photo contract: standard empty add tile, edit-strip first-photo
+  `COVER` affordance, edit-strip add tile while under max photos, and
+  `CreateClubProfileImagePicker.editLogo` bottom-right add/edit badge.
+  No picker implementation delta was needed.
+- Added focused contract coverage in
+  `test/clubs/create_club_photos_picker_test.dart` for the standard
+  `Add club photos` tile, edit-strip `COVER` + `Add photos` affordances, and
+  logo-square add badge semantics.
+- Verification: `flutter analyze --no-fatal-infos
+  lib/reviews/shared/reviews_section.dart
+  lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart
+  test/clubs/create_club_photos_picker_test.dart`;
+  `flutter test test/clubs/create_club_photos_picker_test.dart --reporter
+  expanded`; `flutter test test/explore/explore_widgets_test.dart
+  --plain-name "CreateClubScreen picks and previews club photos" --reporter
+  expanded`; raw review-star-size `rg` scan; widget classification/check;
+  new-widget inventory check; widget cleanup scanner; full `node tool/run.mjs
+  check --category design`.
+
 ---
 
 # Part 3 — Profiles: verification pass + token rename
