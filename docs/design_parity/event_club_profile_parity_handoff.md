@@ -517,7 +517,7 @@ Part 2 — Clubs
 - [x] 2.1 hero variants (polaroid default, masthead, unreachable full) + skeleton + appshots (`0b39a5793`)
 - [x] 2.2 schedule DateTickets (badges/empty/nav preserved) (`257b52d8a`)
 - [x] 2.3 ClubIndexRow condensed tier + directory migration + skeletons (+ ClubListTile ledger if orphaned) (`04c213d50`)
-- [ ] 2.4 owner seal = activity accent + meta format
+- [x] 2.4 owner seal = activity accent + meta format (`8e3958b71`)
 - [ ] 2.5 star-size token + ClubPhotos contract check
 Part 3 — Profiles
 - [ ] 3.1 sunsetDark → editorialDark (values verified first)
