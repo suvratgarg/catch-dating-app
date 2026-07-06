@@ -166,9 +166,21 @@ class HostClubManagementPanel extends StatelessWidget {
                             ? null
                             : () => _showClubPostComposer(
                                 context: context,
-                                ref: ref,
                                 club: club,
                                 remainingQuota: remainingQuota,
+                                onSubmitPost: (text) async {
+                                  await ref
+                                      .read(clubPostsRepositoryProvider)
+                                      .createPost(clubId: club.id, text: text);
+                                  ref
+                                      .read(appAnalyticsProvider)
+                                      .logEvent(
+                                        AnalyticsEvents.clubPostCreated,
+                                        parameters: {
+                                          AnalyticsParameters.clubId: club.id,
+                                        },
+                                      );
+                                },
                               ),
                         icon: Icon(CatchIcons.megaphone, size: CatchIcon.md),
                         variant: CatchButtonVariant.secondary,
@@ -197,9 +209,9 @@ class HostClubManagementPanel extends StatelessWidget {
 
 Future<void> _showClubPostComposer({
   required BuildContext context,
-  required WidgetRef ref,
   required Club club,
   required int remainingQuota,
+  required Future<void> Function(String text) onSubmitPost,
 }) async {
   final controller = TextEditingController();
   Object? error;
@@ -231,17 +243,7 @@ Future<void> _showClubPostComposer({
                           error = null;
                         });
                         try {
-                          await ref
-                              .read(clubPostsRepositoryProvider)
-                              .createPost(clubId: club.id, text: text);
-                          ref
-                              .read(appAnalyticsProvider)
-                              .logEvent(
-                                AnalyticsEvents.clubPostCreated,
-                                parameters: {
-                                  AnalyticsParameters.clubId: club.id,
-                                },
-                              );
+                          await onSubmitPost(text);
                           if (!sheetContext.mounted) return;
                           Navigator.of(sheetContext).pop();
                           if (!context.mounted) return;

@@ -208,45 +208,40 @@ class _DashboardFullSliverBodyState
     _logAction(_moduleForEvent(event), 'check_in');
     final controller = DashboardEventFocusController(ref: ref);
     unawaited(
-      DashboardEventFocusController.selfCheckInMutation
-          .run(ref, (tx) async {
-            await controller.selfCheckIn(tx, event);
-            if (!context.mounted) return;
-            final launchResult = await launchEventSuccessCompanionIfAvailable(
-              context: context,
-              ref: ref,
-              uid: widget.user.uid,
+      DashboardEventFocusController.selfCheckInMutation.run(ref, (tx) async {
+        await controller.selfCheckIn(tx, event);
+        if (!context.mounted) return;
+        final launchResult = await launchEventSuccessCompanionIfAvailable(
+          context: context,
+          ref: ref,
+          uid: widget.user.uid,
+          event: event,
+        );
+        if (!context.mounted ||
+            launchResult != EventSuccessCompanionLaunchResult.unavailable) {
+          return;
+        }
+        await Navigator.of(context, rootNavigator: true).push(
+          MaterialPageRoute<void>(
+            fullscreenDialog: true,
+            builder: (routeContext) => EventCheckInCelebrationScreen(
               event: event,
-            );
-            if (!context.mounted ||
-                launchResult != EventSuccessCompanionLaunchResult.unavailable) {
-              return;
-            }
-            await Navigator.of(context, rootNavigator: true).push(
-              MaterialPageRoute<void>(
-                fullscreenDialog: true,
-                builder: (routeContext) => EventCheckInCelebrationScreen(
-                  event: event,
-                  onViewEvent: () {
-                    Navigator.of(routeContext).pop();
-                    GoRouter.of(context).goNamed(
-                      Routes.eventDetailScreen.name,
-                      pathParameters: {
-                        'clubId': event.clubId,
-                        'eventId': event.id,
-                      },
-                      extra: event,
-                    );
-                  },
-                  onBackHome: () {
-                    Navigator.of(routeContext).pop();
-                    GoRouter.of(context).goNamed(Routes.dashboardScreen.name);
-                  },
-                ),
-              ),
-            );
-          })
-          .catchError((_) {}),
+              onViewEvent: () {
+                Navigator.of(routeContext).pop();
+                GoRouter.of(context).goNamed(
+                  Routes.eventDetailScreen.name,
+                  pathParameters: {'clubId': event.clubId, 'eventId': event.id},
+                  extra: event,
+                );
+              },
+              onBackHome: () {
+                Navigator.of(routeContext).pop();
+                GoRouter.of(context).goNamed(Routes.dashboardScreen.name);
+              },
+            ),
+          ),
+        );
+      }),
     );
   }
 }

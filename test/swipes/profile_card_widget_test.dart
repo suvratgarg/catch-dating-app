@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/catch_profile_view.dart';
@@ -295,8 +295,8 @@ void main() {
       await tester.pump();
       expect(find.text('Social miles'), findsOneWidget);
       expect(find.text('5K regular'), findsOneWidget);
-      expect(_badge('Social miles'), findsOneWidget);
-      expect(_badge('5K regular'), findsOneWidget);
+      expect(_chip('Social miles'), findsOneWidget);
+      expect(_chip('5K regular'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );
@@ -454,8 +454,8 @@ void main() {
   });
 }
 
-Finder _badge(String label) {
+Finder _chip(String label) {
   return find.byWidgetPredicate(
-    (widget) => widget is CatchBadge && widget.label == label,
+    (widget) => widget is CatchChip && widget.label == label,
   );
 }

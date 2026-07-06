@@ -79,6 +79,8 @@ class ClubPostsRepository {
   );
 }
 
+// keepalive: club post composer and quota streams share one Functions-backed
+// repository instance across host panels during a session.
 @Riverpod(keepAlive: true)
 ClubPostsRepository clubPostsRepository(Ref ref) => ClubPostsRepository(
   ref.watch(firebaseFirestoreProvider),

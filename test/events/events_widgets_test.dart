@@ -279,7 +279,7 @@ void main() {
       );
 
       expect(find.text('Event location'), findsNothing);
-      expect(find.byIcon(CatchIcons.locationOnRounded), findsOneWidget);
+      expect(find.byIcon(CatchIcons.locationOnOutlined), findsOneWidget);
       expect(find.text('Race Course Road main gate'), findsOneWidget);
       expect(
         find.text('Look for the Catch demo pacer near the entrance.'),

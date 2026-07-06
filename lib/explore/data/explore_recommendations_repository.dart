@@ -3,6 +3,7 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
+import 'package:catch_dating_app/explore/domain/explore_event_recommendation.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/foundation.dart';
@@ -40,20 +41,6 @@ class ExploreEventRecommendationCandidate {
   final Event event;
   final String clubName;
   final String? clubLocation;
-}
-
-class ExploreEventRecommendation {
-  const ExploreEventRecommendation({
-    required this.event,
-    required this.clubName,
-    required this.reasonLabel,
-    required this.score,
-  });
-
-  final Event event;
-  final String clubName;
-  final String reasonLabel;
-  final double score;
 }
 
 // Data-owned provider so Explore can consume recommendation supply without

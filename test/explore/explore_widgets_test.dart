@@ -35,7 +35,6 @@ import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -890,11 +889,11 @@ void main() {
       await _pumpClubUi(tester);
 
       final detailPadding = tester.widget<Padding>(
-        find.byKey(const ValueKey('club-detail-hero-padding')),
+        find.byKey(const ValueKey('club-detail-hero-polaroid-padding')),
       );
       expect(detailPadding.padding, cardPadding.padding);
       expect(
-        find.byKey(const ValueKey('club-detail-viewport-curve-frame')),
+        find.byKey(const ValueKey('club-detail-hero-polaroid-frame')),
         findsOneWidget,
       );
     });
@@ -1801,19 +1800,8 @@ void main() {
         expect(find.text('Bandra, Mumbai'), findsOneWidget);
         expect(find.text('4.8'), findsNothing);
         expect(
-          find.byKey(const ValueKey('club-detail-hero-frame')),
+          find.byKey(const ValueKey('club-detail-hero-polaroid-frame')),
           findsOneWidget,
-        );
-        final heroFrame = tester.widget<CatchSurface>(
-          find.byKey(const ValueKey('club-detail-hero-frame')),
-        );
-        expect(heroFrame.backgroundColor, CatchTokens.editorialLight.surface);
-        final expandedTitle = tester.widget<Text>(
-          find.byKey(const ValueKey('club-detail-expanded-title')),
-        );
-        expect(
-          expandedTitle.style?.fontFamily,
-          contains(CatchFonts.serifFamily.split(' ').first),
         );
 
         await tester.tap(find.byIcon(CatchIcons.arrowBackIosNewRounded));
@@ -1824,7 +1812,7 @@ void main() {
     );
 
     testWidgets(
-      'ClubHeroAppBar keeps long title location outside the clipped media frame',
+      'ClubHeroAppBar keeps long title location in the polaroid caption',
       (tester) async {
         tester.view.devicePixelRatio = 1;
         tester.view.physicalSize = const Size(402, 874);
@@ -1859,29 +1847,18 @@ void main() {
         );
         await _pumpClubUi(tester);
 
-        final mediaFrame = find.byKey(
-          const ValueKey('club-detail-viewport-curve-frame'),
+        final polaroidFrame = find.byKey(
+          const ValueKey('club-detail-hero-polaroid-frame'),
         );
-        final caption = find.byKey(const ValueKey('club-detail-hero-caption'));
-        final expandedTitle = find.byKey(
-          const ValueKey('club-detail-expanded-title'),
-        );
-        final location = find.descendant(
-          of: caption,
-          matching: find.text('Vijay Nagar, Indore'),
-        );
+        final title = find.text('Vijay Nagar Event Collective');
+        final location = find.text('Vijay Nagar, Indore');
 
-        expect(mediaFrame, findsOneWidget);
-        expect(caption, findsOneWidget);
-        expect(expandedTitle, findsOneWidget);
+        expect(polaroidFrame, findsOneWidget);
+        expect(title, findsOneWidget);
         expect(location, findsOneWidget);
         expect(
-          find.descendant(of: mediaFrame, matching: expandedTitle),
-          findsNothing,
-        );
-        expect(
-          tester.getBottomLeft(location).dy,
-          lessThan(tester.getBottomLeft(caption).dy),
+          find.descendant(of: polaroidFrame, matching: title),
+          findsOneWidget,
         );
 
         final module = tester.widget<ColoredBox>(
@@ -1891,7 +1868,7 @@ void main() {
       },
     );
 
-    testWidgets('ClubDetailBody keeps a one-line hero tight to stats', (
+    testWidgets('ClubDetailBody renders metrics below the hero content', (
       tester,
     ) async {
       tester.view.devicePixelRatio = 1;
@@ -1931,11 +1908,19 @@ void main() {
       );
       await _pumpClubUi(tester);
 
-      final gap =
-          tester.getTopLeft(find.byType(CatchMetricStrip)).dy -
-          tester.getBottomLeft(find.text('Bandra, Mumbai')).dy;
-      expect(gap, greaterThan(0));
-      expect(gap, lessThanOrEqualTo(CatchSpacing.s8));
+      final heroFrame = find.byKey(
+        const ValueKey('club-detail-hero-polaroid-frame'),
+      );
+      final heroLocation = find.descendant(
+        of: heroFrame,
+        matching: find.text('Bandra, Mumbai'),
+      );
+
+      expect(heroFrame, findsOneWidget);
+      expect(heroLocation, findsOneWidget);
+      final metricTop = tester.getTopLeft(find.byType(CatchMetricStrip)).dy;
+      final locationBottom = tester.getBottomLeft(heroLocation).dy;
+      expect(metricTop, greaterThan(locationBottom));
     });
 
     testWidgets('ClubHeroAppBar uses clean fallback without a cover image', (
@@ -1953,7 +1938,7 @@ void main() {
         ),
       );
 
-      expect(find.byType(ClubPolaroidArtwork), findsNothing);
+      expect(find.byType(ClubPolaroidArtwork), findsOneWidget);
       expect(find.text('MM'), findsNothing);
       expect(find.text('Morning Miles'), findsOneWidget);
       expect(find.text('Bandra, Mumbai'), findsOneWidget);
