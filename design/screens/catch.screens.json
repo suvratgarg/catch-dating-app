@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.screens.schema.json",
   "version": 1,
-  "updated": "2026-07-03",
+  "updated": "2026-07-06",
   "sourceOfTruth": {
     "purpose": "Screen contracts connect route state, controller ownership, section composition, captures, and design references.",
     "tokens": "Foundation values remain in design/tokens/catch.tokens.json.",
@@ -2486,16 +2486,6 @@
           "notes": "Dashboard empty-start route capture with no memberships or booked events."
         },
         {
-          "id": "dashboard_home_recommendations_loading",
-          "status": "captured",
-          "notes": "Dashboard full-shell route capture with recommendations loading inline."
-        },
-        {
-          "id": "dashboard_home_recommendations_error",
-          "status": "captured",
-          "notes": "Dashboard full-shell route capture with recommendations error inline."
-        },
-        {
           "id": "dashboard_home_text_scale_2",
           "status": "captured",
           "notes": "Dashboard route capture at text scale 2.0."
@@ -2606,7 +2596,7 @@
           "id": "full_dashboard",
           "kind": "populated",
           "status": "captured",
-          "source": "Signed-in user with booked events renders DashboardFullSliverBody with event focus, activity, quick actions, joined clubs, and recommendations.",
+          "source": "Signed-in user with booked events renders DashboardFullSliverBody with the Home event lifecycle timeline, club-post updates, quick actions, joined clubs, and idle catch-window education.",
           "captureIds": [
             "dashboard_home"
           ],
@@ -2619,17 +2609,17 @@
           ]
         },
         {
-          "id": "event_focus_upcoming",
+          "id": "event_lifecycle_upcoming",
           "kind": "populated",
           "status": "captured",
-          "source": "DashboardFullViewModel surfaces upcoming booked events into EventFocusRail cards with directions, calendar, and event-detail actions.",
+          "source": "DashboardFullViewModel surfaces upcoming booked events into EventLifecycleTimeline cards with directions, calendar, and event-detail actions.",
           "captureIds": [
             "dashboard_home"
           ],
           "tests": [
             "test/dashboard/dashboard_screen_test.dart"
           ],
-          "nextAction": "Compare event focus cards against exported Dashboard references before layout parity work.",
+          "nextAction": "Compare lifecycle timeline cards against exported Dashboard references before layout parity work.",
           "previewIds": [
             "DashboardScreen/Screen states"
           ]
@@ -2638,7 +2628,7 @@
           "id": "self_check_in_mutation",
           "kind": "mutation",
           "status": "captured",
-          "source": "DashboardFullSliverBody maps EventBookingController.selfCheckInMutation into EventFocusCheckInState for EventFocusRail pending/error UI; dashboardNowProvider lets captures pin check-in timing deterministically, and failures render through the shared Catch inline error banner with AppErrorContext.dashboard.",
+          "source": "DashboardFullSliverBody maps EventBookingController.selfCheckInMutation into EventFocusCheckInState for EventLifecycleTimeline pending/error UI; dashboardNowProvider lets captures pin check-in timing deterministically, and failures render through the shared Catch inline error banner with AppErrorContext.dashboard.",
           "tests": [
             "test/dashboard/dashboard_screen_test.dart"
           ],
@@ -2653,14 +2643,14 @@
           ]
         },
         {
-          "id": "after_event_swipe_review",
+          "id": "catch_window_open_and_review",
           "kind": "populated",
           "status": "captured",
-          "source": "Attended events with an open swipe window and missing review render Start catching and Write review actions in EventFocusRail.",
+          "source": "Attended events with an open catch window and missing review render Start catching and Write review actions in EventLifecycleTimeline.",
           "tests": [
             "test/dashboard/dashboard_screen_test.dart"
           ],
-          "nextAction": "Compare the after-event focus card against exported Dashboard references and decide whether it shares section contracts with future Catches screens.",
+          "nextAction": "Compare the after-event lifecycle card against exported Dashboard references and keep /catches/:eventId deck rendering covered by screen.catches.event.",
           "previewIds": [
             "DashboardScreen/Screen states"
           ],
@@ -2717,54 +2707,6 @@
           ]
         },
         {
-          "id": "recommendations_ready",
-          "kind": "populated",
-          "status": "captured",
-          "source": "dashboardRecommendedEventsProvider candidates are ranked into DashboardEventRecommendation rows and rendered by Recommendations.",
-          "captureIds": [
-            "dashboard_home"
-          ],
-          "tests": [
-            "test/dashboard/dashboard_screen_test.dart"
-          ],
-          "nextAction": "Add section previews for recommendation count, long club/location copy, price/free states, and empty hidden state.",
-          "previewIds": [
-            "DashboardScreen/Screen states"
-          ]
-        },
-        {
-          "id": "recommendations_loading",
-          "kind": "loading",
-          "status": "captured",
-          "source": "DashboardFullSliverBody renders a section state card while recommendations are loading.",
-          "tests": [
-            "test/dashboard/dashboard_screen_test.dart"
-          ],
-          "nextAction": "Keep recommendation loading fixture shared with Widgetbook while adapter extraction proceeds.",
-          "previewIds": [
-            "DashboardScreen/Screen states"
-          ],
-          "captureIds": [
-            "dashboard_home_recommendations_loading"
-          ]
-        },
-        {
-          "id": "recommendations_error",
-          "kind": "error",
-          "status": "captured",
-          "source": "Recommendation load failures render CatchInlineErrorState.fromError with AppErrorContext.dashboard and retry invalidation.",
-          "tests": [
-            "test/dashboard/dashboard_screen_test.dart"
-          ],
-          "nextAction": "Decide whether recommendation-only failures stay inline once design references are exported.",
-          "previewIds": [
-            "DashboardScreen/Screen states"
-          ],
-          "captureIds": [
-            "dashboard_home_recommendations_error"
-          ]
-        },
-        {
           "id": "offline",
           "kind": "offline",
           "status": "captured",
@@ -2781,7 +2723,7 @@
           "id": "text_scale_2",
           "kind": "accessibility",
           "status": "captured",
-          "source": "dashboard_home_text_scale_2 captures the Dashboard route at text scale 2.0 across header, event focus, activity, quick actions, clubs, and recommendations.",
+          "source": "dashboard_home_text_scale_2 captures the Dashboard route at text scale 2.0 across header, lifecycle timeline, quick actions, clubs, and idle catch-window education.",
           "nextAction": "Keep text-scale capture in the Dashboard review batch; the baseline Claude references are 1.0 text scale until large-text design references are exported.",
           "previewIds": [
             "DashboardScreen/Screen states"
@@ -2922,7 +2864,7 @@
             "currentOwner": "DashboardScreen",
             "targetOwner": "DashboardHomeScreenState to section composition adapter",
             "dependencies": [
-              "section.dashboard.event_focus",
+              "section.dashboard.event_lifecycle_timeline",
               "section.dashboard.club_posts"
             ],
             "states": [
@@ -2936,20 +2878,20 @@
             ]
           },
           {
-            "id": "section.dashboard.event_focus",
-            "name": "Event focus rail",
+            "id": "section.dashboard.event_lifecycle_timeline",
+            "name": "Event lifecycle timeline",
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "EventFocusRail",
+              "EventLifecycleTimeline",
               "EventFocusCard"
             ],
             "flutter": {
-              "file": "lib/dashboard/presentation/widgets/event_focus_rail.dart",
-              "symbol": "EventFocusRail"
+              "file": "lib/dashboard/presentation/widgets/event_lifecycle_timeline.dart",
+              "symbol": "EventLifecycleTimeline"
             },
-            "currentOwner": "DashboardFullSliverBody supplies typed EventFocusActions and maps self-check-in mutation state into EventFocusCheckInState; EventFocusRail renders the provider-free visual section.",
-            "targetOwner": "provider-free Dashboard Event Focus section with typed route/controller intents",
+            "currentOwner": "DashboardFullSliverBody supplies typed EventFocusActions and maps self-check-in mutation state into EventFocusCheckInState; EventLifecycleTimeline renders the provider-free visual section.",
+            "targetOwner": "provider-free Dashboard event lifecycle timeline with typed route/controller intents",
             "dependencies": [
               "catch.surface",
               "catch.button",
@@ -2958,12 +2900,12 @@
             "states": [
               "upcoming",
               "self_check_in",
-              "after_event_swipe",
+              "catch_window",
               "pending_review",
               "multiple_cards",
               "reduced_motion"
             ],
-            "migration": "Calendar, directions, check-in, swipe, review, and detail navigation intents now flow through typed EventFocusActions supplied by DashboardFullSliverBody. Remaining Event Focus work is design-reference export, advisory pixel comparison, and future removal of any wall-clock-only visual timing such as the catch-window countdown.",
+            "migration": "Calendar, directions, check-in, swipe, review, and detail navigation intents now flow through typed EventFocusActions supplied by DashboardFullSliverBody. The timeline owns catch-window priority ordering and reduced-motion ticker behavior; remaining work is design-reference export and advisory pixel comparison.",
             "previewIds": [
               "DashboardScreen/Screen states"
             ]
@@ -4103,429 +4045,6 @@
           "id": "DS-EVENT-SUCCESS-COMPANION-004",
           "status": "blocked",
           "nextAction": "Blocked on missing canonical design exports for stage, reveal, wingman, afterglow, feedback, offline/error, accessibility, and theme variants. The only local Event Success Companion reference is design/reference_screens/screen.event_success.companion/default_live_guide.png with masks.json."
-        }
-      ]
-    },
-    {
-      "id": "screen.catches.hub",
-      "name": "Catches Hub",
-      "owner": "swipes",
-      "priority": "P1",
-      "status": "in_progress",
-      "routes": [
-        {
-          "id": "swipeHubScreen",
-          "path": "/catches",
-          "role": "primary"
-        }
-      ],
-      "source": {
-        "file": "lib/swipes/presentation/swipe_hub_screen.dart",
-        "symbol": "SwipeHubScreen"
-      },
-      "stateController": {
-        "primary": "CatchesHubScreenState",
-        "files": [
-          {
-            "file": "lib/swipes/presentation/catches_hub_screen_state.dart",
-            "symbol": "CatchesHubScreenState"
-          },
-          {
-            "file": "lib/swipes/presentation/swipe_hub_screen.dart",
-            "symbol": "SwipeHubScreen"
-          },
-          {
-            "file": "lib/events/data/event_repository.dart",
-            "symbol": "watchAttendedEvents"
-          },
-          {
-            "file": "lib/swipes/domain/swipe_window.dart",
-            "symbol": "eventsWithOpenSwipeWindow"
-          }
-        ],
-        "mutationOwners": [],
-        "notes": "SwipeHubScreen watches uid and attended-event streams at the route edge, then builds CatchesHubScreenState. The adapter owns auth/event provider waves, open-window filtering, clock-injected countdown labels, and catch/recap route intents before the route composes provider-free hub sections."
-      },
-      "designRefs": [
-        {
-          "id": "repo.catches-captures",
-          "kind": "repo",
-          "status": "available",
-          "path": "test/ui_captures/catalog/screen_capture_catalog.dart",
-          "notes": "swipe_hub_active captures the main Catches hub with a deterministic active post-event catch window."
-        },
-        {
-          "id": "claude.catches-hub",
-          "kind": "claude",
-          "status": "blocked",
-          "notes": "No distinct Catches Hub Claude source was found in /Users/suvratgarg/Downloads/Catch Design System (2) during the 2026-06-23 reference pass. The bundle contains the Catches Event Deck/post-run catch-window asset, which is already registered separately. Need a canonical Catches Hub design export or design decision before advisory pixel comparison."
-        }
-      ],
-      "captures": [
-        {
-          "id": "swipe_hub_active",
-          "status": "captured",
-          "notes": "Main Catches hub fixture with an active post-event catch window."
-        },
-        {
-          "id": "swipe_hub_uid_loading",
-          "status": "captured",
-          "notes": "Catches hub uid loading skeleton state."
-        },
-        {
-          "id": "swipe_hub_uid_error",
-          "status": "captured",
-          "notes": "Catches hub auth/session error state."
-        },
-        {
-          "id": "swipe_hub_signed_out",
-          "status": "captured",
-          "notes": "Catches hub signed-out shell-hidden state."
-        },
-        {
-          "id": "swipe_hub_attended_events_loading",
-          "status": "captured",
-          "notes": "Catches hub attended-events loading skeleton state."
-        },
-        {
-          "id": "swipe_hub_attended_events_error",
-          "status": "captured",
-          "notes": "Catches hub attended-events error state."
-        },
-        {
-          "id": "swipe_hub_offline",
-          "status": "captured",
-          "notes": "Catches hub attended-events offline-mapped error state."
-        },
-        {
-          "id": "swipe_hub_empty",
-          "status": "captured",
-          "notes": "Catches hub no active catch windows empty state."
-        },
-        {
-          "id": "swipe_hub_text_scale_2",
-          "status": "captured",
-          "notes": "Catches hub text scale 2.0 review state."
-        },
-        {
-          "id": "swipe_hub_reduced_motion",
-          "status": "captured",
-          "notes": "Catches hub reduced-motion review state."
-        }
-      ],
-      "states": [
-        {
-          "id": "uid_loading",
-          "kind": "loading",
-          "status": "captured",
-          "source": "uidProvider AsyncLoading renders CatchSkeletonList.",
-          "nextAction": "Use this capture as the baseline while extracting Catches hub route-state adapters.",
-          "previewIds": [
-            "SwipeHubScreen/Hub route states"
-          ],
-          "captureIds": [
-            "swipe_hub_uid_loading"
-          ]
-        },
-        {
-          "id": "uid_error",
-          "kind": "error",
-          "status": "captured",
-          "source": "uidProvider AsyncError renders CatchErrorState.fromError with AppErrorContext.auth and retry invalidation.",
-          "nextAction": "Keep auth/session retry copy aligned with the app error catalogue.",
-          "previewIds": [
-            "SwipeHubScreen/Hub route states"
-          ],
-          "captureIds": [
-            "swipe_hub_uid_error"
-          ]
-        },
-        {
-          "id": "signed_out_hidden",
-          "kind": "permission",
-          "status": "captured",
-          "source": "Null uid returns SizedBox.shrink while shell/auth routing owns signed-out recovery.",
-          "nextAction": "Confirm shell/auth routing remains the only signed-out recovery path.",
-          "previewIds": [
-            "SwipeHubScreen/Hub route states"
-          ],
-          "captureIds": [
-            "swipe_hub_signed_out"
-          ]
-        },
-        {
-          "id": "attended_events_loading",
-          "kind": "loading",
-          "status": "captured",
-          "source": "watchAttendedEventsProvider AsyncLoading renders CatchSkeletonList.",
-          "nextAction": "Use this capture as the attended-events loading baseline.",
-          "previewIds": [
-            "SwipeHubScreen/Hub route states"
-          ],
-          "captureIds": [
-            "swipe_hub_attended_events_loading"
-          ]
-        },
-        {
-          "id": "attended_events_error",
-          "kind": "error",
-          "status": "captured",
-          "source": "watchAttendedEventsProvider AsyncError renders CatchErrorState.fromError with AppErrorContext.event and retry invalidation.",
-          "nextAction": "Keep attended-events retry placement in the route-state adapter.",
-          "previewIds": [
-            "SwipeHubScreen/Hub route states"
-          ],
-          "captureIds": [
-            "swipe_hub_attended_events_error"
-          ]
-        },
-        {
-          "id": "active_windows",
-          "kind": "populated",
-          "status": "captured",
-          "source": "CatchesHubScreenState filters eventsWithOpenSwipeWindow(events, now), maps CatchesHubEventRow countdown labels and catch/recap route intents, then drives _CatchesHubContent and AttendedEventTile rows.",
-          "captureIds": [
-            "swipe_hub_active"
-          ],
-          "tests": [
-            "test/swipes/swipe_hub_screen_test.dart"
-          ],
-          "nextAction": "Closed by CatchesHubScreenState adapter tests for provider waves, active-window filtering, countdown labels, and route intents.",
-          "previewIds": [
-            "SwipeHubScreen/Hub route states",
-            "CatchesHubContent/Hub composition",
-            "CatchesIntroCard/Intro card states",
-            "AttendedEventTile/Tile states"
-          ]
-        },
-        {
-          "id": "no_active_windows",
-          "kind": "empty",
-          "status": "captured",
-          "source": "Empty activeEvents renders _CatchesEmptyState with Find an event CTA and lock-clock note.",
-          "nextAction": "Compare no-active-window empty copy against design references after export.",
-          "previewIds": [
-            "SwipeHubScreen/Hub route states",
-            "CatchesHubEmptyState/Empty states"
-          ],
-          "captureIds": [
-            "swipe_hub_empty"
-          ]
-        },
-        {
-          "id": "dark_intro_cta",
-          "kind": "theme",
-          "status": "captured",
-          "source": "_CatchesIntroCard keeps the Start catching affordance as a non-interactive light CatchButton in dark mode.",
-          "tests": [
-            "test/swipes/swipe_hub_screen_test.dart"
-          ],
-          "nextAction": "Retain the light non-interactive CTA treatment while componentizing the intro card.",
-          "previewIds": [
-            "SwipeHubScreen/Hub route states",
-            "CatchesIntroCard/Intro card states"
-          ],
-          "captureIds": [
-            "swipe_hub_active"
-          ]
-        },
-        {
-          "id": "offline",
-          "kind": "offline",
-          "status": "captured",
-          "source": "Attended-event provider offline errors use shared mapped offline copy through CatchErrorState.fromError.",
-          "captureIds": [
-            "swipe_hub_offline"
-          ],
-          "nextAction": "Keep the shared offline copy unless product wants Catches-specific offline wording.",
-          "previewIds": [
-            "SwipeHubScreen/Hub route states"
-          ]
-        },
-        {
-          "id": "text_scale_2",
-          "kind": "accessibility",
-          "status": "captured",
-          "source": "swipe_hub_text_scale_2 captures the Catches hub route at TextScaler 2.0.",
-          "nextAction": "Review large-text Catches hub after adapter extraction.",
-          "previewIds": [
-            "SwipeHubScreen/Hub route states",
-            "CatchesHubContent/Hub composition"
-          ],
-          "captureIds": [
-            "swipe_hub_text_scale_2"
-          ]
-        },
-        {
-          "id": "reduced_motion",
-          "kind": "accessibility",
-          "status": "captured",
-          "source": "swipe_hub_reduced_motion captures the Catches hub route with MediaQuery.disableAnimations enabled.",
-          "nextAction": "Keep reduced-motion hub capture registered while adding motion-specific masks.",
-          "previewIds": [
-            "SwipeHubScreen/Hub route states"
-          ],
-          "captureIds": [
-            "swipe_hub_reduced_motion"
-          ]
-        },
-        {
-          "id": "light_dark",
-          "kind": "theme",
-          "status": "captured",
-          "source": "Only the dark-mode intro CTA has a focused test today.",
-          "nextAction": "Use paired baseline captures for light/dark hub review.",
-          "previewIds": [
-            "SwipeHubScreen/Hub route states"
-          ],
-          "captureIds": [
-            "swipe_hub_active"
-          ]
-        }
-      ],
-      "composition": {
-        "currentLayout": "SwipeHubScreen watches uid and attended-event streams at the route edge, builds CatchesHubScreenState for provider waves, open-window display rows, countdown labels, and route paths, then renders local header, intro card, event tiles, or empty state.",
-        "targetLayout": "SwipeHubScreen should keep provider watches and route pushes at the edge, resolve CatchesHubScreenState once, and compose public provider-free hub content, header, intro card, event tile, and empty-state sections with typed callbacks.",
-        "sections": [
-          {
-            "id": "section.catches.hub_header",
-            "name": "Catches hub header",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "CatchesHeader"
-            ],
-            "flutter": {
-              "file": "lib/swipes/presentation/swipe_hub_screen.dart",
-              "symbol": "CatchesHubHeader"
-            },
-            "currentOwner": "SwipeHubScreen",
-            "targetOwner": "provider-free Catches hub header section",
-            "dependencies": [
-              "catch.surface"
-            ],
-            "states": [
-              "default",
-              "text_scale_2",
-              "light_dark"
-            ],
-            "migration": "CatchesHubHeader is now a public provider-free section with Widgetbook coverage for default header chrome; future passes can add long-title, text-scale, and theme captures once canonical references are exported.",
-            "previewIds": [
-              "CatchesHubHeader/Header states"
-            ]
-          },
-          {
-            "id": "section.catches.hub_active_window",
-            "name": "Active catch window hero",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "CatchesActiveWindowCard",
-              "WindowCountdown"
-            ],
-            "flutter": {
-              "file": "lib/swipes/presentation/swipe_hub_screen.dart",
-              "symbol": "CatchesIntroCard"
-            },
-            "currentOwner": "SwipeHubScreen",
-            "targetOwner": "provider-free active-window section with injected clock display data",
-            "dependencies": [
-              "catch.button",
-              "catch.surface"
-            ],
-            "states": [
-              "open",
-              "closing_soon",
-              "closed_boundary",
-              "long_event_title",
-              "dark"
-            ],
-            "migration": "CatchesIntroCard is now a public provider-free section fed by CatchesHubEventRow display data; Widgetbook covers open and closing-soon variants while countdown and route intent calculation stay in CatchesHubScreenState.",
-            "previewIds": [
-              "CatchesIntroCard/Intro card states"
-            ]
-          },
-          {
-            "id": "section.catches.hub_event_list",
-            "name": "Open catch window list",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "CatchesEventRow",
-              "CountdownBadge"
-            ],
-            "flutter": {
-              "file": "lib/swipes/presentation/widgets/attended_event_tile.dart",
-              "symbol": "AttendedEventTile"
-            },
-            "currentOwner": "SwipeHubScreen",
-            "targetOwner": "provider-free attended-event row section",
-            "dependencies": [
-              "catch.badge",
-              "catch.button",
-              "catch.surface"
-            ],
-            "states": [
-              "single",
-              "multiple",
-              "long_title",
-              "closing_soon"
-            ],
-            "migration": "AttendedEventTile now has section-level Widgetbook variants for open and closing-soon rows, with catch/recap callbacks supplied by the parent route composition.",
-            "previewIds": [
-              "AttendedEventTile/Tile states"
-            ]
-          },
-          {
-            "id": "section.catches.hub_empty",
-            "name": "No active catches empty state",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "CatchesEmptyState"
-            ],
-            "flutter": {
-              "file": "lib/swipes/presentation/swipe_hub_screen.dart",
-              "symbol": "CatchesHubEmptyState"
-            },
-            "currentOwner": "SwipeHubScreen",
-            "targetOwner": "provider-free Catches hub empty section",
-            "dependencies": [
-              "catch.button",
-              "catch.surface"
-            ],
-            "states": [
-              "no_active_windows",
-              "guest_or_signed_out",
-              "offline_recovery"
-            ],
-            "migration": "CatchesHubEmptyState is now a public provider-free empty section with an injected Find event callback so Widgetbook and tests can render it without a router side effect.",
-            "previewIds": [
-              "CatchesHubEmptyState/Empty states"
-            ]
-          }
-        ]
-      },
-      "openGaps": [
-        {
-          "id": "DS-CATCHES-HUB-001",
-          "status": "closed",
-          "nextAction": "Closed by SwipeHubScreen/Hub route states first-pass Widgetbook coverage for uid loading/error, signed-out shell-hidden, attended-events loading/error/offline, empty, active windows, text scale, reduced motion, and addon-driven light/dark review."
-        },
-        {
-          "id": "DS-CATCHES-HUB-002",
-          "status": "closed",
-          "nextAction": "Closed by swipe_hub_offline plus existing loading, auth error, signed-out hidden, attended-events loading/error, empty, text-scale, reduced-motion, and paired light/dark captures. The hub intentionally uses shared mapped offline copy unless product requests Catches-specific wording."
-        },
-        {
-          "id": "DS-CATCHES-HUB-003",
-          "status": "closed",
-          "nextAction": "Closed by CatchesHubScreenState, which owns uid/event provider waves, open-window filtering, injected countdown labels, and catch/recap route intents; test/swipes/swipe_hub_screen_test.dart covers provider waves and row route data."
-        },
-        {
-          "id": "DS-CATCHES-HUB-004",
-          "status": "blocked",
-          "nextAction": "Blocked on a canonical Catches Hub design source/export. Once design provides the hub reference, export the PNG, add masks for dynamic countdown/live attendee regions, register the manifest entry, and run advisory pixel comparison."
         }
       ]
     },

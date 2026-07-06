@@ -408,7 +408,7 @@ abstract final class CatchInsets {
 
   /// Compact-top scroll body for tab screens that own their title block inline
   /// (no pinned header) and need section-sized scroll-end breathing room — the
-  /// Catches hub feed and its empty state share this single contract.
+  /// Home timeline and Catches deck empty states share this single contract.
   static const EdgeInsets pageBodyHero = EdgeInsets.fromLTRB(
     CatchSpacing.screenPx,
     CatchSpacing.s2,
@@ -480,7 +480,7 @@ abstract final class CatchInsets {
 
   // ── Shared tab-screen header rhythm ─────────────────────────────────────────
   //
-  // The five top-level tab screens (Home, Clubs, Catches, Chats, Profile) share
+  // The four top-level tab screens (Home, Explore, Chats, Profile) share
   // one spacing contract for the band between their title block, any pinned
   // search/filter/tab control, and the first content row. These role tokens
   // centralise that rhythm so screens stop tuning their own raw EdgeInsets.

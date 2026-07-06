@@ -3,10 +3,10 @@
   "source": "test/ui_captures/catalog/screen_capture_catalog.dart",
   "coverage": {
     "routes": 48,
-    "captures": 627,
+    "captures": 615,
     "statusCounts": {
-      "excluded": 6,
-      "captured": 37,
+      "excluded": 7,
+      "captured": 36,
       "alias": 5
     }
   },
@@ -1564,40 +1564,6 @@
         "dark": "dark/dashboard_home_empty_start.png"
       },
       "whatItIs": "Dashboard Home Empty Start",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "dashboard_home_recommendations_loading",
-      "routes": [
-        "dashboardScreen"
-      ],
-      "device": "review-tall",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/dashboard_home_recommendations_loading.png",
-        "dark": "dark/dashboard_home_recommendations_loading.png"
-      },
-      "whatItIs": "Dashboard Home Recommendations Loading",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "dashboard_home_recommendations_error",
-      "routes": [
-        "dashboardScreen"
-      ],
-      "device": "review-tall",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/dashboard_home_recommendations_error.png",
-        "dark": "dark/dashboard_home_recommendations_error.png"
-      },
-      "whatItIs": "Dashboard Home Recommendations Error",
       "keepChangeNotes": ""
     },
     {
@@ -6983,176 +6949,6 @@
         "salesDemo.member.postRunCatchWindow"
       ],
       "whatItIs": "Post Run Catch Window",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "swipe_hub_active",
-      "routes": [
-        "swipeHubScreen"
-      ],
-      "device": "review-tall",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/swipe_hub_active.png",
-        "dark": "dark/swipe_hub_active.png"
-      },
-      "whatItIs": "Swipe Hub Active",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "swipe_hub_uid_loading",
-      "routes": [
-        "swipeHubScreen"
-      ],
-      "device": "review-tall",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/swipe_hub_uid_loading.png",
-        "dark": "dark/swipe_hub_uid_loading.png"
-      },
-      "whatItIs": "Swipe Hub Uid Loading",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "swipe_hub_uid_error",
-      "routes": [
-        "swipeHubScreen"
-      ],
-      "device": "review-tall",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/swipe_hub_uid_error.png",
-        "dark": "dark/swipe_hub_uid_error.png"
-      },
-      "whatItIs": "Swipe Hub Uid Error",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "swipe_hub_signed_out",
-      "routes": [
-        "swipeHubScreen"
-      ],
-      "device": "review-tall",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/swipe_hub_signed_out.png",
-        "dark": "dark/swipe_hub_signed_out.png"
-      },
-      "whatItIs": "Swipe Hub Signed Out",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "swipe_hub_attended_events_loading",
-      "routes": [
-        "swipeHubScreen"
-      ],
-      "device": "review-tall",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/swipe_hub_attended_events_loading.png",
-        "dark": "dark/swipe_hub_attended_events_loading.png"
-      },
-      "whatItIs": "Swipe Hub Attended Events Loading",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "swipe_hub_attended_events_error",
-      "routes": [
-        "swipeHubScreen"
-      ],
-      "device": "review-tall",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/swipe_hub_attended_events_error.png",
-        "dark": "dark/swipe_hub_attended_events_error.png"
-      },
-      "whatItIs": "Swipe Hub Attended Events Error",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "swipe_hub_offline",
-      "routes": [
-        "swipeHubScreen"
-      ],
-      "device": "review-tall",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/swipe_hub_offline.png",
-        "dark": "dark/swipe_hub_offline.png"
-      },
-      "whatItIs": "Swipe Hub Offline",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "swipe_hub_empty",
-      "routes": [
-        "swipeHubScreen"
-      ],
-      "device": "review-tall",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/swipe_hub_empty.png",
-        "dark": "dark/swipe_hub_empty.png"
-      },
-      "whatItIs": "Swipe Hub Empty",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "swipe_hub_text_scale_2",
-      "routes": [
-        "swipeHubScreen"
-      ],
-      "device": "review-tall",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/swipe_hub_text_scale_2.png",
-        "dark": "dark/swipe_hub_text_scale_2.png"
-      },
-      "whatItIs": "Swipe Hub Text Scale 2",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "swipe_hub_reduced_motion",
-      "routes": [
-        "swipeHubScreen"
-      ],
-      "device": "review-tall",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/swipe_hub_reduced_motion.png",
-        "dark": "dark/swipe_hub_reduced_motion.png"
-      },
-      "whatItIs": "Swipe Hub Reduced Motion",
       "keepChangeNotes": ""
     },
     {

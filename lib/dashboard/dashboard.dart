@@ -9,4 +9,4 @@ export 'presentation/widgets/dashboard_empty.dart'; // public-api: shared presen
 export 'presentation/widgets/dashboard_full.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/dashboard_sliver_header.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/empty_hero_card.dart'; // public-api: shared presentation component used outside this feature
-export 'presentation/widgets/event_focus_rail.dart'; // public-api: shared presentation component used outside this feature
+export 'presentation/widgets/event_lifecycle_timeline.dart'; // public-api: shared presentation component used outside this feature

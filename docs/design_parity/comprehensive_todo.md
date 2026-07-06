@@ -22,27 +22,27 @@ ledgers as the source of truth when counts differ:
 ## Current Snapshot
 
 - Route inventory: 48 app routes.
-- Route coverage decisions: 40 contracted, 2 alias, 0 planned, 6 excluded.
-- Screen contracts: 35 contracted screens.
-- Screen priority spread: 18 P1, 12 P2, and 5 P3 contracted screens.
-- Contracted screen states: 619.
-- Contracted screen sections: 241.
-- Screen registry migration gaps: 2 open, 28 blocked, and 109 closed. These are
+- Route coverage decisions: 39 contracted, 2 alias, 0 planned, 7 excluded.
+- Screen contracts: 34 contracted screens.
+- Screen priority spread: 17 P1, 12 P2, and 5 P3 contracted screens.
+- Contracted screen states: 605.
+- Contracted screen sections: 234.
+- Screen registry migration gaps: 2 open, 27 blocked, and 106 closed. These are
   product migration gaps in `design/screens/catch.screens.json`, not
   validation failures.
-- Contracted section states: 1,110.
+- Contracted section states: 1,089.
 - Open screen-contract validation gaps: 0.
-- Design parity matrix: 12 feature groups, 36 screens, 621 matrix states, and
-  48 open matrix gaps across screen-state, lint-candidate, and preview-plan
+- Design parity matrix: 12 feature groups, 35 screens, 607 matrix states, and
+  47 open matrix gaps across screen-state, lint-candidate, and preview-plan
   queues.
-- Matrix state status spread: 567 captured, 13 implemented, 1 planned, and
-  40 tested.
-- Capture coverage registry: 627 capture ids across 37 captured route entries,
-  5 alias route entries, 0 planned route entries, and 6 excluded route entries.
-- Component contracts: 56 reusable primitive/composite contracts with 349
+- Matrix state status spread: 555 captured, 14 implemented, 1 planned, and
+  37 tested.
+- Capture coverage registry: 615 capture ids across 36 captured route entries,
+  5 alias route entries, 0 planned route entries, and 7 excluded route entries.
+- Component contracts: 59 reusable primitive/composite contracts with 349
   contract states.
-- Widgetbook registry: 724 generated component entries, 739 generated use-case
-  builders, 62 formal primitive contract previews, and 1,429 referenced
+- Widgetbook registry: 867 generated component entries, 900 generated use-case
+  builders, 105 formal primitive contract previews, and 1,383 referenced
   preview ids.
 - Design references: 45 exported references are registered across 26 screens in
   `design/reference_screens/manifest.json`; 9 contracted screens still have no

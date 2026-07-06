@@ -1,15 +1,15 @@
 {
-  "generatedAt": "2026-07-06T06:07:19.375Z",
+  "generatedAt": "2026-07-06T19:18:53.059Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
-    "useCases": 851,
-    "components": 820,
-    "stateCards": 1705,
-    "reviewCandidates": 38,
-    "oversizedUseCases": 42,
+    "useCases": 845,
+    "components": 814,
+    "stateCards": 1690,
+    "reviewCandidates": 37,
+    "oversizedUseCases": 41,
     "multiUseCaseComponents": 30
   },
   "reviewCandidates": [
@@ -3135,87 +3135,6 @@
             {
               "label": "dark theme",
               "normalizedLabel": "dark theme"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "SwipeHubScreen",
-      "useCaseCount": 1,
-      "stateCardCount": 10,
-      "paths": [
-        "[P1 product surfaces]/Catches"
-      ],
-      "labels": [
-        "active catch windows",
-        "attended events error",
-        "attended events loading",
-        "auth error",
-        "no active windows",
-        "offline event load",
-        "reduced motion",
-        "signed out shell-hidden",
-        "text scale 2.0",
-        "uid loading"
-      ],
-      "review": {
-        "needsReview": true,
-        "reasons": [
-          "large-state-matrix"
-        ],
-        "duplicateLabels": [],
-        "oversizedUseCases": [
-          "catchesHubRouteStates"
-        ]
-      },
-      "useCases": [
-        {
-          "name": "Hub route states",
-          "functionName": "catchesHubRouteStates",
-          "file": "widgetbook/lib/catches/catches_use_cases.dart",
-          "path": "[P1 product surfaces]/Catches",
-          "stateCardCount": 10,
-          "stateCards": [
-            {
-              "label": "uid loading",
-              "normalizedLabel": "uid loading"
-            },
-            {
-              "label": "auth error",
-              "normalizedLabel": "auth error"
-            },
-            {
-              "label": "signed out shell-hidden",
-              "normalizedLabel": "signed out shell hidden"
-            },
-            {
-              "label": "attended events loading",
-              "normalizedLabel": "attended events loading"
-            },
-            {
-              "label": "attended events error",
-              "normalizedLabel": "attended events error"
-            },
-            {
-              "label": "offline event load",
-              "normalizedLabel": "offline event load"
-            },
-            {
-              "label": "no active windows",
-              "normalizedLabel": "no active windows"
-            },
-            {
-              "label": "active catch windows",
-              "normalizedLabel": "active catch windows"
-            },
-            {
-              "label": "text scale 2.0",
-              "normalizedLabel": "text scale 2 0"
-            },
-            {
-              "label": "reduced motion",
-              "normalizedLabel": "reduced motion"
             }
           ]
         }
@@ -6946,87 +6865,6 @@
             {
               "label": "dark theme",
               "normalizedLabel": "dark theme"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "SwipeHubScreen",
-      "useCaseCount": 1,
-      "stateCardCount": 10,
-      "paths": [
-        "[P1 product surfaces]/Catches"
-      ],
-      "labels": [
-        "active catch windows",
-        "attended events error",
-        "attended events loading",
-        "auth error",
-        "no active windows",
-        "offline event load",
-        "reduced motion",
-        "signed out shell-hidden",
-        "text scale 2.0",
-        "uid loading"
-      ],
-      "review": {
-        "needsReview": true,
-        "reasons": [
-          "large-state-matrix"
-        ],
-        "duplicateLabels": [],
-        "oversizedUseCases": [
-          "catchesHubRouteStates"
-        ]
-      },
-      "useCases": [
-        {
-          "name": "Hub route states",
-          "functionName": "catchesHubRouteStates",
-          "file": "widgetbook/lib/catches/catches_use_cases.dart",
-          "path": "[P1 product surfaces]/Catches",
-          "stateCardCount": 10,
-          "stateCards": [
-            {
-              "label": "uid loading",
-              "normalizedLabel": "uid loading"
-            },
-            {
-              "label": "auth error",
-              "normalizedLabel": "auth error"
-            },
-            {
-              "label": "signed out shell-hidden",
-              "normalizedLabel": "signed out shell hidden"
-            },
-            {
-              "label": "attended events loading",
-              "normalizedLabel": "attended events loading"
-            },
-            {
-              "label": "attended events error",
-              "normalizedLabel": "attended events error"
-            },
-            {
-              "label": "offline event load",
-              "normalizedLabel": "offline event load"
-            },
-            {
-              "label": "no active windows",
-              "normalizedLabel": "no active windows"
-            },
-            {
-              "label": "active catch windows",
-              "normalizedLabel": "active catch windows"
-            },
-            {
-              "label": "text scale 2.0",
-              "normalizedLabel": "text scale 2 0"
-            },
-            {
-              "label": "reduced motion",
-              "normalizedLabel": "reduced motion"
             }
           ]
         }
@@ -12189,6 +12027,53 @@
       ]
     },
     {
+      "component": "EventLifecycleTimeline",
+      "useCaseCount": 1,
+      "stateCardCount": 4,
+      "paths": [
+        "[P1 product surfaces]/Dashboard home"
+      ],
+      "labels": [
+        "check-in pending",
+        "multiple open catch windows",
+        "open catch window plus upcoming",
+        "upcoming event"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Timeline states",
+          "functionName": "dashboardEventLifecycleTimelineReviewStates",
+          "file": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
+          "path": "[P1 product surfaces]/Dashboard home",
+          "stateCardCount": 4,
+          "stateCards": [
+            {
+              "label": "upcoming event",
+              "normalizedLabel": "upcoming event"
+            },
+            {
+              "label": "open catch window plus upcoming",
+              "normalizedLabel": "open catch window plus upcoming"
+            },
+            {
+              "label": "multiple open catch windows",
+              "normalizedLabel": "multiple open catch windows"
+            },
+            {
+              "label": "check-in pending",
+              "normalizedLabel": "check in pending"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "EventLocationMapRouteScreen",
       "useCaseCount": 1,
       "stateCardCount": 4,
@@ -16238,80 +16123,6 @@
       ]
     },
     {
-      "component": "CatchesHubContent",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[P1 product surfaces]/Catches/Sections"
-      ],
-      "labels": [
-        "active windows",
-        "text scale 2.0"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Hub composition",
-          "functionName": "catchesHubContentStates",
-          "file": "widgetbook/lib/catches/catches_use_cases.dart",
-          "path": "[P1 product surfaces]/Catches/Sections",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "active windows",
-              "normalizedLabel": "active windows"
-            },
-            {
-              "label": "text scale 2.0",
-              "normalizedLabel": "text scale 2 0"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "CatchesIntroCard",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[P1 product surfaces]/Catches/Sections"
-      ],
-      "labels": [
-        "closing soon",
-        "window open"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Intro card states",
-          "functionName": "catchesIntroCardStates",
-          "file": "widgetbook/lib/catches/catches_use_cases.dart",
-          "path": "[P1 product surfaces]/Catches/Sections",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "window open",
-              "normalizedLabel": "window open"
-            },
-            {
-              "label": "closing soon",
-              "normalizedLabel": "closing soon"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "CatchesProfileReview",
       "useCaseCount": 1,
       "stateCardCount": 2,
@@ -18489,43 +18300,6 @@
             {
               "label": "spotlight transition target",
               "normalizedLabel": "spotlight transition target"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "EventFocusRail",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[P1 product surfaces]/Dashboard home"
-      ],
-      "labels": [
-        "check-in pending",
-        "upcoming event"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Rail states",
-          "functionName": "dashboardEventFocusRailReviewStates",
-          "file": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
-          "path": "[P1 product surfaces]/Dashboard home",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "upcoming event",
-              "normalizedLabel": "upcoming event"
-            },
-            {
-              "label": "check-in pending",
-              "normalizedLabel": "check in pending"
             }
           ]
         }
@@ -21371,38 +21145,6 @@
       ]
     },
     {
-      "component": "AttendedEventTile",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[P1 product surfaces]/Catches/Sections"
-      ],
-      "labels": [
-        "open and closing soon"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Tile states",
-          "functionName": "attendedEventTileStates",
-          "file": "widgetbook/lib/catches/catches_use_cases.dart",
-          "path": "[P1 product surfaces]/Catches/Sections",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "open and closing soon",
-              "normalizedLabel": "open and closing soon"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "CalendarDateHeaderSkeleton",
       "useCaseCount": 1,
       "stateCardCount": 1,
@@ -22286,70 +22028,6 @@
         {
           "name": "Bottom scrim states",
           "functionName": "catchesBottomScrimStates",
-          "file": "widgetbook/lib/catches/catches_use_cases.dart",
-          "path": "[P1 product surfaces]/Catches/Sections",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "default",
-              "normalizedLabel": "default"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "CatchesHubEmptyState",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[P1 product surfaces]/Catches/Sections"
-      ],
-      "labels": [
-        "no active catches"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Empty states",
-          "functionName": "catchesHubEmptyStateStates",
-          "file": "widgetbook/lib/catches/catches_use_cases.dart",
-          "path": "[P1 product surfaces]/Catches/Sections",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "no active catches",
-              "normalizedLabel": "no active catches"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "CatchesHubHeader",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[P1 product surfaces]/Catches/Sections"
-      ],
-      "labels": [
-        "default"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Header states",
-          "functionName": "catchesHubHeaderStates",
           "file": "widgetbook/lib/catches/catches_use_cases.dart",
           "path": "[P1 product surfaces]/Catches/Sections",
           "stateCardCount": 1,

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-07-01",
+  "updated": "2026-07-06",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
   "description": "Phase 1 UI capture coverage policy. Every route from go_router.dart must be captured, aliased to a canonical capture surface, planned, or explicitly excluded.",
   "routes": [
@@ -185,8 +185,6 @@
         "dashboard_home_memberships_error",
         "dashboard_home_booked_events_error",
         "dashboard_home_empty_start",
-        "dashboard_home_recommendations_loading",
-        "dashboard_home_recommendations_error",
         "dashboard_home_text_scale_2",
         "dashboard_home_reduced_motion",
         "dashboard_home_self_check_in",
@@ -357,22 +355,10 @@
       "reason": "Deterministic attendee companion captures now cover route loading/error/access/offline states, default live guide, paired light/dark, self-check-in, pending actions, runtime moments, assignment/rotation/reveal/wingman/afterglow variants, text-scale, and reduced-motion states; stage-specific reference comparisons remain open in the design parity tracker."
     },
     {
-      "routeId": "swipeHubScreen",
-      "status": "captured",
+      "routeId": "catchesRedirect",
+      "status": "excluded",
       "priority": "P1",
-      "captureIds": [
-        "swipe_hub_active",
-        "swipe_hub_uid_loading",
-        "swipe_hub_uid_error",
-        "swipe_hub_signed_out",
-        "swipe_hub_attended_events_loading",
-        "swipe_hub_attended_events_error",
-        "swipe_hub_offline",
-        "swipe_hub_empty",
-        "swipe_hub_text_scale_2",
-        "swipe_hub_reduced_motion"
-      ],
-      "reason": "Catches hub captures now cover active, uid loading/error, signed-out hidden, attended-events loading/error/offline, empty, text-scale, and reduced-motion states."
+      "reason": "Retired top-level Catches hub route redirects to Home; Home dashboard captures own catch-window discovery and /catches/:eventId captures the deck."
     },
     {
       "routeId": "swipeEventScreen",

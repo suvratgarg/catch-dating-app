@@ -226,6 +226,8 @@ abstract final class AnalyticsEvents {
   static const homeOpened = 'home_opened';
   static const homeModuleImpression = 'home_module_impression';
   static const homeActionTap = 'home_action_tap';
+  static const catchWindowImpression = 'catch_window_impression';
+  static const catchWindowOpen = 'catch_window_open';
   static const clubPostCreated = 'club_post_created';
   static const clubPostImpression = 'club_post_impression';
   static const clubPostOpen = 'club_post_open';

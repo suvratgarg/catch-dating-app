@@ -241,7 +241,7 @@ void main() {
       expect(viewModel.upcomingEvents.map((event) => event.id), ['upcoming']);
     });
 
-    test('surfaces attended section errors and clears the swipe event', () {
+    test('surfaces attended section errors and clears windowed events', () {
       final viewModel = buildDashboardFullViewModel(
         signedUpEvents: const [],
         attendedEventsAsync: AsyncError<List<Event>>(
@@ -256,19 +256,19 @@ void main() {
         viewModel.attendedEventsSection.message,
         'Unable to load your recent events.',
       );
-      expect(viewModel.activeSwipeEvent, isNull);
+      expect(viewModel.windowedEvents, isEmpty);
     });
 
-    test('selects the most recent event with an open swipe window', () {
+    test('orders all open catch windows by soonest expiry', () {
       final now = DateTime(2026, 4, 23, 20);
-      final older = buildEvent(
-        id: 'older',
+      final closingSoon = buildEvent(
+        id: 'closing-soon',
         checkedInCount: 1,
-        startTime: now.subtract(const Duration(hours: 8)),
-        endTime: now.subtract(const Duration(hours: 6)),
+        startTime: now.subtract(const Duration(hours: 24, minutes: 20)),
+        endTime: now.subtract(const Duration(hours: 23, minutes: 50)),
       );
-      final latest = buildEvent(
-        id: 'latest',
+      final laterWindow = buildEvent(
+        id: 'later-window',
         checkedInCount: 1,
         startTime: now.subtract(const Duration(hours: 4)),
         endTime: now.subtract(const Duration(hours: 2)),
@@ -276,12 +276,17 @@ void main() {
 
       final viewModel = buildDashboardFullViewModel(
         signedUpEvents: const [],
-        attendedEventsAsync: AsyncData<List<Event>>([older, latest]),
+        attendedEventsAsync: AsyncData<List<Event>>([laterWindow, closingSoon]),
         recommendedEventsAsync: noRecommendationCandidates,
         now: now,
       );
 
-      expect(viewModel.activeSwipeEvent?.id, latest.id);
+      expect(viewModel.windowedEvents.map((item) => item.event.id), [
+        'closing-soon',
+        'later-window',
+      ]);
+      expect(viewModel.windowedEvents.first.countdownLabel(now), '0h 10m');
+      expect(viewModel.windowedEvents.first.attendedCountLabel, '1');
     });
 
     test('uses Catch attended events as the weekly activity fallback', () {

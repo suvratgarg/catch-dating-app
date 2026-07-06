@@ -9,7 +9,7 @@
 /// expanded). Use [ScreenSize] for app-shell decisions (bottom bar vs nav
 /// rail); use these for in-widget reflow. Migrated verbatim from `CatchLayout`.
 abstract final class ComponentBreakpoints {
-  /// Catches hub gains horizontal padding once its column is this wide.
+  /// Catches deck surfaces gain horizontal padding once their column is this wide.
   static const double catchesWidePaddingBreakpoint = 700;
 
   /// Explore event-type grid switches 1 → 2 columns at this rail width.

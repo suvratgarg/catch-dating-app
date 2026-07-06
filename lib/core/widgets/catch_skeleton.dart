@@ -149,7 +149,7 @@ class CatchSkeleton extends StatelessWidget {
 
 /// A list of skeleton cards with a [count] and optional spacing.
 ///
-/// Convenience widget for swipe hubs, dashboards, and club lists.
+/// Convenience widget for swipe decks, dashboards, and club lists.
 class CatchSkeletonList extends StatelessWidget {
   const CatchSkeletonList({
     super.key,

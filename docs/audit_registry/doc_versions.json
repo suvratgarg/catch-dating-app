@@ -240,10 +240,17 @@
   },
   "widget_catalog": {
     "path": "docs/widget_catalog.md",
-    "version": "2.5.602",
+    "version": "2.5.603",
     "updated": "2026-07-06",
     "status": "active",
     "read_policy": "Use as widget inventory and update it when widget APIs, ownership models, sliver/tab structures, reusable design-system roles, action-effect/state adapters, or provider-free section boundaries materially change."
+  },
+  "home_catches_unification_spec": {
+    "path": "docs/plans/home_catches_unification_spec.md",
+    "version": "1.0.1",
+    "updated": "2026-07-06",
+    "status": "implemented",
+    "read_policy": "Use for the implemented Home plus Catches lifecycle merger: windowedEvents, EventLifecycleTimeline, retired Catches hub/tab, preserved catch-flow deep links, analytics expectations, and verification checklist."
   },
   "host_tooling_consolidation_tracker": {
     "path": "docs/host_tooling_consolidation_tracker.md",

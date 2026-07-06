@@ -116,12 +116,11 @@ void main() {
       overrides: appShellTestOverrides(uid: user.uid, user: user),
     );
 
-    expect(find.text('WELCOME TO CATCH'), findsOneWidget);
-    expect(find.text('Find an event near me'), findsOneWidget);
     expect(find.text('Home'), findsOneWidget);
+    expect(find.textContaining('Suvrat'), findsWidgets);
   });
 
-  testWidgets('authenticated shell loads the five primary feature tabs', (
+  testWidgets('authenticated shell loads the four primary feature tabs', (
     tester,
   ) async {
     final user = buildSocialReadyUser(name: 'Suvrat Garg');
@@ -153,21 +152,19 @@ void main() {
     );
     await pumpFeatureUi(tester);
 
-    expect(find.text('Event Focus'), findsOneWidget);
+    expect(find.text('Event timeline'), findsOneWidget);
+    expect(find.text('Start catching'), findsOneWidget);
 
     await openAppTab(tester, 'Explore');
     expect(find.text('Explore'), findsWidgets);
-
-    await openAppTab(tester, 'Catches');
-    expect(find.text('After the event'), findsOneWidget);
-    expect(find.text('Start catching'), findsOneWidget);
 
     await openAppTab(tester, 'Chats');
     expect(find.text('Chats'), findsWidgets);
     expect(find.text('No catches yet'), findsOneWidget);
 
     await openAppTab(tester, 'Profile');
-    expect(find.text('Profile'), findsWidgets);
+    expect(find.text('You'), findsWidgets);
+    expect(find.text('Your profile'), findsOneWidget);
     expect(find.text('Display name'), findsOneWidget);
   });
 }

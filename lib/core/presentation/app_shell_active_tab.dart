@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 
 const appShellHomeTabIndex = 0;
 const appShellClubsTabIndex = 1;
-const appShellCatchesTabIndex = 2;
-const appShellChatsTabIndex = 3;
-const appShellProfileTabIndex = 4;
+const appShellChatsTabIndex = 2;
+const appShellProfileTabIndex = 3;
 
 class AppShellActiveTab extends InheritedWidget {
   const AppShellActiveTab({

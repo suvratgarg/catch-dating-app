@@ -176,7 +176,6 @@ import 'package:catch_dating_app/swipes/presentation/event_recap_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_view_model.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_controller.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
-import 'package:catch_dating_app/swipes/presentation/swipe_hub_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_queue_controller.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_screen.dart';
@@ -1020,32 +1019,8 @@ final _postRunProfiles = [
 final _catchesOpenEvent = CatchesSurfaceFixtures.openWindowEvent(
   id: 'capture-catches-open',
 );
-final _catchesClosingSoonEvent = CatchesSurfaceFixtures.closingSoonEvent();
 final _catchesClosedEvent = CatchesSurfaceFixtures.closedWindowEvent();
 final _catchesUpcomingEvent = CatchesSurfaceFixtures.upcomingEvent();
-
-List<Object> _swipeHubProviderOverrides({
-  AsyncValue<String?> uidValue = const AsyncData<String?>(
-    CatchesSurfaceFixtures.viewerUid,
-  ),
-  AsyncValue<List<Event>>? eventsValue,
-}) {
-  final uid = switch (uidValue) {
-    AsyncData(:final value) => value,
-    _ => null,
-  };
-  return [
-    uidProvider.overrideWithValue(uidValue),
-    if (uid != null)
-      watchAttendedEventsProvider(uid).overrideWithValue(
-        eventsValue ??
-            AsyncData<List<Event>>([
-              _catchesOpenEvent,
-              _catchesClosingSoonEvent,
-            ]),
-      ),
-  ];
-}
 
 NetworkException _catchesOfflineException({required String action}) {
   return obviousOfflineException(
@@ -8156,28 +8131,6 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => const DashboardScreen(),
   ),
   ScreenCaptureEntry(
-    id: 'dashboard_home_recommendations_loading',
-    routeIds: const <String>['dashboardScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _dashboardProviderOverrides(
-      recommendations:
-          const AsyncLoading<List<DashboardEventRecommendationCandidate>>(),
-    ),
-    builder: (context) => const DashboardScreen(),
-  ),
-  ScreenCaptureEntry(
-    id: 'dashboard_home_recommendations_error',
-    routeIds: const <String>['dashboardScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _dashboardProviderOverrides(
-      recommendations: AsyncError<List<DashboardEventRecommendationCandidate>>(
-        StateError('Capture dashboard recommendations failed'),
-        StackTrace.empty,
-      ),
-    ),
-    builder: (context) => const DashboardScreen(),
-  ),
-  ScreenCaptureEntry(
     id: 'dashboard_home_self_check_in',
     routeIds: const <String>['dashboardScreen'],
     device: CaptureDevice.reviewTall,
@@ -12057,101 +12010,6 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ],
     builder: (context) =>
         SwipeScreen(eventId: _postRunEvent.id, now: _captureNow),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_hub_active',
-    routeIds: const <String>['swipeHubScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _swipeHubProviderOverrides(),
-    builder: (context) => SwipeHubScreen(now: CatchesSurfaceFixtures.now),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_hub_uid_loading',
-    routeIds: const <String>['swipeHubScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _swipeHubProviderOverrides(
-      uidValue: const AsyncLoading<String?>(),
-    ),
-    builder: (context) => SwipeHubScreen(now: CatchesSurfaceFixtures.now),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_hub_uid_error',
-    routeIds: const <String>['swipeHubScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _swipeHubProviderOverrides(
-      uidValue: AsyncError<String?>(
-        StateError('Capture Catches session failed'),
-        StackTrace.empty,
-      ),
-    ),
-    builder: (context) => SwipeHubScreen(now: CatchesSurfaceFixtures.now),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_hub_signed_out',
-    routeIds: const <String>['swipeHubScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _swipeHubProviderOverrides(
-      uidValue: const AsyncData<String?>(null),
-    ),
-    builder: (context) => SwipeHubScreen(now: CatchesSurfaceFixtures.now),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_hub_attended_events_loading',
-    routeIds: const <String>['swipeHubScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _swipeHubProviderOverrides(
-      eventsValue: const AsyncLoading<List<Event>>(),
-    ),
-    builder: (context) => SwipeHubScreen(now: CatchesSurfaceFixtures.now),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_hub_attended_events_error',
-    routeIds: const <String>['swipeHubScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _swipeHubProviderOverrides(
-      eventsValue: AsyncError<List<Event>>(
-        StateError('Capture Catches events failed'),
-        StackTrace.empty,
-      ),
-    ),
-    builder: (context) => SwipeHubScreen(now: CatchesSurfaceFixtures.now),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_hub_offline',
-    routeIds: const <String>['swipeHubScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _swipeHubProviderOverrides(
-      eventsValue: AsyncError<List<Event>>(
-        _catchesOfflineException(action: 'load attended events'),
-        StackTrace.empty,
-      ),
-    ),
-    builder: (context) => SwipeHubScreen(now: CatchesSurfaceFixtures.now),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_hub_empty',
-    routeIds: const <String>['swipeHubScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _swipeHubProviderOverrides(
-      eventsValue: AsyncData<List<Event>>([_catchesClosedEvent]),
-    ),
-    builder: (context) => SwipeHubScreen(now: CatchesSurfaceFixtures.now),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_hub_text_scale_2',
-    routeIds: const <String>['swipeHubScreen'],
-    device: CaptureDevice.reviewTall,
-    textScale: 2,
-    providerOverrides: _swipeHubProviderOverrides(),
-    builder: (context) => SwipeHubScreen(now: CatchesSurfaceFixtures.now),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_hub_reduced_motion',
-    routeIds: const <String>['swipeHubScreen'],
-    device: CaptureDevice.reviewTall,
-    disableAnimations: true,
-    providerOverrides: _swipeHubProviderOverrides(),
-    builder: (context) => SwipeHubScreen(now: CatchesSurfaceFixtures.now),
   ),
   ScreenCaptureEntry(
     id: 'swipe_event_queue_loading',
