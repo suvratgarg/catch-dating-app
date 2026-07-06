@@ -572,7 +572,7 @@ Part 2 — Clubs
 - [x] 2.4 owner seal = activity accent + meta format (`8e3958b71`)
 - [x] 2.5 star-size token + ClubPhotos contract check (`0e24e097f`)
 Part 3 — Profiles
-- [ ] 3.1 sunsetDark → editorialDark (values verified first)
+- [x] 3.1 sunsetDark → editorialDark (values verified first) (`db4cb49cc`)
 - [ ] 3.2 verification checklist receipted line-by-line
 - [ ] 3.3 D1 crumbs receipted
 Finish
