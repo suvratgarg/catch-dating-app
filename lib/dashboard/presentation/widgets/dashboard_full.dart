@@ -206,9 +206,15 @@ class _DashboardFullSliverBodyState
 
   void _checkIn(BuildContext context, Event event) {
     _logAction(_moduleForEvent(event), 'check_in');
+    unawaited(_runCheckInFlow(context, event));
+  }
+
+  Future<void> _runCheckInFlow(BuildContext context, Event event) async {
     final controller = DashboardEventFocusController(ref: ref);
-    unawaited(
-      DashboardEventFocusController.selfCheckInMutation.run(ref, (tx) async {
+    try {
+      await DashboardEventFocusController.selfCheckInMutation.run(ref, (
+        tx,
+      ) async {
         await controller.selfCheckIn(tx, event);
         if (!context.mounted) return;
         final launchResult = await launchEventSuccessCompanionIfAvailable(
@@ -241,7 +247,9 @@ class _DashboardFullSliverBodyState
             ),
           ),
         );
-      }),
-    );
+      });
+    } catch (_) {
+      // Mutation state owns the inline error display in EventFocusRail.
+    }
   }
 }
