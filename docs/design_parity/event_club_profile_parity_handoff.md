@@ -549,6 +549,44 @@ the DS source); edit-tab work (composition audit + flush contract own it).
   stale hero keys/layout expectations, so they were not used as proof for this
   rename.
 
+## 3.2 Verification Receipt
+
+- Hero meta strip: aligned against
+  `components/profile/ProfileHero/ProfileHero.d.ts`; `ProfileHeroWidget`
+  renders `"{displayName}, {age}"`, uppercases the mono meta strip, and the new
+  `profile_surface_contract_test.dart` verifies `Maya, 29` plus
+  `DESIGNER · BANDRA`.
+- Hero kicker no-activity fallback: aligned; `ProfileHeroWidget` keeps the
+  no-activity kicker on `CatchTokens.editorialDark.ink`, verified by the new
+  contract test.
+- RunningRhythm: fixed; `ProfileRunning` now renders pace/distance through the
+  shared `CatchMetricStrip` and activity-tints emotional run tags through the
+  handoff `CatchChip` primitive.
+- CompatibilityList: fixed; compatibility reasons now render as HintList-style
+  activity-pigmented marker rows with tokenized hairline separators, and
+  confidence signals now render as static `CatchChip` tags instead of status
+  badges.
+- FactList: aligned; `ProfileFactsSection` still owns explicit section titles
+  from the mapper (`Details` / `Lifestyle`, uppercased by
+  `ProfileSectionKicker`) and `ProfileFacts` renders one icon/text row per fact.
+- PhotoGrid: aligned; the existing shared `PhotoGrid` contract already covers
+  the leading `MAIN` affordance, next-empty-slot add target, guarded delete
+  affordance, and optional reorder callback via `ReorderableBuilder`. Existing
+  `photo_grid_test.dart` covers add, main-label, delete, and inactive-slot
+  behavior; no contract delta was found.
+- Verification: `flutter analyze --no-fatal-infos
+  lib/swipes/shared/profile_surface/catch_profile_view.dart
+  test/swipes/profile_surface_contract_test.dart` and `flutter test
+  test/swipes/profile_surface_contract_test.dart
+  test/swipes/profile_view_mapper_test.dart
+  test/image_uploads/photo_grid_test.dart --reporter expanded`.
+
+## 3.3 Drift Crumbs Receipt
+
+- Scanned `catch_profile_view.dart` and `profile_surface.dart` for raw
+  dimensions and raw alpha literals after the 3.2 edits. Findings are tokenized
+  `EdgeInsets` only; no D1 crumbs remain to file from this pass.
+
 ---
 
 # Completion checklist (goal mode — flip with commit hashes)

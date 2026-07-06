@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 1.7.9
+version: 1.7.10
 updated: 2026-07-06
 owner: recursive_audit_loop
 status: active
@@ -19,7 +19,10 @@ The native splash is generated from the `flutter_native_splash:` block in
 instead of hand-editing platform drawables/storyboards. Before regenerating,
 verify the configured splash image is a transparent mark that composites cleanly
 on both `#F4F4F1` and `#0F0E10`; a baked app-icon tile is not an acceptable
-native splash image.
+native splash image. The native splash mark is generated as transparent output
+by `tool/branding/generate_catch_icon.swift` and is a separate asset from the
+opaque launcher icon; edit the generator and `pubspec.yaml`, then re-run the
+Swift generator and `flutter_native_splash:create`.
 
 ## Required PR Checks
 

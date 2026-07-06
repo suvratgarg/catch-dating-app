@@ -10,6 +10,8 @@
   },
   "generated": [
     "assets/branding/catch_hosts_icon.png",
+    "assets/branding/catch_splash_mark_light.png",
+    "assets/branding/catch_splash_mark_dark.png",
     "assets/branding/generated/catch_icon_dev.png",
     "assets/branding/generated/catch_icon_staging.png",
     "assets/branding/generated/catch_icon_host_dev.png",

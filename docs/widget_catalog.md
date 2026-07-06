@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.601
+version: 2.5.602
 updated: 2026-07-06
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,16 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.602
+
+- Re-aligned the flagship profile contract with the design export:
+  `ProfileRunning` now renders pace/distance through `CatchMetricStrip`,
+  compatibility reasons use HintList-style activity-pigmented markers and
+  hairline separators, and profile confidence/running tags render through the
+  handoff `CatchChip` primitive instead of status badges or local stat rows.
+- Removed the stale `RunningStat` catalog entry and refreshed the
+  `catch_profile_view.dart` / `PhotoGrid` inventory paths.
 
 ### 2.5.601
 
@@ -3876,7 +3886,7 @@ a feature section here only when auditing that feature's widget surface.
 - `GradedImage` / `CatchGrade` is now a tunable, brightness-aware **matte duotone**
   (desaturate + black-lift + warm shadow/highlight split-tone, optional grain).
 - **Flagship profile:** `CatchProfileView`
-  (`lib/swipes/presentation/profile_redesign/`) renders a section-based `ProfileView`
+  (`lib/swipes/shared/profile_surface/`) renders a section-based `ProfileView`
   in the editorial language with per-section reaction controls;
   `profileViewFromCardContent` maps the existing `ProfileCardContent`, and
   `ProfileSurface` routes Catches + preview + public profile through it. The legacy
@@ -5948,7 +5958,7 @@ Generated 2026-05-06.
 | `CatchNoticeHost` | `lib/core/widgets/catch_notice.dart:84` | App-wide overlay host for ambient notices. Renders persistent notices such as offline state below the safe area and queues ephemeral event notices through `appNoticeControllerProvider`. |
 | `CatchNotice` | `lib/core/widgets/catch_notice.dart:184` | Reusable floating notice primitive with tone, icon, optional message, optional action, and optional dismiss control. Use for ambient app status/events, not inline form errors. |
 | `CatchSectionHeader` | `lib/core/widgets/catch_section_header.dart:4` | Lightweight section header with sentence-case styling by default, optional heavy weight, and opt-in uppercase for intentional metadata/eyebrow labels. Prefer `CatchSection` for carded content sections. |
-| `CatchStatColumn` | `lib/core/widgets/catch_stat_column.dart:5` | Vertical stat display: value on top, label below. Used by profile and host surfaces that need local surface ownership; detail-page rails should use `CatchMetricStrip`. |
+| `CatchStatColumn` | `lib/core/widgets/catch_stat_column.dart:5` | Vertical stat display: value on top, label below. Used by local host/stat surfaces that need their own chrome; shared metric rails and profile running identity should use `CatchMetricStrip`. |
 | `CatchBottomSheetGrabber` | `lib/core/widgets/catch_bottom_sheet_grabber.dart:4` | Small drag handle/grabber bar shown at the top of bottom sheets and draggable sheet shells. Supports caller-owned width/height while keeping tokenized color and radius. |
 | `CatchPersonRow` | `lib/core/widgets/catch_person_row.dart:89` | Multipurpose person row. In chat-thread mode (when `lastMessage` is non-null), renders name, timestamp, context line, last message, and unread badge. In roster mode, renders name, meta line, context line, and an optional trailing widget. Used in chat inbox, rosters, waitlists, and catches previews. |
 | `CatchPersonChatLayout` | `lib/core/widgets/catch_person_row.dart:177` | Direct chat-thread body renderer for `CatchPersonRow`: display name, optional run context, typing state, last-message preview, and unread/new emphasis. |
@@ -6135,14 +6145,14 @@ Generated 2026-05-06.
 | `SwipeHubScreen` | `lib/swipes/presentation/swipe_hub_screen.dart:26` | "Catches" tab. Keeps uid and attended-event provider watches plus route pushes at the screen edge, builds `CatchesHubScreenState`, and composes provider-free local sections for the header, active-window intro card, attended-event rows, and empty state. |
 | `ScrollableProfile` | `lib/swipes/presentation/widgets/scrollable_profile.dart:19` | Full-length scrollable profile body used inside `ProfileSurface`. Keeps the shared rendering path identical across Catches, Profile Preview, and Public Profile, renders the hero photo first, then contextual profile insights, profile prompts, one canonical `RUN PROFILE` running identity card, detail chips, inset photos, and lifestyle. Its internal vertical scroll view is non-primary, can accept an explicit controller and route-provided physics when embedded in a sliver route, and can report leading overscroll to a parent route for collapsible-header coordination. |
 | `ProfileSurface` | `lib/swipes/presentation/profile_surface.dart:18` | Shared cardless public profile renderer. Maps `ProfileCardContent` into the handoff-aligned `CatchProfileView`, passes optional viewer/event context for compatibility insights, renders passive compatibility and running-identity labels as `CatchBadge` metadata, applies the social-run activity pigment to the hero fallback and Running Rhythm block, and mode-gates reaction controls so Catches can show, disable, or mark section like/comment affordances pending while Preview/Public Profile remain passive. |
-| `ProfileSurfaceSkeleton` | `lib/swipes/presentation/profile_surface.dart:85` | Shared profile-surface loading skeleton for Public Profile, Profile Preview, and Catches deck loading. Mirrors `CatchProfileView` with a portrait hero placeholder, body gutter, section rules, running-stat cards, inset photo block, and fact rows while preserving optional scroll controller, physics, leading-overscroll callback, and bottom-padding hooks. |
-| `ProfileSurfaceHeroSkeleton` | `lib/swipes/presentation/profile_surface.dart:149` | Leaf hero loading block for `ProfileSurfaceSkeleton`. Preserves the profile hero 4:5 ratio, rounded lower corners, and bottom-aligned name/meta text placeholders. |
-| `ProfileSurfaceSectionSkeleton` | `lib/swipes/presentation/profile_surface.dart:191` | Generic profile body-section loading block with title, configurable text-line count, and three chip placeholders for prompt/detail-style profile sections. |
-| `ProfileSurfaceRunningSkeleton` | `lib/swipes/presentation/profile_surface.dart:225` | Running-rhythm loading block used by `ProfileSurfaceSkeleton`, including title, two stat-card placeholders, and a supporting text placeholder. |
-| `ProfileSurfacePhotoSkeleton` | `lib/swipes/presentation/profile_surface.dart:260` | Inset portrait photo loading block for the shared profile skeleton, preserving the same rounded 4:5 media geometry as loaded profile photos. |
-| `ProfileSurfaceFactsSkeleton` | `lib/swipes/presentation/profile_surface.dart:282` | Fact-row loading block for the shared profile skeleton, rendering a title placeholder and four icon/text skeleton rows. |
-| `ProfileSurfaceRule` | `lib/swipes/presentation/profile_surface.dart:314` | Profile skeleton section divider. Uses the current token line color and shared content-vertical padding so loading-state section rhythm matches loaded `CatchProfileView` sections. |
-| `CatchProfileView` | `lib/swipes/presentation/profile_redesign/catch_profile_view.dart:24` | Flagship cardless profile surface over a pure `ProfileView` display model. Renders the dark editorial hero, activity-pigmented kicker, ordered body sections, optional section reaction controls for Catches, and leading-overscroll/bottom-padding hooks for Profile Preview/Public Profile embedding. |
+| `ProfileSurfaceSkeleton` | `lib/swipes/shared/profile_surface/profile_surface.dart:85` | Shared profile-surface loading skeleton for Public Profile, Profile Preview, and Catches deck loading. Mirrors `CatchProfileView` with a portrait hero placeholder, body gutter, section rules, running-stat cards, inset photo block, and fact rows while preserving optional scroll controller, physics, leading-overscroll callback, and bottom-padding hooks. |
+| `ProfileSurfaceHeroSkeleton` | `lib/swipes/shared/profile_surface/profile_surface.dart:147` | Leaf hero loading block for `ProfileSurfaceSkeleton`. Preserves the profile hero 4:5 ratio, rounded lower corners, and bottom-aligned name/meta text placeholders. |
+| `ProfileSurfaceSectionSkeleton` | `lib/swipes/shared/profile_surface/profile_surface.dart:189` | Generic profile body-section loading block with title, configurable text-line count, and three chip placeholders for prompt/detail-style profile sections. |
+| `ProfileSurfaceRunningSkeleton` | `lib/swipes/shared/profile_surface/profile_surface.dart:223` | Running-rhythm loading block used by `ProfileSurfaceSkeleton`, including title, two stat-card placeholders, and a supporting text placeholder. |
+| `ProfileSurfacePhotoSkeleton` | `lib/swipes/shared/profile_surface/profile_surface.dart:258` | Inset portrait photo loading block for the shared profile skeleton, preserving the same rounded 4:5 media geometry as loaded profile photos. |
+| `ProfileSurfaceFactsSkeleton` | `lib/swipes/shared/profile_surface/profile_surface.dart:280` | Fact-row loading block for the shared profile skeleton, rendering a title placeholder and four icon/text skeleton rows. |
+| `ProfileSurfaceRule` | `lib/swipes/shared/profile_surface/profile_surface.dart:312` | Profile skeleton section divider. Uses the current token line color and shared content-vertical padding so loading-state section rhythm matches loaded `CatchProfileView` sections. |
+| `CatchProfileView` | `lib/swipes/shared/profile_surface/catch_profile_view.dart:23` | Flagship cardless profile surface over a pure `ProfileView` display model. Renders the dark editorial hero, activity-pigmented kicker, ordered body sections, optional section reaction controls for Catches, and leading-overscroll/bottom-padding hooks for Profile Preview/Public Profile embedding. |
 | `EventRecapViewModel` | `lib/swipes/presentation/event_recap_view_model.dart:11` | Recap data seam. Combines the event, current uid, and `eventParticipations` to derive checked-in count and the attendee IDs shown in the vibe grid without reading compatibility arrays. |
 
 ### StatelessWidget
@@ -6154,16 +6164,15 @@ Generated 2026-05-06.
 | `CatchesIntroCard` | `lib/swipes/presentation/swipe_hub_screen.dart:185` | Gradient hero card promoting the 24-hour catch window from `CatchesHubEventRow` display data: intro copy, countdown label, roster count, and "Start catching" CTA. The parent `CatchSurface` owns tap handling; the solid-white CTA is a non-interactive `CatchButtonVariant.light` display label so accessibility and color pairing stay correct. |
 | `ProfileHeroWidget` | `lib/swipes/shared/profile_surface/catch_profile_view.dart:123` | Dark editorial profile hero. Composes graded/fallback profile media, `CatchScrim.heroTint`, activity-colored kicker, display name/age, meta line, and optional overlay reaction controls. |
 | `ProfilePhoto` | `lib/swipes/shared/profile_surface/catch_profile_view.dart:214` | Profile media renderer. Shows a graded real photo when present, otherwise falls back to the activity artwork for the profile's kicker activity. |
-| `ProfileSectionView` | `lib/swipes/presentation/profile_redesign/catch_profile_view.dart:266` | Public section dispatcher for `ProfileSection` display models. Routes compatibility, prompt, running, facts, and photo sections to their named renderers, and adds section reaction controls only when the parent Catches surface supplies `onReact`. |
-| `ProfileSectionKicker` | `lib/swipes/presentation/profile_redesign/catch_profile_view.dart:326` | Uppercase mono section label used by profile compatibility, prompt, running, and fact sections, with optional activity accent color. |
-| `ProfileCompatibility` | `lib/swipes/presentation/profile_redesign/catch_profile_view.dart:344` | Compatibility block for "why you might click" content. Renders checked reasons plus confidence badges from the pure `ProfileCompatibilitySection` display model. |
-| `ProfilePrompt` | `lib/swipes/presentation/profile_redesign/catch_profile_view.dart:401` | Profile prompt renderer. Shows the prompt question as a kicker and the answer in the profile-answer text role. |
-| `ProfileRunning` | `lib/swipes/presentation/profile_redesign/catch_profile_view.dart:425` | Running identity section. Presents pace and distance through `RunningStat`, then supporting reasons/times and optional tags. |
-| `RunningStat` | `lib/swipes/presentation/profile_redesign/catch_profile_view.dart:471` | Compact profile running metric with uppercase label and large numeric value. |
-| `ProfileFacts` | `lib/swipes/presentation/profile_redesign/catch_profile_view.dart:496` | Titled icon/text facts block for profile details and lifestyle sections. |
-| `ProfilePhotoBlock` | `lib/swipes/presentation/profile_redesign/catch_profile_view.dart:540` | Standalone profile photo section. Uses the same `ProfilePhoto` media renderer, optional caption, and optional overlay reaction controls for photo-specific reactions. |
-| `PhotoCaption` | `lib/swipes/presentation/profile_redesign/catch_profile_view.dart:591` | Dark translucent caption pill used over standalone profile photos. |
-| `ProfileRule` | `lib/swipes/presentation/profile_redesign/catch_profile_view.dart:614` | Hairline divider inserted between profile body sections. |
+| `ProfileSectionView` | `lib/swipes/shared/profile_surface/catch_profile_view.dart:238` | Public section dispatcher for `ProfileSection` display models. Routes compatibility, prompt, running, facts, and photo sections to their named renderers, passes the resolved activity descriptor into activity-pigmented sections, and adds section reaction controls only when the parent Catches surface supplies `onReact`. |
+| `ProfileSectionKicker` | `lib/swipes/shared/profile_surface/catch_profile_view.dart:298` | Uppercase mono section label used by profile compatibility, prompt, running, and fact sections, with optional activity accent color. |
+| `ProfileCompatibility` | `lib/swipes/shared/profile_surface/catch_profile_view.dart:316` | Compatibility block for "why you might click" content. Renders HintList-style activity-pigmented reason markers with hairline separators plus confidence `CatchChip` tags from the pure `ProfileCompatibilitySection` display model. |
+| `ProfilePrompt` | `lib/swipes/shared/profile_surface/catch_profile_view.dart:355` | Profile prompt renderer. Shows the prompt question as a kicker and the answer in the profile-answer text role. |
+| `ProfileRunning` | `lib/swipes/shared/profile_surface/catch_profile_view.dart:379` | Running identity section. Presents pace and distance through `CatchMetricStrip`, then supporting reasons/times and optional activity-tinted `CatchChip` tags. |
+| `ProfileFacts` | `lib/swipes/shared/profile_surface/catch_profile_view.dart:483` | Titled icon/text facts block for profile details and lifestyle sections. |
+| `ProfilePhotoBlock` | `lib/swipes/shared/profile_surface/catch_profile_view.dart:527` | Standalone profile photo section. Uses the same `ProfilePhoto` media renderer, optional caption, and optional overlay reaction controls for photo-specific reactions. |
+| `PhotoCaption` | `lib/swipes/shared/profile_surface/catch_profile_view.dart:578` | Dark translucent caption pill used over standalone profile photos. |
+| `ProfileRule` | `lib/swipes/shared/profile_surface/catch_profile_view.dart:601` | Hairline divider inserted between profile body sections. |
 | `CatchesHubEmptyState` | `lib/swipes/presentation/swipe_hub_screen.dart:307` | Provider-free route-level empty state when no active catch windows exist. Renders the Catches header as top chrome, then centers the empty-state body plus privacy note in the remaining viewport with scroll fallback. Receives the "Find an event" callback from `SwipeHubScreen` so Widgetbook and tests can render it without router side effects. |
 | `CatchesProfileReviewSkeleton` | `lib/swipes/presentation/swipe_screen.dart:178` | Profile-shaped Catches deck loading shell. Reuses `ProfileSurfaceSkeleton`, preserves the top overlay geometry with circular/pill placeholders, keeps the bottom scrim, and shows a pass-button placeholder while the queue loads. |
 | `CatchesProfileReview` | `lib/swipes/presentation/swipe_screen.dart:224` | Provider-free Catches deck composition. Layers the reactable `ProfileSurface`, `CatchesTopOverlay`, `CatchesBottomScrim`, and floating `CatchesPassButton` while receiving back/filter/pass/reaction callbacks plus immutable action-state display data from `SwipeScreen`. |
@@ -6434,7 +6443,7 @@ Generated 2026-05-06.
 | Widget | File | Purpose |
 |---|---|---|
 | `OrderedPhotoPicker` | `lib/image_uploads/presentation/widgets/ordered_photo_picker.dart:32` | Shared ordered media picker for host club/event forms. Filters to previews with image data, renders add/photo tiles on `CatchSurface`, preserves semantic labels/tooltips, exposes stable add/remove keys, supports optional removal and reorder callbacks, optional first-photo cover badge, optional reorder-handle visibility, and keeps callers responsible for upload/persistence state. Add-tile visible labels collapse in short/high text-scale tiles while semantic labels and tooltips remain. |
-| `PhotoGrid` | `lib/image_uploads/presentation/photo_grid.dart:15` | Dense 3x2 profile photo grid over normalized `ProfilePhoto` objects. Uses `maximumProfilePhotoCount`, keyed slots, guarded delete callbacks, optional reorder, and a hideable leading `MAIN` label; callers own opening `ProfilePhotoEditorScreen` and enforcing the completed-profile minimum. |
+| `PhotoGrid` | `lib/image_uploads/shared/photo_grid.dart:15` | Dense 3x2 profile photo grid over normalized `ProfilePhoto` objects. Uses `maximumProfilePhotoCount`, keyed slots, guarded delete callbacks, optional reorder, and a hideable leading `MAIN` label; callers own opening `ProfilePhotoEditorScreen` and enforcing the completed-profile minimum. |
 
 ### StatelessWidget
 

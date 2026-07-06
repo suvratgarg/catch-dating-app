@@ -240,7 +240,7 @@
   },
   "widget_catalog": {
     "path": "docs/widget_catalog.md",
-    "version": "2.5.601",
+    "version": "2.5.602",
     "updated": "2026-07-06",
     "status": "active",
     "read_policy": "Use as widget inventory and update it when widget APIs, ownership models, sliver/tab structures, reusable design-system roles, action-effect/state adapters, or provider-free section boundaries materially change."
@@ -268,7 +268,7 @@
   },
   "release_operations": {
     "path": "docs/release_operations.md",
-    "version": "1.7.9",
+    "version": "1.7.10",
     "updated": "2026-07-06",
     "status": "active",
     "read_policy": "Read before changing CI workflows, Firebase deploy ordering, release gates, environment setup, store readiness, app-shell integration coverage, host TestFlight setup, or release evidence."

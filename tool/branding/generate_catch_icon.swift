@@ -9,6 +9,8 @@ private let fontURL = root.appendingPathComponent("assets/fonts/Archivo-Roman-VF
 private let squareIconURL = root.appendingPathComponent("assets/branding/catch_icon.png")
 private let squarePreviewURL = root.appendingPathComponent("assets/branding/catch_icon_square.png")
 private let roundIconURL = root.appendingPathComponent("assets/branding/catch_icon_round.png")
+private let splashMarkLightURL = root.appendingPathComponent("assets/branding/catch_splash_mark_light.png")
+private let splashMarkDarkURL = root.appendingPathComponent("assets/branding/catch_splash_mark_dark.png")
 private let hostLogoURL = root.appendingPathComponent("assets/branding/catch_hosts_logo.png")
 private let hostIconURL = root.appendingPathComponent("assets/branding/catch_hosts_icon.png")
 
@@ -40,13 +42,19 @@ let round = renderIcon(mask: .round, size: iconSize)
 writePNG(round, to: roundIconURL)
 writeAndroidRoundIcons(from: round)
 
+let splashMarkLight = renderSplashMark(ink: roundInk, size: iconSize)
+writePNG(splashMarkLight, to: splashMarkLightURL)
+
+let splashMarkDark = renderSplashMark(ink: squareInk, size: iconSize)
+writePNG(splashMarkDark, to: splashMarkDarkURL)
+
 let hostLogo = renderHostLogo(size: hostLogoSize)
 writePNG(hostLogo, to: hostLogoURL)
 
 let hostIcon = renderHostIcon(size: iconSize)
 writePNG(hostIcon, to: hostIconURL)
 
-print("Generated Catch launcher icons and host marks.")
+print("Generated Catch launcher icons, transparent splash marks, and host marks.")
 
 private enum IconMask {
   case square
@@ -97,6 +105,22 @@ private func renderIcon(mask: IconMask, size: Int) -> NSBitmapImageRep {
     ring.stroke()
     drawWordmark(ink: roundInk, size: size)
   }
+
+  return bitmap
+}
+
+private func renderSplashMark(ink: NSColor, size: Int) -> NSBitmapImageRep {
+  let bitmap = makeBitmap(size: size)
+  let context = NSGraphicsContext(bitmapImageRep: bitmap)!
+  NSGraphicsContext.saveGraphicsState()
+  NSGraphicsContext.current = context
+  defer {
+    NSGraphicsContext.restoreGraphicsState()
+  }
+
+  NSColor.clear.setFill()
+  NSRect(x: 0, y: 0, width: size, height: size).fill()
+  drawWordmark(ink: ink, size: size)
 
   return bitmap
 }
