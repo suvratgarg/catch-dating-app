@@ -407,6 +407,36 @@ variant's product trigger; the dense-list escalation path (resolved by 2.3).
   check; Widgetbook contract refs; widget classification + check; new-widget
   inventory check; widget cleanup scanner.
 
+## 2.4 Verification Receipt
+
+- `ClubHostSection` now resolves the club's primary activity through
+  `ActivityPalette.resolve(context, club.hostDefaults.primaryActivityKind)` and
+  passes that accent into `ClubHostRow` as the owner seal color. The owner seal
+  no longer uses `t.primary`.
+- Club established-date formatting moved into the shared
+  `clubEstablishedLabel` helper. Club stats and host rows now reuse the same
+  `JAN 2025` style label instead of keeping a private stats-only formatter.
+- `ClubHostRow` remains provider-free: standalone callers pass
+  `ownerSealColor` and `establishedLabel` explicitly. Its meta lane is now the
+  mono, pre-uppercased, middot-separated role/date copy (`OWNER · EST. JAN
+  2025`, `HOST · EST. JAN 2025`); profile viewing and messaging stay separate
+  affordances.
+- Widgetbook `ClubHostRow` states were updated to pass the explicit activity
+  accent and established label, and catalog version `2.5.600` records the API
+  contract change.
+- Verification: focused analyzer for changed club-detail/test/Widgetbook files;
+  `flutter test test/clubs/club_host_section_test.dart --reporter expanded`;
+  `flutter test test/explore/explore_widgets_test.dart --plain-name
+  "ClubDetailBody shows host identity without opening a dating profile"
+  --reporter expanded`; `flutter test test/explore/explore_widgets_test.dart
+  --plain-name "ClubDetailBody shows multiple hosts and messages a host"
+  --reporter expanded`; `flutter test test/explore/explore_widgets_test.dart
+  --plain-name "ClubDetailBody host view stays a public club profile"
+  --reporter expanded`; `flutter test test/explore/explore_widgets_test.dart
+  --plain-name "HostClubManagementPanel and metric strip show computed values"
+  --reporter expanded`; Widgetbook club-use-case analyzer; widget
+  classification/check; new-widget inventory check; widget cleanup scanner.
+
 ---
 
 # Part 3 — Profiles: verification pass + token rename

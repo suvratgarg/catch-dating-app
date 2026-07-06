@@ -11,6 +11,7 @@ import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_mode
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_dock.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_contact_section.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_body.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_formatters.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_skeleton.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_hero_app_bar.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_host_section.dart';
@@ -24,6 +25,7 @@ import 'package:catch_dating_app/clubs/shared/catch_polaroid.dart';
 import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
+import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -1239,6 +1241,12 @@ Widget clubHostSectionStates(BuildContext context) {
   path: '[Club Detail]/Sections',
 )
 Widget clubHostRowStates(BuildContext context) {
+  final ownerSealColor = ActivityPalette.resolve(
+    context,
+    _club.hostDefaults.primaryActivityKind,
+  ).accent;
+  final establishedLabel = clubEstablishedLabel(_club);
+
   return _CatalogScreen(
     title: 'ClubHostRow',
     catalogId: 'section.club.hosts.row',
@@ -1248,6 +1256,8 @@ Widget clubHostRowStates(BuildContext context) {
         child: ClubHostRow(
           host: _club.displayHostProfiles.first,
           borderColor: CatchTokens.of(context).primarySoft,
+          ownerSealColor: ownerSealColor,
+          establishedLabel: establishedLabel,
           showChevron: true,
           onMessage: _noop,
         ),
@@ -1257,6 +1267,8 @@ Widget clubHostRowStates(BuildContext context) {
         child: ClubHostRow(
           host: _club.displayHostProfiles.last,
           borderColor: CatchTokens.of(context).primarySoft,
+          ownerSealColor: ownerSealColor,
+          establishedLabel: establishedLabel,
           showChevron: false,
           onMessage: null,
         ),

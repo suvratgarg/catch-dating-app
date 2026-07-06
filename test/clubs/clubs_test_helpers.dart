@@ -42,6 +42,7 @@ Club buildClub({
   String? instagramHandle,
   String? phoneNumber,
   String? email,
+  ClubHostDefaults? hostDefaults,
   ClubAppVisibility appVisibility = ClubAppVisibility.discoverable,
 }) {
   return Club(
@@ -72,6 +73,7 @@ Club buildClub({
     instagramHandle: instagramHandle,
     phoneNumber: phoneNumber,
     email: email,
+    hostDefaults: hostDefaults ?? const ClubHostDefaults(),
     appVisibility: appVisibility,
   );
 }

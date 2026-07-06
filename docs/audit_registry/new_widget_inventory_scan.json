@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-06T06:18:21.928Z",
+  "generatedAt": "2026-07-06T07:10:29.825Z",
   "baseRef": "HEAD^",
   "baseStatus": "git-ref",
   "baseWarning": null,
@@ -10,35 +10,20 @@
     "policy": "New public widget classes need Widgetbook and widget catalog coverage. New private widget classes and Widget-returning helpers must be inlined/deleted, merged into an existing primitive, or promoted to public cataloged widgets."
   },
   "summary": {
-    "addedWidgetClasses": 1,
-    "addedPublicWidgetClasses": 1,
+    "addedWidgetClasses": 0,
+    "addedPublicWidgetClasses": 0,
     "addedPrivateWidgetClasses": 0,
     "addedWidgetReturningHelpers": 0,
     "movedWidgetClasses": 0,
     "movedWidgetReturningHelpers": 0,
-    "coveredNewWidgets": 1,
+    "coveredNewWidgets": 0,
     "unresolved": 0,
-    "widgetsByStatus": {
-      "covered": 1
-    },
+    "widgetsByStatus": {},
     "helpersByStatus": {},
     "issues": {}
   },
   "movedWidgets": [],
   "movedWidgetHelpers": [],
-  "addedWidgets": [
-    {
-      "name": "ClubIndexRow",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 3,
-      "file": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    }
-  ],
+  "addedWidgets": [],
   "addedWidgetHelpers": []
 }

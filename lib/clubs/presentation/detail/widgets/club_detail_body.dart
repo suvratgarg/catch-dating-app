@@ -2,6 +2,7 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen_state.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_contact_section.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_formatters.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_hero_app_bar.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_host_section.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_photo_strip.dart';
@@ -168,28 +169,8 @@ List<CatchMetricStripItem> _clubMetricItems(Club club) {
       label: 'rating',
     ),
     CatchMetricStripItem(value: '${club.reviewCount}', label: 'reviews'),
-    CatchMetricStripItem(value: _clubEstablishedLabel(club), label: 'est.'),
+    CatchMetricStripItem(value: clubEstablishedLabel(club), label: 'est.'),
   ];
-}
-
-String _clubEstablishedLabel(Club club) {
-  const months = <String>[
-    'JAN',
-    'FEB',
-    'MAR',
-    'APR',
-    'MAY',
-    'JUN',
-    'JUL',
-    'AUG',
-    'SEP',
-    'OCT',
-    'NOV',
-    'DEC',
-  ];
-  final month = months[(club.createdAt.month - 1).clamp(0, 11)];
-  final year = (club.createdAt.year % 100).toString().padLeft(2, '0');
-  return '$month \'$year';
 }
 
 String _clubHeroLocationLabel(Club club, Event? nextEvent) {

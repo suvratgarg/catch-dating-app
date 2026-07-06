@@ -1707,7 +1707,7 @@ void main() {
                   CatchMetricStripItem(value: '24', label: 'members'),
                   CatchMetricStripItem(value: '4.7', label: 'rating'),
                   CatchMetricStripItem(value: '12', label: 'reviews'),
-                  CatchMetricStripItem(value: "JAN '25", label: 'est.'),
+                  CatchMetricStripItem(value: 'JAN 2025', label: 'est.'),
                 ],
               ),
             ],
@@ -1723,7 +1723,7 @@ void main() {
         expect(find.text('reviews'), findsOneWidget);
         expect(find.text('est.'), findsOneWidget);
         expect(find.text('12'), findsOneWidget);
-        expect(find.text("JAN '25"), findsOneWidget);
+        expect(find.text('JAN 2025'), findsOneWidget);
         expect(find.text('4.7'), findsOneWidget);
       },
     );
@@ -2199,7 +2199,7 @@ void main() {
       expect(find.byIcon(CatchIcons.platformShare()), findsOneWidget);
       expect(find.text('Share'), findsNothing);
       expect(find.text('Asha Host'), findsOneWidget);
-      expect(find.textContaining('PUBLIC PROFILE'), findsOneWidget);
+      expect(find.textContaining('OWNER · EST. JAN 2025'), findsOneWidget);
       expect(find.textContaining('VIEW PROFILE'), findsNothing);
       expect(find.text('Club host'), findsNothing);
       expect(find.text('Hosts events in Saket'), findsNothing);
@@ -2263,7 +2263,7 @@ void main() {
 
         expect(find.text('Host'), findsNothing);
         expect(find.text('Asha Shah'), findsOneWidget);
-        expect(find.textContaining('PUBLIC PROFILE'), findsOneWidget);
+        expect(find.textContaining('OWNER · EST. JAN 2025'), findsOneWidget);
         expect(find.textContaining('VIEW PROFILE'), findsNothing);
         expect(find.text('Club host'), findsNothing);
         expect(find.text('Hosts events in Bandra'), findsNothing);
