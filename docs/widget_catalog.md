@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.598
+version: 2.5.599
 updated: 2026-07-06
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,24 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.599
+
+- Replaced the live Explore club-directory tile family with the condensed
+  `ClubIndexRow` tier: directories now render a dense row with a small
+  white-mat club thumbnail, title, activity badge, mono location/member meta,
+  and membership trailing action. `ExploreClubPolaroidCard` remains the
+  higher-emphasis spotlight card for mixed feed placements.
+- Removed the active `ClubListTile` router and tall directory-card subwidget
+  family from the catalog/Widgetbook surface (`DirectoryCard`,
+  `DirectoryClubCard`, `ClubPhotoMediaOverlay`, `ClubPhotoChrome`,
+  `ClubLogoCrest`, `ClubLogoFallback`, `ClubDirectoryFooter`,
+  `ClubHostActionRow`, and `ClubRule`). `AvatarChip`, `ClubImage`,
+  `MembershipTrailingController`, and `MembershipTrailing` remain as explicit
+  atoms.
+- Updated `ClubDirectorySkeletonCard`/`ClubDirectorySkeletonList` to mimic the
+  condensed row instead of the retired tall card, and changed joined directory
+  state from hidden sash-only status to an explicit compact `Joined` badge.
 
 ### 2.5.598
 
@@ -6434,7 +6452,7 @@ Generated 2026-05-06.
 | `ExploreList` | `lib/explore/presentation/widgets/explore_list.dart:16` | Sliver state-dispatch widget for the Explore tab's club directory state. Renders directory-card skeletons, error, city-empty, search-empty, filter-empty, and data slivers from `ExploreViewModel`, which partitions joined/discover clubs from active membership edges, and calls `buildExploreBodySlivers` directly for the data branch. Join-mutation feedback is owned by the enclosing screen/scroll boundary. |
 | `ExploreListEmptyState` | `lib/explore/presentation/widgets/explore_list.dart:94` | Provider-aware Explore list empty-state adapter. Selects city-empty, search-empty, filter-empty, or combined search/filter-empty copy from explicit city/search/filter inputs, while clear actions still route through the Explore provider seam. |
 | `ClubDirectorySkeletonList` | `lib/explore/presentation/widgets/explore_list.dart:185` | Explore club-directory loading stack. Renders three stable `ClubDirectorySkeletonCard` rows with shared vertical spacing so the provider-backed `ExploreList` loading branch keeps directory page rhythm. |
-| `ClubDirectorySkeletonCard` | `lib/explore/presentation/widgets/explore_list.dart:202` | Single Explore club-directory skeleton card. Uses `CatchSurface`, `CatchSkeleton`, and named `CatchLayout` skeleton dimensions for image, title, subtitle, chips, divider, footer avatar, and action placeholders. |
+| `ClubDirectorySkeletonCard` | `lib/explore/presentation/widgets/explore_list.dart:202` | Single Explore club-directory skeleton row. Mirrors `ClubIndexRow` with a white-mat thumbnail placeholder, title, badge, mono meta, and trailing action skeleton inside the shared `CatchSurface` row shell. |
 | `ExploreFilterRail` | `lib/explore/presentation/widgets/explore_filter_rail.dart:21` | Handoff Explore scope/filter rail. Renders visible time scopes through `CatchOptionGroupItem` in a horizontally safe lane, keeps the filter glyph pinned to the right with an active-count badge, and leaves selected time mutation at the rail boundary. Secondary distance/joined filters stay in a tokenized `CatchBottomSheetScaffold` with handoff `SelectChip` choices. The rail stays backed by `exploreFiltersProvider` and can receive transparent/opaque background colors from the floating map chrome. |
 | `ExploreFilterGlyphButton` | `lib/explore/presentation/widgets/explore_filter_rail.dart:126` | Pinned filter glyph button used inside `ExploreFilterRail`. Receives active-count copy, semantic label, and tap callback, then renders the tune icon with `CatchIconBadge` so filter state stays visible without giving the leaf provider access. |
 | `ExploreFilterSheet` | `lib/explore/presentation/widgets/explore_filter_rail.dart:171` | Public Explore filter-sheet content opened by `ExploreFilterRail` and rendered directly in Widgetbook. It keeps distance and joined-club controls on the same `exploreFiltersProvider` seam as the rail and uses `CatchBottomSheetScaffold`, `CatchButton`, and `CatchSelectChip` instead of a feature-local sheet shell. |
@@ -6474,9 +6492,9 @@ Generated 2026-05-06.
 | `MoreActivityTypesRow` | `lib/explore/presentation/widgets/explore_event_type_browse_grid.dart:261` | Collapsed overflow row for Browse by activity. Shows `+ n MORE TYPES`, forward affordance, and semantic expand label. |
 | `ActivityDot` | `lib/explore/presentation/widgets/explore_event_type_browse_grid.dart:309` | Fixed-size pill-radius activity accent dot rendered through `CatchSurface` so Browse by activity rows use tokenized shape and sizing. |
 | `EventTypeBrowseSkeleton` | `lib/explore/presentation/widgets/explore_event_type_browse_grid.dart:327` | Loading placeholder for the Browse by activity grid with kicker text skeleton plus two stable row skeletons. |
-| `ClubDiscoverList` | `lib/clubs/presentation/discovery/widgets/club_discover_list.dart:8` | Club directory section of Explore with a real `SliverList` of directory cards. Passes joined and hosted club IDs separately so host-owned clubs are not mislabeled as ordinary joined clubs. |
+| `ClubDiscoverList` | `lib/clubs/presentation/discovery/widgets/club_discover_list.dart:47` | Compatibility sliver wrapper for the Explore club directory. Delegates the real directory composition to `buildClubDirectorySlivers`, which renders `ClubIndexRow` entries with joined-club state and detail-route navigation. |
 | `ClubIdentityAtoms` | `lib/clubs/presentation/shared/club_identity_atoms.dart:11` | Shared club-card identity helpers and widgets: member-count label, tag filtering, member seal, tag wrap, hosted-by line, host avatar, host role badge, and rating pill. Use this before adding club-card-local member labels, tag wraps, host rows, or rating chips. |
-| `ClubListTile` | `lib/clubs/presentation/discovery/widgets/club_list_tile.dart:33` | Club tile rendered as directory card or avatar chip. Directory cards now use the productionized concept-lab club language and shared club identity atoms: image-backed clubs get a bounded photo card with member seal, centrally themed `CatchTextStyles.clubDisplay` title, tags, host row, and role sash; no-image clubs get an identity card that reuses the shared fallback palette. Display-only tile rendering does not watch provider state; only the join button owns the mutation provider. |
+| `ClubIndexRow` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:3` | Condensed Explore club-directory row. Uses a small white-mat `ClubImage` thumbnail, club title, activity `CatchBadge`, uppercase mono location/member meta, and `MembershipTrailingController` so long directories stay scannable while preserving the club polaroid material cue. |
 | `ExploreScreenEmptyState` | `lib/explore/presentation/explore_screen.dart:164` | Route-level Explore empty-state adapter. Receives provider-free `ExploreDiscoveryEmptyState` plus clear-search/filter callbacks from `ExploreScreen`, then renders `CatchEmptyState` directly with Explore copy and `ExploreClearAction`. |
 | `ExploreClearAction` | `lib/explore/presentation/explore_screen.dart:204` | Provider-free secondary clear action used by Explore route/list empty states. Encodes clear-search, clear-filters, and combined clear behavior without reading providers or routing. |
 | `ExploreFeedEventRow` | `lib/explore/presentation/widgets/explore_events_section.dart:243` | Compact mixed-feed event row. Converts `ExploreEventItem` into `EventDateRailCard` copy/status through `ExploreEventRowState`, applies the analytics-source hero tag, and keeps navigation/analytics as a tap callback owned by the Explore feed. |
@@ -6520,17 +6538,8 @@ Generated 2026-05-06.
 | `CreateClubProfileImagePicker` | `lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart:84` | Profile/logo image picker for host create/edit club forms. Standard mode keeps the create-flow square add/change tile; `editLogo` mode renders the compact Host Edit Club logo row with kicker, square tile, camera/edit affordance, and supporting copy. |
 | `ClubProfileImageTile` | `lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart:167` | Reusable square club profile/logo image tile used by create/edit club pickers. Renders memory or network images, the empty raised slot, optional empty label, semantics, and size variants without owning picker state. |
 | `CreateClubContactFields` | `lib/hosts/presentation/club_management/create/widgets/create_club_contact_fields.dart:6` | Contact fields (Instagram, WhatsApp, website, email) for the host create/edit club form. |
-| `DirectoryCard` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:3` | Directory-style club card router for Explore. Computes cover-photo availability, wraps the display card in button semantics when tappable, and delegates image/no-cover rendering to `DirectoryClubCard`. |
-| `DirectoryClubCard` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:32` | Merged Explore club directory card. Uses `CatchPolaroid` with real club imagery through `ClubPhotoMediaOverlay` when cover imagery exists and `ClubPolaroidArtwork` otherwise, preserves the two-line no-cover title allowance, overlays shared `ClubPhotoChrome`, renders tags plus hosted-by/action affordances, and derives the joined sash from `isJoined` without moving join mutation state into display-only card code. |
-| `ClubPhotoMediaOverlay` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:74` | Directory-card media slot that renders `ClubImage` in cover-first mode with the full-size fallback treatment expected by photo-backed club cards. |
-| `ClubPhotoChrome` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:85` | Directory-card media chrome. Layers `CatchScrim.photoFrame`, logo crest, optional joined sash, and compact member seal over card media while using the deterministic `ClubCoverVisualPalette` accent. |
-| `ClubLogoCrest` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:138` | Circular club logo mark used by directory media chrome. Renders the club profile image when present, otherwise falls back to `ClubLogoFallback`, with caller-supplied palette, border, size, and elevation. |
-| `ClubLogoFallback` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:178` | Empty logo fallback used inside the accent-colored `ClubLogoCrest` shell when the club has no profile image or the network image fails. |
-| `ClubDirectoryFooter` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:187` | Directory-card footer stack for rating, host/action row, separator rule, and visible club tags. Keeps card metadata layout separate from the media and title band. |
-| `ClubRule` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:225` | Single-pixel directory-card separator used between host/action metadata and tag chips. |
-| `ClubHostActionRow` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:239` | Directory-card hosted-by row. Reuses `ClubHostIdentityLine` and delegates joined/joinable trailing state to `MembershipTrailingController`. |
-| `MembershipTrailingController` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:301` | Directory-card membership action adapter. Hides redundant joined controls because the card sash carries that state, keys join mutation state by `clubId` so one pending Join button does not disable every visible club card, and routes signed-out users through the auth flow. |
-| `MembershipTrailing` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:369` | Provider-free directory-card join renderer. Shows the compact `CatchButton` for joinable clubs, disables it while the controller mutation is pending, and renders no redundant joined control when the sash already carries membership state. |
+| `MembershipTrailingController` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:117` | Directory-row membership action adapter. Keys join mutation state by `clubId` so one pending Join button does not disable every visible club row, renders joined clubs through the provider-free badge state, and routes signed-out users through the auth flow. |
+| `MembershipTrailing` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart:185` | Provider-free directory-row membership renderer. Shows a compact `Joined` badge for joined clubs and the compact `CatchButton` for joinable clubs, disabling it while the controller mutation is pending. |
 | `ClubImage` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/club_image.dart:3` | Club media renderer for list tiles and avatar chips. Selects cover/profile image order by explicit flags, grades network imagery through `CatchGradedImage`, and falls back to `ClubPolaroidArtwork` with compact or full fallback chrome chosen by the caller. |
 | `AvatarChip` | `lib/clubs/presentation/discovery/widgets/club_list_tile_parts/avatar_chip.dart:6` | Joined-club rail tile with a rounded image/fallback chip, optional live-badge border/copy, semantic open-club label, and truncated club name. |
 

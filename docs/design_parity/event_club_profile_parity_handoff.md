@@ -371,6 +371,42 @@ variant's product trigger; the dense-list escalation path (resolved by 2.3).
   analyzer; widget variant/classification/new-widget scanners; widget cleanup
   scanner.
 
+## 2.3 Verification Receipt
+
+- Explore club directories now render one condensed `ClubIndexRow` tier rather
+  than the retired tall `ClubListTile`/directory-card family. The row keeps the
+  approved polaroid material cue as a small white-mat `ClubImage` thumbnail,
+  then renders club name, activity `CatchBadge`, uppercase mono
+  location/member meta, and membership trailing state.
+- `ExploreClubPolaroidCard` remains untouched as the high-emphasis spotlight
+  tier; no long-list directory mixes tall polaroid cards with dense rows.
+- `ClubDiscoverList` / `buildClubDirectorySlivers` now own detail-route
+  navigation explicitly and render `ClubIndexRow` entries. `ClubAvatarRail`
+  now composes `AvatarChip` directly instead of routing through
+  `ClubListTile`.
+- `ClubListTile`, `ClubListTileVariant`, and the tall directory-card internals
+  were deleted from live code and Widgetbook: `DirectoryCard`,
+  `DirectoryClubCard`, `ClubPhotoMediaOverlay`, `ClubPhotoChrome`,
+  `ClubLogoCrest`, `ClubLogoFallback`, `ClubDirectoryFooter`,
+  `ClubHostActionRow`, and `ClubRule`. The consolidation ledger records those
+  deletes while keeping `AvatarChip`, `ClubImage`,
+  `MembershipTrailingController`, and `MembershipTrailing`.
+- `ClubDirectorySkeletonCard` / `ClubDirectorySkeletonList` now mimic the
+  condensed row skeleton. Joined directory state is visible as a compact
+  `Joined` badge instead of relying on a tall-card sash.
+- Widgetbook replaced the old tile-state use case with `ClubIndexRow` states
+  for photo/joined, fallback/joinable, and logo-backed clubs; generated
+  Widgetbook refs were refreshed.
+- Verification: focused app analyzer for the changed club/explore/test files;
+  `flutter test test/explore/explore_widgets_test.dart --plain-name
+  "ClubIndexRow" --reporter expanded`; `flutter test
+  test/explore/explore_widgets_test.dart --plain-name "club index row"
+  --reporter expanded`; `flutter test test/clubs/clubs_flow_test.dart
+  --plain-name "club taps navigate with the required route param" --reporter
+  expanded`; Widgetbook club-use-case analyzer; widget variant inventory +
+  check; Widgetbook contract refs; widget classification + check; new-widget
+  inventory check; widget cleanup scanner.
+
 ---
 
 # Part 3 — Profiles: verification pass + token rename

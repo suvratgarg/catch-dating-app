@@ -1515,7 +1515,7 @@ void main() {
       expect(find.text('Create club'), findsNothing);
     });
 
-    testWidgets('directory and avatar chip variants render club metadata', (
+    testWidgets('club index row and avatar chip render club metadata', (
       tester,
     ) async {
       final club = buildClub(
@@ -1533,31 +1533,21 @@ void main() {
         tester,
         Column(
           children: [
-            Expanded(child: ClubListTile(club: club, isJoined: true)),
-            ClubListTile(
-              club: club,
-              variant: ClubListTileVariant.avatarChip,
-              showLiveBadge: true,
-            ),
+            Expanded(child: ClubIndexRow(club: club, isJoined: true)),
+            AvatarChip(club: club, showLiveBadge: true),
           ],
         ),
       );
 
-      // The directory card keeps cover art and club identity separate:
-      // imageUrl is the cover, profileImageUrl is the logo crest. Rating
-      // belongs with the title, not as a duplicate review/meta row.
+      // The index row keeps cover art and rail identity separate:
+      // imageUrl is the row thumbnail, profileImageUrl is the avatar-chip image.
       expect(find.text('Night Pacers'), findsNWidgets(2));
-      expect(find.text('Joined'), findsOneWidget); // corner sash
+      expect(find.text('Joined'), findsOneWidget);
       expect(find.text('Join'), findsNothing);
-      expect(find.text('SOCIAL'), findsOneWidget); // tag chip
-      expect(find.text('INDORE'), findsNothing);
-      expect(find.text('1\nmember'), findsOneWidget); // member seal
-      expect(find.text('RACE COURSE ROAD MAIN GATE'), findsOneWidget);
-      expect(
-        find.text('4.8 · 12 reviews'),
-        findsNothing,
-      ); // removed duplicate review/meta row
-      expect(find.text('4.8'), findsOneWidget); // title rating
+      expect(find.text('SOCIAL RUN'), findsOneWidget);
+      expect(find.text('BANDRA / INDORE · 1 MEMBER'), findsOneWidget);
+      expect(find.text('RACE COURSE ROAD MAIN GATE'), findsNothing);
+      expect(find.text('4.8'), findsNothing);
       expect(
         find.byWidgetPredicate(
           (widget) =>
@@ -1574,12 +1564,12 @@ void main() {
       );
     });
 
-    testWidgets('ClubListTile labels joined clubs without host state', (
+    testWidgets('ClubIndexRow labels joined clubs without host state', (
       tester,
     ) async {
       await pumpTestApp(
         tester,
-        ClubListTile(club: buildClub(name: 'Host Club'), isJoined: true),
+        ClubIndexRow(club: buildClub(name: 'Host Club'), isJoined: true),
       );
 
       expect(find.text('You host'), findsNothing);
@@ -2014,17 +2004,16 @@ void main() {
       },
     );
 
-    testWidgets('ClubListTile variants navigate to detail routes', (
+    testWidgets('club index row and avatar chip navigate to detail routes', (
       tester,
     ) async {
-      Future<void> pumpVariant(
-        ClubListTileVariant variant, {
-        bool showLiveBadge = false,
-        bool isJoined = false,
+      Future<void> pumpRow({
+        required String id,
+        required Widget Function(BuildContext context, Club club) childBuilder,
       }) async {
         final club = buildClub(
-          id: variant.name,
-          name: 'Club ${variant.name}',
+          id: id,
+          name: 'Club $id',
           imageUrl: 'https://example.com/club.jpg',
         );
         final router = GoRouter(
@@ -2032,16 +2021,8 @@ void main() {
           routes: [
             GoRoute(
               path: '/',
-              builder: (_, _) => Scaffold(
-                body: Center(
-                  child: ClubListTile(
-                    club: club,
-                    variant: variant,
-                    showLiveBadge: showLiveBadge,
-                    isJoined: isJoined,
-                  ),
-                ),
-              ),
+              builder: (context, _) =>
+                  Scaffold(body: Center(child: childBuilder(context, club))),
             ),
             GoRoute(
               path: '/detail/:clubId',
@@ -2061,9 +2042,8 @@ void main() {
         await tester.tap(
           find.byWidgetPredicate(
             (widget) =>
-                widget is ClubListTile &&
-                widget.club.id == club.id &&
-                widget.variant == variant,
+                (widget is ClubIndexRow && widget.club.id == club.id) ||
+                (widget is AvatarChip && widget.club.id == club.id),
           ),
         );
         await _pumpClubUi(tester);
@@ -2071,29 +2051,52 @@ void main() {
         expect(find.text('Detail ${club.id}'), findsOneWidget);
       }
 
-      await pumpVariant(ClubListTileVariant.directory, isJoined: true);
-      await pumpVariant(ClubListTileVariant.avatarChip, showLiveBadge: true);
+      await pumpRow(
+        id: 'index',
+        childBuilder: (context, club) => ClubIndexRow(
+          club: club,
+          isJoined: true,
+          onTap: () => context.pushNamed(
+            Routes.clubDetailScreen.name,
+            pathParameters: {'clubId': club.id},
+            extra: club,
+          ),
+        ),
+      );
+      await pumpRow(
+        id: 'avatar',
+        childBuilder: (context, club) => AvatarChip(
+          club: club,
+          showLiveBadge: true,
+          onTap: () => context.pushNamed(
+            Routes.clubDetailScreen.name,
+            pathParameters: {'clubId': club.id},
+            extra: club,
+          ),
+        ),
+      );
     });
 
-    testWidgets('ClubListTile uses club cover fallback when image is absent', (
+    testWidgets('ClubIndexRow uses club cover fallback when image is absent', (
       tester,
     ) async {
       await pumpTestApp(
         tester,
-        ClubListTile(
+        ClubIndexRow(
           club: buildClub(name: 'No Cover Club', area: 'Signal Hill'),
+          isJoined: false,
         ),
       );
 
       expect(find.byType(ClubPolaroidArtwork), findsWidgets);
       expect(find.text('NC'), findsNothing);
       expect(find.byIcon(CatchIcons.locationOnRounded), findsOneWidget);
-      // Directory cards use the area as the caption when no next event is set;
-      // the fallback crest itself should not add a duplicate footer label.
-      expect(find.text('SIGNAL HILL / MUMBAI'), findsOneWidget);
+      // Index rows use the area/city/member line as the mono meta row; the
+      // fallback artwork itself should not add a duplicate footer label.
+      expect(find.text('SIGNAL HILL / MUMBAI · 1 MEMBER'), findsOneWidget);
     });
 
-    testWidgets('ClubListTile surfaces directory join failures', (
+    testWidgets('ClubIndexRow surfaces directory join failures', (
       tester,
     ) async {
       final fakeRepository = FakeClubsRepository()
@@ -2121,8 +2124,9 @@ void main() {
             theme: AppTheme.light,
             home: Scaffold(
               body: Center(
-                child: ClubListTile(
+                child: ClubIndexRow(
                   club: buildClub(id: 'club-fail', name: 'Fail Club'),
+                  isJoined: false,
                 ),
               ),
             ),

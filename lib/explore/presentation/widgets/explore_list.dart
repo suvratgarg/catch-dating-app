@@ -207,61 +207,52 @@ class ClubDirectorySkeletonCard extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchSurface(
       borderColor: t.line,
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      elevation: CatchSurfaceElevation.card,
+      radius: CatchRadius.md,
+      padding: CatchInsets.tileContentCompact,
+      child: Row(
         children: [
-          CatchSkeleton.card(),
-          Padding(
-            padding: CatchInsets.tileContentCompact,
+          DecoratedBox(
+            decoration: BoxDecoration(
+              color: t.surface,
+              borderRadius: BorderRadius.circular(
+                CatchLayout.clubPolaroidRadius,
+              ),
+              border: Border.all(color: t.line),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(CatchSpacing.micro3),
+              child: CatchSkeleton.card(
+                width: CatchSpacing.s16,
+                height: CatchSpacing.s16,
+              ),
+            ),
+          ),
+          gapW12,
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 CatchSkeleton.text(
                   width: CatchLayout.clubDirectorySkeletonTitleWidth,
                 ),
                 gapH8,
+                CatchSkeleton.card(
+                  width: CatchLayout.clubDirectorySkeletonShortChipWidth,
+                  height: CatchSpacing.s6,
+                ),
+                gapH6,
                 CatchSkeleton.text(
                   width: CatchLayout.clubDirectorySkeletonSubtitleWidth,
                 ),
-                gapH12,
-                Row(
-                  children: [
-                    CatchSkeleton.card(
-                      width: CatchLayout.clubDirectorySkeletonShortChipWidth,
-                      height: CatchSpacing.s6,
-                    ),
-                    gapW8,
-                    CatchSkeleton.card(
-                      width: CatchLayout.clubDirectorySkeletonLongChipWidth,
-                      height: CatchSpacing.s6,
-                    ),
-                  ],
-                ),
-                gapH12,
-                SizedBox(
-                  height: CatchStroke.hairline,
-                  child: ColoredBox(color: t.line),
-                ),
-                gapH12,
-                Row(
-                  children: [
-                    CatchSkeleton.circle(size: CatchIcon.md),
-                    gapW8,
-                    Expanded(
-                      child: CatchSkeleton.text(
-                        width: CatchLayout.clubDirectorySkeletonFooterWidth,
-                      ),
-                    ),
-                    gapW12,
-                    CatchSkeleton.card(
-                      width: CatchLayout.clubDirectorySkeletonActionWidth,
-                      height: CatchSpacing.s9,
-                    ),
-                  ],
-                ),
               ],
             ),
+          ),
+          gapW12,
+          CatchSkeleton.card(
+            width: CatchLayout.clubDirectorySkeletonActionWidth,
+            height: CatchSpacing.s9,
           ),
         ],
       ),

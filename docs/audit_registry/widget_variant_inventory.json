@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-07-06T03:18:37.218Z",
+  "generatedAt": "2026-07-06T06:07:19.375Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
-    "useCases": 860,
-    "components": 829,
-    "stateCards": 1719,
+    "useCases": 851,
+    "components": 820,
+    "stateCards": 1705,
     "reviewCandidates": 38,
     "oversizedUseCases": 42,
     "multiUseCaseComponents": 30
@@ -14450,6 +14450,48 @@
       ]
     },
     {
+      "component": "ClubIndexRow",
+      "useCaseCount": 1,
+      "stateCardCount": 3,
+      "paths": [
+        "[Club Discovery]/Cards"
+      ],
+      "labels": [
+        "fallback / joinable",
+        "logo club",
+        "photo / joined"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Index row states",
+          "functionName": "clubIndexRowStates",
+          "file": "widgetbook/lib/clubs/club_detail_use_cases.dart",
+          "path": "[Club Discovery]/Cards",
+          "stateCardCount": 3,
+          "stateCards": [
+            {
+              "label": "photo / joined",
+              "normalizedLabel": "photo joined"
+            },
+            {
+              "label": "fallback / joinable",
+              "normalizedLabel": "fallback joinable"
+            },
+            {
+              "label": "logo club",
+              "normalizedLabel": "logo club"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "CreateClubScreen",
       "useCaseCount": 1,
       "stateCardCount": 3,
@@ -15088,7 +15130,7 @@
       ],
       "labels": [
         "join button",
-        "joined hidden",
+        "joined badge",
         "pending"
       ],
       "review": {
@@ -15114,8 +15156,8 @@
               "normalizedLabel": "pending"
             },
             {
-              "label": "joined hidden",
-              "normalizedLabel": "joined hidden"
+              "label": "joined badge",
+              "normalizedLabel": "joined badge"
             }
           ]
         }
@@ -16899,80 +16941,6 @@
       ]
     },
     {
-      "component": "ClubDirectoryFooter",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[Club Discovery]/Atoms"
-      ],
-      "labels": [
-        "joined / no rating",
-        "rating / host / tags"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Directory footer states",
-          "functionName": "clubDirectoryFooterStates",
-          "file": "widgetbook/lib/clubs/club_detail_use_cases.dart",
-          "path": "[Club Discovery]/Atoms",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "rating / host / tags",
-              "normalizedLabel": "rating host tags"
-            },
-            {
-              "label": "joined / no rating",
-              "normalizedLabel": "joined no rating"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "ClubHostActionRow",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[Club Discovery]/Atoms"
-      ],
-      "labels": [
-        "joinable",
-        "joined"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Host action row states",
-          "functionName": "clubHostActionRowStates",
-          "file": "widgetbook/lib/clubs/club_detail_use_cases.dart",
-          "path": "[Club Discovery]/Atoms",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "joinable",
-              "normalizedLabel": "joinable"
-            },
-            {
-              "label": "joined",
-              "normalizedLabel": "joined"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "ClubHostIdentityLine",
       "useCaseCount": 1,
       "stateCardCount": 2,
@@ -17084,80 +17052,6 @@
       ]
     },
     {
-      "component": "ClubListTile",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[Club Discovery]/Cards"
-      ],
-      "labels": [
-        "avatar chip",
-        "directory photo"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "List tile states",
-          "functionName": "clubListTileStates",
-          "file": "widgetbook/lib/clubs/club_detail_use_cases.dart",
-          "path": "[Club Discovery]/Cards",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "directory photo",
-              "normalizedLabel": "directory photo"
-            },
-            {
-              "label": "avatar chip",
-              "normalizedLabel": "avatar chip"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "ClubLogoCrest",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[Club Discovery]/Atoms"
-      ],
-      "labels": [
-        "fallback",
-        "photo logo"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Logo crest states",
-          "functionName": "clubLogoCrestStates",
-          "file": "widgetbook/lib/clubs/club_detail_use_cases.dart",
-          "path": "[Club Discovery]/Atoms",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "photo logo",
-              "normalizedLabel": "photo logo"
-            },
-            {
-              "label": "fallback",
-              "normalizedLabel": "fallback"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "ClubMemberSeal",
       "useCaseCount": 1,
       "stateCardCount": 2,
@@ -17263,43 +17157,6 @@
             {
               "label": "display only",
               "normalizedLabel": "display only"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "ClubPhotoMediaOverlay",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[Club Discovery]/Atoms"
-      ],
-      "labels": [
-        "cover image",
-        "fallback image order"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Photo media overlay states",
-          "functionName": "clubPhotoMediaOverlayStates",
-          "file": "widgetbook/lib/clubs/club_detail_use_cases.dart",
-          "path": "[Club Discovery]/Atoms",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "cover image",
-              "normalizedLabel": "cover image"
-            },
-            {
-              "label": "fallback image order",
-              "normalizedLabel": "fallback image order"
             }
           ]
         }
@@ -18077,80 +17934,6 @@
             {
               "label": "notification action",
               "normalizedLabel": "notification action"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "DirectoryCard",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[Club Discovery]/Cards"
-      ],
-      "labels": [
-        "identity / joined",
-        "photo / joinable"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Directory card states",
-          "functionName": "directoryCardStates",
-          "file": "widgetbook/lib/clubs/club_detail_use_cases.dart",
-          "path": "[Club Discovery]/Cards",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "photo / joinable",
-              "normalizedLabel": "photo joinable"
-            },
-            {
-              "label": "identity / joined",
-              "normalizedLabel": "identity joined"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "DirectoryClubCard",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[Club Discovery]/Cards"
-      ],
-      "labels": [
-        "identity / joined",
-        "photo / joinable"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Directory club card states",
-          "functionName": "directoryClubCardStates",
-          "file": "widgetbook/lib/clubs/club_detail_use_cases.dart",
-          "path": "[Club Discovery]/Cards",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "photo / joinable",
-              "normalizedLabel": "photo joinable"
-            },
-            {
-              "label": "identity / joined",
-              "normalizedLabel": "identity joined"
             }
           ]
         }
@@ -24660,70 +24443,6 @@
       ]
     },
     {
-      "component": "ClubLogoFallback",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[Club Discovery]/Atoms"
-      ],
-      "labels": [
-        "empty mark"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Logo fallback states",
-          "functionName": "clubLogoFallbackStates",
-          "file": "widgetbook/lib/clubs/club_detail_use_cases.dart",
-          "path": "[Club Discovery]/Atoms",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "empty mark",
-              "normalizedLabel": "empty mark"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "ClubPhotoChrome",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[Club Discovery]/Atoms"
-      ],
-      "labels": [
-        "logo / member seal"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Photo chrome states",
-          "functionName": "clubPhotoChromeStates",
-          "file": "widgetbook/lib/clubs/club_detail_use_cases.dart",
-          "path": "[Club Discovery]/Atoms",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "logo / member seal",
-              "normalizedLabel": "logo member seal"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "ClubPolicyDefaultsCard",
       "useCaseCount": 1,
       "stateCardCount": 1,
@@ -24750,38 +24469,6 @@
             {
               "label": "editable",
               "normalizedLabel": "editable"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "ClubRule",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[Club Discovery]/Atoms"
-      ],
-      "labels": [
-        "hairline"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Rule states",
-          "functionName": "clubRuleStates",
-          "file": "widgetbook/lib/clubs/club_detail_use_cases.dart",
-          "path": "[Club Discovery]/Atoms",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "hairline",
-              "normalizedLabel": "hairline"
             }
           ]
         }

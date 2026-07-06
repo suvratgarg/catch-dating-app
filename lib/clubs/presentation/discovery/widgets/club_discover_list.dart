@@ -3,7 +3,9 @@ import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_list_
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 /// Returns the slivers for the club directory section. Returns multiple
 /// slivers so the parent can spread them flat — nesting `SliverMainAxisGroup`
@@ -28,9 +30,10 @@ List<Widget> buildClubDirectorySlivers({
         children: [
           for (var index = 0; index < clubs.length; index += 1) ...[
             if (index > 0) gapH14,
-            ClubListTile(
+            ClubIndexRow(
               club: clubs[index],
               isJoined: joinedClubIds.contains(clubs[index].id),
+              onTap: () => _openClubDetail(context, clubs[index]),
             ),
           ],
         ],
@@ -61,4 +64,12 @@ class ClubDiscoverList extends StatelessWidget {
       ),
     );
   }
+}
+
+void _openClubDetail(BuildContext context, Club club) {
+  context.pushNamed(
+    Routes.clubDetailScreen.name,
+    pathParameters: {'clubId': club.id},
+    extra: club,
+  );
 }

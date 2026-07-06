@@ -5929,6 +5929,78 @@
       "decidedBy": "claude-review -> codex",
       "date": "2026-07-06",
       "status": "executed-parity-handoff"
+    },
+    {
+      "clusterId": "handoff-2.3: Club directory condensed row",
+      "decision": "replace-with-new-primitive",
+      "canonicalSymbol": "ClubIndexRow",
+      "members": [
+        {
+          "name": "ClubListTile",
+          "action": "delete",
+          "note": "directory routing moved to buildClubDirectorySlivers; avatar rail now uses AvatarChip directly"
+        },
+        {
+          "name": "DirectoryCard",
+          "action": "delete"
+        },
+        {
+          "name": "DirectoryClubCard",
+          "action": "delete"
+        },
+        {
+          "name": "ClubPhotoMediaOverlay",
+          "action": "delete"
+        },
+        {
+          "name": "ClubPhotoChrome",
+          "action": "delete"
+        },
+        {
+          "name": "ClubLogoCrest",
+          "action": "delete"
+        },
+        {
+          "name": "ClubLogoFallback",
+          "action": "delete"
+        },
+        {
+          "name": "ClubDirectoryFooter",
+          "action": "delete"
+        },
+        {
+          "name": "ClubHostActionRow",
+          "action": "delete"
+        },
+        {
+          "name": "ClubRule",
+          "action": "delete"
+        },
+        {
+          "name": "AvatarChip",
+          "action": "keep",
+          "note": "joined-club rail atom"
+        },
+        {
+          "name": "ClubImage",
+          "action": "keep",
+          "note": "shared cover/profile/fallback media atom"
+        },
+        {
+          "name": "MembershipTrailingController",
+          "action": "keep",
+          "note": "join mutation/auth redirect seam reused by ClubIndexRow"
+        },
+        {
+          "name": "MembershipTrailing",
+          "action": "keep",
+          "note": "provider-free joined badge/join button leaf"
+        }
+      ],
+      "rationale": "Handoff 2.3 assigns long club directories to a condensed polaroid index-row tier, not the old tall directory card tier. ClubIndexRow keeps the polaroid thumbnail cue, activity chip, mono meta row, and membership trailing while ExploreClubPolaroidCard remains the hero/spotlight tier.",
+      "decidedBy": "claude-review -> codex",
+      "date": "2026-07-06",
+      "status": "executed-parity-handoff"
     }
   ]
 }

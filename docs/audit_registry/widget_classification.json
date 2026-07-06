@@ -10,29 +10,29 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1104,
-    "widgetClasses": 994,
+    "total": 1095,
+    "widgetClasses": 985,
     "stateClasses": 110,
-    "publicClasses": 990,
+    "publicClasses": 981,
     "privateClasses": 114,
     "byRole": {
       "atom": 57,
-      "composition": 335,
-      "feature-adapter": 324,
+      "composition": 331,
+      "feature-adapter": 319,
       "pattern": 16,
       "screen": 262,
       "widget-state": 110
     },
     "byDecision": {
       "keep-canonical-contract": 170,
-      "keep-public-cataloged": 750,
+      "keep-public-cataloged": 741,
       "keep-widget-state": 110,
       "review-catalog-coverage": 55,
       "review-promote-or-consolidate": 15,
       "review-promote-or-inline": 4
     },
     "byCatalogStatus": {
-      "cataloged": 703,
+      "cataloged": 694,
       "contracted": 170,
       "not-applicable": 110,
       "route-covered": 61,
@@ -1502,7 +1502,9 @@
         "keepPublicCataloged",
         "mergeIntoCanonical"
       ],
-      "flags": []
+      "flags": [
+        "primitive-imports-routing-layer"
+      ]
     },
     {
       "name": "ClubDiscoverList",
@@ -1525,7 +1527,9 @@
         "keepPublicCataloged",
         "mergeIntoCanonical"
       ],
-      "flags": []
+      "flags": [
+        "primitive-imports-routing-layer"
+      ]
     },
     {
       "name": "AvatarChip",
@@ -1574,197 +1578,13 @@
       "flags": []
     },
     {
-      "name": "ClubDirectoryFooter",
+      "name": "ClubIndexRow",
       "file": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
       "classKind": "widget",
       "baseClass": "StatelessWidget",
       "visibility": "public",
       "role": "composition",
-      "canonicalFamily": "catch.club_directory_footer",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "ClubHostActionRow",
-      "file": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.club_host_action_row",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "ClubLogoCrest",
-      "file": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.clubs.club_logo_crest",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "ClubLogoFallback",
-      "file": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.clubs.club_logo_fallback",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "ClubPhotoChrome",
-      "file": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.clubs.club_photo_chrome",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "ClubPhotoMediaOverlay",
-      "file": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.clubs.club_photo_media_overlay",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "ClubRule",
-      "file": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.clubs.club_rule",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "DirectoryCard",
-      "file": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.directory_card",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
-      "name": "DirectoryClubCard",
-      "file": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.directory_club_card",
+      "canonicalFamily": "catch.club_index_row",
       "publicApi": true,
       "catalogStatus": "cataloged",
       "contractId": null,
@@ -1825,33 +1645,6 @@
         "mergeIntoCanonical"
       ],
       "flags": []
-    },
-    {
-      "name": "ClubListTile",
-      "file": "lib/clubs/presentation/discovery/widgets/club_list_tile.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "composition",
-      "canonicalFamily": "catch.club_list_tile",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "allowedDependencyLevel": "primitives-and-slots",
-      "stateOwnership": "slot-state-only",
-      "asyncOwnership": "none",
-      "layoutOwnership": "slot-layout",
-      "actionOwnership": "callbacks-only",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": [
-        "primitive-imports-data-layer",
-        "primitive-imports-provider-layer",
-        "primitive-imports-routing-layer"
-      ]
     },
     {
       "name": "CatchPolaroid",

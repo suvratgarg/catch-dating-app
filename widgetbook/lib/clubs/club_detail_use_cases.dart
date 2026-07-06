@@ -770,25 +770,29 @@ Widget clubDiscoverListStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'List tile states',
-  type: ClubListTile,
+  name: 'Index row states',
+  type: ClubIndexRow,
   path: '[Club Discovery]/Cards',
 )
-Widget clubListTileStates(BuildContext context) {
+Widget clubIndexRowStates(BuildContext context) {
   return _CatalogScreen(
-    title: 'ClubListTile',
-    catalogId: 'card.club.list_tile',
+    title: 'ClubIndexRow',
+    catalogId: 'card.club.index_row',
     children: [
       _StateCard(
-        label: 'directory photo',
-        child: ClubListTile(club: _club, isJoined: true),
+        label: 'photo / joined',
+        child: ClubIndexRow(club: _club, isJoined: true),
       ),
       _StateCard(
-        label: 'avatar chip',
-        child: ClubListTile(
-          club: _minimalClub,
-          variant: ClubListTileVariant.avatarChip,
-          showLiveBadge: true,
+        label: 'fallback / joinable',
+        child: _ClubDirectoryPreviewScope(
+          child: ClubIndexRow(club: _minimalClub, isJoined: false),
+        ),
+      ),
+      _StateCard(
+        label: 'logo club',
+        child: _ClubDirectoryPreviewScope(
+          child: ClubIndexRow(club: _logoClub, isJoined: false),
         ),
       ),
     ],
@@ -840,128 +844,6 @@ Widget clubImageStates(BuildContext context) {
       _StateCard(
         label: 'fallback',
         child: _ClubMediaFrame(child: ClubImage(club: _minimalClub)),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Directory card states',
-  type: DirectoryCard,
-  path: '[Club Discovery]/Cards',
-)
-Widget directoryCardStates(BuildContext context) {
-  return _CatalogScreen(
-    title: 'DirectoryCard',
-    catalogId: 'card.club.directory',
-    children: [
-      _StateCard(
-        label: 'photo / joinable',
-        child: _ClubDiscoveryFrame(
-          child: _ClubDirectoryPreviewScope(
-            child: DirectoryCard(club: _logoClub, isJoined: false),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'identity / joined',
-        child: _ClubDiscoveryFrame(
-          child: DirectoryCard(club: _minimalClub, isJoined: true),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Directory club card states',
-  type: DirectoryClubCard,
-  path: '[Club Discovery]/Cards',
-)
-Widget directoryClubCardStates(BuildContext context) {
-  return _CatalogScreen(
-    title: 'DirectoryClubCard',
-    catalogId: 'card.club.directory_club',
-    children: [
-      _StateCard(
-        label: 'photo / joinable',
-        child: _ClubDiscoveryFrame(
-          child: _ClubDirectoryPreviewScope(
-            child: DirectoryClubCard(
-              club: _logoClub,
-              isJoined: false,
-              hasCoverImage: true,
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'identity / joined',
-        child: _ClubDiscoveryFrame(
-          child: _ClubDirectoryPreviewScope(
-            child: DirectoryClubCard(
-              club: _minimalClub,
-              isJoined: true,
-              hasCoverImage: false,
-            ),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Directory footer states',
-  type: ClubDirectoryFooter,
-  path: '[Club Discovery]/Atoms',
-)
-Widget clubDirectoryFooterStates(BuildContext context) {
-  return _CatalogScreen(
-    title: 'ClubDirectoryFooter',
-    catalogId: 'atom.club.directory_footer',
-    children: [
-      _StateCard(
-        label: 'rating / host / tags',
-        child: _ClubDirectoryPreviewScope(
-          child: ClubDirectoryFooter(
-            club: _logoClub,
-            isJoined: false,
-            visibleTags: visibleClubTags(_logoClub, limit: 3),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'joined / no rating',
-        child: ClubDirectoryFooter(
-          club: _minimalClub,
-          isJoined: true,
-          visibleTags: visibleClubTags(_minimalClub, limit: 3),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Host action row states',
-  type: ClubHostActionRow,
-  path: '[Club Discovery]/Atoms',
-)
-Widget clubHostActionRowStates(BuildContext context) {
-  return _CatalogScreen(
-    title: 'ClubHostActionRow',
-    catalogId: 'atom.club.host_action_row',
-    children: [
-      _StateCard(
-        label: 'joinable',
-        child: _ClubDirectoryPreviewScope(
-          child: ClubHostActionRow(club: _logoClub, isJoined: false),
-        ),
-      ),
-      _StateCard(
-        label: 'joined',
-        child: ClubHostActionRow(club: _minimalClub, isJoined: true),
       ),
     ],
   );
@@ -1021,145 +903,12 @@ Widget membershipTrailingStates(BuildContext context) {
         ),
       ),
       const _StateCard(
-        label: 'joined hidden',
+        label: 'joined badge',
         child: MembershipTrailing(
           isJoined: true,
           isPending: false,
           onJoinPressed: null,
         ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Photo media overlay states',
-  type: ClubPhotoMediaOverlay,
-  path: '[Club Discovery]/Atoms',
-)
-Widget clubPhotoMediaOverlayStates(BuildContext context) {
-  return _CatalogScreen(
-    title: 'ClubPhotoMediaOverlay',
-    catalogId: 'atom.club.photo_media_overlay',
-    children: [
-      _StateCard(
-        label: 'cover image',
-        child: _ClubMediaFrame(child: ClubPhotoMediaOverlay(club: _club)),
-      ),
-      _StateCard(
-        label: 'fallback image order',
-        child: _ClubMediaFrame(
-          child: ClubPhotoMediaOverlay(club: _minimalClub),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Photo chrome states',
-  type: ClubPhotoChrome,
-  path: '[Club Discovery]/Atoms',
-)
-Widget clubPhotoChromeStates(BuildContext context) {
-  final palette = ClubCoverVisualPalette.forClub(context, _logoClub);
-  return _CatalogScreen(
-    title: 'ClubPhotoChrome',
-    catalogId: 'atom.club.photo_chrome',
-    children: [
-      _StateCard(
-        label: 'logo / member seal',
-        child: _ClubMediaFrame(
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              ClubPhotoMediaOverlay(club: _club),
-              ClubPhotoChrome(club: _logoClub, sash: null, palette: palette),
-            ],
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Logo crest states',
-  type: ClubLogoCrest,
-  path: '[Club Discovery]/Atoms',
-)
-Widget clubLogoCrestStates(BuildContext context) {
-  final palette = ClubCoverVisualPalette.forClub(context, _logoClub);
-  return _CatalogScreen(
-    title: 'ClubLogoCrest',
-    catalogId: 'atom.club.logo_crest',
-    children: [
-      _StateCard(
-        label: 'photo logo',
-        child: ClubLogoCrest(
-          club: _logoClub,
-          palette: palette,
-          size: 64,
-          borderColor: CatchTokens.editorialLight,
-          borderWidth: 2,
-        ),
-      ),
-      _StateCard(
-        label: 'fallback',
-        child: ClubLogoCrest(
-          club: _minimalClub,
-          palette: ClubCoverVisualPalette.forClub(context, _minimalClub),
-          size: 64,
-          borderColor: CatchTokens.editorialLight,
-          borderWidth: 2,
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Logo fallback states',
-  type: ClubLogoFallback,
-  path: '[Club Discovery]/Atoms',
-)
-Widget clubLogoFallbackStates(BuildContext context) {
-  final t = CatchTokens.of(context);
-  return _CatalogScreen(
-    title: 'ClubLogoFallback',
-    catalogId: 'atom.club.logo_fallback',
-    children: [
-      _StateCard(
-        label: 'empty mark',
-        child: SizedBox.square(
-          dimension: 64,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: t.primarySoft,
-              shape: BoxShape.circle,
-            ),
-            child: const ClipOval(child: ClubLogoFallback()),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Rule states',
-  type: ClubRule,
-  path: '[Club Discovery]/Atoms',
-)
-Widget clubRuleStates(BuildContext context) {
-  final t = CatchTokens.of(context);
-  return _CatalogScreen(
-    title: 'ClubRule',
-    catalogId: 'atom.club.rule',
-    children: [
-      _StateCard(
-        label: 'hairline',
-        child: ClubRule(color: t.line),
       ),
     ],
   );

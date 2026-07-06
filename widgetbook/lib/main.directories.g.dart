@@ -425,26 +425,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubDirectoryFooter',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Directory footer states',
-                builder: _widgetbook_workspace_clubs_club_detail_use_cases
-                    .clubDirectoryFooterStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ClubHostActionRow',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Host action row states',
-                builder: _widgetbook_workspace_clubs_club_detail_use_cases
-                    .clubHostActionRowStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'ClubHostIdentityLine',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -475,26 +455,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubLogoCrest',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Logo crest states',
-                builder: _widgetbook_workspace_clubs_club_detail_use_cases
-                    .clubLogoCrestStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ClubLogoFallback',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Logo fallback states',
-                builder: _widgetbook_workspace_clubs_club_detail_use_cases
-                    .clubLogoFallbackStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'ClubMemberSeal',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -505,42 +465,12 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubPhotoChrome',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Photo chrome states',
-                builder: _widgetbook_workspace_clubs_club_detail_use_cases
-                    .clubPhotoChromeStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ClubPhotoMediaOverlay',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Photo media overlay states',
-                builder: _widgetbook_workspace_clubs_club_detail_use_cases
-                    .clubPhotoMediaOverlayStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'ClubRatingPill',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Rating pill states',
                 builder: _widgetbook_workspace_clubs_club_detail_use_cases
                     .clubRatingPillStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ClubRule',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Rule states',
-                builder: _widgetbook_workspace_clubs_club_detail_use_cases
-                    .clubRuleStates,
               ),
             ],
           ),
@@ -590,12 +520,12 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ClubListTile',
+            name: 'ClubIndexRow',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'List tile states',
+                name: 'Index row states',
                 builder: _widgetbook_workspace_clubs_club_detail_use_cases
-                    .clubListTileStates,
+                    .clubIndexRowStates,
               ),
             ],
           ),
@@ -606,26 +536,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Artwork states',
                 builder: _widgetbook_workspace_clubs_club_detail_use_cases
                     .clubPolaroidArtworkStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'DirectoryCard',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Directory card states',
-                builder: _widgetbook_workspace_clubs_club_detail_use_cases
-                    .directoryCardStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'DirectoryClubCard',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Directory club card states',
-                builder: _widgetbook_workspace_clubs_club_detail_use_cases
-                    .directoryClubCardStates,
               ),
             ],
           ),
