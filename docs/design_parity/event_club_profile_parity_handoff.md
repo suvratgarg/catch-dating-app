@@ -418,7 +418,7 @@ Part 1 — Events/Map
 - [x] 1.B5 tests + widgetbook states (selected-card/no-exact-pin coverage; DS pin parity covered by 1.B3) (6254440c8, 7f6294d04)
 Part 2 — Clubs
 - [x] 2.0 aligned/deviation verifies receipted (StatStrip delta, contact links) (0747b0021)
-- [ ] 2.1 hero variants (polaroid default, masthead, unreachable full) + skeleton + appshots
+- [x] 2.1 hero variants (polaroid default, masthead, unreachable full) + skeleton + appshots (`0b39a5793`)
 - [ ] 2.2 schedule DateTickets (badges/empty/nav preserved)
 - [ ] 2.3 ClubIndexRow condensed tier + directory migration + skeletons (+ ClubListTile ledger if orphaned)
 - [ ] 2.4 owner seal = activity accent + meta format
