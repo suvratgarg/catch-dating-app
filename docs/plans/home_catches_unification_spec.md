@@ -158,19 +158,32 @@ states.
 
 ---
 
-## Owner decisions `[confirm]`
+## Owner decisions — RESOLVED 2026-07-06 (delegated to review)
 
-- **U-C1 · Multi-window layout.** Today the focus surface is a horizontal
-  focus rail (one card at a time). With several simultaneous phases
-  (2 windows + upcoming + review), a horizontal rail hides urgency behind
-  a swipe. RECOMMEND: the focus surface becomes a **vertical priority list**
-  (windowed cards first, full-width, countdown visible without swiping);
-  keep the rail only if a single focus item. Needs an owner call — it
-  changes home's primary layout.
-- **U-C2 · Tab identity.** The consumer tabs become Home · Explore · Chats ·
-  Profile. Keep "Home", or rename to a catch-centric label now that the tab
-  literally hosts the catch windows (the app's core verb)? Pure labeling;
-  RECOMMEND deciding at ratification, default keep "Home".
+- **U-C1 · Multi-window layout → VERTICAL PRIORITY LIST (rail retired)
+  `[codex]`.** The focus surface becomes a vertical, urgency-ordered list of
+  full-width cards, not a horizontal focus rail. Rationale: the thesis is
+  "answer what to do right now at a glance"; a rail shows one card and hides
+  every other active phase behind a swipe, so a second open window or a
+  closing countdown is invisible until you interact — which defeats the
+  purpose for exactly the time-sensitive content that earns home placement.
+  Apply the presentation-tier doctrine (`design_language.md` §6): the
+  top/urgent phase (an open window) renders as the **hero** card with its
+  live countdown; a long low-urgency **upcoming tail** may render in the
+  **condensed** tier (compact rows) so the list stays scannable. Degrades
+  gracefully to a single card when there is one focus item — no special-case
+  rail. This replaces `EventFocusRail`'s horizontal `PageView` treatment;
+  update its widgetbook + tests accordingly.
+- **U-C2 · Tab identity → KEEP "Home" `[codex]`.** The consumer tabs are
+  Home · Explore · Chats · Profile; the anchor tab stays "Home". Rationale:
+  (1) it is the default/leftmost anchor tab, where convention matters most
+  and where it must survive the empty/idle state gracefully; (2) it must not
+  over-index on any single phase — the screen is upcoming + live + windows +
+  review, not only catches; (3) a catch-centric label would worsen the
+  `Catch*` / `Catches*` namespace collision already flagged for the naming
+  lexicon. The screen's identity is carried by its live-timeline content, not
+  a clever label. No rename; no code change beyond removing the Catches item
+  (U3).
 
 ## Sequencing
 
@@ -192,10 +205,9 @@ independent and can interleave.
 ## Completion checklist (goal mode)
 
 - [ ] U1 view model unified (windowedEvents list; hub aggregation moved, not duplicated)
+- [ ] U-C1 focus surface = vertical priority list (rail retired; hero window card + condensed upcoming tail per §6)
 - [ ] U2 lifecycle card window phase (countdown + count + launch) + hub widgets retired + ledger
-- [ ] U3 nav shell: Catches tab removed, catch flow re-parented, deep links preserved, indices verified
+- [ ] U3 nav shell: Catches tab removed, catch flow re-parented, deep links preserved, indices verified (tab stays "Home", U-C2)
 - [ ] U4 merged idle/empty state (explainer folded in)
 - [ ] U5 analytics + tests + widgetbook states
-- [ ] U-C1 multi-window layout decided + applied
-- [ ] U-C2 tab identity decided
 - [ ] full analyze clean; readiness 100/100; scanners green; catalog/doc_versions/passes stamped
