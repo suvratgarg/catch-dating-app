@@ -1977,7 +1977,6 @@ abstract final class CatchLayout {
   static const double welcomeMinBodyToCtaGap = 16.0;
   static const double welcomeHeadlineToBodyGap = 66.0;
   static const double welcomeRevealOffsetY = 16.0;
-  static const double welcomeVoiceWidth = 78.0;
 
   static double welcomeReelLandingOffset(int index) =>
       (index * welcomeReelRowHeight) +

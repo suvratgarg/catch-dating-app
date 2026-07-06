@@ -60,23 +60,25 @@ abstract final class CatchFonts {
     };
   }
 
-  static const double _archivoWidthMin = 62;
-  static const double _archivoWidthMax = 125;
-
-  static double _archivoWidth(double width) =>
-      width.clamp(_archivoWidthMin, _archivoWidthMax).toDouble();
+  /// The single ratified Archivo width. The bundled variable font exposes a
+  /// `wdth` axis of 62–125, but the Catch type system renders Archivo at
+  /// exactly ONE width — the DS "78% system" (`colors_and_type.css`, every
+  /// voice/headline/prose style at `font-stretch: 78%`). There is deliberately
+  /// no per-style width knob: one width is what keeps the poster voice from
+  /// drifting back to the old mixed 90–100% state. Re-skin here, never at a
+  /// call site.
+  static const double archivoWidth = 78;
 
   // -- General-purpose builders -----------------------------------------------
 
-  /// Archivo (voice). Weight and width are driven via [FontVariation] against
-  /// the bundled variable font. Archivo ships as roman in this pack, so italic
-  /// requests are intentionally ignored to keep the app on the locked spec.
+  /// Archivo (voice). Weight is driven via [FontVariation]; width is locked to
+  /// [archivoWidth]. Archivo ships as roman in this pack, so italic requests
+  /// are intentionally ignored to keep the app on the locked spec.
   static TextStyle voice({
     required double fontSize,
     required double height,
     Color? color,
     FontWeight fontWeight = FontWeight.w600,
-    double width = 100,
     double letterSpacing = 0,
   }) {
     return TextStyle(
@@ -90,26 +92,25 @@ abstract final class CatchFonts {
       color: color,
       fontVariations: <FontVariation>[
         FontVariation('wght', fontWeight.value.toDouble()),
-        FontVariation('wdth', _archivoWidth(width)),
+        const FontVariation('wdth', archivoWidth),
       ],
     );
   }
 
-  /// Archivo condensed head treatment for event titles, console titles, hints,
-  /// and person/host names.
+  /// Archivo head treatment for event titles, console titles, hints, and
+  /// person/host names. Same single [archivoWidth] as [voice]; the head role
+  /// differs only in default weight.
   static TextStyle head({
     required double fontSize,
     required double height,
     Color? color,
     FontWeight fontWeight = FontWeight.w700,
-    double width = 92,
     double letterSpacing = 0,
   }) => voice(
     fontSize: fontSize,
     height: height,
     color: color,
     fontWeight: fontWeight,
-    width: width,
     letterSpacing: letterSpacing,
   );
 
@@ -210,7 +211,6 @@ abstract final class CatchFonts {
       fontWeight: fontWeight,
       height: height,
       color: color,
-      width: 92,
     );
   }
 }

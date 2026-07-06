@@ -93,7 +93,6 @@ abstract final class CatchTextStyles {
   static TextStyle eventTitle(BuildContext context, {Color? color}) =>
       CatchFonts.head(
         fontSize: 36,
-        width: 90,
         height: 1,
         color: color ?? CatchTokens.of(context).ink,
       );
@@ -103,7 +102,6 @@ abstract final class CatchTextStyles {
       CatchFonts.head(
         fontSize: 20,
         fontWeight: FontWeight.w800,
-        width: 90,
         height: 1.15,
         color: color ?? CatchTokens.of(context).ink,
       );
@@ -113,7 +111,6 @@ abstract final class CatchTextStyles {
       CatchFonts.head(
         fontSize: 16.5,
         fontWeight: FontWeight.w600,
-        width: 94,
         height: 1.25,
         color: color ?? CatchTokens.of(context).ink,
       );

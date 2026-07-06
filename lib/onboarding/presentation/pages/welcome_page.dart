@@ -594,7 +594,6 @@ abstract final class _WelcomeType {
     fontSize: 36,
     height: 1.02,
     color: color,
-    width: CatchLayout.welcomeVoiceWidth,
     letterSpacing: -0.5,
   );
 
@@ -603,7 +602,6 @@ abstract final class _WelcomeType {
     height: 1.48,
     color: color.withValues(alpha: CatchOpacity.welcomeIntroBody),
     fontWeight: FontWeight.w400,
-    width: CatchLayout.welcomeVoiceWidth,
   );
 }
 
