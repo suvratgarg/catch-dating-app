@@ -247,7 +247,7 @@ class EventAgendaTileSkeleton extends StatelessWidget {
               child: Container(
                 width: CatchLayout.eventDateRailWidth,
                 decoration: const BoxDecoration(
-                  color: CatchTokens.editorialLight,
+                  color: CatchTokens.editorialWhite,
                   borderRadius: BorderRadius.horizontal(
                     left: Radius.circular(CatchRadius.md),
                   ),

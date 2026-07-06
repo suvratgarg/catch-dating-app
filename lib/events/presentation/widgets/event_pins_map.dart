@@ -168,7 +168,7 @@ class _EventPinsMapState extends State<EventPinsMap> {
         center: userLocation,
         radiusMeters: 42,
         strokeWidth: 3,
-        strokeColor: CatchTokens.editorialLight.withValues(
+        strokeColor: CatchTokens.editorialWhite.withValues(
           alpha: CatchOpacity.mapUserLocationStroke,
         ),
         fillColor: t.primary,

@@ -225,13 +225,13 @@ class ReactionControlButton extends StatelessWidget {
     final palette = ProfileCardPalette.of(context);
     final isOverlay = style == ProfileReactionControlsStyle.overlay;
     final background = isOverlay
-        ? CatchTokens.editorialLight.withValues(
+        ? CatchTokens.editorialWhite.withValues(
             alpha: CatchOpacity.reactionOverlayFill,
           )
         : palette.chipFill;
     final foreground = isOverlay ? palette.accent : palette.textSecondary;
     final border = isOverlay
-        ? CatchTokens.editorialLight.withValues(
+        ? CatchTokens.editorialWhite.withValues(
             alpha: CatchOpacity.reactionOverlayBorder,
           )
         : palette.chipBorder;

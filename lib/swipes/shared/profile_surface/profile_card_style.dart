@@ -47,7 +47,7 @@ class ProfileCardPalette {
       chipBorder: t.line2,
       accent: t.primary,
       accentSoft: t.primarySoft,
-      shadow: CatchTokens.editorialDark.withValues(
+      shadow: CatchTokens.editorialBlack.withValues(
         alpha: isDark
             ? CatchOpacity.profileShadowDark
             : CatchOpacity.profileShadowLight,

@@ -522,6 +522,33 @@ fully receipted; zero visual changes except explicitly fixed deltas.
 Out of scope: restructuring the profile surface (it is the flagship and
 the DS source); edit-tab work (composition audit + flush contract own it).
 
+## 3.1 Verification Receipt
+
+- Verified the retired `sunsetDark` alias already pointed at the current B&W
+  dark register, not a legacy cream/orange palette. Current dark token values:
+  `bg #0F0E10`, `surface #18171A`, `raised #211F23`, `overlay black@72%`,
+  `ink #F4F0E8`, `ink2 #BAB2A7`, `ink3 #7E776D`, `line paper@13%`,
+  `line2 paper@22%`, `primary #F4F0E8`, and `primaryInk #16140F`.
+- Resolved the API naming conflict by moving fixed absolute overlay colors from
+  `CatchTokens.editorialDark` / `CatchTokens.editorialLight` to
+  `CatchTokens.editorialBlack` / `CatchTokens.editorialWhite`. The token-set
+  names are now `CatchTokens.editorialLight` and `CatchTokens.editorialDark`.
+- Deprecated `CatchTokens.sunsetLight` / `CatchTokens.sunsetDark` for one
+  release and migrated production, test, and Widgetbook callers to the
+  editorial token-set names. Source audit now finds `sunsetLight` /
+  `sunsetDark` only in the deprecated alias definitions.
+- Catalog version `2.5.601` records the token-set rename and fixed-color split.
+- Verification: `dart run tool/design_tokens.dart --check`; focused app/test
+  analyzer for renamed call sites (`--no-fatal-infos`, no errors/warnings; 61
+  pre-existing Event Success infos); Widgetbook analyzer for changed use cases;
+  `flutter test test/core/catch_primitives_test.dart --reporter expanded`;
+  small token-expectation test files for top bar, dashboard, payments, safety,
+  and swipes; EventPhotoHeader named tests; and the passing
+  `ClubDetailBody host view stays a public club profile` token case. Three
+  exploratory Explore hero/layout tests fail before the token assertions on
+  stale hero keys/layout expectations, so they were not used as proof for this
+  rename.
+
 ---
 
 # Completion checklist (goal mode — flip with commit hashes)

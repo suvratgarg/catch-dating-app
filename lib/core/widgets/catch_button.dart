@@ -65,7 +65,7 @@ class _CatchButtonState extends State<CatchButton> {
     if (accent != null && widget.variant == CatchButtonVariant.primary) {
       palette = palette.copyWith(
         background: accent,
-        foreground: CatchTokens.editorialLight,
+        foreground: CatchTokens.editorialWhite,
         border: Colors.transparent,
       );
     }
@@ -81,7 +81,7 @@ class _CatchButtonState extends State<CatchButton> {
         if (_enabled && (_hovered || _pressed))
           Positioned.fill(
             child: ColoredBox(
-              color: CatchTokens.editorialDark.withValues(
+              color: CatchTokens.editorialBlack.withValues(
                 alpha: _pressed
                     ? CatchOpacity.controlOverlayPressed
                     : CatchOpacity.controlOverlayHover,
@@ -324,12 +324,12 @@ class _ButtonPalette {
       ),
       CatchButtonVariant.danger => _ButtonPalette(
         background: t.danger,
-        foreground: CatchTokens.editorialLight,
+        foreground: CatchTokens.editorialWhite,
         border: Colors.transparent,
       ),
       CatchButtonVariant.light => _ButtonPalette(
-        background: CatchTokens.editorialLight,
-        foreground: CatchTokens.sunsetLight.ink,
+        background: CatchTokens.editorialWhite,
+        foreground: CatchTokens.editorialLight.ink,
         border: Colors.transparent,
       ),
     };

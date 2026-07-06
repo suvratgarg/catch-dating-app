@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.600
+version: 2.5.601
 updated: 2026-07-06
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,16 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.601
+
+- Retired the live `sunsetLight` / `sunsetDark` token-set names in favor of
+  `CatchTokens.editorialLight` / `CatchTokens.editorialDark`. The deprecated
+  aliases remain for one release, but production, test, and Widgetbook callers
+  now use the editorial token-set names.
+- Split fixed absolute overlay colors out to `CatchTokens.editorialBlack` /
+  `CatchTokens.editorialWhite`, so color constants no longer collide with
+  token-set names.
 
 ### 2.5.600
 

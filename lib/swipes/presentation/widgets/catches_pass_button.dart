@@ -33,7 +33,7 @@ class CatchesPassButton extends StatelessWidget {
             color: t.surface.withValues(alpha: CatchOpacity.passButtonFill),
             shape: CircleBorder(side: BorderSide(color: t.line)),
             elevation: CatchElevation.physicalPassControl,
-            shadowColor: CatchTokens.editorialDark.withValues(
+            shadowColor: CatchTokens.editorialBlack.withValues(
               alpha: CatchOpacity.passButtonShadow,
             ),
             child: InkWell(

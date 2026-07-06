@@ -667,7 +667,7 @@ class _EventCheckInQrScannerSheetState
                             _errorText!,
                             style: CatchTextStyles.supporting(
                               context,
-                              color: CatchTokens.editorialLight,
+                              color: CatchTokens.editorialWhite,
                             ),
                             textAlign: TextAlign.center,
                           ),

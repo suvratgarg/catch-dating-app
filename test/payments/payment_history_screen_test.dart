@@ -45,7 +45,7 @@ void main() {
         events: {'event-1': buildEvent()},
       );
 
-      expect(_topBarMaterial(tester).color, CatchTokens.sunsetLight.bg);
+      expect(_topBarMaterial(tester).color, CatchTokens.editorialLight.bg);
       expect(find.text('Booking failed'), findsOneWidget);
       expect(
         find.text('No spot was reserved. Refund may still be pending.'),

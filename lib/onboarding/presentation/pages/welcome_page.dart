@@ -153,7 +153,7 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
 
   @override
   Widget build(BuildContext context) {
-    const d = CatchTokens.sunsetDark;
+    const d = CatchTokens.editorialDark;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light.copyWith(
@@ -247,7 +247,7 @@ class WelcomeScene extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const tokens = CatchTokens.sunsetDark;
+    const tokens = CatchTokens.editorialDark;
     final wheelTop = math.max(
       CatchLayout.welcomeReelTop,
       mediaPadding.top + CatchSpacing.s1,
@@ -449,7 +449,7 @@ class ReelRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const tokens = CatchTokens.sunsetDark;
+    const tokens = CatchTokens.editorialDark;
     final center = CatchLayout.welcomeReelRowCenter(
       rowIndex: rowIndex,
       trackOffset: trackOffset,

@@ -195,10 +195,10 @@ class ClubPolaroidArtwork extends StatelessWidget {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  CatchTokens.editorialLight.withValues(
+                  CatchTokens.editorialWhite.withValues(
                     alpha: CatchOpacity.clubCoverHighlightOverlay,
                   ),
-                  CatchTokens.editorialDark.withValues(
+                  CatchTokens.editorialBlack.withValues(
                     alpha: CatchOpacity.clubCoverLowScrim,
                   ),
                 ],
@@ -240,7 +240,7 @@ class ClubCoverVisualPalette {
   static ClubCoverVisualPalette forSeed(String seed, {BuildContext? context}) {
     final t = context != null
         ? CatchTokens.of(context)
-        : CatchTokens.sunsetLight;
+        : CatchTokens.editorialLight;
     final palette = context != null
         ? ActivityPalette.of(context)
         : ActivityPalette.light;

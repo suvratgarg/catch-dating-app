@@ -51,7 +51,7 @@ class EventDetailHeroAppBar extends StatelessWidget {
         presentationMode != EventDetailPresentationMode.standard;
     final isSpotlight =
         presentationMode == EventDetailPresentationMode.spotlightDark;
-    final overlayScrim = CatchTokens.editorialDark.withValues(
+    final overlayScrim = CatchTokens.editorialBlack.withValues(
       alpha: CatchOpacity.eventHeroOverlayScrim,
     );
     final expandedHeight = _expandedHeightFor(
@@ -322,10 +322,10 @@ class EventDetailTicketSurface extends StatelessWidget {
                           end: Alignment.bottomCenter,
                           colors: [
                             Colors.transparent,
-                            CatchTokens.editorialDark.withValues(
+                            CatchTokens.editorialBlack.withValues(
                               alpha: CatchOpacity.eventHeroGradientMidScrim,
                             ),
-                            CatchTokens.editorialDark.withValues(
+                            CatchTokens.editorialBlack.withValues(
                               alpha: isSpotlight
                                   ? CatchOpacity.eventHeroSpotlightBottomScrim
                                   : CatchOpacity.eventHeroGradientBottomScrim,

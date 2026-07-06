@@ -458,7 +458,7 @@ Widget eventDetailHeroActivityBadgeStates(BuildContext context) {
       _StateCard(
         label: 'activity badges',
         child: ColoredBox(
-          color: CatchTokens.editorialDark,
+          color: CatchTokens.editorialBlack,
           child: Padding(
             padding: CatchInsets.content,
             child: Wrap(
@@ -505,7 +505,7 @@ Widget eventDetailHeroTimeChipStates(BuildContext context) {
       _StateCard(
         label: 'time chips',
         child: ColoredBox(
-          color: CatchTokens.editorialDark,
+          color: CatchTokens.editorialBlack,
           child: Padding(
             padding: CatchInsets.content,
             child: Wrap(

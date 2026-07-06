@@ -825,7 +825,7 @@ void main() {
 
         await tester.pumpWidget(
           MaterialApp(
-            theme: ThemeData(extensions: const [CatchTokens.sunsetLight]),
+            theme: ThemeData(extensions: const [CatchTokens.editorialLight]),
             home: Scaffold(
               body: SizedBox(
                 height: 320,
@@ -853,7 +853,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          theme: ThemeData(extensions: const [CatchTokens.sunsetLight]),
+          theme: ThemeData(extensions: const [CatchTokens.editorialLight]),
           home: Scaffold(
             body: SizedBox(height: 320, child: EventPhotoHeader(event: event)),
           ),
@@ -877,7 +877,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          theme: ThemeData(extensions: const [CatchTokens.sunsetLight]),
+          theme: ThemeData(extensions: const [CatchTokens.editorialLight]),
           home: Scaffold(
             body: SizedBox(height: 320, child: EventPhotoHeader(event: event)),
           ),

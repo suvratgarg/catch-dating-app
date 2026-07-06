@@ -129,15 +129,15 @@ class CatchEventThumbnailScrimOverlay extends StatelessWidget {
       CatchEventThumbnailScrim.bottom => [
         Colors.transparent,
         Colors.transparent,
-        CatchTokens.editorialDark.withValues(alpha: CatchOpacity.mutedContent),
-        CatchTokens.editorialDark.withValues(alpha: CatchOpacity.gradientBand),
+        CatchTokens.editorialBlack.withValues(alpha: CatchOpacity.mutedContent),
+        CatchTokens.editorialBlack.withValues(alpha: CatchOpacity.gradientBand),
       ],
       CatchEventThumbnailScrim.full => [
-        CatchTokens.editorialDark.withValues(
+        CatchTokens.editorialBlack.withValues(
           alpha: CatchOpacity.photoScrimBarelyVisible,
         ),
-        CatchTokens.editorialDark.withValues(alpha: CatchOpacity.mutedContent),
-        CatchTokens.editorialDark.withValues(alpha: CatchOpacity.gradientBand),
+        CatchTokens.editorialBlack.withValues(alpha: CatchOpacity.mutedContent),
+        CatchTokens.editorialBlack.withValues(alpha: CatchOpacity.gradientBand),
       ],
     };
     final stops = switch (style) {

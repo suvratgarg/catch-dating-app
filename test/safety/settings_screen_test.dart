@@ -39,7 +39,7 @@ void main() {
     expect(find.text('No blocked accounts'), findsOneWidget);
     expect(find.byKey(SettingsKeys.showOnMapSwitch), findsOneWidget);
     expect(find.byKey(SettingsKeys.weeklyDigestSwitch), findsOneWidget);
-    expect(_topBarMaterial(tester).color, CatchTokens.sunsetLight.bg);
+    expect(_topBarMaterial(tester).color, CatchTokens.editorialLight.bg);
   });
 
   testWidgets('settings rows align to the section text lane', (tester) async {

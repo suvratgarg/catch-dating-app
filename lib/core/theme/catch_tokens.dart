@@ -101,8 +101,11 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
 
   // ── Convenience accessor ──────────────────────────────────────────────────────
 
-  static const Color editorialDark = Color(0xFF000000);
-  static const Color editorialLight = Color(0xFFFFFFFF);
+  /// Fixed absolute black for editorial overlays and scrims.
+  static const Color editorialBlack = Color(0xFF000000);
+
+  /// Fixed absolute white for editorial overlays and scrims.
+  static const Color editorialWhite = Color(0xFFFFFFFF);
 
   static CatchTokens of(BuildContext context) =>
       Theme.of(context).extension<CatchTokens>()!;
@@ -110,7 +113,7 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
   /// Legible foreground for arbitrary filled surfaces such as activity colors.
   Color onFill(Color fill) =>
       ThemeData.estimateBrightnessForColor(fill) == Brightness.dark
-      ? const Color(0xFFFFFFFF)
+      ? editorialWhite
       : ink;
 
   /// Muted foreground for secondary text on arbitrary filled surfaces.
@@ -124,18 +127,18 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
   /// Fixed editorial dark fill for badges/pills that intentionally remain dark
   /// regardless of app theme.
   Color get darkPillFill =>
-      editorialDark.withValues(alpha: CatchOpacity.darkPillFill);
+      editorialBlack.withValues(alpha: CatchOpacity.darkPillFill);
 
   /// Fixed dark scrim for text overlays on image/activity backdrops.
   Color get darkScrimFill =>
-      editorialDark.withValues(alpha: CatchOpacity.scrimFill);
+      editorialBlack.withValues(alpha: CatchOpacity.scrimFill);
 
   /// Foreground for fixed editorial dark pills.
-  Color get darkPillInk => editorialLight;
+  Color get darkPillInk => editorialWhite;
 
   /// Muted foreground on fixed editorial dark overlays.
   Color get darkMutedInk =>
-      editorialLight.withValues(alpha: CatchOpacity.onDarkMuted);
+      editorialWhite.withValues(alpha: CatchOpacity.onDarkMuted);
 
   // ── Paper/ink palette — light (launch default) ───────────────────────────────
 
@@ -194,10 +197,19 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
     heroGrad: GeneratedCatchGradientTokens.darkHeroGrad,
   );
 
+  /// B&W editorial light token set.
+  static const editorialLight = light;
+
+  /// B&W editorial dark token set.
+  static const editorialDark = dark;
+
   /// Backward-compatible aliases while older code still names the retired
   /// Sunset palette.
-  static const sunsetLight = light;
-  static const sunsetDark = dark;
+  @Deprecated('Use editorialLight')
+  static const sunsetLight = editorialLight;
+
+  @Deprecated('Use editorialDark')
+  static const sunsetDark = editorialDark;
 
   // ── ThemeExtension boilerplate ────────────────────────────────────────────────
 

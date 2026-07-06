@@ -1807,7 +1807,7 @@ void main() {
         final heroFrame = tester.widget<CatchSurface>(
           find.byKey(const ValueKey('club-detail-hero-frame')),
         );
-        expect(heroFrame.backgroundColor, CatchTokens.sunsetLight.surface);
+        expect(heroFrame.backgroundColor, CatchTokens.editorialLight.surface);
         final expandedTitle = tester.widget<Text>(
           find.byKey(const ValueKey('club-detail-expanded-title')),
         );
@@ -1887,7 +1887,7 @@ void main() {
         final module = tester.widget<ColoredBox>(
           find.byKey(const ValueKey('club-detail-hero-module')),
         );
-        expect(module.color, CatchTokens.sunsetLight.surface);
+        expect(module.color, CatchTokens.editorialLight.surface);
       },
     );
 
@@ -2195,7 +2195,7 @@ void main() {
             )
             .first,
       );
-      expect(scrollBackground.color, CatchTokens.sunsetLight.surface);
+      expect(scrollBackground.color, CatchTokens.editorialLight.surface);
       expect(find.byIcon(CatchIcons.platformShare()), findsOneWidget);
       expect(find.text('Share'), findsNothing);
       expect(find.text('Asha Host'), findsOneWidget);

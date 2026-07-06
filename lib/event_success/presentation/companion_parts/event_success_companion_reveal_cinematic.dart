@@ -291,7 +291,7 @@ class _RevealCinematicPainter extends CustomPainter {
           canvas.drawRect(
             Offset.zero & size,
             Paint()
-              ..color = CatchTokens.editorialLight.withValues(
+              ..color = CatchTokens.editorialWhite.withValues(
                 alpha: flash * CatchOpacity.revealCinematicFlash,
               ),
           );
@@ -339,8 +339,8 @@ class _RevealCinematicPainter extends CustomPainter {
       ),
       radius: 0.92,
       colors: [
-        CatchTokens.editorialDark.withValues(alpha: CatchOpacity.none),
-        CatchTokens.editorialDark.withValues(alpha: strength.clamp(0.0, 1.0)),
+        CatchTokens.editorialBlack.withValues(alpha: CatchOpacity.none),
+        CatchTokens.editorialBlack.withValues(alpha: strength.clamp(0.0, 1.0)),
       ],
       stops: const [0.34, 1.0],
     );

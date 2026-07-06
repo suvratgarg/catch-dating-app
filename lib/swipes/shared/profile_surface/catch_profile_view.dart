@@ -138,7 +138,7 @@ class ProfileHeroWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dark = CatchTokens.sunsetDark;
+    final dark = CatchTokens.editorialDark;
     final kickerColor = accent ?? dark.ink;
     final reaction = data.heroReaction;
 
@@ -548,7 +548,7 @@ class PhotoCaption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dark = CatchTokens.sunsetDark;
+    final dark = CatchTokens.editorialDark;
     return CatchSurface(
       padding: CatchInsets.compactControlContent,
       radius: CatchRadius.sm,

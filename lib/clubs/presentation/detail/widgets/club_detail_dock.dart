@@ -234,7 +234,7 @@ class DockBell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final foreground = active ? CatchTokens.editorialLight : t.ink2;
+    final foreground = active ? CatchTokens.editorialWhite : t.ink2;
 
     return Semantics(
       button: true,

@@ -1071,7 +1071,7 @@ Widget catchButtonLoadingDotsContractStates(BuildContext context) {
         child: _InlineWrap(
           children: [
             CatchButtonLoadingDots(color: t.primary),
-            const CatchButtonLoadingDots(color: CatchTokens.editorialLight),
+            const CatchButtonLoadingDots(color: CatchTokens.editorialWhite),
           ],
         ),
       ),
@@ -5461,7 +5461,7 @@ Widget catchGradedImageContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'dark-image',
-        child: CatchGradedImage(child: swatch(CatchTokens.editorialDark)),
+        child: CatchGradedImage(child: swatch(CatchTokens.editorialBlack)),
       ),
     ],
   );
@@ -5557,7 +5557,7 @@ Widget catchScrimContractStates(BuildContext context) {
           width: 340,
           height: 180,
           child: DecoratedBox(
-            decoration: BoxDecoration(color: CatchTokens.editorialDark),
+            decoration: BoxDecoration(color: CatchTokens.editorialBlack),
             child: CatchScrim.detailHero(),
           ),
         ),

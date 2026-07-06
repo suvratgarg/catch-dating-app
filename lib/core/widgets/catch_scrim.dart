@@ -41,7 +41,7 @@ class CatchScrim extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final resolvedBase = base ?? CatchTokens.editorialDark;
+    final resolvedBase = base ?? CatchTokens.editorialBlack;
     return IgnorePointer(
       child: DecoratedBox(
         decoration: BoxDecoration(

@@ -113,12 +113,12 @@ class PhotoSlot extends StatelessWidget {
               content,
               if (isLoading)
                 ColoredBox(
-                  color: CatchTokens.editorialDark.withValues(
+                  color: CatchTokens.editorialBlack.withValues(
                     alpha: CatchOpacity.photoUploadLoadingScrim,
                   ),
                   child: const Center(
                     child: CatchLoadingIndicator(
-                      color: CatchTokens.editorialLight,
+                      color: CatchTokens.editorialWhite,
                     ),
                   ),
                 ),
@@ -164,7 +164,7 @@ class PhotoSlot extends StatelessWidget {
                   bottom: CatchSpacing.micro6,
                   child: CatchSurface(
                     radius: CatchRadius.sm,
-                    backgroundColor: CatchTokens.editorialDark.withValues(
+                    backgroundColor: CatchTokens.editorialBlack.withValues(
                       alpha: CatchOpacity.photoPromptScrim,
                     ),
                     borderWidth: 0,
@@ -173,7 +173,7 @@ class PhotoSlot extends StatelessWidget {
                       prompt!.displayPrompt,
                       style: CatchTextStyles.labelS(
                         context,
-                        color: CatchTokens.editorialLight,
+                        color: CatchTokens.editorialWhite,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

@@ -181,7 +181,7 @@ class CountryCodeSelector extends StatelessWidget {
           headerTextStyle: CatchTextStyles.sectionTitle(context, color: t.ink),
           dialogBackgroundColor: t.surface,
           backgroundColor: t.surface,
-          barrierColor: CatchTokens.editorialDark.withValues(
+          barrierColor: CatchTokens.editorialBlack.withValues(
             alpha: CatchOpacity.mutedBorder,
           ),
           boxDecoration: BoxDecoration(
