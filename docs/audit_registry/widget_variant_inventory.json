@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-06T00:31:19.643Z",
+  "generatedAt": "2026-07-06T01:51:48.127Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
@@ -7,7 +7,7 @@
   "summary": {
     "useCases": 860,
     "components": 829,
-    "stateCards": 1715,
+    "stateCards": 1717,
     "reviewCandidates": 38,
     "oversizedUseCases": 42,
     "multiUseCaseComponents": 30
@@ -11902,6 +11902,53 @@
       ]
     },
     {
+      "component": "ClubHeroModule",
+      "useCaseCount": 1,
+      "stateCardCount": 4,
+      "paths": [
+        "[Club Detail]/Sections"
+      ],
+      "labels": [
+        "art polaroid module",
+        "full review module",
+        "logo masthead module",
+        "photo polaroid module"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Hero module states",
+          "functionName": "clubHeroModuleStates",
+          "file": "widgetbook/lib/clubs/club_detail_use_cases.dart",
+          "path": "[Club Detail]/Sections",
+          "stateCardCount": 4,
+          "stateCards": [
+            {
+              "label": "photo polaroid module",
+              "normalizedLabel": "photo polaroid module"
+            },
+            {
+              "label": "logo masthead module",
+              "normalizedLabel": "logo masthead module"
+            },
+            {
+              "label": "art polaroid module",
+              "normalizedLabel": "art polaroid module"
+            },
+            {
+              "label": "full review module",
+              "normalizedLabel": "full review module"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "EventCompanionEntry",
       "useCaseCount": 1,
       "stateCardCount": 4,
@@ -14232,9 +14279,9 @@
         "[Club Detail]/Sections"
       ],
       "labels": [
-        "cover",
-        "host badge",
-        "no cover"
+        "art polaroid",
+        "logo masthead",
+        "photo polaroid"
       ],
       "review": {
         "needsReview": false,
@@ -14251,16 +14298,16 @@
           "stateCardCount": 3,
           "stateCards": [
             {
-              "label": "cover",
-              "normalizedLabel": "cover"
+              "label": "photo polaroid",
+              "normalizedLabel": "photo polaroid"
             },
             {
-              "label": "no cover",
-              "normalizedLabel": "no cover"
+              "label": "logo masthead",
+              "normalizedLabel": "logo masthead"
             },
             {
-              "label": "host badge",
-              "normalizedLabel": "host badge"
+              "label": "art polaroid",
+              "normalizedLabel": "art polaroid"
             }
           ]
         }
@@ -16873,43 +16920,6 @@
             {
               "label": "joined / no rating",
               "normalizedLabel": "joined no rating"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "ClubHeroModule",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[Club Detail]/Sections"
-      ],
-      "labels": [
-        "cover module",
-        "fallback module"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Hero module states",
-          "functionName": "clubHeroModuleStates",
-          "file": "widgetbook/lib/clubs/club_detail_use_cases.dart",
-          "path": "[Club Detail]/Sections",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "cover module",
-              "normalizedLabel": "cover module"
-            },
-            {
-              "label": "fallback module",
-              "normalizedLabel": "fallback module"
             }
           ]
         }

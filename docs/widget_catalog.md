@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.596
+version: 2.5.597
 updated: 2026-07-06
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,16 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.597
+
+- Added the Club Detail hero variant API. `ClubHeroAppBar` now resolves the
+  DS default variants from domain media state: cover/club photos render through
+  the shared `CatchPolaroid` mat, logo-only clubs render a masthead with a
+  circular logo seal, and clubs with neither render the same polaroid shell
+  with `ClubPolaroidArtwork`. `ClubHeroModule` keeps the retained `full`
+  variant for Widgetbook review only; production selection has no domain
+  trigger for it yet. `ClubHeroLoadingSkeleton` now mimics the polaroid shape.
 
 ### 2.5.596
 
@@ -6472,8 +6482,8 @@ Generated 2026-05-06.
 | `ClubAvatarRail` | `lib/clubs/presentation/discovery/widgets/club_avatar_rail.dart:7` | Horizontal rail of the user's joined clubs plus an optional create-club tile. Uses larger rounded image chips so no-photo fallback marks and live badges remain legible. Embedded/chromeless by default for Home/dashboard sections; Explore/page-level placements opt into screen gutters and divider with `fullBleed: true`. |
 | `_CreateClubButton` | `lib/clubs/presentation/discovery/widgets/club_avatar_rail.dart:36` | Rounded-square create tile at the end of the avatar rail to create a new club. |
 | `ExploreBrowseHeaderContent` | `lib/explore/presentation/widgets/explore_header.dart:23` | Explore-specific browse header. It can render in the pinned sliver slot or inside Explore's floating chrome layer, owns temporary search-open state, wires city picker and search actions through shared primitives, accepts an optional background color, and keeps query state in `exploreSearchQueryProvider` for event and club search. |
-| `ClubHeroAppBar` | `lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart:21` | Club detail identity hero with cover-photo support, shared branded fallback, name, optional location-label override, back, and share. The hero uses `clubInteractionHeroTag` and the same base `clubInteractionMediaPadding` as the Explore Polaroid club card, and owns the device-derived top viewport curve that clips its media frame. Hero back/share actions use the shared floating `CatchIconButton` chrome. The caption sits outside that clipped frame on the page surface, uses tighter `CatchLayout.clubDetailHero*` sizing so the Claude reference title fits one line, shows an area/city kicker, and can receive the next event address from `ClubDetailBody`. Expanded and collapsed titles use the central `CatchTextStyles.clubDisplay` treatment. Rating and host-only ownership cues stay out of the hero, and no-photo headers use a shorter height. |
-| `ClubHeroModule` | `lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart:230` | Provider-free Club Detail hero module used inside `ClubHeroAppBar`'s flexible space. Receives computed media height, kicker, and location copy, owns the curved media frame, `CatchDetailHeroBackdrop`, expanded club title, and location row without route actions or provider reads. |
+| `ClubHeroAppBar` | `lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart:35` | Club detail identity hero with DS variant selection, name, optional location-label override, back, and share. Production default selection is data-driven: clubs with photos or legacy `imageUrl` use the shared `CatchPolaroid` white-mat hero, logo-only clubs use a masthead with circular seal, and clubs with neither use the same polaroid shell with `ClubPolaroidArtwork`. The retained full-bleed treatment is not selected by domain data until product defines a trigger. Hero back/share actions use the shared floating `CatchIconButton` chrome, the sliver keeps the `clubInteractionHeroTag`, pinned/collapsed title mechanics, and computed expanded height, and expanded/collapsed titles use `CatchTextStyles.clubDisplay`. Rating and host-only ownership cues stay out of the hero. |
+| `ClubHeroModule` | `lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart:253` | Provider-free Club Detail hero module used inside `ClubHeroAppBar`'s flexible space. Receives `ClubHeroVariant`, computed media/caption extents, kicker, and location copy, then renders the polaroid, masthead, or retained full-review content without route actions or provider reads. The polaroid path delegates the mat to `CatchPolaroid`; the masthead delegates the circular logo seal to `CatchPersonAvatar`; the full path preserves the legacy curved `CatchDetailHeroBackdrop` frame for Widgetbook review only. |
 | `ClubContactAction` | `lib/clubs/presentation/detail/club_detail_screen_state.dart:14` | Typed contact-row intent emitted by `ClubDetailBodyState`. Encodes Instagram, phone, and email labels/URIs plus whether the link should open externally so `ClubDetailScreen` can own the platform link side effect. |
 | `ClubDetailBody` | `lib/clubs/presentation/detail/widgets/club_detail_body.dart:74` | Scrollable public club detail body on a white page surface: hero, optional next-run banner, stats apron, then detail-list `CatchSection`s for About, What we do, From the club, Your hosts, sliver-native Schedule, Reviews, and footer-position Get in touch. The body is a reusable renderer: it receives typed callbacks for share, schedule taps, host profile/message actions, and contact links instead of reading GoRouter or external link/share providers itself. For Host Club Detail parity, it passes the next event address into `ClubHeroAppBar`, renders activity-kind chips before generic tags, uses regular-weight About copy, splits additional generic tags onto a follow-up wrap row, keeps the current public-preview contract, and leaves operational Add event, Edit club, payouts, and host-team editing in Host Operations unless a future design contract moves them here. |
 | `ClubNextRunBanner` | `lib/clubs/presentation/detail/widgets/club_detail_body.dart:205` | Optional next-run banner shown near the top of Club Detail when the club has an upcoming event. Uses `CatchSurface` for the tappable tile shell, activity pigment, event date/time copy from `EventFormatters`, tap semantics, token typography, and a forward affordance while navigation remains an injected callback. |

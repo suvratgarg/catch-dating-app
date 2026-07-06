@@ -1607,11 +1607,11 @@
             {
               "id": "no_exact_pins",
               "kind": "empty",
-              "status": "captured",
+              "status": "implemented",
               "previewIds": [
                 "ExploreMapScreen/Map route states"
               ],
-              "notes": "Widgetbook covers the no-exact-pins route branch by feeding events without exact coordinates through ExploreMapScreen and EventMapView."
+              "notes": "Widgetbook covers the no-exact-pins route branch by feeding events without exact coordinates through ExploreMapScreen and EventMapView; no pixel capture is registered for this branch yet."
             },
             {
               "id": "map_loading",
@@ -1684,10 +1684,8 @@
             "lib/dashboard/presentation/widgets/dashboard_full.dart",
             "lib/dashboard/presentation/widgets/dashboard_sliver_header.dart",
             "lib/dashboard/presentation/widgets/event_focus_rail.dart",
-            "lib/dashboard/presentation/widgets/stride_card.dart",
-            "lib/dashboard/shared/quick_actions.dart",
-            "lib/clubs/presentation/discovery/widgets/club_avatar_rail.dart",
-            "lib/dashboard/presentation/widgets/recommendations.dart"
+            "lib/dashboard/presentation/widgets/empty_hero_card.dart",
+            "lib/dashboard/presentation/widgets/club_posts_home_section.dart"
           ],
           "componentIds": [
             "catch.badge",

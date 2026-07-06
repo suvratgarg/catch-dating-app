@@ -755,6 +755,51 @@
       }
     }
   },
+  "layout": {
+    "$type": "dimension",
+    "activityMapPinRestingSize": {
+      "$value": {
+        "value": 26,
+        "unit": "px"
+      }
+    },
+    "activityMapPinSelectedSize": {
+      "$value": {
+        "value": 38,
+        "unit": "px"
+      }
+    },
+    "activityMapPinFlagMaxWidth": {
+      "$value": {
+        "value": 180,
+        "unit": "px"
+      }
+    },
+    "activityMapPinNativeCanvasPadding": {
+      "$value": {
+        "value": 4,
+        "unit": "px"
+      }
+    },
+    "activityMapPinShadowBlur": {
+      "$value": {
+        "value": 3,
+        "unit": "px"
+      }
+    },
+    "activityMapPinShadowDy": {
+      "$value": {
+        "value": 2,
+        "unit": "px"
+      }
+    }
+  },
+  "opacity": {
+    "$type": "number",
+    "activityMapPinShadow": {
+      "$value": 0.3
+    }
+  },
   "font": {
     "family": {
       "$type": "fontFamily",

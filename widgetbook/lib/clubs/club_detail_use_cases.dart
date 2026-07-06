@@ -127,6 +127,12 @@ final _logoClub = _club.copyWith(
       'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=160&q=80',
 );
 
+final _logoOnlyHeroClub = _minimalClub.copyWith(
+  id: 'widgetbook-logo-only-club',
+  name: 'Bandra Dawn Club',
+  logoPhoto: _photo('club-logo-dawn', 0),
+);
+
 final _events = [
   _event(
     id: 'widgetbook-sunrise-6k',
@@ -1551,7 +1557,7 @@ Widget clubHeroAppBarStates(BuildContext context) {
     catalogId: 'section.club.hero',
     children: [
       _StateCard(
-        label: 'cover',
+        label: 'photo polaroid',
         child: _SliverFrame(
           height: 560,
           slivers: [
@@ -1565,12 +1571,12 @@ Widget clubHeroAppBarStates(BuildContext context) {
         ),
       ),
       _StateCard(
-        label: 'no cover',
+        label: 'logo masthead',
         child: _SliverFrame(
           height: 500,
           slivers: [
             ClubHeroAppBar(
-              club: _minimalClub,
+              club: _logoOnlyHeroClub,
               isHost: false,
               onShareClub: _ignoreShare,
             ),
@@ -1579,13 +1585,13 @@ Widget clubHeroAppBarStates(BuildContext context) {
         ),
       ),
       _StateCard(
-        label: 'host badge',
+        label: 'art polaroid',
         child: _SliverFrame(
           height: 560,
           slivers: [
             ClubHeroAppBar(
-              club: _club,
-              isHost: true,
+              club: _minimalClub,
+              isHost: false,
               onShareClub: _ignoreShare,
             ),
             const SliverToBoxAdapter(child: SizedBox(height: 180)),
@@ -1607,26 +1613,58 @@ Widget clubHeroModuleStates(BuildContext context) {
     catalogId: 'section.club.hero.module',
     children: [
       _StateCard(
-        label: 'cover module',
+        label: 'photo polaroid module',
         child: _DeviceFrame(
           height: 460,
           child: ClubHeroModule(
             club: _club,
+            variant: ClubHeroVariant.polaroid,
             mediaHeight: 280,
+            captionExtent: CatchLayout.clubDetailHeroCaptionExtent,
             kickerLabel: 'BANDRA · MUMBAI',
             locationLabel: 'Bandstand promenade',
           ),
         ),
       ),
       _StateCard(
-        label: 'fallback module',
+        label: 'logo masthead module',
+        child: _DeviceFrame(
+          height: 420,
+          child: ClubHeroModule(
+            club: _logoOnlyHeroClub,
+            variant: ClubHeroVariant.masthead,
+            mediaHeight: 220,
+            captionExtent: CatchLayout.clubDetailHeroCaptionExtent,
+            kickerLabel: 'DINNER · MUMBAI',
+            locationLabel: 'Khar Social',
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'art polaroid module',
         child: _DeviceFrame(
           height: 420,
           child: ClubHeroModule(
             club: _minimalClub,
+            variant: ClubHeroVariant.polaroid,
             mediaHeight: 220,
+            captionExtent: CatchLayout.clubDetailHeroCaptionExtent,
             kickerLabel: 'DINNER · MUMBAI',
             locationLabel: 'Khar Social',
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'full review module',
+        child: _DeviceFrame(
+          height: 460,
+          child: ClubHeroModule(
+            club: _club,
+            variant: ClubHeroVariant.full,
+            mediaHeight: 280,
+            captionExtent: CatchLayout.clubDetailHeroCaptionExtent,
+            kickerLabel: 'BANDRA · MUMBAI',
+            locationLabel: 'Bandstand promenade',
           ),
         ),
       ),

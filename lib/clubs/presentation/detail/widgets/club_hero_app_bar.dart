@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_share_card.dart';
+import 'package:catch_dating_app/clubs/shared/catch_polaroid.dart';
 import 'package:catch_dating_app/clubs/shared/club_transition_tags.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/external_share.dart';
@@ -12,6 +13,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_detail_hero_backdrop.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +21,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 typedef ClubShareHandler =
     Future<void> Function(BuildContext context, Club club);
+
+enum ClubHeroVariant { polaroid, masthead, full }
+
+@visibleForTesting
+ClubHeroVariant clubHeroVariantFor(Club club) {
+  if (_clubHeroPrimaryPhotoUrl(club) != null) {
+    return ClubHeroVariant.polaroid;
+  }
+  if (_clubHeroLogoUrl(club) != null) {
+    return ClubHeroVariant.masthead;
+  }
+  // The DS ClubHero also defines a full variant, but there is no product or
+  // domain trigger for it yet; production selection keeps it unreachable.
+  return ClubHeroVariant.polaroid;
+}
 
 final EdgeInsets _clubHeroLeadingPadding = CatchInsets.pageHorizontal.copyWith(
   top: CatchSpacing.micro10,
@@ -50,7 +67,8 @@ class ClubHeroAppBar extends StatelessWidget {
     final t = CatchTokens.of(context);
     final width = MediaQuery.of(context).size.width;
     final topInset = MediaQuery.paddingOf(context).top;
-    final hasCover = CatchDetailHeroBackdrop.hasImage(club.imageUrl);
+    final variant = clubHeroVariantFor(club);
+    final hasCover = _clubHeroPrimaryPhotoUrl(club) != null;
     final mediaHeight = _heroMediaHeightFor(width, hasCover: hasCover);
     final resolvedLocationLabel = locationLabel ?? _clubLocationLabel(club);
     final kickerLabel = _clubHeroKicker(club);
@@ -136,7 +154,9 @@ class ClubHeroAppBar extends StatelessWidget {
                   color: Colors.transparent,
                   child: ClubHeroModule(
                     club: club,
+                    variant: variant,
                     mediaHeight: mediaHeight,
+                    captionExtent: captionExtent,
                     kickerLabel: kickerLabel,
                     locationLabel: resolvedLocationLabel,
                   ),
@@ -234,18 +254,140 @@ class ClubHeroModule extends StatelessWidget {
   const ClubHeroModule({
     super.key,
     required this.club,
+    required this.variant,
     required this.mediaHeight,
+    required this.captionExtent,
     required this.kickerLabel,
     required this.locationLabel,
   });
 
   final Club club;
+  final ClubHeroVariant variant;
   final double mediaHeight;
+  final double captionExtent;
   final String kickerLabel;
   final String locationLabel;
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final module = switch (variant) {
+      ClubHeroVariant.polaroid => _buildPolaroid(context),
+      ClubHeroVariant.masthead => _buildMasthead(context),
+      ClubHeroVariant.full => _buildFull(context),
+    };
+
+    return ColoredBox(
+      key: const ValueKey('club-detail-hero-module'),
+      color: t.surface,
+      child: module,
+    );
+  }
+
+  Padding _buildPolaroid(BuildContext context) {
+    final photoUrl = _clubHeroPrimaryPhotoUrl(club);
+
+    return Padding(
+      key: const ValueKey('club-detail-hero-polaroid-padding'),
+      padding: clubInteractionMediaPadding,
+      child: SizedBox(
+        key: const ValueKey('club-detail-hero-polaroid-frame'),
+        height: mediaHeight + captionExtent,
+        child: CatchPolaroid(
+          media: photoUrl == null
+              ? ClubPolaroidArtwork(club: club)
+              : CatchDetailHeroBackdrop(
+                  imageUrl: photoUrl,
+                  semanticLabel: '${club.name} cover photo',
+                  showScrim: false,
+                ),
+          caption: locationLabel,
+          title: club.name,
+          titleMaxLines: 2,
+          showArrow: false,
+        ),
+      ),
+    );
+  }
+
+  Padding _buildMasthead(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final logoUrl = _clubHeroLogoUrl(club);
+
+    return Padding(
+      key: const ValueKey('club-detail-hero-masthead-padding'),
+      padding: clubInteractionMediaPadding,
+      child: CatchSurface(
+        key: const ValueKey('club-detail-hero-masthead'),
+        height: mediaHeight + captionExtent,
+        borderColor: t.line,
+        radius: CatchLayout.clubPolaroidRadius,
+        backgroundColor: t.surface,
+        padding: CatchInsets.tileContent,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
+                    kickerLabel,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: CatchTextStyles.monoLabelS(context, color: t.ink),
+                  ),
+                ),
+                gapW12,
+                CatchPersonAvatar(
+                  key: const ValueKey('club-detail-hero-logo-seal'),
+                  size: CatchSpacing.s16,
+                  name: club.name,
+                  imageUrl: logoUrl,
+                  borderWidth: CatchStroke.hairline,
+                  borderColor: t.line,
+                ),
+              ],
+            ),
+            const Spacer(),
+            Text(
+              club.name,
+              key: const ValueKey('club-detail-expanded-title'),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: CatchTextStyles.clubDisplay(
+                context,
+                size: CatchLayout.clubDetailHeroExpandedTitleSize,
+                height: CatchLayout.clubDetailHeroExpandedTitleLineHeight,
+                color: t.ink,
+              ),
+            ),
+            const SizedBox(height: CatchLayout.clubDetailHeroTitleLocationGap),
+            Row(
+              children: [
+                Icon(
+                  CatchIcons.locationOnOutlined,
+                  size: CatchIcon.md,
+                  color: t.ink2,
+                ),
+                gapW6,
+                Expanded(
+                  child: Text(
+                    locationLabel,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: CatchTextStyles.bodyLead(context, color: t.ink2),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Column _buildFull(BuildContext context) {
     final t = CatchTokens.of(context);
     final resolvedMediaPadding = clubInteractionMediaPadding.resolve(
       Directionality.of(context),
@@ -253,103 +395,108 @@ class ClubHeroModule extends StatelessWidget {
     final viewportTopRadius = _clubHeroViewportTopCornerRadius(
       MediaQuery.of(context),
     );
-
-    return ColoredBox(
-      key: const ValueKey('club-detail-hero-module'),
-      color: t.surface,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          ClipRSuperellipse(
-            key: const ValueKey('club-detail-viewport-curve-frame'),
-            clipBehavior: Clip.antiAliasWithSaveLayer,
-            clipper: _ClubHeroViewportCurveClipper(
-              padding: resolvedMediaPadding,
-              viewportTopRadius: viewportTopRadius,
-              cornerRadius: CatchRadius.lg,
-            ),
-            child: ColoredBox(
-              color: t.surface,
-              child: Padding(
-                key: const ValueKey('club-detail-hero-padding'),
-                padding: clubInteractionMediaPadding,
-                child: CatchSurface(
-                  key: const ValueKey('club-detail-hero-frame'),
-                  backgroundColor: t.surface,
-                  borderColor: t.surface,
-                  borderWidth: 2,
-                  clipBehavior: Clip.hardEdge,
-                  child: SizedBox(
-                    height: mediaHeight,
-                    child: CatchDetailHeroBackdrop(
-                      imageUrl: club.imageUrl,
-                      semanticLabel: '${club.name} cover photo',
-                      showScrim: false,
-                    ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ClipRSuperellipse(
+          key: const ValueKey('club-detail-viewport-curve-frame'),
+          clipBehavior: Clip.antiAliasWithSaveLayer,
+          clipper: _ClubHeroViewportCurveClipper(
+            padding: resolvedMediaPadding,
+            viewportTopRadius: viewportTopRadius,
+            cornerRadius: CatchRadius.lg,
+          ),
+          child: ColoredBox(
+            color: t.surface,
+            child: Padding(
+              key: const ValueKey('club-detail-hero-padding'),
+              padding: clubInteractionMediaPadding,
+              child: CatchSurface(
+                key: const ValueKey('club-detail-hero-frame'),
+                backgroundColor: t.surface,
+                borderColor: t.surface,
+                borderWidth: 2,
+                clipBehavior: Clip.hardEdge,
+                child: SizedBox(
+                  height: mediaHeight,
+                  child: CatchDetailHeroBackdrop(
+                    imageUrl: _clubHeroPrimaryPhotoUrl(club),
+                    semanticLabel: '${club.name} cover photo',
+                    showScrim: false,
                   ),
                 ),
               ),
             ),
           ),
-          Padding(
-            key: const ValueKey('club-detail-hero-caption'),
-            padding: const EdgeInsets.fromLTRB(
-              CatchLayout.detailScreenHorizontalPadding,
-              CatchLayout.clubDetailHeroTitleTopPadding,
-              CatchLayout.detailScreenHorizontalPadding,
-              CatchLayout.clubDetailHeroTitleBottomPadding,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  kickerLabel,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.monoLabelS(context, color: t.ink),
-                ),
-                gapH8,
-                Text(
-                  club.name,
-                  key: const ValueKey('club-detail-expanded-title'),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.clubDisplay(
-                    context,
-                    size: CatchLayout.clubDetailHeroExpandedTitleSize,
-                    height: CatchLayout.clubDetailHeroExpandedTitleLineHeight,
-                    color: t.ink,
-                  ),
-                ),
-                const SizedBox(
-                  height: CatchLayout.clubDetailHeroTitleLocationGap,
-                ),
-                Row(
-                  children: [
-                    Icon(
-                      CatchIcons.locationOnOutlined,
-                      size: CatchIcon.md,
-                      color: t.ink2,
-                    ),
-                    gapW6,
-                    Expanded(
-                      child: Text(
-                        locationLabel,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: CatchTextStyles.bodyLead(context, color: t.ink2),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+        ),
+        Padding(
+          key: const ValueKey('club-detail-hero-caption'),
+          padding: const EdgeInsets.fromLTRB(
+            CatchLayout.detailScreenHorizontalPadding,
+            CatchLayout.clubDetailHeroTitleTopPadding,
+            CatchLayout.detailScreenHorizontalPadding,
+            CatchLayout.clubDetailHeroTitleBottomPadding,
           ),
-        ],
-      ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                kickerLabel,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: CatchTextStyles.monoLabelS(context, color: t.ink),
+              ),
+              gapH8,
+              Text(
+                club.name,
+                key: const ValueKey('club-detail-expanded-title'),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: CatchTextStyles.clubDisplay(
+                  context,
+                  size: CatchLayout.clubDetailHeroExpandedTitleSize,
+                  height: CatchLayout.clubDetailHeroExpandedTitleLineHeight,
+                  color: t.ink,
+                ),
+              ),
+              const SizedBox(
+                height: CatchLayout.clubDetailHeroTitleLocationGap,
+              ),
+              Row(
+                children: [
+                  Icon(
+                    CatchIcons.locationOnOutlined,
+                    size: CatchIcon.md,
+                    color: t.ink2,
+                  ),
+                  gapW6,
+                  Expanded(
+                    child: Text(
+                      locationLabel,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: CatchTextStyles.bodyLead(context, color: t.ink2),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
+}
+
+String? _clubHeroPrimaryPhotoUrl(Club club) =>
+    _trimmedOrNull(club.primaryClubPhotoUrl);
+
+String? _clubHeroLogoUrl(Club club) => _trimmedOrNull(club.logoPhotoUrl);
+
+String? _trimmedOrNull(String? value) {
+  final trimmed = value?.trim();
+  return trimmed == null || trimmed.isEmpty ? null : trimmed;
 }
 
 String _clubHeroKicker(Club club) {

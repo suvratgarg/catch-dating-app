@@ -302,6 +302,45 @@ one polaroid system, one ticket system; all gates green.
 Out of scope: calendar/saved-events agenda surfaces; the `full` hero
 variant's product trigger; the dense-list escalation path (resolved by 2.3).
 
+## 2.1 Verification Receipt
+
+- `ClubHeroAppBar` now resolves ClubHero defaults from domain media state:
+  `club.primaryClubPhotoUrl` (including legacy `imageUrl`) → polaroid,
+  logo-only (`logoPhotoUrl`) → masthead, neither → polaroid artwork. The
+  resolver never returns `ClubHeroVariant.full`.
+- `ClubHeroModule` owns the explicit `ClubHeroVariant` rendering contract.
+  The polaroid path delegates the mat to `CatchPolaroid`; the masthead path
+  uses the large club name plus circular `CatchPersonAvatar` logo seal; the
+  retained `full` path preserves the prior curved `CatchDetailHeroBackdrop`
+  treatment for Widgetbook review only until product defines a domain trigger.
+- `ClubHeroLoadingSkeleton` now mimics the polaroid/card shape instead of the
+  old full-bleed block.
+- Widgetbook coverage now includes default sliver states for photo polaroid,
+  logo masthead, and art polaroid, plus module states for those three and the
+  unreachable full review variant.
+- Appshot proof (local capture artifacts; `artifacts/ui-captures/` is ignored
+  by git): before capture
+  `artifacts/ui-captures/full-catalog/club_detail_member/light.png` shows the
+  old full-bleed hero. After captures are stored under
+  `artifacts/ui-captures/club-hero-2-1/` for `club_detail_member` and
+  `club_detail_loading` in light/dark.
+- Verification: `flutter test test/clubs/club_hero_app_bar_test.dart
+  --reporter expanded`; `flutter test test/clubs/club_share_card_test.dart
+  --reporter expanded`; `flutter test test/clubs/clubs_flow_test.dart
+  --plain-name "detail screen shows club-shaped skeleton while live data
+  loads" --reporter expanded`; focused app/test analyzer; Widgetbook analyzer;
+  `node tool/ui_capture/run_captures.mjs --ids
+  club_detail_member,club_detail_loading --device design-phone --output-dir
+  /tmp/catch-club-hero-2-1-captures`; `node tool/run.mjs check --category
+  design`.
+- Aggregate design-gate cleanup: the check exposed stale generated/registry
+  state outside this slice. `catch.activity_map_pin` design-token contracts were
+  added to the DTCG token source and regenerated; the Explore map no-exact-pin
+  branch was downgraded from captured to implemented because it has Widgetbook
+  coverage but no pixel capture; Dashboard Home's screen contract was updated to
+  match the current full-body sections; route inventory and the design context
+  pack were regenerated.
+
 ---
 
 # Part 3 — Profiles: verification pass + token rename

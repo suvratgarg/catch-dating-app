@@ -1994,7 +1994,7 @@
         {
           "id": "no_exact_pins",
           "kind": "empty",
-          "status": "captured",
+          "status": "implemented",
           "source": "ExploreMapScreen delegates no-exact-pin feed data to EventMapView's shared no-pins empty branch while keeping the route chrome and deterministic Widgetbook fixture.",
           "previewIds": [
             "ExploreMapScreen/Map route states"
@@ -2395,8 +2395,8 @@
         ],
         "mutationOwners": [
           {
-            "file": "lib/dashboard/presentation/dashboard_stride_actions_controller.dart",
-            "symbol": "DashboardStrideActions"
+            "file": "lib/dashboard/presentation/dashboard_event_focus_controller.dart",
+            "symbol": "DashboardEventFocusController"
           },
           {
             "file": "lib/events/presentation/event_booking_controller.dart",
@@ -2818,8 +2818,8 @@
         }
       ],
       "composition": {
-        "currentLayout": "DashboardScreen watches dashboardHomeScreenStateProvider, switches over loading/error/empty/full states, and composes DashboardSliverHeader, DashboardEmptySliverBody, DashboardFullSliverBody, and notification action slots. DashboardHomeScreenState owns route provider waves, retry targets, header copy, followed-club ids, and empty/full selection.",
-        "targetLayout": "DashboardScreen should remain a thin route composer. Remaining migration work is below the full body: event focus, activity/stride, quick actions, joined clubs, recommendations, and notification action should receive provider-free display data and typed callbacks from section adapters.",
+        "currentLayout": "DashboardScreen watches dashboardHomeScreenStateProvider, switches over loading/error/empty/full states, and composes DashboardSliverHeader, DashboardEmptySliverBody, DashboardFullSliverBody, and notification action slots. DashboardHomeScreenState owns route provider waves, retry targets, header copy, club-post notification ids, and empty/full selection.",
+        "targetLayout": "DashboardScreen should remain a thin route composer. Remaining migration work is below the full body: event focus and club-post updates should receive provider-free display data and typed callbacks from section adapters.",
         "sections": [
           {
             "id": "section.dashboard.header",
@@ -2923,17 +2923,14 @@
             "targetOwner": "DashboardHomeScreenState to section composition adapter",
             "dependencies": [
               "section.dashboard.event_focus",
-              "section.dashboard.stride",
-              "section.dashboard.quick_actions",
-              "section.dashboard.clubs_rail",
-              "section.dashboard.recommendations"
+              "section.dashboard.club_posts"
             ],
             "states": [
               "full_dashboard",
               "section_loading",
               "section_error"
             ],
-            "migration": "Route-level empty/full selection now lives in DashboardHomeScreenState. Remaining work is to split full-body section data and callbacks so DashboardFullSliverBody no longer watches club-name and recommendation providers directly.",
+            "migration": "Route-level empty/full selection now lives in DashboardHomeScreenState. Remaining work is to split full-body section data and callbacks so DashboardFullSliverBody no longer watches club lookup providers for club-post notifications.",
             "previewIds": [
               "DashboardScreen/Screen states"
             ]
@@ -2972,119 +2969,32 @@
             ]
           },
           {
-            "id": "section.dashboard.stride",
-            "name": "Weekly activity card",
+            "id": "section.dashboard.club_posts",
+            "name": "Club post updates",
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "StrideCard",
-              "WeeklyActivityCard"
+              "NotificationCard",
+              "ClubAvatar"
             ],
             "flutter": {
-              "file": "lib/dashboard/presentation/widgets/stride_card.dart",
-              "symbol": "DashboardStrideSection"
+              "file": "lib/dashboard/presentation/widgets/club_posts_home_section.dart",
+              "symbol": "ClubPostsHomeSection"
             },
-            "currentOwner": "DashboardFullSliverBody supplies typed DashboardStrideSectionActions and DashboardStrideActionState; DashboardStrideSection renders the provider-free activity section.",
-            "targetOwner": "provider-free activity summary section with injected action intents and display-only action state",
+            "currentOwner": "DashboardFullSliverBody passes club-post notifications while ClubPostsHomeSection resolves club display data.",
+            "targetOwner": "provider-free club-post update section fed by DashboardHomeScreenState",
             "dependencies": [
-              "catch.button",
+              "catch.person_avatar",
+              "catch.section",
               "catch.surface"
             ],
             "states": [
-              "connected",
-              "permission_required",
-              "unsupported",
-              "loading",
-              "error",
-              "connecting",
-              "install_health_connect"
-            ],
-            "migration": "DashboardStrideSection now receives DashboardStrideSectionActions and DashboardStrideActionState. DashboardFullSliverBody owns retry invalidation, permission/install side effects, weekly activity refresh, denied-permission snackbar, and connecting/installing busy flags. Remaining Stride work is section-level Widgetbook coverage for connected, permission, unsupported, loading, error, connecting, and install states.",
-            "previewIds": [
-              "DashboardScreen/Screen states"
-            ]
-          },
-          {
-            "id": "section.dashboard.quick_actions",
-            "name": "Dashboard quick actions",
-            "status": "implemented_local",
-            "layer": "compound",
-            "claudeComponents": [
-              "QuickActions"
-            ],
-            "flutter": {
-              "file": "lib/dashboard/shared/quick_actions.dart",
-              "symbol": "QuickActions"
-            },
-            "currentOwner": "DashboardFullSliverBody supplies typed DashboardQuickAction route intents; QuickActions renders the provider-free grid.",
-            "targetOwner": "registered dashboard quick actions compound with typed action models and external route intents",
-            "dependencies": [
-              "catch.surface"
-            ],
-            "states": [
-              "calendar",
-              "saved_events",
-              "disabled_future_action"
-            ],
-            "migration": "QuickActions now receives DashboardQuickAction models and callbacks from the composing DashboardFullSliverBody. Keep the visual grid provider-free; future work is only to extend its action model if disabled/future actions need richer design states.",
-            "previewIds": [
-              "DashboardScreen/Screen states"
-            ]
-          },
-          {
-            "id": "section.dashboard.clubs_rail",
-            "name": "Joined clubs rail",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "ClubAvatarRail"
-            ],
-            "flutter": {
-              "file": "lib/clubs/presentation/discovery/widgets/club_avatar_rail.dart",
-              "symbol": "ClubAvatarRail"
-            },
-            "currentOwner": "DashboardFullSliverBody via ClubAvatarRail and watchClubsByIdsProvider",
-            "targetOwner": "provider-free joined clubs rail fed by pre-resolved dashboard club display data",
-            "dependencies": [
-              "catch.surface"
-            ],
-            "states": [
-              "loading",
-              "clubs_ready",
               "empty_hidden",
-              "partial_error"
+              "updates_ready",
+              "club_lookup_loading",
+              "club_lookup_partial"
             ],
-            "migration": "ClubAvatarRail now uses the batched watchClubsByIdsProvider seam instead of one watchClubProvider per club id. Remaining work is to lift that resolved club display data into a Dashboard section adapter so the visual rail itself becomes provider-free.",
-            "previewIds": [
-              "DashboardScreen/Screen states"
-            ]
-          },
-          {
-            "id": "section.dashboard.recommendations",
-            "name": "Recommendations rail",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "RecommendationRail",
-              "DateTicket"
-            ],
-            "flutter": {
-              "file": "lib/dashboard/presentation/widgets/recommendations.dart",
-              "symbol": "Recommendations"
-            },
-            "currentOwner": "DashboardFullSliverBody",
-            "targetOwner": "provider-free recommendation rail fed by DashboardHomeScreenState",
-            "dependencies": [
-              "catch.surface"
-            ],
-            "states": [
-              "ready",
-              "loading",
-              "error",
-              "empty_hidden",
-              "long_copy"
-            ],
-            "migration": "Keep ranking in DashboardFullViewModel but move section loading/error display models into a named dashboard adapter and add Widgetbook states.",
+            "migration": "Move club display lookup out of ClubPostsHomeSection so the visual section receives provider-free card data and typed open-post callbacks.",
             "previewIds": [
               "DashboardScreen/Screen states"
             ]
