@@ -3,10 +3,10 @@
   "generatedBy": "tool/ui_capture/check_route_inventory.mjs",
   "source": {
     "path": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "a6844697e0511ef90bc52f14a884eb539c97f3b430ab1678ec80f6afd3b3ffe4",
-    "routeContractSha256": "e0aa935fc83b6ecc9157babb122a6e69e5b8c6910544022c93baf294d9c36e7d",
+    "normalizedFileSha256": "926fd5d7b594d6e0cebeae1dcf29328a7c1800a4303c4b116195f59438e498a6",
+    "routeContractSha256": "95ab20c51def97cb71d3f9cbbd4214c67fba27f9525228e6e4d6cb6c14ba5a91",
     "goRouteCount": 48,
-    "shellBranchCount": 9,
+    "shellBranchCount": 8,
     "enumRouteCount": 48,
     "referencedRouteCount": 48,
     "runtimeRouteCount": 48,
@@ -252,14 +252,14 @@
       "referencedByGoRouter": true
     },
     {
-      "id": "swipeHubScreen",
+      "id": "catchesRedirect",
       "path": "/catches",
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
       "runtimePath": "/catches",
-      "runtimeParentId": null,
-      "runtimePathExpression": "Routes.swipeHubScreen.path",
+      "runtimeParentId": "dashboardScreen",
+      "runtimePathExpression": "'catches'",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -272,8 +272,8 @@
       "requiresFixture": true,
       "gated": false,
       "runtimePath": "/catches/:eventId",
-      "runtimeParentId": "swipeHubScreen",
-      "runtimePathExpression": "':eventId'",
+      "runtimeParentId": "dashboardScreen",
+      "runtimePathExpression": "'catches/:eventId'",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -286,8 +286,8 @@
       "requiresFixture": true,
       "gated": false,
       "runtimePath": "/catches/:eventId/recap",
-      "runtimeParentId": "swipeHubScreen",
-      "runtimePathExpression": "':eventId/recap'",
+      "runtimeParentId": "dashboardScreen",
+      "runtimePathExpression": "'catches/:eventId/recap'",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -650,6 +650,7 @@
     "authScreen",
     "calendarEventDetailScreen",
     "calendarScreen",
+    "catchesRedirect",
     "chatScreen",
     "clubDetailScreen",
     "dashboardEventDetailScreen",
@@ -693,7 +694,6 @@
     "savedEventsScreen",
     "settingsScreen",
     "startScreen",
-    "swipeEventScreen",
-    "swipeHubScreen"
+    "swipeEventScreen"
   ]
 }

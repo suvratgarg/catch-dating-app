@@ -1,24 +1,24 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
-import 'package:catch_dating_app/core/widgets/catch_page_dots.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
+import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_arrival_action.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
-import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-typedef EventFocusClubNameBuilder = String? Function(Event event);
+typedef EventLifecycleClubNameBuilder = String? Function(Event event);
 typedef EventFocusEventCallback = void Function(Event event);
 
 class EventFocusActions {
@@ -50,160 +50,130 @@ class EventFocusCheckInState {
   final Object? error;
 }
 
-class EventFocusRail extends StatefulWidget {
-  const EventFocusRail({
+class EventLifecycleTimeline extends StatefulWidget {
+  const EventLifecycleTimeline({
     super.key,
     required this.upcomingEvents,
+    required this.windowedEvents,
     required this.actions,
     this.checkInState = EventFocusCheckInState.idle,
     this.arrivalAction,
-    this.activeSwipeEvent,
     this.pendingReviewEvent,
     this.clubNameBuilder,
   });
 
-  static const railKey = Key('dashboard-event-focus-rail');
-  static const pageIndicatorKey = Key('dashboard-event-focus-page-indicator');
+  static const timelineKey = Key('dashboard-event-lifecycle-timeline');
+  static const listKey = Key('dashboard-event-lifecycle-list');
   static Key actionKey(String actionName) =>
-      ValueKey('dashboard-event-focus-action-$actionName');
+      ValueKey('dashboard-event-lifecycle-action-$actionName');
 
   final List<Event> upcomingEvents;
+  final List<CatchWindowItem> windowedEvents;
   final EventFocusActions actions;
   final EventFocusCheckInState checkInState;
   final EventArrivalAction? arrivalAction;
-  final Event? activeSwipeEvent;
   final Event? pendingReviewEvent;
-  final EventFocusClubNameBuilder? clubNameBuilder;
+  final EventLifecycleClubNameBuilder? clubNameBuilder;
 
   @override
-  State<EventFocusRail> createState() => _EventFocusRailState();
+  State<EventLifecycleTimeline> createState() => _EventLifecycleTimelineState();
 }
 
-class _EventFocusRailState extends State<EventFocusRail> {
-  static const _minimumSwipeDistance = 56.0;
-  static const _minimumSwipeVelocity = 360.0;
-
-  int _selectedIndex = 0;
-  double _dragDistance = 0;
+class _EventLifecycleTimelineState extends State<EventLifecycleTimeline> {
+  Timer? _ticker;
+  DateTime _now = DateTime.now();
 
   @override
-  void didUpdateWidget(covariant EventFocusRail oldWidget) {
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _syncTicker();
+  }
+
+  @override
+  void didUpdateWidget(covariant EventLifecycleTimeline oldWidget) {
     super.didUpdateWidget(oldWidget);
-    final itemCount = _buildItems().length;
-    if (_selectedIndex >= itemCount) {
-      _selectedIndex = itemCount == 0 ? 0 : itemCount - 1;
+    if (oldWidget.windowedEvents.length != widget.windowedEvents.length) {
+      _syncTicker();
     }
+  }
+
+  @override
+  void dispose() {
+    _ticker?.cancel();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final items = _buildItems();
     if (items.isEmpty) return const SizedBox.shrink();
-    if (_selectedIndex >= items.length) _selectedIndex = items.length - 1;
 
     final cardCountLabel = items.length == 1
-        ? '1 event'
-        : '${items.length} events';
-    final selectedItem = items[_selectedIndex];
+        ? '1 phase'
+        : '${items.length} phases';
 
     return Column(
-      key: EventFocusRail.railKey,
+      key: EventLifecycleTimeline.timelineKey,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            Text('Event Focus', style: CatchTextStyles.titleL(context)),
+            Expanded(
+              child: Text(
+                'Event timeline',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: CatchTextStyles.titleL(context),
+              ),
+            ),
             gapW8,
             CatchBadge(label: cardCountLabel, tone: CatchBadgeTone.brand),
           ],
         ),
         gapH10,
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final cardWidth = constraints.hasBoundedWidth
-                ? constraints.maxWidth
-                : MediaQuery.sizeOf(context).width;
-            final canAdvance = _selectedIndex < items.length - 1;
-            final canRetreat = _selectedIndex > 0;
-
-            return SizedBox(
-              width: cardWidth,
-              child: Semantics(
-                label: 'Event focus carousel',
-                value: 'Event ${_selectedIndex + 1} of ${items.length}',
-                increasedValue: canAdvance
-                    ? 'Event ${_selectedIndex + 2} of ${items.length}'
-                    : null,
-                decreasedValue: canRetreat
-                    ? 'Event $_selectedIndex of ${items.length}'
-                    : null,
-                onIncrease: items.length > 1 && canAdvance
-                    ? () => setState(() => _selectedIndex += 1)
-                    : null,
-                onDecrease: items.length > 1 && canRetreat
-                    ? () => setState(() => _selectedIndex -= 1)
-                    : null,
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onHorizontalDragStart: items.length > 1
-                      ? (_) => _dragDistance = 0
-                      : null,
-                  onHorizontalDragUpdate: items.length > 1
-                      ? (details) => _dragDistance += details.primaryDelta ?? 0
-                      : null,
-                  onHorizontalDragEnd: items.length > 1
-                      ? (details) => _handleHorizontalDragEnd(
-                          details: details,
-                          itemCount: items.length,
-                        )
-                      : null,
-                  onHorizontalDragCancel: items.length > 1
-                      ? () => _dragDistance = 0
-                      : null,
-                  child: AnimatedSwitcher(
-                    duration: CatchMotion.base,
-                    switchInCurve: CatchMotion.easeOutCubicCurve,
-                    switchOutCurve: CatchMotion.easeInCubicCurve,
-                    transitionBuilder: (child, animation) =>
-                        FadeTransition(opacity: animation, child: child),
-                    child: EventFocusCard(
-                      key: ValueKey(
-                        'event-focus-${selectedItem.kind.name}-'
-                        '${selectedItem.event.id}-'
-                        '${selectedItem.canSwipe}-${selectedItem.needsReview}',
-                      ),
-                      item: selectedItem,
-                      cardIndex: _selectedIndex,
-                      cardCount: items.length,
-                      checkInState: widget.checkInState,
-                      onActionPressed: (action) =>
-                          _handleAction(selectedItem, action),
-                    ),
-                  ),
+        Column(
+          key: EventLifecycleTimeline.listKey,
+          children: [
+            for (final (index, item) in items.indexed) ...[
+              EventFocusCard(
+                key: ValueKey(
+                  'event-lifecycle-${item.kind.name}-${item.event.id}-'
+                  '${item.canSwipe}-${item.needsReview}',
                 ),
+                item: item,
+                now: _now,
+                checkInState: widget.checkInState,
+                onActionPressed: (action) => _handleAction(item, action),
               ),
-            );
-          },
+              if (index != items.length - 1) gapH10,
+            ],
+          ],
         ),
-        if (items.length > 1) ...[
+        if (widget.checkInState.error != null) ...[
           gapH10,
-          Center(
-            key: EventFocusRail.pageIndicatorKey,
-            child: CatchPageDots(
-              selectedIndex: _selectedIndex,
-              itemCount: items.length,
-              semanticLabel: 'Event ${_selectedIndex + 1} of ${items.length}',
-            ),
-          ),
-        ],
-        if (widget.checkInState.error != null)
           CatchErrorBanner.fromError(
             widget.checkInState.error!,
             context: AppErrorContext.dashboard,
             onRetry: widget.actions.onResetCheckInError,
           ),
+        ],
       ],
     );
+  }
+
+  void _syncTicker() {
+    _ticker?.cancel();
+    _ticker = null;
+    _now = DateTime.now();
+
+    final mediaQuery = MediaQuery.maybeOf(context);
+    final reduceMotion = mediaQuery?.disableAnimations ?? false;
+    if (reduceMotion || widget.windowedEvents.isEmpty) return;
+
+    _ticker = Timer.periodic(const Duration(minutes: 1), (_) {
+      if (!mounted) return;
+      setState(() => _now = DateTime.now());
+    });
   }
 
   List<EventFocusItem> _buildItems() {
@@ -212,6 +182,20 @@ class _EventFocusRailState extends State<EventFocusRail> {
         widget.arrivalAction?.kind == EventArrivalActionKind.selfCheckIn
         ? widget.arrivalAction?.event.id
         : null;
+
+    final afterEventIds = <String>{};
+    for (final window in widget.windowedEvents) {
+      afterEventIds.add(window.event.id);
+      items.add(
+        EventFocusItem(
+          event: window.event,
+          kind: EventFocusKind.catchWindow,
+          windowItem: window,
+          needsReview: widget.pendingReviewEvent?.id == window.event.id,
+          clubName: widget.clubNameBuilder?.call(window.event),
+        ),
+      );
+    }
 
     for (final event in widget.upcomingEvents) {
       items.add(
@@ -225,20 +209,6 @@ class _EventFocusRailState extends State<EventFocusRail> {
       );
     }
 
-    final afterEventIds = <String>{};
-    if (widget.activeSwipeEvent != null) {
-      afterEventIds.add(widget.activeSwipeEvent!.id);
-      items.add(
-        EventFocusItem(
-          event: widget.activeSwipeEvent!,
-          kind: EventFocusKind.afterEvent,
-          canSwipe: true,
-          needsReview:
-              widget.pendingReviewEvent?.id == widget.activeSwipeEvent!.id,
-          clubName: widget.clubNameBuilder?.call(widget.activeSwipeEvent!),
-        ),
-      );
-    }
     if (widget.pendingReviewEvent != null &&
         !afterEventIds.contains(widget.pendingReviewEvent!.id)) {
       items.add(
@@ -258,34 +228,16 @@ class _EventFocusRailState extends State<EventFocusRail> {
   int _compareFocusItems(EventFocusItem a, EventFocusItem b) {
     final priority = a.priority.compareTo(b.priority);
     if (priority != 0) return priority;
+    if (a.windowItem != null && b.windowItem != null) {
+      return a.windowItem!.windowClosesAt.compareTo(
+        b.windowItem!.windowClosesAt,
+      );
+    }
     if (a.kind == EventFocusKind.afterEvent &&
         b.kind == EventFocusKind.afterEvent) {
       return b.event.endTime.compareTo(a.event.endTime);
     }
     return a.event.startTime.compareTo(b.event.startTime);
-  }
-
-  void _handleHorizontalDragEnd({
-    required DragEndDetails details,
-    required int itemCount,
-  }) {
-    final velocity = details.primaryVelocity ?? 0;
-    final shouldAdvance =
-        velocity < -_minimumSwipeVelocity ||
-        _dragDistance < -_minimumSwipeDistance;
-    final shouldRetreat =
-        velocity > _minimumSwipeVelocity ||
-        _dragDistance > _minimumSwipeDistance;
-    int boundIndex(int value) => value.clamp(0, itemCount - 1).toInt();
-    final nextIndex = switch ((shouldAdvance, shouldRetreat)) {
-      (true, _) => boundIndex(_selectedIndex + 1),
-      (_, true) => boundIndex(_selectedIndex - 1),
-      _ => _selectedIndex,
-    };
-
-    _dragDistance = 0;
-    if (nextIndex == _selectedIndex) return;
-    setState(() => _selectedIndex = nextIndex);
   }
 
   void _handleAction(EventFocusItem item, EventFocusAction action) {
@@ -310,15 +262,13 @@ class EventFocusCard extends StatelessWidget {
   const EventFocusCard({
     super.key,
     required this.item,
-    required this.cardIndex,
-    required this.cardCount,
+    required this.now,
     required this.checkInState,
     required this.onActionPressed,
   });
 
   final EventFocusItem item;
-  final int cardIndex;
-  final int cardCount;
+  final DateTime now;
   final EventFocusCheckInState checkInState;
   final ValueChanged<EventFocusAction> onActionPressed;
 
@@ -326,21 +276,22 @@ class EventFocusCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final actions = [item.primaryAction, ...item.secondaryActions];
     final activity = ActivityPalette.resolve(context, item.event.activityKind);
+    final window = item.windowItem;
+    final countdown = window?.countdownLabel(now);
 
     return EventActionCard(
       event: item.event,
       topAccentColors: [activity.accent, activity.deep],
       subtitle: item.clubName,
       urgent: item.isUrgent,
-      indexLabel: cardCount > 1 ? '${cardIndex + 1}/$cardCount' : null,
       badges: [
         EventActionCardBadge(
           label: item.badgeLabel,
           tone: item.isUrgent ? CatchBadgeTone.brand : CatchBadgeTone.neutral,
         ),
-        if (item.canSwipe)
+        if (window != null && countdown != null)
           EventActionCardBadge(
-            label: 'Catch · ${_swipeCountdown(item.event)}',
+            label: '${window.attendedCountLabel} to catch · $countdown left',
             tone: CatchBadgeTone.brand,
             icon: PhosphorIconsFill.heart,
           ),
@@ -351,34 +302,7 @@ class EventFocusCard extends StatelessWidget {
             icon: PhosphorIconsRegular.pencilLine,
           ),
       ],
-      metaRows: [
-        [
-          CatchMetaEntry(
-            icon: CatchIcons.clock,
-            label:
-                '${EventFormatters.shortWeekday(item.event.startTime)}, '
-                '${item.event.startTime.day} '
-                '${EventFormatters.shortMonth(item.event.startTime)} · '
-                '${item.event.timeRangeLabel}',
-          ),
-        ],
-        [
-          CatchMetaEntry(
-            icon: CatchIcons.pinOutlined,
-            label: item.event.locationName,
-          ),
-        ],
-        [
-          CatchMetaEntry(
-            icon: activityKindGlyph(item.event.activityKind),
-            label: item.event.activitySummaryLabel,
-          ),
-          CatchMetaEntry(
-            icon: CatchIcons.group,
-            label: '${item.event.signedUpCount}/${item.event.capacityLimit}',
-          ),
-        ],
-      ],
+      metaRows: _metaRows(activity, countdown),
       actions: [
         for (var index = 0; index < actions.length; index += 1)
           EventActionCardAction(
@@ -403,9 +327,67 @@ class EventFocusCard extends StatelessWidget {
       ],
     );
   }
+
+  List<List<CatchMetaEntry>> _metaRows(
+    CatchActivity activity,
+    String? countdown,
+  ) {
+    final window = item.windowItem;
+    if (window != null) {
+      return [
+        [
+          CatchMetaEntry(
+            icon: CatchIcons.clock,
+            label: countdown == null ? 'Catch window open' : '$countdown left',
+          ),
+        ],
+        [
+          CatchMetaEntry(
+            icon: CatchIcons.group,
+            label: window.dateAttendeeLabel,
+          ),
+        ],
+        [
+          CatchMetaEntry(
+            icon: CatchIcons.pinOutlined,
+            label: item.event.locationName,
+          ),
+        ],
+      ];
+    }
+
+    return [
+      [
+        CatchMetaEntry(
+          icon: CatchIcons.clock,
+          label:
+              '${EventFormatters.shortWeekday(item.event.startTime)}, '
+              '${item.event.startTime.day} '
+              '${EventFormatters.shortMonth(item.event.startTime)} · '
+              '${item.event.timeRangeLabel}',
+        ),
+      ],
+      [
+        CatchMetaEntry(
+          icon: CatchIcons.pinOutlined,
+          label: item.event.locationName,
+        ),
+      ],
+      [
+        CatchMetaEntry(
+          icon: activityKindGlyph(item.event.activityKind),
+          label: item.event.activitySummaryLabel,
+        ),
+        CatchMetaEntry(
+          icon: CatchIcons.group,
+          label: '${item.event.signedUpCount}/${item.event.capacityLimit}',
+        ),
+      ],
+    ];
+  }
 }
 
-enum EventFocusKind { upcoming, checkIn, afterEvent }
+enum EventFocusKind { catchWindow, checkIn, upcoming, afterEvent }
 
 enum EventFocusAction {
   viewEvent,
@@ -439,7 +421,7 @@ extension on EventFocusAction {
     };
   }
 
-  Key get key => EventFocusRail.actionKey(name);
+  Key get key => EventLifecycleTimeline.actionKey(name);
 }
 
 class EventFocusItem {
@@ -447,15 +429,17 @@ class EventFocusItem {
     required this.event,
     required this.kind,
     this.clubName,
-    this.canSwipe = false,
+    this.windowItem,
     this.needsReview = false,
   });
 
   final Event event;
   final EventFocusKind kind;
   final String? clubName;
-  final bool canSwipe;
+  final CatchWindowItem? windowItem;
   final bool needsReview;
+
+  bool get canSwipe => windowItem != null;
 
   bool get isUrgent =>
       kind == EventFocusKind.checkIn || canSwipe || needsReview;
@@ -463,12 +447,13 @@ class EventFocusItem {
   int get priority {
     if (canSwipe) return 0;
     if (kind == EventFocusKind.checkIn) return 1;
-    if (needsReview) return 2;
+    if (kind == EventFocusKind.upcoming) return 2;
     return 3;
   }
 
   String get badgeLabel {
     return switch (kind) {
+      EventFocusKind.catchWindow => 'Catch window open',
       EventFocusKind.checkIn => 'Check-in open',
       EventFocusKind.afterEvent => 'After the event',
       EventFocusKind.upcoming => 'Next event',
@@ -495,12 +480,4 @@ class EventFocusItem {
     if (canSwipe && needsReview) return const [EventFocusAction.review];
     return const [];
   }
-}
-
-String _swipeCountdown(Event event) {
-  final remaining = swipeWindowClosesAt(event).difference(DateTime.now());
-  if (remaining.isNegative) return '0h 00m';
-  final h = remaining.inHours;
-  final m = remaining.inMinutes.remainder(60);
-  return '${h}h ${m.toString().padLeft(2, '0')}m';
 }

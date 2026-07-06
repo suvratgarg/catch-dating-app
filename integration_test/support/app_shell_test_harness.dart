@@ -185,6 +185,7 @@ Future<void> openSwipeDeck(WidgetTester tester, Event event) async {
 Future<void> openAppTab(WidgetTester tester, String label) async {
   final destinationLabel = switch (label) {
     'Clubs' => 'Explore',
+    'Profile' => 'You',
     _ => label,
   };
   final destination = find.descendant(

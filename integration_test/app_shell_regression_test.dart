@@ -73,7 +73,7 @@ void main() {
 
     await pumpCatchAppShell(
       tester,
-      initialRoute: Routes.swipeHubScreen.path,
+      initialRoute: Routes.dashboardScreen.path,
       overrides: appShellTestOverrides(
         uid: user.uid,
         user: user,

@@ -29,7 +29,6 @@ void main() {
           branches: [
             _branch(Routes.dashboardScreen.path, 'Home'),
             _branch(Routes.exploreScreen.path, 'Explore'),
-            _branch(Routes.swipeHubScreen.path, 'Catches'),
             _branch(Routes.matchesListScreen.path, 'Chats'),
             _branch(Routes.profileScreen.path, 'Profile'),
           ],
@@ -60,7 +59,6 @@ void main() {
 
     expect(find.text('Continue with phone'), findsNothing);
     expect(find.text('Home'), findsNothing);
-    expect(find.text('Catches'), findsNothing);
     expect(find.text('Chats'), findsNothing);
     expect(find.text('Profile'), findsNothing);
   });
@@ -84,7 +82,6 @@ void main() {
           branches: [
             _branch(Routes.dashboardScreen.path, 'Home'),
             _branch(Routes.exploreScreen.path, 'Explore'),
-            _branch(Routes.swipeHubScreen.path, 'Catches'),
             _branch(Routes.matchesListScreen.path, 'Chats'),
             _branch(Routes.profileScreen.path, 'Profile'),
           ],
@@ -116,7 +113,6 @@ void main() {
 
     expect(find.text('Continue with phone'), findsOneWidget);
     expect(find.text('Home'), findsNothing);
-    expect(find.text('Catches'), findsNothing);
     expect(find.text('Chats'), findsNothing);
     expect(find.text('Profile'), findsNothing);
 

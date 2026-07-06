@@ -1,7 +1,7 @@
 {
   "$schema": "./screen_coverage.schema.json",
   "version": 1,
-  "updated": "2026-06-22",
+  "updated": "2026-07-06",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
   "description": "Design screen coverage policy. Every route from the generated route inventory must be contracted, aliased to a canonical design surface, planned for a future screen contract, or explicitly excluded from baseline design parity.",
   "routes": [
@@ -131,11 +131,10 @@
       "screenId": "screen.event_success.companion"
     },
     {
-      "routeId": "swipeHubScreen",
-      "status": "contracted",
+      "routeId": "catchesRedirect",
+      "status": "excluded",
       "priority": "P1",
-      "reason": "Covered by screen.catches.hub as the primary Catches hub route.",
-      "screenId": "screen.catches.hub"
+      "reason": "Retired top-level Catches hub route redirects to Home; Home dashboard owns catch-window discovery and screen.catches.event covers the deck."
     },
     {
       "routeId": "swipeEventScreen",

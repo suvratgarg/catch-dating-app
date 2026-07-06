@@ -151,7 +151,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
               if (context.canPop()) {
                 context.pop();
               } else {
-                context.goNamed(Routes.swipeHubScreen.name);
+                context.goNamed(Routes.dashboardScreen.name);
               }
             },
             onFilters: () => context.pushNamed(Routes.filtersScreen.name),

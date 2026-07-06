@@ -291,6 +291,18 @@ void main() {
       );
     });
 
+    test('bare catches route does not require social profile completion', () {
+      expect(
+        _redirect(
+          uidAsync: const AsyncData(_testUid),
+          userProfileAsync: AsyncData(_bookingReadyUser()),
+          location: Routes.catchesRedirect.path,
+          matchedLocation: Routes.catchesRedirect.path,
+        ),
+        null,
+      );
+    });
+
     test('profile-completion onboarding is allowed until social ready', () {
       expect(
         _redirect(

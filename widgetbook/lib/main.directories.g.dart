@@ -4327,16 +4327,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Sections',
             children: [
               _widgetbook.WidgetbookComponent(
-                name: 'AttendedEventTile',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Tile states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
-                        .attendedEventTileStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'CatchProfileView',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -4363,46 +4353,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Bottom scrim states',
                     builder: _widgetbook_workspace_catches_catches_use_cases
                         .catchesBottomScrimStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'CatchesHubContent',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Hub composition',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
-                        .catchesHubContentStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'CatchesHubEmptyState',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Empty states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
-                        .catchesHubEmptyStateStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'CatchesHubHeader',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Header states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
-                        .catchesHubHeaderStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'CatchesIntroCard',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Intro card states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
-                        .catchesIntroCardStates,
                   ),
                 ],
               ),
@@ -4749,16 +4699,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'SwipeHubScreen',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Hub route states',
-                builder: _widgetbook_workspace_catches_catches_use_cases
-                    .catchesHubRouteStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'SwipeScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -4929,12 +4869,12 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'EventFocusRail',
+            name: 'EventLifecycleTimeline',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Rail states',
+                name: 'Timeline states',
                 builder: _widgetbook_workspace_dashboard_dashboard_use_cases
-                    .dashboardEventFocusRailReviewStates,
+                    .dashboardEventLifecycleTimelineReviewStates,
               ),
             ],
           ),

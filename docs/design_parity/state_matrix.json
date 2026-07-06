@@ -1,7 +1,7 @@
 {
   "$schema": "./state_matrix.schema.json",
   "version": 1,
-  "updated": "2026-07-03",
+  "updated": "2026-07-06",
   "requiredStateKinds": [
     "loading",
     "populated",
@@ -1683,9 +1683,10 @@
             "lib/dashboard/presentation/widgets/dashboard_empty.dart",
             "lib/dashboard/presentation/widgets/dashboard_full.dart",
             "lib/dashboard/presentation/widgets/dashboard_sliver_header.dart",
-            "lib/dashboard/presentation/widgets/event_focus_rail.dart",
+            "lib/dashboard/presentation/widgets/event_lifecycle_timeline.dart",
             "lib/dashboard/presentation/widgets/empty_hero_card.dart",
-            "lib/dashboard/presentation/widgets/club_posts_home_section.dart"
+            "lib/dashboard/presentation/widgets/club_posts_home_section.dart",
+            "lib/swipes/domain/swipe_window.dart"
           ],
           "componentIds": [
             "catch.badge",
@@ -1702,8 +1703,6 @@
             "dashboard_home_memberships_error",
             "dashboard_home_booked_events_error",
             "dashboard_home_empty_start",
-            "dashboard_home_recommendations_loading",
-            "dashboard_home_recommendations_error",
             "dashboard_home_text_scale_2",
             "dashboard_home_reduced_motion",
             "dashboard_home_self_check_in",
@@ -1828,7 +1827,7 @@
               ]
             },
             {
-              "id": "event_focus_upcoming",
+              "id": "event_lifecycle_upcoming",
               "kind": "populated",
               "status": "captured",
               "captureIds": [
@@ -1860,13 +1859,13 @@
               ]
             },
             {
-              "id": "after_event_swipe_review",
+              "id": "catch_window_open_and_review",
               "kind": "populated",
               "status": "captured",
               "tests": [
                 "test/dashboard/dashboard_screen_test.dart"
               ],
-              "notes": "dashboard_home_after_event_focus captures the after-event Start catching and Write review focus card.",
+              "notes": "dashboard_home_after_event_focus now captures the Home-owned catch-window lifecycle card with Start catching, Review pending, and Write review affordances. Focused tests cover window-open analytics, impression/open events, vertical ordering, and the /catches/:eventId route launch.",
               "previewIds": [
                 "DashboardScreen/Screen states"
               ],
@@ -1917,51 +1916,6 @@
               "notes": "Apple Health permission-required card is captured and tested; DashboardStrideSection now receives typed action callbacks and display-only busy state from DashboardFullSliverBody.",
               "previewIds": [
                 "DashboardScreen/Screen states"
-              ]
-            },
-            {
-              "id": "recommendations_ready",
-              "kind": "populated",
-              "status": "captured",
-              "captureIds": [
-                "dashboard_home"
-              ],
-              "tests": [
-                "test/dashboard/dashboard_screen_test.dart"
-              ],
-              "notes": "Recommendation rail is captured and tested on the happy path.",
-              "previewIds": [
-                "DashboardScreen/Screen states"
-              ]
-            },
-            {
-              "id": "recommendations_loading",
-              "kind": "loading",
-              "status": "captured",
-              "tests": [
-                "test/dashboard/dashboard_screen_test.dart"
-              ],
-              "notes": "Section-level recommendation loading card is tested and captured inside the full dashboard shell. Capture proof is registered in the route capture catalog.",
-              "previewIds": [
-                "DashboardScreen/Screen states"
-              ],
-              "captureIds": [
-                "dashboard_home_recommendations_loading"
-              ]
-            },
-            {
-              "id": "recommendations_error",
-              "kind": "error",
-              "status": "captured",
-              "tests": [
-                "test/dashboard/dashboard_screen_test.dart"
-              ],
-              "notes": "Section-level recommendation error is tested and captured inside the full dashboard shell. Capture proof is registered in the route capture catalog.",
-              "previewIds": [
-                "DashboardScreen/Screen states"
-              ],
-              "captureIds": [
-                "dashboard_home_recommendations_error"
               ]
             },
             {
@@ -2595,221 +2549,6 @@
       "nextPass": "catches-captures-01",
       "screens": [
         {
-          "id": "catches.hub",
-          "routeId": "swipeHubScreen",
-          "implementationPaths": [
-            "lib/swipes/presentation/catches_hub_screen_state.dart",
-            "lib/swipes/presentation/swipe_hub_screen.dart",
-            "lib/swipes/presentation/widgets/attended_event_tile.dart",
-            "lib/swipes/domain/swipe_window.dart"
-          ],
-          "componentIds": [
-            "catch.badge",
-            "catch.button",
-            "catch.surface"
-          ],
-          "captureIds": [
-            "swipe_hub_active",
-            "swipe_hub_uid_loading",
-            "swipe_hub_uid_error",
-            "swipe_hub_signed_out",
-            "swipe_hub_attended_events_loading",
-            "swipe_hub_attended_events_error",
-            "swipe_hub_offline",
-            "swipe_hub_empty",
-            "swipe_hub_text_scale_2",
-            "swipe_hub_reduced_motion"
-          ],
-          "designRefs": [
-            {
-              "id": "catches-hub-reference",
-              "kind": "external",
-              "status": "blocked",
-              "notes": "No distinct Catches Hub Claude source was found in /Users/suvratgarg/Downloads/Catch Design System (2) during the 2026-06-23 reference pass. The bundle contains the Catches Event Deck/post-run catch-window asset, which is already registered separately. Need a canonical Catches Hub design export or design decision before advisory pixel comparison."
-            }
-          ],
-          "states": [
-            {
-              "id": "uid_loading",
-              "kind": "loading",
-              "status": "captured",
-              "notes": "Captured uid loading skeleton state.",
-              "previewIds": [
-                "SwipeHubScreen/Hub route states"
-              ],
-              "captureIds": [
-                "swipe_hub_uid_loading"
-              ]
-            },
-            {
-              "id": "uid_error",
-              "kind": "error",
-              "status": "captured",
-              "notes": "Captured auth/session error state with branded retry surface.",
-              "previewIds": [
-                "SwipeHubScreen/Hub route states"
-              ],
-              "captureIds": [
-                "swipe_hub_uid_error"
-              ]
-            },
-            {
-              "id": "signed_out_hidden",
-              "kind": "permission",
-              "status": "captured",
-              "notes": "Captured signed-out shell-hidden state.",
-              "previewIds": [
-                "SwipeHubScreen/Hub route states"
-              ],
-              "captureIds": [
-                "swipe_hub_signed_out"
-              ]
-            },
-            {
-              "id": "attended_events_loading",
-              "kind": "loading",
-              "status": "captured",
-              "notes": "Captured attended-events loading skeleton state.",
-              "previewIds": [
-                "SwipeHubScreen/Hub route states"
-              ],
-              "captureIds": [
-                "swipe_hub_attended_events_loading"
-              ]
-            },
-            {
-              "id": "attended_events_error",
-              "kind": "error",
-              "status": "captured",
-              "notes": "Captured attended-events error state with branded retry surface.",
-              "previewIds": [
-                "SwipeHubScreen/Hub route states"
-              ],
-              "captureIds": [
-                "swipe_hub_attended_events_error"
-              ]
-            },
-            {
-              "id": "active_windows",
-              "kind": "populated",
-              "status": "captured",
-              "captureIds": [
-                "swipe_hub_active"
-              ],
-              "tests": [
-                "test/swipes/swipe_hub_screen_test.dart"
-              ],
-              "notes": "CatchesHubScreenState filters active open catch windows with an injected clock and maps countdown labels plus catch/recap route intents before rendering hero card and attended event tiles.",
-              "previewIds": [
-                "SwipeHubScreen/Hub route states",
-                "CatchesHubContent/Hub composition",
-                "CatchesIntroCard/Intro card states",
-                "AttendedEventTile/Tile states"
-              ]
-            },
-            {
-              "id": "no_active_windows",
-              "kind": "empty",
-              "status": "captured",
-              "notes": "Captured no-active-catch-windows empty state.",
-              "previewIds": [
-                "SwipeHubScreen/Hub route states",
-                "CatchesHubEmptyState/Empty states"
-              ],
-              "captureIds": [
-                "swipe_hub_empty"
-              ]
-            },
-            {
-              "id": "dark_intro_cta",
-              "kind": "theme",
-              "status": "captured",
-              "tests": [
-                "test/swipes/swipe_hub_screen_test.dart"
-              ],
-              "notes": "Baseline paired hub capture includes the dark-mode intro CTA treatment.",
-              "previewIds": [
-                "SwipeHubScreen/Hub route states",
-                "CatchesIntroCard/Intro card states"
-              ],
-              "captureIds": [
-                "swipe_hub_active"
-              ]
-            },
-            {
-              "id": "offline",
-              "kind": "offline",
-              "status": "captured",
-              "notes": "swipe_hub_offline captures attended-event provider offline errors through shared mapped offline copy.",
-              "captureIds": [
-                "swipe_hub_offline"
-              ],
-              "previewIds": [
-                "SwipeHubScreen/Hub route states"
-              ]
-            },
-            {
-              "id": "text_scale_2",
-              "kind": "accessibility",
-              "status": "captured",
-              "notes": "Captured Catches hub at text scale 2.0.",
-              "previewIds": [
-                "SwipeHubScreen/Hub route states",
-                "CatchesHubContent/Hub composition"
-              ],
-              "captureIds": [
-                "swipe_hub_text_scale_2"
-              ]
-            },
-            {
-              "id": "reduced_motion",
-              "kind": "accessibility",
-              "status": "captured",
-              "notes": "Captured Catches hub with animations disabled.",
-              "previewIds": [
-                "SwipeHubScreen/Hub route states"
-              ],
-              "captureIds": [
-                "swipe_hub_reduced_motion"
-              ]
-            },
-            {
-              "id": "light_dark",
-              "kind": "theme",
-              "status": "captured",
-              "notes": "Baseline hub capture writes paired light and dark PNGs.",
-              "previewIds": [
-                "SwipeHubScreen/Hub route states"
-              ],
-              "captureIds": [
-                "swipe_hub_active"
-              ]
-            }
-          ],
-          "gaps": [
-            {
-              "id": "DP-CATCHES-HUB-001",
-              "status": "closed",
-              "nextAction": "Closed by SwipeHubScreen/Hub route states first-pass Widgetbook coverage."
-            },
-            {
-              "id": "DP-CATCHES-HUB-002",
-              "status": "closed",
-              "nextAction": "Closed by swipe_hub_offline plus existing loading, auth error, signed-out hidden, attended-events loading/error, empty, text-scale, reduced-motion, and paired light/dark captures. The hub intentionally uses shared mapped offline copy unless product requests Catches-specific wording."
-            },
-            {
-              "id": "DP-CATCHES-HUB-003",
-              "status": "closed",
-              "nextAction": "Closed by CatchesHubScreenState and focused tests proving provider waves, active-window filtering, countdown labels, and catch/recap route intents."
-            },
-            {
-              "id": "DP-CATCHES-HUB-004",
-              "status": "blocked",
-              "nextAction": "Blocked on a canonical Catches Hub design source/export. Once design provides the hub reference, export the PNG, add masks for dynamic countdown/live attendee regions, register the manifest entry, and run advisory pixel comparison."
-            }
-          ]
-        },
-        {
           "id": "catches.event",
           "routeId": "swipeEventScreen",
           "implementationPaths": [
@@ -3177,7 +2916,7 @@
         {
           "id": "DP-CATCHES-PREVIEW-001",
           "status": "closed",
-          "nextAction": "Closed by SwipeHubScreen/Hub route states and SwipeScreen/Event deck route states first-pass Widgetbook use cases."
+          "nextAction": "Closed for the remaining Catches deck by SwipeScreen/Event deck route states first-pass Widgetbook use cases. The retired Catches hub is now represented by Home's EventLifecycleTimeline window-open states."
         }
       ]
     },

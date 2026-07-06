@@ -29,9 +29,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 // Tab indices — kept in sync with branch order in go_router.dart
 //   0  Home      (DashboardScreen)
 //   1  Explore   (ExploreScreen)
-//   2  Catches   (SwipeHubScreen)
-//   3  Chats     (MatchesListScreen)
-//   4  Profile   (ProfileScreen)
+//   2  Chats     (MatchesListScreen)
+//   3  Profile   (ProfileScreen)
 
 part 'app_shell.g.dart';
 
@@ -309,13 +308,6 @@ List<AppShellNavigationItem> _consumerNavigationItems() => [
     materialSelectedIcon: CatchIcons.tabExploreFilled,
     cupertinoIcon: CupertinoIcons.person_2,
     cupertinoSelectedIcon: CupertinoIcons.person_2_fill,
-  ),
-  AppShellNavigationItem(
-    label: 'Catches',
-    materialIcon: CatchIcons.tabCatches,
-    materialSelectedIcon: CatchIcons.tabCatchesFilled,
-    cupertinoIcon: CupertinoIcons.heart,
-    cupertinoSelectedIcon: CupertinoIcons.heart_fill,
   ),
   AppShellNavigationItem(
     label: 'Chats',

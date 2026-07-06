@@ -130,6 +130,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         AnalyticsEvents.homeModuleImpression,
         parameters: {AnalyticsParameters.homeModule: module},
       );
+      if (module == 'catch_window') {
+        analytics.logEvent(
+          AnalyticsEvents.catchWindowImpression,
+          parameters: {AnalyticsParameters.surface: 'home'},
+        );
+      }
       if (module == 'club_posts') {
         analytics.logEvent(
           AnalyticsEvents.clubPostImpression,

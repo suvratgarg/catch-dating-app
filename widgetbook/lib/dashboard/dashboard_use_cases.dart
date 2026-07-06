@@ -18,7 +18,7 @@ import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_empty.
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_sliver_header.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/empty_hero_card.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_rail.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/event_lifecycle_timeline.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/recommend_card.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/recommendations.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -729,20 +729,62 @@ Widget dashboardEmptyHeroContentReviewStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Rail states',
-  type: EventFocusRail,
+  name: 'Timeline states',
+  type: EventLifecycleTimeline,
   path: '[P1 product surfaces]/Dashboard home',
 )
-Widget dashboardEventFocusRailReviewStates(BuildContext context) {
+Widget dashboardEventLifecycleTimelineReviewStates(BuildContext context) {
+  final now = DateTime.now();
+  final firstWindow = DashboardSurfaceFixtures.attendedEvent.copyWith(
+    id: 'widgetbook-catch-window-first',
+    title: 'Sunday Social Run',
+    startTime: now.subtract(const Duration(hours: 5)),
+    endTime: now.subtract(const Duration(hours: 4)),
+    checkedInCount: 6,
+  );
+  final secondWindow = DashboardSurfaceFixtures.attendedEvent.copyWith(
+    id: 'widgetbook-catch-window-second',
+    title: 'Morning Coffee Walk',
+    startTime: now.subtract(const Duration(hours: 8)),
+    endTime: now.subtract(const Duration(hours: 6)),
+    checkedInCount: 4,
+  );
+
   return _DashboardCatalog(
-    title: 'EventFocusRail',
-    contractId: 'dashboard.home.event_focus_rail',
+    title: 'EventLifecycleTimeline',
+    contractId: 'dashboard.home.event_lifecycle_timeline',
     children: [
       _StateCard(
         label: 'upcoming event',
         child: _DashboardPrimitiveFrame(
-          child: EventFocusRail(
+          child: EventLifecycleTimeline(
             upcomingEvents: [_nextEvent],
+            windowedEvents: const [],
+            actions: _eventFocusActions,
+            clubNameBuilder: (_) => _club.name,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'open catch window plus upcoming',
+        child: _DashboardPrimitiveFrame(
+          child: EventLifecycleTimeline(
+            upcomingEvents: [_nextEvent],
+            windowedEvents: [catchWindowItemFromEvent(firstWindow)],
+            actions: _eventFocusActions,
+            clubNameBuilder: (_) => _club.name,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'multiple open catch windows',
+        child: _DashboardPrimitiveFrame(
+          child: EventLifecycleTimeline(
+            upcomingEvents: [_nextEvent],
+            windowedEvents: [
+              catchWindowItemFromEvent(firstWindow),
+              catchWindowItemFromEvent(secondWindow),
+            ],
             actions: _eventFocusActions,
             clubNameBuilder: (_) => _club.name,
           ),
@@ -751,8 +793,9 @@ Widget dashboardEventFocusRailReviewStates(BuildContext context) {
       _StateCard(
         label: 'check-in pending',
         child: _DashboardPrimitiveFrame(
-          child: EventFocusRail(
+          child: EventLifecycleTimeline(
             upcomingEvents: [_nextEvent],
+            windowedEvents: const [],
             arrivalAction: EventArrivalAction(
               kind: EventArrivalActionKind.selfCheckIn,
               event: _nextEvent,
@@ -1144,7 +1187,7 @@ DashboardFullViewModel _dashboardFullViewModel() {
     upcomingEvents: [_nextEvent],
     nextEvent: _nextEvent,
     arrivalAction: null,
-    activeSwipeEvent: null,
+    windowedEvents: const [],
     pendingReviewEvent: null,
     attendedEventsSection: DashboardSectionModel.data([
       DashboardSurfaceFixtures.attendedEvent,

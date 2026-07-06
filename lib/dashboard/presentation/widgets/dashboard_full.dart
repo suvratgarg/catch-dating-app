@@ -3,14 +3,18 @@ import 'dart:async';
 import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/external_links.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_event_focus_controller.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/notifications_list_state.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/club_posts_home_section.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/empty_hero_card.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_rail.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/event_lifecycle_timeline.dart';
 import 'package:catch_dating_app/event_success/event_success_companion_launcher.dart';
 import 'package:catch_dating_app/events/data/event_calendar_links.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -46,8 +50,7 @@ class _DashboardFullSliverBodyState
   @override
   Widget build(BuildContext context) {
     final focusEvents = [
-      if (widget.viewModel.activeSwipeEvent != null)
-        widget.viewModel.activeSwipeEvent!,
+      for (final window in widget.viewModel.windowedEvents) window.event,
       ...widget.viewModel.upcomingEvents,
       if (widget.viewModel.pendingReviewEvent != null)
         widget.viewModel.pendingReviewEvent!,
@@ -73,12 +76,19 @@ class _DashboardFullSliverBodyState
             gap: CatchSpacing.micro18,
             children: [
               if (focusEvents.isEmpty)
-                EmptyHeroCard(onFindEvent: () => _openExplore(context))
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    EmptyHeroCard(onFindEvent: () => _openExplore(context)),
+                    gapH18,
+                    const _HomeCatchWindowExplainer(),
+                  ],
+                )
               else
-                EventFocusRail(
+                EventLifecycleTimeline(
                   upcomingEvents: widget.viewModel.upcomingEvents,
+                  windowedEvents: widget.viewModel.windowedEvents,
                   arrivalAction: widget.viewModel.arrivalAction,
-                  activeSwipeEvent: widget.viewModel.activeSwipeEvent,
                   pendingReviewEvent: widget.viewModel.pendingReviewEvent,
                   clubNameBuilder: (event) => clubNames?[event.clubId],
                   checkInState: EventFocusCheckInState(
@@ -128,9 +138,11 @@ class _DashboardFullSliverBodyState
   }
 
   String _moduleForEvent(Event event) {
-    return widget.viewModel.activeSwipeEvent?.id == event.id
+    return widget.viewModel.windowedEvents.any(
+          (window) => window.event.id == event.id,
+        )
         ? 'catch_window'
-        : 'focus_rail';
+        : 'lifecycle_timeline';
   }
 
   void _openExplore(BuildContext context) {
@@ -187,7 +199,19 @@ class _DashboardFullSliverBodyState
   }
 
   void _openSwipe(BuildContext context, Event event) {
-    _logAction(_moduleForEvent(event), 'open_catch_window');
+    final module = _moduleForEvent(event);
+    _logAction(module, 'open_catch_window');
+    if (module == 'catch_window') {
+      ref
+          .read(appAnalyticsProvider)
+          .logEvent(
+            AnalyticsEvents.catchWindowOpen,
+            parameters: {
+              AnalyticsParameters.surface: 'home',
+              AnalyticsParameters.eventId: event.id,
+            },
+          );
+    }
     context.pushNamed(
       Routes.swipeEventScreen.name,
       pathParameters: {'eventId': event.id},
@@ -249,7 +273,38 @@ class _DashboardFullSliverBodyState
         );
       });
     } catch (_) {
-      // Mutation state owns the inline error display in EventFocusRail.
+      // Mutation state owns the inline error display in EventLifecycleTimeline.
     }
+  }
+}
+
+class _HomeCatchWindowExplainer extends StatelessWidget {
+  const _HomeCatchWindowExplainer();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return CatchSurface(
+      padding: CatchInsets.content,
+      tone: CatchSurfaceTone.raised,
+      borderColor: t.line,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            CatchIcons.lockClockRounded,
+            color: t.primary,
+            size: CatchIcon.control,
+          ),
+          gapW10,
+          Expanded(
+            child: Text(
+              'Dating stays locked until you actually run together. No cold stranger browsing.',
+              style: CatchTextStyles.proseM(context, color: t.ink2),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

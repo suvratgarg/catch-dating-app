@@ -44,7 +44,6 @@ import 'package:catch_dating_app/reviews/presentation/reviews_history_screen.dar
 import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
-import 'package:catch_dating_app/swipes/presentation/swipe_hub_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_screen.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_readiness.dart';
@@ -78,14 +77,15 @@ enum Routes {
   clubDetailScreen('/clubs/:clubId'),
   eventDetailScreen('/clubs/:clubId/events/:eventId'),
   eventSuccessCompanionScreen('/clubs/:clubId/events/:eventId/companion'),
-  // Catches branch (index 2)
-  swipeHubScreen('/catches'),
+  // Catch flow paths stay stable for push/deep links, but the hub tab is
+  // retired and the immersive flow is parented under Home.
+  catchesRedirect('/catches'),
   swipeEventScreen('/catches/:eventId'),
   eventRecapScreen('/catches/:eventId/recap'),
-  // Chats branch (index 3)
+  // Chats branch (index 2)
   matchesListScreen('/chats'),
   chatScreen('/chats/:matchId'),
-  // Profile branch (index 4)
+  // Profile branch (index 3)
   profileScreen('/you'),
   reviewsHistoryScreen('/you/reviews'),
   publicProfileScreen('/profiles/:uid'),
@@ -240,7 +240,6 @@ Page<void> _eventDetailPage(BuildContext _, GoRouterState state) {
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _dashboardShellKey = GlobalKey<NavigatorState>();
 final _exploreShellKey = GlobalKey<NavigatorState>();
-final _catchesShellKey = GlobalKey<NavigatorState>();
 final _chatsShellKey = GlobalKey<NavigatorState>();
 final _profileShellKey = GlobalKey<NavigatorState>();
 final _hostEventsShellKey = GlobalKey<NavigatorState>();
@@ -449,6 +448,30 @@ GoRouter goRouter(Ref ref) {
                       name: Routes.notificationsScreen.name,
                       builder: (context, state) => const ActivityScreen(),
                     ),
+                    GoRoute(
+                      path: 'catches',
+                      name: Routes.catchesRedirect.name,
+                      redirect: (context, state) => Routes.dashboardScreen.path,
+                    ),
+                    GoRoute(
+                      path: 'catches/:eventId/recap',
+                      name: Routes.eventRecapScreen.name,
+                      builder: (context, state) => EventRecapScreen(
+                        eventId: state.pathParameters['eventId']!,
+                      ),
+                    ),
+                    GoRoute(
+                      path: 'catches/:eventId',
+                      name: Routes.swipeEventScreen.name,
+                      parentNavigatorKey: _rootNavigatorKey,
+                      builder: (context, state) => SwipeScreen(
+                        eventId: state.pathParameters['eventId']!,
+                        vibeIds: switch (state.extra) {
+                          final Set<String> ids => ids,
+                          _ => const {},
+                        },
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -503,41 +526,7 @@ GoRouter goRouter(Ref ref) {
               ],
             ),
 
-            // ── Branch 2: Catches (swipe) ────────────────────────────────
-            StatefulShellBranch(
-              navigatorKey: _catchesShellKey,
-              observers: [AnalyticsRouteObserver(analytics)],
-              routes: [
-                GoRoute(
-                  path: Routes.swipeHubScreen.path,
-                  name: Routes.swipeHubScreen.name,
-                  builder: (context, state) => const SwipeHubScreen(),
-                  routes: [
-                    GoRoute(
-                      path: ':eventId/recap',
-                      name: Routes.eventRecapScreen.name,
-                      builder: (context, state) => EventRecapScreen(
-                        eventId: state.pathParameters['eventId']!,
-                      ),
-                    ),
-                    GoRoute(
-                      path: ':eventId',
-                      name: Routes.swipeEventScreen.name,
-                      parentNavigatorKey: _rootNavigatorKey,
-                      builder: (context, state) => SwipeScreen(
-                        eventId: state.pathParameters['eventId']!,
-                        vibeIds: switch (state.extra) {
-                          final Set<String> ids => ids,
-                          _ => const {},
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-
-            // ── Branch 3: Chats ──────────────────────────────────────────
+            // ── Branch 2: Chats ──────────────────────────────────────────
             StatefulShellBranch(
               navigatorKey: _chatsShellKey,
               observers: [AnalyticsRouteObserver(analytics)],
@@ -563,7 +552,7 @@ GoRouter goRouter(Ref ref) {
               ],
             ),
 
-            // ── Branch 4: Profile ────────────────────────────────────────
+            // ── Branch 3: Profile ────────────────────────────────────────
             StatefulShellBranch(
               navigatorKey: _profileShellKey,
               observers: [AnalyticsRouteObserver(analytics)],
@@ -947,7 +936,6 @@ String? appRedirect({
 
 bool _requiresSocialProfile(String matchedLocation) {
   return matchedLocation == Routes.filtersScreen.path ||
-      matchedLocation == Routes.swipeHubScreen.path ||
       matchedLocation.startsWith('/catches/');
 }
 
