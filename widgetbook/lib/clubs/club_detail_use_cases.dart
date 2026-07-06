@@ -155,6 +155,27 @@ final _events = [
   ),
 ];
 
+final _sameDayScheduleEvents = [
+  _event(
+    id: 'widgetbook-thursday-dawn-5k',
+    startTime: DateTime(2026, 6, 25, 6, 30),
+    meetingPoint: 'Bandra Fort gate',
+    distanceKm: 5,
+    bookedCount: 12,
+    capacityLimit: 18,
+    description: 'A steady start for weekday regulars.',
+  ),
+  _event(
+    id: 'widgetbook-thursday-evening-8k',
+    startTime: DateTime(2026, 6, 25, 18, 15),
+    meetingPoint: 'Carter Road amphitheatre',
+    distanceKm: 8,
+    bookedCount: 17,
+    capacityLimit: 20,
+    description: 'A social evening loop with a cool-down walk.',
+  ),
+];
+
 final _reviews = [
   Review(
     id: 'widgetbook-club-review-1',
@@ -1759,6 +1780,22 @@ Widget clubScheduleSectionStates(BuildContext context) {
         child: _SliverFrame(
           height: 520,
           slivers: [ClubScheduleSection(events: _events)],
+        ),
+      ),
+      _StateCard(
+        label: 'same-day strip',
+        child: _SliverFrame(
+          height: 420,
+          slivers: [ClubScheduleSection(events: _sameDayScheduleEvents)],
+        ),
+      ),
+      _StateCard(
+        label: 'hosted events',
+        child: _SliverFrame(
+          height: 420,
+          slivers: [
+            ClubScheduleSection(events: _sameDayScheduleEvents, isHost: true),
+          ],
         ),
       ),
       _StateCard(

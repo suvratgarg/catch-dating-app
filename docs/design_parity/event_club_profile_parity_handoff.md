@@ -341,6 +341,36 @@ variant's product trigger; the dense-list escalation path (resolved by 2.3).
   match the current full-body sections; route inventory and the design context
   pack were regenerated.
 
+## 2.2 Verification Receipt
+
+- `ClubScheduleSection` no longer routes its upcoming-event list through
+  `EventAgendaSliverList` / `EventAgendaTile`. It groups schedule rows by day
+  and renders direct `EventDateRailCard` DateTickets with the same strip
+  position semantics used by Explore's weekly rail.
+- Shared event tile atoms now own the reusable mapping rules:
+  kicker/supporting labels, badge-to-status mapping, day grouping/labels, and
+  strip-position calculation. Explore and agenda surfaces call those helpers
+  instead of duplicating private rules.
+- Preserved behavior: the `CatchSection.divided` Schedule title still renders;
+  empty club schedules still use the compact inline empty state; consumer
+  schedule rows still suppress the old `VIEW` badge; host schedules still show
+  `HOSTED`; `onEventSelected` still receives the tapped event.
+- Agenda widgets were intentionally kept for their other consumers. Calendar
+  and Saved Events still use `EventAgendaSliverList` / `EventAgendaTile`, with
+  their grouping/status logic delegated to the shared helpers.
+- Widgetbook now has `ClubScheduleSection` coverage for upcoming events,
+  same-day strip grouping, hosted events, member empty, and host empty states.
+- Verification: `flutter test test/clubs/club_schedule_section_test.dart
+  --reporter expanded`; `flutter test test/explore/explore_widgets_test.dart
+  --plain-name "ExploreEventsSection shows enough top recommendations by day"
+  --reporter expanded`; `flutter test test/events/events_widgets_test.dart
+  --plain-name "agenda list sorts events and forwards selected-event taps"
+  --reporter expanded`; `flutter test test/events/events_widgets_test.dart
+  --plain-name "agenda list renders provided club names in global context"
+  --reporter expanded`; focused app analyzer; Widgetbook club-use-case
+  analyzer; widget variant/classification/new-widget scanners; widget cleanup
+  scanner.
+
 ---
 
 # Part 3 — Profiles: verification pass + token rename

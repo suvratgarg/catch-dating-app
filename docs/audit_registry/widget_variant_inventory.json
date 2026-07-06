@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-06T01:51:48.127Z",
+  "generatedAt": "2026-07-06T03:18:37.218Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
@@ -7,7 +7,7 @@
   "summary": {
     "useCases": 860,
     "components": 829,
-    "stateCards": 1717,
+    "stateCards": 1719,
     "reviewCandidates": 38,
     "oversizedUseCases": 42,
     "multiUseCaseComponents": 30
@@ -10417,6 +10417,58 @@
       ]
     },
     {
+      "component": "ClubScheduleSection",
+      "useCaseCount": 1,
+      "stateCardCount": 5,
+      "paths": [
+        "[Club Detail]/Sections"
+      ],
+      "labels": [
+        "empty consumer",
+        "empty host",
+        "hosted events",
+        "same-day strip",
+        "upcoming events"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Schedule states",
+          "functionName": "clubScheduleSectionStates",
+          "file": "widgetbook/lib/clubs/club_detail_use_cases.dart",
+          "path": "[Club Detail]/Sections",
+          "stateCardCount": 5,
+          "stateCards": [
+            {
+              "label": "upcoming events",
+              "normalizedLabel": "upcoming events"
+            },
+            {
+              "label": "same-day strip",
+              "normalizedLabel": "same day strip"
+            },
+            {
+              "label": "hosted events",
+              "normalizedLabel": "hosted events"
+            },
+            {
+              "label": "empty consumer",
+              "normalizedLabel": "empty consumer"
+            },
+            {
+              "label": "empty host",
+              "normalizedLabel": "empty host"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "GenderInterestPage",
       "useCaseCount": 1,
       "stateCardCount": 5,
@@ -14392,48 +14444,6 @@
             {
               "label": "fallback",
               "normalizedLabel": "fallback"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "ClubScheduleSection",
-      "useCaseCount": 1,
-      "stateCardCount": 3,
-      "paths": [
-        "[Club Detail]/Sections"
-      ],
-      "labels": [
-        "empty consumer",
-        "empty host",
-        "upcoming events"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Schedule states",
-          "functionName": "clubScheduleSectionStates",
-          "file": "widgetbook/lib/clubs/club_detail_use_cases.dart",
-          "path": "[Club Detail]/Sections",
-          "stateCardCount": 3,
-          "stateCards": [
-            {
-              "label": "upcoming events",
-              "normalizedLabel": "upcoming events"
-            },
-            {
-              "label": "empty consumer",
-              "normalizedLabel": "empty consumer"
-            },
-            {
-              "label": "empty host",
-              "normalizedLabel": "empty host"
             }
           ]
         }

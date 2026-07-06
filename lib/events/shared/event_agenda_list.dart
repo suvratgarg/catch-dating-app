@@ -4,7 +4,6 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:flutter/material.dart';
 
@@ -124,8 +123,9 @@ class EventAgendaSliverList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final rows = agendaRows ?? _agendaRowsFromEvents();
-    final grouped = _groupAgendaRows(
+    final grouped = groupEventDateRailItems(
       rows,
+      startTimeOf: (row) => row.event.startTime,
       preserveInputOrder: preserveInputOrder,
     );
     final effectiveToday = today ?? DateTime.now();
@@ -162,15 +162,19 @@ class EventAgendaSliverList extends StatelessWidget {
   }
 
   List<EventAgendaRow> _agendaRowsFromEvents() {
-    return [
-      for (final event in events)
-        EventAgendaRow(
-          event: event,
-          badgeLabel: badgeLabelBuilder?.call(event) ?? badgeLabel,
-          clubName: clubNameBuilder?.call(event),
-          status: statusBuilder?.call(event),
-        ),
-    ];
+    return [for (final event in events) _agendaRowFor(event)];
+  }
+
+  EventAgendaRow _agendaRowFor(Event event) {
+    final effectiveBadgeLabel = badgeLabelBuilder?.call(event) ?? badgeLabel;
+    return EventAgendaRow(
+      event: event,
+      badgeLabel: effectiveBadgeLabel,
+      clubName: clubNameBuilder?.call(event),
+      status:
+          statusBuilder?.call(event) ??
+          eventTileStatusForBadge(effectiveBadgeLabel),
+    );
   }
 }
 
@@ -347,7 +351,7 @@ class AgendaDayGroup extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          _dayLabel(date, today).toUpperCase(),
+          eventDateRailDayLabel(date, today).toUpperCase(),
           style: CatchTextStyles.labelM(
             context,
             color: DateUtils.isSameDay(date, today) ? t.primary : t.ink3,
@@ -359,7 +363,8 @@ class AgendaDayGroup extends StatelessWidget {
             builder: (context) {
               final row = rows[eventIndex];
               final event = row.event;
-              final status = row.status ?? _statusForBadge(row.badgeLabel);
+              final status =
+                  row.status ?? eventTileStatusForBadge(row.badgeLabel);
               return EventAgendaTile(
                 data: EventTileData.fromEvent(
                   event: event,
@@ -379,38 +384,4 @@ class AgendaDayGroup extends StatelessWidget {
       ],
     );
   }
-}
-
-Map<DateTime, List<EventAgendaRow>> _groupAgendaRows(
-  List<EventAgendaRow> rows, {
-  required bool preserveInputOrder,
-}) {
-  final sorted = preserveInputOrder
-      ? rows
-      : ([...rows]
-          ..sort((a, b) => a.event.startTime.compareTo(b.event.startTime)));
-  final grouped = <DateTime, List<EventAgendaRow>>{};
-  for (final row in sorted) {
-    final day = DateUtils.dateOnly(row.event.startTime);
-    grouped.putIfAbsent(day, () => []).add(row);
-  }
-  return grouped;
-}
-
-String _dayLabel(DateTime date, DateTime today) {
-  if (DateUtils.isSameDay(date, today)) return 'Today';
-  return '${EventFormatters.shortWeekday(date)} · ${date.day} ${EventFormatters.shortMonth(date)}';
-}
-
-EventTileStatus _statusForBadge(String? badgeLabel) {
-  return switch (badgeLabel?.toUpperCase()) {
-    'JOINED' => EventTileStatus.joined,
-    'SAVED' => EventTileStatus.saved,
-    'PAST' => EventTileStatus.past,
-    'WAITLISTED' => EventTileStatus.waitlisted,
-    'ATTENDED' => EventTileStatus.attended,
-    'HOSTED' => EventTileStatus.hosted,
-    'FULL' => EventTileStatus.full,
-    _ => EventTileStatus.open,
-  };
 }

@@ -19,6 +19,16 @@ const double _ticketNotchDepth = CatchSpacing.s2;
 
 enum EventDateRailCardStripPosition { single, first, middle, last }
 
+EventDateRailCardStripPosition eventDateRailCardStripPositionFor(
+  int index,
+  int total,
+) {
+  if (total <= 1) return EventDateRailCardStripPosition.single;
+  if (index == 0) return EventDateRailCardStripPosition.first;
+  if (index == total - 1) return EventDateRailCardStripPosition.last;
+  return EventDateRailCardStripPosition.middle;
+}
+
 class EventDateRailCard extends StatelessWidget {
   const EventDateRailCard({
     super.key,

@@ -1,9 +1,9 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/shared/event_agenda_list.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:flutter/material.dart';
 
@@ -23,6 +23,20 @@ class ClubScheduleSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final today = DateTime.now();
+    final groupedRows = groupEventDateRailItems(
+      [
+        for (final event in events)
+          _ClubScheduleRow(
+            event: event,
+            badgeLabel: isHost ? 'HOSTED' : 'VIEW',
+            status: isHost ? EventTileStatus.hosted : EventTileStatus.open,
+          ),
+      ],
+      startTimeOf: (row) => row.event.startTime,
+    ).entries.toList(growable: false);
+
     return SliverMainAxisGroup(
       slivers: [
         const SliverPadding(
@@ -58,19 +72,105 @@ class ClubScheduleSection extends StatelessWidget {
             ),
           )
         else
-          EventAgendaSliverList(
-            events: events,
-            badgeLabel: isHost ? 'HOSTED' : 'VIEW',
-            statusBuilder: isHost ? (_) => EventTileStatus.hosted : null,
-            onEventSelected: onEventSelected,
+          SliverPadding(
             padding: EdgeInsets.fromLTRB(
               CatchLayout.detailScreenHorizontalPadding,
               0,
               CatchLayout.detailScreenHorizontalPadding,
               bottomPadding,
             ),
+            sliver: SliverList.list(
+              children: [
+                for (
+                  var groupIndex = 0;
+                  groupIndex < groupedRows.length;
+                  groupIndex++
+                ) ...[
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        eventDateRailDayLabel(
+                          groupedRows[groupIndex].key,
+                          today,
+                        ).toUpperCase(),
+                        style: CatchTextStyles.labelM(
+                          context,
+                          color:
+                              DateUtils.isSameDay(
+                                groupedRows[groupIndex].key,
+                                today,
+                              )
+                              ? t.primary
+                              : t.ink3,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: CatchLayout.agendaDayLabelBottomGap,
+                      ),
+                      for (
+                        var eventIndex = 0;
+                        eventIndex < groupedRows[groupIndex].value.length;
+                        eventIndex++
+                      ) ...[
+                        Builder(
+                          builder: (context) {
+                            final row =
+                                groupedRows[groupIndex].value[eventIndex];
+                            final data = EventTileData.fromEvent(
+                              event: row.event,
+                              status: row.status,
+                            );
+                            return EventDateRailCard(
+                              event: row.event,
+                              kicker: eventTileKickerLabel(
+                                data,
+                                showClubName: false,
+                              ),
+                              supportingLabel: eventTileSupportingLabel(
+                                data,
+                                showClubName: false,
+                              ),
+                              priceLabel: data.priceLabel,
+                              statusLabel: eventTileCardStatusLabel(
+                                row.status,
+                                label: row.badgeLabel,
+                              ),
+                              stripPosition: eventDateRailCardStripPositionFor(
+                                eventIndex,
+                                groupedRows[groupIndex].value.length,
+                              ),
+                              onTap: onEventSelected == null
+                                  ? null
+                                  : () => onEventSelected!(row.event),
+                            );
+                          },
+                        ),
+                        if (eventIndex <
+                            groupedRows[groupIndex].value.length - 1)
+                          const SizedBox(height: CatchLayout.agendaItemGap),
+                      ],
+                    ],
+                  ),
+                  if (groupIndex < groupedRows.length - 1)
+                    const SizedBox(height: CatchLayout.agendaGroupGap),
+                ],
+              ],
+            ),
           ),
       ],
     );
   }
+}
+
+class _ClubScheduleRow {
+  const _ClubScheduleRow({
+    required this.event,
+    required this.badgeLabel,
+    required this.status,
+  });
+
+  final Event event;
+  final String badgeLabel;
+  final EventTileStatus status;
 }
