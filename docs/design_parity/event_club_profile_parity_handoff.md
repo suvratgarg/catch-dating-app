@@ -174,11 +174,11 @@ navigate with hero transition; background tap = dismiss; no peek rail or
 spotlight anywhere; the map card is byte-identical to the feed's
 `EventDateRailCard` (modulo `notchBg`); net widget count negative.
 
-Status: B1/B2/B4 and the selected-card/test portion of B5 are implemented
-and covered by focused widget tests plus Widgetbook route states. B3 remains
-open: real map pins still need DS `MapPin` visual parity (resting/selected
-sizes plus uppercase activity/time flag), so do not close the full Part 1B
-acceptance until that primitive-level pin work lands.
+Status: B1/B2/B3/B4/B5 are implemented and covered by focused widget tests,
+Widgetbook route states, and DS pin parity checks. B3 closed in `7f6294d04`:
+deterministic placeholders render `CatchActivityMapPin`, native Google Map
+markers render byte-backed DS pin bitmaps, selected pins use the uppercase
+activity/time flag, and selected native markers own z-order.
 
 Out of scope (recorded): dashboard CoverStory moment; the companion
 ticket-tear animation (design gap, companion exercise).
@@ -356,9 +356,9 @@ Part 1 — Events/Map
 - [x] 1.A5 ledger entries recorded (3e4274430)
 - [x] 1.B1 selection/navigation split (other consumers preserved) (6254440c8)
 - [x] 1.B2 DateTicket selected card (kicker helper reused, notchBg if needed) (6254440c8)
-- [ ] 1.B3 pin parity vs DS MapPin (tokens, flag label)
+- [x] 1.B3 pin parity vs DS MapPin (tokens, flag label) (7f6294d04)
 - [x] 1.B4 refresh-safe selection (6254440c8)
-- [x] 1.B5 tests + widgetbook states (selected-card/no-exact-pin coverage; DS pin parity remains 1.B3) (6254440c8)
+- [x] 1.B5 tests + widgetbook states (selected-card/no-exact-pin coverage; DS pin parity covered by 1.B3) (6254440c8, 7f6294d04)
 Part 2 — Clubs
 - [ ] 2.0 aligned/deviation verifies receipted (StatStrip delta, contact links)
 - [ ] 2.1 hero variants (polaroid default, masthead, unreachable full) + skeleton + appshots
