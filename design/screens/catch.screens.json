@@ -1943,7 +1943,7 @@
           "tests": [
             "test/explore/explore_widgets_test.dart"
           ],
-          "nextAction": "Map ready, selected-card, and distance-ring captures are registered; define dynamic-region masks before strict/advisory map pixel comparison. DS MapPin parity remains tracked by handoff item 1.B3."
+          "nextAction": "Map ready, selected-card, distance-ring, and DS MapPin parity are registered; define dynamic-region masks before strict/advisory map pixel comparison."
         },
         {
           "id": "pins_ready",
@@ -1976,7 +1976,7 @@
           "tests": [
             "test/explore/explore_widgets_test.dart"
           ],
-          "nextAction": "Selected-card route behavior is covered by widget tests for preselect, pin tap, card navigation, background dismissal, dropped feed items, and lost exact pins. DS MapPin parity remains tracked by handoff item 1.B3."
+          "nextAction": "Selected-card route behavior is covered by widget tests for preselect, pin tap, card navigation, background dismissal, dropped feed items, lost exact pins, and DS MapPin parity."
         },
         {
           "id": "large_pan_scope",
@@ -2268,7 +2268,7 @@
             "previewIds": [
               "ExploreMapScreen/Map route states"
             ],
-            "migration": "The dropped Explore map peek-rail lead and selected-pin ticket widgets were retired in the event/club/profile parity handoff. ExploreMapScreen now owns selected-pin route state and renders the selected event through the canonical EventDateRailCard overlay; Widgetbook covers ready, selected-card, loading, empty, no-exact-pin, error, and distance-ring route states. Remaining work: DS MapPin visual parity, map dynamic-region masking, keeping EventMapView as the map primitive, and moving route chrome/provider-wave data into an adapter."
+            "migration": "The dropped Explore map peek-rail lead and selected-pin ticket widgets were retired in the event/club/profile parity handoff. ExploreMapScreen now owns selected-pin route state and renders the selected event through the canonical EventDateRailCard overlay; EventPinsMap renders DS activity map pins for deterministic placeholders and byte-backed native markers. Widgetbook covers ready, selected-card, loading, empty, no-exact-pin, error, and distance-ring route states. Remaining work: map dynamic-region masking, keeping EventMapView as the map primitive, and moving route chrome/provider-wave data into an adapter."
           },
           {
             "id": "section.explore.empty_error",

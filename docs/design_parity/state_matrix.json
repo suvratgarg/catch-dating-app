@@ -1647,7 +1647,7 @@
             {
               "id": "DP-EXPLORE-MAP-002",
               "status": "closed",
-              "nextAction": "Closed by the selected EventDateRailCard route state, Widgetbook coverage for ready/selected/loading/empty/no-exact-pins/error/distance-ring branches, and widget tests for preselect, pin-tap selection, card navigation, background dismissal, feed-drop clearing, and lost-pin clearing. DS MapPin visual parity remains separate handoff item 1.B3."
+              "nextAction": "Closed by the selected EventDateRailCard route state, DS MapPin parity for deterministic placeholders and native marker bitmaps, Widgetbook coverage for ready/selected/loading/empty/no-exact-pins/error/distance-ring branches, and widget tests for preselect, pin-tap selection, card navigation, background dismissal, feed-drop clearing, lost-pin clearing, placeholder pin parity, and byte-backed marker support."
             }
           ]
         }

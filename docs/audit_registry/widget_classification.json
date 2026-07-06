@@ -1,7 +1,7 @@
 {
   "$schema": "./widget_classification.schema.json",
   "version": 1,
-  "updated": "2026-07-05",
+  "updated": "2026-07-06",
   "sourceOfTruth": {
     "scope": "Generated inventory for production Flutter widget and widget-state classes under lib/**. Widgetbook/test scaffolds are intentionally out of scope.",
     "canonicalContracts": "design/components/catch.components.json owns canonical global component contracts and governance metadata.",
@@ -10,33 +10,33 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1102,
-    "widgetClasses": 993,
-    "stateClasses": 109,
+    "total": 1104,
+    "widgetClasses": 994,
+    "stateClasses": 110,
     "publicClasses": 990,
-    "privateClasses": 112,
+    "privateClasses": 114,
     "byRole": {
       "atom": 57,
       "composition": 335,
       "feature-adapter": 324,
       "pattern": 16,
-      "screen": 261,
-      "widget-state": 109
+      "screen": 262,
+      "widget-state": 110
     },
     "byDecision": {
       "keep-canonical-contract": 170,
       "keep-public-cataloged": 750,
-      "keep-widget-state": 109,
+      "keep-widget-state": 110,
       "review-catalog-coverage": 55,
       "review-promote-or-consolidate": 15,
-      "review-promote-or-inline": 3
+      "review-promote-or-inline": 4
     },
     "byCatalogStatus": {
       "cataloged": 703,
       "contracted": 170,
-      "not-applicable": 109,
+      "not-applicable": 110,
       "route-covered": 61,
-      "uncataloged": 59
+      "uncataloged": 60
     }
   },
   "widgets": [
@@ -15639,10 +15639,59 @@
       "flags": []
     },
     {
+      "name": "_ExploreMapScreenState",
+      "file": "lib/explore/presentation/explore_map_screen.dart",
+      "classKind": "widget-state",
+      "baseClass": "ConsumerState<ExploreMapScreen>",
+      "visibility": "private",
+      "role": "widget-state",
+      "canonicalFamily": "state.explore_map_screen",
+      "publicApi": false,
+      "catalogStatus": "not-applicable",
+      "contractId": null,
+      "allowedDependencyLevel": "owning-widget-state",
+      "stateOwnership": "owning-widget-state",
+      "asyncOwnership": "owning-widget-state",
+      "layoutOwnership": "owning-widget-state",
+      "actionOwnership": "owning-widget-state",
+      "decision": "keep-widget-state",
+      "remediationOptions": [
+        "moveStateToController",
+        "routeThroughScreenState"
+      ],
+      "flags": []
+    },
+    {
+      "name": "_ExploreMapSelectedEventCard",
+      "file": "lib/explore/presentation/explore_map_screen.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "role": "screen",
+      "canonicalFamily": "screen.explore_map_selected_event_card",
+      "publicApi": false,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "review-promote-or-inline",
+      "remediationOptions": [
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "private-widget-publicization-required"
+      ]
+    },
+    {
       "name": "ExploreMapScreen",
       "file": "lib/explore/presentation/explore_map_screen.dart",
       "classKind": "widget",
-      "baseClass": "ConsumerWidget",
+      "baseClass": "ConsumerStatefulWidget",
       "visibility": "public",
       "role": "screen",
       "canonicalFamily": "screen.explore_map_screen",

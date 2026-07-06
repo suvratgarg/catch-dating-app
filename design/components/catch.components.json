@@ -8634,7 +8634,7 @@
       "name": "CatchActivityMapPin",
       "status": "active",
       "kind": "primitive",
-      "summary": "Canonical activity-colored map pin for resting and selected map marks with optional selected-state flag text.",
+      "summary": "Canonical activity-colored map pin for resting and selected map marks with optional uppercased selected-state flag text.",
       "dart": {
         "symbol": "CatchActivityMapPin",
         "file": "lib/core/widgets/catch_activity_map_pin.dart",
@@ -8715,6 +8715,13 @@
           "space.s1",
           "space.s2",
           "radius.pill",
+          "layout.activityMapPinRestingSize",
+          "layout.activityMapPinSelectedSize",
+          "layout.activityMapPinFlagMaxWidth",
+          "layout.activityMapPinNativeCanvasPadding",
+          "layout.activityMapPinShadowBlur",
+          "layout.activityMapPinShadowDy",
+          "opacity.activityMapPinShadow",
           "theme.light.color.ink",
           "theme.light.color.primaryInk"
         ],
@@ -8728,7 +8735,8 @@
       "handoff": {
         "allowedChildren": [],
         "notes": [
-          "Use for activity map marks; do not create feature-specific pin glyphs for Explore or event maps unless the map interaction introduces a genuinely new state."
+          "Use for activity map marks; do not create feature-specific pin glyphs for Explore or event maps unless the map interaction introduces a genuinely new state.",
+          "Selected flag labels are uppercased at the primitive boundary and native map surfaces should render byte-backed markers from the same token metrics."
         ]
       },
       "governance": {

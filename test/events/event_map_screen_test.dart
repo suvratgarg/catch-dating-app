@@ -1,6 +1,10 @@
+import 'dart:typed_data';
+
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_activity_map_pin.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/events/presentation/event_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
@@ -8,6 +12,7 @@ import 'package:catch_dating_app/events/presentation/widgets/event_pins_map.dart
 import 'package:catch_dating_app/events/shared/event_tiles/event_tile_data.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/locations/shared/catch_google_map.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -180,6 +185,93 @@ void main() {
       tester.widget<EventPinsMap>(find.byType(EventPinsMap)).selectedEventId,
       isNull,
     );
+  });
+
+  testWidgets('placeholder event pins use DS activity map pin states', (
+    tester,
+  ) async {
+    final firstRun = buildEvent(
+      id: 'first-event',
+      meetingPoint: 'Race Course Road main gate',
+      startingPointLat: 22.72,
+      startingPointLng: 75.86,
+      startTime: DateTime(2026, 5, 27, 6, 30),
+    );
+    final secondRun = buildEvent(
+      id: 'second-event',
+      meetingPoint: 'Vijay Nagar main gate',
+      startingPointLat: 22.75,
+      startingPointLng: 75.9,
+      startTime: DateTime(2026, 5, 27, 18, 45),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: EventPinsMap(
+          enableNetworkTiles: false,
+          selectedEventId: 'second-event',
+          items: [
+            EventMapItem(event: firstRun, status: EventTileStatus.open),
+            EventMapItem(event: secondRun, status: EventTileStatus.open),
+          ],
+          initialCenter: const LocationCoordinate(22.72, 75.86),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final pins = tester
+        .widgetList<CatchActivityMapPin>(find.byType(CatchActivityMapPin))
+        .toList();
+    final restingPin = pins.singleWhere((pin) => !pin.selected);
+    final selectedPin = pins.singleWhere((pin) => pin.selected);
+
+    expect(restingPin.size, CatchLayout.activityMapPinRestingSize);
+    expect(selectedPin.size, CatchLayout.activityMapPinSelectedSize);
+    expect(selectedPin.label, 'SOCIAL RUN · 6:45 PM');
+    expect(find.text('SOCIAL RUN · 6:45 PM'), findsOneWidget);
+  });
+
+  testWidgets('native map wrapper supports byte-backed marker icons', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: CatchGoogleMap(
+          initialCenter: const LocationCoordinate(22.72, 75.86),
+          initialZoom: 14,
+          markers: {
+            CatchMapMarker(
+              id: 'byte-backed-marker',
+              position: const LocationCoordinate(22.72, 75.86),
+              bitmap: CatchMapMarkerBitmap(
+                bytes: Uint8List.fromList(<int>[1, 2, 3, 4]),
+                logicalSize: const Size(38, 58),
+                imagePixelRatio: 2,
+              ),
+              zIndex: 2,
+            ),
+          },
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final googleMap = tester.widget<gmaps.GoogleMap>(
+      find.byType(gmaps.GoogleMap),
+    );
+    final marker = googleMap.markers.single;
+    final iconJson = marker.icon.toJson() as List<Object?>;
+
+    expect(iconJson.first, 'bytes');
+    final iconPayload = iconJson[1] as Map<String, Object?>;
+    expect(iconPayload['width'], greaterThan(0));
+    expect(iconPayload['height'], greaterThan(0));
+    expect(iconPayload['byteData'], isNotEmpty);
+    expect(marker.anchor, const Offset(0.5, 1));
+    expect(marker.zIndexInt, 2);
   });
 
   testWidgets('event pin maps use Google default map styling', (tester) async {

@@ -2400,7 +2400,6 @@ Widget eventPinsMapPlaceholderState(BuildContext context) {
     child: EventPinsMapPlaceholder(
       items: _eventMapItems(),
       selectedEventId: _event.id,
-      markerIcon: CatchIcons.running,
       userLocation: _mapCenter,
       distanceRingRadiusKm: 3,
       onEventSelected: (_) {},

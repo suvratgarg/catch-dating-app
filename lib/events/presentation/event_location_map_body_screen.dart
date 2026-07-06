@@ -44,7 +44,6 @@ class EventLocationMapScreen extends StatelessWidget {
             initialZoom: 15.5,
             selectedEventId: state.event.id,
             enableNetworkTiles: state.enableNetworkTiles,
-            markerIcon: CatchIcons.locationOnRounded,
           ),
         ),
         Positioned(

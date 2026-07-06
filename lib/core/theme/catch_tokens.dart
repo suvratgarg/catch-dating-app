@@ -1621,6 +1621,8 @@ abstract final class CatchLayout {
   static const double activityAvatarTextureStride = 13.0;
   static const double activityMapPinRestingSize = 26.0;
   static const double activityMapPinSelectedSize = 38.0;
+  static const double activityMapPinFlagMaxWidth = 180.0;
+  static const double activityMapPinNativeCanvasPadding = 4.0;
   static const double activityMapPinShadowBlur = 3.0;
   static const double activityMapPinShadowDy = 2.0;
   static const double distanceRingDefaultSize = 170.0;
@@ -1904,7 +1906,6 @@ abstract final class CatchLayout {
   // LayoutBuilder; 216 = divider + the 2-line stub headroom the old rail reserved.)
   static const double exploreTicketRailHeight =
       exploreTicketRailCardWidth * 10 / 16 + 216.0;
-  static const double mapPlaceholderPinSize = 42.0;
   static const double eventRecapGridGap = 10.0;
   static const double eventRecapStatInset = 10.0;
   static const double eventActivityStampExtent = 42.0;

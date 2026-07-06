@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.595
+version: 2.5.596
 updated: 2026-07-06
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,17 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.596
+
+- Closed Explore/Event map pin parity against the `CatchActivityMapPin`
+  contract. `EventPinsMap` now renders deterministic no-network placeholders
+  with the shared activity map pin primitive and renders native Google Map
+  markers from byte-backed DS pin bitmaps, including the selected uppercase
+  activity/time flag and selected marker z-order.
+- Extended `CatchGoogleMap`/`CatchMapMarker` with a token-sized bitmap marker
+  seam so map canvases can use design-system markers without feature-local map
+  glyph props. The old EventPinsMap `markerIcon` escape hatch was removed.
 
 ### 2.5.595
 
@@ -5812,7 +5823,7 @@ Generated 2026-05-06.
 | `CatchActivityArt` | `lib/core/widgets/catch_activity_art.dart:10` | Handoff generated activity-art surface. Resolves activity pigment and glyph through `ActivityPalette`, renders the gradient, screen-print texture, faint motif glyph, optional dim layer, radius/height controls, and overlay child slot. |
 | `CatchActivityInitialsPlaceholder` | `lib/core/widgets/catch_person_avatar.dart:396` | Direct activity-register avatar fallback for people shown in activity-grounded surfaces. Resolves activity pigment through `ActivityPalette`, renders mono initials over an activity gradient with screen-print texture, and supports dim veil states. |
 | `CatchActivityChip` | `lib/core/widgets/catch_activity_chip.dart:8` | Handoff activity tag for typed `ActivityKind` values. Resolves label/glyph/pigment through `ActivityPalette`, supports soft and primary registers, optional label override, and optional tap semantics. Use for registry-backed activity labels instead of feature-local colored chip helpers. |
-| `CatchActivityMapPin` | `lib/core/widgets/catch_activity_map_pin.dart:8` | Handoff map pin for activity-colored map marks. Resolves pigment through `ActivityPalette`, supports resting/selected sizing, optional selected flag text, and the subtle pin shadow used on map canvases. |
+| `CatchActivityMapPin` | `lib/core/widgets/catch_activity_map_pin.dart:9` | Handoff map pin for activity-colored map marks. Resolves pigment through `ActivityPalette`, supports resting/selected sizing, uppercases optional selected flag text, and owns the subtle pin shadow used on map canvases. |
 | `CatchDistanceRing` | `lib/core/widgets/catch_distance_ring.dart:7` | Handoff map radius ring for static map canvases and previews. Renders a 170px default circular ink ring with 1.2px stroke and an optional tappable mono label pill anchored to the top edge. |
 | `CatchBadge` | `lib/core/widgets/catch_badge.dart:10` | Handoff `Badge` status pill used for spots-left indicators, distance/pace pills, event requirement chips, status labels, compact metadata, and action-column outcomes. Supports functional tones including `gold`, `size.action` 33px alignment, optional leading icons, optional uppercase labels, and activity-accent tinting. |
 | `CatchCountBadge` | `lib/core/widgets/catch_count_badge.dart:7` | Anchored 99+ count marker for icon and navigation glyph overlays. Renders the child alone when count is zero, reserves the shared app-shell badge box when active, and uses the primary/primaryInk pill recipe from the badge family. Registered as formal component contract `catch.badge.count_badge`; Widgetbook contract states cover hidden, count, and overflow-count. |
@@ -6562,8 +6573,8 @@ Generated 2026-05-06.
 | `EmptyRosterMessage` | `lib/events/presentation/widgets/who_is_going.dart:182` | Event Detail empty roster surface. Renders the no-attendees title/message with optional event-detail surface colors so upcoming and past roster-empty states can be reviewed without the provider wrapper. |
 | `SwipeWindowBanner` | `lib/events/presentation/widgets/who_is_going.dart:239` | Compact Event Detail roster status banner for locked, open, and closed post-event catch windows. Uses explicit icon/message props and optional event-detail surface colors while preserving the shared `CatchSurface` treatment. |
 | `EventMapLoadingBody` | `lib/events/presentation/event_map_screen.dart:132` | Map-shaped skeleton body shared by general event-map loading and the location-map route. Shows a full-bleed map shimmer, centered pin, filter/distance pill placeholder, and floating control placeholder. |
-| `EventPinsMap` | `lib/events/presentation/widgets/event_pins_map.dart:16` | Shared Flutter map canvas for event pins. Used by Explore and `EventLocationMapScreen`; renders only events with exact coordinates and keeps map centering outside the pin widget. It reports camera-center changes on idle, draws optional user-location and distance-ring circles, clusters dense low-zoom pins with app-rendered count markers, expands clusters by zooming in, and reports background map taps through `onMapTapped` so controlled callers can clear selection. Its no-network placeholder lays markers out spatially, exposes meeting-point selection labels so widget tests can exercise selected-pin flows without network map tiles, and keeps the painter boundary to concrete token-derived colors rather than prop-drilling `CatchTokens`. |
-| `EventPinsMapPlaceholder` | `lib/events/presentation/widgets/event_pins_map.dart:331` | Provider-free no-network map placeholder used by `EventPinsMap` when native map tiles are disabled for tests, captures, or review. It draws the tokenized placeholder map, optional distance ring, selected marker state, event-selection semantics, and an opaque background tap target for clearing selection without depending on Google Maps rendering. |
+| `EventPinsMap` | `lib/events/presentation/widgets/event_pins_map.dart:19` | Shared Flutter map canvas for event pins. Used by Explore and `EventLocationMapScreen`; renders only events with exact coordinates and keeps map centering outside the pin widget. It reports camera-center changes on idle, draws optional user-location and distance-ring circles, clusters dense low-zoom pins with app-rendered count markers, expands clusters by zooming in, and reports background map taps through `onMapTapped` so controlled callers can clear selection. Single native markers are rendered as byte-backed DS activity map pin bitmaps with resting/selected sizing, selected flag labels, bottom-center anchors, and selected z-order. |
+| `EventPinsMapPlaceholder` | `lib/events/presentation/widgets/event_pins_map.dart:533` | Provider-free no-network map placeholder used by `EventPinsMap` when native map tiles are disabled for tests, captures, or review. It draws the tokenized placeholder map, optional distance ring, canonical `CatchActivityMapPin` states, event-selection semantics, and an opaque background tap target for clearing selection without depending on Google Maps rendering. |
 
 ### StatelessWidget
 
