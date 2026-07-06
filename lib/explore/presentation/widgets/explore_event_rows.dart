@@ -186,17 +186,13 @@ class ThisWeekRecommendationsSection extends StatelessWidget {
             item: items[index],
             onEventSelected: onEventSelected,
             analyticsSource: 'this_week',
-            stripPosition: _stripPositionFor(index, items.length),
+            stripPosition: eventDateRailCardStripPositionFor(
+              index,
+              items.length,
+            ),
           ),
         ],
       ],
     );
   }
-}
-
-EventDateRailCardStripPosition _stripPositionFor(int index, int total) {
-  if (total <= 1) return EventDateRailCardStripPosition.single;
-  if (index == 0) return EventDateRailCardStripPosition.first;
-  if (index == total - 1) return EventDateRailCardStripPosition.last;
-  return EventDateRailCardStripPosition.middle;
 }

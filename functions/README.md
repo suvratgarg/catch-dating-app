@@ -10,7 +10,7 @@ Global concurrency ceiling is 50 (`maxInstances` in `src/index.ts`).
 Per-function overrides can be added to individual `onCall` / `onDocumentCreated`
 options when specific functions need higher or lower limits.
 
-## Function inventory (May 2026)
+## Function inventory (July 2026)
 
 ### Callable (client-invoked)
 
@@ -27,6 +27,7 @@ options when specific functions need higher or lower limits.
 | `updateClub` / `archiveClub` / `deleteClub` | `src/clubs/` | Host-owned club mutation surface |
 | `addClubHost` / `removeClubHost` | `src/clubs/` | Host management surface |
 | `joinClub` / `leaveClub` / `setClubNotificationPreference` | `src/clubs/` | Join/leave a club and manage member notifications |
+| `createClubPost` | `src/clubs/` | Host-only follower update with weekly quota and activity fan-out |
 | `markEventAttendance` | `src/events/` | Host marks attendance |
 | `selfCheckInAttendance` | `src/events/` | Participant self-check-in with GPS |
 | `generateEventSuccessPods` | `src/eventSuccess/` | Generate event-success pod suggestions |

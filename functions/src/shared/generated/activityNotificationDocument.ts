@@ -35,6 +35,7 @@ export interface ActivityNotificationDocument {
   matchId?: string | null;
   eventId?: string | null;
   clubId?: string | null;
+  postId?: string | null;
   actorUid?: string | null;
   actorName?: string | null;
   /**

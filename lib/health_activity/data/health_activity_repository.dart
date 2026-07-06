@@ -150,6 +150,9 @@ HealthActivityRepository healthActivityRepository(Ref ref) {
   );
 }
 
+@Deprecated(
+  'Home no longer renders weekly activity; retained for insights/compatibility.',
+)
 @riverpod
 Future<WeeklyActivitySnapshot> weeklyActivity(Ref ref) {
   return ref.watch(healthActivityRepositoryProvider).fetchWeeklyActivity();

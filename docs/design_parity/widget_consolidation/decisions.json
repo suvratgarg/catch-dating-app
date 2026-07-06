@@ -5859,6 +5859,148 @@
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded"
+    },
+    {
+      "clusterId": "handoff-1A1: explore peek-rail system",
+      "decision": "delete",
+      "members": [
+        {
+          "name": "ExploreMapSheetLead",
+          "action": "delete"
+        },
+        {
+          "name": "ExploreSelectedEventLead",
+          "action": "delete"
+        },
+        {
+          "name": "ExploreEventTicketCard",
+          "action": "delete"
+        }
+      ],
+      "rationale": "Dropped three-snap/peek-rail design direction (archived in the DS); no screen mounted the rail. Deleted with file; still-referenced state types re-homed to explore_screen_state.dart per handoff 1.A1.",
+      "decidedBy": "claude-review -> codex",
+      "date": "2026-07-06",
+      "status": "executed-parity-handoff"
+    },
+    {
+      "clusterId": "handoff-1A2: CatchEventCard.spotlight variant",
+      "decision": "delete",
+      "members": [
+        {
+          "name": "CatchEventCard",
+          "action": "keep",
+          "note": "spotlight named constructor deleted; ticket variant stays (DS EventTicket)"
+        }
+      ],
+      "rationale": "Only production consumer was the retired peek rail. Variant + fields + widgetbook states deleted per handoff 1.A2.",
+      "decidedBy": "claude-review -> codex",
+      "date": "2026-07-06",
+      "status": "executed-parity-handoff"
+    },
+    {
+      "clusterId": "handoff-1A3: CatchEventCard.compact variant",
+      "decision": "delete",
+      "members": [
+        {
+          "name": "CatchEventCard",
+          "action": "keep",
+          "note": "compact named constructor deleted; condensed map role belongs to the DateTicket"
+        }
+      ],
+      "rationale": "Zero production users (widgetbook only); the DS assigns the condensed map card to DateTicket. Deleted per handoff 1.A3.",
+      "decidedBy": "claude-review -> codex",
+      "date": "2026-07-06",
+      "status": "executed-parity-handoff"
+    },
+    {
+      "clusterId": "handoff-1A4: EventCompactRow family",
+      "decision": "delete",
+      "members": [
+        {
+          "name": "EventCompactRow",
+          "action": "delete"
+        },
+        {
+          "name": "EventCompactDatePill",
+          "action": "delete"
+        }
+      ],
+      "rationale": "Zero production users; the date pill's only consumer was the row. File deleted per handoff 1.A4.",
+      "decidedBy": "claude-review -> codex",
+      "date": "2026-07-06",
+      "status": "executed-parity-handoff"
+    },
+    {
+      "clusterId": "handoff-2.3: Club directory condensed row",
+      "decision": "replace-with-new-primitive",
+      "canonicalSymbol": "ClubIndexRow",
+      "members": [
+        {
+          "name": "ClubListTile",
+          "action": "delete",
+          "note": "directory routing moved to buildClubDirectorySlivers; avatar rail now uses AvatarChip directly"
+        },
+        {
+          "name": "DirectoryCard",
+          "action": "delete"
+        },
+        {
+          "name": "DirectoryClubCard",
+          "action": "delete"
+        },
+        {
+          "name": "ClubPhotoMediaOverlay",
+          "action": "delete"
+        },
+        {
+          "name": "ClubPhotoChrome",
+          "action": "delete"
+        },
+        {
+          "name": "ClubLogoCrest",
+          "action": "delete"
+        },
+        {
+          "name": "ClubLogoFallback",
+          "action": "delete"
+        },
+        {
+          "name": "ClubDirectoryFooter",
+          "action": "delete"
+        },
+        {
+          "name": "ClubHostActionRow",
+          "action": "delete"
+        },
+        {
+          "name": "ClubRule",
+          "action": "delete"
+        },
+        {
+          "name": "AvatarChip",
+          "action": "keep",
+          "note": "joined-club rail atom"
+        },
+        {
+          "name": "ClubImage",
+          "action": "keep",
+          "note": "shared cover/profile/fallback media atom"
+        },
+        {
+          "name": "MembershipTrailingController",
+          "action": "keep",
+          "note": "join mutation/auth redirect seam reused by ClubIndexRow"
+        },
+        {
+          "name": "MembershipTrailing",
+          "action": "keep",
+          "note": "provider-free joined badge/join button leaf"
+        }
+      ],
+      "rationale": "Handoff 2.3 assigns long club directories to a condensed polaroid index-row tier, not the old tall directory card tier. ClubIndexRow keeps the polaroid thumbnail cue, activity chip, mono meta row, and membership trailing while ExploreClubPolaroidCard remains the hero/spotlight tier.",
+      "decidedBy": "claude-review -> codex",
+      "date": "2026-07-06",
+      "status": "executed-parity-handoff"
     }
   ]
 }

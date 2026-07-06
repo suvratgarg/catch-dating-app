@@ -127,6 +127,13 @@
   --catch-radius-md: 14px;
   --catch-radius-lg: 20px;
   --catch-radius-pill: 999px;
+  --catch-layout-activity-map-pin-resting-size: 26px;
+  --catch-layout-activity-map-pin-selected-size: 38px;
+  --catch-layout-activity-map-pin-flag-max-width: 180px;
+  --catch-layout-activity-map-pin-native-canvas-padding: 4px;
+  --catch-layout-activity-map-pin-shadow-blur: 3px;
+  --catch-layout-activity-map-pin-shadow-dy: 2px;
+  --catch-opacity-activity-map-pin-shadow: 0.3;
   --catch-font-voice: "Archivo";
   --catch-font-head: "Archivo";
   --catch-font-function: "system-ui";

@@ -30,6 +30,7 @@ abstract class ActivityNotification with _$ActivityNotification {
     String? matchId,
     String? eventId,
     String? clubId,
+    String? postId,
     String? actorUid,
     String? actorName,
   }) = _ActivityNotification;

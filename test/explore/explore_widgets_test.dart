@@ -28,7 +28,6 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
@@ -36,7 +35,6 @@ import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -58,7 +56,6 @@ import 'package:catch_dating_app/explore/presentation/widgets/explore_events_sec
 import 'package:catch_dating_app/explore/presentation/widgets/explore_filter_rail.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_header.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_list.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/explore_peek_rail.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_club_tools.dart';
@@ -892,11 +889,11 @@ void main() {
       await _pumpClubUi(tester);
 
       final detailPadding = tester.widget<Padding>(
-        find.byKey(const ValueKey('club-detail-hero-padding')),
+        find.byKey(const ValueKey('club-detail-hero-polaroid-padding')),
       );
       expect(detailPadding.padding, cardPadding.padding);
       expect(
-        find.byKey(const ValueKey('club-detail-viewport-curve-frame')),
+        find.byKey(const ValueKey('club-detail-hero-polaroid-frame')),
         findsOneWidget,
       );
     });
@@ -1012,14 +1009,6 @@ void main() {
         expect(find.textContaining('Pickleball'), findsWidgets);
         expect(find.textContaining('Pub Quiz'), findsWidgets);
         expect(find.byType(EventDateRailCard), findsNWidgets(5));
-        expect(
-          find.byWidgetPredicate(
-            (widget) =>
-                widget is CatchEventCard &&
-                widget.variant == CatchEventCardVariant.spotlight,
-          ),
-          findsNothing,
-        );
         expect(find.byType(CatchCoverStory), findsNothing);
       },
     );
@@ -1525,7 +1514,7 @@ void main() {
       expect(find.text('Create club'), findsNothing);
     });
 
-    testWidgets('directory and avatar chip variants render club metadata', (
+    testWidgets('club index row and avatar chip render club metadata', (
       tester,
     ) async {
       final club = buildClub(
@@ -1543,31 +1532,21 @@ void main() {
         tester,
         Column(
           children: [
-            Expanded(child: ClubListTile(club: club, isJoined: true)),
-            ClubListTile(
-              club: club,
-              variant: ClubListTileVariant.avatarChip,
-              showLiveBadge: true,
-            ),
+            Expanded(child: ClubIndexRow(club: club, isJoined: true)),
+            AvatarChip(club: club, showLiveBadge: true),
           ],
         ),
       );
 
-      // The directory card keeps cover art and club identity separate:
-      // imageUrl is the cover, profileImageUrl is the logo crest. Rating
-      // belongs with the title, not as a duplicate review/meta row.
+      // The index row keeps cover art and rail identity separate:
+      // imageUrl is the row thumbnail, profileImageUrl is the avatar-chip image.
       expect(find.text('Night Pacers'), findsNWidgets(2));
-      expect(find.text('Joined'), findsOneWidget); // corner sash
+      expect(find.text('Joined'), findsOneWidget);
       expect(find.text('Join'), findsNothing);
-      expect(find.text('SOCIAL'), findsOneWidget); // tag chip
-      expect(find.text('INDORE'), findsNothing);
-      expect(find.text('1\nmember'), findsOneWidget); // member seal
-      expect(find.text('RACE COURSE ROAD MAIN GATE'), findsOneWidget);
-      expect(
-        find.text('4.8 · 12 reviews'),
-        findsNothing,
-      ); // removed duplicate review/meta row
-      expect(find.text('4.8'), findsOneWidget); // title rating
+      expect(find.text('SOCIAL RUN'), findsOneWidget);
+      expect(find.text('BANDRA / INDORE · 1 MEMBER'), findsOneWidget);
+      expect(find.text('RACE COURSE ROAD MAIN GATE'), findsNothing);
+      expect(find.text('4.8'), findsNothing);
       expect(
         find.byWidgetPredicate(
           (widget) =>
@@ -1584,12 +1563,12 @@ void main() {
       );
     });
 
-    testWidgets('ClubListTile labels joined clubs without host state', (
+    testWidgets('ClubIndexRow labels joined clubs without host state', (
       tester,
     ) async {
       await pumpTestApp(
         tester,
-        ClubListTile(club: buildClub(name: 'Host Club'), isJoined: true),
+        ClubIndexRow(club: buildClub(name: 'Host Club'), isJoined: true),
       );
 
       expect(find.text('You host'), findsNothing);
@@ -1727,7 +1706,7 @@ void main() {
                   CatchMetricStripItem(value: '24', label: 'members'),
                   CatchMetricStripItem(value: '4.7', label: 'rating'),
                   CatchMetricStripItem(value: '12', label: 'reviews'),
-                  CatchMetricStripItem(value: "JAN '25", label: 'est.'),
+                  CatchMetricStripItem(value: 'JAN 2025', label: 'est.'),
                 ],
               ),
             ],
@@ -1743,7 +1722,7 @@ void main() {
         expect(find.text('reviews'), findsOneWidget);
         expect(find.text('est.'), findsOneWidget);
         expect(find.text('12'), findsOneWidget);
-        expect(find.text("JAN '25"), findsOneWidget);
+        expect(find.text('JAN 2025'), findsOneWidget);
         expect(find.text('4.7'), findsOneWidget);
       },
     );
@@ -1821,19 +1800,8 @@ void main() {
         expect(find.text('Bandra, Mumbai'), findsOneWidget);
         expect(find.text('4.8'), findsNothing);
         expect(
-          find.byKey(const ValueKey('club-detail-hero-frame')),
+          find.byKey(const ValueKey('club-detail-hero-polaroid-frame')),
           findsOneWidget,
-        );
-        final heroFrame = tester.widget<CatchSurface>(
-          find.byKey(const ValueKey('club-detail-hero-frame')),
-        );
-        expect(heroFrame.backgroundColor, CatchTokens.sunsetLight.surface);
-        final expandedTitle = tester.widget<Text>(
-          find.byKey(const ValueKey('club-detail-expanded-title')),
-        );
-        expect(
-          expandedTitle.style?.fontFamily,
-          contains(CatchFonts.serifFamily.split(' ').first),
         );
 
         await tester.tap(find.byIcon(CatchIcons.arrowBackIosNewRounded));
@@ -1844,7 +1812,7 @@ void main() {
     );
 
     testWidgets(
-      'ClubHeroAppBar keeps long title location outside the clipped media frame',
+      'ClubHeroAppBar keeps long title location in the polaroid caption',
       (tester) async {
         tester.view.devicePixelRatio = 1;
         tester.view.physicalSize = const Size(402, 874);
@@ -1879,39 +1847,28 @@ void main() {
         );
         await _pumpClubUi(tester);
 
-        final mediaFrame = find.byKey(
-          const ValueKey('club-detail-viewport-curve-frame'),
+        final polaroidFrame = find.byKey(
+          const ValueKey('club-detail-hero-polaroid-frame'),
         );
-        final caption = find.byKey(const ValueKey('club-detail-hero-caption'));
-        final expandedTitle = find.byKey(
-          const ValueKey('club-detail-expanded-title'),
-        );
-        final location = find.descendant(
-          of: caption,
-          matching: find.text('Vijay Nagar, Indore'),
-        );
+        final title = find.text('Vijay Nagar Event Collective');
+        final location = find.text('Vijay Nagar, Indore');
 
-        expect(mediaFrame, findsOneWidget);
-        expect(caption, findsOneWidget);
-        expect(expandedTitle, findsOneWidget);
+        expect(polaroidFrame, findsOneWidget);
+        expect(title, findsOneWidget);
         expect(location, findsOneWidget);
         expect(
-          find.descendant(of: mediaFrame, matching: expandedTitle),
-          findsNothing,
-        );
-        expect(
-          tester.getBottomLeft(location).dy,
-          lessThan(tester.getBottomLeft(caption).dy),
+          find.descendant(of: polaroidFrame, matching: title),
+          findsOneWidget,
         );
 
         final module = tester.widget<ColoredBox>(
           find.byKey(const ValueKey('club-detail-hero-module')),
         );
-        expect(module.color, CatchTokens.sunsetLight.surface);
+        expect(module.color, CatchTokens.editorialLight.surface);
       },
     );
 
-    testWidgets('ClubDetailBody keeps a one-line hero tight to stats', (
+    testWidgets('ClubDetailBody renders metrics below the hero content', (
       tester,
     ) async {
       tester.view.devicePixelRatio = 1;
@@ -1951,11 +1908,19 @@ void main() {
       );
       await _pumpClubUi(tester);
 
-      final gap =
-          tester.getTopLeft(find.byType(CatchMetricStrip)).dy -
-          tester.getBottomLeft(find.text('Bandra, Mumbai')).dy;
-      expect(gap, greaterThan(0));
-      expect(gap, lessThanOrEqualTo(CatchSpacing.s8));
+      final heroFrame = find.byKey(
+        const ValueKey('club-detail-hero-polaroid-frame'),
+      );
+      final heroLocation = find.descendant(
+        of: heroFrame,
+        matching: find.text('Bandra, Mumbai'),
+      );
+
+      expect(heroFrame, findsOneWidget);
+      expect(heroLocation, findsOneWidget);
+      final metricTop = tester.getTopLeft(find.byType(CatchMetricStrip)).dy;
+      final locationBottom = tester.getBottomLeft(heroLocation).dy;
+      expect(metricTop, greaterThan(locationBottom));
     });
 
     testWidgets('ClubHeroAppBar uses clean fallback without a cover image', (
@@ -1973,7 +1938,7 @@ void main() {
         ),
       );
 
-      expect(find.byType(ClubPolaroidArtwork), findsNothing);
+      expect(find.byType(ClubPolaroidArtwork), findsOneWidget);
       expect(find.text('MM'), findsNothing);
       expect(find.text('Morning Miles'), findsOneWidget);
       expect(find.text('Bandra, Mumbai'), findsOneWidget);
@@ -2024,17 +1989,16 @@ void main() {
       },
     );
 
-    testWidgets('ClubListTile variants navigate to detail routes', (
+    testWidgets('club index row and avatar chip navigate to detail routes', (
       tester,
     ) async {
-      Future<void> pumpVariant(
-        ClubListTileVariant variant, {
-        bool showLiveBadge = false,
-        bool isJoined = false,
+      Future<void> pumpRow({
+        required String id,
+        required Widget Function(BuildContext context, Club club) childBuilder,
       }) async {
         final club = buildClub(
-          id: variant.name,
-          name: 'Club ${variant.name}',
+          id: id,
+          name: 'Club $id',
           imageUrl: 'https://example.com/club.jpg',
         );
         final router = GoRouter(
@@ -2042,16 +2006,8 @@ void main() {
           routes: [
             GoRoute(
               path: '/',
-              builder: (_, _) => Scaffold(
-                body: Center(
-                  child: ClubListTile(
-                    club: club,
-                    variant: variant,
-                    showLiveBadge: showLiveBadge,
-                    isJoined: isJoined,
-                  ),
-                ),
-              ),
+              builder: (context, _) =>
+                  Scaffold(body: Center(child: childBuilder(context, club))),
             ),
             GoRoute(
               path: '/detail/:clubId',
@@ -2071,9 +2027,8 @@ void main() {
         await tester.tap(
           find.byWidgetPredicate(
             (widget) =>
-                widget is ClubListTile &&
-                widget.club.id == club.id &&
-                widget.variant == variant,
+                (widget is ClubIndexRow && widget.club.id == club.id) ||
+                (widget is AvatarChip && widget.club.id == club.id),
           ),
         );
         await _pumpClubUi(tester);
@@ -2081,29 +2036,52 @@ void main() {
         expect(find.text('Detail ${club.id}'), findsOneWidget);
       }
 
-      await pumpVariant(ClubListTileVariant.directory, isJoined: true);
-      await pumpVariant(ClubListTileVariant.avatarChip, showLiveBadge: true);
+      await pumpRow(
+        id: 'index',
+        childBuilder: (context, club) => ClubIndexRow(
+          club: club,
+          isJoined: true,
+          onTap: () => context.pushNamed(
+            Routes.clubDetailScreen.name,
+            pathParameters: {'clubId': club.id},
+            extra: club,
+          ),
+        ),
+      );
+      await pumpRow(
+        id: 'avatar',
+        childBuilder: (context, club) => AvatarChip(
+          club: club,
+          showLiveBadge: true,
+          onTap: () => context.pushNamed(
+            Routes.clubDetailScreen.name,
+            pathParameters: {'clubId': club.id},
+            extra: club,
+          ),
+        ),
+      );
     });
 
-    testWidgets('ClubListTile uses club cover fallback when image is absent', (
+    testWidgets('ClubIndexRow uses club cover fallback when image is absent', (
       tester,
     ) async {
       await pumpTestApp(
         tester,
-        ClubListTile(
+        ClubIndexRow(
           club: buildClub(name: 'No Cover Club', area: 'Signal Hill'),
+          isJoined: false,
         ),
       );
 
       expect(find.byType(ClubPolaroidArtwork), findsWidgets);
       expect(find.text('NC'), findsNothing);
       expect(find.byIcon(CatchIcons.locationOnRounded), findsOneWidget);
-      // Directory cards use the area as the caption when no next event is set;
-      // the fallback crest itself should not add a duplicate footer label.
-      expect(find.text('SIGNAL HILL / MUMBAI'), findsOneWidget);
+      // Index rows use the area/city/member line as the mono meta row; the
+      // fallback artwork itself should not add a duplicate footer label.
+      expect(find.text('SIGNAL HILL / MUMBAI · 1 MEMBER'), findsOneWidget);
     });
 
-    testWidgets('ClubListTile surfaces directory join failures', (
+    testWidgets('ClubIndexRow surfaces directory join failures', (
       tester,
     ) async {
       final fakeRepository = FakeClubsRepository()
@@ -2131,8 +2109,9 @@ void main() {
             theme: AppTheme.light,
             home: Scaffold(
               body: Center(
-                child: ClubListTile(
+                child: ClubIndexRow(
                   club: buildClub(id: 'club-fail', name: 'Fail Club'),
+                  isJoined: false,
                 ),
               ),
             ),
@@ -2201,11 +2180,11 @@ void main() {
             )
             .first,
       );
-      expect(scrollBackground.color, CatchTokens.sunsetLight.surface);
+      expect(scrollBackground.color, CatchTokens.editorialLight.surface);
       expect(find.byIcon(CatchIcons.platformShare()), findsOneWidget);
       expect(find.text('Share'), findsNothing);
       expect(find.text('Asha Host'), findsOneWidget);
-      expect(find.textContaining('PUBLIC PROFILE'), findsOneWidget);
+      expect(find.textContaining('OWNER · EST. JAN 2025'), findsOneWidget);
       expect(find.textContaining('VIEW PROFILE'), findsNothing);
       expect(find.text('Club host'), findsNothing);
       expect(find.text('Hosts events in Saket'), findsNothing);
@@ -2269,7 +2248,7 @@ void main() {
 
         expect(find.text('Host'), findsNothing);
         expect(find.text('Asha Shah'), findsOneWidget);
-        expect(find.textContaining('PUBLIC PROFILE'), findsOneWidget);
+        expect(find.textContaining('OWNER · EST. JAN 2025'), findsOneWidget);
         expect(find.textContaining('VIEW PROFILE'), findsNothing);
         expect(find.text('Club host'), findsNothing);
         expect(find.text('Hosts events in Bandra'), findsNothing);
@@ -3131,42 +3110,59 @@ void main() {
         ),
         findsOneWidget,
       );
+      expect(find.byType(EventDateRailCard), findsOneWidget);
+      expect(find.text('BANDRA MAP CLUB'), findsOneWidget);
     });
 
-    testWidgets('selected spotlight pin keeps spotlight styling', (
+    testWidgets('ExploreMapScreen selects pin before navigating from card', (
       tester,
     ) async {
-      final club = buildClub(
-        id: 'club-selected-spotlight',
-        name: 'Spotlight Club',
-      );
-      final spotlight = event_test.buildEvent(
-        id: 'event-spotlight-pin',
+      final club = buildClub(id: 'club-map-nav', name: 'Race Course Road Club');
+      final event = event_test.buildEvent(
+        id: 'event-map-nav',
         clubId: club.id,
-        meetingPoint: 'Spotlight Point',
+        meetingPoint: 'Race Course Road main gate',
+        startingPointLat: 19.0608,
+        startingPointLng: 72.8365,
         startTime: DateTime.now().add(const Duration(days: 1)),
       );
-      final other = event_test.buildEvent(
-        id: 'event-other-pin',
-        clubId: club.id,
-        meetingPoint: 'Other Point',
-        startTime: DateTime.now().add(const Duration(days: 2)),
+      final router = GoRouter(
+        initialLocation: '/',
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (_, _) =>
+                const ExploreMapScreen(enableNetworkTiles: false),
+          ),
+          GoRoute(
+            path: '/events/:clubId/:eventId',
+            name: Routes.eventDetailScreen.name,
+            builder: (_, state) {
+              final extra = state.extra as EventDetailRouteExtra?;
+              return Text(
+                [
+                  'Event ${state.pathParameters['eventId']}',
+                  extra?.transition.name,
+                  extra?.heroTag,
+                ].whereType<Object>().join(' · '),
+                textDirection: TextDirection.ltr,
+              );
+            },
+          ),
+        ],
       );
 
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
+            cityListProvider.overrideWith((ref) async => _testCities),
+            deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
             exploreFeedViewModelProvider.overrideWithValue(
               AsyncData(
                 ExploreFeedViewModel(
                   items: [
                     ExploreEventItem(
-                      event: spotlight,
-                      club: club,
-                      status: EventTileStatus.recommended,
-                    ),
-                    ExploreEventItem(
-                      event: other,
+                      event: event,
                       club: club,
                       status: EventTileStatus.open,
                     ),
@@ -3175,233 +3171,210 @@ void main() {
               ),
             ),
           ],
-          child: Consumer(
-            builder: (context, ref, _) {
-              return MaterialApp(
-                theme: AppTheme.light,
-                home: Scaffold(
-                  body: CustomScrollView(
-                    slivers: buildExploreMapSheetLeadSlivers(
-                      feedAsync: ref.watch(exploreFeedViewModelProvider),
-                      onRetry: () =>
-                          ref.invalidate(exploreFeedViewModelProvider),
-                      selectedEventId: spotlight.id,
-                      cameraCenter: null,
-                      filters: const ExploreFilterSelection(),
-                      scopeLabel: 'Mumbai',
-                      leadMode: ExploreMapSheetLeadMode.selectedEvent,
-                      onEventTapped: (_) {},
-                      onSeeAll: () {},
-                    ),
-                  ),
-                ),
-              );
-            },
+          child: MaterialApp.router(
+            theme: AppTheme.light,
+            routerConfig: router,
           ),
         ),
       );
-      await tester.pump();
+      await _pumpClubUi(tester);
+
+      expect(find.byType(EventDateRailCard), findsNothing);
+      expect(find.textContaining('Event event-map-nav'), findsNothing);
+
+      await tester.tap(
+        find.bySemanticsLabel('Select Race Course Road main gate'),
+      );
+      await tester.pump(CatchMotion.fast);
+
+      expect(find.byType(EventDateRailCard), findsOneWidget);
+      expect(find.text(event.title), findsOneWidget);
+      expect(find.textContaining('Event event-map-nav'), findsNothing);
+
+      await tester.tap(find.text(event.title));
+      await tester.pumpAndSettle();
 
       expect(
-        find.byKey(ValueKey('explore-selected-${spotlight.id}')),
-        findsOneWidget,
-      );
-      expect(
-        find.byWidgetPredicate(
-          (widget) =>
-              widget is CatchEventCard &&
-              widget.variant == CatchEventCardVariant.spotlight,
-        ),
-        findsOneWidget,
-      );
-      expect(
-        find.byWidgetPredicate(
-          (widget) =>
-              widget is CatchEventCard &&
-              widget.variant == CatchEventCardVariant.ticket,
-        ),
-        findsNothing,
-      );
-      expect(
-        find.byWidgetPredicate(
-          (widget) =>
-              widget is Hero &&
-              widget.tag ==
-                  eventSpotlightHeroTag(spotlight.id, 'map_selected_card'),
+        find.text(
+          'Event event-map-nav · mapSelectedCard · event-ticket-map-event-map-nav',
         ),
         findsOneWidget,
       );
     });
 
-    test('explore map summary switches to map area after a large pan', () {
-      final mumbai = _testCities.first;
-
-      expect(exploreMapScopeLabel(city: mumbai, cameraCenter: null), 'Mumbai');
-      expect(
-        exploreMapScopeLabel(
-          city: mumbai,
-          cameraCenter: const LocationCoordinate(19.08, 72.88),
-        ),
-        'Mumbai',
-      );
-      expect(
-        exploreMapScopeLabel(
-          city: mumbai,
-          cameraCenter: const LocationCoordinate(19.45, 73.35),
-        ),
-        'Map area',
-      );
-    });
-
-    testWidgets('Explore peek rail loading skeleton scrolls on narrow sheets', (
+    testWidgets('ExploreMapScreen background tap dismisses selected card', (
       tester,
     ) async {
-      tester.view.physicalSize = const Size(390, 844);
-      tester.view.devicePixelRatio = 1;
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
+      final club = buildClub(id: 'club-map-clear', name: 'Map Clear Club');
+      final event = event_test.buildEvent(
+        id: 'event-map-clear',
+        clubId: club.id,
+        meetingPoint: 'Clearable Pin Point',
+        startingPointLat: 19.0608,
+        startingPointLng: 72.8365,
+        startTime: DateTime.now().add(const Duration(days: 1)),
+      );
 
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
+            cityListProvider.overrideWith((ref) async => _testCities),
+            deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
             exploreFeedViewModelProvider.overrideWithValue(
-              const AsyncLoading<ExploreFeedViewModel>(),
+              AsyncData(
+                ExploreFeedViewModel(
+                  items: [
+                    ExploreEventItem(
+                      event: event,
+                      club: club,
+                      status: EventTileStatus.open,
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
-          child: Consumer(
-            builder: (context, ref, _) {
-              return MaterialApp(
-                theme: AppTheme.light,
-                home: Scaffold(
-                  body: CustomScrollView(
-                    slivers: buildExploreMapSheetLeadSlivers(
-                      feedAsync: ref.watch(exploreFeedViewModelProvider),
-                      onRetry: () =>
-                          ref.invalidate(exploreFeedViewModelProvider),
-                      selectedEventId: null,
-                      cameraCenter: null,
-                      filters: const ExploreFilterSelection(),
-                      scopeLabel: 'Mumbai',
-                      leadMode: ExploreMapSheetLeadMode.nearbyRail,
-                      onEventTapped: (_) {},
-                      onSeeAll: () {},
-                    ),
-                  ),
-                ),
-              );
-            },
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const ExploreMapScreen(enableNetworkTiles: false),
           ),
         ),
       );
-      await tester.pump();
+      await _pumpClubUi(tester);
 
-      expect(tester.takeException(), isNull);
-      expect(find.byType(CatchSkeleton), findsNWidgets(3));
-      expect(find.byType(ListView), findsOneWidget);
+      await tester.tap(find.bySemanticsLabel('Select Clearable Pin Point'));
+      await tester.pump(CatchMotion.fast);
+      expect(find.byType(EventDateRailCard), findsOneWidget);
+
+      await tester.tapAt(const Offset(24, 220));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(EventDateRailCard), findsNothing);
     });
 
     testWidgets(
-      'Explore peek rail resets to nearest events after camera reorder',
+      'ExploreMapScreen clears selected card when feed refresh drops event',
       (tester) async {
-        tester.view.physicalSize = const Size(390, 844);
-        tester.view.devicePixelRatio = 1;
-        addTearDown(tester.view.resetPhysicalSize);
-        addTearDown(tester.view.resetDevicePixelRatio);
-
+        var showSelectedEvent = true;
         final club = buildClub(
-          id: 'club-camera-sort',
-          name: 'Camera Sort Club',
+          id: 'club-map-refresh',
+          name: 'Map Refresh Club',
         );
-        final events = [
-          for (var index = 0; index < 6; index += 1)
-            event_test.buildEvent(
-              id: 'camera-event-$index',
-              clubId: club.id,
-              meetingPoint: 'Camera Point $index',
-              startTime: DateTime.now().add(Duration(days: index + 1)),
-              startingPointLat: 19.0,
-              startingPointLng: 72.0 + (index * 0.01),
-            ),
-        ];
-        var cameraCenter = const LocationCoordinate(19.0, 72.0);
-        late void Function(LocationCoordinate center) updateCamera;
+        final event = event_test.buildEvent(
+          id: 'event-map-refresh',
+          clubId: club.id,
+          meetingPoint: 'Refresh Pin Point',
+          startingPointLat: 19.0608,
+          startingPointLng: 72.8365,
+          startTime: DateTime.now().add(const Duration(days: 1)),
+        );
 
         await tester.pumpWidget(
           ProviderScope(
             overrides: [
-              exploreFeedViewModelProvider.overrideWithValue(
-                AsyncData(
+              cityListProvider.overrideWith((ref) async => _testCities),
+              deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+              exploreFeedViewModelProvider.overrideWith((ref) {
+                return AsyncData(
                   ExploreFeedViewModel(
-                    items: [
-                      for (final event in events)
-                        ExploreEventItem(
-                          event: event,
-                          club: club,
-                          status: EventTileStatus.open,
-                        ),
-                    ],
+                    items: showSelectedEvent
+                        ? [
+                            ExploreEventItem(
+                              event: event,
+                              club: club,
+                              status: EventTileStatus.open,
+                            ),
+                          ]
+                        : const <ExploreEventItem>[],
                   ),
-                ),
-              ),
-            ],
-            child: StatefulBuilder(
-              builder: (context, setState) {
-                updateCamera = (center) =>
-                    setState(() => cameraCenter = center);
-                return Consumer(
-                  builder: (context, ref, _) {
-                    return MaterialApp(
-                      theme: AppTheme.light,
-                      home: Scaffold(
-                        body: CustomScrollView(
-                          slivers: buildExploreMapSheetLeadSlivers(
-                            feedAsync: ref.watch(exploreFeedViewModelProvider),
-                            onRetry: () =>
-                                ref.invalidate(exploreFeedViewModelProvider),
-                            selectedEventId: null,
-                            cameraCenter: cameraCenter,
-                            filters: const ExploreFilterSelection(),
-                            scopeLabel: 'Mumbai',
-                            leadMode: ExploreMapSheetLeadMode.nearbyRail,
-                            onEventTapped: (_) {},
-                            onSeeAll: () {},
-                          ),
-                        ),
-                      ),
-                    );
-                  },
                 );
-              },
+              }),
+            ],
+            child: MaterialApp(
+              theme: AppTheme.light,
+              home: const ExploreMapScreen(enableNetworkTiles: false),
             ),
           ),
         );
-        await tester.pump();
+        await _pumpClubUi(tester);
 
-        final railScrollable = find.descendant(
-          of: find.byType(ListView),
-          matching: find.byType(Scrollable),
-        );
-        expect(railScrollable, findsOneWidget);
-
-        await tester.drag(find.byType(ListView), const Offset(-520, 0));
-        await tester.pump();
-        expect(
-          tester.state<ScrollableState>(railScrollable).position.pixels,
-          greaterThan(0),
-        );
-
-        updateCamera(const LocationCoordinate(19.0, 72.05));
-        await tester.pump();
+        await tester.tap(find.bySemanticsLabel('Select Refresh Pin Point'));
         await tester.pump(CatchMotion.fast);
+        expect(find.byType(EventDateRailCard), findsOneWidget);
 
-        expect(
-          tester.state<ScrollableState>(railScrollable).position.pixels,
-          0,
+        final ProviderContainer container = ProviderScope.containerOf(
+          tester.element(find.byType(ExploreMapScreen)),
         );
-        expect(
-          find.byKey(ValueKey('explore-peek-${events.last.id}')),
-          findsOneWidget,
+        showSelectedEvent = false;
+        container.invalidate(exploreFeedViewModelProvider);
+        await tester.pump();
+        await tester.pumpAndSettle();
+
+        expect(find.byType(EventDateRailCard), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'ExploreMapScreen clears selected card when selected event loses its pin',
+      (tester) async {
+        var showExactPin = true;
+        final club = buildClub(id: 'club-map-pin-loss', name: 'Map Pin Club');
+        final pinnedEvent = event_test.buildEvent(
+          id: 'event-map-pin-loss',
+          clubId: club.id,
+          meetingPoint: 'Pin Loss Point',
+          startingPointLat: 19.0608,
+          startingPointLng: 72.8365,
+          startTime: DateTime.now().add(const Duration(days: 1)),
         );
+        final unpinnedEvent = event_test.buildEvent(
+          id: pinnedEvent.id,
+          clubId: club.id,
+          meetingPoint: pinnedEvent.meetingPoint,
+          startTime: pinnedEvent.startTime,
+          endTime: pinnedEvent.endTime,
+        );
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              cityListProvider.overrideWith((ref) async => _testCities),
+              deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+              exploreFeedViewModelProvider.overrideWith((ref) {
+                return AsyncData(
+                  ExploreFeedViewModel(
+                    items: [
+                      ExploreEventItem(
+                        event: showExactPin ? pinnedEvent : unpinnedEvent,
+                        club: club,
+                        status: EventTileStatus.open,
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            ],
+            child: MaterialApp(
+              theme: AppTheme.light,
+              home: const ExploreMapScreen(enableNetworkTiles: false),
+            ),
+          ),
+        );
+        await _pumpClubUi(tester);
+
+        await tester.tap(find.bySemanticsLabel('Select Pin Loss Point'));
+        await tester.pump(CatchMotion.fast);
+        expect(find.byType(EventDateRailCard), findsOneWidget);
+
+        final ProviderContainer container = ProviderScope.containerOf(
+          tester.element(find.byType(ExploreMapScreen)),
+        );
+        showExactPin = false;
+        container.invalidate(exploreFeedViewModelProvider);
+        await tester.pump();
+        await tester.pumpAndSettle();
+
+        expect(find.byType(EventDateRailCard), findsNothing);
       },
     );
 

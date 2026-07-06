@@ -23,6 +23,7 @@ Do not edit it by hand.
 | PublicProfileDocument | `firestore/public_profiles.schema.json` | `functions/src/shared/generated/publicProfileDocument.ts` |
 | HostProfileDocument | `firestore/host_profiles.schema.json` | `functions/src/shared/generated/hostProfileDocument.ts` |
 | ClubDocument | `firestore/clubs.schema.json` | `functions/src/shared/generated/clubDocument.ts` |
+| ClubPostDocument | `firestore/club_posts.schema.json` | `functions/src/shared/generated/clubPostDocument.ts` |
 | ClubMembershipDocument | `firestore/club_memberships.schema.json` | `functions/src/shared/generated/clubMembershipDocument.ts` |
 | ClubHostClaimDocument | `firestore/club_host_claims.schema.json` | `functions/src/shared/generated/clubHostClaimDocument.ts` |
 | ClubClaimRequestDocument | `firestore/club_claim_requests.schema.json` | `functions/src/shared/generated/clubClaimRequestDocument.ts` |
@@ -71,6 +72,8 @@ Do not edit it by hand.
 | UpdateUserProfileCallablePayload | `patches/update_user_profile.schema.json` | `functions/src/shared/generated/updateUserProfileCallablePayload.ts` |
 | CreateClubCallablePayload | `callables/create_club_payload.schema.json` | `functions/src/shared/generated/createClubCallablePayload.ts` |
 | CreateClubCallableResponse | `callable_responses/create_club_response.schema.json` | `functions/src/shared/generated/createClubCallableResponse.ts` |
+| CreateClubPostCallablePayload | `callables/create_club_post_payload.schema.json` | `functions/src/shared/generated/createClubPostCallablePayload.ts` |
+| CreateClubPostCallableResponse | `callable_responses/create_club_post_response.schema.json` | `functions/src/shared/generated/createClubPostCallableResponse.ts` |
 | UpdateClubCallablePayload | `callables/update_club_payload.schema.json` | `functions/src/shared/generated/updateClubCallablePayload.ts` |
 | HostAnalyticsQueryCallablePayload | `callables/host_analytics_query_payload.schema.json` | `functions/src/shared/generated/hostAnalyticsQueryCallablePayload.ts` |
 | HostAnalyticsCallableResponse | `callable_responses/host_analytics_response.schema.json` | `functions/src/shared/generated/hostAnalyticsCallableResponse.ts` |
@@ -174,6 +177,7 @@ Do not edit it by hand.
 | `schemaPublicProfileDocumentSchema` | PublicProfileDocument | `firestore/public_profiles.schema.json` | `lib/core/schema_contracts/generated/schemas/public_profile_document.g.dart` |
 | `schemaHostProfileDocumentSchema` | HostProfileDocument | `firestore/host_profiles.schema.json` | `lib/core/schema_contracts/generated/schemas/host_profile_document.g.dart` |
 | `schemaClubDocumentSchema` | ClubDocument | `firestore/clubs.schema.json` | `lib/core/schema_contracts/generated/schemas/club_document.g.dart` |
+| `schemaClubPostDocumentSchema` | ClubPostDocument | `firestore/club_posts.schema.json` | `lib/core/schema_contracts/generated/schemas/club_post_document.g.dart` |
 | `schemaClubMembershipDocumentSchema` | ClubMembershipDocument | `firestore/club_memberships.schema.json` | `lib/core/schema_contracts/generated/schemas/club_membership_document.g.dart` |
 | `schemaClubHostClaimDocumentSchema` | ClubHostClaimDocument | `firestore/club_host_claims.schema.json` | `lib/core/schema_contracts/generated/schemas/club_host_claim_document.g.dart` |
 | `schemaClubClaimRequestDocumentSchema` | ClubClaimRequestDocument | `firestore/club_claim_requests.schema.json` | `lib/core/schema_contracts/generated/schemas/club_claim_request_document.g.dart` |
@@ -222,6 +226,8 @@ Do not edit it by hand.
 | `schemaUpdateUserProfileCallablePayloadSchema` | UpdateUserProfileCallablePayload | `patches/update_user_profile.schema.json` | `lib/core/schema_contracts/generated/schemas/update_user_profile_callable_payload.g.dart` |
 | `schemaCreateClubCallablePayloadSchema` | CreateClubCallablePayload | `callables/create_club_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/create_club_callable_payload.g.dart` |
 | `schemaCreateClubCallableResponseSchema` | CreateClubCallableResponse | `callable_responses/create_club_response.schema.json` | `lib/core/schema_contracts/generated/schemas/create_club_callable_response.g.dart` |
+| `schemaCreateClubPostCallablePayloadSchema` | CreateClubPostCallablePayload | `callables/create_club_post_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/create_club_post_callable_payload.g.dart` |
+| `schemaCreateClubPostCallableResponseSchema` | CreateClubPostCallableResponse | `callable_responses/create_club_post_response.schema.json` | `lib/core/schema_contracts/generated/schemas/create_club_post_callable_response.g.dart` |
 | `schemaUpdateClubCallablePayloadSchema` | UpdateClubCallablePayload | `callables/update_club_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/update_club_callable_payload.g.dart` |
 | `schemaHostAnalyticsQueryCallablePayloadSchema` | HostAnalyticsQueryCallablePayload | `callables/host_analytics_query_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/host_analytics_query_callable_payload.g.dart` |
 | `schemaHostAnalyticsCallableResponseSchema` | HostAnalyticsCallableResponse | `callable_responses/host_analytics_response.schema.json` | `lib/core/schema_contracts/generated/schemas/host_analytics_callable_response.g.dart` |
@@ -316,6 +322,7 @@ Do not edit it by hand.
 |---|---|---|---|
 | UpdateUserProfilePatch | UpdateUserProfileCallablePayload | `patches/update_user_profile.schema.json` | `lib/core/schema_contracts/generated/callables/update_user_profile_patch.g.dart` |
 | CreateClubCallableRequest | CreateClubCallablePayload | `callables/create_club_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_club_callable_request.g.dart` |
+| CreateClubPostCallableRequest | CreateClubPostCallablePayload | `callables/create_club_post_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_club_post_callable_request.g.dart` |
 | HostAnalyticsQueryCallableRequest | HostAnalyticsQueryCallablePayload | `callables/host_analytics_query_payload.schema.json` | `lib/core/schema_contracts/generated/callables/host_analytics_query_callable_request.g.dart` |
 | UserAnalyticsQueryCallableRequest | UserAnalyticsQueryCallablePayload | `callables/user_analytics_query_payload.schema.json` | `lib/core/schema_contracts/generated/callables/user_analytics_query_callable_request.g.dart` |
 | AddClubHostCallableRequest | AddClubHostCallablePayload | `callables/add_club_host_payload.schema.json` | `lib/core/schema_contracts/generated/callables/add_club_host_callable_request.g.dart` |

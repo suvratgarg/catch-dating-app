@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_formatters.dart';
+import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -36,6 +38,11 @@ class ClubHostSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final hosts = club.displayHostProfiles;
+    final activity = ActivityPalette.resolve(
+      context,
+      club.hostDefaults.primaryActivityKind,
+    );
+    final establishedLabel = clubEstablishedLabel(club);
 
     return CatchSurface(
       borderColor: t.line,
@@ -55,6 +62,8 @@ class ClubHostSection extends StatelessWidget {
                 child: ClubHostRow(
                   host: host,
                   borderColor: t.primarySoft,
+                  ownerSealColor: activity.accent,
+                  establishedLabel: establishedLabel,
                   showChevron: canViewProfile,
                   onMessage:
                       messageableHostUids.contains(host.uid) &&
@@ -78,12 +87,16 @@ class ClubHostRow extends StatelessWidget {
     super.key,
     required this.host,
     required this.borderColor,
+    required this.ownerSealColor,
+    required this.establishedLabel,
     required this.showChevron,
     required this.onMessage,
   });
 
   final ClubHostProfile host;
   final Color borderColor;
+  final Color ownerSealColor;
+  final String establishedLabel;
   final bool showChevron;
   final VoidCallback? onMessage;
 
@@ -92,9 +105,7 @@ class ClubHostRow extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     final isOwner = host.role == ClubHostRole.owner;
-    final meta =
-        '${isOwner ? 'OWNER' : 'HOST'} · '
-        '${showChevron ? 'VIEW PROFILE' : 'PUBLIC PROFILE'}';
+    final meta = '${isOwner ? 'OWNER' : 'HOST'} · EST. $establishedLabel';
 
     return Row(
       children: [
@@ -126,7 +137,7 @@ class ClubHostRow extends StatelessWidget {
                     Icon(
                       CatchIcons.sealCheck,
                       size: CatchIcon.sm,
-                      color: t.primary,
+                      color: ownerSealColor,
                     ),
                   ],
                 ],

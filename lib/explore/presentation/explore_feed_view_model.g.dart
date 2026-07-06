@@ -105,4 +105,57 @@ final class ExploreFeedViewModelProvider
 }
 
 String _$exploreFeedViewModelHash() =>
-    r'9ab4d2ff555c2562d1467383577c589a76dcca72';
+    r'3d7928e09055a71c2a2daea149a032300bf1b5ba';
+
+@ProviderFor(exploreRecommendations)
+final exploreRecommendationsProvider = ExploreRecommendationsProvider._();
+
+final class ExploreRecommendationsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<ExploreEventRecommendation>>,
+          AsyncValue<List<ExploreEventRecommendation>>,
+          AsyncValue<List<ExploreEventRecommendation>>
+        >
+    with $Provider<AsyncValue<List<ExploreEventRecommendation>>> {
+  ExploreRecommendationsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'exploreRecommendationsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$exploreRecommendationsHash();
+
+  @$internal
+  @override
+  $ProviderElement<AsyncValue<List<ExploreEventRecommendation>>> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  AsyncValue<List<ExploreEventRecommendation>> create(Ref ref) {
+    return exploreRecommendations(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(
+    AsyncValue<List<ExploreEventRecommendation>> value,
+  ) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride:
+          $SyncValueProvider<AsyncValue<List<ExploreEventRecommendation>>>(
+            value,
+          ),
+    );
+  }
+}
+
+String _$exploreRecommendationsHash() =>
+    r'a9102dea96e5510ac59d36c6bef388025ed7d57a';

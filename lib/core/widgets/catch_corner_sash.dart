@@ -80,14 +80,14 @@ class CatchCornerSash extends StatelessWidget {
       ),
       CatchSashTone.success => _SashPalette(
         background: t.success,
-        foreground: CatchTokens.editorialLight,
+        foreground: CatchTokens.editorialWhite,
       ),
       CatchSashTone.solid => _SashPalette(
         background: t.ink,
         foreground: t.surface,
       ),
       CatchSashTone.surface => _SashPalette(
-        background: CatchTokens.editorialLight.withValues(
+        background: CatchTokens.editorialWhite.withValues(
           alpha: CatchOpacity.surfaceSashFill,
         ),
         foreground: t.ink,

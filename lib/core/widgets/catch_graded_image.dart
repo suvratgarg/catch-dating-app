@@ -189,8 +189,8 @@ class _GrainPainter extends CustomPainter {
       final light = rng.nextBool();
       // Fixed editorial grain tones keep generated texture theme-independent.
       final tone = light
-          ? CatchTokens.editorialLight
-          : CatchTokens.editorialDark;
+          ? CatchTokens.editorialWhite
+          : CatchTokens.editorialBlack;
       paint.color = tone.withValues(
         alpha: opacity * (0.35 + rng.nextDouble() * 0.65),
       );

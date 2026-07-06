@@ -109,7 +109,7 @@ class EventDetailCta extends ConsumerWidget {
     final referenceNow = now ?? DateTime.now();
     final ctaBackground = darkSurface ? t.ink : null;
     final ctaDivider = darkSurface
-        ? CatchTokens.editorialLight.withValues(
+        ? CatchTokens.editorialWhite.withValues(
             alpha: CatchOpacity.eventDetailCtaDarkDivider,
           )
         : null;

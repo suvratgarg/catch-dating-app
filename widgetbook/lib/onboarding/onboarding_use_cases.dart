@@ -354,7 +354,7 @@ Widget welcomeReelBandStates(BuildContext context) {
       _StateCard(
         label: 'spinning band',
         child: ColoredBox(
-          color: CatchTokens.sunsetDark.bg,
+          color: CatchTokens.editorialDark.bg,
           child: const SizedBox(
             height: 360,
             child: ReelBand(spinValue: 0.5, landingValue: 0, landed: false),
@@ -364,7 +364,7 @@ Widget welcomeReelBandStates(BuildContext context) {
       _StateCard(
         label: 'landed focus',
         child: ColoredBox(
-          color: CatchTokens.sunsetDark.bg,
+          color: CatchTokens.editorialDark.bg,
           child: const SizedBox(
             height: 360,
             child: ReelBand(spinValue: 1, landingValue: 1, landed: true),
@@ -387,7 +387,7 @@ Widget welcomeReelRowStates(BuildContext context) {
       _StateCard(
         label: 'activity phrase',
         child: ColoredBox(
-          color: CatchTokens.sunsetDark.bg,
+          color: CatchTokens.editorialDark.bg,
           child: const SizedBox(
             height: 92,
             child: ReelRow(
@@ -404,7 +404,7 @@ Widget welcomeReelRowStates(BuildContext context) {
       _StateCard(
         label: 'landing phrase',
         child: ColoredBox(
-          color: CatchTokens.sunsetDark.bg,
+          color: CatchTokens.editorialDark.bg,
           child: const SizedBox(
             height: 92,
             child: ReelRow(
@@ -434,7 +434,7 @@ Widget welcomeRevealEntranceStates(BuildContext context) {
       _StateCard(
         label: 'settling',
         child: ColoredBox(
-          color: CatchTokens.sunsetDark.bg,
+          color: CatchTokens.editorialDark.bg,
           child: const Padding(
             padding: EdgeInsets.all(24),
             child: RevealEntrance(
@@ -451,7 +451,7 @@ Widget welcomeRevealEntranceStates(BuildContext context) {
       _StateCard(
         label: 'visible',
         child: ColoredBox(
-          color: CatchTokens.sunsetDark.bg,
+          color: CatchTokens.editorialDark.bg,
           child: const Padding(
             padding: EdgeInsets.all(24),
             child: RevealEntrance(

@@ -1,13 +1,12 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
+import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_scrim.dart';
-import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_reaction_controls.dart';
@@ -53,9 +52,9 @@ class CatchProfileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final accent = data.kickerActivity == null
+    final activity = data.kickerActivity == null
         ? null
-        : ActivityPalette.of(context).forKind(data.kickerActivity!).accent;
+        : ActivityPalette.resolve(context, data.kickerActivity!);
 
     return ColoredBox(
       color: t.bg,
@@ -77,7 +76,7 @@ class CatchProfileView extends StatelessWidget {
             SliverToBoxAdapter(
               child: ProfileHeroWidget(
                 data: data,
-                accent: accent,
+                accent: activity?.accent,
                 onReact: onReact,
                 reactionsEnabled: reactionsEnabled,
                 reactionsPending: reactionsPending,
@@ -88,7 +87,7 @@ class CatchProfileView extends StatelessWidget {
                 top: CatchSpacing.s7,
                 bottom: bottomPadding,
               ),
-              sliver: SliverList.list(children: _body(context, accent)),
+              sliver: SliverList.list(children: _body(context, activity)),
             ),
           ],
         ),
@@ -96,7 +95,7 @@ class CatchProfileView extends StatelessWidget {
     );
   }
 
-  List<Widget> _body(BuildContext context, Color? accent) {
+  List<Widget> _body(BuildContext context, CatchActivity? activity) {
     final t = CatchTokens.of(context);
     final blocks = <Widget>[];
     for (var i = 0; i < data.sections.length; i++) {
@@ -104,7 +103,7 @@ class CatchProfileView extends StatelessWidget {
       blocks.add(
         ProfileSectionView(
           section: data.sections[i],
-          accent: accent,
+          activity: activity,
           onReact: onReact,
           reactionsEnabled: reactionsEnabled,
           reactionsPending: reactionsPending,
@@ -138,7 +137,7 @@ class ProfileHeroWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dark = CatchTokens.sunsetDark;
+    final dark = CatchTokens.editorialDark;
     final kickerColor = accent ?? dark.ink;
     final reaction = data.heroReaction;
 
@@ -240,14 +239,14 @@ class ProfileSectionView extends StatelessWidget {
   const ProfileSectionView({
     super.key,
     required this.section,
-    this.accent,
+    this.activity,
     this.onReact,
     this.reactionsEnabled = true,
     this.reactionsPending = false,
   });
 
   final ProfileSection section;
-  final Color? accent;
+  final CatchActivity? activity;
   final ProfileReactionCallback? onReact;
   final bool reactionsEnabled;
   final bool reactionsPending;
@@ -267,10 +266,10 @@ class ProfileSectionView extends StatelessWidget {
     final content = switch (section) {
       ProfileCompatibilitySection s => ProfileCompatibility(
         section: s,
-        accent: accent,
+        activity: activity,
       ),
       ProfilePromptSectionData s => ProfilePrompt(section: s),
-      ProfileRunningSection s => ProfileRunning(section: s, accent: accent),
+      ProfileRunningSection s => ProfileRunning(section: s, activity: activity),
       ProfileFactsSection s => ProfileFacts(section: s),
       ProfilePhotoSection() => const SizedBox.shrink(),
     };
@@ -315,52 +314,60 @@ class ProfileSectionKicker extends StatelessWidget {
 // ── Compatibility ("Why you might click") ─────────────────────────────────────
 
 class ProfileCompatibility extends StatelessWidget {
-  const ProfileCompatibility({super.key, required this.section, this.accent});
+  const ProfileCompatibility({super.key, required this.section, this.activity});
 
   final ProfileCompatibilitySection section;
-  final Color? accent;
+  final CatchActivity? activity;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final markColor = accent ?? t.ink;
+    final markColor = activity?.accent ?? t.ink;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ProfileSectionKicker(section.title, color: accent),
+        ProfileSectionKicker(section.title),
         gapH10,
-        for (final reason in section.reasons)
+        for (final (index, reason) in section.reasons.indexed) ...[
+          if (index > 0) ProfileRule(color: t.line),
           Padding(
-            padding: const EdgeInsets.only(bottom: CatchSpacing.s2),
+            padding: EdgeInsets.only(
+              top: index > 0 ? CatchSpacing.s3 : 0,
+              bottom: index == section.reasons.length - 1 ? 0 : CatchSpacing.s3,
+            ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
                   padding: const EdgeInsets.only(top: CatchSpacing.s1),
-                  child: Icon(
-                    CatchIcons.checkRounded,
-                    size: CatchIcon.sm,
-                    color: markColor,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: markColor,
+                      borderRadius: BorderRadius.circular(CatchRadius.pill),
+                    ),
+                    child: const SizedBox.square(
+                      dimension: CatchSpacing.micro6,
+                    ),
                   ),
                 ),
-                gapW10,
+                gapW12,
                 Expanded(
                   child: Text(
                     reason,
-                    style: CatchTextStyles.proseM(context, color: t.ink),
+                    style: CatchTextStyles.profileAnswer(context, color: t.ink),
                   ),
                 ),
               ],
             ),
           ),
+        ],
         if (section.confidence.isNotEmpty) ...[
-          gapH4,
+          gapH10,
           Wrap(
             spacing: CatchSpacing.s2,
             runSpacing: CatchSpacing.s2,
             children: [
-              for (final signal in section.confidence)
-                CatchBadge(label: signal),
+              for (final signal in section.confidence) CatchChip(label: signal),
             ],
           ),
         ],
@@ -396,10 +403,10 @@ class ProfilePrompt extends StatelessWidget {
 // ── Running identity ──────────────────────────────────────────────────────────
 
 class ProfileRunning extends StatelessWidget {
-  const ProfileRunning({super.key, required this.section, this.accent});
+  const ProfileRunning({super.key, required this.section, this.activity});
 
   final ProfileRunningSection section;
-  final Color? accent;
+  final CatchActivity? activity;
 
   @override
   Widget build(BuildContext context) {
@@ -407,21 +414,12 @@ class ProfileRunning extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ProfileSectionKicker('Running rhythm', color: accent),
+        ProfileSectionKicker('Running rhythm', color: activity?.accent),
         gapH10,
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: CatchStatColumn(label: 'Pace', value: section.pace),
-            ),
-            gapW12,
-            Expanded(
-              child: CatchStatColumn(
-                label: 'Distance',
-                value: section.distance,
-              ),
-            ),
+        CatchMetricStrip(
+          items: [
+            CatchMetricStripItem(value: section.pace, label: 'PACE'),
+            CatchMetricStripItem(value: section.distance, label: 'DISTANCE'),
           ],
         ),
         if (section.reasons.isNotEmpty || section.times.isNotEmpty) ...[
@@ -436,7 +434,14 @@ class ProfileRunning extends StatelessWidget {
           Wrap(
             spacing: CatchSpacing.s2,
             runSpacing: CatchSpacing.s2,
-            children: [for (final tag in section.tags) CatchBadge(label: tag)],
+            children: [
+              for (final tag in section.tags)
+                CatchChip(
+                  label: tag,
+                  tintColor: activity?.soft,
+                  inkColor: activity?.deep,
+                ),
+            ],
           ),
         ],
       ],
@@ -548,7 +553,7 @@ class PhotoCaption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dark = CatchTokens.sunsetDark;
+    final dark = CatchTokens.editorialDark;
     return CatchSurface(
       padding: CatchInsets.compactControlContent,
       radius: CatchRadius.sm,

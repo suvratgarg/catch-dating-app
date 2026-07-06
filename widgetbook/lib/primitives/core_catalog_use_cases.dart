@@ -1054,7 +1054,7 @@ Widget catchStartupLoadingScreenCatalogStates(BuildContext context) {
     catalogId: 'core.widgets.catch_startup_loading_screen',
     children: const [
       _StateCard(
-        label: 'branded boot surface',
+        label: 'boot surface before delayed spinner',
         child: _PhoneFrame(height: 360, child: CatchStartupLoadingScreen()),
       ),
     ],
@@ -1795,36 +1795,6 @@ Widget catchEventCardCatalogStates(BuildContext context) {
               onTap: _noop,
             ),
           ],
-        ),
-      ),
-      _StateCard(
-        label: 'spotlight',
-        child: CatchEventCard.spotlight(
-          title: 'Dinner for six',
-          supportingLabel: 'A low-pressure table with rotating prompts.',
-          timeLabel: '8 PM',
-          countdownLabel: 'Fri',
-          priceLabel: '₹1499',
-          capacityLabel: '4 seats left',
-          activityKind: ActivityKind.dinner,
-          onTap: _noop,
-        ),
-      ),
-      _StateCard(
-        label: 'compact',
-        child: SizedBox(
-          width: 360,
-          child: CatchEventCard.compact(
-            title: 'Sunday sea-face social',
-            subtitle: 'Hosted by Catch Run Club',
-            timeLabel: '7 AM',
-            countdownLabel: 'Sun',
-            priceLabel: 'Free',
-            capacityLabel: '18 going / 6 left',
-            activityKind: ActivityKind.socialRun,
-            statusLabel: 'Nearby',
-            onTap: _noop,
-          ),
         ),
       ),
     ],

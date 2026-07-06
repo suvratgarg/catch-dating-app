@@ -15,6 +15,7 @@ import {UserProfileDocument} from "./userProfileDocument";
 import {PublicProfileDocument} from "./publicProfileDocument";
 import {HostProfileDocument} from "./hostProfileDocument";
 import {ClubDocument} from "./clubDocument";
+import {ClubPostDocument} from "./clubPostDocument";
 import {ClubMembershipDocument} from "./clubMembershipDocument";
 import {ClubHostClaimDocument} from "./clubHostClaimDocument";
 import {ClubClaimRequestDocument} from "./clubClaimRequestDocument";
@@ -63,6 +64,8 @@ import {OrganizerPolicyGapReviewDecisionDocument} from "./organizerPolicyGapRevi
 import {UpdateUserProfileCallablePayload} from "./updateUserProfileCallablePayload";
 import {CreateClubCallablePayload} from "./createClubCallablePayload";
 import {CreateClubCallableResponse} from "./createClubCallableResponse";
+import {CreateClubPostCallablePayload} from "./createClubPostCallablePayload";
+import {CreateClubPostCallableResponse} from "./createClubPostCallableResponse";
 import {UpdateClubCallablePayload} from "./updateClubCallablePayload";
 import {HostAnalyticsQueryCallablePayload} from "./hostAnalyticsQueryCallablePayload";
 import {HostAnalyticsCallableResponse} from "./hostAnalyticsCallableResponse";
@@ -162,6 +165,7 @@ import {
   publicProfileDocumentSchema,
   hostProfileDocumentSchema,
   clubDocumentSchema,
+  clubPostDocumentSchema,
   clubMembershipDocumentSchema,
   clubHostClaimDocumentSchema,
   clubClaimRequestDocumentSchema,
@@ -210,6 +214,8 @@ import {
   updateUserProfileCallablePayloadSchema,
   createClubCallablePayloadSchema,
   createClubCallableResponseSchema,
+  createClubPostCallablePayloadSchema,
+  createClubPostCallableResponseSchema,
   updateClubCallablePayloadSchema,
   hostAnalyticsQueryCallablePayloadSchema,
   hostAnalyticsCallableResponseSchema,
@@ -346,6 +352,10 @@ export const validateClubDocument:
   ValidateFunction<ClubDocument> =
     ajv.compile(clubDocumentSchema) as
       ValidateFunction<ClubDocument>;
+export const validateClubPostDocument:
+  ValidateFunction<ClubPostDocument> =
+    ajv.compile(clubPostDocumentSchema) as
+      ValidateFunction<ClubPostDocument>;
 export const validateClubMembershipDocument:
   ValidateFunction<ClubMembershipDocument> =
     ajv.compile(clubMembershipDocumentSchema) as
@@ -538,6 +548,14 @@ export const validateCreateClubCallableResponse:
   ValidateFunction<CreateClubCallableResponse> =
     ajv.compile(createClubCallableResponseSchema) as
       ValidateFunction<CreateClubCallableResponse>;
+export const validateCreateClubPostCallablePayload:
+  ValidateFunction<CreateClubPostCallablePayload> =
+    ajv.compile(createClubPostCallablePayloadSchema) as
+      ValidateFunction<CreateClubPostCallablePayload>;
+export const validateCreateClubPostCallableResponse:
+  ValidateFunction<CreateClubPostCallableResponse> =
+    ajv.compile(createClubPostCallableResponseSchema) as
+      ValidateFunction<CreateClubPostCallableResponse>;
 export const validateUpdateClubCallablePayload:
   ValidateFunction<UpdateClubCallablePayload> =
     ajv.compile(updateClubCallablePayloadSchema) as

@@ -1,32 +1,23 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/clubs/clubs.dart' show ClubAvatarRail;
 import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
-import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
-import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/external_links.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
-import 'package:catch_dating_app/dashboard/data/dashboard_recommendations_repository.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_event_focus_controller.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
-import 'package:catch_dating_app/dashboard/presentation/dashboard_stride_actions_controller.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_loading_widgets.dart';
+import 'package:catch_dating_app/dashboard/presentation/notifications_list_state.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/club_posts_home_section.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/empty_hero_card.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_rail.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/recommendations.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/stride_card.dart';
-import 'package:catch_dating_app/dashboard/shared/quick_actions.dart';
 import 'package:catch_dating_app/event_success/event_success_companion_launcher.dart';
 import 'package:catch_dating_app/events/data/event_calendar_links.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_location_links.dart';
 import 'package:catch_dating_app/events/shared/event_check_in_celebration_screen.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
+import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
+import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:catch_dating_app/reviews/shared/write_review_sheet.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -40,12 +31,10 @@ class DashboardFullSliverBody extends ConsumerStatefulWidget {
     super.key,
     required this.viewModel,
     required this.user,
-    this.followedClubIds = const <String>[],
   });
 
   final DashboardFullViewModel viewModel;
   final UserProfile user;
-  final List<String> followedClubIds;
 
   @override
   ConsumerState<DashboardFullSliverBody> createState() =>
@@ -54,15 +43,12 @@ class DashboardFullSliverBody extends ConsumerStatefulWidget {
 
 class _DashboardFullSliverBodyState
     extends ConsumerState<DashboardFullSliverBody> {
-  bool _isConnectingStride = false;
-  bool _isInstallingHealthConnect = false;
-
   @override
   Widget build(BuildContext context) {
     final focusEvents = [
-      ...widget.viewModel.upcomingEvents,
       if (widget.viewModel.activeSwipeEvent != null)
         widget.viewModel.activeSwipeEvent!,
+      ...widget.viewModel.upcomingEvents,
       if (widget.viewModel.pendingReviewEvent != null)
         widget.viewModel.pendingReviewEvent!,
     ];
@@ -86,7 +72,9 @@ class _DashboardFullSliverBodyState
             padding: CatchInsets.pageBodyUnderHeader,
             gap: CatchSpacing.micro18,
             children: [
-              if (focusEvents.isNotEmpty)
+              if (focusEvents.isEmpty)
+                EmptyHeroCard(onFindEvent: () => _openExplore(context))
+              else
                 EventFocusRail(
                   upcomingEvents: widget.viewModel.upcomingEvents,
                   arrivalAction: widget.viewModel.arrivalAction,
@@ -101,49 +89,17 @@ class _DashboardFullSliverBodyState
                   ),
                   actions: _buildEventFocusActions(context),
                 ),
-              DashboardStrideSection(
-                section: widget.viewModel.weeklyActivitySection,
-                actionState: DashboardStrideActionState(
-                  isConnecting: _isConnectingStride,
-                  isInstallingHealthConnect: _isInstallingHealthConnect,
+              if (widget.viewModel.clubPostNotifications.isNotEmpty)
+                ClubPostsHomeSection(
+                  notifications: widget.viewModel.clubPostNotifications,
+                  onOpenPost: (notification) =>
+                      _openClubPost(context, notification),
                 ),
-                actions: DashboardStrideSectionActions(
-                  onRetry: () => ref.invalidate(weeklyActivityProvider),
-                  onConnect: () => _connectStride(context),
-                  onInstallHealthConnect: _installHealthConnect,
-                ),
-              ),
-              QuickActions(actions: _buildQuickActions(context)),
-              if (widget.followedClubIds.isNotEmpty) _buildFollowedClubsRail(),
-              ..._buildRecommendedEventsSection(
-                recommendationsSection: widget.viewModel.recommendationsSection,
-              ),
             ],
           ),
         ),
       ),
     );
-  }
-
-  Widget _buildFollowedClubsRail() {
-    final uniqueIds = widget.followedClubIds
-        .toSet()
-        .take(12)
-        .toList(growable: false);
-    if (uniqueIds.isEmpty) return const SizedBox.shrink();
-
-    final clubsAsync = ref.watch(
-      watchClubsByIdsProvider(ClubsByIdQuery(uniqueIds)),
-    );
-    final clubs = clubsAsync.asData?.value ?? const [];
-
-    if (clubs.isNotEmpty) {
-      return ClubAvatarRail(clubs: clubs);
-    }
-
-    return clubsAsync.isLoading
-        ? const FollowedClubsRailSkeleton()
-        : const SizedBox.shrink();
   }
 
   EventFocusActions _buildEventFocusActions(BuildContext context) {
@@ -159,14 +115,56 @@ class _DashboardFullSliverBodyState
     );
   }
 
-  List<DashboardQuickAction> _buildQuickActions(BuildContext context) {
-    return dashboardQuickActions(
-      onCalendarPressed: () => context.push(Routes.calendarScreen.path),
-      onSavedEventsPressed: () => context.push(Routes.savedEventsScreen.path),
+  void _logAction(String module, String action) {
+    ref
+        .read(appAnalyticsProvider)
+        .logEvent(
+          AnalyticsEvents.homeActionTap,
+          parameters: {
+            AnalyticsParameters.homeModule: module,
+            AnalyticsParameters.homeAction: action,
+          },
+        );
+  }
+
+  String _moduleForEvent(Event event) {
+    return widget.viewModel.activeSwipeEvent?.id == event.id
+        ? 'catch_window'
+        : 'focus_rail';
+  }
+
+  void _openExplore(BuildContext context) {
+    _logAction('idle_cta', 'find_event');
+    context.go(Routes.exploreScreen.path);
+  }
+
+  void _openClubPost(BuildContext context, ActivityNotification notification) {
+    _logAction('club_posts', 'open_post');
+    final parameters = <String, Object>{};
+    final clubId = notification.clubId;
+    final eventId = notification.eventId;
+    if (clubId != null) {
+      parameters[AnalyticsParameters.clubId] = clubId;
+    }
+    if (eventId != null) {
+      parameters[AnalyticsParameters.eventId] = eventId;
+    }
+    ref
+        .read(appAnalyticsProvider)
+        .logEvent(AnalyticsEvents.clubPostOpen, parameters: parameters);
+    unawaited(
+      ref
+          .read(activityNotificationRepositoryProvider)
+          .markAllRead(uid: notification.uid, notifications: [notification]),
     );
+    final route = notificationRoute(notification);
+    if (route != null) {
+      context.push(route);
+    }
   }
 
   void _openEvent(BuildContext context, Event event) {
+    _logAction(_moduleForEvent(event), 'view_event');
     context.pushNamed(
       Routes.dashboardEventDetailScreen.name,
       pathParameters: {'clubId': event.clubId, 'eventId': event.id},
@@ -175,6 +173,7 @@ class _DashboardFullSliverBodyState
   }
 
   void _openDirections(Event event) {
+    _logAction(_moduleForEvent(event), 'directions');
     unawaited(
       ref
           .read(externalLinkControllerProvider)
@@ -183,10 +182,12 @@ class _DashboardFullSliverBodyState
   }
 
   void _addToCalendar(Event event) {
+    _logAction(_moduleForEvent(event), 'add_to_calendar');
     unawaited(ref.read(eventCalendarControllerProvider).addToCalendar(event));
   }
 
   void _openSwipe(BuildContext context, Event event) {
+    _logAction(_moduleForEvent(event), 'open_catch_window');
     context.pushNamed(
       Routes.swipeEventScreen.name,
       pathParameters: {'eventId': event.id},
@@ -194,6 +195,7 @@ class _DashboardFullSliverBodyState
   }
 
   void _writeReview(BuildContext context, Event event) {
+    _logAction(_moduleForEvent(event), 'write_review');
     showWriteReviewSheet(
       context: context,
       clubId: event.clubId,
@@ -203,131 +205,51 @@ class _DashboardFullSliverBodyState
   }
 
   void _checkIn(BuildContext context, Event event) {
+    _logAction(_moduleForEvent(event), 'check_in');
+    unawaited(_runCheckInFlow(context, event));
+  }
+
+  Future<void> _runCheckInFlow(BuildContext context, Event event) async {
     final controller = DashboardEventFocusController(ref: ref);
-    unawaited(
-      DashboardEventFocusController.selfCheckInMutation
-          .run(ref, (tx) async {
-            await controller.selfCheckIn(tx, event);
-            if (!context.mounted) return;
-            final launchResult = await launchEventSuccessCompanionIfAvailable(
-              context: context,
-              ref: ref,
-              uid: widget.user.uid,
+    try {
+      await DashboardEventFocusController.selfCheckInMutation.run(ref, (
+        tx,
+      ) async {
+        await controller.selfCheckIn(tx, event);
+        if (!context.mounted) return;
+        final launchResult = await launchEventSuccessCompanionIfAvailable(
+          context: context,
+          ref: ref,
+          uid: widget.user.uid,
+          event: event,
+        );
+        if (!context.mounted ||
+            launchResult != EventSuccessCompanionLaunchResult.unavailable) {
+          return;
+        }
+        await Navigator.of(context, rootNavigator: true).push(
+          MaterialPageRoute<void>(
+            fullscreenDialog: true,
+            builder: (routeContext) => EventCheckInCelebrationScreen(
               event: event,
-            );
-            if (!context.mounted ||
-                launchResult != EventSuccessCompanionLaunchResult.unavailable) {
-              return;
-            }
-            await Navigator.of(context, rootNavigator: true).push(
-              MaterialPageRoute<void>(
-                fullscreenDialog: true,
-                builder: (routeContext) => EventCheckInCelebrationScreen(
-                  event: event,
-                  onViewEvent: () {
-                    Navigator.of(routeContext).pop();
-                    GoRouter.of(context).goNamed(
-                      Routes.eventDetailScreen.name,
-                      pathParameters: {
-                        'clubId': event.clubId,
-                        'eventId': event.id,
-                      },
-                      extra: event,
-                    );
-                  },
-                  onBackHome: () {
-                    Navigator.of(routeContext).pop();
-                    GoRouter.of(context).goNamed(Routes.dashboardScreen.name);
-                  },
-                ),
-              ),
-            );
-          })
-          .catchError((_) {}),
-    );
-  }
-
-  Future<void> _connectStride(BuildContext context) async {
-    if (_isConnectingStride) return;
-    setState(() => _isConnectingStride = true);
-    final actions = ref.read(dashboardStrideActionsProvider);
-    final granted = await actions.requestActivityReadPermission();
-    actions.refreshWeeklyActivity();
-    if (!mounted || !context.mounted) return;
-    setState(() => _isConnectingStride = false);
-    if (!granted) {
-      showCatchErrorSnackBar(
-        context,
-        const PermissionException('Health access was not granted.'),
-        errorContext: AppErrorContext.dashboard,
-      );
+              onViewEvent: () {
+                Navigator.of(routeContext).pop();
+                GoRouter.of(context).goNamed(
+                  Routes.eventDetailScreen.name,
+                  pathParameters: {'clubId': event.clubId, 'eventId': event.id},
+                  extra: event,
+                );
+              },
+              onBackHome: () {
+                Navigator.of(routeContext).pop();
+                GoRouter.of(context).goNamed(Routes.dashboardScreen.name);
+              },
+            ),
+          ),
+        );
+      });
+    } catch (_) {
+      // Mutation state owns the inline error display in EventFocusRail.
     }
-  }
-
-  Future<void> _installHealthConnect() async {
-    if (_isInstallingHealthConnect) return;
-    setState(() => _isInstallingHealthConnect = true);
-    final actions = ref.read(dashboardStrideActionsProvider);
-    await actions.installHealthConnect();
-    actions.refreshWeeklyActivity();
-    if (!mounted) return;
-    setState(() => _isInstallingHealthConnect = false);
-  }
-
-  List<Widget> _buildRecommendedEventsSection({
-    required DashboardSectionModel<List<DashboardEventRecommendation>>
-    recommendationsSection,
-  }) {
-    if (recommendationsSection.isLoading) {
-      return const [DashboardRecommendedLoadingSection()];
-    }
-
-    final error = recommendationsSection.error;
-    if (error != null) {
-      return [
-        CatchInlineErrorState.fromError(
-          error,
-          context: AppErrorContext.dashboard,
-          compact: true,
-          onRetry: () => ref.invalidate(dashboardRecommendedEventsProvider),
-        ),
-      ];
-    }
-
-    final recommendations =
-        recommendationsSection.data ?? const <DashboardEventRecommendation>[];
-    return recommendations.isEmpty
-        ? const []
-        : [Recommendations(recommendations: recommendations)];
-  }
-}
-
-class FollowedClubsRailSkeleton extends StatelessWidget {
-  const FollowedClubsRailSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text('Your clubs', style: CatchTextStyles.titleL(context)),
-        const SizedBox(height: CatchSpacing.s3),
-        Row(
-          children: [
-            for (var index = 0; index < 3; index += 1) ...[
-              if (index > 0) const SizedBox(width: CatchSpacing.micro14),
-              Column(
-                children: [
-                  CatchSkeleton.circle(size: CatchLayout.avatarIdentityExtent),
-                  const SizedBox(height: CatchSpacing.micro6),
-                  CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
-                ],
-              ),
-            ],
-          ],
-        ),
-      ],
-    );
   }
 }

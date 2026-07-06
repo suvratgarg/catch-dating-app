@@ -15,6 +15,6 @@ void main() {
 
     final label = tester.widget<Text>(find.text('Find an event near me'));
 
-    expect(label.style?.color, CatchTokens.sunsetLight.ink);
+    expect(label.style?.color, CatchTokens.editorialLight.ink);
   });
 }

@@ -328,7 +328,7 @@ class ProfilePhotoEditorPreview extends StatelessWidget {
     if (loading) {
       return CatchSkeleton.custom(
         child: const ColoredBox(
-          color: CatchTokens.editorialLight,
+          color: CatchTokens.editorialWhite,
           child: SizedBox.expand(),
         ),
       );

@@ -75,6 +75,7 @@ dependencies:
   audioplayers: ^6.6.0
   phosphor_flutter: ^2.1.0
   flutter_reorderable_grid_view: ^5.6.0
+  flutter_native_splash: ^2.4.7
 
 
 dev_dependencies:
@@ -99,7 +100,6 @@ dev_dependencies:
   freezed: ^3.0.0
   json_serializable: ^6.14.0
   flutter_launcher_icons: ^0.14.4
-  flutter_native_splash: ^2.4.7
   fake_cloud_firestore: ^4.1.0+1
   firebase_auth_mocks: ^0.15.1
   json_schema: ^5.2.2
@@ -128,16 +128,16 @@ flutter_native_splash:
   color_web: "#F4F4F1"
   color_dark: "#0F0E10"
   color_dark_web: "#0F0E10"
-  image: assets/branding/catch_icon.png
-  image_dark: assets/branding/catch_icon.png
+  image: assets/branding/catch_splash_mark_light.png
+  image_dark: assets/branding/catch_splash_mark_dark.png
   android: true
   ios: true
   web: true
   android_12:
     color: "#F4F4F1"
     color_dark: "#0F0E10"
-    image: assets/branding/catch_icon.png
-    image_dark: assets/branding/catch_icon.png
+    image: assets/branding/catch_splash_mark_light.png
+    image_dark: assets/branding/catch_splash_mark_dark.png
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -159,6 +159,8 @@ flutter:
     - assets/branding/catch_icon.png
     - assets/branding/catch_icon_round.png
     - assets/branding/catch_icon_square.png
+    - assets/branding/catch_splash_mark_dark.png
+    - assets/branding/catch_splash_mark_light.png
     - assets/branding/catch_hosts_icon.png
     - assets/branding/catch_hosts_logo.png
     - assets/fixtures/club_hero_portrait.jpg

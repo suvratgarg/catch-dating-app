@@ -153,7 +153,7 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
 
   @override
   Widget build(BuildContext context) {
-    const d = CatchTokens.sunsetDark;
+    const d = CatchTokens.editorialDark;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light.copyWith(
@@ -247,7 +247,7 @@ class WelcomeScene extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const tokens = CatchTokens.sunsetDark;
+    const tokens = CatchTokens.editorialDark;
     final wheelTop = math.max(
       CatchLayout.welcomeReelTop,
       mediaPadding.top + CatchSpacing.s1,
@@ -449,7 +449,7 @@ class ReelRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const tokens = CatchTokens.sunsetDark;
+    const tokens = CatchTokens.editorialDark;
     final center = CatchLayout.welcomeReelRowCenter(
       rowIndex: rowIndex,
       trackOffset: trackOffset,
@@ -491,6 +491,7 @@ class ReelRow extends StatelessWidget {
       decoration: inFocus ? TextDecoration.underline : TextDecoration.none,
       decorationColor: pigment,
       decorationThickness: 4,
+      decorationStyle: TextDecorationStyle.solid,
     );
 
     return SizedBox(
@@ -593,7 +594,7 @@ abstract final class _WelcomeType {
     fontSize: 36,
     height: 1.02,
     color: color,
-    width: CatchLayout.welcomeVoiceWidth,
+    letterSpacing: -0.5,
   );
 
   static TextStyle body(Color color) => CatchFonts.voice(
@@ -601,7 +602,6 @@ abstract final class _WelcomeType {
     height: 1.48,
     color: color.withValues(alpha: CatchOpacity.welcomeIntroBody),
     fontWeight: FontWeight.w400,
-    width: CatchLayout.welcomeVoiceWidth,
   );
 }
 

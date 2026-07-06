@@ -4,7 +4,6 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/sentinels.dart';
@@ -94,6 +93,7 @@ class ExploreFilterSelection {
     this.distanceFilter = ExploreDistanceFilter.any,
     this.highRatedOnly = false,
     this.joinedOnly = false,
+    this.followingOnly = false,
     this.activityTag,
     this.area,
   }) : timeFilter =
@@ -106,6 +106,7 @@ class ExploreFilterSelection {
   final ExploreDistanceFilter distanceFilter;
   final bool highRatedOnly;
   final bool joinedOnly;
+  final bool followingOnly;
   final String? activityTag;
   final String? area;
 
@@ -120,6 +121,7 @@ class ExploreFilterSelection {
       distanceFilter != ExploreDistanceFilter.any ||
       highRatedOnly ||
       joinedOnly ||
+      followingOnly ||
       activityTag != null ||
       area != null;
 
@@ -132,6 +134,7 @@ class ExploreFilterSelection {
       timeFilter != defaultExploreTimeFilter ||
       highRatedOnly ||
       joinedOnly ||
+      followingOnly ||
       activityTag != null ||
       area != null;
 
@@ -141,6 +144,7 @@ class ExploreFilterSelection {
     bool? thisWeekOnly,
     bool? highRatedOnly,
     bool? joinedOnly,
+    bool? followingOnly,
     Object? activityTag = unsetSentinel,
     Object? area = unsetSentinel,
   }) {
@@ -155,6 +159,7 @@ class ExploreFilterSelection {
           : distanceFilter as ExploreDistanceFilter,
       highRatedOnly: highRatedOnly ?? this.highRatedOnly,
       joinedOnly: joinedOnly ?? this.joinedOnly,
+      followingOnly: followingOnly ?? this.followingOnly,
       activityTag: identical(activityTag, unsetSentinel)
           ? this.activityTag
           : activityTag as String?,
@@ -170,6 +175,7 @@ class ExploreFilterSelection {
             other.distanceFilter == distanceFilter &&
             other.highRatedOnly == highRatedOnly &&
             other.joinedOnly == joinedOnly &&
+            other.followingOnly == followingOnly &&
             other.activityTag == activityTag &&
             other.area == area;
   }
@@ -180,6 +186,7 @@ class ExploreFilterSelection {
     distanceFilter,
     highRatedOnly,
     joinedOnly,
+    followingOnly,
     activityTag,
     area,
   );
@@ -201,6 +208,7 @@ abstract class ExploreViewModel with _$ExploreViewModel {
     required List<Club> joinedClubs,
     required List<Club> allClubs,
     @Default({}) Set<String> joinedClubIds,
+    @Default({}) Set<String> followedClubIds,
   }) = _ExploreViewModel;
 
   bool get isEmpty => allClubs.isEmpty;
@@ -208,7 +216,9 @@ abstract class ExploreViewModel with _$ExploreViewModel {
   factory ExploreViewModel.partition({
     required List<Club> clubs,
     required Set<String> joinedClubIds,
+    Set<String>? followedClubIds,
   }) {
+    final effectiveFollowedClubIds = followedClubIds ?? joinedClubIds;
     final joinedClubs = <Club>[];
     final activeClubIds = <String>{};
 
@@ -223,6 +233,7 @@ abstract class ExploreViewModel with _$ExploreViewModel {
       joinedClubs: List.unmodifiable(joinedClubs),
       allClubs: List.unmodifiable(clubs),
       joinedClubIds: activeClubIds,
+      followedClubIds: Set.unmodifiable(effectiveFollowedClubIds),
     );
   }
 }
@@ -366,6 +377,10 @@ class ExploreFilters extends _$ExploreFilters {
 
   void toggleJoinedOnly() {
     state = state.copyWith(joinedOnly: !state.joinedOnly);
+  }
+
+  void toggleFollowingOnly() {
+    state = state.copyWith(followingOnly: !state.followingOnly);
   }
 
   void toggleActivityTag(String tag) {
@@ -537,34 +552,33 @@ AsyncValue<ExploreViewModel> exploreClubsViewModel(Ref ref) {
   }
 
   final uid = uidAsync.asData?.value;
-  final membershipsAsync = uid == null
-      ? const AsyncData<List<ClubMembership>>([])
-      : ref.watch(watchActiveClubMembershipsForUserProvider(uid));
+  final followedClubIdsAsync = ref.watch(currentUserFollowedClubIdsProvider);
 
-  if (membershipsAsync.isLoading) {
+  if (uid != null && followedClubIdsAsync.isLoading) {
     return const AsyncLoading();
   }
-  if (membershipsAsync.hasError) {
+  if (uid != null && followedClubIdsAsync.hasError) {
     return AsyncError(
-      membershipsAsync.error!,
-      membershipsAsync.stackTrace ?? StackTrace.current,
+      followedClubIdsAsync.error!,
+      followedClubIdsAsync.stackTrace ?? StackTrace.current,
     );
   }
 
-  final membershipClubIds =
-      membershipsAsync.asData?.value
-          .map((membership) => membership.clubId)
-          .toSet() ??
-      <String>{};
-  final joinedClubIds = membershipClubIds;
+  final followedClubIds = followedClubIdsAsync.asData?.value ?? <String>{};
+  final joinedClubIds = followedClubIds;
   final clubs = applyExploreFilters(
     clubs: sourceClubs,
     filters: browseFilters,
     joinedClubIds: joinedClubIds,
+    followedClubIds: followedClubIds,
   );
 
   return AsyncData(
-    ExploreViewModel.partition(clubs: clubs, joinedClubIds: joinedClubIds),
+    ExploreViewModel.partition(
+      clubs: clubs,
+      joinedClubIds: joinedClubIds,
+      followedClubIds: followedClubIds,
+    ),
   );
 }
 
@@ -579,6 +593,7 @@ List<Club> applyExploreFilters({
   required List<Club> clubs,
   required ExploreFilterSelection filters,
   required Set<String> joinedClubIds,
+  Set<String>? followedClubIds,
   DateTime? now,
 }) {
   if (!filters.hasActiveClubFilters) return clubs;
@@ -593,6 +608,7 @@ List<Club> applyExploreFilters({
           club: club,
           filters: filters,
           joinedClubIds: joinedClubIds,
+          followedClubIds: followedClubIds ?? joinedClubIds,
         );
       })
       .toList(growable: false);

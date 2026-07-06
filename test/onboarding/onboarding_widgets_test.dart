@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
@@ -45,6 +47,37 @@ import 'onboarding_test_helpers.dart';
 
 void main() {
   group('WelcomePage', () {
+    testWidgets('reel phrase bank matches strings.json', (tester) async {
+      final strings =
+          jsonDecode(_welcomeStringsSource().readAsStringSync())
+              as Map<String, dynamic>;
+      final phrases = (strings['phrases'] as List<Object?>)
+          .cast<Map<String, dynamic>>();
+      final objects = [
+        for (final phrase in phrases) '${phrase['object'] as String}.',
+      ];
+
+      await tester.pumpWidget(
+        const Directionality(
+          textDirection: TextDirection.ltr,
+          child: SizedBox(
+            width: 320,
+            height: 540,
+            child: ReelBand(spinValue: 0, landingValue: 0, landed: false),
+          ),
+        ),
+      );
+
+      final rendered = tester
+          .widgetList<RichText>(find.byType(RichText))
+          .map((widget) => widget.text.toPlainText())
+          .toList();
+
+      expect(strings['landingIndex'], 11);
+      expect(objects.last, 'someone real.');
+      expect(rendered, [...objects, ...objects]);
+    });
+
     testWidgets('shows the landed welcome page with CTA', (tester) async {
       final reporter = _FakeAnalyticsReporter();
       final container = createOnboardingTestContainer(
@@ -77,6 +110,93 @@ void main() {
       expect(
         reporter.events.single.parameters,
         containsPair(AnalyticsParameters.splashMotion, 'direct'),
+      );
+    });
+
+    testWidgets('reduced motion renders landed state immediately', (
+      tester,
+    ) async {
+      final reporter = _FakeAnalyticsReporter();
+      final container = createOnboardingTestContainer(
+        appAnalytics: AppAnalytics(reporter: reporter, shouldCollect: true),
+      );
+      addTearDown(container.dispose);
+
+      await pumpOnboardingPage(
+        tester,
+        container: container,
+        child: const MediaQuery(
+          data: MediaQueryData(disableAnimations: true),
+          child: WelcomePage(),
+        ),
+      );
+
+      expect(
+        find.widgetWithText(CatchButton, 'Continue with phone'),
+        findsOneWidget,
+      );
+      expect(
+        find.widgetWithText(CatchButton, 'See what\'s on'),
+        findsOneWidget,
+      );
+      expect(
+        reporter.events.single.parameters,
+        containsPair(AnalyticsParameters.splashMotion, 'reduced_motion'),
+      );
+    });
+
+    testWidgets('landed scene pins reel and CTA anchors', (tester) async {
+      tester.view.physicalSize = const Size(320, 630);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: WelcomeScene(
+            viewportHeight: 630,
+            mediaPadding: EdgeInsets.zero,
+            spinValue: 1,
+            landingValue: 1,
+            landed: true,
+            onContinue: () {},
+            onExplore: () {},
+          ),
+        ),
+      );
+
+      final catchTopLeft = tester.getTopLeft(find.text('Catch'));
+      expect(catchTopLeft.dx, closeTo(CatchLayout.welcomeReelCatchLeft, 0.1));
+      expect(
+        catchTopLeft.dy,
+        closeTo(
+          CatchLayout.welcomeReelTop + CatchLayout.welcomeReelCatchFocusTop,
+          0.1,
+        ),
+      );
+
+      final phraseFinder = find.text('someone real.').first;
+      final phraseTopLeft = tester.getTopLeft(phraseFinder);
+      expect(phraseTopLeft.dx, closeTo(CatchLayout.welcomeReelObjectLeft, 0.1));
+      expect(
+        phraseTopLeft.dy,
+        closeTo(
+          CatchLayout.welcomeReelTop + CatchLayout.welcomeReelCatchFocusTop,
+          0.1,
+        ),
+      );
+      final phraseText = tester.widget<Text>(phraseFinder);
+      final rootSpan = phraseText.textSpan! as TextSpan;
+      final periodSpan = rootSpan.children!.last as TextSpan;
+      expect(periodSpan.text, '.');
+      expect(periodSpan.style!.color!.a, closeTo(1, 0.001));
+
+      expect(
+        tester
+            .getBottomLeft(find.widgetWithText(CatchButton, 'See what\'s on'))
+            .dy,
+        closeTo(630 - CatchLayout.welcomeButtonsBottom, 0.1),
       );
     });
 
@@ -1153,6 +1273,14 @@ void main() {
       expect(find.text('Evening'), findsOneWidget);
     });
   });
+}
+
+File _welcomeStringsSource() {
+  final handoff = File(
+    '${Platform.environment['HOME']}/Downloads/Catch Design System (2)/splash-welcome-handoff/strings.json',
+  );
+  if (handoff.existsSync()) return handoff;
+  return File('test/fixtures/splash_welcome_strings.json');
 }
 
 final class _AnalyticsEventCall {

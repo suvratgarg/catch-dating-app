@@ -20,7 +20,6 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_flow.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
@@ -34,6 +33,7 @@ import 'package:catch_dating_app/hosts/presentation/club_management/create/widge
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_event_success_defaults_step.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart';
+import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/host_club_editor_loading_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -600,7 +600,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
     final t = CatchTokens.of(context);
     final uidAsync = ref.watch(uidProvider);
     if (_isEditing && uidAsync.isLoading) {
-      return const CatchStartupLoadingScreen();
+      return const HostClubEditorLoadingScreen();
     }
     if (_isEditing && uidAsync.hasError) {
       return CatchErrorScaffold.fromError(

@@ -4,8 +4,8 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/host_club_editor_loading_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_create_club_screen_state.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,7 +29,7 @@ class HostEditClubRouteScreen extends ConsumerWidget {
     final clubAsync = ref.watch(fetchClubProvider(clubId));
     return CatchAsyncValueView<Club?>(
       value: clubAsync,
-      loadingBuilder: (_) => const CatchStartupLoadingScreen(),
+      loadingBuilder: (_) => const HostClubEditorLoadingScreen(),
       errorBuilder: (_, error, _) => CatchErrorScaffold.fromError(
         error,
         context: AppErrorContext.club,
@@ -60,7 +60,7 @@ class HostClubEditorStateView extends ConsumerWidget {
     );
 
     return switch (state.mode) {
-      HostClubEditMode.loadingIdentity => const CatchStartupLoadingScreen(),
+      HostClubEditMode.loadingIdentity => const HostClubEditorLoadingScreen(),
       HostClubEditMode.forbidden => const CatchErrorScaffold(
         title: 'Host access required',
         message: "Only this club's host team can edit this club.",

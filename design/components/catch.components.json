@@ -7419,92 +7419,6 @@
       }
     },
     {
-      "id": "catch.quick_actions",
-      "name": "QuickActions",
-      "status": "active",
-      "kind": "composite",
-      "summary": "Responsive dashboard action-tile grid; currently product-named but tracks the reusable action-grid grammar.",
-      "dart": {
-        "symbol": "QuickActions",
-        "file": "lib/dashboard/shared/quick_actions.dart",
-        "constructors": [
-          "QuickActions"
-        ]
-      },
-      "design": {
-        "figma": {
-          "status": "unmapped",
-          "componentName": "Catch/QuickActions",
-          "componentUrl": null
-        },
-        "codeConnect": {
-          "status": "planned",
-          "snippetLanguage": "dart",
-          "template": null
-        },
-        "claude": {
-          "handoffName": "QuickActions",
-          "allowed": true
-        }
-      },
-      "contract": {
-        "props": [
-          {
-            "name": "actions",
-            "type": "list",
-            "required": true,
-            "dartType": "List<DashboardQuickAction>"
-          }
-        ],
-        "states": [
-          "two-actions",
-          "disabled-action",
-          "payment-confirmation",
-          "multi-action-wrap",
-          "long-copy",
-          "empty"
-        ],
-        "slots": [],
-        "tokens": [
-          "space.s2",
-          "space.s3",
-          "space.s4",
-          "space.s5",
-          "radius.md",
-          "radius.lg",
-          "theme.light.color.bg",
-          "theme.light.color.ink",
-          "theme.light.color.line",
-          "theme.light.color.surface"
-        ],
-        "dartRoles": [
-          "DashboardQuickAction",
-          "CatchIconTile",
-          "ComponentBreakpoints.quickActionsWideBreakpoint"
-        ],
-        "goldens": []
-      },
-      "handoff": {
-        "allowedChildren": [
-          "catch.surface"
-        ],
-        "notes": [
-          "This is the current tracked component for action-tile grids; consider renaming/extracting to CatchActionGrid if another feature needs the same grammar."
-        ]
-      },
-      "governance": {
-        "role": "composition",
-        "canonicalFamily": "catch.quick_actions",
-        "publicApi": true,
-        "stateOwnership": "slot-state-only",
-        "asyncOwnership": "none",
-        "layoutOwnership": "slot-layout",
-        "actionOwnership": "callbacks-only",
-        "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
-      }
-    },
-    {
       "id": "catch.cover_story",
       "name": "CatchCoverStory",
       "status": "active",
@@ -8252,14 +8166,12 @@
       "name": "CatchEventCard",
       "status": "active",
       "kind": "composite",
-      "summary": "Canonical event card surface for ticket, spotlight, and compact event presentations backed by shared activity visuals and event media states.",
+      "summary": "Canonical ticket-style event card surface backed by shared activity visuals and event media atoms.",
       "dart": {
         "symbol": "CatchEventCard",
         "file": "lib/core/widgets/catch_event_activity_cards.dart",
         "constructors": [
-          "CatchEventCard.ticket",
-          "CatchEventCard.spotlight",
-          "CatchEventCard.compact"
+          "CatchEventCard.ticket"
         ]
       },
       "design": {
@@ -8289,14 +8201,8 @@
           {
             "name": "subtitle",
             "type": "string",
-            "required": false,
-            "dartType": "String?"
-          },
-          {
-            "name": "supportingLabel",
-            "type": "string",
-            "required": false,
-            "dartType": "String?"
+            "required": true,
+            "dartType": "String"
           },
           {
             "name": "timeLabel",
@@ -8353,10 +8259,22 @@
             "dartType": "String?"
           },
           {
+            "name": "clockTime",
+            "type": "object",
+            "required": false,
+            "dartType": "TimeOfDay?"
+          },
+          {
             "name": "width",
             "type": "number",
             "required": false,
             "dartType": "double?"
+          },
+          {
+            "name": "heroTag",
+            "type": "object",
+            "required": false,
+            "dartType": "Object?"
           },
           {
             "name": "onTap",
@@ -8368,11 +8286,7 @@
         "states": [
           "ticket",
           "ticket-status",
-          "spotlight",
-          "compact",
-          "long-copy",
-          "hero-transition",
-          "activity-art"
+          "long-copy"
         ],
         "slots": [],
         "tokens": [
@@ -8389,7 +8303,6 @@
           "theme.light.color.surface"
         ],
         "dartRoles": [
-          "CatchEventCardVariant",
           "ActivityKind",
           "EventActivityVisualSpec",
           "EventActivityBackdrop",
@@ -8721,7 +8634,7 @@
       "name": "CatchActivityMapPin",
       "status": "active",
       "kind": "primitive",
-      "summary": "Canonical activity-colored map pin for resting and selected map marks with optional selected-state flag text.",
+      "summary": "Canonical activity-colored map pin for resting and selected map marks with optional uppercased selected-state flag text.",
       "dart": {
         "symbol": "CatchActivityMapPin",
         "file": "lib/core/widgets/catch_activity_map_pin.dart",
@@ -8802,6 +8715,13 @@
           "space.s1",
           "space.s2",
           "radius.pill",
+          "layout.activityMapPinRestingSize",
+          "layout.activityMapPinSelectedSize",
+          "layout.activityMapPinFlagMaxWidth",
+          "layout.activityMapPinNativeCanvasPadding",
+          "layout.activityMapPinShadowBlur",
+          "layout.activityMapPinShadowDy",
+          "opacity.activityMapPinShadow",
           "theme.light.color.ink",
           "theme.light.color.primaryInk"
         ],
@@ -8815,7 +8735,8 @@
       "handoff": {
         "allowedChildren": [],
         "notes": [
-          "Use for activity map marks; do not create feature-specific pin glyphs for Explore or event maps unless the map interaction introduces a genuinely new state."
+          "Use for activity map marks; do not create feature-specific pin glyphs for Explore or event maps unless the map interaction introduces a genuinely new state.",
+          "Selected flag labels are uppercased at the primitive boundary and native map surfaces should render byte-backed markers from the same token metrics."
         ]
       },
       "governance": {

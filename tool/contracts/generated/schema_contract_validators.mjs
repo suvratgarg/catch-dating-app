@@ -14,6 +14,7 @@ import {
   publicProfileDocumentSchema,
   hostProfileDocumentSchema,
   clubDocumentSchema,
+  clubPostDocumentSchema,
   clubMembershipDocumentSchema,
   clubHostClaimDocumentSchema,
   clubClaimRequestDocumentSchema,
@@ -62,6 +63,8 @@ import {
   updateUserProfileCallablePayloadSchema,
   createClubCallablePayloadSchema,
   createClubCallableResponseSchema,
+  createClubPostCallablePayloadSchema,
+  createClubPostCallableResponseSchema,
   updateClubCallablePayloadSchema,
   hostAnalyticsQueryCallablePayloadSchema,
   hostAnalyticsCallableResponseSchema,
@@ -184,6 +187,7 @@ export const validateUserProfileDocument = ajv.compile(userProfileDocumentSchema
 export const validatePublicProfileDocument = ajv.compile(publicProfileDocumentSchema);
 export const validateHostProfileDocument = ajv.compile(hostProfileDocumentSchema);
 export const validateClubDocument = ajv.compile(clubDocumentSchema);
+export const validateClubPostDocument = ajv.compile(clubPostDocumentSchema);
 export const validateClubMembershipDocument = ajv.compile(clubMembershipDocumentSchema);
 export const validateClubHostClaimDocument = ajv.compile(clubHostClaimDocumentSchema);
 export const validateClubClaimRequestDocument = ajv.compile(clubClaimRequestDocumentSchema);
@@ -232,6 +236,8 @@ export const validateOrganizerPolicyGapReviewDecisionDocument = ajv.compile(orga
 export const validateUpdateUserProfileCallablePayload = ajv.compile(updateUserProfileCallablePayloadSchema);
 export const validateCreateClubCallablePayload = ajv.compile(createClubCallablePayloadSchema);
 export const validateCreateClubCallableResponse = ajv.compile(createClubCallableResponseSchema);
+export const validateCreateClubPostCallablePayload = ajv.compile(createClubPostCallablePayloadSchema);
+export const validateCreateClubPostCallableResponse = ajv.compile(createClubPostCallableResponseSchema);
 export const validateUpdateClubCallablePayload = ajv.compile(updateClubCallablePayloadSchema);
 export const validateHostAnalyticsQueryCallablePayload = ajv.compile(hostAnalyticsQueryCallablePayloadSchema);
 export const validateHostAnalyticsCallableResponse = ajv.compile(hostAnalyticsCallableResponseSchema);

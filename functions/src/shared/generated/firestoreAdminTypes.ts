@@ -920,6 +920,19 @@ export interface ClubDocument {
 }
 
 /**
+ * Canonical organizer post stored at clubs/{clubId}/posts/{postId}.
+ */
+export interface ClubPostDocument {
+  authorUid: string;
+  text: string;
+  photoPath?: string | null;
+  eventId?: string | null;
+  audience: "followers";
+  createdAt: FirebaseFirestore.Timestamp;
+  status: "active" | "removed";
+}
+
+/**
  * Canonical club membership edge stored at clubMemberships/{membershipId}.
  */
 export interface ClubMembershipDocument {
@@ -1852,6 +1865,7 @@ export interface ActivityNotificationDocument {
   matchId?: string | null;
   eventId?: string | null;
   clubId?: string | null;
+  postId?: string | null;
   actorUid?: string | null;
   actorName?: string | null;
 }

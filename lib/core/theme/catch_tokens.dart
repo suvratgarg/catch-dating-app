@@ -101,8 +101,11 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
 
   // ── Convenience accessor ──────────────────────────────────────────────────────
 
-  static const Color editorialDark = Color(0xFF000000);
-  static const Color editorialLight = Color(0xFFFFFFFF);
+  /// Fixed absolute black for editorial overlays and scrims.
+  static const Color editorialBlack = Color(0xFF000000);
+
+  /// Fixed absolute white for editorial overlays and scrims.
+  static const Color editorialWhite = Color(0xFFFFFFFF);
 
   static CatchTokens of(BuildContext context) =>
       Theme.of(context).extension<CatchTokens>()!;
@@ -110,7 +113,7 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
   /// Legible foreground for arbitrary filled surfaces such as activity colors.
   Color onFill(Color fill) =>
       ThemeData.estimateBrightnessForColor(fill) == Brightness.dark
-      ? const Color(0xFFFFFFFF)
+      ? editorialWhite
       : ink;
 
   /// Muted foreground for secondary text on arbitrary filled surfaces.
@@ -124,18 +127,18 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
   /// Fixed editorial dark fill for badges/pills that intentionally remain dark
   /// regardless of app theme.
   Color get darkPillFill =>
-      editorialDark.withValues(alpha: CatchOpacity.darkPillFill);
+      editorialBlack.withValues(alpha: CatchOpacity.darkPillFill);
 
   /// Fixed dark scrim for text overlays on image/activity backdrops.
   Color get darkScrimFill =>
-      editorialDark.withValues(alpha: CatchOpacity.scrimFill);
+      editorialBlack.withValues(alpha: CatchOpacity.scrimFill);
 
   /// Foreground for fixed editorial dark pills.
-  Color get darkPillInk => editorialLight;
+  Color get darkPillInk => editorialWhite;
 
   /// Muted foreground on fixed editorial dark overlays.
   Color get darkMutedInk =>
-      editorialLight.withValues(alpha: CatchOpacity.onDarkMuted);
+      editorialWhite.withValues(alpha: CatchOpacity.onDarkMuted);
 
   // ── Paper/ink palette — light (launch default) ───────────────────────────────
 
@@ -194,10 +197,19 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
     heroGrad: GeneratedCatchGradientTokens.darkHeroGrad,
   );
 
+  /// B&W editorial light token set.
+  static const editorialLight = light;
+
+  /// B&W editorial dark token set.
+  static const editorialDark = dark;
+
   /// Backward-compatible aliases while older code still names the retired
   /// Sunset palette.
-  static const sunsetLight = light;
-  static const sunsetDark = dark;
+  @Deprecated('Use editorialLight')
+  static const sunsetLight = editorialLight;
+
+  @Deprecated('Use editorialDark')
+  static const sunsetDark = editorialDark;
 
   // ── ThemeExtension boilerplate ────────────────────────────────────────────────
 
@@ -1454,6 +1466,7 @@ abstract final class CatchMotion {
   static const Duration ambientLoop = Duration(seconds: 16);
   static const Duration pulse = Duration(milliseconds: 700);
   static const Duration skeletonShimmer = Duration(milliseconds: 1200);
+  static const Duration startupIndicatorDelay = Duration(milliseconds: 600);
   static const Duration welcomeReel = Duration(milliseconds: 3000);
   static const Duration welcomeLandingReveal = Duration(milliseconds: 1400);
   static const Duration welcomeNonFocusFade = Duration(milliseconds: 500);
@@ -1620,6 +1633,8 @@ abstract final class CatchLayout {
   static const double activityAvatarTextureStride = 13.0;
   static const double activityMapPinRestingSize = 26.0;
   static const double activityMapPinSelectedSize = 38.0;
+  static const double activityMapPinFlagMaxWidth = 180.0;
+  static const double activityMapPinNativeCanvasPadding = 4.0;
   static const double activityMapPinShadowBlur = 3.0;
   static const double activityMapPinShadowDy = 2.0;
   static const double distanceRingDefaultSize = 170.0;
@@ -1864,6 +1879,7 @@ abstract final class CatchLayout {
   static const double skeletonStatusPillWidth = 82.0;
   static const double startupLogoExtent = 96.0;
   static const double startupIndicatorExtent = CatchSpacing.s7;
+  static const double startupIndicatorOffsetY = 76.0;
   static const double stepHeaderProgressHeight = 2.0;
   static const double statusBarTopPadding = CatchSpacing.micro14;
   static const double statusBarHorizontalPadding = CatchSpacing.s7;
@@ -1902,7 +1918,6 @@ abstract final class CatchLayout {
   // LayoutBuilder; 216 = divider + the 2-line stub headroom the old rail reserved.)
   static const double exploreTicketRailHeight =
       exploreTicketRailCardWidth * 10 / 16 + 216.0;
-  static const double mapPlaceholderPinSize = 42.0;
   static const double eventRecapGridGap = 10.0;
   static const double eventRecapStatInset = 10.0;
   static const double eventActivityStampExtent = 42.0;
@@ -1917,6 +1932,7 @@ abstract final class CatchLayout {
   static const double clubDirectorySkeletonLongChipWidth = 96.0;
   static const double clubDirectorySkeletonFooterWidth = 140.0;
   static const double clubDirectorySkeletonActionWidth = 70.0;
+  static const double clubEditorPhotoSkeletonHeight = 132.0;
   static const double recommendationRailGap = 10.0;
   static const double heroSignalChipHorizontalPadding = 11.0;
   static const double heroSignalChipVerticalPadding = 7.0;
@@ -1961,7 +1977,6 @@ abstract final class CatchLayout {
   static const double welcomeMinBodyToCtaGap = 16.0;
   static const double welcomeHeadlineToBodyGap = 66.0;
   static const double welcomeRevealOffsetY = 16.0;
-  static const double welcomeVoiceWidth = 78.0;
 
   static double welcomeReelLandingOffset(int index) =>
       (index * welcomeReelRowHeight) +

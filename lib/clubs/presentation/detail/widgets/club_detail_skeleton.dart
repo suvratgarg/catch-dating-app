@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/clubs/shared/club_transition_tags.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -58,33 +59,42 @@ class ClubHeroLoadingSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        CatchSkeleton.box(
-          width: double.infinity,
-          height: CatchLayout.clubDetailHeroNoCoverPhoneHeight,
-          borderRadius: BorderRadius.zero,
-        ),
-        Positioned(
-          left: CatchLayout.detailScreenHorizontalPadding,
-          right: CatchLayout.detailScreenHorizontalPadding,
-          bottom: CatchSpacing.s5,
+    final t = CatchTokens.of(context);
+
+    return ColoredBox(
+      color: t.surface,
+      child: Padding(
+        padding: clubInteractionMediaPadding,
+        child: CatchSurface(
+          height:
+              CatchLayout.clubDetailHeroNoCoverPhoneHeight +
+              CatchLayout.clubDetailHeroCaptionExtent,
+          borderColor: t.line,
+          radius: CatchLayout.clubPolaroidRadius,
+          elevation: CatchSurfaceElevation.card,
+          backgroundColor: t.surface,
+          padding: CatchInsets.contentDense,
+          clipBehavior: Clip.antiAlias,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
-              gapH10,
-              CatchSkeleton.text(width: CatchSpacing.s16 * 3),
-              gapH8,
-              FractionallySizedBox(
-                widthFactor: 0.58,
-                alignment: Alignment.centerLeft,
-                child: CatchSkeleton.text(),
+              Expanded(
+                child: CatchSkeleton.box(
+                  width: double.infinity,
+                  height: double.infinity,
+                  borderRadius: BorderRadius.circular(
+                    CatchLayout.clubPolaroidMediaRadius,
+                  ),
+                ),
               ),
+              gapH10,
+              CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
+              gapH4,
+              CatchSkeleton.text(width: CatchSpacing.s16 * 3),
             ],
           ),
         ),
-      ],
+      ),
     );
   }
 }

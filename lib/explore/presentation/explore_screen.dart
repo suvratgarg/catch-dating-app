@@ -17,6 +17,7 @@ import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/explore/presentation/explore_city_controller.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
@@ -43,6 +44,7 @@ class ExploreScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
     final feedAsync = ref.watch(exploreFeedViewModelProvider);
+    final recommendationsAsync = ref.watch(exploreRecommendationsProvider);
     final viewModelAsync = ref.watch(exploreClubsViewModelProvider);
     ref.watch(exploreCityControllerProvider);
     final city = ref.watch(selectedExploreCityProvider);
@@ -191,6 +193,7 @@ class ExploreScreen extends ConsumerWidget {
       ExploreScreenBodyKind.content => buildExploreBodySlivers(
         context: context,
         feedAsync: feedAsync,
+        recommendationsAsync: recommendationsAsync,
         clubsViewModel: bodyState.viewModel,
         filters: filters,
         searchQuery: query,
@@ -213,6 +216,7 @@ class ExploreScreen extends ConsumerWidget {
       ExploreScreenBodyKind.contentWithoutClubs => buildExploreBodySlivers(
         context: context,
         feedAsync: feedAsync,
+        recommendationsAsync: recommendationsAsync,
         filters: filters,
         searchQuery: query,
         clubSectionError: bodyState.error,
@@ -265,6 +269,14 @@ class ExploreScreen extends ConsumerWidget {
                     onQueryChanged: (value) => ref
                         .read(exploreSearchQueryProvider.notifier)
                         .setQuery(value),
+                    actions: [
+                      CatchIconAction(
+                        icon: CatchIcons.bookmarkBorderRounded,
+                        tooltip: 'Saved events',
+                        onPressed: () =>
+                            context.push(Routes.savedEventsScreen.path),
+                      ),
+                    ],
                     onFeaturedEventSelected: openFeaturedEvent,
                   ),
                 ),
@@ -282,6 +294,9 @@ class ExploreScreen extends ConsumerWidget {
                     onToggleJoinedOnly: () => ref
                         .read(exploreFiltersProvider.notifier)
                         .toggleJoinedOnly(),
+                    onToggleFollowingOnly: () => ref
+                        .read(exploreFiltersProvider.notifier)
+                        .toggleFollowingOnly(),
                     onToggleHighRatedOnly: () => ref
                         .read(exploreFiltersProvider.notifier)
                         .toggleHighRatedOnly(),

@@ -213,7 +213,7 @@ void main() {
     expect(find.text('EXPLORE'), findsOneWidget);
     expect(find.text('Discover'), findsOneWidget);
     expect(find.text('Tonight near you'), findsOneWidget);
-    expect(_topBarMaterial(tester).color, CatchTokens.sunsetLight.surface);
+    expect(_topBarMaterial(tester).color, CatchTokens.editorialLight.surface);
     expect(find.byIcon(CatchIcons.close), findsOneWidget);
 
     await tester.tap(find.byIcon(CatchIcons.close));

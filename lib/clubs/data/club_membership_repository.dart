@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
@@ -103,3 +104,35 @@ Stream<ClubMembership?> watchClubMembership(
 ) => ref
     .watch(clubMembershipRepositoryProvider)
     .watchMembership(clubId: clubId, uid: uid);
+
+@riverpod
+AsyncValue<Set<String>> currentUserFollowedClubIds(Ref ref) {
+  final uidAsync = ref.watch(uidProvider);
+  if (uidAsync.isLoading) return const AsyncLoading();
+  if (uidAsync.hasError) {
+    return AsyncError(
+      uidAsync.error!,
+      uidAsync.stackTrace ?? StackTrace.current,
+    );
+  }
+
+  final uid = uidAsync.asData?.value;
+  if (uid == null) return const AsyncData(<String>{});
+
+  final membershipsAsync = ref.watch(
+    watchActiveClubMembershipsForUserProvider(uid),
+  );
+  if (membershipsAsync.isLoading) return const AsyncLoading();
+  if (membershipsAsync.hasError) {
+    return AsyncError(
+      membershipsAsync.error!,
+      membershipsAsync.stackTrace ?? StackTrace.current,
+    );
+  }
+
+  return AsyncData({
+    for (final membership
+        in membershipsAsync.asData?.value ?? const <ClubMembership>[])
+      membership.clubId,
+  });
+}

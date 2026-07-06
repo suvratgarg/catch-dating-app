@@ -50,6 +50,7 @@ export {
   placesAutocomplete,
 } from "./places/placeAutocomplete";
 export {createClub} from "./clubs/createClub";
+export {createClubPost} from "./clubs/clubPosts";
 export {startClubHostConversation} from "./clubs/clubHostConversations";
 export {
   addClubHost,

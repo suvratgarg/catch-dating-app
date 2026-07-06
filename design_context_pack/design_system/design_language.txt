@@ -1,6 +1,6 @@
 ---
 doc_id: design_language
-version: 1.3.0
+version: 1.4.0
 updated: 2026-07-05
 owner: ui_elevation_initiative
 status: active — identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
@@ -133,7 +133,7 @@ Three roles, no competition:
 
 | Role | Family | Use |
 |---|---|---|
-| **Voice / head** (display + long-form body) | **Archivo** (variable grotesque, with condensed widths for poster/head surfaces) | screen titles, event/club/profile names, hero moments, **and** reading text (bios, descriptions) |
+| **Voice / head** (display + long-form body) | **Archivo** (variable grotesque, locked to a single **78% width** — the "78% system") | screen titles, event/club/profile names, hero moments, **and** reading text (bios, descriptions) |
 | **Function** | **Platform system font** (SF on iOS, Roboto on Android) | buttons, nav, inputs, dense UI controls |
 | **Data** | **IBM Plex Mono** | time, price, counts, kickers, uppercase labels |
 
@@ -146,8 +146,14 @@ to the platform for legibility and Dynamic Type behavior.
 > `CatchFonts`, `CatchTextStyles`, and `design/tokens/catch.tokens.json`.
 
 **Legibility-first craft:**
-- **Variable width** — condensed Archivo widths carry event/head surfaces; normal width
-  carries prose, prompts, and names.
+- **Single Archivo width — 78% (ratified 2026-07-06).** The DS
+  `colors_and_type.css` renders every voice/headline/prose style at
+  `font-stretch: 78%`; the app matches it. Archivo's `wdth` axis (62–125) is
+  NOT a per-style knob — `CatchFonts.archivoWidth` is the one width, enforced
+  at the engine (`voice`/`head` take no width param). The earlier mixed
+  90/92/94/100 widths were pre-decision drift and are retired. This is the
+  Archivo half of the identity migration; the Newsreader→Archivo family swap
+  completed earlier.
 - **Dramatic scale jumps** — a large display over a small mono kicker; avoid many mid sizes.
 - **Zero display tracking + near-1.0 leading**; **generous body leading (~1.55–1.62)**.
 - **Upright titles; italic reserved as a single accent** (not italic-by-default).
@@ -159,6 +165,14 @@ system font.
 ---
 
 ## 6. Metaphors
+
+**Presentation tiers (ratified 2026-07-05):** every entity material (event
+ticket, club polaroid, person card) ships in at least two tiers — a **hero**
+form for surfaces where the entity earns attention, detail, and vertical
+space (detail heroes, featured cards, cover moments), and a **condensed**
+form for long lists and date-grouped rails (DateTicket rows, index rows).
+More tiers are allowed when a surface justifies them; a surface never mixes
+tiers within one list.
 
 - **Ticket → events: keep & refine.** `event_ticket_surface.dart` (real `CustomClipper`
   notches, perforation, Hero card→detail) is strong, award-adjacent craft. Refine: the

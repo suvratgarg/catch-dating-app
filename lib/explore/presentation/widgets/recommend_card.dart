@@ -1,15 +1,15 @@
 import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
-import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_capacity_labels.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/explore/domain/explore_event_recommendation.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-/// Dashboard recommendation card.
+/// Explore recommendation card.
 ///
-/// Wraps [CatchEventCard.ticket] so the dashboard rail uses the same activity
+/// Wraps [CatchEventCard.ticket] so the recommendation rail uses the same activity
 /// artwork and ticket shape as the Explore event feed. Recommendation reason
 /// stays visible in the media label while distance, pace, and capacity are
 /// folded into the ticket's bottom mono line.
@@ -24,7 +24,7 @@ class RecommendCard extends StatelessWidget {
 
   factory RecommendCard.fromRecommendation({
     Key? key,
-    required DashboardEventRecommendation recommendation,
+    required ExploreEventRecommendation recommendation,
     double? width,
   }) {
     return RecommendCard(

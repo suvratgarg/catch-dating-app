@@ -2,7 +2,9 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_list_tile.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_horizontal_rail.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class ClubAvatarRail extends StatelessWidget {
   const ClubAvatarRail({
@@ -33,12 +35,20 @@ class ClubAvatarRail extends StatelessWidget {
       itemCount: clubs.length,
       itemBuilder: (context, index) {
         final club = clubs[index];
-        return ClubListTile(
+        return AvatarChip(
           club: club,
-          variant: ClubListTileVariant.avatarChip,
           showLiveBadge: club.nextEventLabel != null,
+          onTap: () => _openClubDetail(context, club),
         );
       },
     );
   }
+}
+
+void _openClubDetail(BuildContext context, Club club) {
+  context.pushNamed(
+    Routes.clubDetailScreen.name,
+    pathParameters: {'clubId': club.id},
+    extra: club,
+  );
 }

@@ -187,5 +187,6 @@ class _CatchFrameworkErrorDebugDetailsState
 }
 
 CatchTokens _tokensOf(BuildContext context) {
-  return Theme.of(context).extension<CatchTokens>() ?? CatchTokens.sunsetLight;
+  return Theme.of(context).extension<CatchTokens>() ??
+      CatchTokens.editorialLight;
 }

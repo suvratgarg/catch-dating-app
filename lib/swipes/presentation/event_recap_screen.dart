@@ -475,10 +475,10 @@ class VibeTile extends StatelessWidget {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      CatchTokens.editorialDark.withValues(
+                      CatchTokens.editorialBlack.withValues(
                         alpha: CatchOpacity.none,
                       ),
-                      CatchTokens.editorialDark.withValues(
+                      CatchTokens.editorialBlack.withValues(
                         alpha: CatchOpacity.eventRecapTileScrim,
                       ),
                     ],
@@ -493,7 +493,7 @@ class VibeTile extends StatelessWidget {
                   row.displayName,
                   style: CatchTextStyles.labelM(
                     context,
-                    color: CatchTokens.editorialLight,
+                    color: CatchTokens.editorialWhite,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,

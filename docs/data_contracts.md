@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.1.7
-updated: 2026-06-30
+version: 1.1.8
+updated: 2026-07-05
 owner: recursive_audit_loop
 status: active
 ---
@@ -192,6 +192,7 @@ Root-level edge/action documents are the source of truth for many-to-many state:
 | Outgoing profile decisions | `profileDecisions/{uid}/outgoing/{targetId}` |
 | Match messages | `matches/{matchId}/messages/{messageId}` |
 | Notification timeline | `notifications/{uid}/items/{notificationId}` |
+| Club follower posts | `clubs/{clubId}/posts/{postId}` |
 
 Retired relationship arrays must not be reintroduced into Flutter models,
 Functions writes, Firestore rules, active tooling, or tests. Parent entity docs
@@ -203,6 +204,15 @@ Direct client writes are still allowed only for narrow owner-owned actions that
 rules can prove locally: onboarding drafts, saved events, outgoing profile decisions,
 match-scoped chat messages, own unread reset, own notification `readAt`, and
 own FCM token. Multi-document product writes belong in callables or triggers.
+
+## Club Follower Posts
+
+Organizer follower posts live under `clubs/{clubId}/posts/{postId}` and are
+created only by the `createClubPost` callable. Clients may read authenticated
+posts, but direct writes are denied. The callable verifies host authority,
+validates optional linked events against the same club, enforces the rolling
+three-posts-per-seven-days club quota, writes the canonical post, and fans out
+durable `clubUpdate` activity notifications to active followers.
 
 ## Organizer Claim Documents
 

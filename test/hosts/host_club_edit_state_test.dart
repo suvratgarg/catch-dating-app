@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/host_club_editor_loading_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_create_club_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -97,7 +97,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(CatchStartupLoadingScreen), findsOneWidget);
+    expect(find.byType(HostClubEditorLoadingScreen), findsOneWidget);
     expect(find.text('Club name'), findsNothing);
   });
 }

@@ -64,6 +64,7 @@ import 'package:catch_dating_app/hosts/presentation/club_management/create/widge
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_contact_fields.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart';
+import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/host_club_editor_loading_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_create_club_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_club_edit_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_team_management_controller.dart';
@@ -2532,6 +2533,24 @@ Widget hostClubDetailPublicPreviewStates(BuildContext context) {
         child: const _DeviceFrame(
           child: _HostClubDetailScope(themeMode: ThemeMode.dark),
         ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Loading state',
+  type: HostClubEditorLoadingScreen,
+  path: '[P1 product surfaces]/Host operations',
+)
+Widget hostClubEditorLoadingScreenState(BuildContext context) {
+  return const _HostCatalog(
+    title: 'HostClubEditorLoadingScreen',
+    contractId: 'screen.host.club.editor.loading',
+    children: [
+      _StateCard(
+        label: 'form-shaped skeleton',
+        child: _DeviceFrame(child: HostClubEditorLoadingScreen()),
       ),
     ],
   );

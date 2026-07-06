@@ -71,6 +71,11 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/clubDocument.ts",
   },
   {
+    name: "ClubPostDocument",
+    source: "firestore/club_posts.schema.json",
+    typeOutput: "functions/src/shared/generated/clubPostDocument.ts",
+  },
+  {
     name: "ClubMembershipDocument",
     source: "firestore/club_memberships.schema.json",
     typeOutput: "functions/src/shared/generated/clubMembershipDocument.ts",
@@ -338,6 +343,18 @@ const schemaSpecs = [
     source: "callable_responses/create_club_response.schema.json",
     typeOutput:
       "functions/src/shared/generated/createClubCallableResponse.ts",
+  },
+  {
+    name: "CreateClubPostCallablePayload",
+    source: "callables/create_club_post_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createClubPostCallablePayload.ts",
+  },
+  {
+    name: "CreateClubPostCallableResponse",
+    source: "callable_responses/create_club_post_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createClubPostCallableResponse.ts",
   },
   {
     name: "UpdateClubCallablePayload",

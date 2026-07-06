@@ -65,7 +65,6 @@ import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_d
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
-import 'package:catch_dating_app/dashboard/shared/quick_actions.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/catch_cover_story.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/catch_cross_paths_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/catch_roster_board.dart';
@@ -1072,7 +1071,7 @@ Widget catchButtonLoadingDotsContractStates(BuildContext context) {
         child: _InlineWrap(
           children: [
             CatchButtonLoadingDots(color: t.primary),
-            const CatchButtonLoadingDots(color: CatchTokens.editorialLight),
+            const CatchButtonLoadingDots(color: CatchTokens.editorialWhite),
           ],
         ),
       ),
@@ -5328,15 +5327,7 @@ Widget catchEventCardContractStates(BuildContext context) {
   return _ContractScreen(
     title: 'CatchEventCard',
     contractId: 'catch.event_card',
-    states: const [
-      'ticket',
-      'ticket-status',
-      'spotlight',
-      'compact',
-      'long-copy',
-      'hero-transition',
-      'activity-art',
-    ],
+    states: const ['ticket', 'ticket-status', 'long-copy'],
     children: [
       const _StateCard(
         label: 'ticket',
@@ -5364,30 +5355,6 @@ Widget catchEventCardContractStates(BuildContext context) {
         ),
       ),
       const _StateCard(
-        label: 'spotlight',
-        child: CatchEventCard.spotlight(
-          title: 'Trivia without awkward tables',
-          supportingLabel: 'The Daily, Bandra',
-          timeLabel: '8:00 PM',
-          countdownLabel: 'Tuesday',
-          priceLabel: '₹600',
-          capacityLabel: '12 going',
-          activityKind: ActivityKind.pubQuiz,
-        ),
-      ),
-      const _StateCard(
-        label: 'compact',
-        child: CatchEventCard.compact(
-          title: 'Sunday flow',
-          subtitle: 'Yoga House',
-          timeLabel: '10:00 AM',
-          countdownLabel: 'Sun',
-          priceLabel: '₹500',
-          capacityLabel: '8 left',
-          activityKind: ActivityKind.yoga,
-        ),
-      ),
-      const _StateCard(
         label: 'long-copy',
         child: SizedBox(
           width: 320,
@@ -5400,32 +5367,6 @@ Widget catchEventCardContractStates(BuildContext context) {
             capacityLabel: '18 going',
             activityKind: ActivityKind.socialRun,
           ),
-        ),
-      ),
-      const _StateCard(
-        label: 'hero-transition',
-        child: CatchEventCard.spotlight(
-          title: 'Dinner at the long table',
-          supportingLabel: 'Bandra',
-          timeLabel: '8:30 PM',
-          countdownLabel: 'Friday',
-          priceLabel: '₹1,200',
-          capacityLabel: '2 left',
-          activityKind: ActivityKind.dinner,
-          heroTag: 'contract-event-card',
-          visualHeroTag: 'contract-event-card-visual',
-        ),
-      ),
-      const _StateCard(
-        label: 'activity-art',
-        child: CatchEventCard.compact(
-          title: 'Open court',
-          subtitle: 'Padel ladder',
-          timeLabel: '6:00 PM',
-          countdownLabel: 'Today',
-          priceLabel: '₹800',
-          capacityLabel: '6 left',
-          activityKind: ActivityKind.pickleball,
         ),
       ),
     ],
@@ -5520,7 +5461,7 @@ Widget catchGradedImageContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'dark-image',
-        child: CatchGradedImage(child: swatch(CatchTokens.editorialDark)),
+        child: CatchGradedImage(child: swatch(CatchTokens.editorialBlack)),
       ),
     ],
   );
@@ -5616,7 +5557,7 @@ Widget catchScrimContractStates(BuildContext context) {
           width: 340,
           height: 180,
           child: DecoratedBox(
-            decoration: BoxDecoration(color: CatchTokens.editorialDark),
+            decoration: BoxDecoration(color: CatchTokens.editorialBlack),
             child: CatchScrim.detailHero(),
           ),
         ),
@@ -5769,111 +5710,6 @@ Widget catchActivityMapPinContractStates(BuildContext context) {
           activityKind: ActivityKind.pubQuiz,
           size: 44,
         ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: QuickActions,
-  path: '[Core primitives]/Product composites',
-)
-Widget quickActionsContractStates(BuildContext context) {
-  return _ContractScreen(
-    title: 'QuickActions',
-    contractId: 'catch.quick_actions',
-    states: const [
-      'two-actions',
-      'disabled-action',
-      'payment-confirmation',
-      'multi-action-wrap',
-      'long-copy',
-      'empty',
-    ],
-    children: [
-      _StateCard(
-        label: 'two-actions',
-        child: SizedBox(
-          width: 360,
-          child: QuickActions(actions: _contractQuickActions.take(2).toList()),
-        ),
-      ),
-      _StateCard(
-        label: 'disabled-action',
-        child: SizedBox(
-          width: 360,
-          child: QuickActions(
-            actions: [
-              DashboardQuickAction(
-                icon: CatchIcons.calendarMonthOutlined,
-                label: 'Calendar',
-              ),
-              DashboardQuickAction(
-                icon: CatchIcons.bookmarkBorderRounded,
-                label: 'Saved events',
-              ),
-            ],
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'payment-confirmation',
-        child: SizedBox(
-          width: 360,
-          child: QuickActions(
-            actions: [
-              DashboardQuickAction(
-                icon: CatchIcons.calendarMonthOutlined,
-                label: 'Add to calendar',
-                onPressed: _noop,
-              ),
-              DashboardQuickAction(
-                icon: CatchIcons.directionsOutlined,
-                label: 'Get directions',
-                onPressed: _noop,
-              ),
-              DashboardQuickAction(
-                icon: CatchIcons.platformShare(
-                  platform: Theme.of(context).platform,
-                ),
-                label: 'Invite friend',
-                onPressed: _noop,
-              ),
-            ],
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'multi-action-wrap',
-        child: SizedBox(
-          width: 360,
-          child: QuickActions(actions: _contractQuickActions),
-        ),
-      ),
-      _StateCard(
-        label: 'long-copy',
-        child: SizedBox(
-          width: 260,
-          child: QuickActions(
-            actions: [
-              DashboardQuickAction(
-                icon: CatchIcons.calendarMonthOutlined,
-                label: 'A very long dashboard action label',
-                onPressed: _noop,
-              ),
-              DashboardQuickAction(
-                icon: CatchIcons.bookmarkBorderRounded,
-                label: 'Saved events',
-                onPressed: _noop,
-              ),
-            ],
-          ),
-        ),
-      ),
-      const _StateCard(
-        label: 'empty',
-        child: SizedBox(width: 360, child: QuickActions(actions: [])),
       ),
     ],
   );
@@ -6836,29 +6672,6 @@ final _contractTabDockItems = [
 const _contractDialogActions = [
   CatchDialogAction(label: 'Cancel', value: false),
   CatchDialogAction(label: 'Confirm', value: true, isDefault: true),
-];
-
-final _contractQuickActions = [
-  DashboardQuickAction(
-    icon: CatchIcons.calendarMonthOutlined,
-    label: 'Calendar',
-    onPressed: _noop,
-  ),
-  DashboardQuickAction(
-    icon: CatchIcons.bookmarkBorderRounded,
-    label: 'Saved events',
-    onPressed: _noop,
-  ),
-  DashboardQuickAction(
-    icon: CatchIcons.groupAddOutlined,
-    label: 'Invite friends',
-    onPressed: _noop,
-  ),
-  DashboardQuickAction(
-    icon: CatchIcons.tuneRounded,
-    label: 'Preferences',
-    onPressed: _noop,
-  ),
 ];
 
 class CatchAdaptivePickerHarness extends StatefulWidget {

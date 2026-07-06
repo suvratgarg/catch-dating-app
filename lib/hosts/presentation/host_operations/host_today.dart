@@ -326,7 +326,7 @@ class HostTodayEventHero extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: CatchTextStyles.headlineS(
               context,
-              color: CatchTokens.editorialLight,
+              color: CatchTokens.editorialWhite,
             ),
           ),
           gapH14,
@@ -339,7 +339,7 @@ class HostTodayEventHero extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: CatchTextStyles.supporting(
                     context,
-                    color: CatchTokens.editorialLight.withValues(
+                    color: CatchTokens.editorialWhite.withValues(
                       alpha: CatchOpacity.onDarkMuted,
                     ),
                   ),
@@ -354,7 +354,7 @@ class HostTodayEventHero extends StatelessWidget {
                   textAlign: TextAlign.right,
                   style: CatchTextStyles.supporting(
                     context,
-                    color: CatchTokens.editorialLight.withValues(
+                    color: CatchTokens.editorialWhite.withValues(
                       alpha: CatchOpacity.onDarkMuted,
                     ),
                   ),
@@ -365,7 +365,7 @@ class HostTodayEventHero extends StatelessWidget {
           gapH16,
           Divider(
             height: CatchStroke.hairline,
-            color: CatchTokens.editorialLight.withValues(
+            color: CatchTokens.editorialWhite.withValues(
               alpha: CatchOpacity.darkHeroDivider,
             ),
           ),
@@ -397,7 +397,7 @@ class HostTodayEventHero extends StatelessWidget {
             label: 'Set up & run',
             fullWidth: true,
             backgroundColor: activity.accent,
-            foregroundColor: CatchTokens.editorialLight,
+            foregroundColor: CatchTokens.editorialWhite,
             borderColor: Colors.transparent,
             onPressed: onPressed,
           ),
@@ -416,7 +416,7 @@ class HostTodayCountdownPill extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchSurface(
       radius: CatchRadius.pill,
-      backgroundColor: CatchTokens.editorialLight.withValues(
+      backgroundColor: CatchTokens.editorialWhite.withValues(
         alpha: CatchOpacity.darkHeroPillFill,
       ),
       borderWidth: 0,
@@ -428,7 +428,7 @@ class HostTodayCountdownPill extends StatelessWidget {
         'STARTS ${_eventStartLeadLabel(event)}',
         style: CatchTextStyles.monoLabel(
           context,
-          color: CatchTokens.editorialLight,
+          color: CatchTokens.editorialWhite,
         ),
       ),
     );
@@ -456,7 +456,7 @@ class HostTodayHeroMetric extends StatelessWidget {
           value,
           style: CatchTextStyles.titleL(
             context,
-            color: valueColor ?? CatchTokens.editorialLight,
+            color: valueColor ?? CatchTokens.editorialWhite,
           ),
         ),
         gapH2,
@@ -464,7 +464,7 @@ class HostTodayHeroMetric extends StatelessWidget {
           label,
           style: CatchTextStyles.monoLabel(
             context,
-            color: CatchTokens.editorialLight.withValues(
+            color: CatchTokens.editorialWhite.withValues(
               alpha: CatchOpacity.onDarkMuted,
             ),
           ),
@@ -528,7 +528,7 @@ class HostTodayAvatarDot extends StatelessWidget {
       left: left,
       child: CircleAvatar(
         radius: CatchSpacing.s3,
-        backgroundColor: CatchTokens.editorialDark.withValues(
+        backgroundColor: CatchTokens.editorialBlack.withValues(
           alpha: CatchOpacity.avatarStackRing,
         ),
         child: CircleAvatar(

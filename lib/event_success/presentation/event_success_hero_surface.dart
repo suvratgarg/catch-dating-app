@@ -37,13 +37,13 @@ class EventSuccessDarkPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = foregroundColor ?? CatchTokens.editorialLight;
+    final color = foregroundColor ?? CatchTokens.editorialWhite;
     return CatchSurface(
       radius: CatchRadius.pill,
-      backgroundColor: CatchTokens.editorialLight.withValues(
+      backgroundColor: CatchTokens.editorialWhite.withValues(
         alpha: CatchOpacity.revealSurfaceFill,
       ),
-      borderColor: CatchTokens.editorialLight.withValues(
+      borderColor: CatchTokens.editorialWhite.withValues(
         alpha: CatchOpacity.eventSuccessSubtleBorder,
       ),
       padding: CatchInsets.compactControlContent,

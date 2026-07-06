@@ -4761,6 +4761,94 @@ export const clubDocumentSchema = {
   }
 };
 
+export const clubPostDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/club_posts.schema.json",
+  "title": "ClubPostDocument",
+  "description": "Canonical organizer post stored at clubs/{clubId}/posts/{postId}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "club_posts",
+  "x-firestore-path": "clubs/{clubId}/posts/{postId}",
+  "x-document-id-field": "id",
+  "x-owner": "createClubPost callable",
+  "required": [
+    "authorUid",
+    "text",
+    "audience",
+    "createdAt",
+    "status"
+  ],
+  "properties": {
+    "authorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "x-catch-ownership": "callable-owned"
+    },
+    "photoPath": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 500,
+      "x-catch-ownership": "callable-owned"
+    },
+    "eventId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "audience": {
+      "type": "string",
+      "enum": [
+        "followers"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "removed"
+      ],
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+};
+
 export const clubMembershipDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/club_memberships.schema.json",
@@ -12012,6 +12100,15 @@ export const activityNotificationDocumentSchema = {
       "maxLength": 180,
       "x-catch-ownership": "server-only"
     },
+    "postId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
     "actorUid": {
       "type": [
         "string",
@@ -16113,6 +16210,66 @@ export const createClubCallableResponseSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
+    }
+  }
+};
+
+export const createClubPostCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/create_club_post_payload.schema.json",
+  "title": "CreateClubPostCallablePayload",
+  "description": "Callable payload accepted by createClubPost.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "clubId",
+    "text"
+  ],
+  "properties": {
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "photoPath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const createClubPostCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/create_club_post_response.schema.json",
+  "title": "CreateClubPostCallableResponse",
+  "description": "Callable response returned by createClubPost.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "postId",
+    "remainingWeeklyQuota"
+  ],
+  "properties": {
+    "postId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "remainingWeeklyQuota": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3
     }
   }
 };

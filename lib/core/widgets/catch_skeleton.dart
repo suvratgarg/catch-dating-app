@@ -34,7 +34,7 @@ class CatchSkeleton extends StatelessWidget {
         width: width ?? double.infinity,
         height: height,
         decoration: BoxDecoration(
-          color: CatchTokens.editorialLight,
+          color: CatchTokens.editorialWhite,
           borderRadius: BorderRadius.circular(CatchRadius.md),
         ),
       ),
@@ -54,7 +54,7 @@ class CatchSkeleton extends StatelessWidget {
         width: width,
         height: height,
         decoration: BoxDecoration(
-          color: CatchTokens.editorialLight,
+          color: CatchTokens.editorialWhite,
           borderRadius:
               borderRadius ?? BorderRadius.all(Radius.circular(radius)),
           border: borderColor == null ? null : Border.all(color: borderColor),
@@ -70,7 +70,7 @@ class CatchSkeleton extends StatelessWidget {
         width: width,
         height: CatchLayout.skeletonTextHeight,
         decoration: BoxDecoration(
-          color: CatchTokens.editorialLight,
+          color: CatchTokens.editorialWhite,
           borderRadius: BorderRadius.circular(CatchRadius.xs),
         ),
       ),
@@ -95,7 +95,7 @@ class CatchSkeleton extends StatelessWidget {
                 child: Container(
                   height: CatchLayout.skeletonTextHeight,
                   decoration: BoxDecoration(
-                    color: CatchTokens.editorialLight,
+                    color: CatchTokens.editorialWhite,
                     borderRadius: BorderRadius.circular(CatchRadius.xs),
                   ),
                 ),
@@ -115,7 +115,7 @@ class CatchSkeleton extends StatelessWidget {
         width: size,
         height: size,
         decoration: const BoxDecoration(
-          color: CatchTokens.editorialLight,
+          color: CatchTokens.editorialWhite,
           shape: BoxShape.circle,
         ),
       ),

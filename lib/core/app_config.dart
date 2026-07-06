@@ -192,6 +192,8 @@ class AppConfig {
     'ENABLE_EXPLORE_SYNTHETIC_VISUAL_FILL',
   );
 
+  static const bool enableClubPosts = bool.fromEnvironment('ENABLE_CLUB_POSTS');
+
   static bool get shouldShowEnvironmentBanner => !environment.isProduction;
 
   static String get environmentBannerLabel {

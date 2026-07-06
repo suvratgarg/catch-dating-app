@@ -23,7 +23,7 @@ class CatchStatusBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final foreground = tone == CatchStatusBarTone.dark
-        ? CatchTokens.sunsetDark.ink
+        ? CatchTokens.editorialDark.ink
         : t.ink;
 
     return ColoredBox(

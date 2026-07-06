@@ -1537,7 +1537,6 @@
           "implementationPaths": [
             "lib/explore/presentation/explore_map_screen.dart",
             "lib/explore/presentation/explore_feed_view_model.dart",
-            "lib/explore/presentation/widgets/explore_peek_rail.dart",
             "lib/events/presentation/event_map_screen.dart",
             "lib/events/presentation/event_map_view_model.dart"
           ],
@@ -1579,7 +1578,7 @@
               "tests": [
                 "test/explore/explore_widgets_test.dart"
               ],
-              "notes": "ExploreMapScreen derives pins from ExploreFeedViewModel and has deterministic ready, selected-pin, and distance-ring captures."
+              "notes": "ExploreMapScreen derives pins from ExploreFeedViewModel and has deterministic ready, selected-card, and distance-ring captures."
             },
             {
               "id": "selected_pin",
@@ -1591,7 +1590,7 @@
               "tests": [
                 "test/explore/explore_widgets_test.dart"
               ],
-              "notes": "ExploreMapScreen seeds an initial selected event id for deterministic map capture while production pin taps still route to Event Detail."
+              "notes": "ExploreMapScreen seeds an initial selected event id for deterministic map capture; production pin taps now select the visible pin and show the bottom EventDateRailCard. Card taps route to Event Detail with the map hero tag, and tests cover background dismissal plus feed refresh clearing."
             },
             {
               "id": "large_pan_scope",
@@ -1604,6 +1603,15 @@
                 "test/explore/explore_widgets_test.dart"
               ],
               "notes": "Distance-ring capture seeds user location plus an active distance filter in the deterministic map placeholder."
+            },
+            {
+              "id": "no_exact_pins",
+              "kind": "empty",
+              "status": "implemented",
+              "previewIds": [
+                "ExploreMapScreen/Map route states"
+              ],
+              "notes": "Widgetbook covers the no-exact-pins route branch by feeding events without exact coordinates through ExploreMapScreen and EventMapView; no pixel capture is registered for this branch yet."
             },
             {
               "id": "map_loading",
@@ -1639,7 +1647,7 @@
             {
               "id": "DP-EXPLORE-MAP-002",
               "status": "closed",
-              "nextAction": "Closed by Widgetbook states for ExploreMapScreen route states, ExploreMapSheetLead collapsed/selected/nearby/loading/error/text-scale states, and ExplorePeekRailContent nearby/selected states."
+              "nextAction": "Closed by the selected EventDateRailCard route state, DS MapPin parity for deterministic placeholders and native marker bitmaps, Widgetbook coverage for ready/selected/loading/empty/no-exact-pins/error/distance-ring branches, and widget tests for preselect, pin-tap selection, card navigation, background dismissal, feed-drop clearing, lost-pin clearing, placeholder pin parity, and byte-backed marker support."
             }
           ]
         }
@@ -1676,10 +1684,8 @@
             "lib/dashboard/presentation/widgets/dashboard_full.dart",
             "lib/dashboard/presentation/widgets/dashboard_sliver_header.dart",
             "lib/dashboard/presentation/widgets/event_focus_rail.dart",
-            "lib/dashboard/presentation/widgets/stride_card.dart",
-            "lib/dashboard/shared/quick_actions.dart",
-            "lib/clubs/presentation/discovery/widgets/club_avatar_rail.dart",
-            "lib/dashboard/presentation/widgets/recommendations.dart"
+            "lib/dashboard/presentation/widgets/empty_hero_card.dart",
+            "lib/dashboard/presentation/widgets/club_posts_home_section.dart"
           ],
           "componentIds": [
             "catch.badge",

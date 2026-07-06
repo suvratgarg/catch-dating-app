@@ -22,6 +22,8 @@ It regenerates:
 - `assets/branding/catch_icon.png`
 - `assets/branding/catch_icon_square.png`
 - `assets/branding/catch_icon_round.png`
+- `assets/branding/catch_splash_mark_light.png`
+- `assets/branding/catch_splash_mark_dark.png`
 - `assets/branding/catch_hosts_logo.png`
 - `assets/branding/catch_hosts_icon.png`
 - Android production round launcher icon resources

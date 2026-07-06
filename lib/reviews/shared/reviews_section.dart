@@ -207,7 +207,7 @@ class ReviewsPreviewSection extends StatelessWidget {
                 child: Text('Reviews', style: CatchTextStyles.titleL(context)),
               ),
               if (avgRating != null) ...[
-                StarRating(rating: avgRating.round(), size: 14),
+                StarRating(rating: avgRating.round(), size: CatchIcon.rating),
                 gapW4,
                 Text(
                   '${avgRating.toStringAsFixed(1)} · ${reviews.length}',
@@ -308,7 +308,7 @@ class ReviewCard extends StatelessWidget {
                       isOwn ? 'You' : review.reviewerName,
                       style: CatchTextStyles.labelL(context),
                     ),
-                    StarRating(rating: review.rating, size: 12),
+                    StarRating(rating: review.rating, size: CatchIcon.rating),
                   ],
                 ),
               ),

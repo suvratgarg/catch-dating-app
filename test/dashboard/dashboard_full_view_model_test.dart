@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/dashboard/data/dashboard_recommendations_repository.dart';
@@ -10,6 +11,7 @@ import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
 import 'package:catch_dating_app/health_activity/domain/runner_activity.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
+import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -62,6 +64,7 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           watchUserProfileProvider.overrideWithValue(AsyncData(user)),
+          uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
           watchActiveClubMembershipsForUserProvider(user.uid).overrideWithValue(
             const AsyncError<List<ClubMembership>>('clubs', StackTrace.empty),
           ),
@@ -91,6 +94,7 @@ void main() {
       final membershipsLoading = ProviderContainer(
         overrides: [
           watchUserProfileProvider.overrideWithValue(AsyncData(user)),
+          uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
           watchActiveClubMembershipsForUserProvider(
             user.uid,
           ).overrideWithValue(const AsyncLoading<List<ClubMembership>>()),
@@ -112,42 +116,44 @@ void main() {
       );
     });
 
-    test(
-      'returns signed-in empty state with notification action ownership',
-      () {
-        final user = buildUser();
-        final container = ProviderContainer(
-          overrides: [
-            dashboardNowProvider.overrideWithValue(DateTime(2026, 5, 13, 8)),
-            watchUserProfileProvider.overrideWithValue(AsyncData(user)),
-            watchActiveClubMembershipsForUserProvider(
-              user.uid,
-            ).overrideWithValue(const AsyncData<List<ClubMembership>>([])),
-            watchSignedUpEventsProvider(
-              user.uid,
-            ).overrideWithValue(const AsyncData<List<Event>>([])),
-            watchAttendedEventsProvider(
-              user.uid,
-            ).overrideWithValue(const AsyncData<List<Event>>([])),
-            weeklyActivityProvider.overrideWithValue(
-              emptyWeeklyActivitySnapshot(),
-            ),
-            watchReviewsByUserProvider(
-              user.uid,
-            ).overrideWithValue(const AsyncData<List<Review>>([])),
-            dashboardRecommendedEventsProvider(
-              recommendationsQueryFor(user.uid, const []),
-            ).overrideWithValue(noRecommendationCandidates),
-          ],
-        );
-        addTearDown(container.dispose);
+    test('returns signed-in idle as a full live-layer state', () {
+      final user = buildUser();
+      final container = ProviderContainer(
+        overrides: [
+          dashboardNowProvider.overrideWithValue(DateTime(2026, 5, 13, 8)),
+          watchUserProfileProvider.overrideWithValue(AsyncData(user)),
+          uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
+          watchActiveClubMembershipsForUserProvider(
+            user.uid,
+          ).overrideWithValue(const AsyncData<List<ClubMembership>>([])),
+          watchSignedUpEventsProvider(
+            user.uid,
+          ).overrideWithValue(const AsyncData<List<Event>>([])),
+          watchAttendedEventsProvider(
+            user.uid,
+          ).overrideWithValue(const AsyncData<List<Event>>([])),
+          weeklyActivityProvider.overrideWithValue(
+            emptyWeeklyActivitySnapshot(),
+          ),
+          watchReviewsByUserProvider(
+            user.uid,
+          ).overrideWithValue(const AsyncData<List<Review>>([])),
+          dashboardRecommendedEventsProvider(
+            recommendationsQueryFor(user.uid, const []),
+          ).overrideWithValue(noRecommendationCandidates),
+        ],
+      );
+      addTearDown(container.dispose);
 
-        final state = container.read(dashboardHomeScreenStateProvider);
-        expect(state.status, DashboardHomeScreenStatus.empty);
-        expect(state.notificationUid, user.uid);
-        expect(state.header.eyebrow, 'WELCOME TO CATCH');
-      },
-    );
+      final state = container.read(dashboardHomeScreenStateProvider);
+      expect(state.status, DashboardHomeScreenStatus.full);
+      expect(state.notificationUid, user.uid);
+      expect(state.header.eyebrow, 'WEDNESDAY · MUMBAI');
+      expect(
+        dashboardHomeLiveStateFor(state, now: DateTime(2026, 5, 13, 8)),
+        DashboardHomeLiveState.idle,
+      );
+    });
 
     test('returns full state with pinned header copy and followed clubs', () {
       final user = buildUser();
@@ -156,6 +162,7 @@ void main() {
         overrides: [
           dashboardNowProvider.overrideWithValue(DateTime(2026, 5, 13, 8)),
           watchUserProfileProvider.overrideWithValue(AsyncData(user)),
+          uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
           watchActiveClubMembershipsForUserProvider(user.uid).overrideWithValue(
             AsyncData<List<ClubMembership>>([
               membership(clubId: 'club-a', uid: user.uid),
@@ -408,6 +415,62 @@ void main() {
       expect(viewModel.pendingReviewEvent?.id, 'pending-event');
     });
 
+    test('surfaces unread club post notifications as a home module', () {
+      final now = DateTime(2026, 5, 18, 10);
+      final posts = clubPostNotificationsFromActivity([
+        _activityNotification(
+          id: 'old-post',
+          type: ActivityNotificationType.clubUpdate,
+          postId: 'post-old',
+          createdAt: now.subtract(const Duration(hours: 3)),
+        ),
+        _activityNotification(
+          id: 'new-post',
+          type: ActivityNotificationType.clubUpdate,
+          postId: 'post-new',
+          createdAt: now.subtract(const Duration(minutes: 20)),
+        ),
+        _activityNotification(
+          id: 'read-post',
+          type: ActivityNotificationType.clubUpdate,
+          postId: 'post-read',
+          readAt: now,
+        ),
+        _activityNotification(
+          id: 'club-without-post',
+          type: ActivityNotificationType.clubUpdate,
+        ),
+        _activityNotification(id: 'match'),
+      ]);
+
+      expect(posts.map((notification) => notification.id), [
+        'new-post',
+        'old-post',
+      ]);
+
+      final user = buildUser();
+      final viewModel = buildDashboardFullViewModel(
+        signedUpEvents: const [],
+        uid: user.uid,
+        viewer: user,
+        attendedEventsAsync: const AsyncData<List<Event>>([]),
+        recommendedEventsAsync: noRecommendationCandidates,
+        clubPostNotifications: posts,
+        now: now,
+      );
+      final state = DashboardHomeScreenState.full(
+        header: DashboardHomeHeaderModel.full(user: user, now: now),
+        user: user,
+        viewModel: viewModel,
+        followedClubIds: const [],
+      );
+
+      expect(dashboardHomeModuleImpressionsFor(state), [
+        'idle_cta',
+        'club_posts',
+      ]);
+    });
+
     test('surfaces recommendation loading state', () {
       final viewModel = buildDashboardFullViewModel(
         signedUpEvents: const [],
@@ -575,4 +638,24 @@ void main() {
       expect(viewModel.arrivalAction?.event.id, 'check-in-event');
     });
   });
+}
+
+ActivityNotification _activityNotification({
+  required String id,
+  ActivityNotificationType type = ActivityNotificationType.match,
+  String? postId,
+  DateTime? createdAt,
+  DateTime? readAt,
+}) {
+  return ActivityNotification(
+    id: id,
+    uid: 'runner-1',
+    type: type,
+    title: 'Club update',
+    body: 'Meet ten minutes early.',
+    clubId: type == ActivityNotificationType.clubUpdate ? 'club-1' : null,
+    postId: postId,
+    createdAt: createdAt ?? DateTime(2026, 5, 18, 9),
+    readAt: readAt,
+  );
 }

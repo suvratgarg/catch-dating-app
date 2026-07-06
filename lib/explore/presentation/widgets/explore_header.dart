@@ -22,6 +22,7 @@ class ExploreBrowseHeaderContent extends StatelessWidget {
     this.backgroundColor,
     this.cityPickerState,
     this.onCitySelected,
+    this.actions = const <Widget>[],
   });
 
   final String query;
@@ -30,6 +31,7 @@ class ExploreBrowseHeaderContent extends StatelessWidget {
   final Color? backgroundColor;
   final ExploreCityPickerState? cityPickerState;
   final ValueChanged<CityData>? onCitySelected;
+  final List<Widget> actions;
 
   @override
   Widget build(BuildContext context) {
@@ -85,6 +87,7 @@ class ExploreBrowseHeaderContent extends StatelessWidget {
       searchPlaceholder: chrome.searchPlaceholder,
       searchTooltip: chrome.searchTooltip,
       searchSemanticLabel: chrome.searchSemanticLabel,
+      actions: actions,
     );
   }
 }
@@ -96,6 +99,7 @@ class ExploreDiscoveryCoverHeader extends StatefulWidget {
     this.featuredItem,
     required this.cityPickerState,
     required this.onCitySelected,
+    this.actions = const <Widget>[],
     this.onQueryChanged,
     this.onFeaturedEventSelected,
   });
@@ -104,6 +108,7 @@ class ExploreDiscoveryCoverHeader extends StatefulWidget {
   final ExploreEventItem? featuredItem;
   final ExploreCityPickerState cityPickerState;
   final ValueChanged<CityData>? onCitySelected;
+  final List<Widget> actions;
   final ValueChanged<String>? onQueryChanged;
   final ValueChanged<ExploreEventItem>? onFeaturedEventSelected;
 
@@ -158,6 +163,7 @@ class _ExploreDiscoveryCoverHeaderState
             searchPlaceholder: chrome.searchPlaceholder,
             searchTooltip: chrome.searchTooltip,
             searchSemanticLabel: chrome.searchSemanticLabel,
+            actions: widget.actions,
           ),
         ),
       );

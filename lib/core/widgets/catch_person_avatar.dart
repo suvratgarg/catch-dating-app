@@ -265,7 +265,7 @@ class CatchObscuredAvatarContent extends StatelessWidget {
         ),
         DecoratedBox(
           decoration: BoxDecoration(
-            color: CatchTokens.editorialDark.withValues(
+            color: CatchTokens.editorialBlack.withValues(
               alpha: CatchOpacity.avatarPhotoScrim,
             ),
           ),
@@ -424,7 +424,7 @@ class CatchActivityInitialsPlaceholder extends StatelessWidget {
               colors: [activity.accent, activity.deep],
             ),
             border: Border.all(
-              color: CatchTokens.editorialLight.withValues(
+              color: CatchTokens.editorialWhite.withValues(
                 alpha: CatchOpacity.activityAvatarInnerRule,
               ),
             ),
@@ -440,13 +440,13 @@ class CatchActivityInitialsPlaceholder extends StatelessWidget {
                 height: 1,
                 fontWeight: FontWeight.w700,
                 letterSpacing: initialsSize * 0.02,
-                color: CatchTokens.editorialLight,
+                color: CatchTokens.editorialWhite,
               ),
             ),
           ),
         if (dim)
           ColoredBox(
-            color: CatchTokens.editorialDark.withValues(
+            color: CatchTokens.editorialBlack.withValues(
               alpha: CatchOpacity.activityAvatarDim,
             ),
           ),
@@ -459,7 +459,7 @@ class _ActivityAvatarTexturePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = CatchTokens.editorialLight.withValues(
+      ..color = CatchTokens.editorialWhite.withValues(
         alpha: CatchOpacity.activityAvatarPrint,
       )
       ..strokeWidth = CatchLayout.activityAvatarTextureStrokeWidth;

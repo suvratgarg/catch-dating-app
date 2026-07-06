@@ -1,0 +1,19 @@
+{
+  "_comment": "Mirror of splash-welcome-handoff/strings.json for CI environments that do not have the external handoff folder.",
+  "landingIndex": 11,
+  "phrases": [
+    { "object": "the 6:30 run", "activity": "social-run", "pigment": "#D85A3C" },
+    { "object": "the long table", "activity": "dinner", "pigment": "#C44D6A" },
+    { "object": "Tuesday trivia", "activity": "pub-quiz", "pigment": "#4356A8" },
+    { "object": "Sunday doubles", "activity": "padel", "pigment": "#2E9AA0" },
+    { "object": "the sunset 5K", "activity": "running", "pigment": "#C9482E" },
+    { "object": "the climb", "activity": "strength", "pigment": "#B0573C" },
+    { "object": "the record fair", "activity": "bar-crawl", "pigment": "#B14488" },
+    { "object": "the gallery", "activity": "yoga", "pigment": "#8A5FB0" },
+    { "object": "morning swim", "activity": "cycling", "pigment": "#3A6FD0" },
+    { "object": "the supper club", "activity": "dinner", "pigment": "#C44D6A" },
+    { "object": "someone's eye", "activity": "singles", "pigment": "#D85A6E" },
+    { "object": "someone real", "activity": "social-run", "pigment": "#D85A3C" }
+  ],
+  "headline": "Catch someone real."
+}

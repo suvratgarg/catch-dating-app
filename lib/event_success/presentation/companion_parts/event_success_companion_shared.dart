@@ -390,7 +390,7 @@ class PaperTicketHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final foreground = CatchTokens.editorialLight;
+    final foreground = CatchTokens.editorialWhite;
     return CatchSurface(
       radius: CatchRadius.none,
       backgroundColor: swatch.deep,
@@ -1313,7 +1313,7 @@ class _CompanionStageTheme {
     required EventSuccessAttendeeMoment moment,
     required EventSuccessPlan plan,
   }) {
-    const d = CatchTokens.sunsetDark;
+    const d = CatchTokens.editorialDark;
     final activityPalette = ActivityPalette.of(context);
     final kinds = ActivityKind.values;
 

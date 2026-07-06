@@ -2,6 +2,7 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
+import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
@@ -30,6 +31,8 @@ Club buildClub({
   DateTime? createdAt,
   String? imageUrl,
   String? profileImageUrl,
+  List<UploadedPhoto> clubPhotos = const [],
+  UploadedPhoto? logoPhoto,
   List<String> tags = const ['social'],
   int memberCount = 1,
   double rating = 0,
@@ -39,6 +42,7 @@ Club buildClub({
   String? instagramHandle,
   String? phoneNumber,
   String? email,
+  ClubHostDefaults? hostDefaults,
   ClubAppVisibility appVisibility = ClubAppVisibility.discoverable,
 }) {
   return Club(
@@ -58,6 +62,8 @@ Club buildClub({
     createdAt: createdAt ?? DateTime(2025),
     imageUrl: imageUrl,
     profileImageUrl: profileImageUrl,
+    clubPhotos: clubPhotos,
+    logoPhoto: logoPhoto,
     tags: tags,
     memberCount: memberCount,
     rating: rating,
@@ -67,6 +73,7 @@ Club buildClub({
     instagramHandle: instagramHandle,
     phoneNumber: phoneNumber,
     email: email,
+    hostDefaults: hostDefaults ?? const ClubHostDefaults(),
     appVisibility: appVisibility,
   );
 }

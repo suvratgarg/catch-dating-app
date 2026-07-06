@@ -50,14 +50,12 @@ final class DashboardNowProvider
 
 String _$dashboardNowHash() => r'91e11349a0f778936d9df6327401917812107880';
 
-/// Combines signed-up events, attended events, and recommended events into a single
-/// [DashboardFullViewModel] for the dashboard screen.
+/// Combines signed-up and attended events into the live-layer home model.
 
 @ProviderFor(dashboardFullViewModel)
 final dashboardFullViewModelProvider = DashboardFullViewModelFamily._();
 
-/// Combines signed-up events, attended events, and recommended events into a single
-/// [DashboardFullViewModel] for the dashboard screen.
+/// Combines signed-up and attended events into the live-layer home model.
 
 final class DashboardFullViewModelProvider
     extends
@@ -67,8 +65,7 @@ final class DashboardFullViewModelProvider
           DashboardFullViewModel
         >
     with $Provider<DashboardFullViewModel> {
-  /// Combines signed-up events, attended events, and recommended events into a single
-  /// [DashboardFullViewModel] for the dashboard screen.
+  /// Combines signed-up and attended events into the live-layer home model.
   DashboardFullViewModelProvider._({
     required DashboardFullViewModelFamily super.from,
     required ({
@@ -142,10 +139,9 @@ final class DashboardFullViewModelProvider
 }
 
 String _$dashboardFullViewModelHash() =>
-    r'7b3d5b0fc2653abc4b3fa6b66b7927a17fc577b4';
+    r'8166f3821813d3cad2a4915d074aaaae3374c6a2';
 
-/// Combines signed-up events, attended events, and recommended events into a single
-/// [DashboardFullViewModel] for the dashboard screen.
+/// Combines signed-up and attended events into the live-layer home model.
 
 final class DashboardFullViewModelFamily extends $Family
     with
@@ -167,8 +163,7 @@ final class DashboardFullViewModelFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// Combines signed-up events, attended events, and recommended events into a single
-  /// [DashboardFullViewModel] for the dashboard screen.
+  /// Combines signed-up and attended events into the live-layer home model.
 
   DashboardFullViewModelProvider call({
     required List<Event> signedUpEvents,
@@ -252,4 +247,4 @@ final class DashboardHomeScreenStateProvider
 }
 
 String _$dashboardHomeScreenStateHash() =>
-    r'5339a856fbeb67b044df698deb20b757e0787a8a';
+    r'04bb6f45693f913bced08eb06b0d9d27da690327';

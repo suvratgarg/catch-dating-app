@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/locations/shared/google_maps_coordinate_adapter.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +21,9 @@ class CatchMapMarker {
     required this.id,
     required this.position,
     this.hue = CatchMapMarkerHue.red,
+    this.bitmap,
+    this.anchor = const Offset(0.5, 1),
+    this.zIndex = 0,
     this.infoTitle,
     this.infoSnippet,
     this.onTap,
@@ -27,9 +32,24 @@ class CatchMapMarker {
   final String id;
   final LocationCoordinate position;
   final CatchMapMarkerHue hue;
+  final CatchMapMarkerBitmap? bitmap;
+  final Offset anchor;
+  final int zIndex;
   final String? infoTitle;
   final String? infoSnippet;
   final VoidCallback? onTap;
+}
+
+class CatchMapMarkerBitmap {
+  const CatchMapMarkerBitmap({
+    required this.bytes,
+    required this.logicalSize,
+    required this.imagePixelRatio,
+  });
+
+  final Uint8List bytes;
+  final Size logicalSize;
+  final double imagePixelRatio;
 }
 
 class CatchMapCircle {
@@ -140,16 +160,26 @@ class CatchGoogleMap extends StatelessWidget {
 }
 
 gmaps.Marker _googleMarker(CatchMapMarker marker) {
+  final bitmap = marker.bitmap;
   return gmaps.Marker(
     markerId: gmaps.MarkerId(marker.id),
     position: marker.position.toGoogleMapsLatLng(),
-    icon: gmaps.BitmapDescriptor.defaultMarkerWithHue(
-      _googleMarkerHue(marker.hue),
-    ),
+    icon: bitmap == null
+        ? gmaps.BitmapDescriptor.defaultMarkerWithHue(
+            _googleMarkerHue(marker.hue),
+          )
+        : gmaps.BitmapDescriptor.bytes(
+            bitmap.bytes,
+            imagePixelRatio: bitmap.imagePixelRatio,
+            width: bitmap.logicalSize.width,
+            height: bitmap.logicalSize.height,
+          ),
+    anchor: marker.anchor,
     infoWindow: gmaps.InfoWindow(
       title: marker.infoTitle,
       snippet: marker.infoSnippet,
     ),
+    zIndexInt: marker.zIndex,
     onTap: marker.onTap,
   );
 }

@@ -29,7 +29,7 @@ class CatchActivityMapPin extends StatelessWidget {
         (selected
             ? CatchLayout.activityMapPinSelectedSize
             : CatchLayout.activityMapPinRestingSize);
-    final flagLabel = label?.trim();
+    final flagLabel = label?.trim().toUpperCase();
 
     return Column(
       mainAxisSize: MainAxisSize.min,

@@ -1996,7 +1996,7 @@
         {
           "tool": "audit:fn-readme-inventory",
           "stage": "scanner-ratchet",
-          "docAnchor": "functions/README.md#function-inventory-may-2026",
+          "docAnchor": "functions/README.md#function-inventory-july-2026",
           "baseline": "tool/audit/fn_readme_inventory_baseline.json"
         },
         {

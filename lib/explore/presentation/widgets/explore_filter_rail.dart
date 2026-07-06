@@ -28,6 +28,7 @@ class ExploreFilterRail extends StatelessWidget {
     this.onTimeFilterSelected,
     this.onDistanceFilterSelected,
     this.onToggleJoinedOnly,
+    this.onToggleFollowingOnly,
     this.onToggleHighRatedOnly,
     this.onToggleActivityTag,
     this.onToggleArea,
@@ -42,6 +43,7 @@ class ExploreFilterRail extends StatelessWidget {
   final ValueChanged<ExploreTimeFilter>? onTimeFilterSelected;
   final ValueChanged<ExploreDistanceFilter>? onDistanceFilterSelected;
   final VoidCallback? onToggleJoinedOnly;
+  final VoidCallback? onToggleFollowingOnly;
   final VoidCallback? onToggleHighRatedOnly;
   final ValueChanged<String>? onToggleActivityTag;
   final ValueChanged<String>? onToggleArea;
@@ -85,6 +87,7 @@ class ExploreFilterRail extends StatelessWidget {
         state: sheetState,
         onDistanceFilterSelected: onDistanceFilterSelected,
         onToggleJoinedOnly: onToggleJoinedOnly,
+        onToggleFollowingOnly: onToggleFollowingOnly,
         onToggleHighRatedOnly: onToggleHighRatedOnly,
         onToggleActivityTag: onToggleActivityTag,
         onToggleArea: onToggleArea,
@@ -151,6 +154,7 @@ class ExploreFilterSheet extends StatelessWidget {
     this.state,
     this.onDistanceFilterSelected,
     this.onToggleJoinedOnly,
+    this.onToggleFollowingOnly,
     this.onToggleHighRatedOnly,
     this.onToggleActivityTag,
     this.onToggleArea,
@@ -161,6 +165,7 @@ class ExploreFilterSheet extends StatelessWidget {
   final ExploreFilterSheetState? state;
   final ValueChanged<ExploreDistanceFilter>? onDistanceFilterSelected;
   final VoidCallback? onToggleJoinedOnly;
+  final VoidCallback? onToggleFollowingOnly;
   final VoidCallback? onToggleHighRatedOnly;
   final ValueChanged<String>? onToggleActivityTag;
   final ValueChanged<String>? onToggleArea;
@@ -235,6 +240,11 @@ class ExploreFilterSheet extends StatelessWidget {
                     label: 'Joined clubs',
                     active: filters.joinedOnly,
                     onTap: onToggleJoinedOnly,
+                  ),
+                  CatchSelectChip(
+                    label: 'Following',
+                    active: filters.followingOnly,
+                    onTap: onToggleFollowingOnly,
                   ),
                   CatchSelectChip(
                     label: 'Rated 4.5+',

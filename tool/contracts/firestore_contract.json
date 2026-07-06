@@ -244,6 +244,7 @@
       "exportedFunctions": [
         "createClub",
         "updateClub",
+        "createClubPost",
         "joinClub",
         "leaveClub",
         "archiveClub",
@@ -255,8 +256,35 @@
       "migrationNotes": [
         "archiveClub marks clubs archived when history exists.",
         "deleteClub hard-deletes only never-used clubs with no events, payments, reviews, or non-host members.",
+        "Organizer posts live under clubs/{clubId}/posts/{postId} and are created only by createClubPost.",
         "memberCount is recomputed from active clubMemberships by syncClubMemberStats.",
         "nextEventAt and nextEventLabel are recomputed from active future events by syncClubNextEvent."
+      ]
+    },
+    {
+      "id": "club_posts",
+      "path": "clubs/{clubId}/posts/{postId}",
+      "rulesMatch": "/clubs/{clubId}/posts/{postId}",
+      "typescriptInterface": "ClubPostDocument",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "createClubPost callable",
+      "read": "authenticated users",
+      "write": "server only",
+      "exportedFunctions": [
+        "createClubPost"
+      ],
+      "operations": [
+        {
+          "id": "host_create_post",
+          "type": "callable",
+          "owner": "club owner or host",
+          "function": "createClubPost",
+          "payloadSchemaRef": "contracts/callables/create_club_post_payload.schema.json"
+        }
+      ],
+      "migrationNotes": [
+        "V1 post audience is followers only.",
+        "The createClubPost callable enforces max 3 active posts per club per rolling 7 days."
       ]
     },
     {
@@ -772,6 +800,7 @@
         "createEvent",
         "updateEvent",
         "cancelEvent",
+        "createClubPost",
         "signUpForFreeEvent",
         "verifyRazorpayPayment",
         "cancelEventSignUp"

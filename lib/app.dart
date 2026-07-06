@@ -16,8 +16,10 @@ import 'package:catch_dating_app/force_update/presentation/force_update_diagnost
 import 'package:catch_dating_app/force_update/presentation/update_required_screen.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:country_code_picker/country_code_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -106,6 +108,8 @@ class ForceUpdateGate extends ConsumerStatefulWidget {
 
 class _ForceUpdateGateState extends ConsumerState<ForceUpdateGate>
     with WidgetsBindingObserver {
+  bool _nativeSplashRemovalScheduled = false;
+
   @override
   void initState() {
     super.initState();
@@ -137,12 +141,14 @@ class _ForceUpdateGateState extends ConsumerState<ForceUpdateGate>
   Widget build(BuildContext context) {
     final forceUpdate = widget.forceUpdate;
     if (forceUpdate.hasValue) {
+      _scheduleNativeSplashRemoval();
       return forceUpdate.requireValue
           ? const UpdateRequiredScreen()
           : widget.child;
     }
 
     if (forceUpdate.hasError) {
+      _scheduleNativeSplashRemoval();
       return ForceUpdateCheckErrorScreen(
         error: forceUpdate.error,
         onRetry: widget.onRetry,
@@ -150,6 +156,14 @@ class _ForceUpdateGateState extends ConsumerState<ForceUpdateGate>
     }
 
     return const CatchStartupLoadingScreen();
+  }
+
+  void _scheduleNativeSplashRemoval() {
+    if (_nativeSplashRemovalScheduled || kIsWeb) return;
+    _nativeSplashRemovalScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FlutterNativeSplash.remove();
+    });
   }
 }
 

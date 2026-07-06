@@ -8,15 +8,16 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class EmptyHeroCard extends StatelessWidget {
-  const EmptyHeroCard({super.key, this.fullBleed = false});
+  const EmptyHeroCard({super.key, this.fullBleed = false, this.onFindEvent});
 
   final bool fullBleed;
+  final VoidCallback? onFindEvent;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final content = EmptyHeroContent(
-      onFindEvent: () => context.go(Routes.exploreScreen.path),
+      onFindEvent: onFindEvent ?? () => context.go(Routes.exploreScreen.path),
       showWelcomeEyebrow: fullBleed,
     );
 
@@ -72,7 +73,7 @@ class EmptyHeroContent extends StatelessWidget {
             'WELCOME TO CATCH',
             style: CatchTextStyles.kicker(
               context,
-              color: CatchTokens.editorialLight,
+              color: CatchTokens.editorialWhite,
             ),
           ),
           gapH28,
@@ -81,7 +82,7 @@ class EmptyHeroContent extends StatelessWidget {
           '● NO EVENTS BOOKED',
           style: CatchTextStyles.kicker(
             context,
-            color: CatchTokens.editorialLight,
+            color: CatchTokens.editorialWhite,
           ),
         ),
         gapH10,
@@ -89,7 +90,7 @@ class EmptyHeroContent extends StatelessWidget {
           'Your catches unlock\nafter your first event.',
           style: CatchTextStyles.headline(
             context,
-            color: CatchTokens.editorialLight,
+            color: CatchTokens.editorialWhite,
           ),
         ),
         gapH8,
@@ -97,7 +98,7 @@ class EmptyHeroContent extends StatelessWidget {
           "The dating app where you've already met. No cold swiping — just people you actually crossed paths with.",
           style: CatchTextStyles.supporting(
             context,
-            color: CatchTokens.editorialLight,
+            color: CatchTokens.editorialWhite,
           ),
         ),
         gapH16,
@@ -122,7 +123,7 @@ class _HeroLineWash extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final linePaint = Paint()
-      ..color = CatchTokens.editorialLight.withValues(alpha: 0.08)
+      ..color = CatchTokens.editorialWhite.withValues(alpha: 0.08)
       ..strokeWidth = 1;
     for (var x = -size.height; x < size.width + size.height; x += 22) {
       canvas.drawLine(

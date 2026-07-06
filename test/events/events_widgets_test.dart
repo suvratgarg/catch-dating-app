@@ -279,7 +279,7 @@ void main() {
       );
 
       expect(find.text('Event location'), findsNothing);
-      expect(find.byIcon(CatchIcons.locationOnRounded), findsOneWidget);
+      expect(find.byIcon(CatchIcons.locationOnOutlined), findsOneWidget);
       expect(find.text('Race Course Road main gate'), findsOneWidget);
       expect(
         find.text('Look for the Catch demo pacer near the entrance.'),
@@ -764,42 +764,6 @@ void main() {
       expect(find.text(event.title), findsOneWidget);
     });
 
-    testWidgets('event compact row renders details and forwards taps', (
-      tester,
-    ) async {
-      var tapped = false;
-      final event = buildEvent(
-        startTime: DateTime.now().add(const Duration(days: 3)),
-        meetingPoint: 'Sea Link promenade',
-        distanceKm: 8,
-      );
-
-      await pumpEventsTestApp(
-        tester,
-        Scaffold(
-          body: SizedBox(
-            width: 360,
-            child: EventCompactRow(
-              event: event,
-              statusLabel: 'Saved',
-              onTap: () => tapped = true,
-            ),
-          ),
-        ),
-      );
-
-      expect(find.text(event.title), findsOneWidget);
-      expect(find.text('Sea Link promenade'), findsOneWidget);
-      expect(find.text('8km · Easy'), findsOneWidget);
-      expect(find.text('0 going · 20 left'), findsOneWidget);
-      expect(find.text('Saved'), findsOneWidget);
-
-      await tester.tap(find.byType(EventCompactRow));
-      await tester.pump();
-
-      expect(tapped, isTrue);
-    });
-
     testWidgets('event action card renders badges, meta, and actions', (
       tester,
     ) async {
@@ -861,7 +825,7 @@ void main() {
 
         await tester.pumpWidget(
           MaterialApp(
-            theme: ThemeData(extensions: const [CatchTokens.sunsetLight]),
+            theme: ThemeData(extensions: const [CatchTokens.editorialLight]),
             home: Scaffold(
               body: SizedBox(
                 height: 320,
@@ -889,7 +853,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          theme: ThemeData(extensions: const [CatchTokens.sunsetLight]),
+          theme: ThemeData(extensions: const [CatchTokens.editorialLight]),
           home: Scaffold(
             body: SizedBox(height: 320, child: EventPhotoHeader(event: event)),
           ),
@@ -913,7 +877,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          theme: ThemeData(extensions: const [CatchTokens.sunsetLight]),
+          theme: ThemeData(extensions: const [CatchTokens.editorialLight]),
           home: Scaffold(
             body: SizedBox(height: 320, child: EventPhotoHeader(event: event)),
           ),

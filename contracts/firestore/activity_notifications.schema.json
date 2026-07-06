@@ -93,6 +93,15 @@
       "maxLength": 180,
       "x-catch-ownership": "server-only"
     },
+    "postId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
     "actorUid": {
       "type": [
         "string",

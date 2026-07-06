@@ -1,15 +1,16 @@
 import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/dashboard/data/dashboard_recommendations_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_arrival_action.dart';
-import 'package:catch_dating_app/events/domain/event_constraints.dart';
-import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
+import 'package:catch_dating_app/explore/data/explore_recommendations_repository.dart';
+import 'package:catch_dating_app/explore/domain/explore_event_recommendation.dart';
 import 'package:catch_dating_app/health_activity/domain/runner_activity.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
-import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
+import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
@@ -64,23 +65,51 @@ class DashboardFullViewModel {
     required this.arrivalAction,
     required this.activeSwipeEvent,
     required this.pendingReviewEvent,
+    this.clubPostNotifications = const <ActivityNotification>[],
     required this.attendedEventsSection,
-    required this.weeklyActivitySection,
-    required this.recommendationsSection,
-  });
+    DashboardSectionModel<WeeklyActivitySnapshot>? weeklyActivitySection,
+    DashboardSectionModel<List<ExploreEventRecommendation>>?
+    recommendationsSection,
+  }) : _weeklyActivitySection = weeklyActivitySection,
+       _recommendationsSection = recommendationsSection;
 
   final List<Event> upcomingEvents;
   final Event? nextEvent;
   final EventArrivalAction? arrivalAction;
   final Event? activeSwipeEvent;
   final Event? pendingReviewEvent;
+  final List<ActivityNotification> clubPostNotifications;
   final DashboardSectionModel<List<Event>> attendedEventsSection;
-  final DashboardSectionModel<WeeklyActivitySnapshot> weeklyActivitySection;
-  final DashboardSectionModel<List<DashboardEventRecommendation>>
-  recommendationsSection;
+  final DashboardSectionModel<WeeklyActivitySnapshot>? _weeklyActivitySection;
+  final DashboardSectionModel<List<ExploreEventRecommendation>>?
+  _recommendationsSection;
+
+  @Deprecated('Home no longer renders weekly activity.')
+  DashboardSectionModel<WeeklyActivitySnapshot> get weeklyActivitySection =>
+      _weeklyActivitySection ??
+      DashboardSectionModel<WeeklyActivitySnapshot>.data(
+        WeeklyActivitySnapshot.unsupported(referenceDate: DateTime.now()),
+      );
+
+  @Deprecated('Explore owns recommendations.')
+  DashboardSectionModel<List<ExploreEventRecommendation>>
+  get recommendationsSection =>
+      _recommendationsSection ??
+      const DashboardSectionModel<List<ExploreEventRecommendation>>.data([]);
 }
 
 enum DashboardHomeScreenStatus { loading, error, empty, full }
+
+enum DashboardHomeLiveState {
+  idle('idle'),
+  booked('booked'),
+  eventDay('event_day'),
+  windowOpen('window_open');
+
+  const DashboardHomeLiveState(this.analyticsValue);
+
+  final String analyticsValue;
+}
 
 enum DashboardHomeRetryTarget { userProfile, memberships, signedUpEvents }
 
@@ -176,20 +205,6 @@ class DashboardHomeScreenState {
   final String? notificationUid;
 }
 
-class DashboardEventRecommendation {
-  const DashboardEventRecommendation({
-    required this.event,
-    required this.clubName,
-    required this.reasonLabel,
-    required this.score,
-  });
-
-  final Event event;
-  final String clubName;
-  final String reasonLabel;
-  final double score;
-}
-
 String dashboardGreeting(DateTime now) {
   final hour = now.hour;
   if (hour < 12) return 'Morning';
@@ -203,17 +218,92 @@ String dashboardDayCity(String? city, {required DateTime now}) {
   return '$day · ${label.isEmpty ? defaultCityDataForMarket().label : label}';
 }
 
+DashboardHomeLiveState dashboardHomeLiveStateFor(
+  DashboardHomeScreenState state, {
+  required DateTime now,
+}) {
+  if (state.status != DashboardHomeScreenStatus.full) {
+    return DashboardHomeLiveState.idle;
+  }
+
+  final viewModel = state.viewModel;
+  if (viewModel == null) return DashboardHomeLiveState.idle;
+  if (viewModel.activeSwipeEvent != null) {
+    return DashboardHomeLiveState.windowOpen;
+  }
+  if (viewModel.arrivalAction != null ||
+      viewModel.upcomingEvents.any(
+        (event) => _isSameLocalDay(event.startTime, now),
+      )) {
+    return DashboardHomeLiveState.eventDay;
+  }
+  if (viewModel.upcomingEvents.isNotEmpty) {
+    return DashboardHomeLiveState.booked;
+  }
+  return DashboardHomeLiveState.idle;
+}
+
+List<String> dashboardHomeModuleImpressionsFor(DashboardHomeScreenState state) {
+  if (state.status == DashboardHomeScreenStatus.loading ||
+      state.status == DashboardHomeScreenStatus.error) {
+    return const <String>[];
+  }
+
+  final viewModel = state.viewModel;
+  if (viewModel == null) return const ['idle_cta'];
+
+  final modules = <String>[];
+  if (viewModel.activeSwipeEvent != null) {
+    modules.add('catch_window');
+  }
+  if (viewModel.upcomingEvents.isNotEmpty ||
+      viewModel.arrivalAction != null ||
+      viewModel.pendingReviewEvent != null) {
+    modules.add('focus_rail');
+  }
+  final hasLiveModule = modules.isNotEmpty;
+  if (!hasLiveModule) {
+    modules.add('idle_cta');
+  }
+  if (viewModel.clubPostNotifications.isNotEmpty) {
+    modules.add('club_posts');
+  }
+  return List.unmodifiable(modules);
+}
+
+List<ActivityNotification> clubPostNotificationsFromActivity(
+  Iterable<ActivityNotification> notifications,
+) {
+  final posts =
+      notifications
+          .where(
+            (notification) =>
+                notification.isUnread &&
+                notification.type == ActivityNotificationType.clubUpdate &&
+                notification.postId != null,
+          )
+          .toList()
+        ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+  return posts.take(3).toList(growable: false);
+}
+
+bool _isSameLocalDay(DateTime a, DateTime b) {
+  return a.year == b.year && a.month == b.month && a.day == b.day;
+}
+
 DashboardFullViewModel buildDashboardFullViewModel({
   required List<Event> signedUpEvents,
   String? uid,
   UserProfile? viewer,
   required AsyncValue<List<Event>> attendedEventsAsync,
-  required AsyncValue<List<DashboardEventRecommendationCandidate>>
-  recommendedEventsAsync,
+  @Deprecated('Explore owns recommendations; retained for compatibility.')
+  AsyncValue<List<ExploreEventRecommendationCandidate>>? recommendedEventsAsync,
   AsyncValue<WeeklyActivitySnapshot>? weeklyActivityAsync,
   AsyncValue<List<Review>> reviewsByUserAsync = const AsyncData<List<Review>>(
     [],
   ),
+  List<ActivityNotification> clubPostNotifications =
+      const <ActivityNotification>[],
   DateTime? now,
 }) {
   final effectiveNow = now ?? DateTime.now();
@@ -241,32 +331,32 @@ DashboardFullViewModel buildDashboardFullViewModel({
     weeklyActivityAsync: weeklyActivityAsync,
     referenceDate: effectiveNow,
   );
-
   final signedUpEventIds = signedUpEvents.map((event) => event.id).toSet();
-  final recommendationsSection = recommendedEventsAsync.when(
-    loading: () =>
-        const DashboardSectionModel<List<DashboardEventRecommendation>>.loading(
-          'Loading recommended events...',
-        ),
-    error: (error, stackTrace) =>
-        DashboardSectionModel<List<DashboardEventRecommendation>>.error(
-          'Unable to load recommended events.',
-          error: error,
-        ),
-    data: (candidates) =>
-        DashboardSectionModel<List<DashboardEventRecommendation>>.data(
-          rankDashboardEventRecommendations(
-            candidates: candidates,
-            signedUpEventIds: signedUpEventIds,
-            attendedEvents:
-                attendedEventsAsync.asData?.value ?? const <Event>[],
-            signedUpEvents: signedUpEvents,
-            viewer: viewer,
-            now: effectiveNow,
-          ),
-        ),
-  );
-
+  final recommendationsSection =
+      recommendedEventsAsync?.when(
+        loading: () =>
+            const DashboardSectionModel<
+              List<ExploreEventRecommendation>
+            >.loading('Loading recommended events...'),
+        error: (error, stackTrace) =>
+            DashboardSectionModel<List<ExploreEventRecommendation>>.error(
+              'Unable to load recommended events.',
+              error: error,
+            ),
+        data: (candidates) =>
+            DashboardSectionModel<List<ExploreEventRecommendation>>.data(
+              rankExploreEventRecommendations(
+                candidates: candidates,
+                signedUpEventIds: signedUpEventIds,
+                attendedEvents:
+                    attendedEventsAsync.asData?.value ?? const <Event>[],
+                signedUpEvents: signedUpEvents,
+                viewer: viewer,
+                now: effectiveNow,
+              ),
+            ),
+      ) ??
+      const DashboardSectionModel<List<ExploreEventRecommendation>>.data([]);
   final activeSwipeEvent = attendedEventsSection.data == null
       ? null
       : latestEventWithOpenSwipeWindow(
@@ -300,6 +390,7 @@ DashboardFullViewModel buildDashboardFullViewModel({
     arrivalAction: arrivalAction,
     activeSwipeEvent: activeSwipeEvent,
     pendingReviewEvent: pendingReviewEvent,
+    clubPostNotifications: clubPostNotifications,
     attendedEventsSection: attendedEventsSection,
     weeklyActivitySection: weeklyActivitySection,
     recommendationsSection: recommendationsSection,
@@ -465,8 +556,12 @@ Event? _latestUnreviewedAttendedEvent(
   return unreviewedEvents.firstOrNull;
 }
 
+@Deprecated('Use ExploreEventRecommendation from explore recommendations.')
+typedef DashboardEventRecommendation = ExploreEventRecommendation;
+
+@Deprecated('Use rankExploreEventRecommendations from explore recommendations.')
 List<DashboardEventRecommendation> rankDashboardEventRecommendations({
-  required List<DashboardEventRecommendationCandidate> candidates,
+  required List<ExploreEventRecommendationCandidate> candidates,
   required Set<String> signedUpEventIds,
   required List<Event> attendedEvents,
   required List<Event> signedUpEvents,
@@ -474,239 +569,18 @@ List<DashboardEventRecommendation> rankDashboardEventRecommendations({
   UserProfile? viewer,
   int limit = 10,
 }) {
-  final timePreference = _timePreferenceFromEvents(
+  return rankExploreEventRecommendations(
+    candidates: candidates,
+    signedUpEventIds: signedUpEventIds,
     attendedEvents: attendedEvents,
     signedUpEvents: signedUpEvents,
     now: now,
-  );
-
-  final recommendations = <DashboardEventRecommendation>[];
-  for (final candidate in candidates) {
-    final event = candidate.event;
-    if (signedUpEventIds.contains(event.id) ||
-        event.isCancelled ||
-        !event.startTime.isAfter(now) ||
-        event.isFull) {
-      continue;
-    }
-    if (viewer != null && !_isEligibleForRecommendation(event, viewer, now)) {
-      continue;
-    }
-
-    final scored = _scoreRecommendation(
-      candidate: candidate,
-      viewer: viewer,
-      timePreference: timePreference,
-      now: now,
-    );
-    recommendations.add(scored);
-  }
-
-  recommendations.sort((a, b) {
-    final scoreOrder = b.score.compareTo(a.score);
-    if (scoreOrder != 0) return scoreOrder;
-    return a.event.startTime.compareTo(b.event.startTime);
-  });
-  return recommendations.take(limit).toList(growable: false);
-}
-
-bool _isEligibleForRecommendation(
-  Event event,
-  UserProfile viewer,
-  DateTime now,
-) {
-  final viewerAge = viewer.ageOn(now);
-  if (viewerAge < event.constraints.minAge ||
-      viewerAge > event.constraints.maxAge) {
-    return false;
-  }
-  final genderCap = event.constraints.maxForGender(viewer.gender);
-  if (genderCap != null &&
-      (event.genderCounts[viewer.gender.name] ?? 0) >= genderCap) {
-    return false;
-  }
-  return true;
-}
-
-DashboardEventRecommendation _scoreRecommendation({
-  required DashboardEventRecommendationCandidate candidate,
-  required UserProfile? viewer,
-  required _EventTimeBucket? timePreference,
-  required DateTime now,
-}) {
-  final event = candidate.event;
-  var score = 0.0;
-  var reason = 'From your clubs';
-
-  final distanceReason = _distancePreferenceReason(viewer, event);
-  if (distanceReason != null) {
-    score += 28;
-    reason = distanceReason;
-  } else if (_hasNearbyPreferredDistance(viewer, event)) {
-    score += 12;
-  }
-
-  final paceScore = _paceFitScore(viewer, event);
-  score += paceScore;
-  if (reason == 'From your clubs' && paceScore >= 18) {
-    reason = 'Fits your pace';
-  }
-
-  final eventTimeBucket = _EventTimeBucket.fromHour(event.startTime.hour);
-  if (timePreference != null && eventTimeBucket == timePreference) {
-    score += 18;
-    if (reason == 'From your clubs') {
-      reason = '${timePreference.label} event pattern';
-    }
-  }
-
-  final proximityScore = _proximityScore(viewer, event);
-  score += proximityScore;
-  if (reason == 'From your clubs' && proximityScore >= 14) {
-    reason = 'Near you';
-  }
-
-  if (_isSameCity(viewer, candidate.clubLocation)) {
-    score += 10;
-  }
-
-  score += _startTimeScore(event, now);
-  score += event.spotsRemaining >= 5 ? 5 : 2;
-
-  return DashboardEventRecommendation(
-    event: event,
-    clubName: candidate.clubName,
-    reasonLabel: reason,
-    score: score,
+    viewer: viewer,
+    limit: limit,
   );
 }
 
-String? _distancePreferenceReason(UserProfile? viewer, Event event) {
-  final preferredDistances = viewer?.preferredDistances ?? const [];
-  for (final preferred in preferredDistances) {
-    if ((event.distanceKm - preferred.targetKm).abs() <= 0.75) {
-      return 'Matches your ${preferred.label} preference';
-    }
-  }
-  return null;
-}
-
-bool _hasNearbyPreferredDistance(UserProfile? viewer, Event event) {
-  final preferredDistances = viewer?.preferredDistances ?? const [];
-  return preferredDistances.any(
-    (preferred) => (event.distanceKm - preferred.targetKm).abs() <= 2,
-  );
-}
-
-double _paceFitScore(UserProfile? viewer, Event event) {
-  if (viewer == null) return 0;
-  final eventPace = event.pace.secondsPerKm;
-  if (eventPace >= viewer.paceMinSecsPerKm &&
-      eventPace <= viewer.paceMaxSecsPerKm) {
-    return 18;
-  }
-  final minDelta = (eventPace - viewer.paceMinSecsPerKm).abs();
-  final maxDelta = (eventPace - viewer.paceMaxSecsPerKm).abs();
-  return minDelta < 45 || maxDelta < 45 ? 8 : 0;
-}
-
-double _proximityScore(UserProfile? viewer, Event event) {
-  final userLocation = LocationCoordinate.fromNullable(
-    latitude: viewer?.latitude,
-    longitude: viewer?.longitude,
-  );
-  final eventLocation = LocationCoordinate.fromNullable(
-    latitude: event.effectiveStartingPointLat,
-    longitude: event.effectiveStartingPointLng,
-  );
-  if (userLocation == null || eventLocation == null) return 0;
-
-  final distanceKm = userLocation.distanceTo(eventLocation) / 1000;
-  if (distanceKm <= 3) return 18;
-  if (distanceKm <= 8) return 12;
-  if (distanceKm <= 15) return 6;
-  return 0;
-}
-
-bool _isSameCity(UserProfile? viewer, String? clubLocation) {
-  final userCity = viewer?.city?.trim().toLowerCase();
-  final location = clubLocation?.trim().toLowerCase();
-  return userCity != null &&
-      userCity.isNotEmpty &&
-      location != null &&
-      location.isNotEmpty &&
-      userCity == location;
-}
-
-double _startTimeScore(Event event, DateTime now) {
-  final daysAway = event.startTime.difference(now).inDays;
-  if (daysAway <= 7) return 8;
-  if (daysAway <= 14) return 5;
-  if (daysAway <= 30) return 2;
-  return 0;
-}
-
-_EventTimeBucket? _timePreferenceFromEvents({
-  required List<Event> attendedEvents,
-  required List<Event> signedUpEvents,
-  required DateTime now,
-}) {
-  final counts = <_EventTimeBucket, int>{};
-  void addRun(Event event, int weight) {
-    if (event.startTime.isAfter(now)) return;
-    final bucket = _EventTimeBucket.fromHour(event.startTime.hour);
-    counts[bucket] = (counts[bucket] ?? 0) + weight;
-  }
-
-  for (final event in attendedEvents) {
-    addRun(event, 2);
-  }
-  for (final event in signedUpEvents) {
-    addRun(event, 1);
-  }
-  if (counts.isEmpty) return null;
-
-  final ranked = counts.entries.toList()
-    ..sort((a, b) => b.value.compareTo(a.value));
-  return ranked.first.value > 1 ? ranked.first.key : null;
-}
-
-enum _EventTimeBucket {
-  morning('Morning'),
-  afternoon('Afternoon'),
-  evening('Evening');
-
-  const _EventTimeBucket(this.label);
-
-  final String label;
-
-  factory _EventTimeBucket.fromHour(int hour) {
-    if (hour < 12) return _EventTimeBucket.morning;
-    if (hour < 17) return _EventTimeBucket.afternoon;
-    return _EventTimeBucket.evening;
-  }
-}
-
-extension on PreferredDistance {
-  double get targetKm => switch (this) {
-    PreferredDistance.fiveK => 5,
-    PreferredDistance.tenK => 10,
-    PreferredDistance.halfMarathon => 21,
-    PreferredDistance.marathon => 42,
-  };
-}
-
-extension on PaceLevel {
-  int get secondsPerKm => switch (this) {
-    PaceLevel.easy => 420,
-    PaceLevel.moderate => 360,
-    PaceLevel.fast => 300,
-    PaceLevel.competitive => 255,
-  };
-}
-
-/// Combines signed-up events, attended events, and recommended events into a single
-/// [DashboardFullViewModel] for the dashboard screen.
+/// Combines signed-up and attended events into the live-layer home model.
 @riverpod
 DashboardFullViewModel dashboardFullViewModel(
   Ref ref, {
@@ -715,21 +589,20 @@ DashboardFullViewModel dashboardFullViewModel(
   required String uid,
   required List<String> followedClubIds,
 }) {
+  final clubPostNotifications = AppConfig.enableClubPosts
+      ? clubPostNotificationsFromActivity(
+          ref.watch(watchActivityNotificationsProvider(uid)).asData?.value ??
+              const <ActivityNotification>[],
+        )
+      : const <ActivityNotification>[];
+
   return buildDashboardFullViewModel(
     signedUpEvents: signedUpEvents,
     uid: uid,
     viewer: user,
     attendedEventsAsync: ref.watch(watchAttendedEventsProvider(uid)),
-    weeklyActivityAsync: ref.watch(weeklyActivityProvider),
     reviewsByUserAsync: ref.watch(watchReviewsByUserProvider(uid)),
-    recommendedEventsAsync: ref.watch(
-      dashboardRecommendedEventsProvider(
-        DashboardRecommendationsQuery(
-          userId: uid,
-          followedClubIds: followedClubIds,
-        ),
-      ),
-    ),
+    clubPostNotifications: clubPostNotifications,
     now: ref.watch(dashboardNowProvider),
   );
 }
@@ -758,20 +631,20 @@ DashboardHomeScreenState dashboardHomeScreenState(Ref ref) {
         return DashboardHomeScreenState.empty();
       }
 
-      final membershipsAsync = ref.watch(
-        watchActiveClubMembershipsForUserProvider(user.uid),
+      final followedClubIdsAsync = ref.watch(
+        currentUserFollowedClubIdsProvider,
       );
       final signedUpEventsAsync = ref.watch(
         watchSignedUpEventsProvider(user.uid),
       );
 
-      if (membershipsAsync.isLoading || signedUpEventsAsync.isLoading) {
+      if (followedClubIdsAsync.isLoading || signedUpEventsAsync.isLoading) {
         return DashboardHomeScreenState.loading();
       }
-      if (membershipsAsync.hasError) {
+      if (followedClubIdsAsync.hasError) {
         return DashboardHomeScreenState.error(
           DashboardHomeLoadError(
-            error: membershipsAsync.error!,
+            error: followedClubIdsAsync.error!,
             fallbackMessage: 'Unable to load your clubs.',
             retryTarget: DashboardHomeRetryTarget.memberships,
             uid: user.uid,
@@ -791,11 +664,7 @@ DashboardHomeScreenState dashboardHomeScreenState(Ref ref) {
 
       final signedUpEvents =
           signedUpEventsAsync.asData?.value ?? const <Event>[];
-      final followedClubIds =
-          membershipsAsync.asData?.value
-              .map((membership) => membership.clubId)
-              .toList(growable: false) ??
-          const <String>[];
+      final followedClubIds = [...?followedClubIdsAsync.asData?.value]..sort();
       final viewModel = ref.watch(
         dashboardFullViewModelProvider(
           signedUpEvents: signedUpEvents,
@@ -804,10 +673,6 @@ DashboardHomeScreenState dashboardHomeScreenState(Ref ref) {
           followedClubIds: followedClubIds,
         ),
       );
-
-      if (signedUpEvents.isEmpty && viewModel.arrivalAction == null) {
-        return DashboardHomeScreenState.empty(notificationUid: user.uid);
-      }
 
       return DashboardHomeScreenState.full(
         header: DashboardHomeHeaderModel.full(user: user, now: now),

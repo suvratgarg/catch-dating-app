@@ -221,7 +221,7 @@ void main() {
     final decoration = buttonBox.decoration as BoxDecoration;
 
     expect(decoration.color, accent);
-    expect(buttonLabel.style?.color, CatchTokens.editorialLight);
+    expect(buttonLabel.style?.color, CatchTokens.editorialWhite);
   });
 
   testWidgets(
@@ -286,7 +286,7 @@ void main() {
               key: const ValueKey('active-icon-button'),
               icon: CatchIcons.favoriteRounded,
               active: true,
-              accent: CatchTokens.sunsetLight.danger,
+              accent: CatchTokens.editorialLight.danger,
               onTap: () {},
             ),
             CatchIconButton.icon(
@@ -299,7 +299,7 @@ void main() {
               key: const ValueKey('plain-icon-button'),
               icon: CatchIcons.more,
               variant: CatchIconButtonVariant.plain,
-              borderColor: CatchTokens.sunsetLight.line2,
+              borderColor: CatchTokens.editorialLight.line2,
               disabled: true,
               onTap: () => taps++,
             ),
@@ -340,7 +340,7 @@ void main() {
     );
     expect(borderedDecoration.color, tokens.surface);
     expect((borderedDecoration.border! as Border).top.color, tokens.line2);
-    expect(activeIconTheme.data.color, CatchTokens.sunsetLight.danger);
+    expect(activeIconTheme.data.color, CatchTokens.editorialLight.danger);
     expect(floatDecoration.color, isNot(tokens.surface));
     expect(floatDecoration.boxShadow, CatchElevation.iconButtonFloat);
     expect(plainDecoration.color, Colors.transparent);
@@ -495,7 +495,7 @@ void main() {
 
     final label = tester.widget<Text>(find.text('Light action'));
 
-    expect(label.style?.color, CatchTokens.sunsetLight.ink);
+    expect(label.style?.color, CatchTokens.editorialLight.ink);
   });
 
   testWidgets('CatchButton primary variant uses white text in dark mode', (
@@ -516,7 +516,7 @@ void main() {
     final label = tester.widget<Text>(find.text('Primary action'));
 
     expect(taps, 1);
-    expect(label.style?.color, CatchTokens.sunsetDark.primaryInk);
+    expect(label.style?.color, CatchTokens.editorialDark.primaryInk);
   });
 
   testWidgets('CatchTextButton applies token color and tap semantics', (
@@ -533,7 +533,7 @@ void main() {
 
     final label = tester.widget<Text>(find.text('Retry'));
     expect(taps, 1);
-    expect(label.style?.color, CatchTokens.sunsetLight.primary);
+    expect(label.style?.color, CatchTokens.editorialLight.primary);
   });
 
   testWidgets('CatchField valueText occupies a right-aligned value lane', (
@@ -699,7 +699,7 @@ void main() {
       );
       expect(
         dividerBox.color,
-        CatchTokens.sunsetLight.line.withValues(
+        CatchTokens.editorialLight.line.withValues(
           alpha: CatchOpacity.fieldRowDivider,
         ),
       );
@@ -1960,7 +1960,7 @@ void main() {
     final lead = tester.widget<Text>(find.text('THE PLAN'));
     final neutral = tester.widget<Text>(find.text('DETAILS'));
     expect(lead.style?.color, activityAccent);
-    expect(neutral.style?.color, CatchTokens.sunsetLight.ink);
+    expect(neutral.style?.color, CatchTokens.editorialLight.ink);
   });
 
   testWidgets('compact core atoms render with shared primitives', (
@@ -2024,7 +2024,7 @@ void main() {
     expect(find.byType(ListTile), findsNothing);
   });
 
-  testWidgets('CatchStartupLoadingScreen shows branded loading state', (
+  testWidgets('CatchStartupLoadingScreen delays slow-boot spinner', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -2035,6 +2035,11 @@ void main() {
     );
 
     expect(find.bySemanticsLabel('Catch'), findsOneWidget);
+    expect(find.byType(CatchLoadingIndicator), findsNothing);
+
+    await tester.pump(CatchMotion.startupIndicatorDelay);
+    await tester.pump(CatchMotion.fast);
+
     expect(find.byType(CatchLoadingIndicator), findsOneWidget);
   });
 
@@ -2059,11 +2064,11 @@ void main() {
       ),
     );
 
-    expect(surface.color, CatchTokens.sunsetLight.surface);
+    expect(surface.color, CatchTokens.editorialLight.surface);
     expect(time.style?.fontSize, CatchLayout.statusBarTimeFontSize);
     expect(time.style?.fontWeight, FontWeight.w700);
-    expect(time.style?.color, CatchTokens.sunsetLight.ink);
-    expect(iconTheme.data.color, CatchTokens.sunsetLight.ink);
+    expect(time.style?.color, CatchTokens.editorialLight.ink);
+    expect(iconTheme.data.color, CatchTokens.editorialLight.ink);
     expect(find.byIcon(CatchIcons.statusCellSignal), findsOneWidget);
     expect(find.byIcon(CatchIcons.statusWifi), findsOneWidget);
     expect(find.byIcon(CatchIcons.statusBattery), findsOneWidget);
@@ -2084,8 +2089,8 @@ void main() {
       ),
     );
 
-    expect(time.style?.color, CatchTokens.sunsetDark.ink);
-    expect(iconTheme.data.color, CatchTokens.sunsetDark.ink);
+    expect(time.style?.color, CatchTokens.editorialDark.ink);
+    expect(iconTheme.data.color, CatchTokens.editorialDark.ink);
   });
 
   testWidgets('CatchSurface supports padding, fixed size, and tap handling', (
@@ -2194,7 +2199,7 @@ void main() {
     );
 
     expect(icon.size, 34);
-    expect(icon.color, CatchTokens.sunsetLight.ink3);
+    expect(icon.color, CatchTokens.editorialLight.ink3);
     expect(
       title.style?.fontSize,
       CatchTextStyles.sectionTitle(titleContext).fontSize,
@@ -2203,7 +2208,7 @@ void main() {
       message.style?.fontSize,
       CatchTextStyles.bodyS(messageContext).fontSize,
     );
-    expect(message.style?.color, CatchTokens.sunsetLight.ink2);
+    expect(message.style?.color, CatchTokens.editorialLight.ink2);
     expect(find.text('Browse events'), findsOneWidget);
   });
 
@@ -2254,7 +2259,7 @@ void main() {
     expect(find.byType(CatchBrandedSheetHeader), findsOneWidget);
     final glyph = tester.widget<Icon>(find.byIcon(CatchIcons.hostBadge));
     expect(glyph.size, CatchLayout.sheetGlyphIconSize);
-    expect(glyph.color, CatchTokens.sunsetLight.primaryInk);
+    expect(glyph.color, CatchTokens.editorialLight.primaryInk);
     expect(find.text('Set up payouts'), findsOneWidget);
     expect(find.text('Powered by Stripe'), findsOneWidget);
     expect(find.text('Soon'), findsOneWidget);
@@ -2299,10 +2304,10 @@ void main() {
     await tester.pump();
 
     final surface = tester.widget<CatchSurface>(find.byType(CatchSurface));
-    expect(surface.borderColor, CatchTokens.sunsetLight.primary);
+    expect(surface.borderColor, CatchTokens.editorialLight.primary);
     expect(
       surface.boxShadow,
-      CatchElevation.focusRing(CatchTokens.sunsetLight),
+      CatchElevation.focusRing(CatchTokens.editorialLight),
     );
   });
 
@@ -2355,7 +2360,7 @@ void main() {
     );
 
     final surface = tester.widget<CatchSurface>(find.byType(CatchSurface));
-    expect(surface.borderColor, CatchTokens.sunsetLight.danger);
+    expect(surface.borderColor, CatchTokens.editorialLight.danger);
     expect(surface.boxShadow, isNull);
   });
 
@@ -3019,7 +3024,7 @@ void main() {
     expect(find.byType(CatchControlShell), findsNothing);
 
     final label = tester.widget<Text>(find.text('Invite code'));
-    expect(label.style?.color, CatchTokens.sunsetLight.danger);
+    expect(label.style?.color, CatchTokens.editorialLight.danger);
   });
 
   testWidgets('CatchField renders optional field marker', (tester) async {
@@ -3238,7 +3243,7 @@ void main() {
     );
 
     final validIcon = tester.widget<Icon>(find.byIcon(CatchIcons.checkCircle));
-    expect(validIcon.color, CatchTokens.sunsetLight.success);
+    expect(validIcon.color, CatchTokens.editorialLight.success);
   });
 
   testWidgets('CatchField success helper uses success support color', (
@@ -3256,7 +3261,7 @@ void main() {
     );
 
     final helper = tester.widget<Text>(find.text('Invite code is available.'));
-    expect(helper.style?.color, CatchTokens.sunsetLight.success);
+    expect(helper.style?.color, CatchTokens.editorialLight.success);
   });
 
   testWidgets('CatchField supports underline, action suffix, and mono data', (
@@ -3565,10 +3570,10 @@ void main() {
       tester.element(find.byIcon(CatchIcons.locationOnOutlined)),
     );
 
-    expect(label.style?.color, CatchTokens.sunsetLight.danger);
-    expect(value.style?.color, CatchTokens.sunsetLight.ink3);
-    expect(chevron.color, CatchTokens.sunsetLight.ink3);
-    expect(iconTheme.color, CatchTokens.sunsetLight.ink2);
+    expect(label.style?.color, CatchTokens.editorialLight.danger);
+    expect(value.style?.color, CatchTokens.editorialLight.ink3);
+    expect(chevron.color, CatchTokens.editorialLight.ink3);
+    expect(iconTheme.color, CatchTokens.editorialLight.ink2);
 
     await tester.tap(find.byIcon(CatchIcons.expandMoreRounded));
     await pumpFeatureUi(tester);

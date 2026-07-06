@@ -48,7 +48,7 @@ class EventDetailSurfaceStyle {
   }
 
   factory EventDetailSurfaceStyle.dark(CatchTokens t) {
-    const d = CatchTokens.sunsetDark;
+    const d = CatchTokens.editorialDark;
     return EventDetailSurfaceStyle(
       isDark: true,
       pageBackground: t.ink,

@@ -1931,7 +1931,7 @@
           "id": "map_route",
           "kind": "populated",
           "status": "captured",
-          "source": "ExploreMapScreen derives EventMapViewModel from exploreFeedViewModelProvider, opens Event Detail from pins, and cycles distance filters.",
+          "source": "ExploreMapScreen derives EventMapViewModel from exploreFeedViewModelProvider, selects pins into a bottom EventDateRailCard, opens Event Detail from the selected card with the map hero tag, and cycles distance filters.",
           "captureIds": [
             "explore_map",
             "explore_map_selected_pin",
@@ -1943,7 +1943,7 @@
           "tests": [
             "test/explore/explore_widgets_test.dart"
           ],
-          "nextAction": "Map ready, selected-pin, and distance-ring captures are registered; define dynamic-region masks before strict/advisory map pixel comparison."
+          "nextAction": "Map ready, selected-card, distance-ring, and DS MapPin parity are registered; define dynamic-region masks before strict/advisory map pixel comparison."
         },
         {
           "id": "pins_ready",
@@ -1966,7 +1966,7 @@
           "id": "selected_pin",
           "kind": "populated",
           "status": "captured",
-          "source": "ExploreMapScreen can seed an initial selected event id for deterministic map captures while production taps still open Event Detail.",
+          "source": "ExploreMapScreen can seed an initial selected event id for deterministic captures; production pin taps select the pin and render the bottom EventDateRailCard without navigating until the card is tapped.",
           "captureIds": [
             "explore_map_selected_pin"
           ],
@@ -1976,7 +1976,7 @@
           "tests": [
             "test/explore/explore_widgets_test.dart"
           ],
-          "nextAction": "Selected-pin capture is registered; continue route-provider-wave extraction under the broader Explore screen-boundary adapter."
+          "nextAction": "Selected-card route behavior is covered by widget tests for preselect, pin tap, card navigation, background dismissal, dropped feed items, lost exact pins, and DS MapPin parity."
         },
         {
           "id": "large_pan_scope",
@@ -1990,6 +1990,16 @@
             "test/explore/explore_widgets_test.dart"
           ],
           "nextAction": "Distance-ring capture is registered; add large-pan camera-region masks before strict map visual comparison."
+        },
+        {
+          "id": "no_exact_pins",
+          "kind": "empty",
+          "status": "implemented",
+          "source": "ExploreMapScreen delegates no-exact-pin feed data to EventMapView's shared no-pins empty branch while keeping the route chrome and deterministic Widgetbook fixture.",
+          "previewIds": [
+            "ExploreMapScreen/Map route states"
+          ],
+          "nextAction": "Keep no-exact-pin route coverage aligned with EventMapView; add a screenshot capture only if map empty-state parity needs pixel review."
         },
         {
           "id": "map_loading",
@@ -2065,7 +2075,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "ExploreScreen composes Scaffold, SafeArea, browse chrome, filter rail, CustomScrollView slivers, membership mutation listener, mixed event/club feed, empty/error states, and floating map count pill; route provider-wave branch precedence, empty-state derivation, and map count label now route through ExploreDiscoveryScreenState, which delegates body loading/error/content/empty branches to ExploreScreenBodyState and map label derivation to ExploreMapLauncherState. Browse/search-open chrome labels and search expansion policy route through ExploreChromeState, city-trigger chrome labels/icons route through ExploreCityTriggerState, filter active-count/sheet-option copy routes through ExploreFilterRailState and ExploreFilterSheetState, cover-story copy routes through ExploreCoverStoryState, mixed-feed card ordering routes through ExploreFeedSectionState, event/external/club feed row labels route through ExploreEventRowState, ExploreExternalEventRowState, and ExploreClubCardState, and map sheet summary/peek ticket labels route through ExploreCollapsedMapSummaryState, ExplorePeekRailState, and ExploreMapEventTicketState. ExploreMapScreen is a child route that reuses the event map view model.",
+        "currentLayout": "ExploreScreen composes Scaffold, SafeArea, browse chrome, filter rail, CustomScrollView slivers, membership mutation listener, mixed event/club feed, empty/error states, and floating map count pill; route provider-wave branch precedence, empty-state derivation, and map count label now route through ExploreDiscoveryScreenState, which delegates body loading/error/content/empty branches to ExploreScreenBodyState and map label derivation to ExploreMapLauncherState. Browse/search-open chrome labels and search expansion policy route through ExploreChromeState, city-trigger chrome labels/icons route through ExploreCityTriggerState, filter active-count/sheet-option copy routes through ExploreFilterRailState and ExploreFilterSheetState, cover-story copy routes through ExploreCoverStoryState, and mixed-feed card ordering plus event/external/club row labels route through ExploreFeedSectionState, ExploreEventRowState, ExploreExternalEventRowState, and ExploreClubCardState. ExploreMapScreen is a child route that reuses the event map view model; the retired map peek-rail summary/ticket adapters are no longer part of the active composition.",
         "targetLayout": "ExploreScreen should map provider state into an ExploreDiscoveryScreenState and compose registered sections: browse chrome, scope/filter rail, cover story, day ticket feed, club interleaves, cross-paths card, event type browse grid, map launcher, empty/error states, and map route sheet/overlay.",
         "sections": [
           {
@@ -2165,7 +2175,7 @@
             "previewIds": [
               "ExploreEventsSection/Feed states"
             ],
-            "migration": "ExploreFeedSectionState now owns mixed feed card selection, result-count copy, club intermix ranking, and This Week promotion. ExploreCoverStoryState owns cover-story kicker, title, CTA, time/price, and attendance copy with an injected clock for tests. ExploreChromeState owns search-open chrome labels and cover/header display policy. ExploreEventRowState owns event row kicker, supporting, price, capacity, and status labels. ExploreExternalEventRowState owns external event source/supporting/time-price/action/read-only labels. ExploreClubCardState owns club member/caption/supporting/action/tag labels for the mixed feed polaroid and row. DateTicket/EventTicket handoff roles map to the registered catch.event_card ticket/card family and ExploreMapEventTicketState owns map/peek ticket labels. ClubPolaroid stays screen-section local through ExploreClubPolaroidCard plus ClubPolaroidArtwork until a second screen needs the same card contract. CrossPathsCard maps to the registered catch.cross_paths_card contract but is catalog-only for Explore feed until product adds a live person-card feed item."
+            "migration": "ExploreFeedSectionState now owns mixed feed card selection, result-count copy, club intermix ranking, and This Week promotion. ExploreCoverStoryState owns cover-story kicker, title, CTA, time/price, and attendance copy with an injected clock for tests. ExploreChromeState owns search-open chrome labels and cover/header display policy. ExploreEventRowState owns event row kicker, supporting, price, capacity, and status labels. ExploreExternalEventRowState owns external event source/supporting/time-price/action/read-only labels. ExploreClubCardState owns club member/caption/supporting/action/tag labels for the mixed feed polaroid and row. DateTicket/EventTicket handoff roles map to the registered event-card/date-ticket families; the retired map/peek ticket adapters are deleted and replacement selected-card coverage is tracked by handoff item 1.B5. ClubPolaroid stays screen-section local through ExploreClubPolaroidCard plus ClubPolaroidArtwork until a second screen needs the same card contract. CrossPathsCard maps to the registered catch.cross_paths_card contract but is catalog-only for Explore feed until product adds a live person-card feed item."
           },
           {
             "id": "section.explore.cover_story",
@@ -2240,7 +2250,7 @@
               "file": "lib/explore/presentation/explore_map_screen.dart",
               "symbol": "ExploreMapScreen"
             },
-            "currentOwner": "ExploreMapScreen, ExploreCollapsedMapSummaryState, ExplorePeekRailState, and ExploreMapEventTicketState",
+            "currentOwner": "ExploreMapScreen and EventMapView",
             "targetOwner": "registered Explore map route adapter",
             "dependencies": [
               "catch.count_pill",
@@ -2256,11 +2266,9 @@
               "distance_ring"
             ],
             "previewIds": [
-              "ExploreMapScreen/Map route states",
-              "ExploreMapSheetLead/Map sheet lead states",
-              "ExplorePeekRailContent/Peek rail states"
+              "ExploreMapScreen/Map route states"
             ],
-            "migration": "ExploreCollapsedMapSummaryState owns collapsed sheet count/scope copy, ExplorePeekRailState owns nearby rail title/action labels, and ExploreMapEventTicketState owns selected/peek ticket copy. Widgetbook now covers route, collapsed sheet summary, selected event lead, nearby rail, loading/error, and text-scale lead states. Deterministic map captures cover ready, selected-pin, distance-ring, loading, and error states. Remaining work: define map dynamic-region masking, keep EventMapView as the map primitive, and move route chrome/provider-wave data into an adapter."
+            "migration": "The dropped Explore map peek-rail lead and selected-pin ticket widgets were retired in the event/club/profile parity handoff. ExploreMapScreen now owns selected-pin route state and renders the selected event through the canonical EventDateRailCard overlay; EventPinsMap renders DS activity map pins for deterministic placeholders and byte-backed native markers. Widgetbook covers ready, selected-card, loading, empty, no-exact-pin, error, and distance-ring route states. Remaining work: map dynamic-region masking, keeping EventMapView as the map primitive, and moving route chrome/provider-wave data into an adapter."
           },
           {
             "id": "section.explore.empty_error",
@@ -2387,8 +2395,8 @@
         ],
         "mutationOwners": [
           {
-            "file": "lib/dashboard/presentation/dashboard_stride_actions_controller.dart",
-            "symbol": "DashboardStrideActions"
+            "file": "lib/dashboard/presentation/dashboard_event_focus_controller.dart",
+            "symbol": "DashboardEventFocusController"
           },
           {
             "file": "lib/events/presentation/event_booking_controller.dart",
@@ -2810,8 +2818,8 @@
         }
       ],
       "composition": {
-        "currentLayout": "DashboardScreen watches dashboardHomeScreenStateProvider, switches over loading/error/empty/full states, and composes DashboardSliverHeader, DashboardEmptySliverBody, DashboardFullSliverBody, and notification action slots. DashboardHomeScreenState owns route provider waves, retry targets, header copy, followed-club ids, and empty/full selection.",
-        "targetLayout": "DashboardScreen should remain a thin route composer. Remaining migration work is below the full body: event focus, activity/stride, quick actions, joined clubs, recommendations, and notification action should receive provider-free display data and typed callbacks from section adapters.",
+        "currentLayout": "DashboardScreen watches dashboardHomeScreenStateProvider, switches over loading/error/empty/full states, and composes DashboardSliverHeader, DashboardEmptySliverBody, DashboardFullSliverBody, and notification action slots. DashboardHomeScreenState owns route provider waves, retry targets, header copy, club-post notification ids, and empty/full selection.",
+        "targetLayout": "DashboardScreen should remain a thin route composer. Remaining migration work is below the full body: event focus and club-post updates should receive provider-free display data and typed callbacks from section adapters.",
         "sections": [
           {
             "id": "section.dashboard.header",
@@ -2915,17 +2923,14 @@
             "targetOwner": "DashboardHomeScreenState to section composition adapter",
             "dependencies": [
               "section.dashboard.event_focus",
-              "section.dashboard.stride",
-              "section.dashboard.quick_actions",
-              "section.dashboard.clubs_rail",
-              "section.dashboard.recommendations"
+              "section.dashboard.club_posts"
             ],
             "states": [
               "full_dashboard",
               "section_loading",
               "section_error"
             ],
-            "migration": "Route-level empty/full selection now lives in DashboardHomeScreenState. Remaining work is to split full-body section data and callbacks so DashboardFullSliverBody no longer watches club-name and recommendation providers directly.",
+            "migration": "Route-level empty/full selection now lives in DashboardHomeScreenState. Remaining work is to split full-body section data and callbacks so DashboardFullSliverBody no longer watches club lookup providers for club-post notifications.",
             "previewIds": [
               "DashboardScreen/Screen states"
             ]
@@ -2964,119 +2969,32 @@
             ]
           },
           {
-            "id": "section.dashboard.stride",
-            "name": "Weekly activity card",
+            "id": "section.dashboard.club_posts",
+            "name": "Club post updates",
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "StrideCard",
-              "WeeklyActivityCard"
+              "NotificationCard",
+              "ClubAvatar"
             ],
             "flutter": {
-              "file": "lib/dashboard/presentation/widgets/stride_card.dart",
-              "symbol": "DashboardStrideSection"
+              "file": "lib/dashboard/presentation/widgets/club_posts_home_section.dart",
+              "symbol": "ClubPostsHomeSection"
             },
-            "currentOwner": "DashboardFullSliverBody supplies typed DashboardStrideSectionActions and DashboardStrideActionState; DashboardStrideSection renders the provider-free activity section.",
-            "targetOwner": "provider-free activity summary section with injected action intents and display-only action state",
+            "currentOwner": "DashboardFullSliverBody passes club-post notifications while ClubPostsHomeSection resolves club display data.",
+            "targetOwner": "provider-free club-post update section fed by DashboardHomeScreenState",
             "dependencies": [
-              "catch.button",
+              "catch.person_avatar",
+              "catch.section",
               "catch.surface"
             ],
             "states": [
-              "connected",
-              "permission_required",
-              "unsupported",
-              "loading",
-              "error",
-              "connecting",
-              "install_health_connect"
-            ],
-            "migration": "DashboardStrideSection now receives DashboardStrideSectionActions and DashboardStrideActionState. DashboardFullSliverBody owns retry invalidation, permission/install side effects, weekly activity refresh, denied-permission snackbar, and connecting/installing busy flags. Remaining Stride work is section-level Widgetbook coverage for connected, permission, unsupported, loading, error, connecting, and install states.",
-            "previewIds": [
-              "DashboardScreen/Screen states"
-            ]
-          },
-          {
-            "id": "section.dashboard.quick_actions",
-            "name": "Dashboard quick actions",
-            "status": "implemented_local",
-            "layer": "compound",
-            "claudeComponents": [
-              "QuickActions"
-            ],
-            "flutter": {
-              "file": "lib/dashboard/shared/quick_actions.dart",
-              "symbol": "QuickActions"
-            },
-            "currentOwner": "DashboardFullSliverBody supplies typed DashboardQuickAction route intents; QuickActions renders the provider-free grid.",
-            "targetOwner": "registered dashboard quick actions compound with typed action models and external route intents",
-            "dependencies": [
-              "catch.surface"
-            ],
-            "states": [
-              "calendar",
-              "saved_events",
-              "disabled_future_action"
-            ],
-            "migration": "QuickActions now receives DashboardQuickAction models and callbacks from the composing DashboardFullSliverBody. Keep the visual grid provider-free; future work is only to extend its action model if disabled/future actions need richer design states.",
-            "previewIds": [
-              "DashboardScreen/Screen states"
-            ]
-          },
-          {
-            "id": "section.dashboard.clubs_rail",
-            "name": "Joined clubs rail",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "ClubAvatarRail"
-            ],
-            "flutter": {
-              "file": "lib/clubs/presentation/discovery/widgets/club_avatar_rail.dart",
-              "symbol": "ClubAvatarRail"
-            },
-            "currentOwner": "DashboardFullSliverBody via ClubAvatarRail and watchClubsByIdsProvider",
-            "targetOwner": "provider-free joined clubs rail fed by pre-resolved dashboard club display data",
-            "dependencies": [
-              "catch.surface"
-            ],
-            "states": [
-              "loading",
-              "clubs_ready",
               "empty_hidden",
-              "partial_error"
+              "updates_ready",
+              "club_lookup_loading",
+              "club_lookup_partial"
             ],
-            "migration": "ClubAvatarRail now uses the batched watchClubsByIdsProvider seam instead of one watchClubProvider per club id. Remaining work is to lift that resolved club display data into a Dashboard section adapter so the visual rail itself becomes provider-free.",
-            "previewIds": [
-              "DashboardScreen/Screen states"
-            ]
-          },
-          {
-            "id": "section.dashboard.recommendations",
-            "name": "Recommendations rail",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "RecommendationRail",
-              "DateTicket"
-            ],
-            "flutter": {
-              "file": "lib/dashboard/presentation/widgets/recommendations.dart",
-              "symbol": "Recommendations"
-            },
-            "currentOwner": "DashboardFullSliverBody",
-            "targetOwner": "provider-free recommendation rail fed by DashboardHomeScreenState",
-            "dependencies": [
-              "catch.surface"
-            ],
-            "states": [
-              "ready",
-              "loading",
-              "error",
-              "empty_hidden",
-              "long_copy"
-            ],
-            "migration": "Keep ranking in DashboardFullViewModel but move section loading/error display models into a named dashboard adapter and add Widgetbook states.",
+            "migration": "Move club display lookup out of ClubPostsHomeSection so the visual section receives provider-free card data and typed open-post callbacks.",
             "previewIds": [
               "DashboardScreen/Screen states"
             ]

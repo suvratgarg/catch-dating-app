@@ -12,9 +12,9 @@ import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet_grabber.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
-import 'package:catch_dating_app/dashboard/shared/quick_actions.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
@@ -467,36 +467,84 @@ class PaymentConfirmationBody extends StatelessWidget {
   final VoidCallback onViewEvent;
   final VoidCallback onBackHome;
 
+  static const double _iconBoxSize = CatchSpacing.s9;
+  static const double _tileSpacing = CatchSpacing.s3;
+
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final actions = [
+      PaymentConfirmationAction(
+        key: PaymentConfirmationKeys.addToCalendar,
+        icon: CatchIcons.calendarMonthOutlined,
+        label: 'Add to calendar',
+        onPressed: onAddToCalendar,
+      ),
+      PaymentConfirmationAction(
+        key: PaymentConfirmationKeys.directions,
+        icon: CatchIcons.directionsOutlined,
+        label: 'Get directions',
+        onPressed: onOpenDirections,
+      ),
+      PaymentConfirmationAction(
+        key: PaymentConfirmationKeys.inviteFriend,
+        icon: CatchIcons.platformShare(platform: Theme.of(context).platform),
+        label: 'Invite friend',
+        onPressed: onInviteFriend,
+      ),
+    ];
+
     return EventJoinedCelebrationScreen(
       event: event,
       clubName: clubName,
       paymentData: data,
       supplementalChildren: [
-        QuickActions(
-          columns: 3,
-          actions: [
-            DashboardQuickAction(
-              key: PaymentConfirmationKeys.addToCalendar,
-              icon: CatchIcons.calendarMonthOutlined,
-              label: 'Add to calendar',
-              onPressed: onAddToCalendar,
-            ),
-            DashboardQuickAction(
-              key: PaymentConfirmationKeys.directions,
-              icon: CatchIcons.directionsOutlined,
-              label: 'Get directions',
-              onPressed: onOpenDirections,
-            ),
-            DashboardQuickAction(
-              key: PaymentConfirmationKeys.inviteFriend,
-              icon: CatchIcons.platformShare(
-                platform: Theme.of(context).platform,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (var index = 0; index < actions.length; index++) ...[
+              Expanded(
+                child: Opacity(
+                  opacity: actions[index].isEnabled ? 1 : 0.7,
+                  child: KeyedSubtree(
+                    key: actions[index].key,
+                    child: Semantics(
+                      label: actions[index].label,
+                      child: CatchSurface(
+                        onTap: actions[index].onPressed,
+                        padding: CatchInsets.content,
+                        radius: CatchRadius.md,
+                        borderColor: t.line,
+                        backgroundColor: t.surface,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CatchIconTile(
+                              icon: actions[index].icon,
+                              iconColor: t.primary,
+                              backgroundColor: t.primarySoft,
+                              borderColor: t.primarySoft,
+                              size: _iconBoxSize,
+                              iconSize: CatchIcon.md,
+                              radius: CatchRadius.sm,
+                            ),
+                            gapH8,
+                            Text(
+                              actions[index].label,
+                              style: CatchTextStyles.labelL(context),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ),
-              label: 'Invite friend',
-              onPressed: onInviteFriend,
-            ),
+              if (index < actions.length - 1)
+                const SizedBox(width: _tileSpacing),
+            ],
           ],
         ),
         const PaymentConfirmationHeadsUp(),
@@ -507,6 +555,22 @@ class PaymentConfirmationBody extends StatelessWidget {
       onBackHome: onBackHome,
     );
   }
+}
+
+class PaymentConfirmationAction {
+  const PaymentConfirmationAction({
+    this.key,
+    required this.icon,
+    required this.label,
+    this.onPressed,
+  });
+
+  final Key? key;
+  final IconData icon;
+  final String label;
+  final VoidCallback? onPressed;
+
+  bool get isEnabled => onPressed != null;
 }
 
 class PaymentConfirmationHeadsUp extends StatelessWidget {

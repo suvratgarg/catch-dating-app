@@ -162,7 +162,7 @@ void main() {
 
     expect(button.variant, CatchButtonVariant.light);
     expect(button.isInteractive, isFalse);
-    expect(label.style?.color, CatchTokens.sunsetLight.ink);
+    expect(label.style?.color, CatchTokens.editorialLight.ink);
   });
 
   testWidgets('Catches hub active window list uses section primitives', (

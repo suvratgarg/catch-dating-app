@@ -302,14 +302,14 @@ class HostCheckInQrPanel extends StatelessWidget {
         children: [
           CatchSurface(
             radius: CatchRadius.sm,
-            backgroundColor: CatchTokens.editorialLight,
+            backgroundColor: CatchTokens.editorialWhite,
             borderWidth: 0,
             padding: CatchInsets.iconChipContent,
             child: QrImageView(
               data: payload,
               size: 116,
               padding: EdgeInsets.zero,
-              backgroundColor: CatchTokens.editorialLight,
+              backgroundColor: CatchTokens.editorialWhite,
             ),
           ),
           gapW12,

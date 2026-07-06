@@ -11,6 +11,7 @@ export interface FcmParams {
   matchId?: string;
   eventId?: string;
   clubId?: string;
+  postId?: string;
 }
 
 export type ActivityNotificationType =
@@ -36,6 +37,7 @@ interface ActivityNotificationParams {
   matchId?: string;
   eventId?: string;
   clubId?: string;
+  postId?: string;
   actorUid?: string;
   actorName?: string;
   demoOps?: boolean;
@@ -103,6 +105,7 @@ export async function sendFcmNotification(params: FcmParams): Promise<void> {
       matchId: params.matchId,
       eventId: params.eventId,
       clubId: params.clubId,
+      postId: params.postId,
     }),
     apns: {payload: {aps: {sound: "default"}}},
     android: {notification: {sound: "default"}},
@@ -294,6 +297,7 @@ function activityNotificationData(
       matchId: params.matchId,
       eventId: params.eventId,
       clubId: params.clubId,
+      postId: params.postId,
       actorUid: params.actorUid,
       actorName: params.actorName,
       demoOpsId: params.demoOpsId,
