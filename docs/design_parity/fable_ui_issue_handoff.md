@@ -3,10 +3,14 @@ doc_id: fable_ui_issue_handoff
 version: 0.1.0
 updated: 2026-07-04
 owner: design_parity_review
-status: working
+status: resolved
 ---
 
 # Fable UI Issue Handoff
+
+> **RESOLVED.** Issue 001 (profile-edit field rows not reading end-to-end)
+> shipped as the `CatchFieldInsetScope` flush contract — now the reference
+> implementation for the containment/gutter doctrine. Retained as history.
 
 ## Meta Prompt
 

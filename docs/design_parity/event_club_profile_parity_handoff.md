@@ -3,11 +3,20 @@ doc_id: event_club_profile_parity_handoff
 version: 1.0.0
 updated: 2026-07-05
 owner: design_parity_review
-status: ready-for-implementation
+status: implemented
 supersedes: explore_map_view_spec, club_design_parity_spec, profile_design_parity_spec
 ---
 
 # Event / Club / Profile Design Parity — Combined Handoff
+
+> **IMPLEMENTED 2026-07-07.** All three parts landed (map selection + card,
+> club hero/schedule/index-row/seal, profile token rename + contract
+> verification); the 22-item checklist is fully checked. One post-landing
+> correction: profile compatibility reasons were verified against the DS
+> HintList contract and moved from `profileAnswer` to `CatchTextStyles.hint`
+> (`.t-hint`) — the parity commit had over-heavied them. The three
+> superseded stubs were deleted (history in git). Retained as the record of
+> decisions.
 
 Repo: `/Users/suvratgarg/Development/catch-dating-app/catch_dating_app`
 Design SoT: `~/Downloads/Catch Design System (2)/` (the 2026-06 ratified
