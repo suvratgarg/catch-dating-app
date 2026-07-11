@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated": "2026-07-11",
+  "updated": "2026-07-12",
   "owner": "agent_operating_model",
   "entries": [
     {
@@ -229,6 +229,24 @@
         "docs/widget_catalog.md"
       ],
       "notes": "Primary Explore bounds only its pinned event slivers; compatibility callers keep pinning disabled and render inline day headers."
+    },
+    {
+      "id": "REG-EXPLORE-003",
+      "title": "Explore calendar-day fixtures change behavior near midnight",
+      "status": "active",
+      "applies_to": [
+        "test/explore/explore_widgets_test.dart",
+        "lib/explore/presentation/explore_screen_state.dart"
+      ],
+      "symptom": "A sparse-market test creates events with separate DateTime.now plus-hour calls; on a UTC runner near midnight the events land on different days and unexpectedly enable the This week strip.",
+      "guard": {
+        "type": "command",
+        "command": "TZ=UTC flutter test test/explore/explore_widgets_test.dart --plain-name 'ExploreEventsSection renders event-first content' --concurrency=1"
+      },
+      "owner_docs": [
+        "docs/agent_regression_ledger.json"
+      ],
+      "notes": "Calendar grouping fixtures must derive every event and availability calculation from one captured reference time and pin intended same-day events to one explicit calendar day."
     },
     {
       "id": "REG-MAP-001",
