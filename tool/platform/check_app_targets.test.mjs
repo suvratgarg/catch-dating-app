@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   androidClientFor,
   parseAppleBuildConfigurations,
+  validateAutomaticAppleSigningSettings,
   validateAndroidBuildSource,
   validateManifestShape,
   validateReleaseOwnership,
@@ -131,6 +132,28 @@ test("Apple build configuration parser keeps target identity bound to its config
   ]);
 });
 
+test("Apple signing settings require automatic signing without an identity override", () => {
+  assert.deepEqual(
+    validateAutomaticAppleSigningSettings({
+      targetId: "host-prod",
+      configurationName: "Release-host-prod",
+      settings: {CODE_SIGN_STYLE: "Automatic"},
+    }),
+    [],
+  );
+
+  const findings = validateAutomaticAppleSigningSettings({
+    targetId: "host-prod",
+    configurationName: "Release-host-prod",
+    settings: {
+      CODE_SIGN_STYLE: "Manual",
+      "CODE_SIGN_IDENTITY[sdk=iphoneos*]": "Apple Distribution",
+    },
+  });
+  assert.ok(findings.some((finding) => finding.includes("CODE_SIGN_STYLE")));
+  assert.ok(findings.some((finding) => finding.includes("defer CODE_SIGN_IDENTITY")));
+});
+
 function unifiedReleaseManifest() {
   const manifest = validManifest();
   manifest.releasePolicy = {
@@ -144,7 +167,10 @@ function unifiedReleaseManifest() {
     ios: {
       channel: "testflight",
       uploadMode: "automatic-main",
-      archiveSigningIdentity: "Apple Distribution",
+      signingStyle: "automatic",
+      distributionSigningStage: "export",
+      uploadArtifact: "verified-ipa",
+      uploadTool: "altool",
     },
     android: {
       channel: "play-internal",
@@ -188,7 +214,20 @@ jobs:
         app_role: roles
     steps:
       - name: Upload to TestFlight
-      - run: echo 'CODE_SIGN_IDENTITY=Apple Distribution'
+      - run: xcodebuild \\
+          -exportArchive
+      - run: node tool/platform/verify_ios_release_identity.mjs \\
+          --app path/to/exported.app
+      - run: /usr/bin/shasum -a 256 --check evidence/consumer-ipa.sha256
+      - run: xcrun altool \\
+          --upload-package "$IPA_PATH" \\
+          --platform ios \\
+          --apple-id "$APP_STORE_CONNECT_APP_ID" \\
+          --bundle-id "$EXPECTED_BUNDLE_ID" \\
+          --bundle-version "$FLUTTER_BUILD_NUMBER" \\
+          --bundle-short-version-string "$FLUTTER_BUILD_NAME" \\
+          --api-key "$ASC_KEY_ID" \\
+          --api-issuer "$ASC_ISSUER_ID"
       - run: node tool/platform/verify_app_store_build.mjs
   prod-android:
     environment: prod-mobile
@@ -226,6 +265,49 @@ jobs:
   const result = validateReleaseOwnership({manifest, workflowSource});
   assert.ok(result.findings.some((finding) => finding.includes("consumer-prod")));
   assert.ok(result.findings.some((finding) => finding.includes("Android role matrix")));
+});
+
+test("release ownership rejects an explicit iOS archive signing identity", () => {
+  const manifest = unifiedReleaseManifest();
+  const workflowSource = `${unifiedWorkflow}\nCODE_SIGN_IDENTITY=Apple Distribution\n`;
+
+  const result = validateReleaseOwnership({manifest, workflowSource});
+  assert.ok(
+    result.findings.some((finding) =>
+      finding.includes("defer CODE_SIGN_IDENTITY to Xcode automatic signing"),
+    ),
+  );
+});
+
+test("release ownership rejects re-exporting after IPA verification", () => {
+  const manifest = unifiedReleaseManifest();
+  const workflowSource = `${unifiedWorkflow}\nxcodebuild \\\n  -exportArchive\n`;
+
+  const result = validateReleaseOwnership({manifest, workflowSource});
+  assert.ok(
+    result.findings.some((finding) =>
+      finding.includes("must export exactly one IPA before verification and upload"),
+    ),
+  );
+});
+
+test("release ownership rejects incomplete App Store upload authentication and metadata", () => {
+  const manifest = unifiedReleaseManifest();
+  const workflowSource = unifiedWorkflow
+    .replace('--api-issuer "$ASC_ISSUER_ID"', "")
+    .replace('--bundle-version "$FLUTTER_BUILD_NUMBER"', "");
+
+  const result = validateReleaseOwnership({manifest, workflowSource});
+  assert.ok(
+    result.findings.some((finding) =>
+      finding.includes("App Store team-key upload authentication"),
+    ),
+  );
+  assert.ok(
+    result.findings.some((finding) =>
+      finding.includes("App Store upload identity metadata"),
+    ),
+  );
 });
 
 test("resolveAppTarget returns explicit target fields", () => {

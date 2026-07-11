@@ -122,6 +122,25 @@ export function validateSharedAndroidManifestSource(source) {
   return findings;
 }
 
+export function validateAutomaticAppleSigningSettings({
+  targetId,
+  configurationName,
+  settings,
+}) {
+  const findings = [];
+  if (settings.CODE_SIGN_STYLE !== "Automatic") {
+    findings.push(
+      `${targetId}: ${configurationName} CODE_SIGN_STYLE was '${settings.CODE_SIGN_STYLE ?? ""}'; expected 'Automatic'`,
+    );
+  }
+  if (Object.hasOwn(settings, "CODE_SIGN_IDENTITY[sdk=iphoneos*]")) {
+    findings.push(
+      `${targetId}: ${configurationName} must defer CODE_SIGN_IDENTITY to Xcode automatic signing`,
+    );
+  }
+  return findings;
+}
+
 export function hasActiveDebt(manifest, debtId) {
   return (manifest.transitionalDebt ?? []).some(
     (debt) => debt.id === debtId && debt.status !== "resolved",
@@ -142,7 +161,10 @@ export function validateReleaseOwnership({manifest, workflowSource}) {
     ["release branch policy", policy.branchPolicy, "main-only"],
     ["iOS channel", policy.ios?.channel, "testflight"],
     ["iOS upload mode", policy.ios?.uploadMode, "automatic-main"],
-    ["iOS archive signing identity", policy.ios?.archiveSigningIdentity, "Apple Distribution"],
+    ["iOS signing style", policy.ios?.signingStyle, "automatic"],
+    ["iOS distribution signing stage", policy.ios?.distributionSigningStage, "export"],
+    ["iOS upload artifact", policy.ios?.uploadArtifact, "verified-ipa"],
+    ["iOS upload tool", policy.ios?.uploadTool, "altool"],
     ["Android channel", policy.android?.channel, "play-internal"],
     ["Android track", policy.android?.track, "qa"],
     ["Android publisher auth", policy.android?.publisherAuth, "github-oidc"],
@@ -187,7 +209,12 @@ export function validateReleaseOwnership({manifest, workflowSource}) {
     ["Android role matrix", /prod-android:[\s\S]*?matrix:[\s\S]*?app_role/u],
     ["mobile credentials environment", /environment:\s*prod-mobile/u],
     ["TestFlight upload", /Upload to TestFlight/u],
-    ["distribution-signed iOS archive", /CODE_SIGN_IDENTITY=Apple Distribution/u],
+    ["automatic iOS distribution export", /xcodebuild\s*\\\s*\n\s*-exportArchive/u],
+    ["post-export iOS identity verification", /verify_ios_release_identity\.mjs\s*\\[\s\S]*?--app/u],
+    ["verified IPA checksum", /shasum\s+-a\s+256\s+--check/u],
+    ["verified IPA TestFlight upload", /xcrun\s+altool[\s\S]*?--upload-package\s+"\$IPA_PATH"/u],
+    ["App Store team-key upload authentication", /--api-key\s+"\$ASC_KEY_ID"[\s\S]*?--api-issuer\s+"\$ASC_ISSUER_ID"/u],
+    ["App Store upload identity metadata", /--platform\s+ios[\s\S]*?--apple-id\s+"\$APP_STORE_CONNECT_APP_ID"[\s\S]*?--bundle-id\s+"\$EXPECTED_BUNDLE_ID"[\s\S]*?--bundle-version\s+"\$FLUTTER_BUILD_NUMBER"[\s\S]*?--bundle-short-version-string\s+"\$FLUTTER_BUILD_NAME"/u],
     ["signed Android identity verification", /verify_android_release_bundle\.mjs/u],
     ["Play internal track", /--track qa/u],
     ["non-committing Play access probe", /probe_google_play_access\.mjs/u],
@@ -200,6 +227,17 @@ export function validateReleaseOwnership({manifest, workflowSource}) {
     ["main-only signed release guard", /refs\/heads\/main/u],
   ]) {
     if (!marker.test(workflowSource)) findings.push(`mobile release workflow is missing ${label}`);
+  }
+  if (/CODE_SIGN_IDENTITY\s*=/u.test(workflowSource)) {
+    findings.push(
+      "mobile release workflow must defer CODE_SIGN_IDENTITY to Xcode automatic signing",
+    );
+  }
+  const exportArchiveCount = workflowSource.match(/-exportArchive/gu)?.length ?? 0;
+  if (exportArchiveCount !== 1) {
+    findings.push(
+      `mobile release workflow must export exactly one IPA before verification and upload; found ${exportArchiveCount} -exportArchive commands`,
+    );
   }
 
   for (const debtId of [
@@ -496,13 +534,6 @@ function validateAppleTargetConfigurations({
   }
 
   for (const configurationName of Object.values(target.ios.configurations ?? {})) {
-    const configurationExpectedSettings = {...expectedSettings};
-    if (platform === "ios") {
-      configurationExpectedSettings["CODE_SIGN_IDENTITY[sdk=iphoneos*]"] =
-        configurationName.startsWith("Release-")
-          ? "Apple Distribution"
-          : "Apple Development";
-    }
     const matches = configurations.filter(
       (configuration) => configuration.name === configurationName,
     );
@@ -512,7 +543,16 @@ function validateAppleTargetConfigurations({
       );
       continue;
     }
-    for (const [key, expected] of Object.entries(configurationExpectedSettings)) {
+    if (platform === "ios") {
+      findings.push(
+        ...validateAutomaticAppleSigningSettings({
+          targetId: target.id,
+          configurationName,
+          settings: matches[0].settings,
+        }),
+      );
+    }
+    for (const [key, expected] of Object.entries(expectedSettings)) {
       const actual = matches[0].settings[key];
       if (actual !== expected) {
         findings.push(

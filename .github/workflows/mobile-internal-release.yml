@@ -267,10 +267,11 @@ jobs:
             echo "Missing App Store Connect API key secrets."
             exit 1
           fi
-          asc_key_dir="$RUNNER_TEMP/appstoreconnect/private_keys"
+          asc_key_dir="$HOME/.appstoreconnect/private_keys"
           mkdir -p "$asc_key_dir"
           /usr/bin/printf '%s' "$ASC_KEY_BASE64" | /usr/bin/base64 -D > "$asc_key_dir/AuthKey_${ASC_KEY_ID}.p8"
           chmod 600 "$asc_key_dir/AuthKey_${ASC_KEY_ID}.p8"
+          echo "ASC_KEY_PATH=$asc_key_dir/AuthKey_${ASC_KEY_ID}.p8" >> "$GITHUB_ENV"
 
       - name: Verify App Store build-number floor
         run: |
@@ -279,7 +280,7 @@ jobs:
             --build-number "$FLUTTER_BUILD_NUMBER" \
             --key-id "$ASC_KEY_ID" \
             --issuer-id "$ASC_ISSUER_ID" \
-            --key-path "$RUNNER_TEMP/appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8" \
+            --key-path "$ASC_KEY_PATH" \
             --check-candidate
 
       - name: Prepare prod Flutter iOS configuration
@@ -295,11 +296,10 @@ jobs:
             -destination generic/platform=iOS \
             -archivePath "$ARCHIVE_PATH" \
             -allowProvisioningUpdates \
-            -authenticationKeyPath "$RUNNER_TEMP/appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8" \
+            -authenticationKeyPath "$ASC_KEY_PATH" \
             -authenticationKeyID "$ASC_KEY_ID" \
             -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
             -hideShellScriptEnvironment \
-            "CODE_SIGN_IDENTITY=Apple Distribution" \
             archive
 
       - name: Verify archived release identity and Maps key
@@ -334,7 +334,7 @@ jobs:
             -exportPath "$EXPORT_PATH" \
             -exportOptionsPlist ios/ExportOptions.prod.plist \
             -allowProvisioningUpdates \
-            -authenticationKeyPath "$RUNNER_TEMP/appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8" \
+            -authenticationKeyPath "$ASC_KEY_PATH" \
             -authenticationKeyID "$ASC_KEY_ID" \
             -authenticationKeyIssuerID "$ASC_ISSUER_ID"
 
@@ -365,6 +365,9 @@ jobs:
             --expected-build "$FLUTTER_BUILD_NUMBER" \
             --receipt "build/ios/release-evidence/${APP_ROLE}-export.json"
 
+          echo "IPA_PATH=$ipa_path" >> "$GITHUB_ENV"
+          /usr/bin/shasum -a 256 "$ipa_path" > "build/ios/release-evidence/${APP_ROLE}-ipa.sha256"
+
           node tool/firebase/validate_google_maps_config.mjs \
             --env prod \
             --platform ios \
@@ -389,6 +392,7 @@ jobs:
           path: |
             build/ios/export/**/*.ipa
             build/ios/release-evidence/*.json
+            build/ios/release-evidence/*.sha256
           if-no-files-found: error
           retention-days: 14
 
@@ -396,19 +400,16 @@ jobs:
         if: ${{ github.event_name == 'push' || inputs.upload_to_internal }}
         run: |
           set -euo pipefail
-          upload_options="$RUNNER_TEMP/ExportOptions.upload.plist"
-          cp ios/ExportOptions.prod.plist "$upload_options"
-          /usr/libexec/PlistBuddy -c 'Set :destination upload' "$upload_options"
-
-          xcodebuild \
-            -exportArchive \
-            -archivePath "$ARCHIVE_PATH" \
-            -exportPath "$RUNNER_TEMP/testflight-upload" \
-            -exportOptionsPlist "$upload_options" \
-            -allowProvisioningUpdates \
-            -authenticationKeyPath "$RUNNER_TEMP/appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8" \
-            -authenticationKeyID "$ASC_KEY_ID" \
-            -authenticationKeyIssuerID "$ASC_ISSUER_ID"
+          /usr/bin/shasum -a 256 --check "build/ios/release-evidence/${APP_ROLE}-ipa.sha256"
+          xcrun altool \
+            --upload-package "$IPA_PATH" \
+            --platform ios \
+            --apple-id "$APP_STORE_CONNECT_APP_ID" \
+            --bundle-id "$EXPECTED_BUNDLE_ID" \
+            --bundle-version "$FLUTTER_BUILD_NUMBER" \
+            --bundle-short-version-string "$FLUTTER_BUILD_NAME" \
+            --api-key "$ASC_KEY_ID" \
+            --api-issuer "$ASC_ISSUER_ID"
 
       - name: Verify TestFlight processing
         if: ${{ github.event_name == 'push' || inputs.upload_to_internal }}
@@ -418,7 +419,7 @@ jobs:
             --build-number "$FLUTTER_BUILD_NUMBER" \
             --key-id "$ASC_KEY_ID" \
             --issuer-id "$ASC_ISSUER_ID" \
-            --key-path "$RUNNER_TEMP/appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8" \
+            --key-path "$ASC_KEY_PATH" \
             --wait-processed \
             --github-run-id "$GITHUB_RUN_ID" \
             --receipt "build/ios/release-evidence/${APP_ROLE}-testflight.json"

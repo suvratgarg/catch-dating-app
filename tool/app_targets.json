@@ -64,7 +64,10 @@
     "ios": {
       "channel": "testflight",
       "uploadMode": "automatic-main",
-      "archiveSigningIdentity": "Apple Distribution"
+      "signingStyle": "automatic",
+      "distributionSigningStage": "export",
+      "uploadArtifact": "verified-ipa",
+      "uploadTool": "altool"
     },
     "android": {
       "channel": "play-internal",
