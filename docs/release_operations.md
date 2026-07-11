@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 1.7.14
-updated: 2026-07-10
+version: 1.7.15
+updated: 2026-07-11
 owner: recursive_audit_loop
 status: active
 ---
@@ -80,7 +80,10 @@ published.
 
 Firebase deploy and data-validation workflows use GitHub OIDC rather than
 long-lived service-account JSON secrets. Use GitHub Environments named `dev`,
-`staging`, and `prod`. Require manual reviewers for `prod`.
+`staging`, `prod-hosting`, and `prod`. `prod-hosting` is approval-free and is
+limited to the automatic marketing and admin Firebase Hosting workflows.
+Require manual reviewers for `prod`, which owns backend production deploys,
+production data operations, and signed mobile release credentials.
 
 Each GitHub Environment must define these variables:
 
@@ -236,6 +239,11 @@ environment variables. Firebase Hosting predeploy runs
 `tool/env/check_web_hosting_env.mjs` for both targets so a deployment fails
 before build if the site would fall back to dev Firebase config, sample admin
 mode, or missing App Check.
+
+Both Hosting workflows use the approval-free `prod-hosting` GitHub Environment
+and deploy automatically after their validation job succeeds on a matching
+`main` push. Keep only Hosting/OIDC variables in that environment; App Store
+Connect secrets and backend production authority remain in protected `prod`.
 
 The production admin Hosting target has its own `Admin Website` workflow. It
 validates `npm run web:admin:build`, checks live prod Vite Firebase/App Check
