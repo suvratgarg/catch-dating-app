@@ -131,43 +131,84 @@ export function hasActiveDebt(manifest, debtId) {
 export function validateReleaseOwnership({manifest, workflowSource}) {
   const findings = [];
   const warnings = [];
-  const xcodeOwned = (manifest.targets ?? []).filter(
-    (target) =>
-      target.release?.owner === "xcode-cloud" ||
-      target.release?.desiredOwner === "xcode-cloud",
-  );
-  if (xcodeOwned.length === 0) return {findings, warnings};
-
-  const automaticallyUploadsHost =
-    /on:\s*[\s\S]*?push:/u.test(workflowSource) &&
-    /github\.event_name\s*==\s*'push'/u.test(workflowSource) &&
-    /app_role="host"/u.test(workflowSource) &&
-    /upload_to_testflight="true"/u.test(workflowSource);
-  if (!automaticallyUploadsHost) return {findings, warnings};
-
-  const hostProd = (manifest.targets ?? []).find(
-    (target) => target.role === "host" && target.environment === "prod",
-  );
-  if (hostProd?.release?.githubMode !== "automatic-main-temporary") {
-    findings.push(
-      "Host release githubMode must describe the temporary automatic main upload",
-    );
+  const policy = manifest.releasePolicy ?? {};
+  const workflow = ".github/workflows/mobile-internal-release.yml";
+  for (const [label, actual, expected] of [
+    ["release owner", policy.owner, "github-actions"],
+    ["release workflow", policy.workflow, workflow],
+    ["release trigger", policy.trigger, "app-relevant-main-push"],
+    ["release environment", policy.environment, "prod-mobile"],
+    ["release approval mode", policy.approvalMode, "none-after-main-merge"],
+    ["release branch policy", policy.branchPolicy, "main-only"],
+    ["iOS channel", policy.ios?.channel, "testflight"],
+    ["iOS upload mode", policy.ios?.uploadMode, "automatic-main"],
+    ["Android channel", policy.android?.channel, "play-internal"],
+    ["Android track", policy.android?.track, "qa"],
+    ["Android publisher auth", policy.android?.publisherAuth, "github-oidc"],
+    [
+      "Android publisher service account",
+      policy.android?.publisherServiceAccount,
+      "github-actions-play-publisher@catch-dating-app-64e51.iam.gserviceaccount.com",
+    ],
+  ]) {
+    if (actual !== expected) findings.push(`${label} was '${actual ?? ""}'; expected '${expected}'`);
   }
-  if (hostProd?.release?.owner !== "github-actions-temporary") {
-    findings.push(
-      "Host release owner must remain github-actions-temporary until cutover proof is recorded",
-    );
+  if (JSON.stringify(policy.roles) !== JSON.stringify(expectedRoles)) {
+    findings.push("release policy roles must be [consumer, host]");
+  }
+  if (!/^[A-F0-9]{64}$/u.test(policy.android?.uploadCertificateSha256 ?? "")) {
+    findings.push("Android upload certificate SHA-256 must be a checked 64-digit hex value");
   }
 
-  const debtId = "APP-TARGET-HOST-TESTFLIGHT-001";
-  if (hasActiveDebt(manifest, debtId)) {
-    warnings.push(
-      `${debtId}: GitHub still auto-uploads Host while authenticated Xcode Cloud distribution proof is pending`,
-    );
-  } else {
-    findings.push(
-      "GitHub automatically uploads an Xcode Cloud-owned target without an active external-proof debt record",
-    );
+  const prodTargets = (manifest.targets ?? []).filter((target) => target.environment === "prod");
+  for (const target of prodTargets) {
+    if (target.release?.owner !== "github-actions") {
+      findings.push(`${target.id}: release owner must be github-actions`);
+    }
+    if (target.release?.githubMode !== "automatic-main") {
+      findings.push(`${target.id}: githubMode must be automatic-main`);
+    }
+    if (target.release?.githubWorkflow !== workflow) {
+      findings.push(`${target.id}: release workflow must be ${workflow}`);
+    }
+    if (target.release?.googlePlayPackageName !== target.android?.applicationId) {
+      findings.push(`${target.id}: Google Play package must match Android application id`);
+    }
+    if (!target.release?.legacyXcodeCloudWorkflow) {
+      findings.push(`${target.id}: legacy Xcode Cloud workflow name is required for cutover`);
+    }
+  }
+
+  for (const [label, marker] of [
+    ["push-to-main trigger", /push:\s*[\s\S]*?branches:\s*[\s\S]*?- main/u],
+    ["consumer role matrix", /roles='\["consumer","host"\]'/u],
+    ["iOS role matrix", /prod-ios:[\s\S]*?matrix:[\s\S]*?app_role/u],
+    ["Android role matrix", /prod-android:[\s\S]*?matrix:[\s\S]*?app_role/u],
+    ["mobile credentials environment", /environment:\s*prod-mobile/u],
+    ["TestFlight upload", /Upload to TestFlight/u],
+    ["signed Android identity verification", /verify_android_release_bundle\.mjs/u],
+    ["Play internal track", /--track qa/u],
+    ["non-committing Play access probe", /probe_google_play_access\.mjs/u],
+    ["legacy Xcode Cloud retirement", /set_xcode_cloud_workflow_state\.mjs/u],
+    ["serialized release concurrency", /concurrency:[\s\S]*?cancel-in-progress:\s*false/u],
+    ["App Store build-floor and processing proof", /verify_app_store_build\.mjs/u],
+    ["pinned bundletool checksum", /BUNDLETOOL_SHA256/u],
+    ["processed-build retirement evidence", /consumer_processed_ios_build_number/u],
+    ["GitHub processing-receipt retirement evidence", /verify_ios_processing_receipts\.mjs/u],
+    ["main-only signed release guard", /refs\/heads\/main/u],
+  ]) {
+    if (!marker.test(workflowSource)) findings.push(`mobile release workflow is missing ${label}`);
+  }
+
+  for (const debtId of [
+    "APP-TARGET-IOS-GITHUB-CUTOVER-001",
+    "APP-TARGET-ANDROID-PLAY-001",
+  ]) {
+    if (hasActiveDebt(manifest, debtId)) {
+      warnings.push(`${debtId}: external store distribution proof remains pending`);
+    } else {
+      findings.push(`${debtId}: missing active external-proof debt record`);
+    }
   }
   return {findings, warnings};
 }
@@ -253,7 +294,7 @@ export function scanAppTargets({root = defaultRepoRoot} = {}) {
   validateDeepLinkOwnership({root, manifest, findings});
   validateRemoteConfigOwnership({root, manifest, findings});
 
-  const prodWorkflow = path.join(root, ".github/workflows/ios-testflight-release.yml");
+  const prodWorkflow = path.join(root, ".github/workflows/mobile-internal-release.yml");
   if (fs.existsSync(prodWorkflow)) {
     const releaseResult = validateReleaseOwnership({
       manifest,
@@ -262,7 +303,7 @@ export function scanAppTargets({root = defaultRepoRoot} = {}) {
     findings.push(...releaseResult.findings);
     warnings.push(...releaseResult.warnings);
   } else {
-    findings.push("missing .github/workflows/ios-testflight-release.yml");
+    findings.push("missing .github/workflows/mobile-internal-release.yml");
   }
 
   return {manifest, findings, warnings};

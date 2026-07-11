@@ -1,0 +1,816 @@
+name: Mobile Internal Release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/actions/**'
+      - '.github/workflows/mobile-internal-release.yml'
+      - 'android/**'
+      - 'assets/**'
+      - 'contracts/**'
+      - 'firebase/prod/**'
+      - 'ios/**'
+      - 'lib/**'
+      - 'packages/**'
+      - 'pubspec.lock'
+      - 'pubspec.yaml'
+      - 'tool/**'
+  workflow_dispatch:
+    inputs:
+      app_role:
+        description: App role to release.
+        required: true
+        default: both
+        type: choice
+        options:
+          - consumer
+          - host
+          - both
+      platform:
+        description: Store platform to release.
+        required: true
+        default: all
+        type: choice
+        options:
+          - ios
+          - android
+          - all
+      upload_to_internal:
+        description: Upload manual artifacts to TestFlight or Play internal testing.
+        required: true
+        default: false
+        type: boolean
+      release_reason:
+        description: Required when a manual store upload or Xcode Cloud retirement is requested.
+        required: false
+        default: ''
+        type: string
+      retire_xcode_cloud:
+        description: Disable legacy Xcode Cloud only after exact GitHub builds are processed for both apps.
+        required: true
+        default: false
+        type: boolean
+      consumer_processed_ios_build_number:
+        description: Processed Consumer GitHub build number required for Xcode Cloud retirement.
+        required: false
+        default: ''
+        type: string
+      host_processed_ios_build_number:
+        description: Processed Host GitHub build number required for Xcode Cloud retirement.
+        required: false
+        default: ''
+        type: string
+      source_mobile_release_run_id:
+        description: Mobile Internal Release run whose processing receipts authorize retirement.
+        required: false
+        default: ''
+        type: string
+      probe_play_access:
+        description: Probe both Play qa tracks through an uncommitted edit; never uploads a bundle.
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: catch-mobile-store-release
+  cancel-in-progress: false
+
+jobs:
+  resolve:
+    name: Resolve mobile release matrix
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      roles: ${{ steps.matrix.outputs.roles }}
+    steps:
+      - name: Guard production release ref
+        env:
+          RELEASE_REF: ${{ github.ref }}
+        run: |
+          if [[ "$RELEASE_REF" != "refs/heads/main" ]]; then
+            echo "Signed production mobile releases are restricted to refs/heads/main."
+            exit 64
+          fi
+
+      - id: matrix
+        env:
+          APP_ROLE_INPUT: ${{ inputs.app_role || 'both' }}
+        run: |
+          set -euo pipefail
+          case "$APP_ROLE_INPUT" in
+            consumer) roles='["consumer"]' ;;
+            host) roles='["host"]' ;;
+            both) roles='["consumer","host"]' ;;
+            *) echo "Unsupported app role: $APP_ROLE_INPUT"; exit 64 ;;
+          esac
+          echo "roles=$roles" >> "$GITHUB_OUTPUT"
+
+      - name: Guard manual release mutation
+        if: ${{ github.event_name == 'workflow_dispatch' && (inputs.upload_to_internal || inputs.retire_xcode_cloud || inputs.probe_play_access) }}
+        env:
+          RELEASE_REASON: ${{ inputs.release_reason }}
+        run: |
+          if [[ -z "${RELEASE_REASON//[[:space:]]/}" ]]; then
+            echo "Manual store uploads and Xcode Cloud retirement require a release reason."
+            exit 64
+          fi
+
+      - name: Guard Google Play access probe
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.probe_play_access }}
+        env:
+          APP_ROLE_INPUT: ${{ inputs.app_role }}
+          PLATFORM_INPUT: ${{ inputs.platform }}
+          UPLOAD_TO_INTERNAL_INPUT: ${{ inputs.upload_to_internal }}
+          RETIRE_XCODE_CLOUD_INPUT: ${{ inputs.retire_xcode_cloud }}
+        run: |
+          if [[ "$APP_ROLE_INPUT" != "both" || "$PLATFORM_INPUT" != "android" ]]; then
+            echo "The Play access probe must target both Android roles."
+            exit 64
+          fi
+          if [[ "$UPLOAD_TO_INTERNAL_INPUT" == "true" || "$RETIRE_XCODE_CLOUD_INPUT" == "true" ]]; then
+            echo "The Play access probe cannot upload or retire another release owner."
+            exit 64
+          fi
+
+      - name: Guard Xcode Cloud retirement proof
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.retire_xcode_cloud }}
+        env:
+          APP_ROLE_INPUT: ${{ inputs.app_role }}
+          PLATFORM_INPUT: ${{ inputs.platform }}
+          UPLOAD_TO_INTERNAL_INPUT: ${{ inputs.upload_to_internal }}
+          CONSUMER_BUILD: ${{ inputs.consumer_processed_ios_build_number }}
+          HOST_BUILD: ${{ inputs.host_processed_ios_build_number }}
+          SOURCE_RUN_ID: ${{ inputs.source_mobile_release_run_id }}
+        run: |
+          set -euo pipefail
+          if [[ "$APP_ROLE_INPUT" != "both" || "$PLATFORM_INPUT" != "ios" ]]; then
+            echo "Xcode Cloud retirement must target both roles and only iOS."
+            exit 64
+          fi
+          if [[ "$UPLOAD_TO_INTERNAL_INPUT" == "true" ]]; then
+            echo "Upload and retirement are intentionally separate operations; first process both GitHub builds."
+            exit 64
+          fi
+          if [[ ! "$CONSUMER_BUILD" =~ ^[0-9]{18}$ || ! "$HOST_BUILD" =~ ^[0-9]{18}$ ]]; then
+            echo "Both processed build numbers must use the canonical 18-digit GitHub namespace."
+            exit 64
+          fi
+          if [[ ! "$SOURCE_RUN_ID" =~ ^[0-9]+$ ]]; then
+            echo "A numeric source Mobile Internal Release run id is required."
+            exit 64
+          fi
+
+  prod-ios:
+    name: iOS internal (${{ matrix.app_role }})
+    needs: resolve
+    if: ${{ !inputs.retire_xcode_cloud && !inputs.probe_play_access && (github.event_name == 'push' || inputs.platform == 'ios' || inputs.platform == 'all') }}
+    strategy:
+      fail-fast: false
+      matrix:
+        app_role: ${{ fromJSON(needs.resolve.outputs.roles) }}
+    runs-on: macos-26
+    environment: prod-mobile
+    timeout-minutes: 90
+
+    env:
+      ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+      ASC_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+
+      - name: Validate installable app-target contract
+        run: node tool/run.mjs check platform:app-targets platform:verify-ios-release-identity
+
+      - name: Resolve release target
+        env:
+          APP_ROLE_INPUT: ${{ matrix.app_role }}
+          UPLOAD_TO_INTERNAL_INPUT: ${{ inputs.upload_to_internal || 'false' }}
+        run: |
+          set -euo pipefail
+
+          app_role="$APP_ROLE_INPUT"
+          upload_to_testflight="$UPLOAD_TO_INTERNAL_INPUT"
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
+            upload_to_testflight="true"
+          fi
+
+          target_fields="$(node tool/platform/resolve_app_target.mjs \
+            --role "$app_role" \
+            --environment prod \
+            --fields id,ios.bundleId,ios.configurations.release,ios.scheme,release.appStoreConnectAppId)"
+          IFS=$'\t' read -r target_id expected_bundle_id ios_configuration ios_scheme app_store_connect_app_id <<< "$target_fields"
+          if [[ -z "$target_id" || -z "$expected_bundle_id" || -z "$ios_configuration" || -z "$ios_scheme" || -z "$app_store_connect_app_id" ]]; then
+            echo "Could not resolve complete prod iOS target metadata for role '$app_role'."
+            exit 1
+          fi
+          archive_name="${target_id//-/_}"
+          export_path="build/ios/export/$target_id"
+
+          version_line="$(awk '/^version: / { print $2; exit }' pubspec.yaml)"
+          build_name="${version_line%%+*}"
+          build_number="${FLUTTER_BUILD_NUMBER:-$(node tool/platform/compute_mobile_build_number.mjs \
+            --platform ios \
+            --utc-date "$(date -u +%Y%m%d)" \
+            --run-number "$GITHUB_RUN_NUMBER" \
+            --run-attempt "$GITHUB_RUN_ATTEMPT")}"
+
+          {
+            echo "APP_ROLE=$app_role"
+            echo "ARCHIVE_NAME=$archive_name"
+            echo "EXPECTED_BUNDLE_ID=$expected_bundle_id"
+            echo "EXPORT_PATH=$export_path"
+            echo "IOS_CONFIGURATION=$ios_configuration"
+            echo "IOS_SCHEME=$ios_scheme"
+            echo "APP_STORE_CONNECT_APP_ID=$app_store_connect_app_id"
+            echo "UPLOAD_TO_TESTFLIGHT=$upload_to_testflight"
+            echo "FLUTTER_BUILD_NAME=$build_name"
+            echo "FLUTTER_BUILD_NUMBER=$build_number"
+          } >> "$GITHUB_ENV"
+
+      - name: Verify client callable dependencies
+        run: |
+          node tool/firebase/check_client_callable_dependencies.mjs \
+            --role "$APP_ROLE" \
+            --environment prod \
+            --verify-live
+
+      - uses: ./.github/actions/setup-flutter
+
+      - run: flutter pub get
+
+      - name: Configure archive path
+        run: echo "ARCHIVE_PATH=$RUNNER_TEMP/${ARCHIVE_NAME}.xcarchive" >> "$GITHUB_ENV"
+
+      - name: Write prod iOS Maps key
+        env:
+          GOOGLE_MAPS_IOS_API_KEY_PROD: ${{ secrets.GOOGLE_MAPS_IOS_API_KEY_PROD }}
+        run: ./tool/write_ios_maps_key_xcconfig.sh prod
+
+      - name: Write App Store Connect API key
+        run: |
+          set -euo pipefail
+          if [[ -z "${ASC_KEY_ID:-}" || -z "${ASC_ISSUER_ID:-}" || -z "${ASC_KEY_BASE64:-}" ]]; then
+            echo "Missing App Store Connect API key secrets."
+            exit 1
+          fi
+          asc_key_dir="$RUNNER_TEMP/appstoreconnect/private_keys"
+          mkdir -p "$asc_key_dir"
+          /usr/bin/printf '%s' "$ASC_KEY_BASE64" | /usr/bin/base64 -D > "$asc_key_dir/AuthKey_${ASC_KEY_ID}.p8"
+          chmod 600 "$asc_key_dir/AuthKey_${ASC_KEY_ID}.p8"
+
+      - name: Verify App Store build-number floor
+        run: |
+          node tool/platform/verify_app_store_build.mjs \
+            --app-id "$APP_STORE_CONNECT_APP_ID" \
+            --build-number "$FLUTTER_BUILD_NUMBER" \
+            --key-id "$ASC_KEY_ID" \
+            --issuer-id "$ASC_ISSUER_ID" \
+            --key-path "$RUNNER_TEMP/appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8" \
+            --check-candidate
+
+      - name: Prepare prod Flutter iOS configuration
+        run: ./tool/flutter_with_env.sh prod --role "$APP_ROLE" build ios --release --config-only --build-name="$FLUTTER_BUILD_NAME" --build-number="$FLUTTER_BUILD_NUMBER"
+
+      - name: Archive prod iOS app
+        run: |
+          set -euo pipefail
+          xcodebuild \
+            -workspace ios/Runner.xcworkspace \
+            -scheme "$IOS_SCHEME" \
+            -configuration "$IOS_CONFIGURATION" \
+            -destination generic/platform=iOS \
+            -archivePath "$ARCHIVE_PATH" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$RUNNER_TEMP/appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            -hideShellScriptEnvironment \
+            archive
+
+      - name: Verify archived release identity and Maps key
+        run: |
+          set -euo pipefail
+          mkdir -p build/ios/release-evidence
+          node tool/platform/verify_ios_release_identity.mjs \
+            --archive "$ARCHIVE_PATH" \
+            --role "$APP_ROLE" \
+            --environment prod \
+            --expected-version "$FLUTTER_BUILD_NAME" \
+            --expected-build "$FLUTTER_BUILD_NUMBER" \
+            --receipt "build/ios/release-evidence/${APP_ROLE}-archive.json"
+
+          archived_app="$(find "$ARCHIVE_PATH/Products/Applications" -maxdepth 1 -type d -name '*.app' -print -quit)"
+          if [[ -z "$archived_app" ]]; then
+            echo "Could not find archived app in $ARCHIVE_PATH/Products/Applications."
+            exit 1
+          fi
+
+          node tool/firebase/validate_google_maps_config.mjs \
+            --env prod \
+            --platform ios \
+            --ios-built-plist "$archived_app/Info.plist"
+
+      - name: Export prod IPA
+        run: |
+          set -euo pipefail
+          xcodebuild \
+            -exportArchive \
+            -archivePath "$ARCHIVE_PATH" \
+            -exportPath "$EXPORT_PATH" \
+            -exportOptionsPlist ios/ExportOptions.prod.plist \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$RUNNER_TEMP/appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID"
+
+      - name: Verify exported release identity
+        run: |
+          set -euo pipefail
+          ipa_path="$(find "$EXPORT_PATH" -maxdepth 1 -type f -name '*.ipa' -print -quit)"
+          extract_dir="$RUNNER_TEMP/${APP_ROLE}-ipa"
+
+          if [[ -z "$ipa_path" ]]; then
+            echo "Could not find exported IPA under $EXPORT_PATH."
+            exit 1
+          fi
+          rm -rf "$extract_dir"
+          mkdir -p "$extract_dir"
+          ditto -x -k "$ipa_path" "$extract_dir"
+          exported_app="$(find "$extract_dir/Payload" -maxdepth 1 -type d -name '*.app' -print -quit)"
+          if [[ -z "$exported_app" ]]; then
+            echo "Could not find exported .app inside $ipa_path."
+            exit 1
+          fi
+
+          node tool/platform/verify_ios_release_identity.mjs \
+            --app "$exported_app" \
+            --role "$APP_ROLE" \
+            --environment prod \
+            --expected-version "$FLUTTER_BUILD_NAME" \
+            --expected-build "$FLUTTER_BUILD_NUMBER" \
+            --receipt "build/ios/release-evidence/${APP_ROLE}-export.json"
+
+          node tool/firebase/validate_google_maps_config.mjs \
+            --env prod \
+            --platform ios \
+            --ios-built-plist "$exported_app/Info.plist"
+
+          {
+            echo "## iOS export verification"
+            echo
+            echo "- App role: \`$APP_ROLE\`"
+            echo "- IPA: \`$ipa_path\`"
+            echo "- Target: \`$IOS_SCHEME\` / \`$IOS_CONFIGURATION\`"
+            echo "- Bundle ID: \`$EXPECTED_BUNDLE_ID\`"
+            echo "- Version/build: \`$FLUTTER_BUILD_NAME ($FLUTTER_BUILD_NUMBER)\`"
+            echo "- Role-specific signed entitlements: verified from \`tool/app_targets.json\`"
+            echo "- Identity receipts: \`build/ios/release-evidence/${APP_ROLE}-{archive,export}.json\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: catch-ios-${{ matrix.app_role }}-prod-ipa
+          path: |
+            build/ios/export/**/*.ipa
+            build/ios/release-evidence/*.json
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload to TestFlight
+        if: ${{ github.event_name == 'push' || inputs.upload_to_internal }}
+        run: |
+          set -euo pipefail
+          upload_options="$RUNNER_TEMP/ExportOptions.upload.plist"
+          cp ios/ExportOptions.prod.plist "$upload_options"
+          /usr/libexec/PlistBuddy -c 'Set :destination upload' "$upload_options"
+
+          xcodebuild \
+            -exportArchive \
+            -archivePath "$ARCHIVE_PATH" \
+            -exportPath "$RUNNER_TEMP/testflight-upload" \
+            -exportOptionsPlist "$upload_options" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$RUNNER_TEMP/appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID"
+
+      - name: Verify TestFlight processing
+        if: ${{ github.event_name == 'push' || inputs.upload_to_internal }}
+        run: |
+          node tool/platform/verify_app_store_build.mjs \
+            --app-id "$APP_STORE_CONNECT_APP_ID" \
+            --build-number "$FLUTTER_BUILD_NUMBER" \
+            --key-id "$ASC_KEY_ID" \
+            --issuer-id "$ASC_ISSUER_ID" \
+            --key-path "$RUNNER_TEMP/appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8" \
+            --wait-processed \
+            --github-run-id "$GITHUB_RUN_ID" \
+            --receipt "build/ios/release-evidence/${APP_ROLE}-testflight.json"
+
+      - name: Upload TestFlight processing receipt
+        if: ${{ github.event_name == 'push' || inputs.upload_to_internal }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: catch-ios-${{ matrix.app_role }}-testflight-receipt
+          path: build/ios/release-evidence/${{ matrix.app_role }}-testflight.json
+          if-no-files-found: error
+          retention-days: 14
+
+  prod-android:
+    name: Android internal (${{ matrix.app_role }})
+    needs: resolve
+    if: ${{ !inputs.retire_xcode_cloud && !inputs.probe_play_access && (github.event_name == 'push' || inputs.platform == 'android' || inputs.platform == 'all') }}
+    strategy:
+      fail-fast: false
+      matrix:
+        app_role: ${{ fromJSON(needs.resolve.outputs.roles) }}
+    runs-on: ubuntu-latest
+    environment: prod-mobile
+    timeout-minutes: 35
+    permissions:
+      contents: read
+      id-token: write
+
+    env:
+      ANDROID_UPLOAD_KEYSTORE_BASE64: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_BASE64 }}
+      ANDROID_UPLOAD_STORE_PASSWORD: ${{ secrets.ANDROID_UPLOAD_STORE_PASSWORD }}
+      ANDROID_UPLOAD_KEY_ALIAS: ${{ secrets.ANDROID_UPLOAD_KEY_ALIAS }}
+      ANDROID_UPLOAD_KEY_PASSWORD: ${{ secrets.ANDROID_UPLOAD_KEY_PASSWORD }}
+      GOOGLE_MAPS_ANDROID_API_KEY_PROD: ${{ secrets.GOOGLE_MAPS_ANDROID_API_KEY_PROD }}
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ steps.toolchain.outputs.java-version }}
+
+      - name: Install pinned bundletool
+        env:
+          BUNDLETOOL_VERSION: 1.18.3
+          BUNDLETOOL_SHA256: a099cfa1543f55593bc2ed16a70a7c67fe54b1747bb7301f37fdfd6d91028e29
+        run: |
+          set -euo pipefail
+          bundletool_path="$RUNNER_TEMP/bundletool-all-${BUNDLETOOL_VERSION}.jar"
+          curl --fail --location --retry 3 \
+            "https://github.com/google/bundletool/releases/download/${BUNDLETOOL_VERSION}/bundletool-all-${BUNDLETOOL_VERSION}.jar" \
+            --output "$bundletool_path"
+          printf '%s  %s\n' "$BUNDLETOOL_SHA256" "$bundletool_path" | sha256sum --check --status
+          echo "BUNDLETOOL_JAR=$bundletool_path" >> "$GITHUB_ENV"
+
+      - uses: ./.github/actions/setup-flutter
+
+      - run: flutter pub get
+
+      - name: Validate installable app-target contract
+        run: node tool/run.mjs check platform:app-targets platform:verify-android-release-identity
+
+      - name: Resolve release target
+        env:
+          APP_ROLE_INPUT: ${{ matrix.app_role }}
+        run: |
+          set -euo pipefail
+          target_fields="$(node tool/platform/resolve_app_target.mjs \
+            --role "$APP_ROLE_INPUT" \
+            --environment prod \
+            --fields id,android.applicationId,android.flavor)"
+          IFS=$'\t' read -r target_id application_id android_flavor <<< "$target_fields"
+          if [[ -z "$target_id" || -z "$application_id" || -z "$android_flavor" ]]; then
+            echo "Could not resolve complete prod Android target metadata for '$APP_ROLE_INPUT'."
+            exit 1
+          fi
+
+          version_line="$(awk '/^version: / { print $2; exit }' pubspec.yaml)"
+          build_name="${version_line%%+*}"
+          build_number="$(node tool/platform/compute_mobile_build_number.mjs \
+            --platform android \
+            --utc-date "$(date -u +%Y%m%d)" \
+            --run-number "$GITHUB_RUN_NUMBER" \
+            --run-attempt "$GITHUB_RUN_ATTEMPT")"
+
+          {
+            echo "APP_ROLE=$APP_ROLE_INPUT"
+            echo "APP_TARGET_ID=$target_id"
+            echo "ANDROID_APPLICATION_ID=$application_id"
+            echo "ANDROID_FLAVOR=$android_flavor"
+            echo "FLUTTER_BUILD_NAME=$build_name"
+            echo "FLUTTER_BUILD_NUMBER=$build_number"
+          } >> "$GITHUB_ENV"
+
+      - name: Verify client callable dependencies
+        run: |
+          node tool/firebase/check_client_callable_dependencies.mjs \
+            --role "$APP_ROLE" \
+            --environment prod \
+            --verify-live
+
+      - name: Materialize Android upload signing
+        run: |
+          set -euo pipefail
+          for variable in \
+            ANDROID_UPLOAD_KEYSTORE_BASE64 \
+            ANDROID_UPLOAD_STORE_PASSWORD \
+            ANDROID_UPLOAD_KEY_ALIAS \
+            ANDROID_UPLOAD_KEY_PASSWORD; do
+            if [[ -z "${!variable:-}" ]]; then
+              echo "Missing protected secret: $variable"
+              exit 1
+            fi
+          done
+          mkdir -p android/keystore
+          printf '%s' "$ANDROID_UPLOAD_KEYSTORE_BASE64" | base64 --decode > android/keystore/upload-keystore.jks
+          chmod 600 android/keystore/upload-keystore.jks
+          {
+            echo 'storeFile=../keystore/upload-keystore.jks'
+            printf 'storePassword=%s\n' "$ANDROID_UPLOAD_STORE_PASSWORD"
+            printf 'keyAlias=%s\n' "$ANDROID_UPLOAD_KEY_ALIAS"
+            printf 'keyPassword=%s\n' "$ANDROID_UPLOAD_KEY_PASSWORD"
+          } > android/key.properties
+          chmod 600 android/key.properties
+
+      - name: Write prod Android Maps key
+        run: |
+          if [[ -z "${GOOGLE_MAPS_ANDROID_API_KEY_PROD:-}" ]]; then
+            echo "Missing GOOGLE_MAPS_ANDROID_API_KEY_PROD secret."
+            exit 1
+          fi
+          printf '\nGOOGLE_MAPS_ANDROID_API_KEY_PROD=%s\n' "$GOOGLE_MAPS_ANDROID_API_KEY_PROD" >> android/local.properties
+
+      - name: Build signed prod Android App Bundle
+        run: |
+          ./tool/flutter_with_env.sh prod --role "$APP_ROLE" build appbundle --release \
+            --build-name="$FLUTTER_BUILD_NAME" \
+            --build-number="$FLUTTER_BUILD_NUMBER"
+
+      - name: Verify signed Android release identity
+        run: |
+          set -euo pipefail
+          mapfile -t bundles < <(find build/app/outputs/bundle -type f -name '*.aab' -print)
+          if (( ${#bundles[@]} != 1 )); then
+            printf 'Expected exactly one Android App Bundle; found %s\n' "${#bundles[@]}"
+            printf '%s\n' "${bundles[@]:-none}"
+            exit 1
+          fi
+          mkdir -p build/android/release-evidence
+          echo "ANDROID_BUNDLE_PATH=${bundles[0]}" >> "$GITHUB_ENV"
+          node tool/platform/verify_android_release_bundle.mjs \
+            --bundle "${bundles[0]}" \
+            --role "$APP_ROLE" \
+            --environment prod \
+            --expected-version "$FLUTTER_BUILD_NAME" \
+            --expected-build "$FLUTTER_BUILD_NUMBER" \
+            --bundletool "$BUNDLETOOL_JAR" \
+            --receipt "build/android/release-evidence/${APP_ROLE}-bundle.json"
+
+      - name: Upload Android release artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: catch-android-${{ matrix.app_role }}-prod-aab
+          path: |
+            build/app/outputs/bundle/**/*.aab
+            build/android/release-evidence/*.json
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Guard requested Play upload readiness
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.upload_to_internal && vars.GOOGLE_PLAY_UPLOAD_ENABLED != 'true' }}
+        run: |
+          echo "Play internal upload is not enabled. Complete APP-TARGET-ANDROID-PLAY-001 and set GOOGLE_PLAY_UPLOAD_ENABLED=true."
+          exit 1
+
+      - id: play-auth
+        name: Authenticate to Google Play publisher
+        if: ${{ vars.GOOGLE_PLAY_UPLOAD_ENABLED == 'true' && (github.event_name == 'push' || inputs.upload_to_internal) }}
+        uses: google-github-actions/auth@v3
+        with:
+          token_format: access_token
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GOOGLE_PLAY_SERVICE_ACCOUNT_EMAIL }}
+          access_token_scopes: https://www.googleapis.com/auth/androidpublisher
+
+      - name: Upload to Play internal testing
+        if: ${{ vars.GOOGLE_PLAY_UPLOAD_ENABLED == 'true' && (github.event_name == 'push' || inputs.upload_to_internal) }}
+        env:
+          GOOGLE_PLAY_ACCESS_TOKEN: ${{ steps.play-auth.outputs.access_token }}
+        run: |
+          node tool/platform/upload_google_play_bundle.mjs \
+            --package-name "$ANDROID_APPLICATION_ID" \
+            --bundle "$ANDROID_BUNDLE_PATH" \
+            --track qa \
+            --release-name "GitHub $APP_TARGET_ID $FLUTTER_BUILD_NAME ($FLUTTER_BUILD_NUMBER)" \
+            --apply \
+            --allow-prod
+
+  probe-play-access:
+    name: Probe Play qa access (${{ matrix.app_role }})
+    needs: resolve
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.probe_play_access }}
+    strategy:
+      fail-fast: false
+      matrix:
+        app_role: ${{ fromJSON(needs.resolve.outputs.roles) }}
+    runs-on: ubuntu-latest
+    environment: prod-mobile
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+
+      - name: Resolve Play package
+        env:
+          APP_ROLE: ${{ matrix.app_role }}
+        run: |
+          package_name="$(node tool/platform/resolve_app_target.mjs \
+            --role "$APP_ROLE" \
+            --environment prod \
+            --field release.googlePlayPackageName)"
+          if [[ -z "$package_name" ]]; then
+            echo "Missing Play package for $APP_ROLE."
+            exit 1
+          fi
+          echo "GOOGLE_PLAY_PACKAGE_NAME=$package_name" >> "$GITHUB_ENV"
+
+      - id: play-probe-auth
+        name: Authenticate probe identity
+        uses: google-github-actions/auth@v3
+        with:
+          token_format: access_token
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GOOGLE_PLAY_SERVICE_ACCOUNT_EMAIL }}
+          access_token_scopes: https://www.googleapis.com/auth/androidpublisher
+
+      - name: Probe uncommitted Play qa edit
+        env:
+          GOOGLE_PLAY_ACCESS_TOKEN: ${{ steps.play-probe-auth.outputs.access_token }}
+        run: |
+          node tool/platform/probe_google_play_access.mjs \
+            --package-name "$GOOGLE_PLAY_PACKAGE_NAME" \
+            --track qa \
+            --apply \
+            --allow-prod
+
+  retire-xcode-cloud:
+    name: Retire legacy Xcode Cloud workflows
+    needs: resolve
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.retire_xcode_cloud }}
+    runs-on: ubuntu-latest
+    environment: prod-mobile
+    timeout-minutes: 15
+    permissions:
+      actions: read
+      contents: read
+    env:
+      ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+      ASC_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
+      CONSUMER_PROCESSED_BUILD: ${{ inputs.consumer_processed_ios_build_number }}
+      HOST_PROCESSED_BUILD: ${{ inputs.host_processed_ios_build_number }}
+      SOURCE_MOBILE_RELEASE_RUN_ID: ${{ inputs.source_mobile_release_run_id }}
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+
+      - name: Download source processing receipts
+        uses: actions/download-artifact@v6
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.source_mobile_release_run_id }}
+          pattern: catch-ios-*-testflight-receipt
+          path: build/ios/retirement-evidence
+          merge-multiple: true
+
+      - name: Verify receipts came from the declared GitHub release run
+        run: |
+          node tool/platform/verify_ios_processing_receipts.mjs \
+            --directory build/ios/retirement-evidence \
+            --github-run-id "$SOURCE_MOBILE_RELEASE_RUN_ID" \
+            --consumer-build "$CONSUMER_PROCESSED_BUILD" \
+            --host-build "$HOST_PROCESSED_BUILD"
+
+      - name: Write App Store Connect API key
+        run: |
+          set -euo pipefail
+          key_path="$RUNNER_TEMP/AuthKey_${ASC_KEY_ID}.p8"
+          printf '%s' "$ASC_KEY_BASE64" | base64 --decode > "$key_path"
+          chmod 600 "$key_path"
+          echo "ASC_KEY_PATH=$key_path" >> "$GITHUB_ENV"
+
+      - name: Verify processed GitHub builds and legacy workflow plan
+        run: |
+          set -euo pipefail
+          for role in consumer host; do
+            fields="$(node tool/platform/resolve_app_target.mjs \
+              --role "$role" \
+              --environment prod \
+              --fields release.appStoreConnectAppId,release.legacyXcodeCloudWorkflow)"
+            IFS=$'\t' read -r app_store_id workflow_name <<< "$fields"
+            if [[ -z "$app_store_id" || -z "$workflow_name" ]]; then
+              echo "Missing legacy Xcode Cloud metadata for $role."
+              exit 1
+            fi
+            if [[ "$role" == "consumer" ]]; then
+              processed_build="$CONSUMER_PROCESSED_BUILD"
+            else
+              processed_build="$HOST_PROCESSED_BUILD"
+            fi
+            node tool/platform/verify_app_store_build.mjs \
+              --app-id "$app_store_id" \
+              --build-number "$processed_build" \
+              --key-id "$ASC_KEY_ID" \
+              --issuer-id "$ASC_ISSUER_ID" \
+              --key-path "$ASC_KEY_PATH" \
+              --wait-processed
+            node tool/platform/set_xcode_cloud_workflow_state.mjs \
+              --app-id "$app_store_id" \
+              --workflow-name "$workflow_name" \
+              --key-id "$ASC_KEY_ID" \
+              --issuer-id "$ASC_ISSUER_ID" \
+              --key-path "$ASC_KEY_PATH" \
+              --disable
+          done
+
+      - name: Disable legacy Xcode Cloud workflows atomically where possible
+        run: |
+          set -euo pipefail
+          disabled_roles=()
+          for role in consumer host; do
+            fields="$(node tool/platform/resolve_app_target.mjs \
+              --role "$role" \
+              --environment prod \
+              --fields release.appStoreConnectAppId,release.legacyXcodeCloudWorkflow)"
+            IFS=$'\t' read -r app_store_id workflow_name <<< "$fields"
+            if apply_result="$(node tool/platform/set_xcode_cloud_workflow_state.mjs \
+              --app-id "$app_store_id" \
+              --workflow-name "$workflow_name" \
+              --key-id "$ASC_KEY_ID" \
+              --issuer-id "$ASC_ISSUER_ID" \
+              --key-path "$ASC_KEY_PATH" \
+              --disable \
+              --apply \
+              --allow-prod)"; then
+              echo "$apply_result"
+              if node -e 'process.exit(JSON.parse(process.argv[1]).changed ? 0 : 1)' "$apply_result"; then
+                disabled_roles+=("$role")
+              fi
+              continue
+            fi
+
+            echo "Retirement failed for $role; rolling back workflows disabled in this operation."
+            for disabled_role in "${disabled_roles[@]}"; do
+              rollback_fields="$(node tool/platform/resolve_app_target.mjs \
+                --role "$disabled_role" \
+                --environment prod \
+                --fields release.appStoreConnectAppId,release.legacyXcodeCloudWorkflow)"
+              IFS=$'\t' read -r rollback_app_id rollback_workflow_name <<< "$rollback_fields"
+              node tool/platform/set_xcode_cloud_workflow_state.mjs \
+                --app-id "$rollback_app_id" \
+                --workflow-name "$rollback_workflow_name" \
+                --key-id "$ASC_KEY_ID" \
+                --issuer-id "$ASC_ISSUER_ID" \
+                --key-path "$ASC_KEY_PATH" \
+                --enable \
+                --apply \
+                --allow-prod || true
+            done
+            exit 1
+          done

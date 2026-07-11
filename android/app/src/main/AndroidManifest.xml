@@ -20,6 +20,18 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${googleMapsApiKey}"/>
+        <meta-data
+            android:name="com.catchdates.app.APP_TARGET_ID"
+            android:value="${compiledAppTargetId}"/>
+        <meta-data
+            android:name="com.catchdates.app.APP_ROLE"
+            android:value="${compiledAppRole}"/>
+        <meta-data
+            android:name="com.catchdates.app.FIREBASE_APP_ID"
+            android:value="${compiledFirebaseAppId}"/>
+        <meta-data
+            android:name="com.catchdates.app.FIREBASE_PROJECT_ID"
+            android:value="${compiledFirebaseProjectId}"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

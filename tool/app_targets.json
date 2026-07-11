@@ -2,7 +2,7 @@
   "$schema": "catch.app-targets/v1",
   "schemaVersion": 1,
   "logicalName": "catch-installable-app-targets",
-  "currentPhase": "release-ownership",
+  "currentPhase": "unified-mobile-release",
   "reason": "Catch ships Consumer and Host as independent store products. Their runtime composition, native identity, Firebase registration, capabilities, links, force-update policy, and release ownership must resolve from one checked contract.",
   "phases": [
     {
@@ -34,12 +34,46 @@
     },
     {
       "id": "release-ownership",
+      "status": "complete_local",
+      "evidence": [
+        ".github/workflows/mobile-internal-release.yml",
+        "tool/platform/verify_ios_release_identity.mjs",
+        "tool/platform/verify_android_release_bundle.mjs"
+      ]
+    },
+    {
+      "id": "store-internal-distribution",
       "status": "blocked_external",
       "evidence": [
-        "APP-TARGET-HOST-TESTFLIGHT-001"
+        "APP-TARGET-IOS-GITHUB-CUTOVER-001",
+        "APP-TARGET-ANDROID-PLAY-001"
       ]
     }
   ],
+  "releasePolicy": {
+    "owner": "github-actions",
+    "workflow": ".github/workflows/mobile-internal-release.yml",
+    "trigger": "app-relevant-main-push",
+    "environment": "prod-mobile",
+    "approvalMode": "none-after-main-merge",
+    "branchPolicy": "main-only",
+    "roles": [
+      "consumer",
+      "host"
+    ],
+    "ios": {
+      "channel": "testflight",
+      "uploadMode": "automatic-main"
+    },
+    "android": {
+      "channel": "play-internal",
+      "track": "qa",
+      "uploadMode": "gated-until-play-ready",
+      "publisherAuth": "github-oidc",
+      "publisherServiceAccount": "github-actions-play-publisher@catch-dating-app-64e51.iam.gserviceaccount.com",
+      "uploadCertificateSha256": "3088F763A60FD9F7CA99204D6A68EF93A30263A697E563EF883B29DBBC7AE23E"
+    }
+  },
   "roles": {
     "consumer": {
       "entrypoint": "lib/main_consumer.dart",
@@ -349,12 +383,14 @@
         "iconSourceSet": "main"
       },
       "release": {
-        "owner": "xcode-cloud",
-        "xcodeCloudWorkflow": "Catch | Default",
-        "githubMode": "manual-break-glass",
-        "githubWorkflow": ".github/workflows/ios-testflight-release.yml",
+        "owner": "github-actions",
+        "githubMode": "automatic-main",
+        "githubWorkflow": ".github/workflows/mobile-internal-release.yml",
         "appStoreConnectAppId": "6765646860",
-        "testFlightEvidence": "legacy-proof-only"
+        "googlePlayPackageName": "com.catchdates.app",
+        "legacyXcodeCloudWorkflow": "Default",
+        "testFlightEvidence": "github-cutover-pending",
+        "playInternalEvidence": "gcp-publisher-ready-play-console-blocked"
       }
     },
     {
@@ -407,32 +443,56 @@
         "iconSourceSet": "hostProd"
       },
       "release": {
-        "owner": "github-actions-temporary",
-        "desiredOwner": "xcode-cloud",
-        "xcodeCloudWorkflow": null,
-        "githubMode": "automatic-main-temporary",
-        "githubWorkflow": ".github/workflows/ios-testflight-release.yml",
+        "owner": "github-actions",
+        "githubMode": "automatic-main",
+        "githubWorkflow": ".github/workflows/mobile-internal-release.yml",
         "appStoreConnectAppId": "6778927317",
-        "testFlightEvidence": "unproven"
+        "googlePlayPackageName": "com.catchdates.host",
+        "legacyXcodeCloudWorkflow": "Default",
+        "testFlightEvidence": "github-cutover-pending",
+        "playInternalEvidence": "gcp-publisher-ready-play-console-blocked"
       }
     }
   ],
   "transitionalDebt": [
     {
-      "id": "APP-TARGET-HOST-TESTFLIGHT-001",
+      "id": "APP-TARGET-IOS-GITHUB-CUTOVER-001",
       "status": "blocked_external",
-      "reason": "Do not disable the temporary GitHub Host upload trigger until an authenticated Xcode Cloud Host build is processed, assigned to the intended TestFlight group, installed, and launched.",
+      "reason": "GitHub Actions is the canonical iOS owner, but cutover remains externally unproven until both role uploads process and both legacy Xcode Cloud workflows are disabled.",
       "externalPrerequisites": [
-        "select and record the intended Host internal TestFlight group",
-        "create or identify the Host Xcode Cloud workflow",
-        "reserve the 8.* build-number prefix for temporary GitHub uploads only"
+        "process a GitHub-uploaded Consumer TestFlight build",
+        "process a GitHub-uploaded Host TestFlight build",
+        "disable the app-scoped Consumer and Host workflows whose exact App Store Connect API name is Default",
+        "select and record the intended Consumer and Host internal TestFlight groups"
       ],
-      "githubBuildNumberNamespace": "8.<UTC YYYYMMDD><GitHub run>.<attempt>",
+      "githubBuildNumberNamespace": "<UTC YYYYMMDD><8-digit GitHub run><2-digit attempt>",
       "removalProof": [
+        "consumer-prod/Release-prod archive and processed build",
         "host-prod/Release-host-prod archive",
         "com.catchdates.host processed build",
-        "tester-group assignment",
-        "installed Host launch"
+        "processing receipts bound to one Mobile Internal Release run",
+        "both legacy Xcode Cloud workflows disabled",
+        "tester-group assignments"
+      ]
+    },
+    {
+      "id": "APP-TARGET-ANDROID-PLAY-001",
+      "status": "blocked_external",
+      "reason": "The unified workflow, Android Publisher API, dedicated zero-project-role service account, and prod-mobile OIDC binding are ready, but Play internal upload stays disabled until both Play app records grant app-scoped testing-track access.",
+      "externalPrerequisites": [
+        "create com.catchdates.app and com.catchdates.host Play records",
+        "enroll both apps in Play App Signing",
+        "grant GOOGLE_PLAY_SERVICE_ACCOUNT_EMAIL release access to both apps",
+        "configure both internal tester lists",
+        "dispatch probe_play_access for both qa tracks and keep the edit uncommitted",
+        "set GOOGLE_PLAY_UPLOAD_ENABLED=true only after both authenticated access probes pass"
+      ],
+      "playTrack": "qa",
+      "removalProof": [
+        "consumer signed AAB processed on Play internal testing",
+        "host signed AAB processed on Play internal testing",
+        "Play signing fingerprints registered with Firebase and App Check",
+        "both internal builds installed and launched"
       ]
     }
   ]

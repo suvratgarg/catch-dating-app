@@ -191,10 +191,19 @@ android {
             val environment = jsonString(target, "environment", targetId)
             create(jsonString(androidTarget, "flavor", "$targetId.android")) {
                 dimension = "appTarget"
+                val role = jsonString(target, "role", targetId)
+                val firebaseTarget = jsonObject(target["firebase"], "$targetId.firebase")
+                val firebaseAndroid = jsonObject(firebaseTarget["android"], "$targetId.firebase.android")
                 applicationId = jsonString(androidTarget, "applicationId", "$targetId.android")
                 resValue("string", "app_name", jsonString(target, "displayName", targetId))
                 manifestPlaceholders["googleMapsApiKey"] =
                     googleMapsApiKeyFor(environment.uppercase())
+                manifestPlaceholders["compiledAppTargetId"] = targetId
+                manifestPlaceholders["compiledAppRole"] = role
+                manifestPlaceholders["compiledFirebaseAppId"] =
+                    jsonString(firebaseAndroid, "appId", "$targetId.firebase.android")
+                manifestPlaceholders["compiledFirebaseProjectId"] =
+                    jsonString(firebaseTarget, "projectId", "$targetId.firebase")
             }
         }
     }

@@ -123,6 +123,36 @@ checks compiled target markers, version/build, embedded Firebase identity and
 OAuth URL scheme, plus role-specific signed entitlements. GitHub and Xcode
 Cloud run it before distribution and persist JSON receipts.
 
+`Mobile Internal Release` is the canonical merge-driven internal store workflow. Its iOS
+and Android jobs both resolve Consumer/Host identity from the manifest. Android
+release jobs additionally run `platform:verify-android-release-identity` before
+any guarded `qa`-track upload:
+
+```sh
+node tool/run.mjs check \
+  platform:app-targets \
+  platform:mobile-build-number \
+  platform:verify-ios-release-identity \
+  platform:verify-app-store-build \
+  platform:verify-ios-processing-receipts \
+  platform:verify-android-release-identity \
+  platform:probe-google-play-access
+```
+
+The Android gate uses a checksum-pinned bundletool jar and compares the compiled
+target, role, Firebase, Maps, debug, package, version, and upload-certificate
+identity. `platform:verify-app-store-build` prevents a non-monotonic Apple build
+and waits for exact App Store processing; `platform:verify-ios-processing-receipts`
+binds Xcode Cloud retirement to those GitHub run artifacts.
+`platform:upload-google-play-bundle` refuses the production track and requires
+explicit `--apply --allow-prod`. `platform:xcode-cloud-workflow-state` is a
+guarded cutover operation, not a routine release command.
+
+Before flipping `GOOGLE_PLAY_UPLOAD_ENABLED`, dispatch the workflow with
+`probe_play_access=true`, `app_role=both`, and `platform=android`. The
+`platform:probe-google-play-access` gate creates and deletes an uncommitted edit
+for each `qa` track; it never uploads a bundle or commits a release.
+
 Do not add a bundle id, Firebase app id, native flavor, or store product only to
 a workflow or platform file. Add it to the target contract and make the
 consumer query or checker change in the same pass.

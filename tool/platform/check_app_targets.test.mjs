@@ -129,56 +129,96 @@ test("Apple build configuration parser keeps target identity bound to its config
   ]);
 });
 
-test("release ownership rejects automatic Host upload without external-proof debt", () => {
+function unifiedReleaseManifest() {
   const manifest = validManifest();
-  manifest.targets[5].release = {
-    owner: "github-actions-temporary",
-    desiredOwner: "xcode-cloud",
-    githubMode: "automatic-main-temporary",
+  manifest.releasePolicy = {
+    owner: "github-actions",
+    workflow: ".github/workflows/mobile-internal-release.yml",
+    trigger: "app-relevant-main-push",
+    environment: "prod-mobile",
+    approvalMode: "none-after-main-merge",
+    branchPolicy: "main-only",
+    roles: ["consumer", "host"],
+    ios: {channel: "testflight", uploadMode: "automatic-main"},
+    android: {
+      channel: "play-internal",
+      track: "qa",
+      uploadMode: "gated-until-play-ready",
+      publisherAuth: "github-oidc",
+      publisherServiceAccount: "github-actions-play-publisher@catch-dating-app-64e51.iam.gserviceaccount.com",
+      uploadCertificateSha256: "A".repeat(64),
+    },
   };
-  const workflowSource = `
+  for (const target of manifest.targets.filter((candidate) => candidate.environment === "prod")) {
+    target.release = {
+      owner: "github-actions",
+      githubMode: "automatic-main",
+      githubWorkflow: ".github/workflows/mobile-internal-release.yml",
+      googlePlayPackageName: target.android.applicationId,
+      legacyXcodeCloudWorkflow: `${target.role} legacy`,
+    };
+  }
+  manifest.transitionalDebt.push(
+    {id: "APP-TARGET-IOS-GITHUB-CUTOVER-001", status: "blocked_external"},
+    {id: "APP-TARGET-ANDROID-PLAY-001", status: "blocked_external"},
+  );
+  return manifest;
+}
+
+const unifiedWorkflow = `
 on:
   push:
+    branches:
+      - main
+concurrency:
+  cancel-in-progress: false
 jobs:
-  release:
-    if: github.event_name == 'push'
-    run: |
-      app_role="host"
-      upload_to_testflight="true"
+  resolve:
+    run: echo refs/heads/main; roles='["consumer","host"]'
+  prod-ios:
+    environment: prod-mobile
+    strategy:
+      matrix:
+        app_role: roles
+    steps:
+      - name: Upload to TestFlight
+      - run: node tool/platform/verify_app_store_build.mjs
+  prod-android:
+    environment: prod-mobile
+    strategy:
+      matrix:
+        app_role: roles
+    steps:
+      - run: echo BUNDLETOOL_SHA256
+      - run: node tool/platform/verify_android_release_bundle.mjs --track qa
+      - run: node tool/platform/upload_google_play_bundle.mjs --track qa
+  probe-play:
+    run: node tool/platform/probe_google_play_access.mjs --track qa
+  retire:
+    run: node tool/platform/verify_ios_processing_receipts.mjs consumer_processed_ios_build_number; node tool/platform/set_xcode_cloud_workflow_state.mjs
 `;
 
-  const result = validateReleaseOwnership({manifest, workflowSource});
-
-  assert.equal(result.findings.length, 1);
-  assert.equal(result.warnings.length, 0);
+test("release ownership accepts one GitHub matrix for both roles and platforms", () => {
+  const manifest = unifiedReleaseManifest();
+  const result = validateReleaseOwnership({manifest, workflowSource: unifiedWorkflow});
+  assert.deepEqual(result.findings, []);
+  assert.equal(result.warnings.length, 2);
 });
 
-test("release ownership keeps the Host cutover as an explicit warning while proof is pending", () => {
-  const manifest = validManifest();
-  manifest.targets[5].release = {
-    owner: "github-actions-temporary",
-    desiredOwner: "xcode-cloud",
-    githubMode: "automatic-main-temporary",
-  };
-  manifest.transitionalDebt.push({
-    id: "APP-TARGET-HOST-TESTFLIGHT-001",
-    status: "blocked_external",
-  });
+test("release ownership rejects split or incomplete workflow ownership", () => {
+  const manifest = unifiedReleaseManifest();
+  manifest.targets.find((target) => target.id === "consumer-prod").release.owner = "xcode-cloud";
   const workflowSource = `
 on:
   push:
 jobs:
-  release:
-    if: github.event_name == 'push'
-    run: |
-      app_role="host"
-      upload_to_testflight="true"
+  prod-ios:
+    environment: prod-mobile
 `;
 
   const result = validateReleaseOwnership({manifest, workflowSource});
-
-  assert.equal(result.findings.length, 0);
-  assert.equal(result.warnings.length, 1);
+  assert.ok(result.findings.some((finding) => finding.includes("consumer-prod")));
+  assert.ok(result.findings.some((finding) => finding.includes("Android role matrix")));
 });
 
 test("resolveAppTarget returns explicit target fields", () => {

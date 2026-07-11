@@ -200,6 +200,33 @@ export function readPlistFile(plistPath) {
   return JSON.parse(result.stdout);
 }
 
+export function readArchiveInfoPlist(plistPath) {
+  try {
+    const archiveInfo = readPlistFile(plistPath);
+    if (archiveInfo?.ApplicationProperties) return archiveInfo;
+  } catch {
+    // Xcode archives include CreationDate at the root. plutil cannot convert
+    // that date-bearing dictionary to JSON, so extract only the identity data.
+  }
+
+  const result = spawnSync(
+    "/usr/bin/plutil",
+    ["-extract", "ApplicationProperties", "json", "-o", "-", plistPath],
+    {encoding: "utf8"},
+  );
+  if (result.status !== 0) {
+    throw new Error(
+      `Could not read ApplicationProperties from archive plist ${plistPath}: ${(
+        result.stderr ||
+        result.stdout ||
+        result.error?.message ||
+        "unknown plutil failure"
+      ).trim()}`,
+    );
+  }
+  return {ApplicationProperties: JSON.parse(result.stdout)};
+}
+
 function parseXmlPlistDictionary(source) {
   const values = {};
   const entries = source.matchAll(
@@ -420,7 +447,7 @@ function runCli() {
   const appInfo = readPlistFile(infoPath);
   const firebaseInfo = readPlistFile(firebaseInfoPath);
   const archiveInfo = archivePath
-    ? readPlistFile(path.join(archivePath, "Info.plist"))
+    ? readArchiveInfoPlist(path.join(archivePath, "Info.plist"))
     : null;
   const roleEntitlements = readPlistFile(roleEntitlementsPath);
   const findings = collectReleaseIdentityFindings({
