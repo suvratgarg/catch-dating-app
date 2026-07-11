@@ -1,6 +1,7 @@
 import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
+import {createHash} from "node:crypto";
 import {
   MatchDocument,
   SwipeDocument,
@@ -130,42 +131,83 @@ export async function onSwipeCreatedHandler(
     conversationType: "match",
   };
 
+  let resolvedMatchRef = matchRef;
+  let resolvedMatchId = matchId;
+  let createdDatingMatch = false;
   try {
     // create() throws if the document already exists.
     await matchRef.create(matchDoc);
-    await writeReactionCommentMessages(
-      matchRef,
-      [reverseSwipe, swipeData],
-      deps
-    );
-    logger.info("Match created", {
-      matchId,
-      user1Id: id1,
-      user2Id: id2,
-    });
-    await refreshEvents(sharedEventIds);
+    createdDatingMatch = true;
   } catch (e: unknown) {
     const code = (e as {code?: unknown}).code;
     if (code === 6 || code === "already-exists") {
-      // ALREADY_EXISTS - keep one match doc per pair and append shared event
-      // history instead of creating another conversation.
-      if (sharedEventIds.length > 0) {
+      const existingPairSnap = await matchRef.get();
+      const existingPair = existingPairSnap.data() as
+        MatchDocument | undefined;
+      if (existingPair?.conversationType === "clubHostInquiry") {
+        // Some legacy Host inquiries used the same pair-only document id as a
+        // dating match. Never convert that document (and its organizer chat
+        // history) into a dating conversation. Use a separate deterministic
+        // opaque id for the reciprocal match instead.
+        resolvedMatchId = datingMatchIdForPair(id1, id2);
+        resolvedMatchRef = db.collection("matches").doc(resolvedMatchId);
+        try {
+          await resolvedMatchRef.create(matchDoc);
+          createdDatingMatch = true;
+        } catch (opaqueError: unknown) {
+          const opaqueCode = (opaqueError as {code?: unknown}).code;
+          if (opaqueCode !== 6 && opaqueCode !== "already-exists") {
+            throw opaqueError;
+          }
+          if (sharedEventIds.length > 0) {
+            await resolvedMatchRef.update({
+              eventIds: deps.arrayUnion(...sharedEventIds),
+              conversationType: "match",
+              clubId: admin.firestore.FieldValue.delete(),
+            });
+          }
+        }
+      } else if (sharedEventIds.length > 0) {
+        // ALREADY_EXISTS - keep one dating match doc per pair and append
+        // shared event history instead of creating another conversation.
         await matchRef.update({
           eventIds: deps.arrayUnion(...sharedEventIds),
           conversationType: "match",
           clubId: admin.firestore.FieldValue.delete(),
         });
       }
-      await writeReactionCommentMessages(
-        matchRef,
-        [reverseSwipe, swipeData],
-        deps
-      );
-      await refreshEvents(sharedEventIds);
-      return;
+    } else {
+      throw e;
     }
-    throw e;
   }
+
+  await writeReactionCommentMessages(
+    resolvedMatchRef,
+    [reverseSwipe, swipeData],
+    deps
+  );
+  if (createdDatingMatch) {
+    logger.info("Match created", {
+      matchId: resolvedMatchId,
+      user1Id: id1,
+      user2Id: id2,
+    });
+  }
+  await refreshEvents(sharedEventIds);
+}
+
+/**
+ * Returns the deterministic fallback id used only when a legacy Host inquiry
+ * already occupies the historical pair-only dating match id.
+ * @param {string} user1Id First sorted participant id.
+ * @param {string} user2Id Second sorted participant id.
+ * @return {string} Firestore-safe opaque dating match id.
+ */
+export function datingMatchIdForPair(user1Id: string, user2Id: string): string {
+  const digest = createHash("sha256")
+    .update(JSON.stringify([user1Id, user2Id]))
+    .digest("hex");
+  return `datingMatch_${digest}`;
 }
 
 /**

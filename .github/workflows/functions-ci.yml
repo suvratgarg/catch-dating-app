@@ -28,6 +28,15 @@ jobs:
       - name: Firestore contract check
         run: node tool/contracts/check_firestore_contract.mjs
 
+      - name: Functions governance checks
+        run: node tool/run.mjs check audit:fn-rate-limits audit:fn-readme-inventory
+
+      - name: Firebase release guard tests
+        run: >-
+          node --test
+          tool/firebase/plan_firebase_deploy_targets.test.mjs
+          tool/firebase/check_client_callable_dependencies.test.mjs
+
       - name: Functions lint
         run: npm --prefix functions run lint
 

@@ -1,16 +1,25 @@
 ---
 doc_id: event_club_profile_parity_handoff
-version: 1.0.0
-updated: 2026-07-05
+version: 1.0.1
+updated: 2026-07-10
 owner: design_parity_review
-status: ready-for-implementation
+status: implemented
 supersedes: explore_map_view_spec, club_design_parity_spec, profile_design_parity_spec
 ---
 
 # Event / Club / Profile Design Parity — Combined Handoff
 
+> **IMPLEMENTED 2026-07-07.** All three parts landed (map selection + card,
+> club hero/schedule/index-row/seal, profile token rename + contract
+> verification); the 22-item checklist is fully checked. One post-landing
+> correction: profile compatibility reasons were verified against the DS
+> HintList contract and moved from `profileAnswer` to `CatchTextStyles.hint`
+> (`.t-hint`) — the parity commit had over-heavied them. The three
+> superseded stubs were deleted (history in git). Retained as the record of
+> decisions.
+
 Repo: `/Users/suvratgarg/Development/catch-dating-app/catch_dating_app`
-Design SoT: `~/Downloads/Catch Design System (2)/` (the 2026-06 ratified
+Design SoT: `~/Downloads/Catch Design System (1)/` (the 2026-06 ratified
 round; `explorations/archived-templates/**` is DROPPED direction — never
 implement from it).
 
@@ -40,12 +49,15 @@ advisory):
   cluster). Where this doc says `CatchEventCard.ticket`'s consumer is "the
   dashboard recommended rail," read: the For-you cluster (same
   `RecommendCard`, new home). The variant still stays.
-- `buildExploreBodySlivers` gains the For-you cluster and followed-club
-  boost; `EventDateRailCard` now receives `FROM A CLUB YOU FOLLOW` kickers
-  in the feed; the Explore browse header gains a bookmark action. None of
-  this changes the items below, but merge conflicts and moved helpers are
-  expected — re-verify before editing, and reuse (do not duplicate) any
-  kicker/grouping helpers the home work may have extracted.
+- `buildExploreBodySlivers` gains the For-you cluster; membership-derived
+  `EventDateRailCard` rows now receive `FROM ONE OF YOUR CLUBS`, and the
+  Explore browse header gains a bookmark action. The proposed separate
+  Following lens/boost was removed after verifying that the source provider is
+  active membership, not a follow graph; see
+  `EXPLORE-PRODUCT-DECISIONS-2026-07-10`. None of this changes the items below,
+  but merge conflicts and moved helpers are expected — re-verify before
+  editing, and reuse (do not duplicate) grouping helpers the Home work may
+  have extracted.
 
 ## Ratified doctrine for this handoff — presentation tiers
 

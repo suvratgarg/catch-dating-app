@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/data/city_repository.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/motion/catch_transitions.dart';
+import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -15,6 +16,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -37,11 +39,18 @@ import 'package:go_router/go_router.dart';
 /// sit above day-grouped event tickets, club polaroids, and the editorial
 /// spotlight. The map is no longer an always-on canvas — it is a focused route
 /// reached from the floating bottom-left map pill ([ExploreMapScreen]).
-class ExploreScreen extends ConsumerWidget {
+class ExploreScreen extends ConsumerStatefulWidget {
   const ExploreScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ExploreScreen> createState() => _ExploreScreenState();
+}
+
+class _ExploreScreenState extends ConsumerState<ExploreScreen> {
+  bool _searchRequested = false;
+
+  @override
+  Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final feedAsync = ref.watch(exploreFeedViewModelProvider);
     final recommendationsAsync = ref.watch(exploreRecommendationsProvider);
@@ -62,6 +71,8 @@ class ExploreScreen extends ConsumerWidget {
     final sourceClubs = sourceClubsAsync.asData?.value ?? const [];
     final hasSourceClubs = sourceClubs.isNotEmpty;
     final featuredItem = feedAsync.asData?.value.featuredItem;
+    final showFeaturedCover =
+        featuredItem != null && !_searchRequested && query.isEmpty;
     final filterRailState = ExploreFilterRailState.from(filters);
     final filterSheetState = ExploreFilterSheetState.from(
       filters: filters,
@@ -72,7 +83,7 @@ class ExploreScreen extends ConsumerWidget {
       query: query,
       filters: filters,
       hasSourceClubs: hasSourceClubs,
-      eventFeedCount: feedAsync.asData?.value.count,
+      mappableEventCount: feedAsync.asData?.value.mappableEventCount,
       viewModelLoading: viewModelAsync.isLoading,
       viewModelError: viewModelAsync.hasError ? viewModelAsync.error : null,
       viewModel: viewModelAsync.asData?.value,
@@ -172,6 +183,19 @@ class ExploreScreen extends ConsumerWidget {
       );
     }
 
+    Widget savedEventsAction({bool onDarkBackdrop = false}) {
+      return CatchIconAction(
+        icon: CatchIcons.bookmarkBorderRounded,
+        tooltip: 'Saved events',
+        onPressed: () => context.push(Routes.savedEventsScreen.path),
+        variant: onDarkBackdrop
+            ? CatchIconButtonVariant.plain
+            : CatchIconButtonVariant.bordered,
+        backgroundColor: onDarkBackdrop ? Colors.transparent : null,
+        foregroundColor: onDarkBackdrop ? CatchTokens.dark.ink : null,
+      );
+    }
+
     final bodySlivers = switch (bodyState.kind) {
       ExploreScreenBodyKind.loading => <Widget>[
         const SliverToBoxAdapter(
@@ -210,8 +234,7 @@ class ExploreScreen extends ConsumerWidget {
         onEventSelected: openEvent,
         onExternalEventOpened: openExternalEvent,
         onClubSelected: openClub,
-        includeJoinedClubsRail: false,
-        includeClubDirectory: false,
+        promoteFeaturedItem: showFeaturedCover,
       ),
       ExploreScreenBodyKind.contentWithoutClubs => buildExploreBodySlivers(
         context: context,
@@ -233,8 +256,7 @@ class ExploreScreen extends ConsumerWidget {
         onEventSelected: openEvent,
         onExternalEventOpened: openExternalEvent,
         onClubSelected: openClub,
-        includeJoinedClubsRail: false,
-        includeClubDirectory: false,
+        promoteFeaturedItem: showFeaturedCover,
       ),
       ExploreScreenBodyKind.empty => [
         SliverFillRemaining(
@@ -269,14 +291,13 @@ class ExploreScreen extends ConsumerWidget {
                     onQueryChanged: (value) => ref
                         .read(exploreSearchQueryProvider.notifier)
                         .setQuery(value),
-                    actions: [
-                      CatchIconAction(
-                        icon: CatchIcons.bookmarkBorderRounded,
-                        tooltip: 'Saved events',
-                        onPressed: () =>
-                            context.push(Routes.savedEventsScreen.path),
-                      ),
-                    ],
+                    actions: [savedEventsAction()],
+                    heroActions: [savedEventsAction(onDarkBackdrop: true)],
+                    searchRequested: _searchRequested,
+                    onSearchRequestedChanged: (expanded) {
+                      if (_searchRequested == expanded) return;
+                      setState(() => _searchRequested = expanded);
+                    },
                     onFeaturedEventSelected: openFeaturedEvent,
                   ),
                 ),
@@ -294,9 +315,6 @@ class ExploreScreen extends ConsumerWidget {
                     onToggleJoinedOnly: () => ref
                         .read(exploreFiltersProvider.notifier)
                         .toggleJoinedOnly(),
-                    onToggleFollowingOnly: () => ref
-                        .read(exploreFiltersProvider.notifier)
-                        .toggleFollowingOnly(),
                     onToggleHighRatedOnly: () => ref
                         .read(exploreFiltersProvider.notifier)
                         .toggleHighRatedOnly(),
@@ -316,7 +334,7 @@ class ExploreScreen extends ConsumerWidget {
           ),
           Positioned(
             left: CatchSpacing.s5,
-            bottom: CatchSpacing.s5,
+            bottom: _mapLauncherBottomOffset(context),
             child: SafeArea(
               top: false,
               child: CatchCountPill(
@@ -336,6 +354,13 @@ class ExploreScreen extends ConsumerWidget {
   }
 }
 
+double _mapLauncherBottomOffset(BuildContext context) {
+  return AppShellActiveTab.bottomOverlayClearanceOf(
+    context,
+    minimum: CatchSpacing.s5,
+  );
+}
+
 class ExploreScreenEmptyState extends StatelessWidget {
   const ExploreScreenEmptyState({
     super.key,
@@ -350,7 +375,14 @@ class ExploreScreenEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final action = _actionForState();
+    final action = state.action == ExploreDiscoveryEmptyAction.none
+        ? null
+        : ExploreClearAction(
+            clearSearch: state.clearSearch,
+            clearFilters: state.clearFilters,
+            onClearSearch: onClearSearch,
+            onClearFilters: onClearFilters,
+          );
     return switch (state.kind) {
       ExploreDiscoveryEmptyKind.noSourceClubs => Center(
         child: Padding(
@@ -401,16 +433,6 @@ class ExploreScreenEmptyState extends StatelessWidget {
         ),
       ),
     };
-  }
-
-  Widget? _actionForState() {
-    if (state.action == ExploreDiscoveryEmptyAction.none) return null;
-    return ExploreClearAction(
-      clearSearch: state.clearSearch,
-      clearFilters: state.clearFilters,
-      onClearSearch: onClearSearch,
-      onClearFilters: onClearFilters,
-    );
   }
 }
 

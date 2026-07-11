@@ -1,7 +1,7 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.10
-updated: 2026-06-30
+version: 0.1.11
+updated: 2026-07-10
 owner: product_design_parity
 status: active
 ---
@@ -118,6 +118,15 @@ Then run the advisory comparison:
 ```bash
 node tool/design/check_reference_screens.mjs --compare --capture-dir /tmp/catch-dashboard-reference-captures
 ```
+
+Host references must use a repo-pinned `design/source_packs/` source with a
+hash-complete, locally closed dependency manifest and must compare the real
+application navigation chrome. App Build Matrix regenerates the four primary
+full-shell Host captures and runs a focused `--strict` comparison. Strict mode
+fails unknown or missing captures, dimension drift, and threshold regressions.
+A real but unfinished feature may declare a stable `parityDebtId` plus a looser
+`regressionThresholds` ceiling; that ceiling prevents further drift and does
+not change the canonical parity threshold or close the debt.
 
 ## Preview Policy
 

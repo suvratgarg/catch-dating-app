@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_art.dart';
@@ -48,6 +49,7 @@ import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_privacy_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
+import 'package:catch_dating_app/core/widgets/catch_row_press_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_scrim.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -57,7 +59,7 @@ import 'package:catch_dating_app/core/widgets/catch_status_dot.dart';
 import 'package:catch_dating_app/core/widgets/catch_status_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_tab_dock.dart';
+import 'package:catch_dating_app/core/widgets/catch_tab_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -1198,6 +1200,85 @@ Widget catchFormFieldOptionalBadgeContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
+  type: CatchRowPressSurface,
+  path: '[Core primitives]/Inputs',
+)
+Widget catchRowPressSurfaceContractStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  Widget previewRow({
+    required Widget leading,
+    required String title,
+    required String body,
+    String? trailing,
+  }) {
+    return SizedBox(
+      width: 360,
+      child: CatchRowPressSurface(
+        onTap: _noop,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: CatchSpacing.micro14),
+          child: Row(
+            children: [
+              leading,
+              gapW12,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(title, style: CatchTextStyles.fieldRowTitle(context)),
+                    gapH4,
+                    Text(
+                      body,
+                      style: CatchTextStyles.supporting(context, color: t.ink2),
+                    ),
+                  ],
+                ),
+              ),
+              if (trailing != null) ...[
+                gapW10,
+                Text(
+                  trailing,
+                  style: CatchTextStyles.monoLabelS(context, color: t.ink3),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  return _ContractScreen(
+    title: 'CatchRowPressSurface',
+    contractId: 'catch.row_press_surface',
+    states: const ['field-row', 'chat-row'],
+    children: [
+      _StateCard(
+        label: 'field-row',
+        child: previewRow(
+          leading: Icon(CatchIcons.notificationsNoneRounded, color: t.ink2),
+          title: 'Event starts soon',
+          body: 'Your 5 km event starts in about 15 minutes.',
+          trailing: '26D',
+        ),
+      ),
+      _StateCard(
+        label: 'chat-row',
+        child: previewRow(
+          leading: const CatchPersonAvatar(name: 'Taylor Kim', size: 48),
+          title: 'Taylor Kim',
+          body: 'See you at the event',
+          trailing: '2M',
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
   type: CatchField,
   path: '[Core primitives]/Inputs',
 )
@@ -2186,6 +2267,7 @@ Widget catchSegmentedControlContractStates(BuildContext context) {
       'expanded',
       'with-icons',
       'surface-style',
+      'compact-mono',
     ],
     children: [
       _StateCard(
@@ -2239,6 +2321,22 @@ Widget catchSegmentedControlContractStates(BuildContext context) {
             CatchSegment(value: 'now', label: 'Now'),
             CatchSegment(value: 'later', label: 'Later'),
           ],
+        ),
+      ),
+      _StateCard(
+        label: 'compact-mono',
+        child: const _SegmentedWidth(
+          child: _SegmentedControlDemo<String>(
+            initialValue: 'booked',
+            expanded: true,
+            style: CatchSegmentedControlStyle.surface,
+            size: CatchSegmentedControlSize.compact,
+            labelStyle: CatchSegmentedControlLabelStyle.mono,
+            segments: [
+              CatchSegment(value: 'booked', label: 'BOOKED · 24'),
+              CatchSegment(value: 'prospective', label: 'PROSPECTIVE · 9'),
+            ],
+          ),
         ),
       ),
     ],
@@ -4650,13 +4748,13 @@ Widget catchBrandedSheetHeaderContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchTabDock,
+  type: CatchTabBar,
   path: '[Core primitives]/Navigation',
 )
 Widget catchTabDockContractStates(BuildContext context) {
   return _ContractScreen(
-    title: 'CatchTabDock',
-    contractId: 'catch.tab_dock',
+    title: 'CatchTabBar',
+    contractId: 'catch.tab_bar',
     states: const [
       'selected',
       'unselected',
@@ -4664,15 +4762,17 @@ Widget catchTabDockContractStates(BuildContext context) {
       'with-badge',
       'disabled-readonly',
       'safe-area',
-      'radius',
+      'text-scale',
+      'reduced-motion',
+      'with-four-tabs',
     ],
     children: [
       _StateCard(
         label: 'selected',
         child: SizedBox(
           width: 420,
-          child: CatchTabDock<String>(
-            items: _contractTabDockItems,
+          child: CatchTabBar<String>(
+            items: _contractTabBarItems,
             active: 'explore',
             onChanged: _ignoreString,
           ),
@@ -4682,8 +4782,8 @@ Widget catchTabDockContractStates(BuildContext context) {
         label: 'unselected',
         child: SizedBox(
           width: 420,
-          child: CatchTabDock<String>(
-            items: _contractTabDockItems,
+          child: CatchTabBar<String>(
+            items: _contractTabBarItems,
             active: 'clubs',
             onChanged: _ignoreString,
           ),
@@ -4693,8 +4793,8 @@ Widget catchTabDockContractStates(BuildContext context) {
         label: 'with-active-icon',
         child: SizedBox(
           width: 420,
-          child: CatchTabDock<String>(
-            items: _contractTabDockItems,
+          child: CatchTabBar<String>(
+            items: _contractTabBarItems,
             active: 'matches',
             onChanged: _ignoreString,
           ),
@@ -4704,8 +4804,8 @@ Widget catchTabDockContractStates(BuildContext context) {
         label: 'with-badge',
         child: SizedBox(
           width: 420,
-          child: CatchTabDock<String>(
-            items: _contractTabDockItems,
+          child: CatchTabBar<String>(
+            items: _contractTabBarItems,
             active: 'matches',
             onChanged: _ignoreString,
           ),
@@ -4715,8 +4815,8 @@ Widget catchTabDockContractStates(BuildContext context) {
         label: 'disabled-readonly',
         child: SizedBox(
           width: 420,
-          child: CatchTabDock<String>(
-            items: _contractTabDockItems,
+          child: CatchTabBar<String>(
+            items: _contractTabBarItems,
             active: 'explore',
           ),
         ),
@@ -4725,20 +4825,49 @@ Widget catchTabDockContractStates(BuildContext context) {
         label: 'safe-area',
         child: SizedBox(
           width: 420,
-          child: CatchTabDock<String>(
-            items: _contractTabDockItems,
+          child: CatchTabBar<String>(
+            items: _contractTabBarItems,
             active: 'clubs',
             onChanged: _ignoreString,
           ),
         ),
       ),
       _StateCard(
-        label: 'radius',
+        label: 'text-scale',
         child: SizedBox(
           width: 420,
-          child: CatchTabDock<String>(
-            radius: const BorderRadius.vertical(top: Radius.circular(20)),
-            items: _contractTabDockItems,
+          child: MediaQuery(
+            data: MediaQuery.of(
+              context,
+            ).copyWith(textScaler: const TextScaler.linear(2)),
+            child: CatchTabBar<String>(
+              items: _contractTabBarItems,
+              active: 'explore',
+              onChanged: _ignoreString,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'reduced-motion',
+        child: SizedBox(
+          width: 420,
+          child: MediaQuery(
+            data: MediaQuery.of(context).copyWith(disableAnimations: true),
+            child: CatchTabBar<String>(
+              items: _contractTabBarItems,
+              active: 'explore',
+              onChanged: _ignoreString,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'with-four-tabs',
+        child: SizedBox(
+          width: 420,
+          child: CatchTabBar<String>(
+            items: _contractFourTabBarItems,
             active: 'explore',
             onChanged: _ignoreString,
           ),
@@ -4750,13 +4879,13 @@ Widget catchTabDockContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchTabDockButton,
+  type: CatchTabBarButton,
   path: '[Core primitives]/Navigation',
 )
 Widget catchTabDockButtonContractStates(BuildContext context) {
   return _ContractScreen(
-    title: 'CatchTabDockButton',
-    contractId: 'catch.tab_dock.button',
+    title: 'CatchTabBarButton',
+    contractId: 'catch.tab_bar.button',
     states: const ['selected', 'unselected', 'badge'],
     children: [
       _StateCard(
@@ -4766,8 +4895,8 @@ Widget catchTabDockButtonContractStates(BuildContext context) {
           children: [
             SizedBox(
               width: 96,
-              child: CatchTabDockButton<String>(
-                item: _contractTabDockItems[0],
+              child: CatchTabBarButton<String>(
+                item: _contractTabBarItems[0],
                 selected: true,
                 onTap: _noop,
               ),
@@ -4775,8 +4904,8 @@ Widget catchTabDockButtonContractStates(BuildContext context) {
             const SizedBox(width: CatchSpacing.s4),
             SizedBox(
               width: 96,
-              child: CatchTabDockButton<String>(
-                item: _contractTabDockItems[1],
+              child: CatchTabBarButton<String>(
+                item: _contractTabBarItems[1],
                 selected: false,
                 onTap: _noop,
               ),
@@ -4784,8 +4913,8 @@ Widget catchTabDockButtonContractStates(BuildContext context) {
             const SizedBox(width: CatchSpacing.s4),
             SizedBox(
               width: 96,
-              child: CatchTabDockButton<String>(
-                item: _contractTabDockItems[2],
+              child: CatchTabBarButton<String>(
+                item: _contractTabBarItems[2],
                 selected: true,
                 onTap: _noop,
               ),
@@ -4799,15 +4928,15 @@ Widget catchTabDockButtonContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchTabDockIcon,
+  type: CatchTabBarIcon,
   path: '[Core primitives]/Navigation',
 )
 Widget catchTabDockIconContractStates(BuildContext context) {
   final t = CatchTokens.of(context);
 
   return _ContractScreen(
-    title: 'CatchTabDockIcon',
-    contractId: 'catch.tab_dock.icon',
+    title: 'CatchTabBarIcon',
+    contractId: 'catch.tab_bar.icon',
     states: const ['plain', 'badge', 'large-badge'],
     children: [
       _StateCard(
@@ -4815,15 +4944,15 @@ Widget catchTabDockIconContractStates(BuildContext context) {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CatchTabDockIcon(icon: Icons.explore_outlined, color: t.ink),
+            CatchTabBarIcon(icon: Icons.explore_outlined, color: t.ink),
             const SizedBox(width: CatchSpacing.s4),
-            CatchTabDockIcon(
+            CatchTabBarIcon(
               icon: Icons.chat_bubble_outline,
               color: t.ink,
               badgeCount: 7,
             ),
             const SizedBox(width: CatchSpacing.s4),
-            CatchTabDockIcon(
+            CatchTabBarIcon(
               icon: Icons.chat_bubble_outline,
               color: t.ink,
               badgeCount: 104,
@@ -6647,26 +6776,36 @@ void _noop() {}
 
 void _ignoreString(String value) {}
 
-final _contractTabDockItems = [
-  CatchTabDockItem<String>(
+final _contractTabBarItems = [
+  CatchTabBarItem<String>(
     id: 'explore',
     icon: CatchIcons.homeOutlined,
     activeIcon: CatchIcons.homeRounded,
     label: 'Explore',
   ),
-  CatchTabDockItem<String>(
+  CatchTabBarItem<String>(
     id: 'clubs',
     icon: CatchIcons.groupsOutlined,
     activeIcon: CatchIcons.groupsRounded,
     label: 'Clubs',
   ),
-  CatchTabDockItem<String>(
+  CatchTabBarItem<String>(
     id: 'matches',
     icon: CatchIcons.chatBubbleOutlineRounded,
     activeIcon: CatchIcons.chatBubbleRounded,
     label: 'Chats',
     badgeCount: 3,
   ),
+];
+
+final _contractFourTabBarItems = [
+  CatchTabBarItem<String>(
+    id: 'home',
+    icon: CatchIcons.homeOutlined,
+    activeIcon: CatchIcons.homeRounded,
+    label: 'Home',
+  ),
+  ..._contractTabBarItems,
 ];
 
 const _contractDialogActions = [
@@ -7197,12 +7336,16 @@ class _SegmentedControlDemo<T> extends StatefulWidget {
     required this.segments,
     this.expanded = false,
     this.style = CatchSegmentedControlStyle.filled,
+    this.size = CatchSegmentedControlSize.regular,
+    this.labelStyle = CatchSegmentedControlLabelStyle.standard,
   });
 
   final T initialValue;
   final List<CatchSegment<T>> segments;
   final bool expanded;
   final CatchSegmentedControlStyle style;
+  final CatchSegmentedControlSize size;
+  final CatchSegmentedControlLabelStyle labelStyle;
 
   @override
   State<_SegmentedControlDemo<T>> createState() =>
@@ -7233,6 +7376,8 @@ class _SegmentedControlDemoState<T> extends State<_SegmentedControlDemo<T>> {
       selected: _value,
       expanded: widget.expanded,
       style: widget.style,
+      size: widget.size,
+      labelStyle: widget.labelStyle,
       onChanged: (value) => setState(() => _value = value),
     );
   }

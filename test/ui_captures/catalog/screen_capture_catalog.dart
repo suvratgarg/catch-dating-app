@@ -15,9 +15,6 @@ import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chat_inbox_screen.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/host_inbox_filter.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_list.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_sliver_header.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_share_card.dart';
 import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
@@ -42,6 +39,8 @@ import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
+import 'package:catch_dating_app/core/presentation/app_shell.dart';
+import 'package:catch_dating_app/core/presentation/host_app_shell.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
@@ -78,6 +77,7 @@ import 'package:catch_dating_app/event_success/presentation/event_success_compan
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
+import 'package:catch_dating_app/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -128,6 +128,11 @@ import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dar
 import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_profile_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_broadcast_composer_sheet.dart'
+    as host_inbox;
+import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_broadcast_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
@@ -135,6 +140,7 @@ import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/labs/design_fixtures/catches_surface_fixtures.dart';
 import 'package:catch_dating_app/labs/design_fixtures/event_success_companion_fixtures.dart';
+import 'package:catch_dating_app/labs/design_fixtures/host_inbox_surface_fixtures.dart';
 import 'package:catch_dating_app/labs/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/labs/design_fixtures/matches_chat_surface_fixtures.dart';
 import 'package:catch_dating_app/labs/design_fixtures/profile_surface_fixtures.dart';
@@ -167,6 +173,7 @@ import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_screen.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_state.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/safety/presentation/settings_controller.dart';
 import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
@@ -176,6 +183,7 @@ import 'package:catch_dating_app/swipes/presentation/event_recap_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_view_model.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_controller.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
+import 'package:catch_dating_app/swipes/presentation/swipe_hub_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_queue_controller.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_screen.dart';
@@ -204,6 +212,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart'
         ProviderScope;
 import 'package:flutter_test/flutter_test.dart'
     show Fake, Finder, WidgetTester, expect, find, findsOneWidget;
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../clubs/clubs_test_helpers.dart' as club_test;
@@ -1019,8 +1028,32 @@ final _postRunProfiles = [
 final _catchesOpenEvent = CatchesSurfaceFixtures.openWindowEvent(
   id: 'capture-catches-open',
 );
+final _catchesClosingSoonEvent = CatchesSurfaceFixtures.closingSoonEvent();
 final _catchesClosedEvent = CatchesSurfaceFixtures.closedWindowEvent();
 final _catchesUpcomingEvent = CatchesSurfaceFixtures.upcomingEvent();
+
+List<Object> _swipeHubProviderOverrides({
+  AsyncValue<String?> uidValue = const AsyncData<String?>(
+    CatchesSurfaceFixtures.viewerUid,
+  ),
+  AsyncValue<List<Event>>? eventsValue,
+}) {
+  final uid = switch (uidValue) {
+    AsyncData(:final value) => value,
+    _ => null,
+  };
+  return [
+    uidProvider.overrideWithValue(uidValue),
+    if (uid != null)
+      watchAttendedEventsProvider(uid).overrideWithValue(
+        eventsValue ??
+            AsyncData<List<Event>>([
+              _catchesOpenEvent,
+              _catchesClosingSoonEvent,
+            ]),
+      ),
+  ];
+}
 
 NetworkException _catchesOfflineException({required String action}) {
   return obviousOfflineException(
@@ -2534,6 +2567,142 @@ class _AppRoleCaptureState extends State<_AppRoleCapture> {
 
   @override
   Widget build(BuildContext context) => widget.child;
+}
+
+class _HostRoutedShellCapture extends StatefulWidget {
+  const _HostRoutedShellCapture({
+    required this.initialLocation,
+    required this.activeIndex,
+    required this.child,
+  });
+
+  final String initialLocation;
+  final int activeIndex;
+  final Widget child;
+
+  @override
+  State<_HostRoutedShellCapture> createState() =>
+      _HostRoutedShellCaptureState();
+}
+
+class _HostRoutedShellCaptureState extends State<_HostRoutedShellCapture> {
+  late final GoRouter _router;
+
+  @override
+  void initState() {
+    super.initState();
+    AppConfig.configureEntrypointRole(AppRole.host);
+    _router = GoRouter(
+      initialLocation: widget.initialLocation,
+      routes: [
+        StatefulShellRoute.indexedStack(
+          builder: (context, state, navigationShell) =>
+              HostAppShell(navigationShell: navigationShell),
+          branches: [
+            _branch('/host', 0),
+            _branch('/host/events', 1),
+            _branch('/host/inbox', 2),
+            _branch('/host/organizer', 3),
+          ],
+        ),
+      ],
+    );
+  }
+
+  StatefulShellBranch _branch(String path, int index) {
+    return StatefulShellBranch(
+      routes: [
+        GoRoute(
+          path: path,
+          builder: (context, state) => index == widget.activeIndex
+              ? widget.child
+              : const SizedBox.shrink(),
+        ),
+      ],
+    );
+  }
+
+  @override
+  void dispose() {
+    _router.dispose();
+    AppConfig.resetEntrypointRoleOverrideForTesting();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      theme: Theme.of(context),
+      routerConfig: _router,
+    );
+  }
+}
+
+class _HostInsightsRoutedCapture extends StatefulWidget {
+  const _HostInsightsRoutedCapture({required this.initialLocation});
+
+  final String initialLocation;
+
+  @override
+  State<_HostInsightsRoutedCapture> createState() =>
+      _HostInsightsRoutedCaptureState();
+}
+
+class _HostInsightsRoutedCaptureState
+    extends State<_HostInsightsRoutedCapture> {
+  late final GoRouter _router;
+
+  @override
+  void initState() {
+    super.initState();
+    AppConfig.configureEntrypointRole(AppRole.host);
+    _router = GoRouter(
+      initialLocation: widget.initialLocation,
+      routes: [
+        GoRoute(
+          path: Routes.hostOrganizerScreen.path,
+          name: Routes.hostOrganizerScreen.name,
+          builder: (context, state) => const HostClubsScreen(),
+        ),
+        GoRoute(
+          path: Routes.hostInsightsScreen.path,
+          name: Routes.hostInsightsScreen.name,
+          builder: (context, state) =>
+              HostInsightsScreen(clubId: state.pathParameters['clubId']!),
+        ),
+      ],
+    );
+  }
+
+  @override
+  void dispose() {
+    _router.dispose();
+    AppConfig.resetEntrypointRoleOverrideForTesting();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      theme: Theme.of(context),
+      routerConfig: _router,
+    );
+  }
+}
+
+List<Object> _hostShellCaptureOverrides(String uid, {int unreadCount = 0}) {
+  return [
+    _captureAnalyticsOverride,
+    errorLoggerProvider.overrideWithValue(_CaptureSilentErrorLogger()),
+    appConnectivityProvider.overrideWith(
+      (ref) =>
+          Stream.value(const <ConnectivityResult>[ConnectivityResult.wifi]),
+    ),
+    appShellFcmInitializationProvider(uid).overrideWith((ref) async {}),
+    totalUnreadCountProvider(uid).overrideWithValue(unreadCount),
+  ];
 }
 
 class _ReferenceChromeSafeArea extends StatelessWidget {
@@ -4361,46 +4530,37 @@ final _hostInquiryImageDayMessages = <ChatMessage>[
 ];
 
 List<Object> _hostInboxProviderOverrides({
-  String? uid = MatchesChatSurfaceFixtures.hostUid,
+  AsyncValue<String?> uid = const AsyncData<String?>(
+    HostInboxSurfaceFixtures.hostUid,
+  ),
   AsyncValue<ChatsListViewModel>? viewModel,
-  List<Match>? matches,
-  Object? matchesError,
+  AsyncValue<List<Club>>? clubs,
+  AsyncValue<List<Event>>? events,
+  AsyncValue<List<EventParticipation>>? participations,
 }) {
-  final effectiveMatches =
-      matches ?? MatchesChatSurfaceFixtures.hostInquiryMatches;
-  final effectiveViewModel =
-      viewModel ??
-      AsyncData<ChatsListViewModel>(
-        _matchesListViewModelFor(
-          uid: uid ?? MatchesChatSurfaceFixtures.hostUid,
-          matches: effectiveMatches,
-          hostMode: true,
-        ),
-      );
+  final eventQuery = EventsForClubsQuery([HostInboxSurfaceFixtures.club.id]);
 
   return [
-    uidProvider.overrideWithValue(AsyncData<String?>(uid)),
-    chatsListViewModelProvider.overrideWithValue(effectiveViewModel),
-    matchRepositoryProvider.overrideWithValue(
-      MatchesChatFixtureMatchRepository(
-        matches: effectiveMatches,
-        matchesError: matchesError,
-      ),
+    uidProvider.overrideWithValue(uid),
+    hostOperableClubsProvider(
+      HostInboxSurfaceFixtures.hostUid,
+    ).overrideWithValue(
+      clubs ?? AsyncData<List<Club>>([HostInboxSurfaceFixtures.club]),
     ),
-    if (uid != null)
-      watchMatchesForUserProvider(uid).overrideWith((ref) {
-        if (matchesError != null) {
-          return Stream<List<Match>>.error(matchesError, StackTrace.empty);
-        }
-        return Stream<List<Match>>.value(effectiveMatches);
-      }),
-    watchClubProvider(
-      MatchesChatSurfaceFixtures.club.id,
-    ).overrideWith((ref) => Stream.value(MatchesChatSurfaceFixtures.club)),
-    for (final profile in MatchesChatSurfaceFixtures.profiles.values)
-      watchPublicProfileProvider(
-        profile.uid,
-      ).overrideWith((ref) => Stream.value(profile)),
+    watchEventsForClubsProvider(eventQuery).overrideWithValue(
+      events ?? AsyncData<List<Event>>([HostInboxSurfaceFixtures.event]),
+    ),
+    chatsListViewModelProvider.overrideWithValue(
+      viewModel ?? AsyncData(HostInboxSurfaceFixtures.allThreads),
+    ),
+    watchEventParticipationsForEventProvider(
+      HostInboxSurfaceFixtures.eventId,
+    ).overrideWithValue(
+      participations ??
+          AsyncData<List<EventParticipation>>(
+            HostInboxSurfaceFixtures.participations,
+          ),
+    ),
   ];
 }
 
@@ -4752,69 +4912,6 @@ ChatThreadPreview _matchesThreadPreviewFor({
   );
 }
 
-List<Object> _hostUnreadOnlyInboxProviderOverrides() {
-  final matches = MatchesChatSurfaceFixtures.hostInquiryMatches
-      .map((match) => match.copyWith(unreadCounts: const <String, int>{}))
-      .toList(growable: false);
-  return _hostInboxProviderOverrides(
-    matches: matches,
-    viewModel: AsyncData<ChatsListViewModel>(
-      _matchesListViewModelFor(
-        uid: MatchesChatSurfaceFixtures.hostUid,
-        matches: matches,
-        hostMode: true,
-      ),
-    ),
-  );
-}
-
-List<Object> _hostUnreadFilteredInboxProviderOverrides() {
-  final matches = MatchesChatSurfaceFixtures.hostInquiryMatches;
-  return _hostInboxProviderOverrides(
-    matches: matches,
-    viewModel: AsyncData<ChatsListViewModel>(
-      _matchesListViewModelFor(
-        uid: MatchesChatSurfaceFixtures.hostUid,
-        matches: matches,
-        hostMode: true,
-      ),
-    ),
-  );
-}
-
-List<Object> _hostInboxSearchEmptyProviderOverrides() {
-  return _hostInboxProviderOverrides(
-    viewModel: AsyncData<ChatsListViewModel>(
-      ChatsListViewModel(
-        newMatches: const <ChatThreadPreview>[],
-        conversations: const <ChatThreadPreview>[],
-        totalThreadCount: MatchesChatSurfaceFixtures.hostInquiryMatches.length,
-      ),
-    ),
-  );
-}
-
-List<Object> _hostNewInquiryProviderOverrides() {
-  final matches = [
-    MatchesChatSurfaceFixtures.hostInquiryMatches.first.copyWith(
-      id: 'design-host-inquiry-new',
-      lastMessageAt: null,
-      lastMessagePreview: null,
-      lastMessageSenderId: null,
-    ),
-  ];
-  return _hostInboxProviderOverrides(
-    matches: matches,
-    viewModel: AsyncData<ChatsListViewModel>(
-      _matchesListViewModelFor(
-        uid: MatchesChatSurfaceFixtures.hostUid,
-        matches: matches,
-        hostMode: true,
-      ),
-    ),
-  );
-}
-
 List<Object> get _matchesPublicProfileOverrides {
   const uids = [
     MatchesChatSurfaceFixtures.taylorUid,
@@ -4842,6 +4939,29 @@ Widget _matchesListCapture({
   return _AppRoleCapture(
     role: role,
     child: _ChatSearchQuerySeed(query: searchQuery, child: child),
+  );
+}
+
+Widget _hostInboxCapture({
+  HostInboxScope initialScope = const HostInboxScope.event(
+    HostInboxSurfaceFixtures.eventId,
+  ),
+  HostInboxAudienceSegment initialSegment = HostInboxAudienceSegment.booked,
+  String searchQuery = '',
+  bool broadcastEnabled = true,
+}) {
+  return _AppRoleCapture(
+    role: AppRole.host,
+    child: _ChatSearchQuerySeed(
+      query: searchQuery,
+      child: HostInboxScreen(
+        initialScope: initialScope,
+        initialSegment: initialSegment,
+        broadcastEnabled: broadcastEnabled,
+        syncSelectionToRoute: false,
+        now: HostInboxSurfaceFixtures.now,
+      ),
+    ),
   );
 }
 
@@ -4875,37 +4995,92 @@ class _ChatSearchQuerySeedState extends ConsumerState<_ChatSearchQuerySeed> {
   Widget build(BuildContext context) => widget.child;
 }
 
-class _HostUnreadOnlyInboxCapture extends StatelessWidget {
-  const _HostUnreadOnlyInboxCapture();
+enum _HostBroadcastCaptureState { ready, pending, error }
+
+class _HostBroadcastComposerCapture extends ConsumerStatefulWidget {
+  const _HostBroadcastComposerCapture({
+    this.state = _HostBroadcastCaptureState.ready,
+  });
+
+  final _HostBroadcastCaptureState state;
+
+  @override
+  ConsumerState<_HostBroadcastComposerCapture> createState() =>
+      _HostBroadcastComposerCaptureState();
+}
+
+class _HostBroadcastComposerCaptureState
+    extends ConsumerState<_HostBroadcastComposerCapture> {
+  Completer<SendEventBroadcastCallableResponse>? _pending;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || widget.state == _HostBroadcastCaptureState.ready) return;
+      if (widget.state == _HostBroadcastCaptureState.pending) {
+        _pending = Completer<SendEventBroadcastCallableResponse>();
+        _ignoreMutationResult(
+          HostInboxBroadcastController.sendMutation.run(
+            ref,
+            (_) => _pending!.future,
+          ),
+        );
+      } else {
+        _ignoreMutationResult(
+          HostInboxBroadcastController.sendMutation.run(
+            ref,
+            (_) async => throw StateError('Broadcast delivery unavailable'),
+          ),
+        );
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return _AppRoleCapture(
       role: AppRole.host,
       child: Scaffold(
-        body: SafeArea(
-          child: CustomScrollView(
-            slivers: [
-              ...CatchSliverHeader(
-                title: const SizedBox.shrink(),
-                bottomHeight: chatsBrowseHeaderHeight(hasHostFilter: true),
-                bottom: ChatsBrowseHeader(
-                  showSearchAction: true,
-                  searchValue: '',
-                  onSearchChanged: null,
-                  hostFilter: HostInboxFilter.unread,
-                  hostUnreadCount: 0,
-                  onHostFilterChanged: (_) {},
-                ),
-              ).buildSlivers(context),
-              const ChatsList(hostFilter: HostInboxFilter.unread),
-            ],
+        body: Align(
+          alignment: Alignment.bottomCenter,
+          child: host_inbox.HostBroadcastComposerSheet(
+            event: HostInboxSurfaceFixtures.event,
+            bookedCount: 24,
+            prospectiveCount: 9,
+            initialSegment: HostInboxAudienceSegment.booked,
+            initialTemplate: host_inbox.HostBroadcastTemplate.reminder,
+            sendingEnabled: true,
+            requestIdFactory: () => 'capture-broadcast-request',
+            sendAction: _captureBroadcastSend,
           ),
         ),
       ),
     );
   }
 }
+
+void _ignoreMutationResult(Future<SendEventBroadcastCallableResponse> result) {
+  unawaited(result.then<void>((_) {}, onError: (Object _, StackTrace _) {}));
+}
+
+Future<SendEventBroadcastCallableResponse> _captureBroadcastSend({
+  required String requestId,
+  required String eventId,
+  required EventBroadcastAudience audience,
+  required String body,
+}) async => const SendEventBroadcastCallableResponse(
+  broadcastId: 'capture-broadcast',
+  status: EventBroadcastDeliveryStatus.completed,
+  recipientCount: 24,
+  excludedCount: 0,
+  activityAvailableCount: 24,
+  pushAttemptedCount: 0,
+  pushAcceptedCount: 0,
+  pushFailedCount: 0,
+  pushUnknownCount: 0,
+  idempotentReplay: false,
+);
 
 class _MatchCelebrationCapture extends StatelessWidget {
   const _MatchCelebrationCapture();
@@ -5510,6 +5685,54 @@ final _hostTodayReferenceEvent = _hostManageReferenceEvent.copyWith(
     customActivityLabel: 'Trivia Night',
   ),
 );
+final _hostEventsReferenceNow = DateTime(2026, 6, 17, 17);
+final _hostEventsReferenceEvents = <Event>[
+  _hostTodayReferenceEvent.copyWith(
+    id: 'host-events-reference-trivia',
+    startTime: DateTime(2026, 6, 17, 20),
+    endTime: DateTime(2026, 6, 17, 22),
+    bookedCount: 24,
+    waitlistedCount: 2,
+    capacityLimit: 30,
+  ),
+  HostOperationsFixtures.upcomingEvent.copyWith(
+    id: 'host-events-reference-run',
+    clubId: _hostTodayReferenceClub.id,
+    startTime: DateTime(2026, 6, 21, 6, 30),
+    endTime: DateTime(2026, 6, 21, 8),
+    bookedCount: 6,
+    capacityLimit: 10,
+  ),
+  HostOperationsFixtures.fullEvent.copyWith(
+    id: 'host-events-reference-dinner',
+    clubId: _hostTodayReferenceClub.id,
+    startTime: DateTime(2026, 6, 27, 20),
+    endTime: DateTime(2026, 6, 27, 22),
+    bookedCount: 10,
+    checkedInCount: 0,
+    waitlistedCount: 0,
+    capacityLimit: 15,
+  ),
+  HostOperationsFixtures.upcomingEvent.copyWith(
+    id: 'host-events-reference-padel',
+    clubId: _hostTodayReferenceClub.id,
+    startTime: DateTime(2026, 7, 6, 9),
+    endTime: DateTime(2026, 7, 6, 10, 30),
+    eventFormat: EventFormatSnapshot.fromActivityKind(ActivityKind.padel),
+    bookedCount: 5,
+    waitlistedCount: 0,
+    capacityLimit: 16,
+  ),
+  _hostTodayReferenceEvent.copyWith(
+    id: 'host-events-reference-past-trivia',
+    startTime: DateTime(2026, 6, 10, 20),
+    endTime: DateTime(2026, 6, 10, 22),
+    bookedCount: 26,
+    checkedInCount: 26,
+    waitlistedCount: 0,
+    capacityLimit: 26,
+  ),
+];
 final _hostHomeLongNameOwnerClub = HostOperationsFixtures.primaryClub.copyWith(
   id: 'host-home-long-owner-club',
   name: 'Bandra Sea Face Morning Run Club for New Members',
@@ -8131,6 +8354,28 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => const DashboardScreen(),
   ),
   ScreenCaptureEntry(
+    id: 'dashboard_home_recommendations_loading',
+    routeIds: const <String>['dashboardScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _dashboardProviderOverrides(
+      recommendations:
+          const AsyncLoading<List<DashboardEventRecommendationCandidate>>(),
+    ),
+    builder: (context) => const DashboardScreen(),
+  ),
+  ScreenCaptureEntry(
+    id: 'dashboard_home_recommendations_error',
+    routeIds: const <String>['dashboardScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _dashboardProviderOverrides(
+      recommendations: AsyncError<List<DashboardEventRecommendationCandidate>>(
+        StateError('Capture dashboard recommendations failed'),
+        StackTrace.empty,
+      ),
+    ),
+    builder: (context) => const DashboardScreen(),
+  ),
+  ScreenCaptureEntry(
     id: 'dashboard_home_self_check_in',
     routeIds: const <String>['dashboardScreen'],
     device: CaptureDevice.reviewTall,
@@ -8201,31 +8446,54 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
   ScreenCaptureEntry(
     id: 'host_home_dashboard',
     routeIds: const <String>['hostHomeScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(
-      hostedClubs: [_hostTodayReferenceClub],
-      ownedClubs: [_hostTodayReferenceClub],
-      clubEvents: {
-        _hostTodayReferenceClub.id: AsyncData<List<Event>>([
-          _hostTodayReferenceEvent,
-        ]),
-      },
-    ),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: [
+      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ..._hostOperationsProviderOverrides(
+        hostedClubs: [_hostTodayReferenceClub],
+        ownedClubs: [_hostTodayReferenceClub],
+        clubEvents: {
+          _hostTodayReferenceClub.id: AsyncData<List<Event>>([
+            _hostTodayReferenceEvent,
+          ]),
+        },
+      ),
+    ],
+    builder: (context) => _HostRoutedShellCapture(
+      initialLocation: '/host',
+      activeIndex: 0,
       child: HostOperationsHomeScreen(
         initialClubId: 'host-home-reference-bandra-social',
+        now: _hostTodayReferenceEvent.startTime.subtract(
+          const Duration(hours: 2),
+        ),
       ),
     ),
   ),
   ScreenCaptureEntry(
     id: 'host_home_events_list',
-    routeIds: const <String>['hostHomeScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: HostOperationsHomeScreen(initialTab: HostHomeTab.events),
+    routeIds: const <String>['hostEventsScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: [
+      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ..._hostOperationsProviderOverrides(
+        hostedClubs: [_hostTodayReferenceClub],
+        ownedClubs: [_hostTodayReferenceClub],
+        clubEvents: {
+          _hostTodayReferenceClub.id: AsyncData<List<Event>>(
+            _hostEventsReferenceEvents,
+          ),
+        },
+      ),
+    ],
+    builder: (context) => _HostRoutedShellCapture(
+      initialLocation: '/host/events',
+      activeIndex: 1,
+      child: HostOperationsHomeScreen(
+        initialClubId: _hostTodayReferenceClub.id,
+        initialTab: HostHomeTab.events,
+        now: _hostEventsReferenceNow,
+      ),
     ),
   ),
   ScreenCaptureEntry(
@@ -8439,11 +8707,17 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_management',
-    routeIds: const <String>['hostClubsScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostOperationsProviderOverrides(),
-    builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: HostClubsScreen()),
+    routeIds: const <String>['hostOrganizerScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: [
+      ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
+      ..._hostOperationsProviderOverrides(),
+    ],
+    builder: (context) => const _HostRoutedShellCapture(
+      initialLocation: '/host/organizer',
+      activeIndex: 3,
+      child: HostClubsScreen(),
+    ),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_signed_out',
@@ -8559,30 +8833,39 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
   ),
   ScreenCaptureEntry(
+    id: 'host_clubs_insights_reference',
+    routeIds: const <String>['hostInsightsScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: _hostOperationsProviderOverrides(),
+    builder: (context) => const _HostInsightsRoutedCapture(
+      initialLocation: '/host/organizer/design-host-sea-face/insights',
+    ),
+  ),
+  ScreenCaptureEntry(
     id: 'host_clubs_insights_report',
-    routeIds: const <String>['hostClubsScreen'],
+    routeIds: const <String>['hostInsightsScreen'],
     device: CaptureDevice.reviewTall,
     providerOverrides: _hostOperationsProviderOverrides(),
     builder: (context) => const _AppRoleCapture(
       role: AppRole.host,
-      child: HostClubsScreen(initialTab: HostClubTab.insights),
+      child: HostInsightsScreen(clubId: 'design-host-sea-face'),
     ),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_insights_loading',
-    routeIds: const <String>['hostClubsScreen'],
+    routeIds: const <String>['hostInsightsScreen'],
     device: CaptureDevice.reviewTall,
     providerOverrides: _hostOperationsProviderOverrides(
       analyticsRepository: const _CaptureLoadingAnalyticsRepository(),
     ),
     builder: (context) => const _AppRoleCapture(
       role: AppRole.host,
-      child: HostClubsScreen(initialTab: HostClubTab.insights),
+      child: HostInsightsScreen(clubId: 'design-host-sea-face'),
     ),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_insights_error',
-    routeIds: const <String>['hostClubsScreen'],
+    routeIds: const <String>['hostInsightsScreen'],
     device: CaptureDevice.reviewTall,
     providerOverrides: _hostOperationsProviderOverrides(
       analyticsRepository: HostFixtureAnalyticsRepository(
@@ -8591,12 +8874,12 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
     builder: (context) => const _AppRoleCapture(
       role: AppRole.host,
-      child: HostClubsScreen(initialTab: HostClubTab.insights),
+      child: HostInsightsScreen(clubId: 'design-host-sea-face'),
     ),
   ),
   ScreenCaptureEntry(
     id: 'host_clubs_insights_offline',
-    routeIds: const <String>['hostClubsScreen'],
+    routeIds: const <String>['hostInsightsScreen'],
     device: CaptureDevice.reviewTall,
     providerOverrides: _hostOperationsProviderOverrides(
       analyticsRepository: HostFixtureAnalyticsRepository(
@@ -8605,7 +8888,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
     builder: (context) => const _AppRoleCapture(
       role: AppRole.host,
-      child: HostClubsScreen(initialTab: HostClubTab.insights),
+      child: HostInsightsScreen(clubId: 'design-host-sea-face'),
     ),
   ),
   ScreenCaptureEntry(
@@ -12012,6 +12295,101 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         SwipeScreen(eventId: _postRunEvent.id, now: _captureNow),
   ),
   ScreenCaptureEntry(
+    id: 'swipe_hub_active',
+    routeIds: const <String>['swipeHubScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _swipeHubProviderOverrides(),
+    builder: (context) => SwipeHubScreen(now: CatchesSurfaceFixtures.now),
+  ),
+  ScreenCaptureEntry(
+    id: 'swipe_hub_uid_loading',
+    routeIds: const <String>['swipeHubScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _swipeHubProviderOverrides(
+      uidValue: const AsyncLoading<String?>(),
+    ),
+    builder: (context) => SwipeHubScreen(now: CatchesSurfaceFixtures.now),
+  ),
+  ScreenCaptureEntry(
+    id: 'swipe_hub_uid_error',
+    routeIds: const <String>['swipeHubScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _swipeHubProviderOverrides(
+      uidValue: AsyncError<String?>(
+        StateError('Capture Catches session failed'),
+        StackTrace.empty,
+      ),
+    ),
+    builder: (context) => SwipeHubScreen(now: CatchesSurfaceFixtures.now),
+  ),
+  ScreenCaptureEntry(
+    id: 'swipe_hub_signed_out',
+    routeIds: const <String>['swipeHubScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _swipeHubProviderOverrides(
+      uidValue: const AsyncData<String?>(null),
+    ),
+    builder: (context) => SwipeHubScreen(now: CatchesSurfaceFixtures.now),
+  ),
+  ScreenCaptureEntry(
+    id: 'swipe_hub_attended_events_loading',
+    routeIds: const <String>['swipeHubScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _swipeHubProviderOverrides(
+      eventsValue: const AsyncLoading<List<Event>>(),
+    ),
+    builder: (context) => SwipeHubScreen(now: CatchesSurfaceFixtures.now),
+  ),
+  ScreenCaptureEntry(
+    id: 'swipe_hub_attended_events_error',
+    routeIds: const <String>['swipeHubScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _swipeHubProviderOverrides(
+      eventsValue: AsyncError<List<Event>>(
+        StateError('Capture Catches events failed'),
+        StackTrace.empty,
+      ),
+    ),
+    builder: (context) => SwipeHubScreen(now: CatchesSurfaceFixtures.now),
+  ),
+  ScreenCaptureEntry(
+    id: 'swipe_hub_offline',
+    routeIds: const <String>['swipeHubScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _swipeHubProviderOverrides(
+      eventsValue: AsyncError<List<Event>>(
+        _catchesOfflineException(action: 'load attended events'),
+        StackTrace.empty,
+      ),
+    ),
+    builder: (context) => SwipeHubScreen(now: CatchesSurfaceFixtures.now),
+  ),
+  ScreenCaptureEntry(
+    id: 'swipe_hub_empty',
+    routeIds: const <String>['swipeHubScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _swipeHubProviderOverrides(
+      eventsValue: AsyncData<List<Event>>([_catchesClosedEvent]),
+    ),
+    builder: (context) => SwipeHubScreen(now: CatchesSurfaceFixtures.now),
+  ),
+  ScreenCaptureEntry(
+    id: 'swipe_hub_text_scale_2',
+    routeIds: const <String>['swipeHubScreen'],
+    device: CaptureDevice.reviewTall,
+    textScale: 2,
+    providerOverrides: _swipeHubProviderOverrides(),
+    builder: (context) => SwipeHubScreen(now: CatchesSurfaceFixtures.now),
+  ),
+  ScreenCaptureEntry(
+    id: 'swipe_hub_reduced_motion',
+    routeIds: const <String>['swipeHubScreen'],
+    device: CaptureDevice.reviewTall,
+    disableAnimations: true,
+    providerOverrides: _swipeHubProviderOverrides(),
+    builder: (context) => SwipeHubScreen(now: CatchesSurfaceFixtures.now),
+  ),
+  ScreenCaptureEntry(
     id: 'swipe_event_queue_loading',
     routeIds: const <String>['swipeEventScreen'],
     device: CaptureDevice.reviewTall,
@@ -13470,11 +13848,25 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
   ScreenCaptureEntry(
     id: 'host_inbox_queries',
     routeIds: const <String>['hostInboxScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostInboxProviderOverrides(),
-    builder: (context) => const _AppRoleCapture(
-      role: AppRole.host,
-      child: _ReferenceChromeSafeArea(child: ChatsListScreen()),
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: [
+      ..._hostShellCaptureOverrides(
+        HostInboxSurfaceFixtures.hostUid,
+        unreadCount: 1,
+      ),
+      ..._hostInboxProviderOverrides(),
+    ],
+    builder: (context) => _HostRoutedShellCapture(
+      initialLocation: '/host/inbox',
+      activeIndex: 2,
+      child: HostInboxScreen(
+        initialScope: const HostInboxScope.event(
+          HostInboxSurfaceFixtures.eventId,
+        ),
+        broadcastEnabled: true,
+        syncSelectionToRoute: false,
+        now: HostInboxSurfaceFixtures.now,
+      ),
     ),
   ),
   ScreenCaptureEntry(
@@ -13482,11 +13874,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['hostInboxScreen'],
     device: CaptureDevice.iphone17Pro,
     providerOverrides: _hostInboxProviderOverrides(
-      uid: null,
-      viewModel: const AsyncLoading<ChatsListViewModel>(),
+      uid: const AsyncLoading<String?>(),
     ),
-    builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: ChatsListScreen()),
+    builder: (context) => _hostInboxCapture(),
   ),
   ScreenCaptureEntry(
     id: 'host_inbox_loading',
@@ -13495,8 +13885,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: _hostInboxProviderOverrides(
       viewModel: const AsyncLoading<ChatsListViewModel>(),
     ),
-    builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: ChatsListScreen()),
+    builder: (context) => _hostInboxCapture(),
   ),
   ScreenCaptureEntry(
     id: 'host_inbox_error',
@@ -13507,10 +13896,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         StateError('Capture host inbox failed'),
         StackTrace.empty,
       ),
-      matchesError: StateError('Capture host inbox failed'),
     ),
-    builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: ChatsListScreen()),
+    builder: (context) => _hostInboxCapture(),
   ),
   ScreenCaptureEntry(
     id: 'host_inbox_offline',
@@ -13521,67 +13908,90 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         _matchesOfflineException(action: 'load host inbox'),
         StackTrace.empty,
       ),
-      matchesError: _matchesOfflineException(action: 'load host inbox'),
     ),
-    builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: ChatsListScreen()),
+    builder: (context) => _hostInboxCapture(),
   ),
   ScreenCaptureEntry(
     id: 'host_inbox_empty',
     routeIds: const <String>['hostInboxScreen'],
     device: CaptureDevice.iphone17Pro,
     providerOverrides: _hostInboxProviderOverrides(
-      matches: const <Match>[],
-      viewModel: const AsyncData<ChatsListViewModel>(
-        ChatsListViewModel(
-          newMatches: <ChatThreadPreview>[],
-          conversations: <ChatThreadPreview>[],
-          totalThreadCount: 0,
-        ),
-      ),
+      viewModel: const AsyncData(HostInboxSurfaceFixtures.noThreads),
+      participations: const AsyncData<List<EventParticipation>>([]),
     ),
+    builder: (context) => _hostInboxCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_inbox_prospective',
+    routeIds: const <String>['hostInboxScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _hostInboxProviderOverrides(),
     builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: ChatsListScreen()),
+        _hostInboxCapture(initialSegment: HostInboxAudienceSegment.prospective),
   ),
   ScreenCaptureEntry(
-    id: 'host_inbox_unread_filter',
+    id: 'host_inbox_general',
     routeIds: const <String>['hostInboxScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostUnreadFilteredInboxProviderOverrides(),
-    builder: (context) => const _HostUnreadOnlyInboxCapture(),
+    providerOverrides: _hostInboxProviderOverrides(),
+    builder: (context) =>
+        _hostInboxCapture(initialScope: const HostInboxScope.general()),
   ),
   ScreenCaptureEntry(
-    id: 'matches_host_unread_empty',
+    id: 'host_inbox_roster_no_threads',
     routeIds: const <String>['hostInboxScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostUnreadOnlyInboxProviderOverrides(),
-    builder: (context) => const _HostUnreadOnlyInboxCapture(),
+    providerOverrides: _hostInboxProviderOverrides(
+      viewModel: const AsyncData(HostInboxSurfaceFixtures.noThreads),
+    ),
+    builder: (context) => _hostInboxCapture(),
   ),
   ScreenCaptureEntry(
     id: 'host_inbox_search_active',
     routeIds: const <String>['hostInboxScreen'],
     device: CaptureDevice.iphone17Pro,
     providerOverrides: _hostInboxProviderOverrides(),
-    builder: (context) =>
-        _matchesListCapture(role: AppRole.host, searchQuery: 'Aarav'),
+    builder: (context) => _hostInboxCapture(searchQuery: 'Aarav'),
   ),
   ScreenCaptureEntry(
     id: 'host_inbox_search_empty',
     routeIds: const <String>['hostInboxScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostInboxSearchEmptyProviderOverrides(),
-    builder: (context) => _matchesListCapture(
-      role: AppRole.host,
-      searchQuery: 'No attendee by this name',
-    ),
+    providerOverrides: _hostInboxProviderOverrides(),
+    builder: (context) =>
+        _hostInboxCapture(searchQuery: 'No attendee by this name'),
   ),
   ScreenCaptureEntry(
     id: 'host_inbox_new_query',
     routeIds: const <String>['hostInboxScreen'],
     device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostNewInquiryProviderOverrides(),
+    providerOverrides: _hostInboxProviderOverrides(
+      viewModel: AsyncData(HostInboxSurfaceFixtures.newInquiryThread),
+    ),
     builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: ChatsListScreen()),
+        _hostInboxCapture(initialSegment: HostInboxAudienceSegment.prospective),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_inbox_broadcast_composer',
+    routeIds: const <String>['hostInboxScreen'],
+    device: CaptureDevice.iphone17Pro,
+    builder: (context) => const _HostBroadcastComposerCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_inbox_broadcast_pending',
+    routeIds: const <String>['hostInboxScreen'],
+    device: CaptureDevice.iphone17Pro,
+    builder: (context) => const _HostBroadcastComposerCapture(
+      state: _HostBroadcastCaptureState.pending,
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_inbox_broadcast_error',
+    routeIds: const <String>['hostInboxScreen'],
+    device: CaptureDevice.iphone17Pro,
+    builder: (context) => const _HostBroadcastComposerCapture(
+      state: _HostBroadcastCaptureState.error,
+    ),
   ),
   ScreenCaptureEntry(
     id: 'host_inbox_text_scale_2',
@@ -13589,8 +13999,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.iphone17Pro,
     textScale: 2,
     providerOverrides: _hostInboxProviderOverrides(),
-    builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: ChatsListScreen()),
+    builder: (context) => _hostInboxCapture(),
   ),
   ScreenCaptureEntry(
     id: 'host_inbox_reduced_motion',
@@ -13598,16 +14007,14 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.iphone17Pro,
     disableAnimations: true,
     providerOverrides: _hostInboxProviderOverrides(),
-    builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: ChatsListScreen()),
+    builder: (context) => _hostInboxCapture(),
   ),
   ScreenCaptureEntry(
     id: 'host_inbox_light_dark',
     routeIds: const <String>['hostInboxScreen'],
     device: CaptureDevice.reviewTall,
     providerOverrides: _hostInboxProviderOverrides(),
-    builder: (context) =>
-        const _AppRoleCapture(role: AppRole.host, child: ChatsListScreen()),
+    builder: (context) => _hostInboxCapture(),
   ),
   ScreenCaptureEntry(
     id: 'host_chat_inquiry',

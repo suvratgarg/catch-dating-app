@@ -53,6 +53,10 @@
 		<string>????</string>
 		<key>CFBundleVersion</key>
 		<string>$(FLUTTER_BUILD_NUMBER)</string>
+		<key>CatchAppTargetID</key>
+		<string>$(CATCH_APP_TARGET_ID)</string>
+		<key>CatchFlutterTarget</key>
+		<string>$(FLUTTER_TARGET)</string>
 		<key>FirebaseCrashlyticsCollectionEnabled</key>
 		<false/>
 		<key>FirebaseMessagingAutoInitEnabled</key>

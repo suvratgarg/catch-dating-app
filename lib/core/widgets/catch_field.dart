@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
+import 'package:catch_dating_app/core/widgets/catch_row_press_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:flutter/foundation.dart';
@@ -1940,7 +1941,7 @@ class CatchFieldRow extends StatelessWidget {
     );
 
     if (onTap == null) return row;
-    return InkWell(onTap: onTap, child: row);
+    return CatchRowPressSurface(onTap: onTap, child: row);
   }
 }
 

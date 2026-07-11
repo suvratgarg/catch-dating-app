@@ -5,11 +5,13 @@ import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
+import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
+import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
+import 'package:catch_dating_app/core/widgets/catch_tab_bar.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -68,21 +70,51 @@ class HostAppShell extends ConsumerWidget {
       }
     });
 
-    return Scaffold(
-      body: CatchNoticeHost(
-        persistentNotices: [if (isOffline) const CatchNoticeData.offline()],
+    final authenticatedTabBarFloats =
+        isAuthenticated && CatchTabBar.floatsFor(context);
+    final authenticatedBottomOverlayInset = authenticatedTabBarFloats
+        ? CatchTabBar.reservedBottomInset(context)
+        : 0.0;
+    final authenticatedNavigationBar = isAuthenticated
+        ? AppShellNavigationBar(
+            currentIndex: navigationShell.currentIndex,
+            unreadCount: unreadCount,
+            items: _hostNavigationItems,
+            onDestinationSelected: (index) => navigationShell.goBranch(
+              index,
+              initialLocation: index == navigationShell.currentIndex,
+            ),
+          )
+        : null;
+    final body = CatchNoticeHost(
+      persistentNotices: [if (isOffline) const CatchNoticeData.offline()],
+      child: AppShellActiveTab(
+        index: navigationShell.currentIndex,
+        bottomOverlayInset: authenticatedBottomOverlayInset,
         child: navigationShell,
       ),
-      bottomNavigationBar: isAuthenticated
-          ? AppShellNavigationBar(
-              currentIndex: navigationShell.currentIndex,
-              unreadCount: unreadCount,
-              items: _hostNavigationItems,
-              onDestinationSelected: (index) => navigationShell.goBranch(
-                index,
-                initialLocation: index == navigationShell.currentIndex,
-              ),
+    );
+
+    return Scaffold(
+      key: AppShellKeys.scaffold,
+      extendBody: authenticatedTabBarFloats,
+      body: authenticatedTabBarFloats
+          ? Stack(
+              children: [
+                Positioned.fill(child: body),
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: authenticatedNavigationBar!,
+                ),
+              ],
             )
+          : body,
+      bottomNavigationBar: authenticatedTabBarFloats
+          ? null
+          : isAuthenticated
+          ? authenticatedNavigationBar
           : null,
     );
   }
@@ -90,32 +122,32 @@ class HostAppShell extends ConsumerWidget {
 
 final _hostNavigationItems = [
   AppShellNavigationItem(
-    label: 'Events',
-    materialIcon: CatchIcons.calendarMonthOutlined,
-    materialSelectedIcon: CatchIcons.calendarMonthOutlined,
-    cupertinoIcon: CupertinoIcons.calendar,
-    cupertinoSelectedIcon: CupertinoIcons.calendar,
+    label: 'Today',
+    materialIcon: CatchIcons.tabHome,
+    materialSelectedIcon: CatchIcons.tabHomeFilled,
+    cupertinoIcon: CatchIcons.tabHome,
+    cupertinoSelectedIcon: CatchIcons.tabHomeFilled,
   ),
   AppShellNavigationItem(
-    label: 'Clubs',
-    materialIcon: CatchIcons.groupsOutlined,
-    materialSelectedIcon: CatchIcons.groupsRounded,
-    cupertinoIcon: CupertinoIcons.person_2,
-    cupertinoSelectedIcon: CupertinoIcons.person_2_fill,
+    label: 'Events',
+    materialIcon: CatchIcons.tabEvents,
+    materialSelectedIcon: CatchIcons.tabEventsFilled,
+    cupertinoIcon: CatchIcons.tabEvents,
+    cupertinoSelectedIcon: CatchIcons.tabEventsFilled,
   ),
   AppShellNavigationItem(
     label: 'Inbox',
-    materialIcon: CatchIcons.chatBubbleOutlineRounded,
-    materialSelectedIcon: CatchIcons.chatBubbleRounded,
-    cupertinoIcon: CupertinoIcons.chat_bubble_2,
-    cupertinoSelectedIcon: CupertinoIcons.chat_bubble_2_fill,
+    materialIcon: CatchIcons.tabChats,
+    materialSelectedIcon: CatchIcons.tabChatsFilled,
+    cupertinoIcon: CatchIcons.tabChats,
+    cupertinoSelectedIcon: CatchIcons.tabChatsFilled,
     showsUnreadBadge: true,
   ),
   AppShellNavigationItem(
-    label: 'Account',
-    materialIcon: CatchIcons.settingsOutlined,
-    materialSelectedIcon: CatchIcons.settingsOutlined,
-    cupertinoIcon: CupertinoIcons.gear,
-    cupertinoSelectedIcon: CupertinoIcons.gear,
+    label: 'Organizer',
+    materialIcon: CatchIcons.tabOrganizer,
+    materialSelectedIcon: CatchIcons.tabOrganizerFilled,
+    cupertinoIcon: CatchIcons.tabOrganizer,
+    cupertinoSelectedIcon: CatchIcons.tabOrganizerFilled,
   ),
 ];

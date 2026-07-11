@@ -1,65 +1,8 @@
 const {execFileSync} = require("node:child_process");
 const https = require("node:https");
+const {GoogleAuth} = require("google-auth-library");
 
 const region = "asia-south1";
-const callableServices = [
-  "archiveclub",
-  "archiverunclub",
-  "blockuser",
-  "cancelevent",
-  "canceleventsignup",
-  "cancelrun",
-  "cancelrunsignup",
-  "createclub",
-  "createevent",
-  "createeventreview",
-  "createrazorpayorder",
-  "createrun",
-  "createrunclub",
-  "createrunreview",
-  "deleteclub",
-  "deleteevent",
-  "deleteeventreview",
-  "deleterun",
-  "deleterunclub",
-  "deleterunreview",
-  "fetcheventsuccesswingmancandidates",
-  "generateeventsuccesspods",
-  "generateeventsuccessrotations",
-  "joinclub",
-  "joineventwaitlist",
-  "joinrunclub",
-  "joinrunwaitlist",
-  "leaveclub",
-  "leaveeventwaitlist",
-  "leaverunclub",
-  "leaverunwaitlist",
-  "listsuvbotdemoactions",
-  "markeventattendance",
-  "markrunattendance",
-  "overrideeventsuccessrotations",
-  "placedetails",
-  "placesautocomplete",
-  "reportuser",
-  "requestaccountdeletion",
-  "requestsuvbotdemooperation",
-  "selfcheckinattendance",
-  "setclubnotificationpreference",
-  "setrunclubnotificationpreference",
-  "signupforfreeevent",
-  "signupforfreerun",
-  "submiteventsuccesswingmanrequest",
-  "unblockuser",
-  "updateclub",
-  "updateevent",
-  "updateeventreview",
-  "updaterun",
-  "updaterunclub",
-  "updaterunreview",
-  "updateuserprofile",
-  "verifyrazorpaypayment",
-  "withdraweventsuccesswingmanrequest",
-];
 
 function firebaseAccessToken() {
   const output = execFileSync("firebase", ["login:list", "--json"], {
@@ -69,25 +12,36 @@ function firebaseAccessToken() {
   const payload = parseFirstJsonObject(output);
   const token = payload.result?.find((entry) => entry.tokens?.access_token)
     ?.tokens.access_token;
-
   if (!token) {
     throw new Error("Unable to read an access token from Firebase CLI auth.");
   }
-
   return token;
+}
+
+async function accessToken() {
+  try {
+    const client = await new GoogleAuth({
+      scopes: ["https://www.googleapis.com/auth/cloud-platform"],
+    }).getClient();
+    const result = await client.getAccessToken();
+    const token = typeof result === "string" ? result : result?.token;
+    if (token) return token;
+  } catch (error) {
+    process.stderr.write(
+      `ADC unavailable; falling back to Firebase CLI auth: ${error.message}\n`,
+    );
+  }
+  return firebaseAccessToken();
 }
 
 function parseFirstJsonObject(text) {
   const start = text.indexOf("{");
-  if (start === -1) {
-    throw new Error("Firebase CLI did not return JSON.");
-  }
-
+  if (start === -1) throw new Error("Firebase CLI did not return JSON.");
   let depth = 0;
   let inString = false;
   let escaped = false;
-  for (let i = start; i < text.length; i += 1) {
-    const char = text[i];
+  for (let index = start; index < text.length; index += 1) {
+    const char = text[index];
     if (escaped) {
       escaped = false;
       continue;
@@ -104,22 +58,16 @@ function parseFirstJsonObject(text) {
     if (char === "{") depth += 1;
     if (char === "}") {
       depth -= 1;
-      if (depth === 0) {
-        return JSON.parse(text.slice(start, i + 1));
-      }
+      if (depth === 0) return JSON.parse(text.slice(start, index + 1));
     }
   }
-
   throw new Error("Firebase CLI JSON was incomplete.");
 }
 
-function cloudRunRequest({method, projectId, service, action, token, body}) {
-  const path = `/v2/projects/${projectId}/locations/${region}` +
-    `/services/${service}:${action}`;
-
+function requestJson({hostname, method, path, token, body}) {
   return new Promise((resolve, reject) => {
     const request = https.request({
-      hostname: "run.googleapis.com",
+      hostname,
       method,
       path,
       headers: {
@@ -135,72 +83,133 @@ function cloudRunRequest({method, projectId, service, action, token, body}) {
       response.on("end", () => {
         if (response.statusCode < 200 || response.statusCode >= 300) {
           reject(new Error(
-            `${method} ${path} failed with ${response.statusCode}: ${data}`,
+            `${method} ${hostname}${path} failed with ` +
+              `${response.statusCode}: ${data}`,
           ));
           return;
         }
         resolve(data.length === 0 ? {} : JSON.parse(data));
       });
     });
-
     request.on("error", reject);
-    if (body) {
-      request.write(JSON.stringify(body));
-    }
+    if (body) request.write(JSON.stringify(body));
     request.end();
   });
 }
 
-async function ensurePublicInvoker({projectId, service, token}) {
-  const policy = await cloudRunRequest({
+async function listCallableServices({
+  projectId,
+  token,
+  request = requestJson,
+}) {
+  const services = new Set();
+  let pageToken = "";
+  do {
+    const query = new URLSearchParams({pageSize: "100"});
+    if (pageToken) query.set("pageToken", pageToken);
+    const payload = await request({
+      hostname: "cloudfunctions.googleapis.com",
+      method: "GET",
+      path: `/v2/projects/${projectId}/locations/${region}/functions?${query}`,
+      token,
+    });
+    for (const fn of payload.functions ?? []) {
+      const callable = fn.labels?.["deployment-callable"];
+      const service = fn.serviceConfig?.service;
+      if ((callable === "true" || callable === true) &&
+          typeof service === "string" && service.length > 0) {
+        services.add(service);
+      }
+    }
+    pageToken = payload.nextPageToken ?? "";
+  } while (pageToken);
+  return [...services].sort();
+}
+
+function cloudRunPolicyPath(service, action) {
+  if (!/^projects\/[^/]+\/locations\/[^/]+\/services\/[^/]+$/.test(service)) {
+    throw new Error(`Invalid Cloud Run service resource: ${service}`);
+  }
+  const resource = service;
+  return `/v2/${resource}:${action}`;
+}
+
+async function ensurePublicInvoker({
+  service,
+  token,
+  request = requestJson,
+}) {
+  const policy = await request({
+    hostname: "run.googleapis.com",
     method: "GET",
-    projectId,
-    service,
-    action: "getIamPolicy",
+    path:
+      `${cloudRunPolicyPath(service, "getIamPolicy")}` +
+      "?options.requestedPolicyVersion=3",
     token,
   });
-
   policy.bindings ??= [];
-  let binding = policy.bindings.find((entry) => entry.role === "roles/run.invoker");
+  let binding = policy.bindings.find(
+    (entry) => entry.role === "roles/run.invoker",
+  );
   if (!binding) {
     binding = {role: "roles/run.invoker", members: []};
     policy.bindings.push(binding);
   }
-
-  if (binding.members.includes("allUsers")) {
-    console.log(`${projectId}/${service}: already public`);
-    return;
-  }
-
+  binding.members ??= [];
+  if (binding.members.includes("allUsers")) return false;
   binding.members.push("allUsers");
   binding.members.sort();
-
-  await cloudRunRequest({
+  await request({
+    hostname: "run.googleapis.com",
     method: "POST",
-    projectId,
-    service,
-    action: "setIamPolicy",
+    path: cloudRunPolicyPath(service, "setIamPolicy"),
     token,
     body: {policy},
   });
-  console.log(`${projectId}/${service}: granted allUsers run.invoker`);
+  return true;
+}
+
+async function syncProject({projectId, token, request = requestJson}) {
+  const services = await listCallableServices({projectId, token, request});
+  if (services.length === 0) {
+    throw new Error(
+      `No deployed callable Cloud Run services found in ${projectId}/${region}.`,
+    );
+  }
+  for (const service of services) {
+    const changed = await ensurePublicInvoker({service, token, request});
+    process.stdout.write(
+      `${projectId}/${service.split("/").at(-1)}: ` +
+        `${changed ? "granted allUsers run.invoker" : "already public"}\n`,
+    );
+  }
 }
 
 async function main() {
   const projectIds = process.argv.slice(2);
   if (projectIds.length === 0) {
-    throw new Error("Usage: node scripts/set-callable-invokers-public.cjs <project-id> [...]");
+    throw new Error(
+      "Usage: node scripts/set-callable-invokers-public.cjs " +
+        "<project-id> [...]",
+    );
   }
-
-  const token = firebaseAccessToken();
+  const token = await accessToken();
   for (const projectId of projectIds) {
-    for (const service of callableServices) {
-      await ensurePublicInvoker({projectId, service, token});
-    }
+    await syncProject({projectId, token});
   }
 }
 
-main().catch((error) => {
-  console.error(error.message);
-  process.exitCode = 1;
-});
+module.exports = {
+  cloudRunPolicyPath,
+  ensurePublicInvoker,
+  listCallableServices,
+  parseFirstJsonObject,
+  syncProject,
+};
+
+if (require.main === module) {
+  main().catch((error) => {
+    process.stderr.write(`${error.message}\n`);
+    process.exitCode = 1;
+  });
+}

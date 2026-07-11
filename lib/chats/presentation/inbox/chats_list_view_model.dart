@@ -24,6 +24,17 @@ abstract class ChatsListViewModel with _$ChatsListViewModel {
 
   bool get isEmpty => newMatches.isEmpty && conversations.isEmpty;
   int get visibleThreadCount => newMatches.length + conversations.length;
+
+  ChatsListViewModel filterByQuery(String query) {
+    final normalized = query.trim().toLowerCase();
+    if (normalized.isEmpty) return this;
+    bool matches(ChatThreadPreview preview) =>
+        preview.displayName.toLowerCase().contains(normalized);
+    return copyWith(
+      newMatches: List.unmodifiable(newMatches.where(matches)),
+      conversations: List.unmodifiable(conversations.where(matches)),
+    );
+  }
 }
 
 class ChatThreadPreview {
@@ -86,18 +97,18 @@ AsyncValue<ChatsListViewModel> chatsListViewModel(Ref ref) {
   final currentUid = uid;
 
   final matchesAsync = ref.watch(watchMatchesForUserProvider(currentUid));
-  final query = ref.watch(chatSearchQueryProvider);
-
   return matchesAsync.whenData((matches) {
     final roleMatches = AppConfig.appRole.isHost
         ? matches.where((match) => match.isClubHostInquiry)
         : matches;
-    final matchesByPerson = collapseMatchesByOtherUser(
-      roleMatches.toList(growable: false),
-      currentUid,
-    );
+    final displayMatches = AppConfig.appRole.isHost
+        ? roleMatches.toList(growable: false)
+        : collapseMatchesByOtherUser(
+            roleMatches.toList(growable: false),
+            currentUid,
+          );
     final hostInquiryClubIds = {
-      for (final match in matchesByPerson)
+      for (final match in displayMatches)
         if (match.isClubHostInquiry && match.clubId != null) match.clubId!,
     };
     final clubsById = hostInquiryClubIds.isEmpty
@@ -106,7 +117,7 @@ AsyncValue<ChatsListViewModel> chatsListViewModel(Ref ref) {
             for (final club
                 in ref
                         .watch(
-                          watchClubsByIdsProvider(
+                          watchClubsForMessagingByIdsProvider(
                             ClubsByIdQuery(hostInquiryClubIds),
                           ),
                         )
@@ -116,7 +127,7 @@ AsyncValue<ChatsListViewModel> chatsListViewModel(Ref ref) {
               club.id: club,
           };
     final publicProfileUids = <String>{};
-    for (final match in matchesByPerson) {
+    for (final match in displayMatches) {
       final otherUid = match.otherId(currentUid);
       final club = match.isClubHostInquiry && match.clubId != null
           ? clubsById[match.clubId!]
@@ -138,7 +149,7 @@ AsyncValue<ChatsListViewModel> chatsListViewModel(Ref ref) {
                   .asData
                   ?.value ??
               const <String, PublicProfile>{};
-    final previews = matchesByPerson
+    final previews = displayMatches
         .map(
           (match) => _previewForMatch(
             match,
@@ -163,22 +174,10 @@ AsyncValue<ChatsListViewModel> chatsListViewModel(Ref ref) {
     newMatches.sort((a, b) => b.timestamp.compareTo(a.timestamp));
     conversations.sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
-    final normalizedQuery = query.trim().toLowerCase();
-    if (normalizedQuery.isNotEmpty) {
-      conversations.removeWhere(
-        (preview) =>
-            !preview.displayName.toLowerCase().contains(normalizedQuery),
-      );
-      newMatches.removeWhere(
-        (preview) =>
-            !preview.displayName.toLowerCase().contains(normalizedQuery),
-      );
-    }
-
     return ChatsListViewModel(
       newMatches: List.unmodifiable(newMatches),
       conversations: List.unmodifiable(conversations),
-      totalThreadCount: matchesByPerson.length,
+      totalThreadCount: displayMatches.length,
     );
   });
 }

@@ -218,11 +218,8 @@ Future<void> _showClubPostComposer({
   var pending = false;
 
   try {
-    await showModalBottomSheet<void>(
+    await showCatchBottomSheet<void>(
       context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      backgroundColor: Colors.transparent,
       builder: (sheetContext) {
         return StatefulBuilder(
           builder: (context, setSheetState) {

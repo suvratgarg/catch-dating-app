@@ -24,6 +24,7 @@ import {ExternalEventDocument} from "./externalEventDocument";
 import {EventPrivateAccessDocument} from "./eventPrivateAccessDocument";
 import {EventInviteLinkDocument} from "./eventInviteLinkDocument";
 import {EventParticipationDocument} from "./eventParticipationDocument";
+import {EventBroadcastDocument} from "./eventBroadcastDocument";
 import {EventWaitlistOfferDocument} from "./eventWaitlistOfferDocument";
 import {EventSuccessPlanDocument} from "./eventSuccessPlanDocument";
 import {EventSuccessFeedbackDocument} from "./eventSuccessFeedbackDocument";
@@ -66,6 +67,8 @@ import {CreateClubCallablePayload} from "./createClubCallablePayload";
 import {CreateClubCallableResponse} from "./createClubCallableResponse";
 import {CreateClubPostCallablePayload} from "./createClubPostCallablePayload";
 import {CreateClubPostCallableResponse} from "./createClubPostCallableResponse";
+import {SendEventBroadcastCallablePayload} from "./sendEventBroadcastCallablePayload";
+import {SendEventBroadcastCallableResponse} from "./sendEventBroadcastCallableResponse";
 import {UpdateClubCallablePayload} from "./updateClubCallablePayload";
 import {HostAnalyticsQueryCallablePayload} from "./hostAnalyticsQueryCallablePayload";
 import {HostAnalyticsCallableResponse} from "./hostAnalyticsCallableResponse";
@@ -174,6 +177,7 @@ import {
   eventPrivateAccessDocumentSchema,
   eventInviteLinkDocumentSchema,
   eventParticipationDocumentSchema,
+  eventBroadcastDocumentSchema,
   eventWaitlistOfferDocumentSchema,
   eventSuccessPlanDocumentSchema,
   eventSuccessFeedbackDocumentSchema,
@@ -216,6 +220,8 @@ import {
   createClubCallableResponseSchema,
   createClubPostCallablePayloadSchema,
   createClubPostCallableResponseSchema,
+  sendEventBroadcastCallablePayloadSchema,
+  sendEventBroadcastCallableResponseSchema,
   updateClubCallablePayloadSchema,
   hostAnalyticsQueryCallablePayloadSchema,
   hostAnalyticsCallableResponseSchema,
@@ -388,6 +394,10 @@ export const validateEventParticipationDocument:
   ValidateFunction<EventParticipationDocument> =
     ajv.compile(eventParticipationDocumentSchema) as
       ValidateFunction<EventParticipationDocument>;
+export const validateEventBroadcastDocument:
+  ValidateFunction<EventBroadcastDocument> =
+    ajv.compile(eventBroadcastDocumentSchema) as
+      ValidateFunction<EventBroadcastDocument>;
 export const validateEventWaitlistOfferDocument:
   ValidateFunction<EventWaitlistOfferDocument> =
     ajv.compile(eventWaitlistOfferDocumentSchema) as
@@ -556,6 +566,14 @@ export const validateCreateClubPostCallableResponse:
   ValidateFunction<CreateClubPostCallableResponse> =
     ajv.compile(createClubPostCallableResponseSchema) as
       ValidateFunction<CreateClubPostCallableResponse>;
+export const validateSendEventBroadcastCallablePayload:
+  ValidateFunction<SendEventBroadcastCallablePayload> =
+    ajv.compile(sendEventBroadcastCallablePayloadSchema) as
+      ValidateFunction<SendEventBroadcastCallablePayload>;
+export const validateSendEventBroadcastCallableResponse:
+  ValidateFunction<SendEventBroadcastCallableResponse> =
+    ajv.compile(sendEventBroadcastCallableResponseSchema) as
+      ValidateFunction<SendEventBroadcastCallableResponse>;
 export const validateUpdateClubCallablePayload:
   ValidateFunction<UpdateClubCallablePayload> =
     ajv.compile(updateClubCallablePayloadSchema) as

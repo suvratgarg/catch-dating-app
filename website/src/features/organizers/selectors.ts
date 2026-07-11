@@ -202,6 +202,10 @@ export function isPublicApiEnabled(listing: HostListing) {
   return listing.publicApi.state === "enabled";
 }
 
+export function isClaimSubmissionEnabledListing(listing: HostListing) {
+  return isUnclaimedListing(listing) && isPublicApiEnabled(listing);
+}
+
 export function hasUpcomingCatchEvent(listing: HostListing) {
   return Boolean(nextFutureCatchEvent(listing) || nextFutureExternalEvent(listing));
 }

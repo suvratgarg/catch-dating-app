@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated": "2026-07-02",
+  "updated": "2026-07-11",
   "owner": "agent_operating_model",
   "entries": [
     {
@@ -190,6 +190,119 @@
       "notes": "Update rule enforcement entries, manifest role/rules/vacuityProof metadata, doc anchors, and baseline receipts in the same pass as enforcement changes."
     },
     {
+      "id": "REG-EXPLORE-001",
+      "title": "Explore cover promotion drops the first search result or misstates feed counts",
+      "status": "active",
+      "applies_to": [
+        "lib/explore/presentation/explore_screen.dart",
+        "lib/explore/presentation/explore_screen_state.dart",
+        "lib/explore/presentation/widgets/explore_events_section.dart",
+        "test/explore/explore_view_model_test.dart",
+        "test/explore/explore_widgets_test.dart"
+      ],
+      "symptom": "The featured event is always removed from the body even after search replaces its cover, the result label counts only visible body rows, or the map pill counts events that cannot produce map pins.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test test/explore/explore_view_model_test.dart test/explore/explore_widgets_test.dart"
+      },
+      "owner_docs": [
+        "docs/widget_catalog.md",
+        "docs/design_parity/comprehensive_todo.md"
+      ],
+      "notes": "Cover presentation is explicit shared state; result count uses the original full feed; mappableEventCount includes exact-coordinate internal events only."
+    },
+    {
+      "id": "REG-EXPLORE-002",
+      "title": "Explore sticky day headers escape the event stream or break sliver geometry",
+      "status": "active",
+      "applies_to": [
+        "lib/explore/presentation/widgets/explore_body.dart",
+        "lib/explore/presentation/widgets/explore_events_section.dart",
+        "test/explore/explore_widgets_test.dart"
+      ],
+      "symptom": "The final day header remains pinned over recommendations or the club directory, or a pinned header nested under an incompatible sliver group throws layoutExtent exceeds paintExtent while scrolling.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test test/explore/explore_widgets_test.dart --plain-name 'sticky day headers release before trailing Explore lanes'"
+      },
+      "owner_docs": [
+        "docs/widget_catalog.md"
+      ],
+      "notes": "Primary Explore bounds only its pinned event slivers; compatibility callers keep pinning disabled and render inline day headers."
+    },
+    {
+      "id": "REG-MAP-001",
+      "title": "Explore map blanks when native Google Maps key validation fails",
+      "status": "active",
+      "applies_to": [
+        "lib/explore/presentation/explore_map_screen.dart",
+        "lib/events/presentation/widgets/event_pins_map.dart",
+        "test/explore/explore_widgets_test.dart",
+        "tool/firebase/validate_google_maps_config.mjs"
+      ],
+      "symptom": "The Explore map route opens but renders a blank native Google map canvas when the iOS SDK rejects the configured API key at runtime, even though static local config validation passes.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test test/explore/explore_widgets_test.dart --plain-name 'ExploreMapScreen default uses resilient Catch pin map'"
+      },
+      "owner_docs": [
+        "docs/widget_catalog.md",
+        "docs/location_stack_plan.md"
+      ],
+      "notes": "Keep Explore's primary event-pin selection path on the resilient Catch placeholder map unless native Maps key acceptance is verified in a runtime device loop."
+    },
+    {
+      "id": "REG-APP-TARGET-001",
+      "title": "Consumer and Host product identity drifts across build surfaces",
+      "status": "active",
+      "applies_to": [
+        "tool/app_targets.json",
+        "tool/audit_registry.dart",
+        "tool/flutter_with_env.sh",
+        "tool/platform/**",
+        "android/**",
+        "ios/**",
+        "macos/**",
+        "firebase/**",
+        "lib/force_update/**",
+        ".github/workflows/**"
+      ],
+      "symptom": "A role builds with the wrong entrypoint, bundle/application id, Firebase registration, icon, capability, deep-link association, force-update policy, or routine release owner because target identity was duplicated across scripts and native configuration.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check platform:app-targets platform:verify-ios-release-identity"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/release_operations.md",
+        "tool/app_targets.json"
+      ],
+      "notes": "The gate rejects aggregate Android builds, wrapper flavor/entrypoint overrides, Apple configuration/Firebase drift, and archive identity drift. The Host TestFlight auto-upload exception remains explicit as APP-TARGET-HOST-TESTFLIGHT-001 until authenticated processing, group assignment, install, and launch proof exists."
+    },
+    {
+      "id": "REG-HOST-V2-DESIGN-001",
+      "title": "Host v2 source provenance or full-shell comparisons silently drift",
+      "status": "active",
+      "applies_to": [
+        "design/source_packs/host-v2/**",
+        "design/reference_screens/**",
+        "test/ui_captures/catalog/screen_capture_catalog.dart",
+        "tool/design/check_reference_screens.mjs",
+        ".github/workflows/app-build-matrix.yml"
+      ],
+      "symptom": "Host references point outside the repository, a pinned gallery has broken local dependencies, navigation chrome is masked, a focused capture is missing, or a known Today/Events mismatch grows while a whole-screen aggregate still appears acceptable.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/design/check_reference_screens.test.mjs && node tool/design/check_reference_screens.mjs --check"
+      },
+      "owner_docs": [
+        "docs/design_parity/README.md",
+        "design/reference_screens/manifest.json",
+        "docs/audit_registry/backlog.json"
+      ],
+      "notes": "App Build Matrix regenerates the four primary Host full-shell captures and runs a focused strict comparison. Stable parity debt may use a looser regression ceiling, but the canonical threshold and debt id remain visible until the feature is actually implemented."
+    },
+    {
       "id": "REG-WEB-001",
       "title": "Marketing route metadata drifts from static output",
       "status": "active",
@@ -210,6 +323,50 @@
         "docs/marketing_landing_page_research.md"
       ],
       "notes": "Run this guard before component-first website review so static HTML, hydrated metadata, generated organizer routes, and review states share one contract."
+    },
+    {
+      "id": "REG-WEB-002",
+      "title": "Published organizer pages are metadata-only or claim readiness comes from a fixture",
+      "status": "active",
+      "applies_to": [
+        "website/scripts/postbuild.mjs",
+        "website/scripts/checkOrganizerBuildOutputs.mjs",
+        "website/scripts/generateOrganizerListings.mjs",
+        "tool/organizer_intake/sync_claim_targets_to_firestore.mjs",
+        ".github/workflows/marketing-website.yml"
+      ],
+      "symptom": "An indexable organizer route has no semantic server-rendered profile content or JSON-LD, or a public claim CTA is enabled without a current receipt bound to the selected Firebase project and exact claim-target plan.",
+      "guard": {
+        "type": "command",
+        "command": "node --test website/scripts/postbuild.test.mjs website/scripts/checkOrganizerBuildOutputs.test.mjs website/scripts/generateOrganizerListings.test.mjs tool/organizer_intake/sync_claim_targets_to_firestore.test.mjs && npm --workspace catch-marketing run build"
+      },
+      "owner_docs": [
+        "docs/marketing_website_architecture.md",
+        "design/website/routes.json",
+        "tool/organizer_intake/README.md"
+      ],
+      "notes": "Firestore mode must create the read-only environment receipt before website listing generation; fixture mode remains preview-only."
+    },
+    {
+      "id": "REG-CLAIM-001",
+      "title": "Stale organizer claim decisions overwrite a newer ownership state",
+      "status": "active",
+      "applies_to": [
+        "functions/src/clubs/clubClaims.ts",
+        "functions/src/admin/clubClaimReview.ts",
+        "admin/src/features/organizers/**"
+      ],
+      "symptom": "A second active claim is accepted, or approving/rejecting an old request clears or replaces ownership established by a newer claim request.",
+      "guard": {
+        "type": "command",
+        "command": "npm --prefix functions run build && node --test functions/lib/clubs/clubClaims.test.js functions/lib/admin/clubClaimReview.test.js"
+      },
+      "owner_docs": [
+        "functions/README.md",
+        "admin/README.md",
+        "docs/data_contracts.md"
+      ],
+      "notes": "The club claim state owns the single active request id. Admin decisions must match it, and stale rejection may update only the old request plus its requester notification."
     }
   ]
 }

@@ -57,10 +57,8 @@ class HostTeamManagementSection extends ConsumerWidget {
     ]);
 
     Future<void> showAddHostSheet() async {
-      final added = await showModalBottomSheet<bool>(
+      final added = await showCatchBottomSheet<bool>(
         context: context,
-        isScrollControlled: true,
-        useSafeArea: true,
         builder: (_) => HostTeamAddHostSheet(
           clubId: club.id,
           actionState: HostTeamAddHostActionState(

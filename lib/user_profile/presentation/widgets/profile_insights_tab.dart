@@ -20,7 +20,7 @@ class ProfileInsightsTabSliverBody extends StatelessWidget {
               width: double.infinity,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [UserAnalyticsPanel(), gapH32],
+                children: [UserAnalyticsPanel(showSectionTitle: false), gapH32],
               ),
             ),
           ),

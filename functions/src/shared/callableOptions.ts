@@ -5,6 +5,19 @@ export const appCheckCallableOptions: CallableOptions = {
   invoker: "public",
 };
 
+/** Applies narrow runtime ceilings without forking App Check/invoker policy. */
+export function appCheckCallableOptionsWithLimits(
+  limits: Pick<
+    CallableOptions,
+    "concurrency" | "maxInstances" | "timeoutSeconds"
+  >
+): CallableOptions {
+  return {
+    ...appCheckCallableOptions,
+    ...limits,
+  };
+}
+
 /**
  * Adds Firebase Secret Manager bindings to the shared App Check callable
  * policy.

@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catch Host App — IA review & first-principles re-cut</title>
+<link rel="stylesheet" href="../../colors_and_type.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #E2E1DC; color: var(--ink); font-family: var(--font-function); -webkit-font-smoothing: antialiased; }
+  .doc { max-width: 940px; margin: 0 auto; padding: 0 40px; }
+
+  .mast { padding: 60px 0 28px; }
+  .mast .kicker { font-family: var(--font-data); font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink2); }
+  .mast h1 { font-family: var(--font-voice); font-size: 56px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.0; margin: 14px 0 0; }
+  .mast h1 em { font-style: italic; }
+  .mast .lede { max-width: 660px; font-size: 16.5px; line-height: 1.6; color: var(--ink2); margin: 18px 0 0; text-wrap: pretty; }
+
+  section { padding: 40px 0; border-top: 1px solid var(--line); }
+  h2 { font-family: var(--font-voice); font-size: 30px; font-weight: 600; letter-spacing: -0.025em; margin: 0; }
+  h2 .n { font-family: var(--font-data); font-size: 13px; font-weight: 700; color: var(--ink3); letter-spacing: 0.04em; margin-right: 12px; vertical-align: 4px; }
+  .sub { font-size: 15px; line-height: 1.6; color: var(--ink2); margin: 12px 0 0; max-width: 680px; text-wrap: pretty; }
+  p { font-size: 15px; line-height: 1.62; color: var(--ink); text-wrap: pretty; }
+  p.q { color: var(--ink2); }
+  b, strong { font-weight: 650; }
+  em.t { font-style: normal; background: var(--act-social-run-soft); padding: 0 4px; border-radius: 4px; }
+
+  .thesis { background: var(--ink); color: var(--primary-ink); border-radius: 20px; padding: 32px 34px; margin-top: 8px; }
+  .thesis .k { font-family: var(--font-data); font-size: 10.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); }
+  .thesis p { color: #D9D2C7; font-size: 16px; line-height: 1.6; margin: 12px 0 0; }
+  .thesis p b { color: var(--primary-ink); }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
+  .two .o { border: 1px solid rgba(244,240,232,0.18); border-radius: 14px; padding: 18px 20px; }
+  .two .o h4 { font-family: var(--font-voice); font-size: 18px; font-weight: 600; margin: 0; color: var(--primary-ink); }
+  .two .o .cad { font-family: var(--font-data); font-size: 9.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-top: 4px; }
+  .two .o p { color: #BAB2A7; font-size: 13px; line-height: 1.55; margin: 10px 0 0; }
+
+  /* today tabs map */
+  .tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 22px; }
+  .tab { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+  .tab .ico { width: 34px; height: 34px; border-radius: 9px; background: var(--primary-soft); display: flex; align-items: center; justify-content: center; font-size: 17px; color: var(--ink); }
+  .tab h4 { font-family: var(--font-head); font-size: 15px; font-weight: 700; margin: 12px 0 0; }
+  .tab .hold { font-size: 12.5px; color: var(--ink2); line-height: 1.5; margin-top: 6px; }
+  .tab .flag { font-size: 11.5px; color: var(--danger); line-height: 1.45; margin-top: 10px; display: flex; gap: 6px; }
+  .tab .flag i { flex: none; margin-top: 2px; }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 20px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  thead th { text-align: left; font-family: var(--font-data); font-size: 9.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink2); padding: 12px 14px; border-bottom: 1px solid var(--line2); background: var(--raised); }
+  tbody td { padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: top; font-size: 13px; line-height: 1.5; }
+  tbody tr:last-child td { border-bottom: 0; }
+  .act { font-family: var(--font-head); font-weight: 700; color: var(--ink); }
+  .freq { font-family: var(--font-data); font-size: 9px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; white-space: nowrap; }
+  .f-once { background: rgba(22,20,15,0.07); color: var(--ink2); }
+  .f-rare { background: rgba(22,20,15,0.07); color: var(--ink2); }
+  .f-occ { background: rgba(67,86,168,0.12); color: #3a4d96; }
+  .f-recur { background: rgba(46,154,160,0.14); color: #1c6b6f; }
+  .f-spike { background: rgba(216,90,60,0.14); color: var(--act-social-run-deep); }
+  .opt { color: var(--ink2); }
+  .stars { color: var(--act-social-run-deep); font-size: 12px; letter-spacing: 1px; white-space: nowrap; }
+
+  .comp { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 22px; }
+  .ccard { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; }
+  .ccard h4 { font-family: var(--font-voice); font-size: 18px; font-weight: 600; margin: 0; }
+  .ccard .nav { font-family: var(--font-data); font-size: 10px; font-weight: 600; letter-spacing: 0.04em; color: var(--ink2); margin: 10px 0 0; line-height: 1.5; }
+  .ccard .lesson { font-size: 13px; line-height: 1.55; color: var(--ink); margin: 10px 0 0; }
+  .ccard .lesson b { color: var(--act-social-run-deep); }
+
+  /* before/after IA */
+  .ba { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 22px; }
+  .ba .col { border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+  .ba .col.now { background: var(--surface); }
+  .ba .col.next { background: var(--act-social-run-soft); border-color: color-mix(in srgb, var(--act-social-run-accent) 30%, transparent); }
+  .ba .col .h { padding: 14px 18px; border-bottom: 1px solid var(--line); font-family: var(--font-data); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+  .ba .col.now .h { color: var(--ink2); }
+  .ba .col.next .h { color: var(--act-social-run-deep); border-bottom-color: color-mix(in srgb, var(--act-social-run-accent) 22%, transparent); }
+  .ba .col ul { list-style: none; margin: 0; padding: 8px 0; }
+  .ba .col li { padding: 11px 18px; display: flex; gap: 11px; align-items: flex-start; border-top: 1px solid var(--line); }
+  .ba .col li:first-child { border-top: 0; }
+  .ba .col.next li { border-top-color: color-mix(in srgb, var(--act-social-run-accent) 16%, transparent); }
+  .ba .col li i { font-size: 16px; flex: none; margin-top: 1px; color: var(--ink2); }
+  .ba .col li .tt b { font-family: var(--font-head); font-size: 14px; font-weight: 700; display: block; color: var(--ink); }
+  .ba .col li .tt span { font-size: 12px; color: var(--ink2); line-height: 1.5; display: block; margin-top: 2px; }
+
+  .moves { counter-reset: m; margin-top: 12px; }
+  .move { display: grid; grid-template-columns: 40px 1fr; gap: 16px; padding: 18px 0; border-top: 1px solid var(--line); }
+  .move:first-child { border-top: 0; }
+  .move::before { counter-increment: m; content: counter(m); font-family: var(--font-voice); font-size: 26px; font-weight: 600; color: var(--act-social-run-deep); line-height: 1; }
+  .move h4 { font-family: var(--font-head); font-size: 16px; font-weight: 700; margin: 0; }
+  .move p { font-size: 13.5px; color: var(--ink2); margin: 5px 0 0; line-height: 1.55; }
+  .move .pri { font-family: var(--font-data); font-size: 8.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; margin-left: 8px; vertical-align: 2px; }
+  .pri-now { background: var(--act-social-run-accent); color: #fff; }
+  .pri-next { background: rgba(22,20,15,0.08); color: var(--ink2); }
+
+  footer { padding: 40px 0 90px; font-family: var(--font-data); font-size: 12px; color: var(--ink3); line-height: 1.7; border-top: 1px solid var(--line); }
+  footer b { color: var(--ink2); }
+  .disc { font-size: 12px; color: var(--ink3); font-style: italic; margin-top: 14px; }
+</style>
+</head>
+<body>
+<div class="doc">
+
+  <header class="mast">
+    <div class="kicker">Catch · Host app · Information-architecture review</div>
+    <h1>The host app,<br>re-grouped from <em>first&nbsp;principles</em>.</h1>
+    <p class="lede">The host build was cleaved out of the main Catch app, and it shows: the navigation is organized around the <b>Club</b>, but a host's time and stakes are organized around the <b>Event</b>. This is a read of what exists, how often each thing is actually done, how the segment solves it, and how I'd re-cut it.</p>
+  </header>
+
+  <!-- THESIS -->
+  <section style="border-top: 0; padding-top: 8px">
+    <div class="thesis">
+      <div class="k">The one idea</div>
+      <p>A host lives in <b>two objects on two cadences</b>. The <b>Club</b> is a brand you set up once and tend rarely. The <b>Event</b> is where ~80% of host time and 100% of the high-stakes moments live — and it has a lifecycle: <b>create → fill → run → report</b>. Today's nav privileges the Club (two of four tabs are club-shaped) and scatters the Event lifecycle down deep nests. Flip it: make the <b>event lifecycle the spine</b>, and let the Club be the calm brand surface behind it.</p>
+      <div class="two">
+        <div class="o">
+          <h4>The Club</h4>
+          <div class="cad">Set-and-forget · edited a few times a year</div>
+          <p>Identity, cover, host team, payouts, the defaults that prefill events, and long-run trends. A brand object. Rarely touched once it's running.</p>
+        </div>
+        <div class="o">
+          <h4>The Event</h4>
+          <div class="cad">The whole job · every week, and live on the night</div>
+          <p>Created on a cadence, filled with bookings/waitlist, <b>run live on-site</b>, then reported on. Every minute of real host effort is here.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TODAY -->
+  <section>
+    <h2><span class="n">01</span>How it's organized today</h2>
+    <p class="sub">Four app-bar tabs from <code>main_host.dart</code>. Two are club-shaped and overlap; the highest-stakes surface (running a live event) is four taps deep; analytics and your public profile are filed as sub-tabs and settings.</p>
+    <div class="tabs">
+      <div class="tab">
+        <div class="ico"><i class="ph ph-calendar-blank"></i></div>
+        <h4>Events</h4>
+        <div class="hold">An "operations home" that lists your <b>clubs</b>, each with an add-event row and upcoming-event manage rows.</div>
+        <div class="flag"><i class="ph-fill ph-warning-circle"></i>Really a club→event launcher — overlaps Clubs.</div>
+      </div>
+      <div class="tab">
+        <div class="ico"><i class="ph ph-users-three"></i></div>
+        <h4>Clubs</h4>
+        <div class="hold">One club at a time with a switcher: <b>Edit / Insights / Preview</b> sub-tabs.</div>
+        <div class="flag"><i class="ph-fill ph-warning-circle"></i>Analytics (Insights) is buried a tab inside a tab.</div>
+      </div>
+      <div class="tab">
+        <div class="ico"><i class="ph ph-chat-circle"></i></div>
+        <h4>Inbox</h4>
+        <div class="hold">Attendee queries &amp; support — the consumer chat list, host-filtered.</div>
+        <div class="flag"><i class="ph-fill ph-warning-circle"></i>Generic threads; not scoped to an event or a blast.</div>
+      </div>
+      <div class="tab">
+        <div class="ico"><i class="ph ph-gear"></i></div>
+        <h4>Account</h4>
+        <div class="hold">Your <b>host profile</b> (Edit/Preview) + sign-out.</div>
+        <div class="flag"><i class="ph-fill ph-warning-circle"></i>Your public face filed as a "setting."</div>
+      </div>
+    </div>
+    <p style="margin-top:22px"><b>The four symptoms of the cleave:</b> (1) <b>Events and Clubs overlap</b> — both are club-organized, so related work is split across two tabs with a muddy "which one do I open?" line. (2) <b>Running a live event</b> — the single highest-stakes act — lives at <code>Clubs › club › event › Manage › Live</code>, behind the longest path in the app. (3) <b>Two homes for "how did it go"</b>: club-level Insights in one tab, event-level Report inside Manage. (4) <b>Profile-as-setting</b>: the host's shareable identity sits next to sign-out instead of with the brand.</p>
+  </section>
+
+  <!-- FREQUENCY -->
+  <section>
+    <h2><span class="n">02</span>Frequency &times; stakes</h2>
+    <p class="sub">What you actually do, how often, and therefore what deserves prime real estate. Optimize for the top-right of this list — high frequency <em>or</em> high stakes — and get everything else out of the way.</p>
+    <table>
+      <thead><tr><th>Action</th><th>Frequency</th><th>Optimize for</th><th>Priority</th><th>Lives today</th></tr></thead>
+      <tbody>
+        <tr><td class="act">Run a live event</td><td><span class="freq f-spike">Per event · on-site</span></td><td class="opt">Speed, one-handed, glanceable; never get lost mid-event</td><td class="stars">★★★★★</td><td>Manage › Live (4 deep)</td></tr>
+        <tr><td class="act">Create an event</td><td><span class="freq f-recur">Recurring · weekly-ish</span></td><td class="opt">Fast path + <b>repeat last event</b>; prefilled from club defaults</td><td class="stars">★★★★★</td><td>Clubs › club › +</td></tr>
+        <tr><td class="act">Pre-event ops — approvals, waitlist, invites</td><td><span class="freq f-recur">Recurring · days before</span></td><td class="opt">Triage what needs you; bulk waitlist offers</td><td class="stars">★★★★</td><td>Manage › Setup</td></tr>
+        <tr><td class="act">Message / blast guests</td><td><span class="freq f-spike">Spiky · around events</span></td><td class="opt">Event-scoped threads + a blast to all booked</td><td class="stars">★★★★</td><td>Inbox (generic)</td></tr>
+        <tr><td class="act">Report &amp; payout (post-event)</td><td><span class="freq f-occ">Per event · once after</span></td><td class="opt">Attendance truth, payout clarity, prompt reviews</td><td class="stars">★★★</td><td>Manage › Report</td></tr>
+        <tr><td class="act">Event / club analytics &amp; trends</td><td><span class="freq f-occ">Occasional · reflective</span></td><td class="opt">Glanceable trend; "what filled fast, who came back"</td><td class="stars">★★★</td><td>Clubs › Insights</td></tr>
+        <tr><td class="act">Edit club / host defaults</td><td><span class="freq f-rare">Seasonal</span></td><td class="opt">Thorough but rare; correctness over speed</td><td class="stars">★★</td><td>Clubs › Edit</td></tr>
+        <tr><td class="act">Create / edit host profile</td><td><span class="freq f-rare">Set once, polish rarely</span></td><td class="opt">Looks-good identity; it's marketing, not a setting</td><td class="stars">★★</td><td>Account</td></tr>
+        <tr><td class="act">Create a club</td><td><span class="freq f-once">Once · few ever</span></td><td class="opt">Smooth onboarding, then disappear</td><td class="stars">★</td><td>Clubs › +</td></tr>
+        <tr><td class="act">Onboarding / auth</td><td><span class="freq f-once">Once</span></td><td class="opt">Invisible after first run</td><td class="stars">★</td><td>(pre-shell)</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:18px">The tell: the <b>two five-star rows — run a live event and create the next one — are today the most buried.</b> Nav real estate is currently spent on the set-and-forget object (the Club, twice) and the once-ever ones (profile as a tab-peer of everything).</p>
+  </section>
+
+  <!-- COMPETITORS -->
+  <section>
+    <h2><span class="n">03</span>How the segment organizes it</h2>
+    <p class="sub">Two camps. <b>Event-atomic</b> tools (Luma, Partiful, Eventbrite) make the event the unit and pack all work into one Manage-Event hub. <b>Community-first</b> tools (Meetup) lead with the persistent group. Catch is genuinely a hybrid — a recurring club <em>and</em> an event marketplace — so it should borrow the event-hub depth from the first camp and the durable-home idea from the second.</p>
+    <div class="comp">
+      <div class="ccard">
+        <h4>Luma</h4>
+        <div class="nav">EVENT IS THE UNIT · MANAGE = REGISTRATION / GUESTS / BLASTS / INSIGHTS / MORE · CALENDARS GROUP EVENTS</div>
+        <div class="lesson">Creating an event drops you straight into one rich Manage hub; co-hosts, guests, blasts and stats all live <b>inside the event</b>, not scattered across tabs. The persistent grouping (Calendars) is the light Club analog.</div>
+      </div>
+      <div class="ccard">
+        <h4>Partiful</h4>
+        <div class="nav">EVENT-FIRST &amp; SOCIAL · ORGANIZER PROFILE GROUPS EVENTS · TEXT BLASTS · CO-ADMINS PER EVENT</div>
+        <div class="lesson">The host's <b>profile is a shareable brand</b> with one link, and <b>guest messaging (blasts) is first-class</b> — both things Catch currently files away. Settings hang off a per-event gear, not a global tab.</div>
+      </div>
+      <div class="ccard">
+        <h4>Meetup</h4>
+        <div class="nav">GROUP IS HOME · EVENTS + MEMBERS + MESSAGING HANG OFF THE GROUP</div>
+        <div class="lesson">Validates a strong, durable <b>Club object</b> as a home — but Meetup is community-led, where Catch's energy is per-event. Take the durable home; don't let it eat the event lifecycle.</div>
+      </div>
+      <div class="ccard">
+        <h4>Eventbrite Organizer / Airbnb Host</h4>
+        <div class="nav">EVENTBRITE: EVENTS LIST → MANAGE (DASHBOARD / ORDERS / ATTENDEES / REPORTS) · AIRBNB: TODAY / CALENDAR / LISTINGS / MESSAGES / INSIGHTS</div>
+        <div class="lesson">Both lead operations with a <b>"Today" surface</b> and treat <b>Messages and Insights as top-level peers</b>. The time-sensitive now-moment gets its own home instead of being computed from a list.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RE-CUT -->
+  <section>
+    <h2><span class="n">04</span>A first-principles re-cut</h2>
+    <p class="sub">Re-cut the four tabs along <b>lifecycle and cadence</b>, not around the Club twice. Same surface count — but every five-star action moves up, and the Club becomes one calm home instead of two overlapping ones.</p>
+    <div class="ba">
+      <div class="col now">
+        <div class="h">Today — club-shaped &times; 2</div>
+        <ul>
+          <li><i class="ph ph-calendar-blank"></i><div class="tt"><b>Events</b><span>Club → event launcher (overlaps Clubs)</span></div></li>
+          <li><i class="ph ph-users-three"></i><div class="tt"><b>Clubs</b><span>Edit · Insights (analytics) · Preview</span></div></li>
+          <li><i class="ph ph-chat-circle"></i><div class="tt"><b>Inbox</b><span>Generic attendee threads</span></div></li>
+          <li><i class="ph ph-gear"></i><div class="tt"><b>Account</b><span>Host profile + sign-out</span></div></li>
+        </ul>
+      </div>
+      <div class="col next">
+        <div class="h">Proposed — lifecycle-shaped</div>
+        <ul>
+          <li><i class="ph-fill ph-broadcast"></i><div class="tt"><b>Tonight / Home</b><span>Time-aware ops: the next or live event up top (one tap to run it) + "what needs you" — approvals, waitlist movement, unanswered guests, drafts</span></div></li>
+          <li><i class="ph ph-ticket"></i><div class="tt"><b>Events</b><span>Upcoming · Live · Past. Home of create (+ repeat last) and per-event Manage (Setup / Guests / Live / Report, roster tucked). Event analytics live in Report.</span></div></li>
+          <li><i class="ph ph-chat-circle"></i><div class="tt"><b>Inbox</b><span>Event-scoped threads + a blast to all booked; requests/approvals can surface here too</span></div></li>
+          <li><i class="ph ph-users-three"></i><div class="tt"><b>Club</b><span>The brand: profile (how guests see you), host team, payouts, defaults, and cross-event trends. Settings/sign-out demoted to a corner.</span></div></li>
+        </ul>
+      </div>
+    </div>
+    <p style="margin-top:20px"><b>What moves:</b> the live console gets a top-level fast path via <em>Tonight</em>; create-event leaves the club nest and lives where the events do, with a repeat-last shortcut; the host <b>profile rejoins the brand</b> (Club) instead of sitting in Settings; <b>analytics consolidates</b> — event-level in each event's Report, club-level trends in Club — instead of two disconnected homes; and the old Events/Clubs overlap collapses into one Events lifecycle + one Club brand surface.</p>
+  </section>
+
+  <!-- MOVES -->
+  <section>
+    <h2><span class="n">05</span>Highest-leverage moves</h2>
+    <p class="sub">If we don't do a full re-cut, these are the changes ranked by leverage — each stands alone.</p>
+    <div class="moves">
+      <div class="move"><div><h4>Give the live event a top-level home<span class="pri pri-now">do first</span></h4><p>A "Tonight" surface (or a persistent live-event banner) that jumps straight into run-of-show. The most important moment shouldn't be the deepest screen.</p></div></div>
+      <div class="move"><div><h4>Collapse Events + Clubs into Events-lifecycle + Club-brand<span class="pri pri-now">do first</span></h4><p>Stop running two club-shaped tabs. One Events tab owns upcoming/live/past + create; one Club tab owns identity, team, payouts, defaults, trends.</p></div></div>
+      <div class="move"><div><h4>Add "repeat last event"<span class="pri pri-now">do first</span></h4><p>For a weekly club this is the single most-repeated creative act. One tap to clone the last run with a new date — the segment's table-stakes move (Luma/RSVPify) that Catch lacks.</p></div></div>
+      <div class="move"><div><h4>Make messaging event-scoped + add a blast<span class="pri pri-next">next</span></h4><p>Group threads by event and add "message all booked." Mirrors Luma/Partiful blasts; turns a generic inbox into an event-ops tool.</p></div></div>
+      <div class="move"><div><h4>Move the host profile out of Settings into the brand<span class="pri pri-next">next</span></h4><p>It's marketing, not a preference. Put it with the Club identity it represents; demote sign-out to a corner.</p></div></div>
+      <div class="move"><div><h4>Unify analytics<span class="pri pri-next">next</span></h4><p>Event metrics in each event's Report; club trends in Club. One mental model for "how did it go," not Insights-tab vs Manage-Report.</p></div></div>
+    </div>
+  </section>
+
+  <footer>
+    <div><b>Scope ·</b> host build · lib/hosts/ + core/presentation/host_app_shell.dart · 4 tabs (Events / Clubs / Inbox / Account)</div>
+    <div><b>Segment scan ·</b> Luma, Partiful (current product/help docs), Meetup, Eventbrite Organizer, Airbnb Host — patterns paraphrased, not quoted.</div>
+    <div class="disc">A point-of-view for discussion, not a spec. Frequencies are first-principles estimates for a recurring-club host (e.g. a weekly run), to be checked against real usage data before committing.</div>
+  </footer>
+
+</div>
+</body>
+</html>

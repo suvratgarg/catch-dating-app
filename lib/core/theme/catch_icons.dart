@@ -33,6 +33,10 @@ abstract final class CatchIcons {
   static IconData get tabChatsFilled => PhosphorIconsFill.chatCircle;
   static IconData get tabYou => PhosphorIconsRegular.user;
   static IconData get tabYouFilled => PhosphorIconsFill.user;
+  static IconData get tabEvents => PhosphorIconsRegular.ticket;
+  static IconData get tabEventsFilled => PhosphorIconsFill.ticket;
+  static IconData get tabOrganizer => PhosphorIconsRegular.storefront;
+  static IconData get tabOrganizerFilled => PhosphorIconsFill.storefront;
 
   // ── Distance / location ──────────────────────────────────────────────────
   static IconData get nearMe => PhosphorIconsBold.navigationArrow;
@@ -90,6 +94,9 @@ abstract final class CatchIcons {
 
   /// Host broadcast / blast affordance (`megaphone-simple`).
   static IconData get megaphone => PhosphorIconsFill.megaphoneSimple;
+
+  /// Live/today event broadcast marker used by lifecycle rows.
+  static IconData get eventLive => PhosphorIconsFill.broadcast;
 
   /// Quiet "matching opens" / catch-window whisper mark (`sparkle`).
   static IconData get sparkle => PhosphorIconsRegular.sparkle;

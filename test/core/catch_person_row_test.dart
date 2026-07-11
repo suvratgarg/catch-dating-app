@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
+import 'package:catch_dating_app/core/widgets/catch_row_press_surface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -94,6 +95,62 @@ void main() {
       ),
       findsOneWidget,
     );
+  });
+
+  testWidgets('chat rows use a full-width tokenized press band', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: Scaffold(
+          body: SizedBox(
+            width: 360,
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: CatchPersonRow(
+                data: const CatchPersonRowData(
+                  name: 'Taylor',
+                  lastMessage: 'See you at the event',
+                  timestamp: '2m',
+                  unreadCount: 1,
+                ),
+                onTap: () {},
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final rowRect = tester.getRect(find.byType(CatchPersonRow));
+    final pressRect = tester.getRect(find.byType(CatchRowPressSurface));
+    expect(rowRect.width, 360);
+    expect(pressRect.left, rowRect.left);
+    expect(pressRect.right, rowRect.right);
+
+    final gesture = await tester.startGesture(
+      Offset(rowRect.left + 4, rowRect.center.dy),
+    );
+    await tester.pump();
+
+    final overlayFinder = find.byKey(CatchRowPressSurface.overlayKey);
+    final overlayRect = tester.getRect(overlayFinder);
+    final overlay = tester.widget<ColoredBox>(overlayFinder);
+    expect(overlayRect.left, rowRect.left);
+    expect(overlayRect.right, rowRect.right);
+    expect(
+      overlay.color,
+      CatchTokens.editorialLight.ink.withValues(
+        alpha: CatchOpacity.controlOverlayPressed,
+      ),
+    );
+
+    await gesture.up();
+    await tester.pump();
+
+    final releasedOverlay = tester.widget<ColoredBox>(overlayFinder);
+    expect(releasedOverlay.color, Colors.transparent);
   });
 
   testWidgets('renders roster layout when no chat preview is supplied', (

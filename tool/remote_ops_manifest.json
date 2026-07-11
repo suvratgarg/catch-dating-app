@@ -290,12 +290,14 @@
     {
       "id": "ios-testflight-app-store",
       "category": "app-store",
-      "status": "break-glass",
-      "safety": "remote-release-break-glass",
+      "status": "transitional",
+      "safety": "remote-release-host-automatic-consumer-break-glass",
       "environments": ["prod"],
-      "purpose": "Track consumer and host iOS archive, export, App Store Connect authentication, TestFlight evidence, and the decision that Xcode Cloud is canonical for routine TestFlight upload.",
+      "purpose": "Track the manifest-owned Consumer/Host iOS archive, export, signed identity, Firebase identity, App Store Connect authentication, and the temporary Host automatic GitHub upload used until authenticated Xcode Cloud distribution proof exists.",
       "entrypoints": [
         {"kind": "tool-id", "ref": "env:flutter"},
+        {"kind": "tool-id", "ref": "platform:app-targets"},
+        {"kind": "tool-id", "ref": "platform:verify-ios-release-identity"},
         {"kind": "tool-id", "ref": "platform:ios-maps-key"},
         {"kind": "tool-id", "ref": "firebase:maps-config"},
         {"kind": "workflow", "ref": ".github/workflows/ios-testflight-release.yml"},
@@ -307,7 +309,7 @@
           "ref": "App Store Connect Xcode Cloud workflow and TestFlight group configuration",
           "owner": "docs/release_operations.md",
           "ticket": "testflight-console-evidence-required",
-          "guardrail": "Confirm Xcode Cloud workflow, TestFlight groups, and break-glass upload reason before any external TestFlight release."
+          "guardrail": "Confirm the current upload owner, Xcode Cloud workflow, intended TestFlight group, and APP-TARGET-HOST-TESTFLIGHT-001 evidence before changing either release path."
         },
         {
           "kind": "manual",
@@ -318,14 +320,15 @@
         }
       ],
       "requiredChecks": [
-        "GitHub workflow upload_to_testflight=false for routine archives.",
-        "break_glass_reason is required when GitHub uploads to TestFlight.",
-        "For app_role=host, verify exported bundle ID com.catchdates.host.",
-        "Verify exported Maps key, HealthKit entitlement, and Associated Domains entitlement."
+        "node tool/run.mjs check platform:app-targets platform:verify-ios-release-identity",
+        "Consumer GitHub uploads require upload_to_testflight=true plus break_glass_reason.",
+        "Host app-relevant main pushes temporarily archive and upload host-prod automatically while APP-TARGET-HOST-TESTFLIGHT-001 is active.",
+        "Verify archive and export bundle, compiled entrypoint, version/build, embedded Firebase app/project, OAuth URL scheme, Maps key, and role-specific signed entitlements.",
+        "Consumer requires HealthKit and Associated Domains; Host must not inherit either capability."
       ],
       "notes": [
-        "GitHub TestFlight upload is break-glass only while Xcode Cloud remains canonical.",
-        "GitHub iOS TestFlight Release supports app_role=consumer and app_role=host; host uses host-prod with Release-host-prod and a separate artifact name.",
+        "Consumer remains Xcode Cloud-owned and GitHub break-glass only. Host is temporarily GitHub-owned with automatic app-relevant main uploads; desired ownership is Xcode Cloud after APP-TARGET-HOST-TESTFLIGHT-001 removal proof.",
+        "GitHub iOS TestFlight Release resolves host-prod / Release-host-prod from tool/app_targets.json, uses the reserved 8.* build-number namespace, and writes archive/export identity receipts.",
         "Apple Developer App ID Catch Host/com.catchdates.host and App Store Connect app id 6778927317 were created on 2026-06-10; SKU is catch-host-ios.",
         "Xcode Cloud host workflows should set CATCH_APP_ROLE=host if the host-prod scheme is not exposed through CI_XCODE_SCHEME.",
         "App Store Connect web for the host app currently says to create the Xcode Cloud workflow in Xcode.",

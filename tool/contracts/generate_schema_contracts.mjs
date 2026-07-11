@@ -118,6 +118,11 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/eventParticipationDocument.ts",
   },
   {
+    name: "EventBroadcastDocument",
+    source: "firestore/event_broadcasts.schema.json",
+    typeOutput: "functions/src/shared/generated/eventBroadcastDocument.ts",
+  },
+  {
     name: "EventWaitlistOfferDocument",
     source: "firestore/event_waitlist_offers.schema.json",
     typeOutput:
@@ -355,6 +360,18 @@ const schemaSpecs = [
     source: "callable_responses/create_club_post_response.schema.json",
     typeOutput:
       "functions/src/shared/generated/createClubPostCallableResponse.ts",
+  },
+  {
+    name: "SendEventBroadcastCallablePayload",
+    source: "callables/send_event_broadcast_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/sendEventBroadcastCallablePayload.ts",
+  },
+  {
+    name: "SendEventBroadcastCallableResponse",
+    source: "callable_responses/send_event_broadcast_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/sendEventBroadcastCallableResponse.ts",
   },
   {
     name: "UpdateClubCallablePayload",

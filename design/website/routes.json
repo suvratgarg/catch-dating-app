@@ -112,15 +112,15 @@
       "staticOutput": "postbuild",
       "indexing": "noindex-follow",
       "sitemap": "excluded",
-      "notes": "Claim landing route with static noindex output.",
+      "notes": "Claim landing route with static noindex output. Firebase Hosting serves nested claim lookup URLs through /claim/index.html.",
       "review": {
         "priority": "p0",
         "status": "ready",
         "viewports": ["desktop", "mobile"],
-        "states": ["default", "not-found", "pending-claim", "already-claimed"],
+        "states": ["default", "not-found", "pending-claim", "already-claimed", "claim-unavailable"],
         "stateCoverage": {
           "storybook": ["default"],
-          "manual": ["not-found", "pending-claim", "already-claimed"]
+          "manual": ["not-found", "pending-claim", "already-claimed", "claim-unavailable"]
         }
       }
     },
@@ -134,15 +134,15 @@
       "staticOutput": "spa-rewrite",
       "indexing": "noindex-follow",
       "sitemap": "excluded",
-      "notes": "Client lookup variant parsed by getClaimListingLookupFromLocation; static output is not generated per listing.",
+      "notes": "Client lookup variant parsed by getClaimListingLookupFromLocation; Firebase Hosting rewrites /claim/** to the static /claim/index.html shell.",
       "review": {
         "priority": "p1",
         "status": "manual",
         "viewports": ["desktop", "mobile"],
-        "states": ["known-listing", "not-found", "pending-claim"],
+        "states": ["known-listing", "not-found", "pending-claim", "claim-unavailable"],
         "stateCoverage": {
           "storybook": [],
-          "manual": ["known-listing", "not-found", "pending-claim"]
+          "manual": ["known-listing", "not-found", "pending-claim", "claim-unavailable"]
         }
       }
     },
@@ -178,7 +178,7 @@
       "staticOutput": "generated-postbuild",
       "indexing": "listing-controlled",
       "sitemap": "listing-controlled",
-      "notes": "Generated canonical organizer profile routes from website/src/generated/hostListings.json. Current inventory contains legacy one-segment canonical paths plus city-scoped canonical paths.",
+      "notes": "Generated canonical organizer profile routes from website/src/generated/hostListings.json. Postbuild emits crawlable semantic profile content, Organization JSON-LD, canonical metadata, and lastVerifiedAt sitemap dates before React starts.",
       "review": {
         "priority": "p0",
         "status": "ready",

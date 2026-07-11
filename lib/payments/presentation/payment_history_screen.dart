@@ -285,7 +285,7 @@ class PaymentHistoryTile extends StatelessWidget {
   void _showDetailSheet(BuildContext context, String eventTitle) {
     final t = CatchTokens.of(context);
 
-    showModalBottomSheet(
+    showCatchBottomSheet(
       context: context,
       backgroundColor: t.surface,
       shape: const RoundedRectangleBorder(

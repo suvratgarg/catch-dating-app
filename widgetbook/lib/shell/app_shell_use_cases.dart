@@ -57,7 +57,7 @@ Widget appShellNavigationBarState(BuildContext context) {
     title: 'AppShellNavigationBar',
     contractId: 'component.app_shell.navigation_bar',
     child: AppShellNavigationBar(
-      currentIndex: 3,
+      currentIndex: 2,
       unreadCount: 12,
       onDestinationSelected: (_) {},
     ),

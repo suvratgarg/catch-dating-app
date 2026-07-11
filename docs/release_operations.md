@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 1.7.10
-updated: 2026-07-06
+version: 1.7.14
+updated: 2026-07-10
 owner: recursive_audit_loop
 status: active
 ---
@@ -270,9 +270,9 @@ functions in non-interactive CI.
 Current setup/build/signing/distribution verdict: there is no known local
 build, Firebase, Firestore, Gradle, Xcode, Apple signing, Developer ID,
 notarization, App Check, or trust-chain blocker remaining in the current
-workspace. Host app store distribution still needs product-release evidence:
-Xcode Cloud setup for `com.catchdates.host` and a host TestFlight
-upload/install/launch proof.
+workspace. Host app store distribution still needs external product-release
+evidence: intended-group selection, desired Xcode Cloud ownership for
+`com.catchdates.host`, and Host TestFlight processing/install/launch proof.
 
 Verified setup state:
 
@@ -289,13 +289,14 @@ Verified setup state:
   under team `2HQBK4UMUT` with App Attest, Associated Domains, HealthKit, and
   Push Notifications enabled. App Store Connect app `Catch Host` exists as app
   id `6778927317`, SKU `catch-host-ios`, primary language English (U.S.), iOS
-  platform, and Full Access user access.
+  platform, and Full Access user access. The native Host product deliberately
+  signs without HealthKit and Associated Domains even if those capabilities
+  remain enabled on the Developer portal record.
 - Direct macOS distribution is Developer ID signed, timestamped, notarized,
   stapled, and Gatekeeper accepted.
 - Consumer TestFlight upload/install/launch and iOS Maps behavior are confirmed
   through App Store Connect/Xcode Cloud evidence. Host TestFlight still needs a
-  real archive/upload/install/launch proof after the Apple-side app record and
-  Xcode Cloud workflow are configured.
+  processed build, intended-group assignment, install, and launch proof.
 
 Still outside this setup verdict:
 
@@ -452,9 +453,8 @@ complete for each target environment (`dev`, `staging`, and `prod`):
   deploys are not blocked while Razorpay account approval is pending.
 - [ ] Deploy Functions after secrets and params are present:
   `./tool/deploy_firebase_targets.sh <env> functions`.
-- [ ] After callable Functions deploy, run
-  `npm --prefix functions run sync:callable-invokers -- <project-id>` for the
-  deployed project if callable invoker bindings were not part of the deploy.
+- [ ] Confirm the Functions phase completed its automatic callable-invoker sync
+  before the deploy advanced to indexes or rules.
 - [ ] Smoke test the full paid-event matrix in the target environment:
   free booking, INR Razorpay checkout success/cancel/refund, non-INR Stripe host
   onboarding, non-INR Stripe checkout success/cancel/expiration webhook, payment
@@ -477,10 +477,43 @@ Deploy Functions before tightening rules when a release moves writes behind new
 callables. Do not use Remote Config as a schema migration tool; use it only to
 block older app builds after the compatible build is available.
 
+The 2026-07-10 event-scoped Host inquiry change is a concrete two-phase case:
+deploy the updated `startClubHostConversation` Function and generated payload
+contract before distributing the new client. The client contains a narrow
+compatibility retry that removes `eventId` only when the older callable returns
+the exact `eventId ... additional properties` validation diagnostic. That
+fallback prevents a premature TestFlight build from breaking Message Host, but
+it creates a General inquiry and therefore is rollout safety—not event-provenance
+closure. Wrong-club and other new-backend validation failures are never retried.
+
+Host event broadcasts use an intentionally stricter backend-first rollout:
+
+1. Merge and deploy `sendEventBroadcast`, its receipt schema, TTL field policy,
+   indexes/rules, and callable IAM while
+   `ENABLE_HOST_EVENT_BROADCAST=false` in the production Dart defines.
+2. Exercise dev, staging, and then production callable reachability. Confirm a
+   missing-auth request reaches the Firebase callable adapter and returns a
+   callable JSON rejection rather than 404, redirect, HTML/GFE, IAM denial, or
+   5xx.
+3. Only after that proof, set the production flag true in a later client merge.
+   The Host TestFlight workflow runs the manifest-driven live dependency check
+   before Flutter/Xcode work and refuses to archive if the callable is not
+   reachable.
+
+Dev and staging may keep the flag true for integration testing. Production
+stays dark in source until the live backend proof exists; a client merge is not
+a substitute for the Functions deployment.
+
 `./tool/deploy_firebase_targets.sh` deploys the logical `functions` target by
 expanding the current exports from `functions/src/index.ts` into explicit
 `functions:<name>` targets. This keeps legacy live Functions, such as old
 run/run-club callables, deployed until a deliberate cleanup plan removes them.
+Exact `functions:<name>` requests use the same Functions-first phase. Planner
+errors and empty or malformed target sets fail before any deploy begins. After
+the Functions phase, the helper discovers every live callable-labeled v2
+Function and synchronizes `roles/run.invoker` on its exact Cloud Run service
+before continuing to indexes or rules. The deploy identity therefore needs
+permission to list Cloud Functions and get/set Cloud Run IAM policies.
 Do not use a broad `firebase deploy --only functions --force` unless deleting
 legacy Functions is the intended release action.
 
@@ -567,7 +600,8 @@ The `bq-host-*` extension service accounts must retain write access to their
 own export tables. The host export env files intentionally use
 `EXCLUDE_OLD_DATA=no` so first install backfills existing host data.
 
-After production Functions deploys, sync callable invokers if needed:
+The standard deploy helper performs this sync automatically. Use the direct
+command only for IAM recovery or auditing a previously deployed environment:
 
 ```bash
 npm --prefix functions run sync:callable-invokers -- \
@@ -790,46 +824,64 @@ Analytics proof, and GA4 BigQuery export status.
 
 ## iOS TestFlight Ownership
 
-Decision as of 2026-05-21: Xcode Cloud is the canonical TestFlight uploader.
-GitHub Actions owns PR checks, Firebase deploys, release-readiness validation,
-and a manual iOS archive/export fallback.
+Decision updated 2026-07-10: release ownership is target-specific and declared
+in `tool/app_targets.json`.
 
-Routine TestFlight distribution must come from Xcode Cloud. The GitHub
-`iOS TestFlight Release` workflow should normally run with
-`upload_to_testflight=false`; its TestFlight upload input is break-glass only
-and requires a reason explaining why Xcode Cloud is not being used.
+- Consumer production remains Xcode Cloud-owned. A GitHub Consumer upload is
+  manual break-glass only and requires `break_glass_reason`.
+- Host production is temporarily GitHub Actions-owned. App-relevant merges to
+  `main` automatically archive and upload `host-prod` because authenticated
+  Host Xcode Cloud distribution has not been proven. The desired owner is Xcode
+  Cloud; `APP-TARGET-HOST-TESTFLIGHT-001` prevents premature cutover.
 
-The workflow uses App Store Connect API key authentication for
-`xcodebuild -allowProvisioningUpdates`, exports with
-`ios/ExportOptions.prod.plist`, and stores the IPA as a short-lived GitHub
-Actions artifact. It defaults to the consumer `prod` scheme with `Release-prod`;
-selecting `app_role=host` archives `host-prod` with `Release-host-prod` and
-expects bundle ID `com.catchdates.host`. Both paths verify the archived and
-exported app contain the prod iOS Maps key, verify the exported bundle ID,
-verify the exported profile contains HealthKit, and check the signed app
-contains HealthKit and Associated Domains.
+The GitHub workflow resolves scheme, configuration, bundle id, and entrypoint
+from the six-target manifest, then runs both platform gates before archiving:
+
+```sh
+node tool/run.mjs check platform:app-targets platform:verify-ios-release-identity
+```
+
+It also checks `tool/firebase/client_callable_dependencies.json` immediately
+after resolving the target. A disabled production feature reports `disabled`
+and skips the live probe. An enabled Host callable dependency must return an
+expected Firebase callable JSON rejection to an unauthenticated probe; 404,
+redirect, HTML/GFE, IAM denial, unexpected success, and 5xx all block archive
+and TestFlight upload.
+
+`verify_ios_release_identity.mjs` checks both the archive and exported app for
+the target marker, compiled Flutter entrypoint, bundle/display identity,
+version/build, embedded Firebase bundle/app/project identity, Firebase OAuth URL
+scheme, and role-specific signed entitlements. Consumer requires HealthKit and
+Associated Domains. Host intentionally has neither; both roles require their
+Push/App Attest contract. The workflow separately validates the built prod Maps
+key and writes JSON identity receipts with the IPA artifact.
+
+Temporary GitHub releases use the reserved `8.*` build-number namespace so a
+Host GitHub upload cannot collide with an Xcode Cloud build during cutover.
 
 ## Host TestFlight Status
 
-The host app now has local/native build identity, Firebase identity, distinct
-launcher icons, an Apple Developer App ID, an App Store Connect app record, and
-GitHub break-glass archive/export support for `com.catchdates.host.dev`,
-`com.catchdates.host.staging`, and `com.catchdates.host`, but routine
-TestFlight distribution is not proven yet. Before external host beta
-distribution:
+The Host app now has checked local/native composition, Firebase identity,
+distinct launcher icons, an Apple Developer App ID, an App Store Connect app
+record, and an automatic manifest-resolved GitHub archive/upload path for
+`com.catchdates.host`. TestFlight processing, group assignment, install, and
+launch are not proven from this repository. Before removing the temporary path
+or starting external Host beta distribution:
 
-1. Add or update the Xcode Cloud workflow to archive `host-prod` with
-   `Release-host-prod`. Set `CATCH_APP_ROLE=host` on the workflow if Xcode Cloud
-   does not expose the `host-prod` scheme through `CI_XCODE_SCHEME`.
-   App Store Connect web for app id `6778927317` currently says to create the
-   workflow in Xcode.
-2. Add the required Xcode Cloud secret `GOOGLE_MAPS_IOS_API_KEY_PROD`.
-3. Confirm provisioning, Associated Domains, HealthKit, Maps key injection,
-   App Attest, and Firebase host config are present in the exported host IPA.
-4. Upload one host build to TestFlight and verify install, launch, App Check,
+1. Select and record the intended internal Host TestFlight group.
+2. Create or identify the Host Xcode Cloud workflow for `host-prod` /
+   `Release-host-prod`. Do not infer that the Consumer workflow owns Host.
+   Set `CATCH_APP_ROLE=host` only if the selected scheme is not exposed through
+   `CI_XCODE_SCHEME`.
+3. Add the required Xcode Cloud secret `GOOGLE_MAPS_IOS_API_KEY_PROD`.
+4. Confirm provisioning, Maps key injection, Push, App Attest, the Host Firebase
+   plist, and `main_host_prod.dart` composition in the exported Host IPA. Confirm
+   HealthKit and Associated Domains are absent.
+5. Process one Host build, assign it to the intended group, then verify install,
+   launch, App Check,
    maps rendering, phone auth, push registration, and host event-management
    entrypoints.
-5. Record Play internal-testing proof separately after Play Console enrollment;
+6. Record Play internal-testing proof separately after Play Console enrollment;
    Play app-signing certificate fingerprints still need to be added to Firebase
    before Android release evidence is complete.
 
@@ -841,8 +893,8 @@ native brand-token or base-icon changes.
 
 ## Xcode Cloud Start Conditions
 
-The old 12 a.m. scheduled Xcode Cloud build was retired live in App Store
-Connect on 2026-05-21. The `Default` Xcode Cloud workflow now starts from
+The old 12 a.m. scheduled Consumer Xcode Cloud build was retired live in App
+Store Connect on 2026-05-21. The Consumer `Default` workflow now starts from
 branch changes on `main`, has auto-cancel enabled, and uses custom file/folder
 rules so docs-only commits do not produce a new TestFlight build.
 
@@ -884,9 +936,10 @@ Two CI scripts drive it:
   `tool/ci/toolchain.env`, installs Flutter and Node, applies the prod Firebase
   environment for `consumer` or `host`, writes the prod iOS Google Maps key, and
   runs `pod install`. It uses `CATCH_APP_ROLE=host` or a `host-*` Xcode scheme to
-  prepare `lib/main_host.dart` with the host prod flavor.
-- `ios/ci_scripts/ci_post_xcodebuild.sh` verifies the archived app's
-  `GoogleMapsApiKey` is a real key before the build can reach TestFlight.
+  prepare the manifest-resolved `lib/main_host_prod.dart` composition.
+- `ios/ci_scripts/ci_post_xcodebuild.sh` runs the release-identity verifier
+  against the archive, writes `build/ios/release-evidence/<role>-xcode-cloud-archive.json`, and verifies the archived
+  `GoogleMapsApiKey` before the build can reach TestFlight.
 
 GitHub Actions read the same `tool/ci/toolchain.env` file through local actions
 under `.github/actions`. Update that file instead of editing workflow YAML or
@@ -909,6 +962,10 @@ inject and verify the environment-specific Maps key.
 TODO: migrate TestFlight upload from Xcode Cloud to GitHub Actions only if we
 want one repo-owned mobile release pipeline.
 
+The temporary automatic Host upload is not that decision: it is a guarded
+fallback under `APP-TARGET-HOST-TESTFLIGHT-001`, while the declared desired Host
+owner remains Xcode Cloud.
+
 Migration checklist:
 
 1. Add a change-aware GitHub release trigger, usually a protected
@@ -928,7 +985,7 @@ privacy, or review metadata state without direct App Store Connect access.
 
 ## Human Release Evidence
 
-Already confirmed outside repository checks:
+Already confirmed outside repository checks for Consumer:
 
 - TestFlight upload, install, launch, and iOS Maps behavior through the App
   Store Connect/Xcode Cloud build process before the nightly schedule was
@@ -936,6 +993,7 @@ Already confirmed outside repository checks:
 
 These still require human confirmation outside repository checks:
 
+- Host TestFlight processing, intended-group assignment, install, and launch.
 - Play internal testing evidence.
 - Crashlytics visibility and symbolication evidence.
 - Analytics DebugView event evidence.

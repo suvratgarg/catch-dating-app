@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Host App — Events" description="The event-lifecycle list. A New-event / Repeat-last create pair, an Upcoming / Live / Past SegPill that scopes the list, and month-grouped EventLifecycleRows. The home of create (re-homing the wizard out of the old Clubs nest). Composed purely of catalogue widgets." -->
+<helmet>
+  <script src="./ds-base.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <style>
+    body { margin: 0; background: #E2E1DC; }
+    .monthhd { margin: 14px 0 10px; color: var(--ink3); }
+  </style>
+</helmet>
+
+<div style="min-height: 100vh; display: flex; justify-content: center; padding: 40px 16px; background: #E2E1DC; font-family: var(--font-function); color: var(--ink); box-sizing: border-box">
+  <div data-screen-label="Host Events" style="position: relative; width: 390px; height: 812px; background: var(--bg); border-radius: 30px; border: 1px solid rgba(22,20,15,0.15); box-shadow: var(--shadow-overlay); overflow: hidden; display: flex; flex-direction: column; box-sizing: border-box">
+
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.StatusBar" hint-size="100%,44px"></x-import>
+
+    <div style="flex: 1; min-height: 0; overflow: auto; padding: 8px 20px 24px">
+      <h1 class="t-headline" style="margin: 6px 0 0">Events</h1>
+
+      <div style="display: flex; gap: 10px; margin: 16px 0 4px">
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Button" icon="plus" onClick="{{ create }}" style="flex: 1" hint-size="50%,50px">New event</x-import>
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Button" variant="secondary" icon="arrows-clockwise" onClick="{{ repeat }}" style="flex: 1" hint-size="50%,50px">Repeat ‘Trivia’</x-import>
+      </div>
+
+      <div style="margin: 16px 0">
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.SegPill" options="{{ tabs }}" value="{{ tab }}" onChange="{{ setTab }}" hint-size="100%,42px"></x-import>
+      </div>
+
+      <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.EmptyState" icon="calendar-x" title="{{ emptyTitle }}" message="{{ emptyBody }}" hint-size="100%,200px"></x-import>
+      </sc-if>
+
+      <sc-for list="{{ sections }}" as="sec" hint-placeholder-count="2">
+        <div class="t-mono-label monthhd">{{ sec.month }}</div>
+        <sc-for list="{{ sec.events }}" as="ev" hint-placeholder-count="2">
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.EventLifecycleRow"
+            activity="{{ ev.activity }}" date="{{ ev.date }}" month="{{ ev.mo }}"
+            title="{{ ev.title }}" meta="{{ ev.meta }}" fill="{{ ev.fill }}" state="{{ ev.state }}"
+            badge="{{ ev.badge }}" onClick="{{ ev.onOpen }}" hint-size="100%,76px" style="display: block"></x-import>
+        </sc-for>
+      </sc-for>
+    </div>
+
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.TabDock" items="{{ hostTabs }}" active="events" radius="0 0 30px 30px" hint-size="100%,64px" style="display: block"></x-import>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const HOST_TABS = [
+  { id: 'today', icon: 'house', label: 'TODAY' },
+  { id: 'events', icon: 'ticket', label: 'EVENTS' },
+  { id: 'inbox', icon: 'chat-circle', label: 'INBOX' },
+  { id: 'organizer', icon: 'storefront', label: 'ORGANIZER' },
+];
+const EVENTS = [
+  { id: 'quiz42', activity: 'pubQuiz', title: 'Tuesday Trivia Night', date: '17', mo: 'JUN', month: 'June', meta: 'Tonight \u00b7 24 going', fill: 80, state: 'today', badge: 2, life: 'upcoming' },
+  { id: 'run15', activity: 'socialRun', title: 'Sundowner 5K, Bandra seafront', date: '21', mo: 'JUN', month: 'June', meta: 'Sat \u00b7 6:30 AM \u00b7 60% full', fill: 60, life: 'upcoming' },
+  { id: 'supper', activity: 'dinner', title: 'Long table \u2116 24', date: '27', mo: 'JUN', month: 'June', meta: 'Fri \u00b7 8:00 PM \u00b7 67% full', fill: 67, life: 'upcoming' },
+  { id: 'padel1', activity: 'padel', title: 'Sunday doubles social', date: '06', mo: 'JUL', month: 'July', meta: 'Sun \u00b7 9:00 AM \u00b7 31% full', fill: 31, life: 'upcoming' },
+  { id: 'quiz41', activity: 'pubQuiz', title: 'Tuesday Trivia Night', date: '10', mo: 'JUN', month: 'June', meta: '26 attended \u00b7 100% full \u00b7 free', state: 'past', life: 'past' },
+  { id: 'run13', activity: 'socialRun', title: 'Sundowner 5K, Bandra seafront', date: '07', mo: 'JUN', month: 'June', meta: '27 attended \u00b7 100% full \u00b7 free', state: 'past', life: 'past' },
+];
+const TABS = [{ value: 'upcoming', label: 'Upcoming' }, { value: 'live', label: 'Live' }, { value: 'past', label: 'Past' }];
+
+class Component extends DCLogic {
+  state = { tab: 'upcoming' };
+
+  renderVals() {
+    const tab = this.state.tab;
+    let list;
+    if (tab === 'live') list = [];
+    else if (tab === 'past') list = EVENTS.filter((e) => e.life === 'past');
+    else list = EVENTS.filter((e) => e.life === 'upcoming');
+    const order = [];
+    const byMonth = {};
+    list.forEach((e) => { if (!byMonth[e.month]) { byMonth[e.month] = []; order.push(e.month); } byMonth[e.month].push({ ...e, onOpen: () => {} }); });
+    const sections = order.map((m) => ({ month: m, events: byMonth[m] }));
+    return {
+      hostTabs: HOST_TABS,
+      tabs: TABS,
+      tab,
+      setTab: (v) => this.setState({ tab: v }),
+      create: () => {},
+      repeat: () => {},
+      sections,
+      isEmpty: list.length === 0,
+      emptyTitle: tab === 'live' ? 'Nothing live right now' : 'No events yet',
+      emptyBody: tab === 'live' ? 'Your next event appears here when it starts.' : 'Create your first event to get going.',
+    };
+  }
+}
+</script>
+</body>
+</html>

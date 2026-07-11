@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Messaging" description="The chat surfaces — an inbox (new matches folded in as conversations, host conversations marked with a square avatar, read/unread treatment) and an event-grounded thread (context header, grouped bubbles, composer), composed from the messaging primitives." -->
+<helmet>
+  <script src="./ds-base.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <style>
+    body { margin: 0; background: #E2E1DC; }
+  </style>
+</helmet>
+
+<div style="min-height: 100vh; display: flex; flex-wrap: wrap; gap: 32px; justify-content: center; align-items: flex-start; padding: 40px 24px; background: #E2E1DC; font-family: var(--font-function); color: var(--ink); box-sizing: border-box">
+
+  <!-- ══════════ INBOX ══════════ -->
+  <div data-screen-label="Messaging · Inbox" style="width: 390px; height: 812px; background: var(--bg); border-radius: 30px; border: 1px solid rgba(22,20,15,0.15); box-shadow: var(--shadow-overlay); overflow: hidden; display: flex; flex-direction: column; box-sizing: border-box">
+
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.StatusBar" hint-size="100%,44px"></x-import>
+
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.AppBar" title="Chats" subtitle="Messages from your matches" search-value="{{ q }}" on-search="{{ setQ }}" search-placeholder="Search chats" hint-size="100%,64px" style="display: block"></x-import>
+
+    <div style="flex: 1; min-height: 0; overflow: auto; padding-bottom: 16px">
+      <div style="padding: 14px 16px 8px; color: var(--ink2)" class="t-kicker">Conversations</div>
+
+      <div style="padding: 0 16px">
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ChatListTile" display-name="Tara" photo="../../assets/sample-portrait.jpg" preview="You matched — say hi" time="New" is-new="{{ true }}" hint-size="100%,64px" style="display: block"></x-import>
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ChatListTile" display-name="Ishaan" preview="You matched — say hi" time="New" is-new="{{ true }}" divider="{{ true }}" hint-size="100%,64px" style="display: block"></x-import>
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ChatListTile" display-name="Aanya" photo="../../assets/sample-portrait.jpg" preview="Same court next Sunday?" time="9:38 AM" unread="2" divider="{{ true }}" hint-size="100%,64px" style="display: block"></x-import>
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ChatListTile" display-name="Naina" preview="That last quiz round though." time="Wed" unread="1" divider="{{ true }}" hint-size="100%,64px" style="display: block"></x-import>
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ChatListTile" display-name="Kabir" preview="You: Ha, you set it! In for Sunday." time="Tue" unread="0" divider="{{ true }}" hint-size="100%,64px" style="display: block"></x-import>
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ChatListTile" display-name="Sunday sea-face crew" preview="Ask the host" time="Jun 9" unread="0" host="{{ true }}" divider="{{ true }}" hint-size="100%,64px" style="display: block"></x-import>
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ChatListTile" display-name="Meher" preview="You: see you there" time="Jun 7" unread="0" divider="{{ true }}" hint-size="100%,64px" style="display: block"></x-import>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ THREAD ══════════ -->
+  <div data-screen-label="Messaging · Thread" style="width: 390px; height: 812px; background: var(--bg); border-radius: 30px; border: 1px solid rgba(22,20,15,0.15); box-shadow: var(--shadow-overlay); overflow: hidden; display: flex; flex-direction: column; box-sizing: border-box">
+
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.StatusBar" surface="{{ true }}" hint-size="100%,44px"></x-import>
+
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ConversationTopBar" display-name="Aanya" photo="../../assets/sample-portrait.jpg" hint-size="100%,56px" style="display: block"></x-import>
+
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ChatThreadHeader" activity="padel" title="Doubles ladder + drinks" date="Sun 22 Jun" hint-size="100%,80px" style="display: block"></x-import>
+
+    <div style="flex: 1; min-height: 0; overflow: auto; padding: 16px 12px 8px; display: flex; flex-direction: column">
+      <div style="text-align: center; color: var(--ink3); margin-bottom: 14px" class="t-badge">Sun 22 Jun</div>
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ChatBubble" text="Loved the pace today — that last point was unreal." time="9:38 AM" last-in-group="{{ false }}" hint-size="100%,46px" style="display: block"></x-import>
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ChatBubble" text="Same court next Sunday?" time="9:38 AM" first-in-group="{{ false }}" hint-size="100%,40px" style="display: block"></x-import>
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ChatBubble" is-me="{{ true }}" text="Ha, you set that one up. In for Sunday." time="9:41 AM" last-in-group="{{ false }}" hint-size="100%,46px" style="display: block"></x-import>
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ChatBubble" is-me="{{ true }}" text="Bringing the good racket this time." time="9:41 AM" first-in-group="{{ false }}" hint-size="100%,40px" style="display: block"></x-import>
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ChatBubble" text="Deal. 9am, court 2." time="9:42 AM" hint-size="100%,40px" style="display: block"></x-import>
+    </div>
+
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ChatComposer" value="See you Sunday" hint-size="100%,64px" style="display: block"></x-import>
+  </div>
+
+  <!-- ══════════ NEW MATCH · EMPTY THREAD ══════════ -->
+  <div data-screen-label="Messaging · New match (empty)" style="width: 390px; height: 812px; background: var(--bg); border-radius: 30px; border: 1px solid rgba(22,20,15,0.15); box-shadow: var(--shadow-overlay); overflow: hidden; display: flex; flex-direction: column; box-sizing: border-box">
+
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.StatusBar" surface="{{ true }}" hint-size="100%,44px"></x-import>
+
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ConversationTopBar" display-name="Tara" hint-size="100%,56px" style="display: block"></x-import>
+
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ChatThreadHeader" activity="socialRun" title="Sundowner 5K, Bandra" date="Sat 14 Jun" hint-size="100%,80px" style="display: block"></x-import>
+
+    <div style="flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px 40px">
+      <div style="width: 60px; height: 60px; border-radius: var(--radius-pill); display: grid; place-items: center; background: var(--primary-soft); color: var(--ink2); margin-bottom: 16px"><i class="ph ph-chat-circle" style="font-size: 28px"></i></div>
+      <div class="t-title-l" style="color: var(--ink)">Say hi</div>
+      <div class="t-body-m" style="color: var(--ink2); margin-top: 6px; max-width: 240px">You both ran the Sundowner 5K. Say hi to Tara!</div>
+    </div>
+
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ChatComposer" hint-size="100%,64px" style="display: block"></x-import>
+  </div>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { q: '' };
+  renderVals() {
+    return {
+      q: this.state.q,
+      setQ: (v) => this.setState({ q: v }),
+      matches: [
+        { id: 'm1', displayName: 'Tara', photo: '../../assets/sample-portrait.jpg' },
+        { id: 'm2', displayName: 'Ishaan' },
+        { id: 'm3', displayName: 'Rhea' },
+        { id: 'm4', displayName: 'Vikram' },
+        { id: 'm5', displayName: 'Arjun' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

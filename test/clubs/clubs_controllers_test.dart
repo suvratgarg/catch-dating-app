@@ -16,6 +16,7 @@ import 'package:catch_dating_app/hosts/presentation/club_management/create/creat
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
@@ -37,6 +38,30 @@ ClubMembership _membership({
 
 void main() {
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
+
+  test(
+    'Host conversation legacy retry only matches the old eventId schema',
+    () {
+      expect(
+        isLegacyHostConversationEventIdRejection(
+          _TestFirebaseFunctionsException(
+            code: 'invalid-argument',
+            message: 'eventId: must NOT have additional properties',
+          ),
+        ),
+        isTrue,
+      );
+      expect(
+        isLegacyHostConversationEventIdRejection(
+          _TestFirebaseFunctionsException(
+            code: 'invalid-argument',
+            message: 'Event does not belong to this club.',
+          ),
+        ),
+        isFalse,
+      );
+    },
+  );
 
   group('ClubMembershipController', () {
     test('join requires sign-in and forwards the club id', () async {
@@ -155,10 +180,12 @@ void main() {
       final matchId = await controller.startConversation(
         clubId: 'club-1',
         hostUid: 'host-2',
+        eventId: 'event-7',
       );
 
       expect(fakeRepository.startedConversationClubId, 'club-1');
       expect(fakeRepository.startedConversationHostUid, 'host-2');
+      expect(fakeRepository.startedConversationEventId, 'event-7');
       expect(matchId, fakeRepository.nextHostConversationMatchId);
     });
   });
@@ -931,5 +958,12 @@ void main() {
         throwsA(isA<BackendOperationException>()),
       );
     });
+  });
+}
+
+class _TestFirebaseFunctionsException extends FirebaseFunctionsException {
+  _TestFirebaseFunctionsException({
+    required super.code,
+    required super.message,
   });
 }

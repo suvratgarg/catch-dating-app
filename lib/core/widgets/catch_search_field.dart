@@ -32,6 +32,10 @@ class CatchSearchField extends StatefulWidget {
     this.onCloseSearch,
     this.tooltip = 'Search',
     this.collapsedExtent = CatchIconButton.navSize,
+    this.backgroundColor,
+    this.borderColor,
+    this.foregroundColor,
+    this.mutedForegroundColor,
   });
 
   final String value;
@@ -54,6 +58,10 @@ class CatchSearchField extends StatefulWidget {
   final VoidCallback? onCloseSearch;
   final String tooltip;
   final double collapsedExtent;
+  final Color? backgroundColor;
+  final Color? borderColor;
+  final Color? foregroundColor;
+  final Color? mutedForegroundColor;
 
   @override
   State<CatchSearchField> createState() => _CatchSearchFieldState();
@@ -114,6 +122,8 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
     }
 
     final t = CatchTokens.of(context);
+    final foreground = widget.foregroundColor ?? t.ink;
+    final mutedForeground = widget.mutedForegroundColor ?? t.ink3;
 
     return Semantics(
       label: widget.semanticLabel ?? widget.placeholder,
@@ -133,7 +143,7 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
             Icon(
               CatchIcons.search,
               size: CatchLayout.searchFieldIconSize,
-              color: t.ink3,
+              color: mutedForeground,
             ),
             const SizedBox(width: CatchLayout.searchFieldIconGap),
             Expanded(
@@ -148,7 +158,7 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
                 onTapOutside: (_) => _focusNode.unfocus(),
                 style: CatchTextStyles.bodyM(
                   context,
-                  color: widget.enabled ? t.ink : t.ink3,
+                  color: widget.enabled ? foreground : mutedForeground,
                 ),
                 cursorColor: t.primary,
                 decoration: InputDecoration(
@@ -161,7 +171,10 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
                   disabledBorder: InputBorder.none,
                   contentPadding: EdgeInsets.zero,
                   hintText: widget.placeholder,
-                  hintStyle: CatchTextStyles.bodyM(context, color: t.ink3),
+                  hintStyle: CatchTextStyles.bodyM(
+                    context,
+                    color: mutedForeground,
+                  ),
                 ),
               ),
             ),
@@ -184,7 +197,7 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
                         icon: Icon(
                           widget.emptyTrailingIcon,
                           size: CatchLayout.searchFieldClearIconSize,
-                          color: t.ink3,
+                          color: mutedForeground,
                         ),
                         onPressed: widget.enabled
                             ? widget.onEmptyTrailingPressed
@@ -210,7 +223,7 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
                     icon: Icon(
                       CatchIcons.clearCircle,
                       size: CatchLayout.searchFieldClearIconSize,
-                      color: t.ink3,
+                      color: mutedForeground,
                     ),
                     onPressed: widget.enabled ? _clear : null,
                   ),
@@ -239,6 +252,8 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
 
   Widget _buildExpandingSearchAt(BuildContext context, double progress) {
     final t = CatchTokens.of(context);
+    final foreground = widget.foregroundColor ?? t.ink;
+    final mutedForeground = widget.mutedForegroundColor ?? t.ink3;
     final maxWidth = widget.maxWidth ?? widget.collapsedExtent;
     final clampedProgress = progress.clamp(0.0, 1.0);
     final width =
@@ -272,9 +287,9 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
           clipBehavior: Clip.antiAlias,
           child: DecoratedBox(
             decoration: BoxDecoration(
-              color: t.surface,
+              color: widget.backgroundColor ?? t.surface,
               borderRadius: radius,
-              border: Border.all(color: t.line2),
+              border: Border.all(color: widget.borderColor ?? t.line2),
             ),
             child: Stack(
               fit: StackFit.expand,
@@ -296,7 +311,7 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
                               Icon(
                                 CatchIcons.search,
                                 size: CatchLayout.searchFieldIconSize,
-                                color: t.ink3,
+                                color: mutedForeground,
                               ),
                               const SizedBox(
                                 width: CatchLayout.searchFieldIconGap,
@@ -313,7 +328,9 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
                                   onTapOutside: (_) => _focusNode.unfocus(),
                                   style: CatchTextStyles.bodyM(
                                     context,
-                                    color: widget.enabled ? t.ink : t.ink3,
+                                    color: widget.enabled
+                                        ? foreground
+                                        : mutedForeground,
                                   ),
                                   cursorColor: t.primary,
                                   decoration: InputDecoration(
@@ -328,7 +345,7 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
                                     hintText: widget.placeholder,
                                     hintStyle: CatchTextStyles.bodyM(
                                       context,
-                                      color: t.ink3,
+                                      color: mutedForeground,
                                     ),
                                   ),
                                 ),
@@ -338,6 +355,7 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
                                 enabled: widget.enabled,
                                 placeholder: widget.placeholder,
                                 emptyTrailingTooltip: 'Close search',
+                                foregroundColor: mutedForeground,
                                 onClear: _clear,
                                 onEmptyPressed:
                                     widget.onCloseSearch ??
@@ -368,7 +386,7 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
                               child: Icon(
                                 CatchIcons.search,
                                 size: CatchIcon.md,
-                                color: t.ink,
+                                color: foreground,
                               ),
                             ),
                           ),
@@ -392,6 +410,7 @@ class _ExpandingSearchTrailing extends StatelessWidget {
     required this.enabled,
     required this.placeholder,
     required this.emptyTrailingTooltip,
+    required this.foregroundColor,
     required this.onClear,
     required this.onEmptyPressed,
   });
@@ -400,12 +419,12 @@ class _ExpandingSearchTrailing extends StatelessWidget {
   final bool enabled;
   final String placeholder;
   final String emptyTrailingTooltip;
+  final Color foregroundColor;
   final VoidCallback onClear;
   final VoidCallback? onEmptyPressed;
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     return ValueListenableBuilder<TextEditingValue>(
       valueListenable: controller,
       builder: (context, value, _) {
@@ -429,7 +448,7 @@ class _ExpandingSearchTrailing extends StatelessWidget {
             icon: Icon(
               icon,
               size: CatchLayout.searchFieldClearIconSize,
-              color: t.ink3,
+              color: foregroundColor,
             ),
             onPressed: enabled ? onPressed : null,
           ),

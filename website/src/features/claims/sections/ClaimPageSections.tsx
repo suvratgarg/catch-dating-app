@@ -409,6 +409,37 @@ export function ClaimUrlStateSection({
     );
   }
 
+  if (state === "claimUnavailable" && listing) {
+    return (
+      <ProcessStatusPanel
+        mark="!"
+        eyebrow="Claim setup in progress"
+        title={`${listing.name} is not accepting owner requests yet.`}
+        body="Catch has published this source-backed profile, but its owner-review target is not ready. No claim packet can be submitted from this page yet."
+        items={[
+          {
+            title: "The public profile stays visible",
+            body: "You can review the organizer facts and public sources while Catch finishes claim setup.",
+          },
+          {
+            title: "No partial request is created",
+            body: "Contact details and proof links are not collected until the verified claim target is available.",
+          },
+          {
+            title: "Hosts can still start fresh",
+            body: "Use the host application if you need to submit first-party organizer details now.",
+          },
+        ]}
+        onActionClick={trackProcessStatusAction}
+        actions={[
+          {href: listing.path, label: "View public listing", variant: "primary"},
+          {href: "/claim/", label: "Search claimable pages", variant: "secondary"},
+          {href: "/host/#founding-hosts", label: "Apply as host", variant: "secondary"},
+        ]}
+      />
+    );
+  }
+
   if (state === "pendingClaim") {
     return (
       <ProcessStatusPanel

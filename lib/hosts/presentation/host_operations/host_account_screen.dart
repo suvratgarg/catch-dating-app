@@ -118,10 +118,8 @@ class _HostAccountScreenState extends ConsumerState<HostAccountScreen> {
   }
 
   Future<void> _openProfileEditor(String uid, HostProfile profile) async {
-    final saved = await showModalBottomSheet<bool>(
+    final saved = await showCatchBottomSheet<bool>(
       context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
       builder: (_) => HostProfileEditorSheet(profile: profile),
     );
     if (saved == true && mounted) {

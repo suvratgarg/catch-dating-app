@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Host Payouts Handoff" description="Host app — Stripe payouts onboarding hand-off sheet (from the club Payouts card). Explains the external Stripe setup, shows country/currency + status, and hands off to Stripe with a returns-here note. Faithful to host_payment_account_card.dart (createOnboardingLink → openExternal). Rendered over a dimmed Clubs backdrop." -->
+<helmet>
+  <script src="./ds-base.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <style>
+    body { margin: 0; background: #E2E1DC; }
+  </style>
+</helmet>
+
+<div style="min-height: 100vh; display: flex; justify-content: center; padding: 40px 16px; background: #E2E1DC; font-family: var(--font-function); color: var(--ink); box-sizing: border-box">
+  <div data-screen-label="Host Payouts Handoff" style="position: relative; width: 390px; height: 812px; background: var(--bg); border-radius: 30px; border: 1px solid rgba(22,20,15,0.15); box-shadow: var(--shadow-overlay); overflow: hidden; display: flex; flex-direction: column; box-sizing: border-box">
+
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.StatusBar" hint-size="100%,44px"></x-import>
+
+    <!-- dimmed backdrop: Payouts card on Clubs -->
+    <div style="flex: 1; min-height: 0; padding: 12px 20px; opacity: 0.5">
+      <div class="t-kicker" style="color: var(--ink3)">HOST PROFILE</div>
+      <h1 class="t-headline-s" style="margin: 6px 0 16px; color: var(--ink)">Clubs</h1>
+      <div style="background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 14px">
+        <div style="display: flex; align-items: center; gap: 10px">
+          <div class="t-section-title" style="flex: 1; color: var(--ink)">Payouts</div>
+        </div>
+        <div class="t-label-l" style="color: var(--ink); margin-top: 10px">Set up international payouts</div>
+      </div>
+    </div>
+
+    <!-- scrim -->
+    <div style="position: absolute; inset: 44px 0 0; background: color-mix(in srgb, var(--ink) 42%, transparent)"></div>
+
+    <!-- sheet -->
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Sheet" glyph="bank" title="Set up payouts" subtitle="Powered by Stripe" badge="Not set up" badge-tone="warning" hint-size="100%,420px" style="position: absolute; left: 0; right: 0; bottom: 0">
+      <p class="t-body-m" style="margin: 0 0 16px; color: var(--ink2); text-wrap: pretty">Catch pays hosts through Stripe. You'll finish a short verification on Stripe, then come back here — required before paid non-INR events can take checkout.</p>
+
+      <div style="border: 1px solid var(--line2); border-radius: var(--radius-md); background: var(--raised); padding: 0 14px">
+        <div style="display: flex; align-items: center; gap: 10px; padding: 12px 0">
+          <i class="ph ph-map-pin" style="font-size: 17px; color: var(--ink3)"></i>
+          <span class="t-body-m" style="flex: 1; color: var(--ink)">Country</span>
+          <span class="t-mono" style="font-size: 13px; color: var(--ink2)">India</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px; padding: 12px 0; border-top: 1px solid var(--line)">
+          <i class="ph ph-currency-circle-dollar" style="font-size: 17px; color: var(--ink3)"></i>
+          <span class="t-body-m" style="flex: 1; color: var(--ink)">Default currency</span>
+          <span class="t-mono" style="font-size: 13px; color: var(--ink2)">INR</span>
+        </div>
+      </div>
+
+      <div style="height: 18px"></div>
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Button" full="{{ true }}" icon="arrow-square-out" onClick="{{ noop }}" hint-size="100%,49px">Continue to Stripe</x-import>
+      <p class="t-body-s" style="margin: 12px 0 0; color: var(--ink3); text-align: center; text-wrap: pretty">We'll refresh your payout status when you return.</p>
+    </x-import>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 390, &quot;height&quot;: 812}}">
+class Component extends DCLogic {
+  renderVals() {
+    return { noop: () => {} };
+  }
+}
+</script>
+</body>
+</html>

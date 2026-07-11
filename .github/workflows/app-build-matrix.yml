@@ -11,13 +11,38 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  app-targets:
+    name: App target contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+
+      - run: node tool/run.mjs check platform:app-targets platform:verify-ios-release-identity
+
   web:
     name: Web build
+    needs: app-targets
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
     steps:
       - uses: actions/checkout@v6
+
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
 
       - uses: ./.github/actions/setup-flutter
 
@@ -39,6 +64,7 @@ jobs:
 
   android:
     name: Android debug APK
+    needs: app-targets
     runs-on: ubuntu-latest
     timeout-minutes: 25
 
@@ -47,6 +73,10 @@ jobs:
 
       - id: toolchain
         uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
 
       - uses: actions/setup-java@v5
         with:
@@ -76,15 +106,36 @@ jobs:
 
   ios:
     name: iOS simulator build
+    needs: app-targets
     runs-on: macos-26
     timeout-minutes: 50
 
     steps:
       - uses: actions/checkout@v6
 
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+
       - uses: ./.github/actions/setup-flutter
 
       - run: flutter pub get
+
+      - name: Verify Host v2 full-shell regression baselines
+        run: |
+          node tool/ui_capture/run_captures.mjs \
+            --ids host_home_dashboard,host_home_events_list,host_inbox_queries,host_clubs_management \
+            --output-dir build/host-shell-reference-captures \
+            --output-layout capture-first
+          node tool/design/check_reference_screens.mjs \
+            --compare \
+            --capture-dir build/host-shell-reference-captures \
+            --capture-layout capture-first \
+            --ids host_home_dashboard,host_home_events_list,host_inbox_queries,host_clubs_management \
+            --strict
 
       - name: Write dev iOS Maps key
         env:

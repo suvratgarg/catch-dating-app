@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
@@ -25,11 +26,40 @@ void main() {
 
     expect(find.text('Settings'), findsOneWidget);
     expect(tester.getSize(find.byType(CatchTopBar)).height, 56);
+    expect(
+      tester.widget<Text>(find.text('Settings')).style,
+      CatchTextStyles.titleL(
+        tester.element(find.text('Settings')),
+        color: CatchTokens.of(tester.element(find.text('Settings'))).ink,
+      ),
+    );
     expect(find.byType(CatchIconButton), findsNothing);
     expect(
       _topBarMaterial(tester).color,
       AppTheme.light.scaffoldBackgroundColor,
     );
+  });
+
+  testWidgets('CatchScreenTopBar uses the root screen headline voice', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const CatchScreenTopBar(title: 'Activity', subtitle: 'Notifications'),
+      ),
+    );
+
+    final titleContext = tester.element(find.text('Activity'));
+    expect(find.byType(CatchScreenTopBar), findsOneWidget);
+    expect(tester.getSize(find.byType(CatchTopBar)).height, 88);
+    expect(
+      tester.widget<Text>(find.text('Activity')).style,
+      CatchTextStyles.headline(
+        titleContext,
+        color: CatchTokens.of(titleContext).ink,
+      ),
+    );
+    expect(find.text('Notifications'), findsOneWidget);
   });
 
   testWidgets('CatchTopBar wires leading and action controls', (tester) async {

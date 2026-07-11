@@ -55,6 +55,9 @@ export const adminQueryKeys = {
     list: (query: string) => [...adminQueryKeys.all, "organizers", "list", query] as const,
     detail: (clubId: string) =>
       [...adminQueryKeys.all, "organizers", "detail", clubId] as const,
+    claims: () => [...adminQueryKeys.all, "organizers", "claims"] as const,
+    claimDetail: (requestId: string) =>
+      [...adminQueryKeys.all, "organizers", "claims", requestId] as const,
   },
   overview: {
     snapshot: (mode: string) =>

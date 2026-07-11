@@ -78,11 +78,15 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   acceptEventWaitlistOffer: {maxRequests: 10, windowMs: 60 * 1000},
   declineEventWaitlistOffer: {maxRequests: 10, windowMs: 60 * 1000},
   decideEventJoinRequest: {maxRequests: 30, windowMs: 60 * 1000},
+  // Broadcasts can fan out to hundreds of people, so cap them per host rather
+  // than inheriting the loose default callable limit.
+  sendEventBroadcast: {maxRequests: 3, windowMs: 60 * 60 * 1000},
   createEventInviteLink: {maxRequests: 20, windowMs: 60 * 1000},
   disableEventInviteLink: {maxRequests: 20, windowMs: 60 * 1000},
   joinClub: {maxRequests: 30, windowMs: 60 * 1000},
   leaveClub: {maxRequests: 30, windowMs: 60 * 1000},
   createClubPost: {maxRequests: 10, windowMs: 60 * 1000},
+  startClubHostConversation: {maxRequests: 5, windowMs: 60 * 1000},
   addClubHost: {maxRequests: 20, windowMs: 60 * 1000},
   removeClubHost: {maxRequests: 20, windowMs: 60 * 1000},
   archiveClub: {maxRequests: 10, windowMs: 60 * 1000},
@@ -107,6 +111,7 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   createClub: {maxRequests: 3, windowMs: 60 * 60 * 1000},
   requestAccountDeletion: {maxRequests: 3, windowMs: 60 * 60 * 1000},
   createPublicClubReview: {maxRequests: 5, windowMs: 60 * 60 * 1000},
+  requestClubClaim: {maxRequests: 5, windowMs: 60 * 60 * 1000},
   // Admin/internal callables. Generous limits — these are role-gated and
   // audit-logged, so the cap is defense-in-depth against a compromised admin
   // token or a runaway client, not a primary control.
@@ -121,6 +126,9 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   adminGetHostAnalytics: {maxRequests: 30, windowMs: 60 * 1000},
   adminGetUserAnalytics: {maxRequests: 30, windowMs: 60 * 1000},
   adminGetAccessApplicationDetails: {maxRequests: 60, windowMs: 60 * 1000},
+  adminListClubClaimRequests: {maxRequests: 60, windowMs: 60 * 1000},
+  adminGetClubClaimRequestDetails: {maxRequests: 60, windowMs: 60 * 1000},
+  adminDecideClubClaim: {maxRequests: 30, windowMs: 60 * 1000},
   adminGetClubDetails: {maxRequests: 60, windowMs: 60 * 1000},
   adminListClubDetails: {maxRequests: 60, windowMs: 60 * 1000},
   adminSetClubIndexStatus: {maxRequests: 30, windowMs: 60 * 1000},

@@ -154,10 +154,8 @@ Future<void> _showGroupOverrideSheet({
   Future<void> Function(List<EventSuccessGroupOverrideRound> rounds)?
   onOverride,
 }) {
-  return showModalBottomSheet<void>(
+  return showCatchBottomSheet<void>(
     context: context,
-    isScrollControlled: true,
-    useSafeArea: true,
     builder: (context) => GroupOverrideSheet(
       event: event,
       assignments: assignments,
@@ -741,10 +739,8 @@ Future<void> _showRotationOverrideSheet({
   Future<void> Function(List<EventSuccessRotationOverrideRound> rounds)?
   onOverride,
 }) {
-  return showModalBottomSheet<void>(
+  return showCatchBottomSheet<void>(
     context: context,
-    isScrollControlled: true,
-    useSafeArea: true,
     builder: (context) => RotationOverrideSheet(
       event: event,
       assignments: assignments,

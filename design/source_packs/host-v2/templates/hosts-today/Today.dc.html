@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Host App — Today" description="The new host app's flagship ops home. A time-aware NextUpHero for the next/live event (dark register, live countdown), a NeedsYouQueue for cross-event triage (approve / offer / reply, with an all-caught-up zero-state), and the week's EventLifecycleRows. Composed purely of catalogue widgets. Part of the 'Catch for Organizers' lifecycle IA." -->
+<helmet>
+  <script src="./ds-base.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <style>
+    body { margin: 0; background: #E2E1DC; }
+    .greet { display: flex; align-items: center; gap: 12px; padding: 10px 0 2px; }
+    .orgchip { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--line2); border-radius: var(--radius-pill); padding: 5px 11px 5px 6px; background: var(--surface); cursor: pointer; }
+    .orglogo { width: 26px; height: 26px; border-radius: 7px; color: #fff; display: flex; align-items: center; justify-content: center; }
+    .sechead { display: flex; align-items: baseline; gap: 8px; margin: 26px 0 12px; }
+    .sechead a { color: var(--ink2); text-decoration: none; cursor: pointer; }
+  </style>
+</helmet>
+
+<div style="min-height: 100vh; display: flex; justify-content: center; padding: 40px 16px; background: #E2E1DC; font-family: var(--font-function); color: var(--ink); box-sizing: border-box">
+  <div data-screen-label="Host Today" style="position: relative; width: 390px; height: 812px; background: var(--bg); border-radius: 30px; border: 1px solid rgba(22,20,15,0.15); box-shadow: var(--shadow-overlay); overflow: hidden; display: flex; flex-direction: column; box-sizing: border-box">
+
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.StatusBar" hint-size="100%,44px"></x-import>
+
+    <div style="flex: 1; min-height: 0; overflow: auto; padding: 4px 20px 24px">
+      <div class="greet">
+        <div style="flex: 1">
+          <div class="t-kicker" style="color: var(--ink3)">{{ daypart }}</div>
+          <h1 class="t-headline-s" style="margin: 3px 0 0">{{ greeting }}</h1>
+        </div>
+        <button class="orgchip" onClick="{{ noop }}">
+          <span class="orglogo t-mono" style="background: var(--act-padel-deep); font-size: 11px; font-weight: 700">{{ orgInitials }}</span>
+          <span class="t-body-s" style="font-weight: 600">{{ orgName }}</span>
+        </button>
+      </div>
+
+      <div style="margin-top: 14px">
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.NextUpHero"
+          activity="pubQuiz" state="{{ clock }}" countdown="{{ countdown }}"
+          title="Tuesday Trivia Night" when="Tonight · 8:00 PM" where="The Daily Bar, Khar"
+          stats="{{ heroStats }}" faces="{{ heroFaces }}" facesExtra="{{ heroExtra }}"
+          onRun="{{ openManage }}" onShare="{{ shareLink }}" hint-size="100%,300px"></x-import>
+      </div>
+
+      <div class="sechead">
+        <span class="t-mono-label" style="flex: 1; color: var(--ink2)">{{ needsLabel }}</span>
+      </div>
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.NeedsYouQueue"
+        items="{{ queue }}" onPrimary="{{ resolvePrimary }}" onSecondary="{{ resolveSecondary }}" onOpen="{{ openManage }}"
+        hint-size="100%,220px" style="display: block"></x-import>
+
+      <div class="sechead">
+        <span class="t-mono-label" style="flex: 1; color: var(--ink2)">Later this week</span>
+        <a class="t-mono-label" onClick="{{ noop }}">All events</a>
+      </div>
+      <sc-for list="{{ later }}" as="ev" hint-placeholder-count="2">
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.EventLifecycleRow"
+          activity="{{ ev.activity }}" date="{{ ev.date }}" month="{{ ev.month }}"
+          title="{{ ev.title }}" meta="{{ ev.meta }}" fill="{{ ev.fill }}" state="{{ ev.state }}"
+          onClick="{{ ev.onOpen }}" hint-size="100%,76px" style="display: block"></x-import>
+      </sc-for>
+    </div>
+
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.TabDock" items="{{ hostTabs }}" active="today" radius="0 0 30px 30px" hint-size="100%,64px" style="display: block"></x-import>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const HOST_TABS = [
+  { id: 'today', icon: 'house', label: 'TODAY' },
+  { id: 'events', icon: 'ticket', label: 'EVENTS' },
+  { id: 'inbox', icon: 'chat-circle', label: 'INBOX' },
+  { id: 'organizer', icon: 'storefront', label: 'ORGANIZER' },
+];
+const PORTRAIT = '../../assets/sample-portrait.jpg';
+const HERO_FACES = [
+  { img: PORTRAIT }, { initials: 'DP', tint: 'oklch(0.9 0.03 50)' }, { initials: 'MD', tint: 'oklch(0.9 0.03 150)' },
+];
+const SEED_QUEUE = [
+  { id: 'q1', icon: 'user-check', tint: 'warning', title: 'Approve requests', sub: 'Ishaan & Zoya want into Tuesday Trivia', primary: 'Approve', secondary: 'Later' },
+  { id: 'q2', icon: 'user-plus', tint: 'gold', title: 'Offer waitlist spots', sub: '6 waiting · 6 spots open', primary: 'Offer 6', secondary: 'Later' },
+  { id: 'q3', icon: 'chat-circle', tint: 'accent', title: 'A guest is waiting on you', sub: '\u201cIs there parking nearby?\u201d \u2014 Zoya', primary: 'Reply', secondary: 'Later' },
+  { id: 'q4', icon: 'note-pencil', tint: 'neutral', title: 'Finish your draft', sub: 'Padel social \u00b7 saved 2d ago', primary: 'Resume', secondary: 'Discard' },
+];
+const LATER = [
+  { id: 'run15', activity: 'socialRun', date: '21', month: 'JUN', title: 'Sundowner 5K, Bandra seafront', meta: 'Sat \u00b7 6:30 AM \u00b7 60% full', fill: 60, state: 'upcoming' },
+  { id: 'supper', activity: 'dinner', date: '27', month: 'JUN', title: 'Long table \u2116 24', meta: 'Fri \u00b7 8:00 PM \u00b7 67% full', fill: 67, state: 'upcoming' },
+];
+
+class Component extends DCLogic {
+  state = { secs: 3 * 3600 + 12 * 60, queue: SEED_QUEUE };
+
+  componentDidMount() {
+    this._t = setInterval(() => this.setState((s) => ({ secs: Math.max(0, s.secs - 1) })), 1000);
+  }
+  componentWillUnmount() { clearInterval(this._t); }
+
+  renderVals() {
+    const s = this.state.secs;
+    const hh = Math.floor(s / 3600), mm = Math.floor((s % 3600) / 60), ss = s % 60;
+    const countdown = `${hh}:${String(mm).padStart(2, '0')}:${String(ss).padStart(2, '0')}`;
+    const drop = (item) => this.setState((st) => ({ queue: st.queue.filter((x) => x.id !== item.id) }));
+    return {
+      noop: () => {},
+      daypart: 'Tuesday evening',
+      greeting: 'Good evening, Aanya',
+      orgName: 'Bandra Social',
+      orgInitials: 'BS',
+      clock: 'soon',
+      countdown,
+      heroStats: [
+        { value: '24', label: 'Going' },
+        { value: '6', label: 'Waiting' },
+        { value: '2', label: 'To review', color: '#E5A655' },
+      ],
+      heroFaces: HERO_FACES,
+      heroExtra: 21,
+      openManage: () => {},
+      shareLink: () => {},
+      needsLabel: this.state.queue.length ? 'Needs you \u00b7 ' + this.state.queue.length : 'Needs you',
+      queue: this.state.queue,
+      resolvePrimary: drop,
+      resolveSecondary: drop,
+      later: LATER.map((e) => ({ ...e, onOpen: () => {} })),
+      hostTabs: HOST_TABS,
+    };
+  }
+}
+</script>
+</body>
+</html>

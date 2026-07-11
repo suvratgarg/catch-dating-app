@@ -1,0 +1,704 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catch for Organizers — redesign prototype</title>
+<link rel="stylesheet" href="../../colors_and_type.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #E2E1DC; color: var(--ink); font-family: var(--font-function); -webkit-font-smoothing: antialiased; display: flex; justify-content: center; align-items: flex-start; padding: 28px 16px; min-height: 100vh; }
+  .device { position: relative; width: 390px; height: 844px; background: var(--bg); border-radius: 38px; border: 1px solid rgba(22,20,15,0.16); box-shadow: 0 2px 4px rgba(22,20,15,0.05), 0 40px 90px -44px rgba(22,20,15,0.6); overflow: hidden; display: flex; flex-direction: column; }
+
+  .statusbar { height: 50px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 0 26px; font-family: var(--font-data); font-size: 13px; font-weight: 600; }
+  .statusbar .r { display: flex; gap: 7px; align-items: center; font-size: 14px; }
+
+  .scroll { flex: 1; min-height: 0; overflow: auto; -webkit-overflow-scrolling: touch; }
+  .pad { padding: 4px 20px 28px; }
+
+  /* tab bar */
+  .tabbar { flex: none; display: flex; border-top: 1px solid var(--line); background: rgba(244,244,241,0.92); backdrop-filter: blur(12px); padding: 8px 6px calc(8px + env(safe-area-inset-bottom)); }
+  .tabbar button { flex: 1; appearance: none; background: none; border: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; cursor: pointer; color: var(--ink3); position: relative; }
+  .tabbar button.on { color: var(--ink); }
+  .tabbar button i { font-size: 23px; }
+  .tabbar button span { font-family: var(--font-data); font-size: 8.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .tabbar .dot { position: absolute; top: 3px; right: 50%; margin-right: -16px; width: 7px; height: 7px; border-radius: 999px; background: var(--act-social-run-accent); }
+
+  /* type helpers */
+  .voice { font-family: var(--font-voice); letter-spacing: -0.02em; }
+  .mono { font-family: var(--font-data); }
+  .ml { font-family: var(--font-data); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink2); }
+  .greet { padding: 8px 20px 2px; display: flex; align-items: center; gap: 12px; }
+  .greet .hi { flex: 1; }
+  .greet .hi .k { font-family: var(--font-data); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink3); }
+  .greet .hi h1 { font-family: var(--font-voice); font-size: 26px; font-weight: 600; letter-spacing: -0.03em; margin: 3px 0 0; }
+  .orgchip { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--line2); border-radius: 999px; padding: 5px 11px 5px 6px; background: var(--surface); font-size: 12px; font-weight: 600; cursor: pointer; }
+
+  .sechead { display: flex; align-items: baseline; gap: 8px; margin: 26px 0 12px; }
+  .sechead .ml { flex: 1; }
+  .sechead a { font-family: var(--font-data); font-size: 10px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink2); text-decoration: none; }
+
+  /* avatars */
+  .av { border-radius: 999px; display: flex; align-items: center; justify-content: center; font-family: var(--font-head); font-weight: 700; flex: none; overflow: hidden; color: var(--ink); background: var(--primary-soft); }
+  .av img { width: 100%; height: 100%; object-fit: cover; }
+
+  /* ── NextUpHero (dark wow) ── */
+  .hero { position: relative; border-radius: 26px; overflow: hidden; padding: 20px; color: #F4F0E8; isolation: isolate; }
+  .hero .art { position: absolute; inset: 0; z-index: -1; }
+  .hero .art .glow { position: absolute; width: 280px; height: 280px; border-radius: 999px; filter: blur(40px); opacity: 0.55; top: -90px; right: -60px; }
+  .hero .state { display: inline-flex; align-items: center; gap: 7px; font-family: var(--font-data); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 5px 10px; border-radius: 999px; background: rgba(244,240,232,0.14); }
+  .hero .state .live { width: 7px; height: 7px; border-radius: 999px; background: #5BC07C; box-shadow: 0 0 0 0 rgba(91,192,124,0.6); animation: pulse 1.8s infinite; }
+  @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(91,192,124,0.5)} 70%{box-shadow:0 0 0 8px rgba(91,192,124,0)} 100%{box-shadow:0 0 0 0 rgba(91,192,124,0)} }
+  .hero h2 { font-family: var(--font-voice); font-size: 28px; font-weight: 600; letter-spacing: -0.025em; line-height: 1.04; margin: 14px 0 0; }
+  .hero .meta { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 12px; }
+  .hero .meta span { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #D9D2C7; }
+  .hero .stats { display: flex; gap: 18px; margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(244,240,232,0.16); }
+  .hero .stats .s b { font-family: var(--font-data); font-size: 19px; font-weight: 700; display: block; }
+  .hero .stats .s span { font-family: var(--font-data); font-size: 8.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #BAB2A7; }
+  .hero .cta { display: flex; gap: 10px; margin-top: 18px; }
+  .hero .cta button { appearance: none; border: 0; cursor: pointer; border-radius: 999px; padding: 14px 18px; font-family: var(--font-function); font-size: 14.5px; font-weight: 650; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+  .hero .cta .primary { flex: 1; color: #16140F; }
+  .hero .cta .ghost { background: rgba(244,240,232,0.12); color: #F4F0E8; }
+  .facepile { display: flex; }
+  .facepile .av { width: 26px; height: 26px; font-size: 10px; border: 2px solid; }
+  .facepile .av + .av, .facepile .more + .av, .facepile .av + .more { margin-left: -9px; }
+  .facepile .more { width: 26px; height: 26px; border-radius: 999px; display: flex; align-items: center; justify-content: center; font-family: var(--font-data); font-size: 9px; font-weight: 700; border: 2px solid; }
+
+  /* ── ActionQueue ── */
+  .qcard { display: flex; align-items: center; gap: 13px; width: 100%; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px; margin-bottom: 10px; cursor: pointer; font-family: inherit; }
+  .qcard .qi { width: 38px; height: 38px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex: none; }
+  .qcard .qt { flex: 1; min-width: 0; }
+  .qcard .qt b { font-family: var(--font-head); font-size: 14.5px; font-weight: 700; color: var(--ink); display: block; letter-spacing: -0.01em; }
+  .qcard .qt span { font-size: 12.5px; color: var(--ink2); display: block; margin-top: 2px; line-height: 1.4; }
+  .qcard .qn { font-family: var(--font-data); font-size: 11px; font-weight: 700; background: var(--ink); color: var(--primary-ink); border-radius: 999px; min-width: 22px; height: 22px; padding: 0 6px; display: flex; align-items: center; justify-content: center; flex: none; }
+  .qcard .chev { color: var(--ink3); font-size: 15px; flex: none; }
+
+  /* ── EventLifecycleRow ── */
+  .erow { display: flex; align-items: center; gap: 13px; width: 100%; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 13px; margin-bottom: 10px; cursor: pointer; font-family: inherit; position: relative; overflow: hidden; }
+  .erow .spine { position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
+  .erow .dt { width: 50px; flex: none; text-align: center; }
+  .erow .dt .d { font-family: var(--font-voice); font-size: 22px; font-weight: 600; line-height: 1; }
+  .erow .dt .mo { font-family: var(--font-data); font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink3); margin-top: 3px; }
+  .erow .eb { flex: 1; min-width: 0; }
+  .erow .eb .et { font-family: var(--font-head); font-size: 15.5px; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .erow .eb .em { font-family: var(--font-data); font-size: 9px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink3); margin-top: 4px; }
+  .erow .fill { height: 4px; border-radius: 999px; background: var(--line2); margin-top: 9px; overflow: hidden; }
+  .erow .fill i { display: block; height: 100%; border-radius: 999px; }
+
+  .pillbtn { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--line2); background: var(--surface); border-radius: 14px; padding: 13px 15px; font-family: inherit; font-size: 14px; font-weight: 600; color: var(--ink); cursor: pointer; }
+  .pillbtn.accent { background: var(--ink); color: var(--primary-ink); border-color: var(--ink); }
+  .pillbtn i { font-size: 17px; }
+
+  /* segmented */
+  .seg { display: flex; gap: 3px; background: var(--primary-soft); border-radius: 999px; padding: 3px; }
+  .seg button { flex: 1; appearance: none; border: 0; background: none; border-radius: 999px; padding: 9px 4px; font-family: var(--font-data); font-size: 10.5px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink2); cursor: pointer; }
+  .seg button.on { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(22,20,15,0.12); }
+
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; }
+  .mgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+  .mcard { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 15px; }
+  .mcard .v { font-family: var(--font-voice); font-size: 26px; font-weight: 600; line-height: 1; letter-spacing: -0.02em; }
+  .mcard .v small { font-family: var(--font-data); font-size: 13px; color: var(--ink3); font-weight: 600; }
+  .mcard .l { font-family: var(--font-data); font-size: 9.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink2); margin-top: 9px; }
+  .mcard .d { font-size: 11.5px; color: var(--ink3); margin-top: 3px; }
+
+  .act { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; background: var(--surface); border: 1px solid var(--line2); border-radius: 15px; padding: 14px 15px; margin-bottom: 10px; cursor: pointer; font-family: inherit; }
+  .act i.lead { font-size: 19px; color: var(--ink2); flex: none; }
+  .act .t { flex: 1; min-width: 0; }
+  .act .t b { display: block; font-family: var(--font-head); font-size: 15px; font-weight: 700; color: var(--ink); }
+  .act .t span { display: block; font-size: 12px; color: var(--ink2); margin-top: 2px; }
+  .act .chev { color: var(--ink3); font-size: 15px; }
+  .act.danger .t b, .act.danger i.lead { color: var(--danger); }
+
+  /* manage overlay */
+  .overlay { position: absolute; inset: 0; z-index: 30; background: var(--bg); display: flex; flex-direction: column; transform: translateX(100%); transition: transform .32s cubic-bezier(.2,.7,.2,1); }
+  .overlay.on { transform: translateX(0); }
+  .mbar { flex: none; padding: 6px 16px 0; }
+  .mbar .top { display: flex; align-items: center; gap: 10px; padding: 6px 0 12px; }
+  .mbar .top .bk { width: 36px; height: 36px; border-radius: 999px; border: 1px solid var(--line2); background: var(--surface); display: flex; align-items: center; justify-content: center; cursor: pointer; flex: none; }
+  .mbar .top .tt { flex: 1; min-width: 0; }
+  .mbar .top .tt .k { font-family: var(--font-data); font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink3); }
+  .mbar .top .tt h2 { font-family: var(--font-voice); font-size: 19px; font-weight: 600; letter-spacing: -0.02em; margin: 2px 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* roster peek (instant) */
+  .deck { position: absolute; right: 16px; bottom: 18px; z-index: 9; width: 176px; height: 110px; cursor: pointer; }
+  .deck .c { position: absolute; inset: 0; border-radius: 18px; background: var(--surface); border: 1px solid var(--line2); box-shadow: 0 10px 26px -14px rgba(22,20,15,0.45); }
+  .deck .c2 { transform: rotate(-7deg) translate(7px,5px); background: var(--act-pub-quiz-soft); }
+  .deck .c1 { transform: rotate(-3.5deg) translate(4px,3px); }
+  .deck .front { display: flex; flex-direction: column; justify-content: space-between; padding: 13px; overflow: hidden; }
+  .deck .dog { position: absolute; top: 0; right: 0; width: 0; height: 0; border-top: 20px solid var(--act-pub-quiz-soft); border-left: 20px solid transparent; border-top-right-radius: 18px; }
+  .deck .lbl { font-family: var(--font-voice); font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
+  .deck .sub { font-family: var(--font-data); font-size: 8px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink3); margin-top: 3px; }
+
+  .scrim { position: absolute; inset: 0; background: color-mix(in srgb, var(--ink) 40%, transparent); opacity: 0; pointer-events: none; transition: opacity .3s; z-index: 40; }
+  .scrim.on { opacity: 1; pointer-events: auto; }
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 41; background: var(--surface); border-top-left-radius: 28px; border-top-right-radius: 28px; box-shadow: 0 -14px 40px -18px rgba(22,20,15,0.42); max-height: 78%; display: flex; flex-direction: column; transition: transform .36s cubic-bezier(.22,.7,.2,1); }
+  .sheet .grab { width: 40px; height: 4px; border-radius: 999px; background: var(--line2); margin: 10px auto 2px; }
+  .sheet .sh { display: flex; align-items: flex-end; padding: 8px 22px 12px; border-bottom: 1px solid var(--line); }
+  .sheet .sh h3 { font-family: var(--font-voice); font-size: 21px; font-weight: 600; letter-spacing: -0.02em; margin: 0; flex: 1; }
+  .sheet .sh .sub { font-family: var(--font-data); font-size: 9px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink3); }
+  .sheet .sb { overflow: auto; padding: 4px 22px 22px; }
+  .gl { font-family: var(--font-data); font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink3); margin: 16px 0 2px; }
+  .prow { display: flex; align-items: center; gap: 13px; padding: 11px 0; border-top: 1px solid var(--line); }
+  .gl + .prow { border-top: 0; }
+  .prow .pn { flex: 1; min-width: 0; }
+  .prow .pn b { font-family: var(--font-head); font-size: 15.5px; font-weight: 700; display: block; letter-spacing: -0.01em; }
+  .prow .pn span { font-size: 12px; color: var(--ink2); display: block; margin-top: 1px; }
+  .sdot { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-data); font-size: 9px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; flex: none; }
+  .sdot i { width: 7px; height: 7px; border-radius: 999px; }
+  .warmbtn { font-family: var(--font-data); font-size: 9px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; border: 0; border-radius: 999px; padding: 8px 13px; flex: none; cursor: pointer; background: var(--act-social-run-accent); color: #fff; }
+
+  /* organizer */
+  .obrand { display: flex; align-items: center; gap: 14px; }
+  .obrand .logo { width: 64px; height: 64px; border-radius: 18px; flex: none; display: flex; align-items: center; justify-content: center; font-family: var(--font-head); font-weight: 800; font-size: 22px; color: #fff; }
+  .obrand h1 { font-family: var(--font-voice); font-size: 24px; font-weight: 600; letter-spacing: -0.025em; margin: 0; display: flex; align-items: center; gap: 7px; }
+  .formats { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+  .fchip { font-family: var(--font-data); font-size: 9.5px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 5px 10px; border-radius: 999px; border: 1px solid var(--line2); color: var(--ink2); }
+
+  /* inbox */
+  .thread { display: flex; align-items: center; gap: 12px; padding: 13px 0; border-top: 1px solid var(--line); cursor: pointer; }
+  .thread .pn { flex: 1; min-width: 0; }
+  .thread .pn b { font-family: var(--font-head); font-size: 15px; font-weight: 700; display: block; letter-spacing: -0.01em; }
+  .thread .pn span { font-size: 13px; color: var(--ink2); display: block; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .thread .when { font-family: var(--font-data); font-size: 9px; font-weight: 600; color: var(--ink3); flex: none; }
+  .thread .unread { width: 8px; height: 8px; border-radius: 999px; background: var(--act-social-run-accent); flex: none; }
+  .blast { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; background: var(--ink); color: var(--primary-ink); border: 0; border-radius: 16px; padding: 14px 16px; cursor: pointer; font-family: inherit; }
+  .blast i { font-size: 19px; flex: none; }
+  .blast .t { flex: 1; }
+  .blast .t b { font-family: var(--font-head); font-size: 14.5px; font-weight: 700; display: block; }
+  .blast .t span { font-size: 12px; color: #BAB2A7; display: block; margin-top: 2px; }
+
+  .toast { position: absolute; left: 16px; right: 16px; bottom: 90px; z-index: 50; background: var(--ink); color: var(--primary-ink); border-radius: 14px; padding: 13px 16px; font-size: 13px; font-weight: 500; box-shadow: var(--shadow-overlay); display: flex; align-items: center; gap: 10px; transform: translateY(20px); opacity: 0; transition: all .25s; pointer-events: none; }
+  .toast.on { transform: translateY(0); opacity: 1; }
+  .toast i { color: #5BC07C; font-size: 17px; }
+  .dqr { display: flex; gap: 10px; padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); font-size: 13px; color: var(--ink2); line-height: 1.5; }
+  .dqr i { flex: none; margin-top: 1px; font-size: 16px; }
+  .dqr.ok i { color: var(--success); }
+  .dqr.warn { border-color: rgba(185,119,15,0.3); background: rgba(185,119,15,0.06); }
+  .dqr.warn i { color: var(--warning); }
+</style>
+</head>
+<body>
+<div class="device" id="app"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<script type="text/babel" data-presets="react">
+const { useState, useEffect } = React;
+const DS = window.CatchDesignSystem_3a44f2 || {};
+const Badge = DS.Badge || (({children}) => <span>{children}</span>);
+const ActivityChip = DS.ActivityChip || null;
+
+/* ════════ DATA — an Organizer (formerly "club"), multi-format ════════ */
+const ORG = { name: 'Bandra Social', initials: 'BS', accent: '#2E9AA0', formats: ['Social run','Pub quiz','Supper club','Padel'], members: 124, events: 37, rating: '4.8' };
+const PORTRAIT = '../../assets/sample-portrait.jpg';
+const PPL = [
+  { n: 'Aanya Sharma', i: 'AS', img: PORTRAIT, g: 'in', m: 'Checked in · 7:58', tint: null },
+  { n: 'Dev Patel', i: 'DP', g: 'in', m: 'Checked in · 8:02', tint: 'oklch(0.92 0.025 50)' },
+  { n: "Mira D'Souza", i: 'MD', g: 'due', m: 'Booked · paid', tint: 'oklch(0.92 0.025 150)' },
+  { n: 'Rahul S.', i: 'RS', g: 'due', m: 'Booked · paid', tint: 'oklch(0.92 0.025 90)' },
+  { n: 'Kabir Khanna', i: 'KK', g: 'due', m: 'Booked · paid', tint: 'oklch(0.92 0.025 25)' },
+  { n: 'Tara Nair', i: 'TN', g: 'due', m: 'Booked · paid', tint: 'oklch(0.92 0.025 320)' },
+  { n: 'Ishaan Verma', i: 'IV', g: 'req', m: 'Requested · review profile', tint: 'oklch(0.92 0.025 70)' },
+  { n: 'Zoya Merchant', i: 'ZM', g: 'req', m: 'Requested · review profile', tint: 'oklch(0.92 0.025 200)' },
+  { n: 'Nikhil Rao', i: 'NR', g: 'wait', m: 'Waitlisted', tint: 'oklch(0.92 0.025 280)' },
+];
+const ACT = { socialRun: '--act-social-run', pubQuiz: '--act-pub-quiz', dinner: '--act-dinner', padel: '--act-padel' };
+const accentOf = (a) => `var(${ACT[a]}-accent)`;
+const softOf = (a) => `var(${ACT[a]}-soft)`;
+const deepOf = (a) => `var(${ACT[a]}-deep)`;
+
+const EVENTS = [
+  { id: 'quiz42', act: 'pubQuiz', title: 'Tuesday Trivia Night', d: '17', mo: 'JUN', when: 'Tonight · 8:00 PM', where: 'The Daily Bar, Khar', life: 'soon', mins: 180, booked: 24, cap: 30, wait: 6, req: 2, attended: 0, price: 0 },
+  { id: 'run15', act: 'socialRun', title: 'Sundowner 5K, Bandra seafront', d: '21', mo: 'JUN', when: 'Sat · 6:30 AM', where: 'Carter Road jetty', life: 'upcoming', mins: 90, booked: 12, cap: 20, wait: 0, req: 0, attended: 0, price: 0 },
+  { id: 'supper', act: 'dinner', title: 'Long table № 24', d: '27', mo: 'JUN', when: 'Fri · 8:00 PM', where: 'Pali Village Cafe', life: 'upcoming', mins: 150, booked: 8, cap: 12, wait: 3, req: 0, attended: 0, price: 1800 },
+  { id: 'quiz41', act: 'pubQuiz', title: 'Tuesday Trivia Night', d: '10', mo: 'JUN', when: 'Last Tue', where: 'The Daily Bar, Khar', life: 'past', mins: 180, booked: 30, cap: 30, wait: 4, req: 0, attended: 26, price: 0, gross: 12000 },
+  { id: 'run13', act: 'socialRun', title: 'Sundowner 5K, Bandra seafront', d: '07', mo: 'JUN', when: '10 days ago', where: 'Carter Road jetty', life: 'past', mins: 90, booked: 32, cap: 32, wait: 6, req: 0, attended: 27, price: 0, gross: 0 },
+];
+const eventById = (id) => EVENTS.find(e => e.id === id);
+
+const QUEUE = [
+  { id: 'q1', icon: 'user-check', tint: 'warning', n: '2', title: 'Approve requests', sub: 'Ishaan & Zoya want into Tuesday Trivia', ev: 'quiz42' },
+  { id: 'q2', icon: 'user-plus', tint: 'gold', n: '6', title: 'Offer waitlist spots', sub: '6 waiting · 6 spots open after approvals', ev: 'quiz42' },
+  { id: 'q3', icon: 'chat-circle', tint: 'accent', n: '1', title: 'A guest is waiting on you', sub: '“Is there parking near the venue?” — Zoya', ev: 'quiz42' },
+  { id: 'q4', icon: 'note-pencil', tint: 'neutral', n: '', title: 'Finish your draft', sub: 'Padel social · Sun 29 Jun — 2 steps left', ev: null },
+];
+
+const THREADS = {
+  quiz42: [
+    { n: 'Zoya Merchant', i: 'ZM', tint: 'oklch(0.92 0.025 200)', last: 'Is there parking near the venue?', when: '12m', unread: true },
+    { n: 'Mira D\u2019Souza', i: 'MD', tint: 'oklch(0.92 0.025 150)', last: 'Can I bring a +1 to the quiz?', when: '1h', unread: true },
+    { n: 'Dev Patel', i: 'DP', tint: 'oklch(0.92 0.025 50)', last: 'See you tonight!', when: '3h', unread: false },
+  ],
+  supper: [
+    { n: 'Tara Nair', i: 'TN', tint: 'oklch(0.92 0.025 320)', last: 'Any nut allergies handled?', when: '2h', unread: true },
+  ],
+};
+
+const TREND = [44,58,50,66,62,74,60,82,76,88,70,94];
+
+/* ════════ NEW WIDGETS (catalogue candidates) ════════ */
+
+// Avatar — photo or warm-tinted initials (HostAvatar candidate)
+function Av({ p, size = 38, cls = '', border }) {
+  const st = { width: size, height: size, fontSize: size * 0.36, background: p.tint || 'var(--primary-soft)' };
+  if (border) st.borderColor = border;
+  return <div className={'av '+cls} style={st}>{p.img ? <img src={p.img} alt="" /> : p.i}</div>;
+}
+function FacePile({ list, n, onDark }) {
+  const bd = onDark ? '#211f23' : 'var(--surface)';
+  return (
+    <div className="facepile">
+      {list.map((p, i) => <Av key={i} p={p} size={26} border={bd} />)}
+      {n ? <div className="more" style={{ background: onDark ? 'rgba(244,240,232,0.16)' : 'var(--ink)', color: onDark ? '#F4F0E8' : 'var(--primary-ink)', borderColor: bd }}>+{n}</div> : null}
+    </div>
+  );
+}
+
+// SegPill — segmented control
+function SegPill({ options, value, onChange }) {
+  return <div className="seg">{options.map(o => {
+    const v = typeof o === 'string' ? o : o.v, l = typeof o === 'string' ? o : o.l;
+    return <button key={v} className={v === value ? 'on' : ''} onClick={() => onChange(v)}>{l}</button>;
+  })}</div>;
+}
+
+// NextUpHero — the time-aware "wow" marquee on Today (dark register)
+function NextUpHero({ ev, live, onRun, onShare }) {
+  const acc = accentOf(ev.act);
+  const state = live ? 'LIVE NOW' : ev.life === 'soon' ? 'STARTS IN 3H' : 'NEXT UP';
+  return (
+    <div className="hero catch-dark" style={{ background: '#18171A' }}>
+      <div className="art"><div className="glow" style={{ background: acc }}></div></div>
+      <div className="state">{live ? <span className="live"></span> : <i className="ph-fill ph-clock" style={{ fontSize: 12 }}></i>}{state}</div>
+      <h2>{ev.title}</h2>
+      <div className="meta">
+        <span><i className="ph ph-calendar-blank"></i>{ev.when}</span>
+        <span><i className="ph ph-map-pin"></i>{ev.where}</span>
+      </div>
+      <div className="stats">
+        <div className="s"><b>{ev.booked}</b><span>Going</span></div>
+        <div className="s"><b>{ev.wait}</b><span>Waiting</span></div>
+        <div className="s"><b style={{ color: ev.req ? '#E5A655' : undefined }}>{ev.req}</b><span>To review</span></div>
+        <div style={{ marginLeft: 'auto', alignSelf: 'center' }}><FacePile list={PPL.slice(0, 3)} n={ev.booked - 3} onDark /></div>
+      </div>
+      <div className="cta">
+        <button className="primary" style={{ background: acc, color: '#fff' }} onClick={onRun}>
+          <i className={'ph-fill ph-'+(live ? 'broadcast' : 'sliders-horizontal')}></i>{live ? 'Open run-of-show' : 'Set up & run'}
+        </button>
+        <button className="ghost" onClick={onShare}><i className="ph ph-share-network"></i></button>
+      </div>
+    </div>
+  );
+}
+
+// ActionQueue — cross-event host triage ("what needs you")
+const QTINT = {
+  warning: ['rgba(185,119,15,0.14)', 'var(--warning)'],
+  gold: ['rgba(201,162,74,0.18)', '#8a6d22'],
+  accent: ['var(--act-social-run-soft)', 'var(--act-social-run-deep)'],
+  neutral: ['var(--primary-soft)', 'var(--ink2)'],
+};
+function ActionQueue({ items, onItem }) {
+  return items.map(it => {
+    const [bg, fg] = QTINT[it.tint];
+    return (
+      <button className="qcard" key={it.id} onClick={() => onItem(it)}>
+        <div className="qi" style={{ background: bg, color: fg }}><i className={'ph-fill ph-'+it.icon}></i></div>
+        <div className="qt"><b>{it.title}</b><span>{it.sub}</span></div>
+        {it.n ? <div className="qn">{it.n}</div> : null}
+        <i className="ph ph-caret-right chev"></i>
+      </button>
+    );
+  });
+}
+
+// EventLifecycleRow — event-first row, state + pigment + fill
+function EventRow({ ev, onOpen }) {
+  const acc = accentOf(ev.act), pct = Math.round(ev.booked / ev.cap * 100);
+  const tag = ev.life === 'soon' ? 'Tonight' : ev.life === 'past' ? (ev.attended + ' attended') : (ev.booked + '/' + ev.cap + ' booked');
+  return (
+    <button className="erow" onClick={() => onOpen(ev.id)}>
+      <div className="spine" style={{ background: acc }}></div>
+      <div className="dt" style={{ marginLeft: 4 }}><div className="d" style={{ color: ev.life === 'past' ? 'var(--ink3)' : 'var(--ink)' }}>{ev.d}</div><div className="mo">{ev.mo}</div></div>
+      <div className="eb">
+        <div className="et">{ev.title}</div>
+        <div className="em">{ev.when} · {tag}</div>
+        {ev.life !== 'past' && <div className="fill"><i style={{ width: pct + '%', background: acc }}></i></div>}
+      </div>
+      {ev.req ? <Badge tone="warning">{ev.req} new</Badge> : <i className="ph ph-caret-right" style={{ color: 'var(--ink3)', fontSize: 16, flex: 'none' }}></i>}
+    </button>
+  );
+}
+
+// RosterSheet — humanist roster, grouped by presence (tucked behind a peek)
+function RosterSheet({ open, onClose, act }) {
+  const groups = [
+    ['Here now · 2', PPL.filter(p => p.g === 'in')],
+    ['Expected · 4', PPL.filter(p => p.g === 'due')],
+    ['Requests · 2', PPL.filter(p => p.g === 'req')],
+    ['Waitlist · 1', PPL.filter(p => p.g === 'wait')],
+  ];
+  const SW = { in: ['var(--success)', 'Here'], due: ['var(--ink3)', 'Due'], req: ['var(--warning)', 'Review'], wait: ['var(--warning)', 'Waiting'] };
+  return (<>
+    <div className={'scrim'+(open ? ' on' : '')} onClick={onClose}></div>
+    <div className="sheet" style={{ transform: open ? 'translateY(0)' : 'translateY(100%)' }}>
+      <div className="grab"></div>
+      <div className="sh"><h3>Who's coming</h3><span className="sub">24 booked · 6 waiting</span></div>
+      <div className="sb">
+        {groups.map(([label, list]) => (<div key={label}>
+          <div className="gl">{label}</div>
+          {list.map((p, i) => { const [c, w] = SW[p.g]; return (
+            <div className="prow" key={i}>
+              <Av p={p} size={44} cls="" />
+              <div className="pn"><b>{p.n}</b><span>{p.m}</span></div>
+              {p.g === 'req' ? <button className="warmbtn">Approve</button>
+                : p.g === 'wait' ? <button className="warmbtn" style={{ background: 'var(--gold)' }}>Offer</button>
+                : <span className="sdot" style={{ color: c }}><i style={{ background: c }}></i>{w}</span>}
+            </div>
+          ); })}
+        </div>))}
+      </div>
+    </div>
+  </>);
+}
+
+/* ════════ SCREENS ════════ */
+
+function TodayScreen({ go, toast }) {
+  const hero = eventById('quiz42');
+  return (
+    <div className="scroll"><div className="pad">
+      <div className="greet" style={{ padding: '14px 0 2px' }}>
+        <div className="hi"><div className="k">Tuesday evening</div><h1>Good evening, Aanya</h1></div>
+        <button className="orgchip" onClick={() => go.tab('organizer')}>
+          <div className="logo av" style={{ width: 26, height: 26, borderRadius: 7, background: ORG.accent, color: '#fff', fontSize: 11 }}>{ORG.initials}</div>
+          {ORG.name}<i className="ph ph-caret-down" style={{ fontSize: 12, color: 'var(--ink3)' }}></i>
+        </button>
+      </div>
+
+      <div style={{ marginTop: 14 }}>
+        <NextUpHero ev={hero} onRun={() => go.manage('quiz42')} onShare={() => toast('Private link copied')} />
+      </div>
+
+      <div className="sechead"><span className="ml">Needs you · 4</span></div>
+      <ActionQueue items={QUEUE} onItem={(it) => it.ev ? go.manage(it.ev) : toast('Opening draft…')} />
+
+      <div className="sechead"><span className="ml">Later this week</span><a onClick={() => go.tab('events')}>All events</a></div>
+      {EVENTS.filter(e => e.life === 'upcoming').map(e => <EventRow key={e.id} ev={e} onOpen={go.manage} />)}
+    </div></div>
+  );
+}
+
+function EventsScreen({ go }) {
+  const [tab, setTab] = useState('upcoming');
+  const list = EVENTS.filter(e => tab === 'upcoming' ? (e.life === 'upcoming' || e.life === 'soon') : e.life === 'past');
+  return (
+    <div className="scroll"><div className="pad">
+      <div className="greet" style={{ padding: '14px 0 0' }}><div className="hi"><h1 style={{ fontSize: 30 }}>Events</h1></div></div>
+      <div style={{ display: 'flex', gap: 10, margin: '16px 0 4px' }}>
+        <button className="pillbtn accent" style={{ flex: 1, justifyContent: 'center' }} onClick={() => go.create()}><i className="ph ph-plus"></i>New event</button>
+        <button className="pillbtn" style={{ flex: 1, justifyContent: 'center' }} onClick={() => go.create('repeat')}><i className="ph ph-arrows-clockwise"></i>Repeat last</button>
+      </div>
+      <div style={{ margin: '16px 0' }}><SegPill options={[{v:'upcoming',l:'Upcoming'},{v:'past',l:'Past'}]} value={tab} onChange={setTab} /></div>
+      {list.map(e => <EventRow key={e.id} ev={e} onOpen={go.manage} />)}
+    </div></div>
+  );
+}
+
+function InboxScreen({ go, toast }) {
+  return (
+    <div className="scroll"><div className="pad">
+      <div className="greet" style={{ padding: '14px 0 0' }}><div className="hi"><h1 style={{ fontSize: 30 }}>Inbox</h1></div></div>
+      <div className="sub" style={{ fontSize: 13, color: 'var(--ink2)', margin: '6px 0 0' }}>Questions and messages, grouped by event.</div>
+      {Object.keys(THREADS).map(eid => { const ev = eventById(eid); return (
+        <div key={eid} style={{ marginTop: 22 }}>
+          <div className="sechead" style={{ margin: '0 0 10px' }}><span className="ml" style={{ color: deepOf(ev.act) }}>{ev.title} · {ev.when}</span></div>
+          <button className="blast" onClick={() => toast('Blast composer — message all '+ev.booked+' booked')}>
+            <i className="ph-fill ph-megaphone-simple"></i>
+            <div className="t"><b>Message all {ev.booked} booked</b><span>Reminders, changes, the meeting point</span></div>
+            <i className="ph ph-caret-right" style={{ color: '#BAB2A7' }}></i>
+          </button>
+          {THREADS[eid].map((t, i) => (
+            <div className="thread" key={i} onClick={() => toast('Opening chat with '+t.n)}>
+              <Av p={t} size={44} />
+              <div className="pn"><b>{t.n}</b><span>{t.last}</span></div>
+              <div className="when">{t.when}</div>
+              {t.unread ? <div className="unread"></div> : null}
+            </div>
+          ))}
+        </div>
+      ); })}
+    </div></div>
+  );
+}
+
+function OrganizerScreen({ go, toast }) {
+  const max = Math.max(...TREND);
+  return (
+    <div className="scroll"><div className="pad">
+      <div style={{ height: 18 }}></div>
+      <div className="obrand">
+        <div className="logo" style={{ background: ORG.accent }}>{ORG.initials}</div>
+        <div style={{ minWidth: 0 }}>
+          <h1>{ORG.name}<i className="ph-fill ph-seal-check" style={{ fontSize: 17, color: ORG.accent }}></i></h1>
+          <div className="mono" style={{ fontSize: 11, fontWeight: 600, color: 'var(--ink2)', marginTop: 4 }}>BANDRA · MUMBAI · SINCE 2020</div>
+        </div>
+      </div>
+      <div className="formats">{ORG.formats.map(f => <span className="fchip" key={f}>{f}</span>)}</div>
+      <div className="mgrid" style={{ marginTop: 16 }}>
+        <div className="mcard"><div className="v">{ORG.members}</div><div className="l">Members</div></div>
+        <div className="mcard"><div className="v">{ORG.events}</div><div className="l">Events hosted</div></div>
+      </div>
+      <button className="act" style={{ marginTop: 12 }} onClick={() => toast('Preview public organizer page')}><i className="ph ph-eye lead"></i><div className="t"><b>How guests see you</b><span>Your public organizer page</span></div><i className="ph ph-caret-right chev"></i></button>
+
+      <div className="sechead"><span className="ml">You as host</span></div>
+      <div className="card" style={{ padding: '4px 14px' }}>
+        <div className="prow" style={{ borderTop: 0 }}><Av p={PPL[0]} size={42} /><div className="pn"><b>Aanya Sharma</b><span>Lead host · profile public</span></div><i className="ph ph-caret-right" style={{ color: 'var(--ink3)' }}></i></div>
+      </div>
+
+      <div className="sechead"><span className="ml">Trends · last 12 weeks</span><a onClick={() => go.insights()}>See insights</a></div>
+      <div className="mcard" onClick={() => go.insights()} style={{ cursor: 'pointer' }}>
+        <div style={{ display: 'flex', gap: 20 }}>
+          <div><div className="v" style={{ fontSize: 22 }}>312</div><div className="l">Bookings</div></div>
+          <div><div className="v" style={{ fontSize: 22 }}>78%</div><div className="l">Fill rate</div></div>
+          <div style={{ flex: 1 }}></div>
+          <div><div className="v" style={{ fontSize: 22 }}>64%</div><div className="l">Repeat</div></div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, height: 56, marginTop: 16 }}>
+          {TREND.map((v, i) => <div key={i} style={{ flex: 1, height: (v/max*100)+'%', background: 'var(--ink)', opacity: 0.82, borderRadius: '2px 2px 0 0' }}></div>)}
+        </div>
+      </div>
+
+      <div className="sechead"><span className="ml">Manage</span></div>
+      <button className="act" onClick={()=>toast('Host team')}><i className="ph ph-users-three lead"></i><div className="t"><b>Host team</b><span>2 hosts · invite & permissions</span></div><i className="ph ph-caret-right chev"></i></button>
+      <button className="act" onClick={()=>toast('Payouts')}><i className="ph ph-bank lead"></i><div className="t"><b>Payouts</b><span>Stripe · ready</span></div><i className="ph ph-caret-right chev"></i></button>
+      <button className="act" onClick={()=>toast('Event defaults')}><i className="ph ph-sliders-horizontal lead"></i><div className="t"><b>Event defaults</b><span>Prefill new events</span></div><i className="ph ph-caret-right chev"></i></button>
+      <button className="act" onClick={()=>toast('Settings')} style={{ marginTop: 6 }}><i className="ph ph-gear lead"></i><div className="t"><b>Settings &amp; sign out</b></div><i className="ph ph-caret-right chev"></i></button>
+    </div></div>
+  );
+}
+
+/* ── Manage overlay — consolidated event hub, roster tucked ── */
+function Manage({ id, onClose, toast }) {
+  const ev = eventById(id) || EVENTS[0];
+  const [mode, setMode] = useState(ev.life === 'soon' ? 'setup' : 'setup');
+  const [roster, setRoster] = useState(false);
+  const [step, setStep] = useState(3);
+  const acc = accentOf(ev.act);
+  const STEPS = [['ARRIVAL','Arrival & first hello'],['OPENING','Team draw & rounds'],['ROUND','Round in play'],['MIXING','Mingle between rounds'],['CLOSING','Wrap & catch']];
+  return (
+    <div className={'overlay on'}>
+      <div className="statusbar"><span>3:11</span><span className="r"><i className="ph-fill ph-cell-signal-full"></i><i className="ph-fill ph-battery-high"></i></span></div>
+      <div className="mbar">
+        <div className="top">
+          <div className="bk" onClick={onClose}><i className="ph ph-arrow-left"></i></div>
+          <div className="tt"><div className="k">{ORG.name} · {ev.when}</div><h2>{ev.title}</h2></div>
+        </div>
+        <SegPill options={[{v:'setup',l:'Setup'},{v:'guests',l:'Guests'},{v:'live',l:'Live'},{v:'report',l:'Report'}]} value={mode} onChange={setMode} />
+        <div style={{ height: 14 }}></div>
+      </div>
+
+      <div className="scroll"><div className="pad" style={{ paddingTop: 2, paddingBottom: 150 }}>
+        {mode === 'setup' && <>
+          <div className="mgrid">
+            <div className="mcard"><div className="v">{ev.booked}<small>/{ev.cap}</small></div><div className="l">Booked</div><div className="d">{ev.cap - ev.booked} spots open</div></div>
+            <div className="mcard"><div className="v">{ev.wait}</div><div className="l">Waitlist</div><div className="d">{ev.req} to review</div></div>
+            <div className="mcard"><div className="v">{ev.price ? '₹'+(ev.booked*ev.price).toLocaleString('en-IN') : 'Free'}</div><div className="l">Revenue est</div></div>
+            <div className="mcard"><div className="v" style={{ fontSize: 19 }}>Standard</div><div className="l">Refund policy</div></div>
+          </div>
+          <div className="sechead"><span className="ml">Host actions</span></div>
+          <button className="act" onClick={()=>toast('Edit event')}><i className="ph ph-pencil-simple lead"></i><div className="t"><b>Edit event details</b><span>Schedule, location, capacity</span></div><i className="ph ph-caret-right chev"></i></button>
+          <button className="act" onClick={()=>toast('Private link copied')}><i className="ph ph-share-network lead"></i><div className="t"><b>Share private link</b><span>2 named invite links live</span></div><i className="ph ph-caret-right chev"></i></button>
+          <button className="act danger" onClick={()=>toast('Cancel flow')}><i className="ph ph-x-circle lead"></i><div className="t"><b>Cancel event</b><span>Keeps records · notifies guests</span></div><i className="ph ph-caret-right chev"></i></button>
+        </>}
+
+        {mode === 'guests' && <>
+          <div className="sub" style={{ fontSize: 13, color: 'var(--ink2)', margin: '4px 0 0' }}>Tap the peek any time, or browse here.</div>
+          <RosterInline />
+        </>}
+
+        {mode === 'live' && <>
+          <div className="card" style={{ padding: 18, borderColor: 'color-mix(in srgb, '+acc+' 30%, transparent)' }}>
+            <div className="mono" style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', color: deepOf(ev.act) }}>STEP {step+1} OF 5 · {STEPS[step][0]}</div>
+            <div className="voice" style={{ fontSize: 21, fontWeight: 600, margin: '8px 0 6px' }}>{STEPS[step][1]}</div>
+            <div style={{ fontSize: 14, lineHeight: 1.5, color: 'var(--ink2)' }}>Keep rounds tight; reveal scores between each. Swap anyone sitting out into a team.</div>
+            <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
+              <button className="pillbtn" style={{ flex: 1, justifyContent: 'center', opacity: step===0?0.4:1 }} onClick={()=>setStep(Math.max(0,step-1))}><i className="ph ph-arrow-left"></i>Back</button>
+              <button className="pillbtn accent" style={{ flex: 2, justifyContent: 'center', background: acc, borderColor: acc }} onClick={()=>setStep(Math.min(4,step+1))}>Next step<i className="ph ph-arrow-right"></i></button>
+            </div>
+          </div>
+          <button className="act" style={{ marginTop: 12 }} onClick={()=>toast('Check-in QR')}><i className="ph ph-qr-code lead"></i><div className="t"><b>Show check-in QR</b><span>For new arrivals at the door</span></div><i className="ph ph-caret-right chev"></i></button>
+        </>}
+
+        {mode === 'report' && <>
+          <div className="mgrid">
+            <div className="mcard"><div className="v">{ev.attended||26}</div><div className="l">Attended</div><div className="d">of {ev.booked} booked</div></div>
+            <div className="mcard"><div className="v">{ev.booked-(ev.attended||26)}</div><div className="l">No-shows</div></div>
+            <div className="mcard"><div className="v">{ev.gross ? '₹'+ev.gross.toLocaleString('en-IN') : 'Free'}</div><div className="l">Gross</div></div>
+            <div className="mcard"><div className="v">3</div><div className="l">Caught</div><div className="d">mutual matches</div></div>
+          </div>
+          <div className="sechead"><span className="ml">Take it with you</span></div>
+          <button className="act" onClick={()=>toast('Attendance CSV')}><i className="ph ph-export lead"></i><div className="t"><b>Attendance CSV</b></div><i className="ph ph-caret-right chev"></i></button>
+          <button className="act" onClick={()=>toast('Revenue CSV')}><i className="ph ph-export lead"></i><div className="t"><b>Revenue CSV</b></div><i className="ph ph-caret-right chev"></i></button>
+        </>}
+      </div></div>
+
+      {/* roster peek — tucked, always one tap */}
+      {mode !== 'guests' && !roster && (
+        <div className="deck" onClick={() => setRoster(true)}>
+          <div className="c c2"></div><div className="c c1"></div>
+          <div className="c front">
+            <div className="dog"></div>
+            <FacePile list={PPL.slice(0,3)} n={ev.booked-3} />
+            <div><div className="lbl">Your room</div><div className="sub">{ev.booked} booked · {ev.wait} waiting{ev.req?' · '+ev.req+' to review':''}</div></div>
+          </div>
+        </div>
+      )}
+      <RosterSheet open={roster} onClose={() => setRoster(false)} act={ev.act} />
+    </div>
+  );
+}
+
+// inline roster for the Guests mode (no overlay)
+function RosterInline() {
+  const SW = { in: ['var(--success)', 'Here'], due: ['var(--ink3)', 'Due'], req: ['var(--warning)', 'Review'], wait: ['var(--warning)', 'Waiting'] };
+  const groups = [['Expected · 4', PPL.filter(p=>p.g==='due')],['Requests · 2', PPL.filter(p=>p.g==='req')],['Waitlist · 1', PPL.filter(p=>p.g==='wait')]];
+  return <div style={{ marginTop: 8 }}>{groups.map(([l,list])=>(<div key={l}>
+    <div className="gl">{l}</div>
+    {list.map((p,i)=>{ const [c,w]=SW[p.g]; return (<div className="prow" key={i}><Av p={p} size={44}/><div className="pn"><b>{p.n}</b><span>{p.m}</span></div>{p.g==='req'?<button className="warmbtn">Approve</button>:p.g==='wait'?<button className="warmbtn" style={{background:'var(--gold)'}}>Offer</button>:<span className="sdot" style={{color:c}}><i style={{background:c}}></i>{w}</span>}</div>); })}
+  </div>))}</div>;
+}
+
+/* ── Insights — full analytics, the organizer's reflective home ── */
+function genSeries(seed, n, base) {
+  const dem = [], book = [];
+  for (let i = 0; i < n; i++) {
+    const w = 1 + 0.28 * Math.sin((i + seed) * 1.1) + 0.16 * Math.sin((i + seed) * 0.45);
+    const b = Math.max(1, Math.round(base * w));
+    book.push(b);
+    dem.push(Math.max(b + 1, Math.round(b / (0.62 + 0.06 * Math.sin((i + seed) * 0.8)))));
+  }
+  return { dem, book };
+}
+const IMETRICS = [
+  { ic: 'target', l: 'Fill rate', v: '86%' },
+  { ic: 'seal-check', l: 'Check-in rate', v: '78%' },
+  { ic: 'ticket', l: 'Bookings', v: '142' },
+  { ic: 'heart', l: 'Mutual matches', v: '28' },
+  { ic: 'arrows-clockwise', l: 'Repeat rate', v: '64%', badge: 'Partial' },
+  { ic: 'currency-inr', l: 'Gross revenue', v: '\u20b948,000' },
+];
+function Insights({ onClose }) {
+  const [range, setRange] = useState('30D');
+  const [gran, setGran] = useState('WEEK');
+  const n = { DAY: 30, WEEK: 12, MONTH: 6 }[gran], base = { DAY: 5, WEEK: 13, MONTH: 26 }[gran];
+  const { dem, book } = genSeries(gran === 'WEEK' ? 3 : gran === 'MONTH' ? 5 : 2, n, base);
+  const max = Math.max.apply(null, dem.concat(1));
+  const sum = (a) => a.reduce((x, y) => x + y, 0);
+  const axis = { DAY: ['30D AGO', '15D', 'TODAY'], WEEK: ['12W AGO', '6W', 'THIS WK'], MONTH: ['6MO', '3MO', 'NOW'] }[gran];
+  return (
+    <div className="overlay on">
+      <div className="statusbar"><span>3:11</span><span className="r"><i className="ph-fill ph-cell-signal-full"></i><i className="ph-fill ph-battery-high"></i></span></div>
+      <div className="mbar">
+        <div className="top"><div className="bk" onClick={onClose}><i className="ph ph-arrow-left"></i></div><div className="tt"><div className="k">{ORG.name} · all events</div><h2>Insights</h2></div></div>
+        <SegPill options={['7D','30D','90D','MONTH']} value={range} onChange={setRange} />
+        <div style={{ height: 14 }}></div>
+      </div>
+      <div className="scroll"><div className="pad" style={{ paddingTop: 2, paddingBottom: 28 }}>
+        <div className="mgrid">
+          {IMETRICS.map((m, i) => (
+            <div className="mcard" key={i} style={m.badge ? { borderColor: 'rgba(185,119,15,0.35)', background: 'rgba(185,119,15,0.06)' } : null}>
+              <div style={{ display: 'flex', alignItems: 'center' }}><i className={'ph ph-'+m.ic} style={{ fontSize: 15, color: 'var(--ink2)' }}></i><span style={{ flex: 1 }}></span>{m.badge ? <Badge tone="warning">{m.badge}</Badge> : null}</div>
+              <div className="v" style={{ fontSize: 24, marginTop: 12 }}>{m.v}</div><div className="l">{m.l}</div>
+            </div>
+          ))}
+        </div>
+        <div className="sechead"><span className="ml" style={{ flex: 1 }}>Trend</span>
+          <span style={{ display: 'flex', gap: 5, alignItems: 'center' }}><span style={{ width: 8, height: 8, borderRadius: 2, background: 'var(--ink)', opacity: 0.85 }}></span><span className="mono" style={{ fontSize: 9, fontWeight: 700, color: 'var(--ink2)' }}>BOOKINGS</span></span>
+          <span style={{ display: 'flex', gap: 5, alignItems: 'center', marginLeft: 10 }}><span style={{ width: 8, height: 8, borderRadius: 2, background: 'color-mix(in srgb, var(--ink) 14%, transparent)' }}></span><span className="mono" style={{ fontSize: 9, fontWeight: 700, color: 'var(--ink3)' }}>DEMAND</span></span>
+        </div>
+        <div style={{ marginBottom: 12 }}><SegPill options={[{v:'DAY',l:'Day'},{v:'WEEK',l:'Week'},{v:'MONTH',l:'Month'}]} value={gran} onChange={setGran} /></div>
+        <div className="mcard">
+          <div style={{ display: 'flex', gap: 18 }}>
+            <div><div className="v" style={{ fontSize: 21 }}>{sum(book).toLocaleString()}</div><div className="l">Bookings</div></div>
+            <div><div className="v" style={{ fontSize: 21 }}>{sum(dem).toLocaleString()}</div><div className="l">Demand</div></div>
+            <div style={{ flex: 1 }}></div>
+            <div style={{ textAlign: 'right' }}><div className="v" style={{ fontSize: 21 }}>{Math.round(sum(book)/sum(dem)*100)}%</div><div className="l">Fill</div></div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: n > 20 ? 2 : 4, height: 110, marginTop: 16 }}>
+            {book.map((b, i) => (<div key={i} style={{ flex: 1, position: 'relative', height: '100%', display: 'flex', alignItems: 'flex-end' }}>
+              <div style={{ width: '100%', height: (dem[i]/max*100)+'%', minHeight: 2, background: 'color-mix(in srgb, var(--ink) 12%, transparent)', borderRadius: '2px 2px 0 0' }}></div>
+              <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: (b/max*100)+'%', minHeight: 2, background: 'var(--ink)', opacity: 0.85, borderRadius: '2px 2px 0 0' }}></div>
+            </div>))}
+          </div>
+          <div style={{ display: 'flex', marginTop: 8 }}>{axis.map((a, i) => <span key={i} className="mono" style={{ flex: 1, fontSize: 9, fontWeight: 600, color: 'var(--ink3)', textAlign: i === 0 ? 'left' : i === 1 ? 'center' : 'right' }}>{a}</span>)}</div>
+        </div>
+        <div className="sechead"><span className="ml">Top events</span></div>
+        {EVENTS.filter(e => e.life === 'past').map(e => (<div className="erow" key={e.id} style={{ cursor: 'default' }}>
+          <div className="spine" style={{ background: accentOf(e.act) }}></div>
+          <div className="dt" style={{ marginLeft: 4 }}><div className="d" style={{ color: 'var(--ink3)' }}>{e.d}</div><div className="mo">{e.mo}</div></div>
+          <div className="eb"><div className="et">{e.title}</div><div className="em">{e.attended} attended · {e.wait} waitlisted{e.gross ? ' · \u20b9'+e.gross.toLocaleString('en-IN') : ' · free'}</div></div>
+        </div>))}
+        <div className="sechead"><span className="ml">Reviews &amp; saves</span></div>
+        <div className="mcard" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '18px 12px' }}>
+          {[['9','New reviews'],['4.8','Avg rating'],['64','Event saves'],['7','Responses']].map((s, i) => (<div key={i}><div className="v" style={{ fontSize: 20 }}>{s[0]}</div><div className="l">{s[1]}</div></div>))}
+        </div>
+        <div className="sechead"><span className="ml">Data quality</span></div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div className="dqr ok"><i className="ph-fill ph-check-circle"></i><span>Check-in scans recorded for all 6 events in range.</span></div>
+          <div className="dqr warn"><i className="ph-fill ph-warning"></i><span>2 events have no published reviews yet — attendance closed but the prompt wasn't sent.</span></div>
+        </div>
+      </div></div>
+    </div>
+  );
+}
+
+/* ════════ APP SHELL ════════ */
+const TABS = [
+  ['today', 'Today', 'house', 'house-fill'],
+  ['events', 'Events', 'ticket', 'ticket'],
+  ['inbox', 'Inbox', 'chat-circle', 'chat-circle-fill'],
+  ['organizer', 'Organizer', 'storefront', 'storefront-fill'],
+];
+
+function App() {
+  const [tab, setTab] = useState(() => localStorage.getItem('hr.tab') || 'today');
+  const [manageId, setManageId] = useState(null);
+  const [insightsOpen, setInsightsOpen] = useState(false);
+  const [toastMsg, setToastMsg] = useState(null);
+  useEffect(() => { localStorage.setItem('hr.tab', tab); }, [tab]);
+  const toast = (m) => { setToastMsg(m); clearTimeout(window.__t); window.__t = setTimeout(() => setToastMsg(null), 1900); };
+  const go = { tab: setTab, manage: (id) => setManageId(id), create: () => toast('Create event wizard'), insights: () => setInsightsOpen(true) };
+
+  return (<>
+    <div className="statusbar"><span>3:11</span><span className="r"><i className="ph-fill ph-cell-signal-full"></i><i className="ph-fill ph-wifi-high"></i><i className="ph-fill ph-battery-high"></i></span></div>
+
+    {tab === 'today' && <TodayScreen go={go} toast={toast} />}
+    {tab === 'events' && <EventsScreen go={go} />}
+    {tab === 'inbox' && <InboxScreen go={go} toast={toast} />}
+    {tab === 'organizer' && <OrganizerScreen go={go} toast={toast} />}
+
+    <div className="tabbar">
+      {TABS.map(([id, label, ic, icf]) => (
+        <button key={id} className={tab === id ? 'on' : ''} onClick={() => setTab(id)}>
+          {id === 'inbox' && <span className="dot"></span>}
+          <i className={'ph'+(tab === id ? '-fill ph-'+icf : ' ph-'+ic)}></i><span>{label}</span>
+        </button>
+      ))}
+    </div>
+
+    {manageId && <Manage id={manageId} onClose={() => setManageId(null)} toast={toast} />}
+    {insightsOpen && <Insights onClose={() => setInsightsOpen(false)} />}
+    <div className={'toast'+(toastMsg ? ' on' : '')}><i className="ph-fill ph-check-circle"></i>{toastMsg}</div>
+  </>);
+}
+
+ReactDOM.createRoot(document.getElementById('app')).render(<App />);
+</script>
+</body>
+</html>

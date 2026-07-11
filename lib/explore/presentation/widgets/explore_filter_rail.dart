@@ -28,7 +28,6 @@ class ExploreFilterRail extends StatelessWidget {
     this.onTimeFilterSelected,
     this.onDistanceFilterSelected,
     this.onToggleJoinedOnly,
-    this.onToggleFollowingOnly,
     this.onToggleHighRatedOnly,
     this.onToggleActivityTag,
     this.onToggleArea,
@@ -43,7 +42,6 @@ class ExploreFilterRail extends StatelessWidget {
   final ValueChanged<ExploreTimeFilter>? onTimeFilterSelected;
   final ValueChanged<ExploreDistanceFilter>? onDistanceFilterSelected;
   final VoidCallback? onToggleJoinedOnly;
-  final VoidCallback? onToggleFollowingOnly;
   final VoidCallback? onToggleHighRatedOnly;
   final ValueChanged<String>? onToggleActivityTag;
   final ValueChanged<String>? onToggleArea;
@@ -51,6 +49,7 @@ class ExploreFilterRail extends StatelessWidget {
 
   static const List<CatchOption<ExploreTimeFilter>> _timeOptions = [
     CatchOption(value: ExploreTimeFilter.tonight, label: 'Tonight'),
+    CatchOption(value: ExploreTimeFilter.tomorrow, label: 'Tomorrow'),
     CatchOption(value: ExploreTimeFilter.weekend, label: 'Weekend'),
     CatchOption(value: ExploreTimeFilter.thisWeek, label: 'This week'),
     CatchOption(value: ExploreTimeFilter.anytime, label: 'Anytime'),
@@ -77,17 +76,13 @@ class ExploreFilterRail extends StatelessWidget {
   }
 
   Future<void> _showExploreFilterSheet(BuildContext context) {
-    return showModalBottomSheet<void>(
+    return showCatchBottomSheet<void>(
       context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      backgroundColor: Colors.transparent,
       builder: (_) => ExploreFilterSheet(
         filters: filters,
         state: sheetState,
         onDistanceFilterSelected: onDistanceFilterSelected,
         onToggleJoinedOnly: onToggleJoinedOnly,
-        onToggleFollowingOnly: onToggleFollowingOnly,
         onToggleHighRatedOnly: onToggleHighRatedOnly,
         onToggleActivityTag: onToggleActivityTag,
         onToggleArea: onToggleArea,
@@ -154,7 +149,6 @@ class ExploreFilterSheet extends StatelessWidget {
     this.state,
     this.onDistanceFilterSelected,
     this.onToggleJoinedOnly,
-    this.onToggleFollowingOnly,
     this.onToggleHighRatedOnly,
     this.onToggleActivityTag,
     this.onToggleArea,
@@ -165,7 +159,6 @@ class ExploreFilterSheet extends StatelessWidget {
   final ExploreFilterSheetState? state;
   final ValueChanged<ExploreDistanceFilter>? onDistanceFilterSelected;
   final VoidCallback? onToggleJoinedOnly;
-  final VoidCallback? onToggleFollowingOnly;
   final VoidCallback? onToggleHighRatedOnly;
   final ValueChanged<String>? onToggleActivityTag;
   final ValueChanged<String>? onToggleArea;
@@ -240,11 +233,6 @@ class ExploreFilterSheet extends StatelessWidget {
                     label: 'Joined clubs',
                     active: filters.joinedOnly,
                     onTap: onToggleJoinedOnly,
-                  ),
-                  CatchSelectChip(
-                    label: 'Following',
-                    active: filters.followingOnly,
-                    onTap: onToggleFollowingOnly,
                   ),
                   CatchSelectChip(
                     label: 'Rated 4.5+',

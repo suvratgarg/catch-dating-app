@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_detail_hero_backdrop.dart';
 import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_share_card_footer.dart';
@@ -20,10 +21,8 @@ Future<void> showClubShareCardSheet(
   required Club club,
   required ExternalShareController share,
 }) {
-  return showModalBottomSheet<void>(
+  return showCatchBottomSheet<void>(
     context: context,
-    isScrollControlled: true,
-    useSafeArea: true,
     builder: (_) => CatchShareCardSheet(
       card: ClubShareCard(club: club),
       share: share,

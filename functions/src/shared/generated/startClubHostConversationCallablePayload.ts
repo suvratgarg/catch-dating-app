@@ -8,4 +8,5 @@
 export interface StartClubHostConversationCallablePayload {
   clubId: string;
   hostUid: string;
+  eventId?: string;
 }

@@ -119,7 +119,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
             controller: _outerScrollController,
             headerSliverBuilder: (context, innerBoxIsScrolled) {
               final headerSlivers = CatchSliverHeader(
-                title: const ProfileTitle(),
+                title: const CatchScreenHeaderTitle.block(
+                  title: 'Your profile',
+                  actions: [ProfileSettingsButton()],
+                ),
                 bottomHeight: CatchLayout.tabRailHeight,
                 bottom: ProfileTabBar(controller: _tabController),
               ).buildSlivers(context);

@@ -12,6 +12,7 @@ test("checkOrganizerBuildOutputs validates listing routes, legacy routes, and si
       "https://example.test/host/",
       "https://example.test/organizers/afterfly/",
     ],
+    withStaticProfiles: true,
   });
 
   const result = checkOrganizerBuildOutputs({
@@ -65,6 +66,7 @@ function createDist({
   includePublicSourceMap = false,
   omitLegacyRoute = false,
   sitemapUrls,
+  withStaticProfiles = false,
 }) {
   const distRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-org-build-"));
   fs.writeFileSync(
@@ -90,6 +92,7 @@ function createDist({
     distRoot,
     routePath: "/organizers/afterfly/",
     robots: afterflyRobots,
+    staticProfile: withStaticProfiles,
   });
   if (!omitLegacyRoute) {
     writeRoute({
@@ -104,6 +107,7 @@ function createDist({
     distRoot,
     routePath: "/organizers/noindex-sample/",
     robots: "noindex, follow",
+    staticProfile: withStaticProfiles,
   });
   if (includePublicSourceMap) {
     const assetsDir = path.join(distRoot, "assets");
@@ -123,14 +127,18 @@ function writeSitemap(distRoot, urls) {
     [
       '<?xml version="1.0" encoding="UTF-8"?>',
       '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-      ...urls.map((url) => `  <url><loc>${url}</loc></url>`),
+      ...urls.map((url) =>
+        `  <url><loc>${url}</loc>` +
+          `${url.endsWith("/organizers/afterfly/") ? "<lastmod>2026-06-18</lastmod>" : ""}` +
+          `</url>`
+      ),
       "</urlset>",
       "",
     ].join("\n")
   );
 }
 
-function writeRoute({canonical, distRoot, robots, routePath}) {
+function writeRoute({canonical, distRoot, robots, routePath, staticProfile = false}) {
   const routeDir = path.join(distRoot, ...routePath.split("/").filter(Boolean));
   fs.mkdirSync(routeDir, {recursive: true});
   fs.writeFileSync(
@@ -141,7 +149,13 @@ function writeRoute({canonical, distRoot, robots, routePath}) {
       "  <head>",
       `    <meta name="robots" content="${robots}" />`,
       `    <link rel="canonical" href="${canonical}" />`,
-      "  </head>",
+      ...(staticProfile ? [
+        '    <script type="application/ld+json">{"@type":"Organization"}</script>',
+        "  </head>",
+        '  <body><main data-static-organizer-profile="true"></main></body>',
+      ] : [
+        "  </head>",
+      ]),
       "</html>",
       "",
     ].join("\n")
@@ -153,6 +167,7 @@ function hostListings() {
     {
       id: "afterfly",
       indexing: "index, follow",
+      lastVerifiedAt: "2026-06-18",
       legacyPaths: ["/organizers/indore/afterfly-run-club/"],
       path: "/organizers/afterfly/",
     },

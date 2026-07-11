@@ -322,19 +322,24 @@ Widget profileScreenSelfSectionStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Profile title',
-  type: ProfileTitle,
+  type: CatchScreenHeaderTitle,
   path: '[P1 product surfaces]/Profiles/Sections',
 )
 Widget profileTitleStates(BuildContext context) {
   return _ProfileCatalog(
-    title: 'ProfileTitle',
+    title: 'CatchScreenHeaderTitle',
     contractId: 'section.profile.self.title',
     children: [
       _StateCard(
         label: 'title row',
         child: const _SectionFrame(
           height: 120,
-          child: _ProfileHeaderRouterFrame(child: ProfileTitle()),
+          child: _ProfileHeaderRouterFrame(
+            child: CatchScreenHeaderTitle.block(
+              title: 'Your profile',
+              actions: [ProfileSettingsButton()],
+            ),
+          ),
         ),
       ),
     ],
@@ -1930,7 +1935,10 @@ class _SelfProfileTabBodyPreviewState extends State<_SelfProfileTabBodyPreview>
     return NestedScrollView(
       headerSliverBuilder: (context, innerBoxIsScrolled) {
         final headerSlivers = CatchSliverHeader(
-          title: const ProfileTitle(),
+          title: const CatchScreenHeaderTitle.block(
+            title: 'Your profile',
+            actions: [ProfileSettingsButton()],
+          ),
           bottomHeight: CatchLayout.tabRailHeight,
           bottom: ProfileTabBar(controller: _tabController),
         ).buildSlivers(context);
@@ -2085,7 +2093,10 @@ class _ProfileHeaderPreviewState extends State<_ProfileHeaderPreview>
     return CustomScrollView(
       slivers: [
         ...CatchSliverHeader(
-          title: const ProfileTitle(),
+          title: const CatchScreenHeaderTitle.block(
+            title: 'Your profile',
+            actions: [ProfileSettingsButton()],
+          ),
           bottomHeight: CatchLayout.tabRailHeight,
           bottom: ProfileTabBar(controller: _controller),
         ).buildSlivers(context),

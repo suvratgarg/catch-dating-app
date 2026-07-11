@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Host Events" description="Host app — Events tab. A single-club operations view: a dropdown club picker (hidden when you host one club), the club's default-activity ActivityChip + role Badge, and its upcoming events as flattened on-surface InfoRows with a '+ Add event' add-row. Paper-and-ink, hairlines not cards." -->
+<helmet>
+  <script src="./ds-base.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <style>
+    body { margin: 0; background: #E2E1DC; }
+    .metarow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  </style>
+</helmet>
+
+<div style="min-height: 100vh; display: flex; justify-content: center; padding: 40px 16px; background: #E2E1DC; font-family: var(--font-function); color: var(--ink); box-sizing: border-box">
+  <div data-screen-label="Host Events" style="position: relative; width: 390px; height: 812px; background: var(--bg); border-radius: 30px; border: 1px solid rgba(22,20,15,0.15); box-shadow: var(--shadow-overlay); overflow: hidden; display: flex; flex-direction: column; box-sizing: border-box">
+
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.StatusBar" hint-size="100%,44px"></x-import>
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.AppBar" kicker="OPERATIONS" title="{{ name }}" action-icon="{{ pickerIcon }}" action-variant="bordered" action-label="Switch club" on-action="{{ togglePicker }}" hint-size="100%,72px" style="display: block"></x-import>
+
+    <sc-if value="{{ pickerOpen }}" hint-placeholder-val="{{ false }}">
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Menu" items="{{ clubMenu }}" hint-size="100%,120px" style="position: absolute; top: 96px; left: 14px; right: 14px; z-index: 30"></x-import>
+    </sc-if>
+
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ScreenBody" hint-size="100%,640px" style="flex: 1; min-height: 0; display: flex; flex-direction: column">
+      <div class="metarow">
+        <span class="t-mono-label" style="color: var(--ink3)">{{ area }}</span>
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Badge" tone="{{ roleTone }}" hint-size="80px,22px">{{ role }}</x-import>
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ActivityChip" activity="{{ activity }}" hint-size="120px,32px"></x-import>
+      </div>
+
+      <section style="margin-top: 22px">
+        <div class="t-kicker" style="color: var(--ink2)">Upcoming</div>
+        <div style="margin-top: 8px">
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.FieldGroup" hint-size="100%,160px" style="display: block">
+            <sc-for list="{{ events }}" as="ev" hint-placeholder-count="2">
+              <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" label="{{ ev.title }}" value="{{ ev.when }}" emphasis="label" trailing="chevron" divider="{{ ev.divider }}" onClick="{{ noop }}"></x-import>
+            </sc-for>
+            <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" add="{{ true }}" label="Add event" divider="{{ true }}" onClick="{{ noop }}"></x-import>
+          </x-import>
+        </div>
+      </section>
+    </x-import>
+
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.TabDock" items="{{ hostTabs }}" active="events" radius="0 0 30px 30px" hint-size="100%,64px" style="display: block"></x-import>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const HOST_TABS = [
+  { id: 'events', icon: 'calendar-blank', label: 'EVENTS' },
+  { id: 'clubs', icon: 'users-three', label: 'CLUBS' },
+  { id: 'inbox', icon: 'chat-circle', label: 'INBOX' },
+  { id: 'account', icon: 'gear', label: 'ACCOUNT' },
+];
+
+const CLUBS = [
+  {
+    name: 'Sunday sea-face crew', area: 'BANDRA · MUMBAI', role: 'OWNER', roleTone: 'solid', activity: 'socialRun',
+    events: [
+      { title: 'Sundowner 5K, Bandra seafront', when: 'Sun · 6:30 AM' },
+      { title: 'Carter Road tempo run', when: 'Wed · 6:45 AM' },
+    ],
+  },
+  {
+    name: 'Quizzicals', area: 'BANDRA · MUMBAI', role: 'HOST TEAM', roleTone: 'neutral', activity: 'pubQuiz',
+    events: [
+      { title: 'Tuesday trivia night', when: 'Tue · 8:00 PM' },
+    ],
+  },
+];
+
+const div0 = (arr) => arr.map((e, i) => ({ ...e, divider: i > 0 }));
+
+class Component extends DCLogic {
+  state = { sel: 0, pickerOpen: false };
+
+  renderVals() {
+    const c = CLUBS[this.state.sel];
+    const single = CLUBS.length < 2;
+    return {
+      hostTabs: HOST_TABS,
+      noop: () => {},
+      clubMenu: CLUBS.map((x, i) => ({
+        value: String(i), label: x.name, sublabel: x.role, selected: i === this.state.sel,
+        onSelect: () => this.setState({ sel: i, pickerOpen: false }),
+      })),
+      pickerIcon: single ? null : (this.state.pickerOpen ? 'caret-up' : 'caret-down'),
+      pickerOpen: this.state.pickerOpen,
+      togglePicker: () => this.setState({ pickerOpen: !this.state.pickerOpen }),
+      name: c.name, area: c.area, role: c.role, roleTone: c.roleTone, activity: c.activity,
+      events: div0(c.events),
+    };
+  }
+}
+</script>
+</body>
+</html>

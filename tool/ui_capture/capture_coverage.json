@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-07-06",
+  "updated": "2026-07-10",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
   "description": "Phase 1 UI capture coverage policy. Every route from go_router.dart must be captured, aliased to a canonical capture surface, planned, or explicitly excluded.",
   "routes": [
@@ -185,6 +185,8 @@
         "dashboard_home_memberships_error",
         "dashboard_home_booked_events_error",
         "dashboard_home_empty_start",
+        "dashboard_home_recommendations_loading",
+        "dashboard_home_recommendations_error",
         "dashboard_home_text_scale_2",
         "dashboard_home_reduced_motion",
         "dashboard_home_self_check_in",
@@ -355,10 +357,11 @@
       "reason": "Deterministic attendee companion captures now cover route loading/error/access/offline states, default live guide, paired light/dark, self-check-in, pending actions, runtime moments, assignment/rotation/reveal/wingman/afterglow variants, text-scale, and reduced-motion states; stage-specific reference comparisons remain open in the design parity tracker."
     },
     {
-      "routeId": "catchesRedirect",
-      "status": "excluded",
+      "routeId": "swipeHubScreen",
+      "status": "alias",
       "priority": "P1",
-      "reason": "Retired top-level Catches hub route redirects to Home; Home dashboard captures own catch-window discovery and /catches/:eventId captures the deck."
+      "canonicalRouteId": "dashboardScreen",
+      "reason": "Retired Catches hub path now redirects to Dashboard Home after the Catches tab removal; hub captures remain historical/preview evidence until the Home+Catches absorption pass removes them."
     },
     {
       "routeId": "swipeEventScreen",
@@ -579,7 +582,6 @@
       "priority": "P1",
       "captureIds": [
         "host_home_dashboard",
-        "host_home_events_list",
         "host_home_switcher_cohost",
         "host_home_long_club_names",
         "host_home_signed_out",
@@ -595,28 +597,54 @@
         "host_home_reduced_motion",
         "host_home_light_dark"
       ],
-      "reason": "Host operations home is captured for Today/dashboard and Events-list baselines plus owner/co-host switcher selection, long selected-club/menu labels, signed-out access, club loading/error/offline, empty clubs, nested event loading/error/offline, co-host empty events, text scale 2.0, reduced motion, and paired light/dark output. HostHomeRouteState and HostHomeEventsSectionState now own route/event async branch selection; remaining work is stable reference export for additional variants."
+      "reason": "The Host Today route is captured through the real four-branch Host shell, plus owner/co-host switcher selection, long selected-club/menu labels, signed-out access, club loading/error/offline, empty clubs, nested event loading/error/offline, co-host empty events, text scale 2.0, reduced motion, and paired light/dark output."
+    },
+    {
+      "routeId": "hostEventsScreen",
+      "status": "captured",
+      "priority": "P1",
+      "captureIds": [
+        "host_home_events_list"
+      ],
+      "reason": "The first-class Host Events branch is captured through the real four-branch Host shell and compared against the pinned full-shell Events source reference."
+    },
+    {
+      "routeId": "hostOrganizerScreen",
+      "status": "captured",
+      "priority": "P1",
+      "captureIds": [
+        "host_clubs_management"
+      ],
+      "reason": "The first-class Host Organizer branch is captured through the real four-branch Host shell and compared against the pinned full-shell Organizer source reference."
+    },
+    {
+      "routeId": "hostInsightsScreen",
+      "status": "captured",
+      "priority": "P2",
+      "captureIds": [
+        "host_clubs_insights_reference",
+        "host_clubs_insights_report",
+        "host_clubs_insights_loading",
+        "host_clubs_insights_error",
+        "host_clubs_insights_offline"
+      ],
+      "reason": "The dedicated Organizer Insights utility route has a routed 390x812 primary capture plus deterministic tall report, loading, generic error, and offline captures."
     },
     {
       "routeId": "hostClubsScreen",
       "status": "captured",
       "priority": "P1",
       "captureIds": [
-        "host_clubs_management",
         "host_clubs_loading",
         "host_clubs_error",
         "host_clubs_offline",
         "host_clubs_empty",
         "host_clubs_cohost_edit",
-        "host_clubs_insights_report",
         "host_clubs_preview_tab",
         "host_clubs_text_scale_2",
         "host_clubs_reduced_motion",
         "host_clubs_light_dark",
         "host_clubs_signed_out",
-        "host_clubs_insights_loading",
-        "host_clubs_insights_error",
-        "host_clubs_insights_offline",
         "host_clubs_payout_loading",
         "host_clubs_payout_ready",
         "host_clubs_payout_restricted",
@@ -635,7 +663,7 @@
         "host_clubs_team_error",
         "host_clubs_team_offline"
       ],
-      "reason": "Host Clubs captures now cover the default organizer overview, signed-out, loading, generic/offline load errors, empty, co-host edit, inline editor pending/error/offline, insights report/loading/error/offline, preview tab, payout provider loading/ready/restricted/error/offline, payout setup pending/error/offline, payout refresh pending/error/offline, host-team mutation pending/error/offline, text scale 2.0, reduced motion, and paired light/dark output. The canonical Host Organizer advisory comparison is within threshold; additional pixel variants depend on future Claude reference exports."
+      "reason": "The legacy Host Clubs utility surface remains captured for signed-out, loading, generic/offline load errors, empty, co-host edit, inline editor pending/error/offline, preview, payout provider and mutation states, host-team mutation states, text scale 2.0, reduced motion, and paired light/dark output. Primary Organizer and Insights ownership now lives on their dedicated routes."
     },
     {
       "routeId": "hostClubDetailScreen",
@@ -872,16 +900,20 @@
         "host_inbox_offline",
         "host_inbox_empty",
         "host_inbox_queries",
-        "host_inbox_unread_filter",
-        "matches_host_unread_empty",
+        "host_inbox_prospective",
+        "host_inbox_general",
+        "host_inbox_roster_no_threads",
         "host_inbox_search_active",
         "host_inbox_search_empty",
         "host_inbox_new_query",
+        "host_inbox_broadcast_composer",
+        "host_inbox_broadcast_pending",
+        "host_inbox_broadcast_error",
         "host_inbox_text_scale_2",
         "host_inbox_reduced_motion",
         "host_inbox_light_dark"
       ],
-      "reason": "Host Inbox now has deterministic captures for uid loading, matches loading, generic error, offline error, empty, populated attendee queries, unread-filtered rows, no-unread empty, search active, search empty, new inquiry, text scale 2.0, reduced motion, and paired light/dark output. Remaining work is host-chat route callback seam, additional duplicate/grouping policy proof, state reference exports, and pixel comparison."
+      "reason": "The production event-scoped Host Inbox has deterministic captures for uid/data loading, generic and offline errors, empty, Booked, Prospective, explicit General inquiries, roster-without-threads, search active/empty, inquiry-only rows, broadcast composer ready/pending/error, text scale 2.0, reduced motion, and paired light/dark output. The old All/Unread captures were retired. A fresh strict comparison is still required before visual parity can close."
     },
     {
       "routeId": "hostChatScreen",

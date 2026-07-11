@@ -1,9 +1,18 @@
 part of '../host_operations_screen.dart';
 
 class HostClubInsightsPane extends ConsumerStatefulWidget {
-  const HostClubInsightsPane({super.key, required this.club});
+  const HostClubInsightsPane({
+    super.key,
+    required this.club,
+    this.isOwner = true,
+    this.dedicated = false,
+    this.onOpenEventReport,
+  });
 
   final Club club;
+  final bool isOwner;
+  final bool dedicated;
+  final ValueChanged<String>? onOpenEventReport;
 
   @override
   ConsumerState<HostClubInsightsPane> createState() =>
@@ -33,8 +42,20 @@ class _HostClubInsightsPaneState extends ConsumerState<HostClubInsightsPane> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        HostMetaRow(club: widget.club, roleLabel: 'Insights', owner: true),
-        gapH24,
+        if (!widget.dedicated) ...[
+          HostMetaRow(
+            club: widget.club,
+            roleLabel: 'Insights',
+            owner: widget.isOwner,
+          ),
+          gapH24,
+        ] else ...[
+          HostAnalyticsRangeChip(
+            label: _state.rangePreset.label,
+            onTap: _showRangePicker,
+          ),
+          gapH16,
+        ],
         HostAnalyticsControls(
           rangePreset: _state.rangePreset,
           granularity: _state.granularity,
@@ -48,8 +69,13 @@ class _HostClubInsightsPaneState extends ConsumerState<HostClubInsightsPane> {
           onPickStartDate: _pickCustomStartDate,
           onPickEndDate: _pickCustomEndDate,
           onClearEvent: _clearEventScope,
+          showRangeOptions: !widget.dedicated,
+          showGranularity: !widget.dedicated,
         ),
-        gapH20,
+        if (!widget.dedicated ||
+            _state.rangePreset == HostClubInsightsRangePreset.custom ||
+            _state.selectedEventId != null)
+          gapH20,
         CatchAsyncValueView<HostAnalyticsReport>(
           value: analyticsAsync,
           loadingBuilder: (_) => const HostAnalyticsReportSkeleton(),
@@ -61,12 +87,28 @@ class _HostClubInsightsPaneState extends ConsumerState<HostClubInsightsPane> {
           builder: (context, report) => HostAnalyticsReportView(
             report: report,
             selectedEventId: _state.selectedEventId,
-            onEventSelected: _selectEventScope,
+            onEventSelected: widget.onOpenEventReport ?? _selectEventScope,
             onClearEvent: _clearEventScope,
+            granularity: widget.dedicated ? _state.granularity : null,
+            onGranularityChanged: widget.dedicated
+                ? (granularity) => setState(
+                    () => _state = _state.selectGranularity(granularity),
+                  )
+                : null,
           ),
         ),
       ],
     );
+  }
+
+  Future<void> _showRangePicker() async {
+    final selected = await showCatchBottomSheet<HostClubInsightsRangePreset>(
+      context: context,
+      builder: (context) =>
+          HostAnalyticsRangeSheet(selected: _state.rangePreset),
+    );
+    if (selected == null || !mounted) return;
+    setState(() => _state = _state.selectRange(selected));
   }
 
   Future<void> _pickCustomStartDate() async {
@@ -139,6 +181,8 @@ class HostAnalyticsControls extends StatelessWidget {
     required this.onPickStartDate,
     required this.onPickEndDate,
     required this.onClearEvent,
+    this.showRangeOptions = true,
+    this.showGranularity = true,
   });
 
   final HostClubInsightsRangePreset rangePreset;
@@ -151,6 +195,8 @@ class HostAnalyticsControls extends StatelessWidget {
   final VoidCallback onPickStartDate;
   final VoidCallback onPickEndDate;
   final VoidCallback onClearEvent;
+  final bool showRangeOptions;
+  final bool showGranularity;
 
   @override
   Widget build(BuildContext context) {
@@ -158,47 +204,52 @@ class HostAnalyticsControls extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CatchOptionGroup<HostClubInsightsRangePreset>(
-          selected: rangePreset,
-          onChanged: onRangeChanged,
-          variant: CatchOptionGroupVariant.mono,
-          options: const [
-            CatchOption(
-              value: HostClubInsightsRangePreset.sevenDays,
-              label: '7D',
-            ),
-            CatchOption(
-              value: HostClubInsightsRangePreset.thirtyDays,
-              label: '30D',
-            ),
-            CatchOption(
-              value: HostClubInsightsRangePreset.ninetyDays,
-              label: '90D',
-            ),
-            CatchOption(
-              value: HostClubInsightsRangePreset.month,
-              label: 'MONTH',
-            ),
-            CatchOption(
-              value: HostClubInsightsRangePreset.custom,
-              label: 'CUSTOM',
-            ),
-          ],
-        ),
-        gapH12,
-        CatchOptionGroup<HostClubInsightsGranularity>(
-          selected: granularity,
-          onChanged: onGranularityChanged,
-          variant: CatchOptionGroupVariant.mono,
-          options: const [
-            CatchOption(value: HostClubInsightsGranularity.day, label: 'DAY'),
-            CatchOption(value: HostClubInsightsGranularity.week, label: 'WEEK'),
-            CatchOption(
-              value: HostClubInsightsGranularity.month,
-              label: 'MONTH',
-            ),
-          ],
-        ),
+        if (showRangeOptions)
+          CatchOptionGroup<HostClubInsightsRangePreset>(
+            selected: rangePreset,
+            onChanged: onRangeChanged,
+            variant: CatchOptionGroupVariant.mono,
+            options: const [
+              CatchOption(
+                value: HostClubInsightsRangePreset.sevenDays,
+                label: '7D',
+              ),
+              CatchOption(
+                value: HostClubInsightsRangePreset.thirtyDays,
+                label: '30D',
+              ),
+              CatchOption(
+                value: HostClubInsightsRangePreset.ninetyDays,
+                label: '90D',
+              ),
+              CatchOption(
+                value: HostClubInsightsRangePreset.month,
+                label: 'MONTH',
+              ),
+              CatchOption(
+                value: HostClubInsightsRangePreset.custom,
+                label: 'CUSTOM',
+              ),
+            ],
+          ),
+        if (showRangeOptions && showGranularity) gapH12,
+        if (showGranularity)
+          CatchOptionGroup<HostClubInsightsGranularity>(
+            selected: granularity,
+            onChanged: onGranularityChanged,
+            variant: CatchOptionGroupVariant.mono,
+            options: const [
+              CatchOption(value: HostClubInsightsGranularity.day, label: 'DAY'),
+              CatchOption(
+                value: HostClubInsightsGranularity.week,
+                label: 'WEEK',
+              ),
+              CatchOption(
+                value: HostClubInsightsGranularity.month,
+                label: 'MONTH',
+              ),
+            ],
+          ),
         if (rangePreset == HostClubInsightsRangePreset.custom) ...[
           gapH12,
           Row(
@@ -245,6 +296,98 @@ class HostAnalyticsControls extends StatelessWidget {
           ),
         ],
       ],
+    );
+  }
+}
+
+class HostAnalyticsRangeChip extends StatelessWidget {
+  const HostAnalyticsRangeChip({
+    super.key,
+    required this.label,
+    required this.onTap,
+  });
+
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return CatchSurface(
+      radius: CatchRadius.pill,
+      borderColor: t.line2,
+      padding: const EdgeInsets.symmetric(
+        horizontal: CatchSpacing.s3,
+        vertical: CatchSpacing.micro10,
+      ),
+      onTap: onTap,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(CatchIcons.calendarTodayOutlined, size: CatchIcon.sm),
+          const SizedBox(width: CatchSpacing.s2),
+          Text(label, style: CatchTextStyles.monoLabel(context, color: t.ink)),
+          const SizedBox(width: CatchSpacing.s2),
+          Icon(CatchIcons.expandMoreRounded, size: CatchIcon.sm),
+        ],
+      ),
+    );
+  }
+}
+
+class HostAnalyticsRangeSheet extends StatefulWidget {
+  const HostAnalyticsRangeSheet({super.key, required this.selected});
+
+  final HostClubInsightsRangePreset selected;
+
+  @override
+  State<HostAnalyticsRangeSheet> createState() =>
+      _HostAnalyticsRangeSheetState();
+}
+
+class _HostAnalyticsRangeSheetState extends State<HostAnalyticsRangeSheet> {
+  late HostClubInsightsRangePreset _selected;
+
+  @override
+  void initState() {
+    super.initState();
+    _selected = widget.selected;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchBottomSheetScaffold(
+      title: 'Date range',
+      subtitle: 'Compare organizer performance over a consistent window.',
+      action: CatchButton(
+        label: 'Apply range',
+        onPressed: () => Navigator.of(context).pop(_selected),
+        fullWidth: true,
+      ),
+      child: CatchOptionGroup<HostClubInsightsRangePreset>(
+        selected: _selected,
+        onChanged: (selected) => setState(() => _selected = selected),
+        variant: CatchOptionGroupVariant.mono,
+        options: const [
+          CatchOption(
+            value: HostClubInsightsRangePreset.sevenDays,
+            label: '7 days',
+          ),
+          CatchOption(
+            value: HostClubInsightsRangePreset.thirtyDays,
+            label: '30 days',
+          ),
+          CatchOption(
+            value: HostClubInsightsRangePreset.ninetyDays,
+            label: '90 days',
+          ),
+          CatchOption(value: HostClubInsightsRangePreset.month, label: 'Month'),
+          CatchOption(
+            value: HostClubInsightsRangePreset.custom,
+            label: 'Custom',
+          ),
+        ],
+      ),
     );
   }
 }
@@ -303,12 +446,16 @@ class HostAnalyticsReportView extends StatelessWidget {
     required this.selectedEventId,
     required this.onEventSelected,
     required this.onClearEvent,
+    this.granularity,
+    this.onGranularityChanged,
   });
 
   final HostAnalyticsReport report;
   final String? selectedEventId;
   final ValueChanged<String> onEventSelected;
   final VoidCallback onClearEvent;
+  final HostClubInsightsGranularity? granularity;
+  final ValueChanged<HostClubInsightsGranularity>? onGranularityChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -322,7 +469,11 @@ class HostAnalyticsReportView extends StatelessWidget {
           ],
         ),
         gapH24,
-        HostAnalyticsTrendPanel(points: report.trend),
+        HostAnalyticsTrendPanel(
+          points: report.trend,
+          granularity: granularity,
+          onGranularityChanged: onGranularityChanged,
+        ),
         gapH24,
         HostAnalyticsEventList(
           events: report.topEvents,
@@ -348,9 +499,16 @@ class HostAnalyticsReportView extends StatelessWidget {
 }
 
 class HostAnalyticsTrendPanel extends StatelessWidget {
-  const HostAnalyticsTrendPanel({super.key, required this.points});
+  const HostAnalyticsTrendPanel({
+    super.key,
+    required this.points,
+    this.granularity,
+    this.onGranularityChanged,
+  });
 
   final List<HostAnalyticsTrendPoint> points;
+  final HostClubInsightsGranularity? granularity;
+  final ValueChanged<HostClubInsightsGranularity>? onGranularityChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -362,57 +520,163 @@ class HostAnalyticsTrendPanel extends StatelessWidget {
       0,
       (sum, point) => sum + (point.metrics['demand'] ?? 0),
     );
-    final maxBookings = points.fold<num>(0, (max, point) {
-      final value = point.metrics['bookings'] ?? 0;
+    final maxValue = points.fold<num>(0, (max, point) {
+      final value = [
+        point.metrics['bookings'] ?? 0,
+        point.metrics['demand'] ?? 0,
+      ].reduce((a, b) => a > b ? a : b);
       return value > max ? value : max;
     });
 
     return CatchAnalyticsSection(
-      label: 'Funnel',
-      child: CatchSurface(
-        padding: CatchInsets.content,
-        borderColor: CatchTokens.of(context).line,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: CatchStatColumn(
-                    label: 'Demand',
-                    value: _formatCount(totalDemand),
-                  ),
+      label: 'Trend · bookings vs demand',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (granularity != null && onGranularityChanged != null) ...[
+            CatchSegmentedControl<HostClubInsightsGranularity>(
+              selected: granularity!,
+              onChanged: onGranularityChanged!,
+              expanded: true,
+              segments: const [
+                CatchSegment(
+                  value: HostClubInsightsGranularity.day,
+                  label: 'Day',
                 ),
-                Expanded(
-                  child: CatchStatColumn(
-                    label: 'Bookings',
-                    value: _formatCount(totalBookings),
+                CatchSegment(
+                  value: HostClubInsightsGranularity.week,
+                  label: 'Week',
+                ),
+                CatchSegment(
+                  value: HostClubInsightsGranularity.month,
+                  label: 'Month',
+                ),
+              ],
+            ),
+            gapH12,
+          ],
+          CatchSurface(
+            padding: CatchInsets.content,
+            borderColor: CatchTokens.of(context).line,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: CatchStatColumn(
+                        label: 'Demand',
+                        value: _formatCount(totalDemand),
+                      ),
+                    ),
+                    Expanded(
+                      child: CatchStatColumn(
+                        label: 'Bookings',
+                        value: _formatCount(totalBookings),
+                      ),
+                    ),
+                  ],
+                ),
+                gapH16,
+                SizedBox(
+                  height: CatchSpacing.s16,
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final contentWidth = math
+                          .max(
+                            constraints.maxWidth,
+                            points.length * CatchSpacing.s4,
+                          )
+                          .toDouble();
+                      return SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        reverse: contentWidth > constraints.maxWidth,
+                        child: SizedBox(
+                          width: contentWidth,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              for (
+                                var index = 0;
+                                index < points.length;
+                                index++
+                              ) ...[
+                                if (index > 0)
+                                  const SizedBox(width: CatchSpacing.micro6),
+                                Expanded(
+                                  child: HostAnalyticsDualBar(
+                                    demand:
+                                        points[index].metrics['demand'] ?? 0,
+                                    bookings:
+                                        points[index].metrics['bookings'] ?? 0,
+                                    maxValue: maxValue,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ],
             ),
-            gapH16,
-            SizedBox(
-              height: CatchSpacing.s16,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  for (final point in points.take(18)) ...[
-                    if (point != points.first)
-                      const SizedBox(width: CatchSpacing.micro6),
-                    Expanded(
-                      child: CatchAnalyticsBar(
-                        value: point.metrics['bookings'] ?? 0,
-                        maxValue: maxBookings,
-                      ),
-                    ),
-                  ],
-                ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class HostAnalyticsDualBar extends StatelessWidget {
+  const HostAnalyticsDualBar({
+    super.key,
+    required this.demand,
+    required this.bookings,
+    required this.maxValue,
+  });
+
+  final num demand;
+  final num bookings;
+  final num maxValue;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final denominator = maxValue <= 0 ? 1.0 : maxValue.toDouble();
+    final demandFactor = (demand.toDouble() / denominator).clamp(0.0, 1.0);
+    final bookingFactor = (bookings.toDouble() / denominator).clamp(0.0, 1.0);
+    return Stack(
+      alignment: Alignment.bottomCenter,
+      children: [
+        FractionallySizedBox(
+          heightFactor: demandFactor,
+          widthFactor: 1,
+          alignment: Alignment.bottomCenter,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: t.ink.withValues(alpha: CatchOpacity.subtleFill),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(CatchSpacing.s1),
               ),
             ),
-          ],
+          ),
         ),
-      ),
+        FractionallySizedBox(
+          heightFactor: bookingFactor,
+          widthFactor: 0.5,
+          alignment: Alignment.bottomCenter,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: t.ink.withValues(alpha: CatchOpacity.scrimFill),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(CatchSpacing.s1),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

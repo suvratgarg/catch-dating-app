@@ -5,10 +5,14 @@ class HostOperationsHomeScreen extends ConsumerWidget {
     super.key,
     this.initialClubId,
     this.initialTab = HostHomeTab.today,
+    this.onViewEvents,
+    this.now,
   });
 
   final String? initialClubId;
   final HostHomeTab initialTab;
+  final VoidCallback? onViewEvents;
+  final DateTime? now;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -44,12 +48,16 @@ class HostOperationsHomeScreen extends ConsumerWidget {
         currentUid: routeState.uid!,
         initialClubId: initialClubId,
         initialTab: initialTab,
+        onViewEvents: onViewEvents,
+        now: now,
       ),
       HostHomeRouteStatus.loaded => HostEventsScaffold(
         clubs: routeState.clubs,
         currentUid: routeState.uid!,
         initialClubId: initialClubId,
         initialTab: initialTab,
+        onViewEvents: onViewEvents,
+        now: now,
       ),
     };
   }

@@ -21,7 +21,7 @@ import 'package:catch_dating_app/dashboard/presentation/notifications_list_view_
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/club_posts_home_section.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/event_lifecycle_timeline.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_rail.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/events/data/event_calendar_links.dart';
@@ -346,115 +346,6 @@ void main() {
           const _AnalyticsEventCall(AnalyticsEvents.homeActionTap, {
             AnalyticsParameters.homeModule: 'idle_cta',
             AnalyticsParameters.homeAction: 'find_event',
-          }),
-        ),
-      );
-    });
-
-    testWidgets('logs catch window home state, impression, and deck opening', (
-      tester,
-    ) async {
-      final now = DateTime(2026, 5, 16, 12);
-      final user = buildUser();
-      final reporter = _FakeAnalyticsReporter();
-      final catchEvent = buildEvent(
-        id: 'catch-window-event',
-        checkedInCount: 2,
-        startTime: now.subtract(const Duration(hours: 4)),
-        endTime: now.subtract(const Duration(hours: 2)),
-      );
-      final router = GoRouter(
-        initialLocation: Routes.dashboardScreen.path,
-        routes: [
-          GoRoute(
-            path: Routes.dashboardScreen.path,
-            builder: (_, _) => const DashboardScreen(),
-          ),
-          GoRoute(
-            name: Routes.swipeEventScreen.name,
-            path: Routes.swipeEventScreen.path,
-            builder: (_, state) =>
-                Text('Catch deck ${state.pathParameters['eventId']}'),
-          ),
-        ],
-      );
-      addTearDown(router.dispose);
-
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            appAnalyticsProvider.overrideWithValue(
-              AppAnalytics(reporter: reporter, shouldCollect: true),
-            ),
-            dashboardNowProvider.overrideWithValue(now),
-            watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
-            membershipsOverride(user, const []),
-            _activityNotificationsOverride(user),
-            watchSignedUpEventsProvider(
-              user.uid,
-            ).overrideWithValue(const AsyncData<List<Event>>([])),
-            watchAttendedEventsProvider(
-              user.uid,
-            ).overrideWithValue(AsyncData<List<Event>>([catchEvent])),
-            watchReviewsByUserProvider(
-              user.uid,
-            ).overrideWithValue(const AsyncData<List<Review>>([])),
-            uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
-          ],
-          child: MaterialApp.router(
-            theme: AppTheme.light,
-            routerConfig: router,
-          ),
-        ),
-      );
-
-      await _pumpDashboardUi(tester);
-
-      expect(find.text('Start catching'), findsOneWidget);
-      expect(
-        reporter.events,
-        contains(
-          const _AnalyticsEventCall(AnalyticsEvents.homeOpened, {
-            AnalyticsParameters.homeState: 'window_open',
-          }),
-        ),
-      );
-      expect(
-        reporter.events,
-        contains(
-          const _AnalyticsEventCall(AnalyticsEvents.homeModuleImpression, {
-            AnalyticsParameters.homeModule: 'catch_window',
-          }),
-        ),
-      );
-      expect(
-        reporter.events,
-        contains(
-          const _AnalyticsEventCall(AnalyticsEvents.catchWindowImpression, {
-            AnalyticsParameters.surface: 'home',
-          }),
-        ),
-      );
-
-      await tester.tap(find.text('Start catching'));
-      await _pumpDashboardUi(tester);
-
-      expect(find.text('Catch deck ${catchEvent.id}'), findsOneWidget);
-      expect(
-        reporter.events,
-        contains(
-          const _AnalyticsEventCall(AnalyticsEvents.homeActionTap, {
-            AnalyticsParameters.homeModule: 'catch_window',
-            AnalyticsParameters.homeAction: 'open_catch_window',
-          }),
-        ),
-      );
-      expect(
-        reporter.events,
-        contains(
-          _AnalyticsEventCall(AnalyticsEvents.catchWindowOpen, {
-            AnalyticsParameters.surface: 'home',
-            AnalyticsParameters.eventId: catchEvent.id,
           }),
         ),
       );
@@ -932,47 +823,46 @@ void main() {
   });
 
   group('Dashboard full home shell', () {
-    testWidgets(
-      'keeps the lifecycle timeline while attended enrichment loads',
-      (tester) async {
-        final joinedClubIds = ['club-1'];
-        final user = buildUser();
-        final event = buildEvent(id: 'booked-event', bookedCount: 1);
+    testWidgets('keeps the focus rail while attended enrichment is loading', (
+      tester,
+    ) async {
+      final joinedClubIds = ['club-1'];
+      final user = buildUser();
+      final event = buildEvent(id: 'booked-event', bookedCount: 1);
 
-        await tester.pumpWidget(
-          ProviderScope(
-            overrides: [
-              watchAttendedEventsProvider(
-                user.uid,
-              ).overrideWithValue(const AsyncLoading<List<Event>>()),
-              dashboardRecommendedEventsProvider(
-                recommendationsQueryFor(user.uid, joinedClubIds),
-              ).overrideWithValue(noRecommendationCandidates),
-              eventRepositoryProvider.overrideWithValue(FakeEventRepository()),
-              uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
-              eventCheckInLocationServiceProvider.overrideWithValue(
-                const _FakeEventCheckInLocationService(),
-              ),
-              ..._dashboardHostOverrides(user),
-            ],
-            child: MaterialApp(
-              theme: AppTheme.light,
-              home: _DashboardFullTestShell(
-                user: user,
-                followedClubIds: joinedClubIds,
-                signedUpEvents: [event],
-              ),
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            watchAttendedEventsProvider(
+              user.uid,
+            ).overrideWithValue(const AsyncLoading<List<Event>>()),
+            dashboardRecommendedEventsProvider(
+              recommendationsQueryFor(user.uid, joinedClubIds),
+            ).overrideWithValue(noRecommendationCandidates),
+            eventRepositoryProvider.overrideWithValue(FakeEventRepository()),
+            uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
+            eventCheckInLocationServiceProvider.overrideWithValue(
+              const _FakeEventCheckInLocationService(),
+            ),
+            ..._dashboardHostOverrides(user),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: _DashboardFullTestShell(
+              user: user,
+              followedClubIds: joinedClubIds,
+              signedUpEvents: [event],
             ),
           ),
-        );
+        ),
+      );
 
-        await tester.pump();
+      await tester.pump();
 
-        expect(find.byType(EventLifecycleTimeline), findsOneWidget);
-        expect(find.text(event.title), findsOneWidget);
-        expect(find.text('Your activity · this week'), findsNothing);
-      },
-    );
+      expect(find.byType(EventFocusRail), findsOneWidget);
+      expect(find.text(event.title), findsOneWidget);
+      expect(find.text('Your activity · this week'), findsNothing);
+    });
 
     testWidgets('keeps live focus content when attended enrichment fails', (
       tester,
@@ -1007,12 +897,12 @@ void main() {
 
       await tester.pump();
 
-      expect(find.byType(EventLifecycleTimeline), findsOneWidget);
+      expect(find.byType(EventFocusRail), findsOneWidget);
       expect(find.text(event.title), findsOneWidget);
       expect(find.text('Dashboard unavailable'), findsNothing);
     });
 
-    testWidgets('renders catch windows before booked events in one timeline', (
+    testWidgets('renders the catch window before booked events', (
       tester,
     ) async {
       final now = DateTime.now();
@@ -1051,15 +941,11 @@ void main() {
 
       await _pumpDashboardUi(tester);
 
-      expect(find.text('Event timeline'), findsOneWidget);
-      expect(find.textContaining('Catch window open'), findsOneWidget);
+      expect(find.text('Event Focus'), findsOneWidget);
+      expect(find.textContaining('After the event'), findsOneWidget);
       expect(find.text('Start catching'), findsOneWidget);
-      expect(find.byKey(EventLifecycleTimeline.listKey), findsOneWidget);
-      expect(find.text(nextEvent.title), findsOneWidget);
-
-      final swipeTop = tester.getTopLeft(find.text(swipeRun.title)).dy;
-      final nextTop = tester.getTopLeft(find.text(nextEvent.title)).dy;
-      expect(swipeTop, lessThan(nextTop));
+      expect(find.byKey(EventFocusRail.pageIndicatorKey), findsOneWidget);
+      expect(find.text(nextEvent.title), findsNothing);
     });
 
     testWidgets('uses the display name in the greeting header', (tester) async {
@@ -1068,6 +954,7 @@ void main() {
       addTearDown(tester.view.resetDevicePixelRatio);
       addTearDown(tester.view.resetPhysicalSize);
 
+      final now = DateTime(2026, 5, 13, 8);
       final joinedClubIds = ['club-1'];
       final user = buildUser(name: 'Manan Sethi', displayName: 'Subrath');
       final nextEvent = buildEvent(
@@ -1079,6 +966,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
+            dashboardNowProvider.overrideWithValue(now),
             watchAttendedEventsProvider(
               user.uid,
             ).overrideWithValue(const AsyncData<List<Event>>([])),
@@ -1105,14 +993,10 @@ void main() {
 
       await _pumpDashboardUi(tester);
 
-      final greetingFinder = find.text(
-        '${dashboardGreeting(DateTime.now())}, Subrath',
-      );
+      final greetingFinder = find.text('${dashboardGreeting(now)}, Subrath');
       expect(greetingFinder, findsOneWidget);
-      expect(
-        find.text('${dashboardGreeting(DateTime.now())}, Manan'),
-        findsNothing,
-      );
+      expect(find.text('${dashboardGreeting(now)}, Manan'), findsNothing);
+      expect(find.text('WEDNESDAY · MUMBAI'), findsNothing);
 
       expect(find.byType(DashboardFullSliverBody), findsOneWidget);
     });
@@ -1209,7 +1093,7 @@ void main() {
 
       await _pumpDashboardUi(tester);
 
-      expect(find.text('Event timeline'), findsOneWidget);
+      expect(find.text('Event Focus'), findsOneWidget);
       expect(find.text('Check-in open'), findsOneWidget);
       expect(find.text('Check in'), findsOneWidget);
       expect(find.text('Directions'), findsOneWidget);
@@ -1342,7 +1226,7 @@ void main() {
     });
 
     testWidgets(
-      'lifecycle timeline uses full-width vertical cards with stacked actions',
+      'event focus uses full-width snapping cards with stacked actions',
       (tester) async {
         final now = DateTime.now();
         final user = buildUser();
@@ -1398,41 +1282,31 @@ void main() {
         await _pumpDashboardUi(tester);
 
         expect(find.text(firstRunTitle), findsOneWidget);
-        expect(find.text(secondRunTitle), findsOneWidget);
-        expect(find.byKey(EventLifecycleTimeline.listKey), findsOneWidget);
+        expect(find.text(secondRunTitle), findsNothing);
+        expect(find.byKey(EventFocusRail.pageIndicatorKey), findsOneWidget);
 
-        final timelineWidth = tester
-            .getSize(find.byKey(EventLifecycleTimeline.timelineKey))
+        final railWidth = tester
+            .getSize(find.byKey(EventFocusRail.railKey))
             .width;
         final cardWidth = tester
             .getSize(_runFocusCardSurface(firstRunTitle))
             .width;
-        expect(cardWidth, timelineWidth);
-        final firstCard = _runFocusCardSurface(firstRunTitle);
-        final viewEvent = find.descendant(
-          of: firstCard,
-          matching: find.text('View event'),
-        );
-        final directions = find.descendant(
-          of: firstCard,
-          matching: find.text('Directions'),
-        );
-        final addToCalendar = find.descendant(
-          of: firstCard,
-          matching: find.text('Add to calendar'),
+        expect(cardWidth, railWidth);
+        expect(
+          tester.getTopLeft(find.text('Directions')).dy,
+          greaterThan(tester.getTopLeft(find.text('View event')).dy),
         );
         expect(
-          tester.getTopLeft(directions).dy,
-          greaterThan(tester.getTopLeft(viewEvent).dy),
-        );
-        expect(
-          tester.getTopLeft(addToCalendar).dy,
-          greaterThan(tester.getTopLeft(directions).dy),
+          tester.getTopLeft(find.text('Add to calendar')).dy,
+          greaterThan(tester.getTopLeft(find.text('Directions')).dy),
         );
 
-        final firstTop = tester.getTopLeft(find.text(firstRunTitle)).dy;
-        final secondTop = tester.getTopLeft(find.text(secondRunTitle)).dy;
-        expect(firstTop, lessThan(secondTop));
+        await tester.drag(find.text(firstRunTitle), const Offset(-420, 0));
+        await tester.pump();
+        await pumpFeatureUiFor(tester, const Duration(milliseconds: 250));
+
+        expect(find.text(firstRunTitle), findsNothing);
+        expect(find.text(secondRunTitle), findsOneWidget);
       },
     );
 
@@ -1475,9 +1349,8 @@ void main() {
 
         await _pumpDashboardUi(tester);
 
-        expect(find.text('Event timeline'), findsOneWidget);
-        expect(find.textContaining('Catch window open'), findsOneWidget);
-        expect(find.text('Review pending'), findsOneWidget);
+        expect(find.text('Event Focus'), findsOneWidget);
+        expect(find.textContaining('After the event'), findsOneWidget);
         expect(find.text('Start catching'), findsOneWidget);
         expect(find.text('Write review'), findsOneWidget);
         expect(find.text('Review your event'), findsNothing);

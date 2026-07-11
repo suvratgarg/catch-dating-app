@@ -12,9 +12,12 @@ import {
   Smartphone,
   Settings2,
   UploadCloud,
+  UserCheck,
   Users,
 } from "lucide-react";
 import type {
+  AdminClubClaimListRow,
+  AdminClubClaimRequestDetails,
   AdminClubDetails,
   AdminClubListRow,
   OrganizerAppVisibility,
@@ -22,6 +25,7 @@ import type {
   OrganizerPublishStatus,
   OrganizerSourceConfidence,
   OrganizerVerificationStatus,
+  ClubClaimDecision,
 } from "../../../shared/types/adminTypes";
 import {
   AdminButton,
@@ -72,6 +76,10 @@ import {
   type OrganizerPublishingFilter,
   useOrganizerPublishingController,
 } from "../controllers/useOrganizerPublishingController";
+import {
+  type OrganizerClaimReviewController,
+  useOrganizerClaimReviewController,
+} from "../controllers/useOrganizerClaimReviewController";
 import type {
   OrganizerDiffRow,
   OrganizerPublishingFormState,
@@ -102,12 +110,23 @@ export function OrganizerPublishingScreen({
     onSelectClubId,
     selectedClubId,
   });
-  return <OrganizerPublishingWorkspace controller={controller} />;
+  const claimReviewController = useOrganizerClaimReviewController({
+    onError,
+    onNotice,
+  });
+  return (
+    <OrganizerPublishingWorkspace
+      claimReviewController={claimReviewController}
+      controller={controller}
+    />
+  );
 }
 
 export function OrganizerPublishingWorkspace({
+  claimReviewController,
   controller,
 }: {
+  claimReviewController?: OrganizerClaimReviewController;
   controller: OrganizerPublishingController;
 }) {
   const needsPublishCount = controller.rows.filter(organizerNeedsPublish).length;
@@ -128,6 +147,7 @@ export function OrganizerPublishingWorkspace({
 
   return (
     <OrganizerDirectoryView
+      claimReviewController={claimReviewController}
       controller={controller}
       needsPublishCount={needsPublishCount}
       publishedCount={publishedCount}
@@ -138,12 +158,14 @@ export function OrganizerPublishingWorkspace({
 }
 
 function OrganizerDirectoryView({
+  claimReviewController,
   controller,
   needsPublishCount,
   publishedCount,
   routeIssueCount,
   searchIssueCount,
 }: {
+  claimReviewController?: OrganizerClaimReviewController;
   controller: OrganizerPublishingController;
   needsPublishCount: number;
   publishedCount: number;
@@ -153,6 +175,9 @@ function OrganizerDirectoryView({
   return (
     <AdminDirectoryScreenStack>
       <PageHeader eyebrow="Organizers" title="Canonical Organizer Directory" />
+      {claimReviewController ? (
+        <OrganizerClaimReviewWorkspace controller={claimReviewController} />
+      ) : null}
       <AdminMetricGrid ariaLabel="Organizer publishing state">
         <AdminMetricCard label="Canonical organizers" value={controller.rows.length} />
         <AdminMetricCard
@@ -176,6 +201,276 @@ function OrganizerDirectoryView({
       <OrganizerDirectoryPanel controller={controller} />
     </AdminDirectoryScreenStack>
   );
+}
+
+function OrganizerClaimReviewWorkspace({
+  controller,
+}: {
+  controller: OrganizerClaimReviewController;
+}) {
+  return (
+    <AdminWorkbenchStack>
+      <AdminMetricGrid ariaLabel="Organizer claim review state">
+        <AdminMetricCard label="Pending claims" value={controller.rows.length} />
+        <AdminMetricCard label="Shown" value={controller.filteredRows.length} />
+        <AdminMetricCard
+          label="Selected profile blocker"
+          tone={controller.details &&
+            !controller.details.requesterProfile.profileComplete ?
+            "attention" :
+            "normal"}
+          value={controller.details &&
+            !controller.details.requesterProfile.profileComplete ? 1 : 0}
+        />
+        <AdminMetricCard
+          label="Selected proof links"
+          value={controller.details?.proofUrls.length ?? 0}
+        />
+      </AdminMetricGrid>
+      <Panel
+        span={2}
+        icon={<UserCheck size={18} strokeWidth={1.9} />}
+        title="Organizer claim review"
+        action={controller.isLoading ?
+          "Loading" :
+          `${controller.filteredRows.length} pending`}
+      >
+        <AdminToolbar>
+          <SearchField
+            ariaLabel="Search organizer claims"
+            icon={<Search size={16} strokeWidth={1.8} />}
+            onChange={controller.setQuery}
+            placeholder="Search requester, organizer, role, contact"
+            value={controller.query}
+          />
+          <AdminButton
+            disabled={controller.isLoading}
+            icon={<RefreshCw size={15} strokeWidth={1.9} />}
+            onClick={() => void controller.refresh()}
+          >
+            Refresh claims
+          </AdminButton>
+        </AdminToolbar>
+        <OrganizerClaimTable
+          rows={controller.filteredRows}
+          selectedRequestId={controller.selected?.requestId ?? null}
+          onSelect={controller.select}
+        />
+      </Panel>
+      <AdminEditorGrid>
+        <OrganizerClaimEvidencePanel
+          details={controller.details}
+          isLoading={controller.isDetailLoading}
+          selected={controller.selected}
+        />
+        <OrganizerClaimDecisionPanel controller={controller} />
+      </AdminEditorGrid>
+    </AdminWorkbenchStack>
+  );
+}
+
+function OrganizerClaimTable({
+  onSelect,
+  rows,
+  selectedRequestId,
+}: {
+  onSelect: (row: AdminClubClaimListRow) => void;
+  rows: AdminClubClaimListRow[];
+  selectedRequestId: string | null;
+}) {
+  if (rows.length === 0) {
+    return (
+      <EmptyState
+        variant="workbench"
+        icon={<CheckCircle2 size={16} strokeWidth={1.9} />}
+      >
+        No pending organizer claims match this filter.
+      </EmptyState>
+    );
+  }
+  return (
+    <DataTable variant="workbench">
+      <thead>
+        <tr>
+          <th>Requester</th>
+          <th>Organizer</th>
+          <th>Evidence</th>
+          <th>Created</th>
+          <th>Select</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row) => (
+          <AdminTableRow
+            key={row.requestId}
+            selected={selectedRequestId === row.requestId}
+          >
+            <td>
+              <AdminRowTitle>
+                <strong>{row.requesterName}</strong>
+                <span>{row.requesterRole} · {row.contact ?? "no contact"}</span>
+              </AdminRowTitle>
+            </td>
+            <td>{row.clubId}</td>
+            <td>{row.proofCount} proof link{row.proofCount === 1 ? "" : "s"}</td>
+            <td>{formatDateTime(row.createdAt)}</td>
+            <td>
+              <TableActionButton onClick={() => onSelect(row)}>
+                Review
+              </TableActionButton>
+            </td>
+          </AdminTableRow>
+        ))}
+      </tbody>
+    </DataTable>
+  );
+}
+
+function OrganizerClaimEvidencePanel({
+  details,
+  isLoading,
+  selected,
+}: {
+  details: AdminClubClaimRequestDetails | null;
+  isLoading: boolean;
+  selected: AdminClubClaimListRow | null;
+}) {
+  return (
+    <AdminEditorPanel
+      icon={<FolderSearch size={18} strokeWidth={1.9} />}
+      title="Claim evidence"
+      action={isLoading ? "Loading" : details?.status ?? "No claim"}
+    >
+      {details ? (
+        <QualityList>
+          <StateRow label="Request" value={details.requestId} />
+          <StateRow label="Requester uid" value={details.requesterUid} />
+          <StateRow label="Requested role" value={details.requesterRole} />
+          <StateRow label="Email" value={details.businessEmail} />
+          <StateRow label="Phone" value={details.businessPhone} />
+          <StateRow label="Message" value={details.message} />
+          <StateRow
+            label="Catch profile"
+            value={details.requesterProfile.exists ?
+              details.requesterProfile.profileComplete ? "complete" : "incomplete" :
+              "missing"}
+          />
+          <StateRow label="Organizer" value={details.club.name ?? details.clubId} />
+          <StateRow label="Claim state" value={details.club.claimState} />
+          <StateRow label="Ownership" value={details.club.ownershipState} />
+          <StateRow label="Current owner" value={details.club.ownerUserId} />
+          <StateRow label="Canonical path" value={details.club.canonicalPath} />
+          <StateRow
+            label="Proof links"
+            value={<OrganizerClaimProofLinks urls={details.proofUrls} />}
+          />
+        </QualityList>
+      ) : (
+        <EmptyState
+          variant="workbench"
+          icon={<Clock3 size={16} strokeWidth={1.9} />}
+        >
+          {selected ?
+            "Loading claim evidence." :
+            "Select a pending claim to inspect its evidence."}
+        </EmptyState>
+      )}
+    </AdminEditorPanel>
+  );
+}
+
+function OrganizerClaimProofLinks({urls}: {urls: string[]}) {
+  if (urls.length === 0) return "none";
+  return (
+    <AdminTagRow as="span">
+      {urls.map((url, index) => (
+        <AdminLinkButton
+          href={url}
+          key={url}
+          rel="noreferrer"
+          target="_blank"
+        >
+          Proof {index + 1}
+        </AdminLinkButton>
+      ))}
+    </AdminTagRow>
+  );
+}
+
+function OrganizerClaimDecisionPanel({
+  controller,
+}: {
+  controller: OrganizerClaimReviewController;
+}) {
+  const isDeciding = controller.decisionInFlight !== null;
+  const displayedIssue = controller.validationIssue ?? controller.approvalIssue;
+  return (
+    <AdminEditorPanel
+      icon={<UploadCloud size={18} strokeWidth={1.9} />}
+      title="Claim decision"
+      action={controller.selected?.status ?? "No claim"}
+    >
+      {controller.selected ? (
+        <AdminForm variant="publishing" onSubmit={(event) => event.preventDefault()}>
+          <AdminEditorSection>
+            <legend>Decision context</legend>
+            <QualityList>
+              <StateRow label="Requester" value={controller.selected.requesterName} />
+              <StateRow label="Organizer" value={controller.selected.clubId} />
+              <StateRow label="Proof count" value={String(controller.selected.proofCount)} />
+            </QualityList>
+          </AdminEditorSection>
+          <AdminEditorSection>
+            <legend>Audited review note</legend>
+            <TextareaField
+              label="Decision reason"
+              onChange={controller.setNote}
+              rows={5}
+              value={controller.note}
+            />
+            {displayedIssue ? (
+              <AdminRoadmapListItem>
+                <FileWarning size={15} strokeWidth={1.9} />
+                <span>{displayedIssue}</span>
+              </AdminRoadmapListItem>
+            ) : null}
+          </AdminEditorSection>
+          <AdminTagRow>
+            <AdminButton
+              disabled={isDeciding || Boolean(controller.approvalIssue)}
+              icon={<CheckCircle2 size={15} strokeWidth={1.9} />}
+              onClick={() => void controller.decide("approve")}
+              variant="primary"
+            >
+              {decisionLabel(controller.decisionInFlight, "approve")}
+            </AdminButton>
+            <AdminButton
+              disabled={isDeciding || Boolean(controller.rejectionIssue)}
+              icon={<FileWarning size={15} strokeWidth={1.9} />}
+              onClick={() => void controller.decide("reject")}
+            >
+              {decisionLabel(controller.decisionInFlight, "reject")}
+            </AdminButton>
+          </AdminTagRow>
+        </AdminForm>
+      ) : (
+        <EmptyState
+          variant="workbench"
+          icon={<Clock3 size={16} strokeWidth={1.9} />}
+        >
+          Select a pending claim before deciding.
+        </EmptyState>
+      )}
+    </AdminEditorPanel>
+  );
+}
+
+function decisionLabel(
+  inFlight: ClubClaimDecision | null,
+  decision: ClubClaimDecision
+): string {
+  if (inFlight !== decision) return decision === "approve" ? "Approve" : "Reject";
+  return decision === "approve" ? "Approving" : "Rejecting";
 }
 
 function OrganizerDetailView({

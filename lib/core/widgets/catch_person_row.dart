@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
+import 'package:catch_dating_app/core/widgets/catch_row_press_surface.dart';
 import 'package:flutter/material.dart';
 
 // ── Data model ────────────────────────────────────────────────────────────────
@@ -161,13 +162,7 @@ class CatchPersonRow extends StatelessWidget {
       ),
     );
 
-    return Semantics(
-      button: onTap != null,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(onTap: onTap, child: row),
-      ),
-    );
+    return CatchRowPressSurface(onTap: onTap, child: row);
   }
 }
 

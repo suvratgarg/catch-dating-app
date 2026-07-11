@@ -40,6 +40,8 @@ class ExploreFeedViewModel {
 
   bool get isEmpty => items.isEmpty && externalItems.isEmpty;
   int get count => items.length + externalItems.length;
+  int get mappableEventCount =>
+      items.where((item) => item.event.hasExactStartingPoint).length;
   ExploreEventItem? get featuredItem => items.isEmpty ? null : items.first;
   List<ExploreEventItem> get railItems => items.skip(1).take(8).toList();
 
@@ -98,7 +100,7 @@ List<ExploreEventDayGroup> _groupByDay(
     for (final key in keys)
       ExploreEventDayGroup(
         day: key,
-        label: _labelForDay(key, today, tomorrow),
+        label: exploreFeedDayLabel(key, today: today, tomorrow: tomorrow),
         items: List.unmodifiable(
           groups[key]!
             ..sort((a, b) => a.event.startTime.compareTo(b.event.startTime)),
@@ -107,7 +109,11 @@ List<ExploreEventDayGroup> _groupByDay(
   ];
 }
 
-String _labelForDay(DateTime day, DateTime today, DateTime tomorrow) {
+String exploreFeedDayLabel(
+  DateTime day, {
+  required DateTime today,
+  required DateTime tomorrow,
+}) {
   if (day == today) {
     return 'Today · ${EventFormatters.shortDate(day)}';
   }
@@ -589,7 +595,6 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
               club: item.club,
               filters: filters,
               joinedClubIds: membershipClubIds,
-              followedClubIds: followedClubIds,
               activityKindFilter: activityKindFilter,
             ),
           )
@@ -604,10 +609,6 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
           )
           .toList()
         ..sort((a, b) => a.event.startTime.compareTo(b.event.startTime));
-  final rankedItems = promoteFollowedClubItemsForExplore(
-    items,
-    followedClubIds: followedClubIds,
-  );
   final externalItems =
       (externalEventsAsync.asData?.value ?? const <ExternalEvent>[])
           .where((event) => event.isUpcomingAt(now))
@@ -632,7 +633,7 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
 
   return AsyncData(
     ExploreFeedViewModel(
-      items: List.unmodifiable(rankedItems),
+      items: List.unmodifiable(items),
       externalItems: List.unmodifiable(externalItems),
     ),
   );
@@ -725,7 +726,6 @@ bool _matchesClubScopeFilters({
   required Club club,
   required ExploreFilterSelection filters,
   required Set<String> joinedClubIds,
-  required Set<String> followedClubIds,
   required ActivityKind? activityKindFilter,
 }) {
   // When the selected tag resolves to a concrete ActivityKind the events query
@@ -734,50 +734,8 @@ bool _matchesClubScopeFilters({
     club: club,
     filters: filters,
     joinedClubIds: joinedClubIds,
-    followedClubIds: followedClubIds,
     activityHandledByEventFilter: activityKindFilter != null,
   );
-}
-
-List<ExploreEventItem> promoteFollowedClubItemsForExplore(
-  List<ExploreEventItem> items, {
-  required Set<String> followedClubIds,
-  int firstPageSize = 10,
-  int targetFollowedCount = 2,
-}) {
-  if (followedClubIds.isEmpty || items.length <= 1) return items;
-
-  final pageSize = firstPageSize.clamp(0, items.length).toInt();
-  final firstPage = items.take(pageSize).toList(growable: true);
-  final existingFollowedCount = firstPage
-      .where((item) => followedClubIds.contains(item.event.clubId))
-      .length;
-  if (existingFollowedCount >= targetFollowedCount) return items;
-
-  final needed = targetFollowedCount - existingFollowedCount;
-  final promoted = <ExploreEventItem>[];
-  for (final item in items.skip(pageSize)) {
-    if (promoted.length >= needed) break;
-    if (followedClubIds.contains(item.event.clubId)) {
-      promoted.add(item);
-    }
-  }
-  if (promoted.isEmpty) return items;
-
-  final promotedIds = {for (final item in promoted) item.event.id};
-  final insertionIndex = firstPage.length < 2 ? firstPage.length : 2;
-  firstPage.insertAll(insertionIndex, promoted);
-  final firstPageIds = {
-    for (final item in firstPage.take(firstPageSize)) item.event.id,
-  };
-
-  return [
-    ...firstPage.take(firstPageSize),
-    for (final item in items)
-      if (!promotedIds.contains(item.event.id) &&
-          !firstPageIds.contains(item.event.id))
-        item,
-  ];
 }
 
 bool _matchesEventTimeFilters(

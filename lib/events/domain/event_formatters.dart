@@ -6,6 +6,9 @@ class EventFormatters {
   static String shortMonth(DateTime dateTime) =>
       AppTimeFormatters.shortMonth(dateTime);
 
+  static String longMonth(DateTime dateTime) =>
+      AppTimeFormatters.longMonth(dateTime);
+
   static String shortWeekday(DateTime dateTime) =>
       AppTimeFormatters.shortWeekday(dateTime);
 

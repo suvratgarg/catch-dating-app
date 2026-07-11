@@ -156,10 +156,8 @@ class ReviewsPreviewSection extends StatelessWidget {
   final ValueChanged<Review>? onRespondToReview;
 
   void _showAllReviews(BuildContext context) {
-    showModalBottomSheet<void>(
+    showCatchBottomSheet<void>(
       context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
       builder: (sheetContext) => CatchBottomSheetScaffold(
         title: 'All reviews (${reviews.length})',
         child: SizedBox(
@@ -410,10 +408,8 @@ Future<void> showReviewResponseSheet({
   required BuildContext context,
   required Review review,
 }) {
-  return showModalBottomSheet<void>(
+  return showCatchBottomSheet<void>(
     context: context,
-    isScrollControlled: true,
-    useSafeArea: true,
     builder: (_) => ReviewResponseSheet(review: review),
   );
 }

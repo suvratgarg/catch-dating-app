@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Host Edit Event" description="Host app — Edit a published event. One scrolling form: edit-scope notice, schedule (date/time/duration), where, event details + pace, description, and event policy. Schedule + policy lock read-only once the event has bookings/waitlist. Faithful to edit_hosted_event_screen.dart. Tweak flips the 'has bookings' locked state." -->
+<helmet>
+  <script src="./ds-base.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <style>
+    body { margin: 0; background: #E2E1DC; }
+  </style>
+</helmet>
+
+<div style="min-height: 100vh; display: flex; justify-content: center; padding: 40px 16px; background: #E2E1DC; font-family: var(--font-function); color: var(--ink); box-sizing: border-box">
+  <div data-screen-label="Host Edit Event" style="width: 390px; height: 812px; background: var(--bg); border-radius: 30px; border: 1px solid rgba(22,20,15,0.15); box-shadow: var(--shadow-overlay); overflow: hidden; display: flex; flex-direction: column; box-sizing: border-box">
+
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.StatusBar" hint-size="100%,44px"></x-import>
+
+    <!-- top bar -->
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.AppBar" title="Edit event" on-back="{{ noop }}" hint-size="100%,56px" style="display: block"></x-import>
+
+    <div style="flex: 1; min-height: 0; overflow: auto; padding: 18px var(--screen-px) 24px">
+
+      <!-- edit-scope notice -->
+      <div style="background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 14px; display: flex; gap: 12px; align-items: flex-start">
+        <i class="ph ph-info" style="font-size: 20px; flex: none; color: var(--primary); margin-top: 1px"></i>
+        <div style="flex: 1; min-width: 0">
+          <div style="display: flex; align-items: center; gap: 8px">
+            <div class="t-section-title" style="flex: 1; color: var(--ink)">{{ noticeTitle }}</div>
+            <sc-if value="{{ locked }}" hint-placeholder-val="{{ false }}">
+              <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Badge" tone="neutral" hint-size="60px,22px">Locked</x-import>
+            </sc-if>
+          </div>
+          <div class="t-body-s" style="color: var(--ink2); margin-top: 4px; text-wrap: pretty">{{ noticeMessage }}</div>
+        </div>
+      </div>
+
+      <!-- schedule -->
+      <div style="height: 20px"></div>
+      <div class="t-mono-label" style="margin-bottom: 8px">SCHEDULE</div>
+      <sc-if value="{{ locked }}" hint-placeholder-val="{{ false }}">
+        <div style="background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 14px">
+          <div class="t-section-title" style="color: var(--ink)">Sun, 22 Jun</div>
+          <div class="t-body-lead" style="color: var(--ink); margin-top: 4px">6:30 – 8:00 AM</div>
+          <div class="t-body-s" style="color: var(--ink2); margin-top: 8px; text-wrap: pretty">Schedule changes are blocked here to avoid changing attendee commitments.</div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ editable }}" hint-placeholder-val="{{ true }}">
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.FieldGroup" hint-size="100%,116px" style="display: block">
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" icon="calendar-blank" label="Date" value="{{ vals.date }}" trailing="chevron" onClick="{{ noop }}" hint-size="100%,58px"></x-import>
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" icon="clock" label="Start time" value="{{ vals.time }}" trailing="chevron" onClick="{{ noop }}" hint-size="100%,58px"></x-import>
+        </x-import>
+        <div style="height: 14px"></div>
+        <div class="t-mono-label" style="margin-bottom: 8px">DURATION</div>
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Stepper" value="{{ durationLabel }}" on-decrement="{{ durDown }}" on-increment="{{ durUp }}" hint-size="100%,56px" style="display: block"></x-import>
+      </sc-if>
+
+      <!-- where -->
+      <div style="height: 24px"></div>
+      <div class="t-mono-label" style="margin-bottom: 8px">WHERE</div>
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.FieldGroup" hint-size="100%,58px" style="display: block">
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" icon="map-pin" label="Location name" value="{{ vals.locName }}" onChange="{{ set.locName }}" hint-size="100%,58px"></x-import>
+      </x-import>
+      <div class="t-body-s" style="color: var(--ink3); margin-top: 6px; text-wrap: pretty">This is what attendees see in event cards and details.</div>
+      <div style="height: 14px"></div>
+      <div onClick="{{ noop }}" style="position: relative; height: 130px; border-radius: var(--radius-md); border: 1px solid var(--line2); background: repeating-linear-gradient(135deg, var(--raised), var(--raised) 11px, var(--surface) 11px, var(--surface) 22px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; cursor: pointer; overflow: hidden">
+        <i class="ph-fill ph-map-pin" style="font-size: 30px; color: var(--act-social-run-accent, var(--ink))"></i>
+        <span class="t-mono-label" style="font-size: 9px; color: var(--ink2)">TAP TO ADJUST PIN</span>
+      </div>
+      <div style="height: 16px"></div>
+      <div class="t-mono-label" style="margin-bottom: 8px">EXTRA DIRECTIONS · OPTIONAL</div>
+      <div style="border: 1px solid var(--line2); border-radius: var(--radius-interactive-tile); background: var(--surface); padding: 13px 16px; min-height: 64px">
+        <p class="t-body-l" style="margin: 0; color: var(--ink); line-height: 1.5; text-wrap: pretty">Meet by the blue gate at the jetty steps.</p>
+      </div>
+
+      <!-- event details -->
+      <div style="height: 24px"></div>
+      <div class="t-mono-label" style="margin-bottom: 8px">EVENT DETAILS</div>
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.FieldGroup" hint-size="100%,58px" style="display: block">
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" icon="ruler" label="Distance (km)" value="{{ vals.distance }}" onChange="{{ set.distance }}" hint-size="100%,58px"></x-import>
+      </x-import>
+      <div style="height: 14px"></div>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px">
+        <sc-for list="{{ paces }}" as="p" hint-placeholder-count="4">
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Chip" selected="{{ p.selected }}" onClick="{{ p.select }}" hint-size="84px,34px">{{ p.label }}</x-import>
+        </sc-for>
+      </div>
+
+      <!-- description -->
+      <div style="height: 22px"></div>
+      <div class="t-mono-label" style="margin-bottom: 8px">DESCRIPTION · OPTIONAL</div>
+      <div style="border: 1px solid var(--line2); border-radius: var(--radius-interactive-tile); background: var(--surface); padding: 13px 16px; min-height: 90px">
+        <p class="t-body-l" style="margin: 0; color: var(--ink); line-height: 1.5; text-wrap: pretty">Easy 5 km along the seafront, regroup at the lighthouse, then coffee at Carter Road.</p>
+      </div>
+
+      <!-- event policy -->
+      <div style="height: 24px"></div>
+      <div class="t-mono-label" style="margin-bottom: 8px">EVENT POLICY</div>
+      <sc-if value="{{ locked }}" hint-placeholder-val="{{ false }}">
+        <div style="background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 14px">
+          <div class="t-section-title" style="color: var(--ink)">Policy locked</div>
+          <div class="t-body-s" style="color: var(--ink2); margin-top: 4px; text-wrap: pretty">Capacity, pricing, admission, and cancellation policy lock once the event starts or someone books or joins the waitlist.</div>
+          <div style="height: 12px"></div>
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.FieldGroup" hint-size="100%,210px" style="display: block">
+            <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" label="Capacity" value="10" hint-size="100%,52px"></x-import>
+            <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" label="Price" value="₹499" divider="{{ true }}" hint-size="100%,52px"></x-import>
+            <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" label="Admission" value="Open capacity" divider="{{ true }}" hint-size="100%,52px"></x-import>
+            <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" label="Cancellation" value="Standard" divider="{{ true }}" hint-size="100%,52px"></x-import>
+          </x-import>
+        </div>
+      </sc-if>
+      <sc-if value="{{ editable }}" hint-placeholder-val="{{ true }}">
+        <div style="background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 16px">
+          <div class="t-body-s" style="color: var(--ink2)">Editable until the first booking or waitlist join.</div>
+          <div style="height: 14px"></div>
+          <div style="display: flex; gap: 12px">
+            <x-import component-from-global-scope="CatchDesignSystem_3a44f2.FieldGroup" hint-size="100%,58px" style="flex: 1; display: block"><x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" label="Max attendees" value="{{ vals.maxAtt }}" onChange="{{ set.maxAtt }}" hint-size="100%,58px"></x-import></x-import>
+            <x-import component-from-global-scope="CatchDesignSystem_3a44f2.FieldGroup" hint-size="100%,58px" style="flex: 1; display: block"><x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" label="Base price" leading="₹" value="{{ vals.basePrice }}" onChange="{{ set.basePrice }}" hint-size="100%,58px"></x-import></x-import>
+          </div>
+          <div style="height: 18px"></div>
+          <div class="t-mono-label" style="margin-bottom: 10px">ADMISSION FORMAT</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px">
+            <sc-for list="{{ admissions }}" as="ad" hint-placeholder-count="4">
+              <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Chip" selected="{{ ad.selected }}" onClick="{{ ad.select }}" hint-size="84px,34px">{{ ad.label }}</x-import>
+            </sc-for>
+          </div>
+          <p class="t-body-s" style="color: var(--ink2); margin: 10px 0 0; text-wrap: pretty">{{ admissionDescription }}</p>
+
+          <div style="height: 18px"></div>
+          <div class="t-mono-label" style="margin-bottom: 10px">AGE RANGE</div>
+          <div style="display: flex; gap: 12px">
+            <x-import component-from-global-scope="CatchDesignSystem_3a44f2.FieldGroup" hint-size="100%,58px" style="flex: 1; display: block"><x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" label="Min age" value="{{ vals.minAge }}" onChange="{{ set.minAge }}" hint-size="100%,58px"></x-import></x-import>
+            <x-import component-from-global-scope="CatchDesignSystem_3a44f2.FieldGroup" hint-size="100%,58px" style="flex: 1; display: block"><x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" label="Max age" value="{{ vals.maxAge }}" onChange="{{ set.maxAge }}" hint-size="100%,58px"></x-import></x-import>
+          </div>
+
+          <div style="height: 18px"></div>
+          <div class="t-mono-label" style="margin-bottom: 10px">CANCELLATION POLICY</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px">
+            <sc-for list="{{ policies }}" as="pol" hint-placeholder-count="3">
+              <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Chip" selected="{{ pol.selected }}" onClick="{{ pol.select }}" hint-size="92px,34px">{{ pol.label }}</x-import>
+            </sc-for>
+          </div>
+          <p class="t-body-s" style="color: var(--ink2); margin: 10px 0 0; text-wrap: pretty">{{ policySummary }}</p>
+        </div>
+      </sc-if>
+    </div>
+
+    <!-- save -->
+    <div style="flex: none; padding: 12px 20px 18px; background: var(--bg); border-top: 1px solid var(--line)">
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Button" full="{{ true }}" icon="floppy-disk" onClick="{{ noop }}" hint-size="100%,49px">Save changes</x-import>
+    </div>
+
+  </div>
+</div>
+
+<x-import component="TweaksPanel" from="./tweaks-panel.jsx" hint-size="0px,0px">
+  <x-import component="TweakSection" from="./tweaks-panel.jsx" label="Event state" hint-size="0px,0px"></x-import>
+  <x-import component="TweakToggle" from="./tweaks-panel.jsx" label="Has bookings (locks schedule & policy)" value="{{ locked }}" onChange="{{ setLocked }}" hint-size="0px,0px"></x-import>
+</x-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 390, &quot;height&quot;: 812}}">
+const PACES = [
+  { id: 'easy', label: 'Easy' },
+  { id: 'moderate', label: 'Moderate' },
+  { id: 'tempo', label: 'Tempo' },
+  { id: 'hard', label: 'Hard' },
+];
+const ADMISSIONS = [
+  { id: 'open', label: 'OPEN', desc: 'Anyone eligible can book until the event reaches capacity.' },
+  { id: 'invite', label: 'INVITE', desc: 'Only people with the invite code or private link can book. Waitlist is off by default.' },
+  { id: 'request', label: 'REQUEST', desc: 'People request a spot first. The host reviews their public profile before confirming who gets in.' },
+  { id: 'balanced', label: 'BALANCED', desc: 'Straight men and women are kept within one spot of each other. Queer, open, non-binary, and other attendees can book within total capacity.' },
+];
+const POLICIES = [
+  { id: 'flexible', label: 'FLEXIBLE', summary: 'Full refund up to 24 hours before the event.' },
+  { id: 'standard', label: 'STANDARD', summary: 'Full refund up to 48 hours before; 50% after that.' },
+  { id: 'strict', label: 'STRICT', summary: 'No refund within 7 days of the event.' },
+];
+
+const calIcon = React.createElement('i', { className: 'ph ph-calendar-blank', style: { fontSize: 18 } });
+const clockIcon = React.createElement('i', { className: 'ph ph-clock', style: { fontSize: 18 } });
+
+const STORE = 'hostEditEvent.tweaks';
+
+class Component extends DCLogic {
+  state = {
+    locked: this._read(),
+    pace: 'easy',
+    admission: 'open',
+    policy: 'standard',
+    durationMin: 90,
+    vals: {
+      date: 'Sun · 22/06/2025', time: '6:30 AM', locName: 'Carter Road jetty, Bandra West',
+      distance: '5', maxAtt: '10', basePrice: '499', minAge: '24', maxAge: '38',
+    },
+  };
+
+  _read() {
+    try { return JSON.parse(localStorage.getItem(STORE) || '{}').locked === true; }
+    catch (e) { return false; }
+  }
+
+  setLocked(v) {
+    this.setState({ locked: v });
+    try { localStorage.setItem(STORE, JSON.stringify({ locked: v })); } catch (e) {}
+    try { window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { locked: v } }, '*'); } catch (e) {}
+  }
+
+  durLabel() {
+    const m = this.state.durationMin;
+    const h = Math.floor(m / 60);
+    const r = m % 60;
+    return (h ? h + 'h' : '') + (h && r ? ' ' : '') + (r ? r + 'm' : (h ? '' : '0m'));
+  }
+
+  renderVals() {
+    const s = this.state;
+    const adm = ADMISSIONS.find((a) => a.id === s.admission);
+    const pol = POLICIES.find((p) => p.id === s.policy);
+    return {
+      locked: s.locked,
+      editable: !s.locked,
+      setLocked: (v) => this.setLocked(v),
+      noop: () => {},
+      calIcon, clockIcon,
+      vals: s.vals,
+      set: Object.fromEntries(Object.keys(s.vals).map((k) => [k, (v) => this.setState({ vals: { ...this.state.vals, [k]: v } })])),
+      noticeTitle: s.locked ? 'Schedule locked' : 'Published event',
+      noticeIconColor: 'var(--primary)',
+      noticeMessage: s.locked
+        ? 'You can still update location and descriptive details. Date, time, and duration stay locked after the event starts or once people have joined.'
+        : 'You can edit schedule, location, event details, capacity, pricing, admission policy, and invite setup until the first booking or waitlist join.',
+      durationLabel: this.durLabel(),
+      durUp: () => this.setState({ durationMin: Math.min(240, s.durationMin + 15) }),
+      durDown: () => this.setState({ durationMin: Math.max(30, s.durationMin - 15) }),
+      paces: PACES.map((p) => ({ label: p.label, selected: p.id === s.pace, select: () => this.setState({ pace: p.id }) })),
+      admissions: ADMISSIONS.map((a) => ({ label: a.label, selected: a.id === s.admission, select: () => this.setState({ admission: a.id }) })),
+      admissionDescription: adm.desc,
+      policies: POLICIES.map((p) => ({ label: p.label, selected: p.id === s.policy, select: () => this.setState({ policy: p.id }) })),
+      policySummary: pol.summary,
+    };
+  }
+}
+</script>
+</body>
+</html>

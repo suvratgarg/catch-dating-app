@@ -26,5 +26,10 @@ const schemaStartClubHostConversationCallablePayloadSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 180,
     },
+    'eventId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
   },
 };

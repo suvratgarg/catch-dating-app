@@ -72,7 +72,8 @@ export function checkOrganizerBuildOutputs({
   }
   checkPublicSourceMaps({distRoot, errors});
 
-  const sitemapUrls = new Set(extractSitemapUrls(sitemap ?? ""));
+  const sitemapEntries = extractSitemapEntries(sitemap ?? "");
+  const sitemapUrls = new Set(sitemapEntries.map((entry) => entry.url));
   const paths = new Set();
   let indexableListings = 0;
   let legacyRoutes = 0;
@@ -97,6 +98,7 @@ export function checkOrganizerBuildOutputs({
         errors,
         expectedRobots: listing.indexing,
         listingId: listing.id,
+        requireStaticProfile: true,
         routeHtml,
         routePath: listing.path,
       });
@@ -107,6 +109,13 @@ export function checkOrganizerBuildOutputs({
       indexableListings += 1;
       if (!sitemapUrls.has(canonicalUrl)) {
         errors.push(`${listing.id}: indexable listing missing from sitemap`);
+      } else if (isIsoDate(listing.lastVerifiedAt)) {
+        const sitemapEntry = sitemapEntries.find((entry) => entry.url === canonicalUrl);
+        if (sitemapEntry?.lastModified !== listing.lastVerifiedAt) {
+          errors.push(
+            `${listing.id}: sitemap lastmod does not match ${listing.lastVerifiedAt}`
+          );
+        }
       }
     } else if (sitemapUrls.has(canonicalUrl)) {
       errors.push(`${listing.id}: noindex listing present in sitemap`);
@@ -127,6 +136,7 @@ export function checkOrganizerBuildOutputs({
           errors,
           expectedRobots: "noindex, follow",
           listingId: listing.id,
+          requireStaticProfile: false,
           routeHtml: legacyHtml,
           routePath: legacyPath,
         });
@@ -157,6 +167,7 @@ function checkRouteHtml({
   errors,
   expectedRobots,
   listingId,
+  requireStaticProfile,
   routeHtml,
   routePath,
 }) {
@@ -177,6 +188,15 @@ function checkRouteHtml({
     }
   } else if (robots !== null) {
     errors.push(`${listingId}: ${routePath} has unexpected robots meta`);
+  }
+  if (requireStaticProfile) {
+    if (!routeHtml.includes('data-static-organizer-profile="true"')) {
+      errors.push(`${listingId}: ${routePath} missing static organizer content`);
+    }
+    if (!routeHtml.includes('type="application/ld+json"') ||
+      !routeHtml.includes('"@type":"Organization"')) {
+      errors.push(`${listingId}: ${routePath} missing Organization JSON-LD`);
+    }
   }
 }
 
@@ -224,10 +244,18 @@ function robotsMetaFor(html) {
     null;
 }
 
-function extractSitemapUrls(sitemap) {
-  return [...sitemap.matchAll(/<loc>(.*?)<\/loc>/g)]
-    .map((match) => unescapeXml(match[1]))
-    .sort();
+function extractSitemapEntries(sitemap) {
+  return [...sitemap.matchAll(/<url>(.*?)<\/url>/gs)]
+    .map((match) => ({
+      url: unescapeXml(match[1].match(/<loc>(.*?)<\/loc>/s)?.[1] ?? ""),
+      lastModified: match[1].match(/<lastmod>(.*?)<\/lastmod>/s)?.[1] ?? null,
+    }))
+    .filter((entry) => entry.url)
+    .sort((a, b) => a.url.localeCompare(b.url));
+}
+
+function isIsoDate(value) {
+  return /^\d{4}-\d{2}-\d{2}$/.test(String(value ?? ""));
 }
 
 function isNoindex(robots) {

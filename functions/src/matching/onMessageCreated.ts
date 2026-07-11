@@ -81,6 +81,7 @@ export async function onMessageCreatedHandler(
   let notificationTitle = "New message";
   let notificationBody = buildMessageBody(displayMessage);
   let scorecardEventIds: string[] = [];
+  let isDatingConversation = false;
 
   await db.runTransaction(async (tx) => {
     const senderProfileRef = db.collection("publicProfiles").doc(
@@ -101,7 +102,10 @@ export async function onMessageCreatedHandler(
       logger.info("Skipping notification for blocked match", {matchId});
       return;
     }
-    scorecardEventIds = Array.isArray(match.eventIds) ? match.eventIds : [];
+    isDatingConversation =
+      match.conversationType == null || match.conversationType === "match";
+    scorecardEventIds = isDatingConversation && Array.isArray(match.eventIds) ?
+      match.eventIds : [];
     recipientId =
       match.user1Id === message.senderId ? match.user2Id : match.user1Id;
     isFirstMessage = match.lastMessageAt == null;
@@ -139,7 +143,7 @@ export async function onMessageCreatedHandler(
     return;
   }
 
-  if (deps.recordSignalFacts) {
+  if (isDatingConversation && deps.recordSignalFacts) {
     await deps.recordSignalFacts(
       db,
       buildChatSignalFacts({

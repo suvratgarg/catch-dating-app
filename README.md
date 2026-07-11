@@ -43,10 +43,14 @@ Current docs:
 Preferred environment-aware app runs:
 
 ```bash
-./tool/flutter_with_env.sh dev run
-./tool/flutter_with_env.sh staging run
-./tool/flutter_with_env.sh prod run
+./tool/flutter_with_env.sh dev --platform ios run -d <ios-device-id>
+./tool/flutter_with_env.sh staging --platform android run -d <android-device-id>
+./tool/flutter_with_env.sh prod --platform web run -d chrome
 ```
+
+`run` requires one device and, when its id does not identify the platform,
+`--platform`. This keeps Android app-target flavors from being confused with
+Apple scheme names.
 
 ## Interactive Phone Debugging Loop
 
@@ -172,19 +176,19 @@ Android, iOS, and macOS builds use native flavors. The environment wrapper autom
 Use Firebase emulators in dev:
 
 ```bash
-./tool/flutter_with_env.sh dev run --dart-define=USE_FIREBASE_EMULATORS=true
+./tool/flutter_with_env.sh dev --platform ios run -d <ios-device-id> --dart-define=USE_FIREBASE_EMULATORS=true
 ```
 
 Enable push messaging:
 
 ```bash
-./tool/flutter_with_env.sh dev run --dart-define=ENABLE_PUSH_MESSAGING=true
+./tool/flutter_with_env.sh dev --platform ios run -d <ios-device-id> --dart-define=ENABLE_PUSH_MESSAGING=true
 ```
 
 Enable push messaging on web:
 
 ```bash
-./tool/flutter_with_env.sh dev run -d chrome \
+./tool/flutter_with_env.sh dev --platform web run -d chrome \
   --dart-define=ENABLE_PUSH_MESSAGING=true \
   --dart-define=FIREBASE_WEB_VAPID_KEY=your_web_push_certificate_key_pair
 ```
@@ -192,7 +196,7 @@ Enable push messaging on web:
 Combine local dev flags:
 
 ```bash
-./tool/flutter_with_env.sh dev run \
+./tool/flutter_with_env.sh dev --platform ios run -d <ios-device-id> \
   --dart-define=USE_FIREBASE_EMULATORS=true \
   --dart-define=ENABLE_PUSH_MESSAGING=true
 ```
@@ -234,15 +238,15 @@ environment, so switch first:
 - Paid Razorpay booking is enabled on Android and iOS only.
 - Web and macOS builds disable paid booking until a supported checkout flow is added for those platforms.
 - Push notifications are wired in-repo for Android and iOS.
-  Android now has `dev`, `staging`, and `prod` product flavors for the consumer app plus host role application IDs: `com.catchdates.host.dev`, `com.catchdates.host.staging`, and `com.catchdates.host`.
+  Android has six explicit role/environment flavors: `consumerDev`, `consumerStaging`, `consumerProd`, `hostDev`, `hostStaging`, and `hostProd`.
   iOS/macOS now have matching consumer `dev`, `staging`, and `prod` schemes/build configurations plus host `host-dev`, `host-staging`, and `host-prod` schemes. Host iOS bundle IDs use `com.catchdates.host.dev`, `com.catchdates.host.staging`, and `com.catchdates.host`.
-  Host builds use generated host-specific launcher icons (`AppIcon-host-*` on Apple platforms and `host*` Android launcher resources), and the manual GitHub TestFlight workflow can archive either `consumer` or `host`.
+  Host builds use generated host-specific launcher icons (`AppIcon-host-*` on Apple platforms and `host*` Android launcher resources). GitHub Consumer uploads are manual break-glass; app-relevant `main` pushes temporarily archive and upload Host automatically until authenticated Host Xcode Cloud distribution proof exists.
   App Check is registered and enforced for consumer and host Android, iOS/macOS, and web apps in all three Firebase environments.
   macOS push is intentionally disabled; direct Developer ID distribution is
   validated, but phone auth runtime behavior on macOS is intentionally deferred.
   Web push has Firebase Web Push VAPID keys in the checked-in Dart define files for the configured environments.
 - Callable Cloud Functions enforce Firebase App Check. See `functions/README.md` before adding new callable endpoints or changing Razorpay secrets.
-- iOS App Attest is declared in `ios/Runner/Runner.entitlements`; real-device App Check, phone auth, push, and upload flows should be smoke-tested in dev/staging after any Firebase or Apple capability change.
+- iOS App Attest and Push are declared in role-specific `ios/Runner/RunnerConsumer.entitlements` and `ios/Runner/RunnerHost.entitlements`; Consumer additionally owns HealthKit and Associated Domains. Real-device App Check, phone auth, push, and upload flows should be smoke-tested in dev/staging after any Firebase or Apple capability change.
 
 ## Firestore error handling
 

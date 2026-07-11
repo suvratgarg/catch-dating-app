@@ -565,10 +565,8 @@ class _SelfCheckInCardState extends State<SelfCheckInCard> {
   }
 
   Future<void> _scanHostQr(BuildContext context) async {
-    final matched = await showModalBottomSheet<bool>(
+    final matched = await showCatchBottomSheet<bool>(
       context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
       builder: (context) =>
           EventCheckInQrScannerSheet(eventId: widget.event.id),
     );

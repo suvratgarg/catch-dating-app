@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import crypto from "node:crypto";
 import {execFileSync} from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
@@ -55,7 +56,7 @@ test("approved organizer intake projections render canonical listings and suppre
   assert.equal(listings[0].claim.href, "/organizers/afterfly/#claim");
   assert.deepEqual(listings[0].publicApi, {
     state: "disabled",
-    reason: "Firestore claim target sync still needs create action for clubs/afterfly.",
+    reason: "Claiming is not available for this organizer yet.",
     claimTargetSyncStatus: "write_needed",
   });
   assert.equal(listings[0].city, "Indore");
@@ -88,7 +89,88 @@ test("approved organizer intake projections render canonical listings and suppre
     "--no-demo",
     "--check",
   ], {stdio: "pipe"});
+
+  const claimTargetPlanPath = path.join(tmpRoot, "organizer_claim_targets.json");
+  const readinessReceiptPath = path.join(tmpRoot, "claim_target_readiness.json");
+  fs.writeFileSync(
+    claimTargetPlanPath,
+    `${JSON.stringify(claimTargetPlan(), null, 2)}\n`
+  );
+  fs.writeFileSync(
+    readinessReceiptPath,
+    `${JSON.stringify(claimTargetReadinessReceipt(claimTargetPlanPath), null, 2)}\n`
+  );
+  execFileSync(process.execPath, [
+    scriptPath,
+    "--projection-plan",
+    projectionPath,
+    "--claim-target-sync-preview",
+    claimTargetSyncPreviewPath,
+    "--claim-target-plan",
+    claimTargetPlanPath,
+    "--claim-target-readiness-receipt",
+    readinessReceiptPath,
+    "--external-event-readiness",
+    externalEventReadinessPath,
+    "--seed-root",
+    seedRoot,
+    "--output",
+    outputPath,
+    "--no-demo",
+  ], {
+    env: {
+      ...process.env,
+      ORGANIZER_CLAIM_TARGET_PROJECT_ID: "catch-dating-app-64e51",
+    },
+    stdio: "pipe",
+  });
+  const readyListings = JSON.parse(fs.readFileSync(outputPath, "utf8"));
+  assert.deepEqual(readyListings[0].publicApi, {
+    state: "enabled",
+    reason: "The organizer claim target is ready.",
+    claimTargetSyncStatus: "in_sync",
+  });
 });
+
+function claimTargetPlan() {
+  return {
+    schemaVersion: 1,
+    targets: [
+      {
+        entityId: "afterfly",
+        path: "clubs/afterfly",
+        claimState: "unclaimed",
+        clubDocument: {name: "AFTER FLY"},
+      },
+    ],
+  };
+}
+
+function claimTargetReadinessReceipt(planPath) {
+  return {
+    schemaVersion: 1,
+    receiptType: "organizer_claim_target_readiness",
+    generatedAt: "2026-07-11T00:00:00.000Z",
+    mode: {source: "firestore_read", remoteWrites: 0},
+    projectId: "catch-dating-app-64e51",
+    plan: {
+      path: "fixture",
+      sha256: crypto.createHash("sha256")
+        .update(fs.readFileSync(planPath))
+        .digest("hex"),
+    },
+    summary: {targets: 1, inSync: 1, writesNeeded: 0},
+    actions: [
+      {
+        entityId: "afterfly",
+        path: "clubs/afterfly",
+        status: "in_sync",
+        merge: false,
+        reason: "public_fields_current",
+      },
+    ],
+  };
+}
 
 function approvedProjectionPlan() {
   return {

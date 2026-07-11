@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/dashboard/presentation/widgets/event_lifecycle_timeline.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -15,7 +14,7 @@ import 'support/app_shell_test_harness.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('home catch window opens the swipe deck for an attended event', (
+  testWidgets('catches tab opens the swipe deck for an attended event', (
     tester,
   ) async {
     final user = buildSocialReadyUser(name: 'Suvrat Garg');
@@ -40,8 +39,8 @@ void main() {
       ),
     );
 
-    expect(find.text('Event timeline'), findsOneWidget);
-    await tester.tap(find.byKey(EventLifecycleTimeline.actionKey('swipe')));
+    await openAppTab(tester, 'Catches');
+    await tester.tap(find.byKey(SwipeKeys.activeCatchWindowCard));
     await pumpFeatureUi(tester);
 
     expect(find.text('No more attendees'), findsOneWidget);
@@ -84,8 +83,8 @@ void main() {
       ),
     );
 
-    expect(find.text('Event timeline'), findsOneWidget);
-    await tester.tap(find.byKey(EventLifecycleTimeline.actionKey('swipe')));
+    await openAppTab(tester, 'Catches');
+    await tester.tap(find.byKey(SwipeKeys.activeCatchWindowCard));
     await pumpFeatureUi(tester);
 
     expect(find.text('Taylor, 30'), findsOneWidget);

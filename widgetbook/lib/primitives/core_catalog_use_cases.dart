@@ -61,7 +61,7 @@ import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_tab_dock.dart';
+import 'package:catch_dating_app/core/widgets/catch_tab_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -714,6 +714,50 @@ Widget catchToggleCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
+  type: CatchScreenTopBar,
+  path: '[Core catalog]/Navigation',
+)
+Widget catchScreenTopBarCatalogStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'CatchScreenTopBar',
+    catalogId: 'core.widgets.catch_screen_top_bar',
+    children: [
+      _StateCard(
+        label: 'root title / subtitle / action',
+        child: CatchScreenTopBar(
+          title: 'Chats',
+          subtitle: 'Messages from your matches',
+          actions: [
+            CatchIconAction(
+              icon: CatchIcons.search,
+              tooltip: 'Search chats',
+              onPressed: _noop,
+            ),
+          ],
+        ),
+      ),
+      _StateCard(
+        label: 'root search chrome',
+        child: CatchScreenTopBar(
+          leading: CatchIconAction(
+            icon: CatchIcons.locationOnOutlined,
+            tooltip: 'Change city',
+            onPressed: _noop,
+          ),
+          title: 'Explore',
+          subtitle: 'Tonight near you',
+          searchEnabled: true,
+          searchValue: '',
+          onSearch: _ignoreString,
+          searchPlaceholder: 'Search events',
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
   type: CatchTopBarTabBar,
   path: '[Core catalog]/Navigation',
 )
@@ -962,10 +1006,10 @@ Widget catchStepProgressCatalogStates(BuildContext context) {
 
 Widget catchTabDockCatalogStates(BuildContext context) {
   return _CatalogScreen(
-    title: 'CatchTabDock',
-    catalogId: 'core.widgets.catch_tab_dock',
+    title: 'CatchTabBar',
+    catalogId: 'core.widgets.catch_tab_bar',
     children: const [
-      _StateCard(label: 'interactive dock', child: _TabDockDemo()),
+      _StateCard(label: 'interactive bar', child: _TabBarDemo()),
     ],
   );
 }
@@ -3706,35 +3750,35 @@ class _ToggleDemoState extends State<_ToggleDemo> {
   }
 }
 
-class _TabDockDemo extends StatefulWidget {
-  const _TabDockDemo();
+class _TabBarDemo extends StatefulWidget {
+  const _TabBarDemo();
 
   @override
-  State<_TabDockDemo> createState() => _TabDockDemoState();
+  State<_TabBarDemo> createState() => _TabBarDemoState();
 }
 
-class _TabDockDemoState extends State<_TabDockDemo> {
+class _TabBarDemoState extends State<_TabBarDemo> {
   var _active = 'home';
 
   @override
   Widget build(BuildContext context) {
-    return CatchTabDock<String>(
+    return CatchTabBar<String>(
       active: _active,
       onChanged: (value) => setState(() => _active = value),
       items: [
-        CatchTabDockItem(
+        CatchTabBarItem(
           id: 'home',
           icon: CatchIcons.homeOutlined,
           activeIcon: CatchIcons.homeRounded,
           label: 'Home',
         ),
-        CatchTabDockItem(
+        CatchTabBarItem(
           id: 'explore',
           icon: CatchIcons.search,
           label: 'Explore',
           badgeCount: 3,
         ),
-        CatchTabDockItem(
+        CatchTabBarItem(
           id: 'chats',
           icon: CatchIcons.chatBubbleOutlineRounded,
           label: 'Chats',

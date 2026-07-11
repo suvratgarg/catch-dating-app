@@ -1,9 +1,17 @@
 import {hostListings} from "../organizers/data";
-import {isUnclaimedListing} from "../organizers/selectors";
+import {
+  isClaimSubmissionEnabledListing,
+  isUnclaimedListing,
+} from "../organizers/selectors";
 import type {HostListing} from "../organizers/types";
 
 export type ClaimRouteLocation = Pick<Location, "pathname" | "search">;
-export type ClaimUrlState = "alreadyClaimed" | "pendingClaim" | "notFound" | null;
+export type ClaimUrlState =
+  | "alreadyClaimed"
+  | "claimUnavailable"
+  | "pendingClaim"
+  | "notFound"
+  | null;
 
 export interface ClaimRouteState {
   lookup: string | null;
@@ -84,6 +92,9 @@ function claimStateForLocation({
   }
   if (lookup && !listing) return "notFound";
   if (listing && !isUnclaimedListing(listing)) return "alreadyClaimed";
+  if (listing && !isClaimSubmissionEnabledListing(listing)) {
+    return "claimUnavailable";
+  }
   return null;
 }
 

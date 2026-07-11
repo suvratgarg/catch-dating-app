@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-06T10:16:00.091Z",
+  "generatedAt": "2026-07-10T20:20:29.522Z",
   "baseRef": "HEAD^",
   "baseStatus": "git-ref",
   "baseWarning": null,
@@ -10,20 +10,351 @@
     "policy": "New public widget classes need Widgetbook and widget catalog coverage. New private widget classes and Widget-returning helpers must be inlined/deleted, merged into an existing primitive, or promoted to public cataloged widgets."
   },
   "summary": {
-    "addedWidgetClasses": 0,
-    "addedPublicWidgetClasses": 0,
-    "addedPrivateWidgetClasses": 0,
-    "addedWidgetReturningHelpers": 0,
+    "addedWidgetClasses": 24,
+    "addedPublicWidgetClasses": 23,
+    "addedPrivateWidgetClasses": 1,
+    "addedWidgetReturningHelpers": 2,
     "movedWidgetClasses": 0,
     "movedWidgetReturningHelpers": 0,
-    "coveredNewWidgets": 0,
-    "unresolved": 0,
-    "widgetsByStatus": {},
-    "helpersByStatus": {},
-    "issues": {}
+    "coveredNewWidgets": 22,
+    "unresolved": 4,
+    "widgetsByStatus": {
+      "covered": 22,
+      "unresolved": 2
+    },
+    "helpersByStatus": {
+      "unresolved": 2
+    },
+    "issues": {
+      "missing-widgetbook": 1,
+      "private-widget-class": 1,
+      "widget-returning-helper": 2
+    }
   },
   "movedWidgets": [],
   "movedWidgetHelpers": [],
-  "addedWidgets": [],
-  "addedWidgetHelpers": []
+  "addedWidgets": [
+    {
+      "name": "CatchRowPressSurface",
+      "baseClass": "StatefulWidget",
+      "visibility": "public",
+      "line": 8,
+      "file": "lib/core/widgets/catch_row_press_surface.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "CatchSliverTerminalPadding",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 152,
+      "file": "lib/core/widgets/catch_section_layout.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": true,
+      "status": "unresolved",
+      "issues": [
+        "missing-widgetbook"
+      ],
+      "recommendedAction": "Add an exact-name Widgetbook component or merge/delete the redundant public widget."
+    },
+    {
+      "name": "CatchTabBar",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 28,
+      "file": "lib/core/widgets/catch_tab_bar.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "CatchTabBarButton",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 130,
+      "file": "lib/core/widgets/catch_tab_bar.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "CatchTabBarIcon",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 261,
+      "file": "lib/core/widgets/catch_tab_bar.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "CatchScreenHeaderTitle",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 22,
+      "file": "lib/core/widgets/catch_top_bar.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "CatchScreenTopBar",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 120,
+      "file": "lib/core/widgets/catch_top_bar.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "ExploreScreen",
+      "baseClass": "ConsumerStatefulWidget",
+      "visibility": "public",
+      "line": 42,
+      "file": "lib/explore/presentation/explore_screen.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "_ExploreDiscoveryTopBar",
+      "baseClass": "StatelessWidget",
+      "visibility": "private",
+      "line": 166,
+      "file": "lib/explore/presentation/widgets/explore_header.dart",
+      "widgetbookCovered": false,
+      "catalogMentioned": false,
+      "status": "unresolved",
+      "issues": [
+        "private-widget-class"
+      ],
+      "recommendedAction": "Inline/delete the private widget, merge it into an existing public primitive, or promote it to a public widget with Widgetbook and catalog coverage."
+    },
+    {
+      "name": "HostAnalyticsRangeChip",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 303,
+      "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "HostAnalyticsRangeSheet",
+      "baseClass": "StatefulWidget",
+      "visibility": "public",
+      "line": 338,
+      "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "HostAnalyticsDualBar",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 632,
+      "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "HostEventLifecycleRow",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 200,
+      "file": "lib/hosts/presentation/host_operations/host_events_list.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "HostEventLifecycleDateBlock",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 308,
+      "file": "lib/hosts/presentation/host_operations/host_events_list.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "HostInsightsScreen",
+      "baseClass": "ConsumerWidget",
+      "visibility": "public",
+      "line": 7,
+      "file": "lib/hosts/presentation/host_operations/host_insights_screen.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "HostInsightsScaffold",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 59,
+      "file": "lib/hosts/presentation/host_operations/host_insights_screen.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "HostInsightsHeader",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 100,
+      "file": "lib/hosts/presentation/host_operations/host_insights_screen.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "HostInsightsUnavailableScreen",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 142,
+      "file": "lib/hosts/presentation/host_operations/host_insights_screen.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "HostBroadcastComposerSheet",
+      "baseClass": "ConsumerStatefulWidget",
+      "visibility": "public",
+      "line": 51,
+      "file": "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "HostInboxScreen",
+      "baseClass": "ConsumerStatefulWidget",
+      "visibility": "public",
+      "line": 39,
+      "file": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "HostInboxScopeSelector",
+      "baseClass": "StatefulWidget",
+      "visibility": "public",
+      "line": 257,
+      "file": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "HostInboxAudienceRail",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 376,
+      "file": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "HostInboxWorkspaceSliver",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 414,
+      "file": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    },
+    {
+      "name": "HostInboxEmptyState",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "line": 510,
+      "file": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
+      "widgetbookCovered": true,
+      "catalogMentioned": true,
+      "status": "covered",
+      "issues": [],
+      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
+    }
+  ],
+  "addedWidgetHelpers": [
+    {
+      "name": "savedEventsAction",
+      "owner": "_ExploreScreenState",
+      "ownerBaseClass": "ConsumerState<ExploreScreen>",
+      "visibility": "public",
+      "line": 186,
+      "scope": "class-method",
+      "file": "lib/explore/presentation/explore_screen.dart",
+      "status": "unresolved",
+      "issues": [
+        "widget-returning-helper"
+      ],
+      "recommendedAction": "Inline into the owning build method when purely local, merge into an existing primitive when duplicated, or extract a public Widgetbook/cataloged widget when reusable."
+    },
+    {
+      "name": "_exploreMixedFeedCard",
+      "owner": null,
+      "ownerBaseClass": null,
+      "visibility": "private",
+      "line": 286,
+      "scope": "top-level",
+      "file": "lib/explore/presentation/widgets/explore_events_section.dart",
+      "status": "unresolved",
+      "issues": [
+        "widget-returning-helper"
+      ],
+      "recommendedAction": "Inline into the owning build method when purely local, merge into an existing primitive when duplicated, or extract a public Widgetbook/cataloged widget when reusable."
+    }
+  ]
 }

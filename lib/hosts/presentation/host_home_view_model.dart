@@ -52,36 +52,37 @@ HostHomeRouteState buildHostHomeRouteState({
   );
 }
 
-HostHomeEventsSectionState buildHostHomeEventsSectionState(
-  AsyncValue<List<Event>> events,
-) {
+HostEventsWorkspaceState buildHostEventsWorkspaceState(
+  AsyncValue<List<Event>> events, {
+  required DateTime now,
+  required HostEventsLifecycleFilter selectedFilter,
+}) {
   if (events.isLoading) {
-    return const HostHomeEventsSectionState(
-      status: HostHomeEventsStatus.loading,
+    return HostEventsWorkspaceState(
+      status: HostEventsWorkspaceStatus.loading,
+      selectedFilter: selectedFilter,
     );
   }
   if (events.hasError) {
-    return HostHomeEventsSectionState(
-      status: HostHomeEventsStatus.error,
+    return HostEventsWorkspaceState(
+      status: HostEventsWorkspaceStatus.error,
+      selectedFilter: selectedFilter,
       error: events.error,
       stackTrace: events.stackTrace,
     );
   }
 
-  final rows = HostHomeEventRowsState.fromEvents(
-    events.asData?.value ?? const <Event>[],
-  );
-  return HostHomeEventsSectionState(
-    status: rows.isEmpty
-        ? HostHomeEventsStatus.empty
-        : HostHomeEventsStatus.populated,
-    rows: rows,
+  return HostEventsWorkspaceState.fromEvents(
+    events: events.asData?.value ?? const <Event>[],
+    now: now,
+    selectedFilter: selectedFilter,
   );
 }
 
 HostHomeTodayDashboardState buildHostHomeTodayDashboardState(
-  AsyncValue<List<Event>> events,
-) {
+  AsyncValue<List<Event>> events, {
+  required DateTime now,
+}) {
   if (events.isLoading) {
     return const HostHomeTodayDashboardState(
       status: HostHomeTodayStatus.loading,
@@ -96,17 +97,45 @@ HostHomeTodayDashboardState buildHostHomeTodayDashboardState(
   }
 
   final activeEvents = events.asData?.value
-      .where((event) => !event.isCancelled)
+      .where((event) => !event.isCancelled && event.endTime.isAfter(now))
       .toList();
-  activeEvents?.sort((a, b) => a.startTime.compareTo(b.startTime));
+  activeEvents?.sort((a, b) {
+    final aIsLive = !a.startTime.isAfter(now) && a.endTime.isAfter(now);
+    final bIsLive = !b.startTime.isAfter(now) && b.endTime.isAfter(now);
+    if (aIsLive != bIsLive) return aIsLive ? -1 : 1;
+    return a.startTime.compareTo(b.startTime);
+  });
   final event = activeEvents?.firstOrNull;
   if (event == null) {
     return const HostHomeTodayDashboardState(status: HostHomeTodayStatus.empty);
   }
 
+  final laterHorizon = DateTime(
+    now.year,
+    now.month,
+    now.day,
+  ).add(const Duration(days: 7));
+  final laterEvents = activeEvents!
+      .skip(1)
+      .where(
+        (candidate) =>
+            candidate.startTime.isAfter(now) &&
+            candidate.startTime.isBefore(laterHorizon),
+      )
+      .take(3)
+      .map(
+        (candidate) =>
+            HostEventLifecycleRowData.fromEvent(event: candidate, now: now),
+      )
+      .toList(growable: false);
+  final tasks = HostHomeTodayTaskData.forEvents(
+    activeEvents,
+  ).toList(growable: false);
+
   return HostHomeTodayDashboardState(
     status: HostHomeTodayStatus.content,
     event: event,
-    tasks: HostHomeTodayTaskData.forEvent(event),
+    laterEvents: List<HostEventLifecycleRowData>.unmodifiable(laterEvents),
+    tasks: List<HostHomeTodayTaskData>.unmodifiable(tasks),
   );
 }

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Host App — Insights" description="The cross-event analytics destination (from Organizer → Trends). A DateRangePicker in a Sheet that scopes the data, a MetricGrid with ▲▼ deltas-vs-previous and data-quality badges, a granularity SegPill over the demand→booking trend, a by-format split, top events as EventLifecycleRows, and a data-quality Callout. Absorbs the old buried Clubs › Insights sub-tab. Composed purely of catalogue widgets." -->
+<helmet>
+  <script src="./ds-base.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <style>
+    body { margin: 0; background: #E2E1DC; }
+    .mbar { padding: 6px 20px 0; }
+    .mtop { display: flex; align-items: center; gap: 10px; padding: 6px 0 10px; }
+    .bk { width: 36px; height: 36px; border-radius: var(--radius-pill); border: 1px solid var(--line2); background: var(--surface); display: flex; align-items: center; justify-content: center; cursor: pointer; flex: none; }
+    .rangechip { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line2); border-radius: var(--radius-pill); padding: 9px 13px; background: var(--surface); cursor: pointer; color: var(--ink); }
+    .rangechip i { color: var(--ink2); }
+    .sechead { margin: 22px 0 12px; color: var(--ink2); }
+    .chart { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 15px; }
+    .bars { display: flex; align-items: flex-end; gap: 5px; height: 96px; margin-top: 12px; }
+    .bars .col { flex: 1; position: relative; height: 100%; display: flex; align-items: flex-end; }
+    .bars .dem { width: 100%; background: color-mix(in srgb, var(--ink) 12%, transparent); border-radius: 2px 2px 0 0; }
+    .bars .book { position: absolute; left: 0; right: 0; bottom: 0; background: var(--ink); opacity: 0.85; border-radius: 2px 2px 0 0; }
+    .fmt { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); }
+    .fmt:first-child { border-top: 0; }
+    .fmt .dot { width: 8px; height: 8px; border-radius: 2px; flex: none; }
+    .fmt .track { width: 90px; height: 6px; border-radius: var(--radius-pill); background: var(--line2); overflow: hidden; }
+    .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 4px 14px; }
+    .scrim { position: absolute; inset: 0; background: color-mix(in srgb, var(--ink) 40%, transparent); z-index: 40; }
+  </style>
+</helmet>
+
+<div style="min-height: 100vh; display: flex; justify-content: center; padding: 40px 16px; background: #E2E1DC; font-family: var(--font-function); color: var(--ink); box-sizing: border-box">
+  <div data-screen-label="Host Insights" style="position: relative; width: 390px; height: 812px; background: var(--bg); border-radius: 30px; border: 1px solid rgba(22,20,15,0.15); box-shadow: var(--shadow-overlay); overflow: hidden; display: flex; flex-direction: column; box-sizing: border-box">
+
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.StatusBar" hint-size="100%,44px"></x-import>
+
+    <div class="mbar">
+      <div class="mtop">
+        <div class="bk" onClick="{{ noop }}"><i class="ph ph-arrow-left"></i></div>
+        <div style="flex: 1; min-width: 0">
+          <div class="t-kicker" style="color: var(--ink3)">Bandra Social · all events</div>
+          <h2 class="t-title-l" style="margin: 2px 0 0">Insights</h2>
+        </div>
+      </div>
+      <button class="rangechip t-mono-label" onClick="{{ openRange }}"><i class="ph ph-calendar-blank"></i>{{ rangeLabel }}<i class="ph ph-caret-down"></i></button>
+      <div style="height: 14px"></div>
+    </div>
+
+    <div style="flex: 1; min-height: 0; overflow: auto; padding: 2px 20px 24px">
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.MetricGrid" hint-size="100%,300px" style="display: block">
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.StatCard" icon="target" value="86%" label="Fill rate" delta="6% vs prev" deltaUp="{{ true }}" hint-size="100%,100px"></x-import>
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.StatCard" icon="seal-check" value="78%" label="Check-in rate" delta="2% vs prev" deltaUp="{{ true }}" hint-size="100%,100px"></x-import>
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.StatCard" icon="ticket" value="142" label="Bookings" delta="18% vs prev" deltaUp="{{ true }}" hint-size="100%,100px"></x-import>
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.StatCard" icon="heart" value="28" label="Mutual matches" delta="9% vs prev" deltaUp="{{ true }}" hint-size="100%,100px"></x-import>
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.StatCard" icon="arrows-clockwise" value="64%" label="Repeat rate" delta="3% vs prev" deltaUp="{{ false }}" badge="Partial" hint-size="100%,100px"></x-import>
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.StatCard" icon="currency-inr" value="₹48,000" label="Gross revenue" delta="22% vs prev" deltaUp="{{ true }}" hint-size="100%,100px"></x-import>
+      </x-import>
+
+      <div class="sechead t-mono-label">Trend · bookings vs demand</div>
+      <div style="margin-bottom: 12px">
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.SegPill" options="{{ grans }}" value="{{ gran }}" onChange="{{ setGran }}" hint-size="100%,42px"></x-import>
+      </div>
+      <div class="chart">{{ trendChart }}</div>
+
+      <div class="sechead t-mono-label">By format</div>
+      <div class="card">{{ formatSplit }}</div>
+
+      <div class="sechead t-mono-label">Top events</div>
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.EventLifecycleRow" activity="pubQuiz" date="10" month="JUN" state="past" title="Tuesday Trivia Night" meta="26 attended · 100% full · free" onClick="{{ noop }}" style="display: block"></x-import>
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.EventLifecycleRow" activity="socialRun" date="07" month="JUN" state="past" title="Sundowner 5K, Bandra seafront" meta="27 attended · 100% full · free" onClick="{{ noop }}" style="display: block"></x-import>
+
+      <div class="sechead t-mono-label">Data quality</div>
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Callout" tone="warning" icon="warning" title="2 events missing reviews" hint-size="100%,90px" style="display: block">
+        Send the review prompts now to close the loop.
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Button" size="sm" onClick="{{ noop }}" style="margin-top: 10px" hint-size="160px,40px">Send review prompts</x-import>
+      </x-import>
+    </div>
+
+    <sc-if value="{{ rangeOpen }}" hint-placeholder-val="{{ false }}">
+      <div class="scrim" onClick="{{ closeRange }}"></div>
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Sheet" title="Date range" hint-size="100%,520px" style="position: absolute; left: 0; right: 0; bottom: 0; z-index: 41; max-height: 92%">
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.DateRangePicker" today="{{ today }}" value="{{ rangeValue }}" onApply="{{ applyRange }}" onCancel="{{ closeRange }}" hint-size="100%,460px"></x-import>
+      </x-import>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const GRANS = [{ value: 'day', label: 'Day' }, { value: 'week', label: 'Week' }, { value: 'month', label: 'Month' }];
+const BOOK = [58, 66, 74, 82, 70, 94, 76, 88, 70, 94, 86, 98];
+const DEM = [86, 98, 104, 118, 100, 130, 110, 124, 100, 130, 118, 132];
+const FORMATS = [
+  ['Pub quiz', 'var(--act-pub-quiz-accent)', 46],
+  ['Social run', 'var(--act-social-run-accent)', 34],
+  ['Supper club', 'var(--act-dinner-accent)', 14],
+  ['Padel', 'var(--act-padel-accent)', 6],
+];
+
+class Component extends DCLogic {
+  state = { gran: 'week', rangeOpen: false, rangeLabel: '30 days' };
+
+  renderVals() {
+    const h = React.createElement;
+    const max = Math.max(...DEM, 1);
+    // Data-viz nodes (no catalogue dual-series chart exists) — kept out of the
+    // template so theme/data values never become style holes.
+    const trendChart = h('div', { className: 'bars' },
+      BOOK.map((b, i) => h('div', { key: i, className: 'col' },
+        h('div', { className: 'dem', style: { height: Math.round((DEM[i] / max) * 100) + '%' } }),
+        h('div', { className: 'book', style: { height: Math.round((b / max) * 100) + '%' } }),
+      )),
+    );
+    const formatSplit = FORMATS.map(([label, accent, pct], i) => h('div', { key: i, className: 'fmt' },
+      h('span', { className: 'dot', style: { background: accent } }),
+      h('span', { className: 't-body', style: { flex: 1, fontWeight: 600 } }, label),
+      h('span', { className: 'track' }, h('span', { style: { display: 'block', height: '100%', width: pct + '%', background: accent } })),
+      h('span', { className: 't-mono', style: { fontSize: 11, fontWeight: 700, color: 'var(--ink2)', width: 30, textAlign: 'right' } }, pct + '%'),
+    ));
+    return {
+      noop: () => {},
+      today: { y: 2025, m: 5, d: 17 },
+      rangeValue: { s: { y: 2025, m: 4, d: 18 }, e: { y: 2025, m: 5, d: 17 }, k: '30d' },
+      grans: GRANS,
+      gran: this.state.gran,
+      setGran: (v) => this.setState({ gran: v }),
+      trendChart,
+      formatSplit,
+      rangeLabel: this.state.rangeLabel,
+      rangeOpen: this.state.rangeOpen,
+      openRange: () => this.setState({ rangeOpen: true }),
+      closeRange: () => this.setState({ rangeOpen: false }),
+      applyRange: (r) => this.setState({ rangeOpen: false, rangeLabel: r && r.k && r.k !== 'custom' ? this.state.rangeLabel : 'Custom' }),
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catch for Organizers — UI/UX punch list</title>
+<link rel="stylesheet" href="../../colors_and_type.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #E2E1DC; color: var(--ink); font-family: var(--font-function); -webkit-font-smoothing: antialiased; }
+  .doc { max-width: 1000px; margin: 0 auto; padding: 0 40px; }
+  .mast { padding: 58px 0 24px; }
+  .mast .kicker { font-family: var(--font-data); font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink2); }
+  .mast h1 { font-family: var(--font-voice); font-size: 52px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.0; margin: 14px 0 0; }
+  .mast .lede { max-width: 680px; font-size: 16px; line-height: 1.6; color: var(--ink2); margin: 16px 0 0; text-wrap: pretty; }
+  .legend { display: flex; flex-wrap: wrap; gap: 10px 18px; margin-top: 22px; font-family: var(--font-data); font-size: 11px; color: var(--ink2); align-items: center; }
+  .legend b { color: var(--ink); }
+  .score { display: flex; gap: 12px; margin-top: 20px; }
+  .score .c { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; }
+  .score .c .n { font-family: var(--font-data); font-size: 24px; font-weight: 700; }
+  .score .c .l { font-family: var(--font-data); font-size: 9px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink2); margin-top: 4px; }
+
+  section { padding: 30px 0 6px; border-top: 1px solid var(--line); margin-top: 30px; }
+  h2 { font-family: var(--font-voice); font-size: 26px; font-weight: 600; letter-spacing: -0.02em; margin: 0; display: flex; align-items: baseline; gap: 12px; }
+  h2 .cnt { font-family: var(--font-data); font-size: 12px; font-weight: 700; color: var(--ink3); }
+  h2 i { font-size: 22px; color: var(--ink2); }
+  .ssub { font-size: 14px; color: var(--ink2); margin: 8px 0 0; max-width: 700px; }
+
+  .item { display: grid; grid-template-columns: 64px 1fr; gap: 14px; padding: 15px 0; border-top: 1px solid var(--line); }
+  .item:first-of-type { border-top: 0; margin-top: 12px; }
+  .tags { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+  .tag { font-family: var(--font-data); font-size: 8.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 7px; border-radius: 5px; }
+  .alt-px { background: rgba(67,86,168,0.13); color: #3a4d96; }
+  .alt-sc { background: rgba(46,154,160,0.15); color: #1c6b6f; }
+  .alt-fl { background: rgba(216,90,60,0.14); color: var(--act-social-run-deep); }
+  .p1 { background: var(--ink); color: var(--primary-ink); }
+  .p2 { background: rgba(22,20,15,0.09); color: var(--ink2); }
+  .p3 { background: rgba(22,20,15,0.05); color: var(--ink3); }
+  .item .body b { font-family: var(--font-head); font-size: 15px; font-weight: 700; color: var(--ink); }
+  .item .body p { font-size: 13.5px; line-height: 1.55; color: var(--ink2); margin: 4px 0 0; text-wrap: pretty; }
+  footer { padding: 40px 0 90px; font-family: var(--font-data); font-size: 12px; color: var(--ink3); line-height: 1.7; margin-top: 30px; border-top: 1px solid var(--line); }
+</style>
+</head>
+<body>
+<div class="doc">
+  <header class="mast">
+    <div class="kicker">Catch for Organizers · Redesign · UI/UX punch list</div>
+    <h1>Every nail<br>we can hammer.</h1>
+    <p class="lede">A comb-through of the redesign prototype, surface by surface — from pixel and element to whole flows. Nothing's too small, nothing's too large. Each item is tagged by altitude and priority so it can be triaged, not just admired.</p>
+    <div class="legend">
+      <span><b>Altitude:</b></span>
+      <span class="tag alt-px">PX</span> pixel / element
+      <span class="tag alt-sc">SC</span> screen
+      <span class="tag alt-fl">FL</span> flow / IA
+      <span style="width:1px;height:16px;background:var(--line2)"></span>
+      <span><b>Priority:</b></span>
+      <span class="tag p1">P1</span> do first
+      <span class="tag p2">P2</span> next
+      <span class="tag p3">P3</span> polish
+    </div>
+    <div class="score" id="score"></div>
+  </header>
+  <div id="root"></div>
+  <footer>
+    <div><b>Target ·</b> explorations/host-redesign/CatchForOrganizers.html</div>
+    <div><b>Method ·</b> surface-by-surface read of the prototype + the IA review. A working list, not a spec — sequence by priority against real usage data.</div>
+  </footer>
+</div>
+
+<script>
+const AUDIT = [
+  { s: 'Global shell & navigation', icon: 'ph-squares-four', sub: 'The frame every screen sits in — status bar, tab bar, overlays, motion.', items: [
+    { t: 'Tab bar unread dot is hardcoded', d: 'Inbox always shows a notification dot regardless of real unread count. Drive it from data and show a count badge, not a bare dot — and clear it when read.', alt: 'sc', p: 'p1' },
+    { t: 'No swipe-back on overlays', d: 'Manage and Insights slide in from the right but can only be dismissed by the back chevron. Add an edge-swipe-to-dismiss; it\u2019s the expected iOS gesture for pushed screens.', alt: 'sc', p: 'p2' },
+    { t: 'Two stacked status bars', d: 'The shell renders a status bar and each overlay renders its own; on open you briefly get a visual double. Hoist one status bar above the whole device frame.', alt: 'px', p: 'p2' },
+    { t: 'Tab labels are tiny (8.5px)', d: 'Below comfortable legibility. Bump to ~10px or drop labels for larger icons + a selected-pill, and confirm the 44px touch target.', alt: 'px', p: 'p2' },
+    { t: 'No active-tab affordance beyond color', d: 'Selected tab only changes ink/fill. Add a subtle indicator (top hairline or filled chip) for at-a-glance orientation.', alt: 'px', p: 'p3' },
+    { t: 'Toast collides with the tab bar', d: 'Toast sits at bottom:90px and can overlap the dock on shorter devices. Anchor it above the tab bar with safe spacing, and let it stack/queue.', alt: 'px', p: 'p3' },
+    { t: 'No global "create" reach', d: 'Creating an event is only reachable from the Events tab. Consider a persistent compose affordance (center dock button or long-press tab) given it\u2019s a top-frequency action.', alt: 'fl', p: 'p2' },
+    { t: 'No notification center', d: 'The "Needs you" queue covers triage on Today, but there\u2019s no home for time-stamped notifications (a guest booked, a payout cleared). Decide if Needs-you is the canonical surface or if a bell is needed.', alt: 'fl', p: 'p2' },
+  ]},
+  { s: 'Today (home)', icon: 'ph-house', sub: 'The flagship ops surface — the hero, the triage queue, the week ahead.', items: [
+    { t: 'Hero state is static, not time-aware', d: '"STARTS IN 3H" and the greeting "Tuesday evening" are hardcoded. Make it a live countdown that flips to LIVE NOW at start and to a post-event "Wrap up" state after — the whole premise of the surface.', alt: 'fl', p: 'p1' },
+    { t: 'Hero "to review" count isn\u2019t a shortcut', d: 'The 2-to-review stat is the most urgent number on screen but isn\u2019t tappable; the only CTA dumps you in Setup. Let each stat deep-link (review \u2192 requests, waiting \u2192 waitlist).', alt: 'sc', p: 'p1' },
+    { t: 'Single-event hero can\u2019t handle a double-header', d: 'If two events fall on one day, only one shows. Make the hero a swipeable stack or add a "+1 more today" affordance.', alt: 'fl', p: 'p2' },
+    { t: 'Share button is icon-only', d: 'The ghost share button has no label and competes with the primary CTA. Label it or move sharing into an overflow once the primary action is unmistakable.', alt: 'px', p: 'p3' },
+    { t: 'Facepile overlaps the stats row', d: 'On the hero, the right-aligned facepile crowds the "To review" column at 390px. Give it its own row or cap the stat widths.', alt: 'px', p: 'p3' },
+    { t: 'Needs-you items aren\u2019t resolvable inline', d: 'Tapping a queue card jumps into Manage; you can\u2019t approve/offer/dismiss from the queue. Add inline actions and swipe-to-dismiss so triage is one tap, not a context switch.', alt: 'sc', p: 'p1' },
+    { t: 'No "all caught up" empty state', d: 'When the queue is empty there\u2019s nothing reassuring. Design the zero-state (a calm "You\u2019re all set for tonight").', alt: 'sc', p: 'p2' },
+    { t: 'Inconsistent count chip', d: '"Finish your draft" has no number chip while siblings do, so its row reads lighter. Use a consistent trailing (chip or a meta time like "saved 2d ago").', alt: 'px', p: 'p3' },
+    { t: 'Org chip caret implies switching with one org', d: 'Same lesson as the old Clubs tab: hide the caret/disable the switcher when there\u2019s a single organizer.', alt: 'px', p: 'p3' },
+    { t: 'No last-updated / refresh', d: 'Counts read as live but there\u2019s no freshness signal or pull-to-refresh on an ops screen people will check repeatedly.', alt: 'sc', p: 'p3' },
+  ]},
+  { s: 'Events', icon: 'ph-ticket', sub: 'The lifecycle list and the create surface.', items: [
+    { t: 'No "Live" segment', d: 'The IA called for Upcoming / Live / Past but the prototype only has Upcoming / Past; tonight\u2019s event hides inside Upcoming. Add Live (or a pinned live banner) so an in-progress event is never buried.', alt: 'fl', p: 'p1' },
+    { t: '"Repeat last" doesn\u2019t name what it repeats', d: 'The button is generic. Show the target ("Repeat \u2018Tuesday Trivia\u2019") and drop the user into a prefilled wizard with a new date.', alt: 'sc', p: 'p1' },
+    { t: 'Create hierarchy may be inverted', d: 'New event is the ink primary, Repeat is secondary \u2014 but for a recurring organizer, repeat is the higher-frequency act. Consider equal weight or repeat-first.', alt: 'sc', p: 'p2' },
+    { t: 'No month grouping or search', d: 'A productive organizer will have a long list. Group by month with sticky headers and add search/filter by format.', alt: 'sc', p: 'p2' },
+    { t: 'Past rows under-inform', d: 'Past events show only "26 attended". Add the result line that matters (fill %, gross, caught) and a one-tap to Report.', alt: 'sc', p: 'p2' },
+    { t: 'Tonight\u2019s row still leads with the date number', d: 'The row tag says "Tonight" but the date block still shows "17". For today/live, swap the date block for a status glyph or "TODAY".', alt: 'px', p: 'p3' },
+    { t: 'No empty states', d: 'First-run (no events) and empty Past need designed zero-states with a create nudge.', alt: 'sc', p: 'p2' },
+  ]},
+  { s: 'Manage event', icon: 'ph-sliders-horizontal', sub: 'The consolidated per-event hub: Setup / Guests / Live / Report.', items: [
+    { t: 'Mode doesn\u2019t follow lifecycle', d: 'Manage always opens on Setup. A live event should open on Live; a past event on Report. Default the mode to the event\u2019s state.', alt: 'fl', p: 'p1' },
+    { t: 'Lost event context inside Manage', d: 'Once in Manage there\u2019s no date/place/cover summary \u2014 only the title in the bar. Add a slim context header (when · where · capacity) so the host stays oriented.', alt: 'sc', p: 'p2' },
+    { t: 'Two roster entry points compete', d: 'The peek deck (Setup/Live/Report) and the Guests tab show the same roster two ways. Decide: peek = shortcut that opens the Guests tab, or Guests = the only home and peek a live-count chip. Don\u2019t duplicate.', alt: 'fl', p: 'p1' },
+    { t: 'Check-in is buried during Live', d: 'During an event, checking people in is the highest-frequency action, but it\u2019s a secondary row under the run-of-show card. Promote a big check-in affordance (or make the peek\u2019s primary action "Check in").', alt: 'sc', p: 'p1' },
+    { t: 'Run-of-show lacks time + progress', d: 'The Live stepper shows step N of 5 but no elapsed/target time and no progress dots. Add a timeline and per-step time targets so pacing is visible.', alt: 'sc', p: 'p2' },
+    { t: 'Destructive action mixed into Setup scroll', d: 'Cancel event sits in the same list as edit/share. Group it in a clearly separated "danger zone" at the bottom.', alt: 'px', p: 'p2' },
+    { t: 'Static metric tiles read as tappable', d: 'Setup tiles (Booked / Policy) look like cards but aren\u2019t interactive; "Policy: Standard" especially invites a tap. Either make them drill in or visually de-emphasize as read-only.', alt: 'px', p: 'p3' },
+    { t: 'Report "Caught 3" dead-ends', d: 'The most delightful metric (mutual matches) has nowhere to go. Link it to the post-event story / feedback.', alt: 'sc', p: 'p3' },
+    { t: 'Revenue shows "Free" oddly for paid-but-zero', d: 'Distinguish a genuinely free event from a paid event with \u20b90 collected; they\u2019re different truths for a host.', alt: 'px', p: 'p3' },
+  ]},
+  { s: 'Roster (peek + sheet)', icon: 'ph-users-three', sub: 'The tucked roster and its bottom sheet.', items: [
+    { t: 'No search or bulk actions', d: 'Long rosters need search and "Approve all requests" / "Offer next N to waitlist" \u2014 the bulk movement that the old board had. Add them to the sheet header.', alt: 'sc', p: 'p1' },
+    { t: 'Approve / Offer give no feedback', d: 'Buttons don\u2019t show pending/confirmed states. Add optimistic state + undo, and animate the row moving between groups.', alt: 'sc', p: 'p2' },
+    { t: 'Sheet counts are static', d: 'Header "24 booked · 6 waiting" doesn\u2019t recompute as you approve/offer. Bind it to live group sizes.', alt: 'px', p: 'p2' },
+    { t: 'Grab handle implies drag, only taps', d: 'The handle suggests a draggable sheet but only tap-to-close works. Wire a real drag, or replace the handle with a close affordance.', alt: 'px', p: 'p3' },
+    { t: 'No per-guest profile', d: 'Rows aren\u2019t tappable; a host reviewing a request needs the public profile. Make each row open the guest.', alt: 'sc', p: 'p2' },
+    { t: 'Peek can drift from reality', d: 'Peek shows "to review" but doesn\u2019t emphasize urgency. Pulse the folded corner / accent when requests are pending.', alt: 'px', p: 'p3' },
+  ]},
+  { s: 'Inbox', icon: 'ph-chat-circle', sub: 'Event-scoped messaging and blasts.', items: [
+    { t: 'No prospective-vs-booked distinction', d: 'The brief is "messaging prospective guests," but threads aren\u2019t segmented. Separate requests/prospective from booked, and allow messaging waitlist/requesters \u2014 "all booked" alone is too narrow.', alt: 'fl', p: 'p1' },
+    { t: 'Blast is a stub', d: 'The composer is a toast. Build it: audience picker (all booked / waitlist / no-shows), templates (reminder, location, change), and send confirmation.', alt: 'fl', p: 'p1' },
+    { t: 'Only events with threads appear', d: 'No all-conversations view, no per-event empty state, no search. Add a default list and search.', alt: 'sc', p: 'p2' },
+    { t: 'Many events \u2192 many blast buttons', d: 'A blast button per event group doesn\u2019t scale. Consider a compose entry + event picker instead of repeating the button.', alt: 'sc', p: 'p3' },
+    { t: 'No date grouping on threads', d: 'Relative times ("12m") without day separators get ambiguous. Group by day.', alt: 'px', p: 'p3' },
+  ]},
+  { s: 'Organizer (brand)', icon: 'ph-storefront', sub: 'The durable organizer surface that merges brand + host identity.', items: [
+    { t: 'Payouts-not-set-up isn\u2019t a nudge', d: 'If Stripe isn\u2019t connected, paid events can\u2019t collect \u2014 but payouts is a quiet row. When unset, surface a prominent setup banner (it gates revenue).', alt: 'fl', p: 'p1' },
+    { t: 'Host team duplicated', d: '"You as host" sits in the brand body and "Host team" is a Manage row \u2014 two homes for people. Merge into one team section with you pinned on top.', alt: 'sc', p: 'p2' },
+    { t: 'Tab label "Organizer" is abstract', d: 'Consider the org name/avatar as the tab (like a profile tab) so it reads as "your brand," not a category.', alt: 'sc', p: 'p3' },
+    { t: 'Stats are thin', d: 'Only Members / Events. Add rating, upcoming count, and followers \u2014 the proof a brand surface should lead with.', alt: 'px', p: 'p3' },
+    { t: 'Formats are display-only', d: 'The format chips imply editability (they\u2019re your offering) but don\u2019t act. Either make them manage formats or demote to plain meta.', alt: 'px', p: 'p3' },
+    { t: 'Sign-out needs a confirm', d: 'Combined "Settings & sign out" row can sign you out without confirmation. Split settings from sign-out or confirm.', alt: 'px', p: 'p3' },
+  ]},
+  { s: 'Insights', icon: 'ph-chart-line-up', sub: 'The cross-event analytics destination.', items: [
+    { t: 'No period-over-period deltas', d: 'The single highest-value analytics add: every metric should show \u25b2/\u25bc vs the prior period. Absolute numbers don\u2019t tell a host if they\u2019re improving.', alt: 'sc', p: 'p1' },
+    { t: 'Range control doesn\u2019t scope the data', d: 'The 7D/30D/90D/Month segmented control changes nothing \u2014 metrics and chart are static. Wire it (it\u2019s the same bug we fixed once; don\u2019t reintroduce it).', alt: 'sc', p: 'p1' },
+    { t: 'Chart bars aren\u2019t inspectable', d: 'Per the earlier note, a trend should be scrubbable \u2014 tap/hold a bar for its value + period. Add a y-scale or value-on-touch.', alt: 'sc', p: 'p2' },
+    { t: 'No per-format breakdown', d: 'A multi-format organizer needs to see runs vs quizzes vs dinners. Add a format split (the reframe makes this essential).', alt: 'fl', p: 'p2' },
+    { t: 'Top events don\u2019t drill', d: 'Rows are inert; each should open that event\u2019s Report. Cross-link the two analytics homes.', alt: 'sc', p: 'p2' },
+    { t: 'Discovery and reviews are conflated', d: '"Reviews & saves" mixes discovery (saves, views, search appearances) with reputation (reviews, responses). Split them.', alt: 'px', p: 'p3' },
+    { t: 'Data-quality rows lack fixes', d: 'Flagging "2 events missing reviews" is good; add the one-tap fix (send review prompts).', alt: 'sc', p: 'p3' },
+  ]},
+  { s: 'System: type, color, spacing, a11y', icon: 'ph-ruler', sub: 'Cross-cutting consistency the prototype hardcodes and should tokenize.', items: [
+    { t: 'Radii are ad-hoc', d: 'Cards use 12 / 14 / 16 / 18 / 26 / 28 / 38px with no system. Map to the named radius tokens (--radius-md / -lg / -hero-card) and pick one card radius.', alt: 'px', p: 'p2' },
+    { t: 'Hardcoded px instead of tokens', d: 'Spacing and color literals are everywhere (gaps, paddings, #18171A). Adopt --s* spacing and token colors so the prototype tracks the system and theming works.', alt: 'px', p: 'p2' },
+    { t: 'Stat value sizes drift', d: 'Metric numbers appear at 26 / 24 / 22 / 21 / 20px across surfaces. Define a stat type scale (display / large / inline) and apply consistently.', alt: 'px', p: 'p2' },
+    { t: 'Mono label sizes drift', d: 'Kicker/label mono runs 8 / 8.5 / 9 / 9.5 / 10px. Consolidate to the two defined mono steps (t-meta / t-mono-label).', alt: 'px', p: 'p3' },
+    { t: 'Sub-44px touch targets', d: 'Warm Approve/Offer buttons and some chips are ~30px tall. Raise hit areas to 44px for on-the-floor, one-handed use.', alt: 'px', p: 'p1' },
+    { t: 'Warm-tint avatar contrast unverified', d: 'Ink initials on low-chroma warm fills should be checked for AA; some hues may be too light behind dark initials.', alt: 'px', p: 'p2' },
+    { t: 'Motion is minimal', d: 'Sheets/overlays slide but list changes (approve \u2192 move groups, check-in \u2192 status flip) have no transitions. Add small, meaningful motion; respect prefers-reduced-motion.', alt: 'px', p: 'p3' },
+    { t: 'No dynamic-type / scaling', d: 'Fixed px won\u2019t respond to OS text size. For an operational tool used by many ages, support larger type.', alt: 'px', p: 'p3' },
+  ]},
+  { s: 'Missing flows & states', icon: 'ph-flow-arrow', sub: 'Whole surfaces the prototype stubs or omits.', items: [
+    { t: 'Create / edit event wizard', d: 'The core creative act is a toast. Build the real flow + the repeat-last clone path (prefilled from the chosen event).', alt: 'fl', p: 'p1' },
+    { t: 'Onboarding & auth', d: 'Becoming an organizer, claiming a seeded organizer page, first-run, and sign-in aren\u2019t represented. Design the once-but-critical entry.', alt: 'fl', p: 'p1' },
+    { t: 'Dedicated Live "event mode"', d: 'Consider promoting Live out of Manage into a focused, glanceable full-screen mode (big check-in, current step, timer) for on-site, one-handed use.', alt: 'fl', p: 'p2' },
+    { t: 'Loading / error / offline', d: 'No skeletons, retry, or offline states anywhere. An on-site tool will hit bad venue wifi \u2014 design the degraded paths.', alt: 'fl', p: 'p2' },
+    { t: 'Empty states everywhere', d: 'No events, no guests, no messages, no insights-yet, first organizer \u2014 each needs a designed zero-state with the right next action.', alt: 'sc', p: 'p2' },
+    { t: 'Multi-organizer switching', d: 'The org chip implies switching; if multiple organizers (national brand / multi-city) are real, design the switcher and how Today/Events span or scope to one.', alt: 'fl', p: 'p3' },
+    { t: 'Cancel / refund flow', d: 'Cancel is a single destructive button; the actual flow (notify, refund per policy, waitlist handling) is the hard part and is unbuilt.', alt: 'fl', p: 'p2' },
+  ]},
+];
+
+const ALT = { px: ['alt-px','PX'], sc: ['alt-sc','SC'], fl: ['alt-fl','FL'] };
+const root = document.getElementById('root');
+let n1=0,n2=0,n3=0,total=0,byAlt={px:0,sc:0,fl:0};
+AUDIT.forEach(sec => {
+  sec.items.forEach(it => { total++; byAlt[it.alt]++; if(it.p==='p1')n1++; else if(it.p==='p2')n2++; else n3++; });
+  const el = document.createElement('section');
+  el.innerHTML = `<h2><i class="ph ${sec.icon}"></i>${sec.s}<span class="cnt">${sec.items.length}</span></h2><p class="ssub">${sec.sub}</p>` +
+    sec.items.map(it => `<div class="item"><div class="tags"><span class="tag ${ALT[it.alt][0]}">${ALT[it.alt][1]}</span><span class="tag ${it.p}">${it.p.toUpperCase()}</span></div><div class="body"><b>${it.t}</b><p>${it.d}</p></div></div>`).join('');
+  root.appendChild(el);
+});
+document.getElementById('score').innerHTML = [
+  [total,'Improvements'],[n1,'P1 · do first'],[byAlt.px,'Pixel'],[byAlt.sc,'Screen'],[byAlt.fl,'Flow']
+].map(([n,l])=>`<div class="c"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
+</script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Host Draft Picker" description="Host app — Draft-picker sheet shown when opening Create event/club with saved drafts. Resume a draft or start fresh; each draft row shows saved time and a delete affordance. Faithful to draft_picker_sheet.dart. Rendered over a dimmed Events backdrop." -->
+<helmet>
+  <script src="./ds-base.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <style>
+    body { margin: 0; background: #E2E1DC; }
+  </style>
+</helmet>
+
+<div style="min-height: 100vh; display: flex; justify-content: center; padding: 40px 16px; background: #E2E1DC; font-family: var(--font-function); color: var(--ink); box-sizing: border-box">
+  <div data-screen-label="Host Draft Picker" style="position: relative; width: 390px; height: 812px; background: var(--bg); border-radius: 30px; border: 1px solid rgba(22,20,15,0.15); box-shadow: var(--shadow-overlay); overflow: hidden; display: flex; flex-direction: column; box-sizing: border-box">
+
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.StatusBar" hint-size="100%,44px"></x-import>
+
+    <!-- dimmed backdrop: Events -->
+    <div style="flex: 1; min-height: 0; padding: 12px 20px; opacity: 0.55">
+      <div class="t-kicker" style="color: var(--ink3)">OPERATIONS</div>
+      <h1 class="t-headline-s" style="margin: 6px 0 16px; color: var(--ink)">Host events</h1>
+      <div style="background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 16px">
+        <div class="t-section-title" style="color: var(--ink)">Sunday sea-face crew</div>
+        <div class="t-body-s" style="color: var(--ink2); margin-top: 4px">Bandra · Mumbai</div>
+      </div>
+    </div>
+
+    <!-- scrim -->
+    <div style="position: absolute; inset: 44px 0 0; background: color-mix(in srgb, var(--ink) 42%, transparent)"></div>
+
+    <!-- sheet -->
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Sheet" title="Resume a draft?" subtitle="Pick up where you left off, or start fresh." hint-size="100%,300px" style="position: absolute; left: 0; right: 0; bottom: 0">
+      <div style="border: 1px solid var(--line2); border-radius: var(--radius-md); overflow: hidden">
+        <sc-for list="{{ drafts }}" as="d" hint-placeholder-count="2">
+          <sc-if value="{{ d.divider }}" hint-placeholder-val="{{ false }}"><div style="height: 1px; background: var(--line)"></div></sc-if>
+          <div onClick="{{ noop }}" style="display: flex; align-items: center; gap: 12px; padding: 14px; cursor: pointer">
+            <i class="ph ph-file-dashed" style="font-size: 22px; color: var(--ink3); flex: none"></i>
+            <div style="flex: 1; min-width: 0">
+              <div class="t-label-l" style="color: var(--ink)">{{ d.title }}</div>
+              <div class="t-mono-label" style="font-size: 8.5px; color: var(--ink3); margin-top: 3px">{{ d.meta }}</div>
+            </div>
+            <x-import component-from-global-scope="CatchDesignSystem_3a44f2.IconButton" icon="trash" variant="plain" size="36" aria-label="Delete draft" onClick="{{ noop }}" hint-size="36px,36px"></x-import>
+            <i class="ph ph-caret-right" style="font-size: 16px; color: var(--ink3); flex: none"></i>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="height: 16px"></div>
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Button" variant="secondary" full="{{ true }}" icon="plus" onClick="{{ noop }}" hint-size="100%,49px">Start a fresh event</x-import>
+    </x-import>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 390, &quot;height&quot;: 812}}">
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      noop: () => {},
+      drafts: [
+        { title: 'Sundowner 5K, Bandra seafront', meta: 'SAVED 2 HOURS AGO · STEP 4 OF 5', divider: false },
+        { title: 'Carter Road tempo run', meta: 'SAVED YESTERDAY · STEP 2 OF 5', divider: true },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -3,12 +3,16 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
 import 'package:flutter/material.dart';
 
 enum HostHomeTab { today, events }
 
 typedef HostHomeCreateEventCallback = void Function(Club club);
+typedef HostHomeRepeatEventCallback = void Function(Club club, Event event);
 typedef HostHomeManageEventCallback = void Function(Club club, Event event);
+typedef HostHomeOpenTaskCallback =
+    void Function(Club club, Event event, HostHomeTodayTaskData task);
 
 enum HostHomeRouteStatus { authRequired, loading, error, empty, loaded }
 
@@ -91,56 +95,176 @@ class HostHomeScreenState {
   }
 }
 
-@immutable
-class HostHomeEventRowsState {
-  const HostHomeEventRowsState({required this.rows});
+enum HostEventsLifecycleFilter {
+  upcoming('Upcoming'),
+  live('Live'),
+  past('Past');
 
-  factory HostHomeEventRowsState.fromEvents(
-    Iterable<Event> events, {
-    int limit = 3,
-  }) {
-    final activeEvents = events.where((event) => !event.isCancelled).toList()
-      ..sort((a, b) => a.startTime.compareTo(b.startTime));
-    final visibleEvents = activeEvents.take(limit).toList(growable: false);
-    return HostHomeEventRowsState(
-      rows: [
-        for (var index = 0; index < visibleEvents.length; index++)
-          HostHomeEventRowData(event: visibleEvents[index], divider: index > 0),
-      ],
-    );
-  }
+  const HostEventsLifecycleFilter(this.label);
 
-  final List<HostHomeEventRowData> rows;
-
-  bool get isEmpty => rows.isEmpty;
+  final String label;
 }
 
-@immutable
-class HostHomeEventRowData {
-  const HostHomeEventRowData({required this.event, required this.divider});
-
-  final Event event;
-  final bool divider;
-
-  String get title => event.title;
-  String get timeRangeLabel => event.timeRangeLabel;
-}
-
-enum HostHomeEventsStatus { loading, error, empty, populated }
+enum HostEventsWorkspaceStatus { loading, error, empty, populated }
 
 @immutable
-class HostHomeEventsSectionState {
-  const HostHomeEventsSectionState({
+class HostEventsWorkspaceState {
+  const HostEventsWorkspaceState({
     required this.status,
-    this.rows = const HostHomeEventRowsState(rows: []),
+    required this.selectedFilter,
+    this.sections = const <HostEventsMonthSection>[],
+    this.repeatSource,
     this.error,
     this.stackTrace,
   });
 
-  final HostHomeEventsStatus status;
-  final HostHomeEventRowsState rows;
+  factory HostEventsWorkspaceState.fromEvents({
+    required Iterable<Event> events,
+    required DateTime now,
+    required HostEventsLifecycleFilter selectedFilter,
+  }) {
+    final active = events.where((event) => !event.isCancelled).toList();
+    final past = active.where((event) => !event.endTime.isAfter(now)).toList()
+      ..sort((a, b) => b.endTime.compareTo(a.endTime));
+    final repeatSource = past.where(_canRepeatEvent).firstOrNull;
+    final filtered = switch (selectedFilter) {
+      HostEventsLifecycleFilter.upcoming =>
+        active.where((event) => event.startTime.isAfter(now)).toList()
+          ..sort((a, b) => a.startTime.compareTo(b.startTime)),
+      HostEventsLifecycleFilter.live =>
+        active
+            .where(
+              (event) =>
+                  !event.startTime.isAfter(now) && event.endTime.isAfter(now),
+            )
+            .toList()
+          ..sort((a, b) => a.startTime.compareTo(b.startTime)),
+      HostEventsLifecycleFilter.past => past,
+    };
+    final sectionsByMonth = <String, List<HostEventLifecycleRowData>>{};
+    for (final event in filtered) {
+      final key = '${event.startTime.year}-${event.startTime.month}';
+      sectionsByMonth
+          .putIfAbsent(key, () => <HostEventLifecycleRowData>[])
+          .add(HostEventLifecycleRowData.fromEvent(event: event, now: now));
+    }
+    final sections = <HostEventsMonthSection>[
+      for (final entry in sectionsByMonth.entries)
+        HostEventsMonthSection(
+          key: entry.key,
+          label: _monthSectionLabel(entry.value.first.event.startTime, now),
+          rows: List<HostEventLifecycleRowData>.unmodifiable(entry.value),
+        ),
+    ];
+
+    return HostEventsWorkspaceState(
+      status: sections.isEmpty
+          ? HostEventsWorkspaceStatus.empty
+          : HostEventsWorkspaceStatus.populated,
+      selectedFilter: selectedFilter,
+      sections: List<HostEventsMonthSection>.unmodifiable(sections),
+      repeatSource: repeatSource,
+    );
+  }
+
+  final HostEventsWorkspaceStatus status;
+  final HostEventsLifecycleFilter selectedFilter;
+  final List<HostEventsMonthSection> sections;
+  final Event? repeatSource;
   final Object? error;
   final StackTrace? stackTrace;
+
+  bool get canRepeat => repeatSource != null;
+
+  String get repeatLabel {
+    final event = repeatSource;
+    if (event == null) return 'Repeat last';
+    final label = event.eventFormat.label.trim();
+    return label.isEmpty ? 'Repeat last' : 'Repeat ‘$label’';
+  }
+
+  String get emptyTitle => switch (selectedFilter) {
+    HostEventsLifecycleFilter.upcoming => 'No upcoming events',
+    HostEventsLifecycleFilter.live => 'Nothing live right now',
+    HostEventsLifecycleFilter.past => 'No past events yet',
+  };
+
+  String get emptyBody => switch (selectedFilter) {
+    HostEventsLifecycleFilter.upcoming =>
+      'Create your next event to start filling this list.',
+    HostEventsLifecycleFilter.live =>
+      'Your next event appears here when it starts.',
+    HostEventsLifecycleFilter.past =>
+      'Completed events and their attendance will appear here.',
+  };
+}
+
+@immutable
+class HostEventsMonthSection {
+  const HostEventsMonthSection({
+    required this.key,
+    required this.label,
+    required this.rows,
+  });
+
+  final String key;
+  final String label;
+  final List<HostEventLifecycleRowData> rows;
+}
+
+@immutable
+class HostEventLifecycleRowData {
+  const HostEventLifecycleRowData({
+    required this.event,
+    required this.isToday,
+    required this.isLive,
+    required this.isPast,
+    required this.fillRatio,
+  });
+
+  factory HostEventLifecycleRowData.fromEvent({
+    required Event event,
+    required DateTime now,
+  }) {
+    final capacity = event.capacityLimit;
+    final fillRatio = capacity <= 0
+        ? 0.0
+        : (event.signedUpCount / capacity).clamp(0.0, 1.0);
+    return HostEventLifecycleRowData(
+      event: event,
+      isToday: DateUtils.isSameDay(event.startTime, now),
+      isLive: !event.startTime.isAfter(now) && event.endTime.isAfter(now),
+      isPast: !event.endTime.isAfter(now),
+      fillRatio: fillRatio,
+    );
+  }
+
+  final Event event;
+  final bool isToday;
+  final bool isLive;
+  final bool isPast;
+  final double fillRatio;
+
+  String get dateLabel => '${event.startTime.day}'.padLeft(2, '0');
+  String get monthLabel =>
+      EventFormatters.shortMonth(event.startTime).toUpperCase();
+  int get fillPercent => (fillRatio * 100).round();
+
+  String get metaLabel {
+    if (isLive) return 'Live · ${event.signedUpCount} going';
+    if (isPast) {
+      final price = event.isFree
+          ? 'free'
+          : EventFormatters.priceInPaise(
+              event.priceInPaise,
+              currencyCode: event.currency,
+            );
+      return '${event.attendedCount} attended · $fillPercent% full · $price';
+    }
+    if (isToday) return 'Today · ${event.signedUpCount} going';
+    return '${EventFormatters.shortWeekday(event.startTime)} · '
+        '${EventFormatters.time(event.startTime)} · $fillPercent% full';
+  }
 }
 
 enum HostHomeTodayStatus { loading, error, empty, content }
@@ -150,6 +274,7 @@ class HostHomeTodayDashboardState {
   const HostHomeTodayDashboardState({
     required this.status,
     this.event,
+    this.laterEvents = const <HostEventLifecycleRowData>[],
     this.tasks = const <HostHomeTodayTaskData>[],
     this.error,
     this.stackTrace,
@@ -157,6 +282,7 @@ class HostHomeTodayDashboardState {
 
   final HostHomeTodayStatus status;
   final Event? event;
+  final List<HostEventLifecycleRowData> laterEvents;
   final List<HostHomeTodayTaskData> tasks;
   final Object? error;
   final StackTrace? stackTrace;
@@ -165,76 +291,59 @@ class HostHomeTodayDashboardState {
 @immutable
 class HostHomeTodayTaskData {
   const HostHomeTodayTaskData({
+    required this.id,
+    required this.event,
     required this.title,
     required this.body,
     required this.primaryActionLabel,
-    required this.secondaryActionLabel,
     required this.icon,
+    required this.destination,
   });
 
-  factory HostHomeTodayTaskData.approveRequests(Event event) {
+  factory HostHomeTodayTaskData.reviewWaitlist(Event event) {
     final waitlistCount = event.waitlistCount;
+    final availability = event.spotsRemaining > 0
+        ? '${event.spotsRemaining} spots open'
+        : 'event full';
     return HostHomeTodayTaskData(
-      title: 'Approve requests',
-      body: waitlistCount > 0
-          ? '$waitlistCount people want into ${event.title}'
-          : 'Review pending guest requests before the event opens.',
-      primaryActionLabel: 'Approve',
-      secondaryActionLabel: 'Later',
+      id: 'waitlist:${event.id}',
+      event: event,
+      title: 'Review waitlist',
+      body: '${event.title}\n$waitlistCount waiting · $availability',
+      primaryActionLabel: 'Review',
       icon: CatchIcons.personSearchOutlined,
-    );
-  }
-
-  factory HostHomeTodayTaskData.offerWaitlist(Event event) {
-    final waitlistCount = event.waitlistCount;
-    final openCount = event.spotsRemaining;
-    return HostHomeTodayTaskData(
-      title: 'Offer waitlist spots',
-      body: waitlistCount > 0
-          ? '$waitlistCount waiting · $openCount spots open'
-          : 'No waitlist pressure right now.',
-      primaryActionLabel: waitlistCount > 0 ? 'Offer $waitlistCount' : 'Review',
-      secondaryActionLabel: 'Later',
-      icon: CatchIcons.groupAddOutlined,
-    );
-  }
-
-  factory HostHomeTodayTaskData.guestWaiting(Event event) {
-    return HostHomeTodayTaskData(
-      title: 'A guest is waiting on you',
-      body: 'Reply before ${EventFormatters.time(event.startTime)}.',
-      primaryActionLabel: 'Reply',
-      secondaryActionLabel: 'Later',
-      icon: CatchIcons.chatBubbleOutlineRounded,
-    );
-  }
-
-  factory HostHomeTodayTaskData.hostSetup(Event event) {
-    return HostHomeTodayTaskData(
-      title: 'Check host setup',
-      body: 'Confirm entry flow, venue notes, and host cues.',
-      primaryActionLabel: 'Check',
-      secondaryActionLabel: 'Later',
-      icon: CatchIcons.factCheckOutlined,
+      destination: HostHomeTodayTaskDestination.guests,
     );
   }
 
   static List<HostHomeTodayTaskData> forEvent(Event event) {
-    final tasks = <HostHomeTodayTaskData>[];
-    if (event.waitlistCount > 0) {
-      tasks.add(HostHomeTodayTaskData.approveRequests(event));
-      tasks.add(HostHomeTodayTaskData.offerWaitlist(event));
-    }
-    tasks.add(HostHomeTodayTaskData.guestWaiting(event));
-    tasks.add(HostHomeTodayTaskData.hostSetup(event));
-    return tasks;
+    return event.waitlistCount > 0 &&
+            !event.effectiveEventPolicy.admissionPolicy.manualApprovalRequired
+        ? <HostHomeTodayTaskData>[HostHomeTodayTaskData.reviewWaitlist(event)]
+        : const <HostHomeTodayTaskData>[];
   }
 
+  static List<HostHomeTodayTaskData> forEvents(Iterable<Event> events) =>
+      List<HostHomeTodayTaskData>.unmodifiable(
+        events.expand(HostHomeTodayTaskData.forEvent),
+      );
+
+  final String id;
+  final Event event;
   final String title;
   final String body;
   final String primaryActionLabel;
-  final String secondaryActionLabel;
   final IconData icon;
+  final HostHomeTodayTaskDestination destination;
+}
+
+enum HostHomeTodayTaskDestination { guests, setup }
+
+bool _canRepeatEvent(Event event) => CreateEventPrefill.canRepeat(event);
+
+String _monthSectionLabel(DateTime date, DateTime now) {
+  final month = EventFormatters.longMonth(date);
+  return date.year == now.year ? month : '$month ${date.year}';
 }
 
 int _resolveSelectedClubIndex({

@@ -279,9 +279,8 @@ Future<void> _showResetSheet(
   required bool pending,
   required SuvbotActionCallback onAction,
 }) {
-  return showModalBottomSheet<void>(
+  return showCatchBottomSheet<void>(
     context: context,
-    isScrollControlled: true,
     builder: (context) => SafeArea(
       child: SingleChildScrollView(
         child: CatchBottomSheetScaffold(
@@ -392,9 +391,8 @@ Future<void> _showMatchTesterSheet(
   required bool pending,
   required SuvbotTextActionCallback onTextAction,
 }) {
-  return showModalBottomSheet<void>(
+  return showCatchBottomSheet<void>(
     context: context,
-    isScrollControlled: true,
     showDragHandle: true,
     builder: (context) => MatchTesterSheet(
       action: action,

@@ -148,7 +148,6 @@ void main() {
       final state = container.read(dashboardHomeScreenStateProvider);
       expect(state.status, DashboardHomeScreenStatus.full);
       expect(state.notificationUid, user.uid);
-      expect(state.header.eyebrow, 'WEDNESDAY · MUMBAI');
       expect(
         dashboardHomeLiveStateFor(state, now: DateTime(2026, 5, 13, 8)),
         DashboardHomeLiveState.idle,
@@ -190,7 +189,6 @@ void main() {
       final state = container.read(dashboardHomeScreenStateProvider);
       expect(state.status, DashboardHomeScreenStatus.full);
       expect(state.header.title, 'Morning, Runner');
-      expect(state.header.eyebrow, 'WEDNESDAY · MUMBAI');
       expect(state.followedClubIds, ['club-a']);
       expect(state.viewModel?.nextEvent?.id, event.id);
     });
@@ -241,7 +239,7 @@ void main() {
       expect(viewModel.upcomingEvents.map((event) => event.id), ['upcoming']);
     });
 
-    test('surfaces attended section errors and clears windowed events', () {
+    test('surfaces attended section errors and clears the swipe event', () {
       final viewModel = buildDashboardFullViewModel(
         signedUpEvents: const [],
         attendedEventsAsync: AsyncError<List<Event>>(
@@ -256,19 +254,19 @@ void main() {
         viewModel.attendedEventsSection.message,
         'Unable to load your recent events.',
       );
-      expect(viewModel.windowedEvents, isEmpty);
+      expect(viewModel.activeSwipeEvent, isNull);
     });
 
-    test('orders all open catch windows by soonest expiry', () {
+    test('selects the most recent event with an open swipe window', () {
       final now = DateTime(2026, 4, 23, 20);
-      final closingSoon = buildEvent(
-        id: 'closing-soon',
+      final older = buildEvent(
+        id: 'older',
         checkedInCount: 1,
-        startTime: now.subtract(const Duration(hours: 24, minutes: 20)),
-        endTime: now.subtract(const Duration(hours: 23, minutes: 50)),
+        startTime: now.subtract(const Duration(hours: 8)),
+        endTime: now.subtract(const Duration(hours: 6)),
       );
-      final laterWindow = buildEvent(
-        id: 'later-window',
+      final latest = buildEvent(
+        id: 'latest',
         checkedInCount: 1,
         startTime: now.subtract(const Duration(hours: 4)),
         endTime: now.subtract(const Duration(hours: 2)),
@@ -276,17 +274,12 @@ void main() {
 
       final viewModel = buildDashboardFullViewModel(
         signedUpEvents: const [],
-        attendedEventsAsync: AsyncData<List<Event>>([laterWindow, closingSoon]),
+        attendedEventsAsync: AsyncData<List<Event>>([older, latest]),
         recommendedEventsAsync: noRecommendationCandidates,
         now: now,
       );
 
-      expect(viewModel.windowedEvents.map((item) => item.event.id), [
-        'closing-soon',
-        'later-window',
-      ]);
-      expect(viewModel.windowedEvents.first.countdownLabel(now), '0h 10m');
-      expect(viewModel.windowedEvents.first.attendedCountLabel, '1');
+      expect(viewModel.activeSwipeEvent?.id, latest.id);
     });
 
     test('uses Catch attended events as the weekly activity fallback', () {

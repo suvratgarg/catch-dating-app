@@ -20,14 +20,14 @@ const _androidIconSizes = <String, int>{
 const _iconVariants = <String, _IconVariant>{
   'dev': _IconVariant(
     generatedName: 'catch_icon_dev.png',
-    androidSourceSet: 'dev',
+    androidSourceSet: 'consumerDev',
     appleIconSet: 'AppIcon-dev',
     filenamePrefix: 'dev',
     ribbons: [_IconRibbon(label: 'DEV', fillToken: 'bg', labelToken: 'ink')],
   ),
   'staging': _IconVariant(
     generatedName: 'catch_icon_staging.png',
-    androidSourceSet: 'staging',
+    androidSourceSet: 'consumerStaging',
     appleIconSet: 'AppIcon-staging',
     filenamePrefix: 'staging',
     ribbons: [
@@ -178,6 +178,10 @@ void _writeAndroidIcons(String sourceSet, image.Image source) {
       'android/app/src/$sourceSet/res/${entry.key}/ic_launcher.png',
       resized,
     );
+    _writePng(
+      'android/app/src/$sourceSet/res/${entry.key}/ic_launcher_round.png',
+      resized,
+    );
   }
 }
 
@@ -264,6 +268,8 @@ void _writeNativeBrandManifest(_NativeBrandTokens tokens) {
         'assets/branding/generated/${variant.generatedName}',
       for (final variant in _iconVariants.values)
         'android/app/src/${variant.androidSourceSet}/res/**/ic_launcher.png',
+      for (final variant in _iconVariants.values)
+        'android/app/src/${variant.androidSourceSet}/res/**/ic_launcher_round.png',
       for (final variant in _iconVariants.values)
         'ios/Runner/Assets.xcassets/${variant.appleIconSet}.appiconset',
       for (final variant in _iconVariants.values)

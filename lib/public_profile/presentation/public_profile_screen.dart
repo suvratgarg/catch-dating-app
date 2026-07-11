@@ -65,9 +65,8 @@ class PublicProfileScreen extends ConsumerWidget {
     }
 
     Future<void> report(PublicProfile profile) async {
-      final reason = await showModalBottomSheet<String>(
+      final reason = await showCatchBottomSheet<String>(
         context: context,
-        useSafeArea: true,
         builder: (context) => SafeArea(
           child: PublicProfileReportSheet(
             profileName: profile.name,

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
@@ -66,6 +67,20 @@ void main() {
           .doc(generatedId)
           .get();
       expect(generatedDoc.exists, isFalse);
+    });
+
+    test('generateBroadcastRequestId does not write a receipt', () async {
+      final requestId = repository.generateBroadcastRequestId();
+
+      expect(requestId, isNotEmpty);
+      expect(
+        (await firestore
+                .collection('eventBroadcastRequests')
+                .doc(requestId)
+                .get())
+            .exists,
+        isFalse,
+      );
     });
 
     test(
@@ -148,6 +163,66 @@ void main() {
         );
       },
     );
+
+    test(
+      'watchEventsForClubs merges hosted clubs in start-time order',
+      () async {
+        final later = buildEvent(
+          id: 'later',
+          clubId: 'club-2',
+          startTime: DateTime(2026, 7, 10, 20),
+        );
+        final earlier = buildEvent(
+          id: 'earlier',
+          startTime: DateTime(2026, 7, 10, 18),
+        );
+        await _seedEvent(firestore, later);
+        await _seedEvent(firestore, earlier);
+        await _seedEvent(firestore, buildEvent(id: 'other', clubId: 'club-3'));
+
+        await expectLater(
+          repository.watchEventsForClubs(clubIds: const ['club-2', 'club-1']),
+          emits([earlier, later]),
+        );
+      },
+    );
+
+    test('sendEventBroadcast uses typed payload and response', () async {
+      final callable =
+          functions.httpsCallable('sendEventBroadcast') as TestHttpsCallable;
+      callable.resultData = {
+        'broadcastId': 'broadcast-1',
+        'status': 'partial',
+        'recipientCount': 3,
+        'excludedCount': 1,
+        'activityAvailableCount': 3,
+        'pushAttemptedCount': 2,
+        'pushAcceptedCount': 1,
+        'pushFailedCount': 1,
+        'pushUnknownCount': 0,
+        'idempotentReplay': false,
+      };
+
+      final response = await repository.sendEventBroadcast(
+        requestId: 'request-1',
+        eventId: 'event-1',
+        audience: EventBroadcastAudience.booked,
+        body: 'Doors open at 7:45.',
+      );
+
+      expect(callable.calls, [
+        {
+          'requestId': 'request-1',
+          'eventId': 'event-1',
+          'audience': 'booked',
+          'body': 'Doors open at 7:45.',
+        },
+      ]);
+      expect(response.broadcastId, 'broadcast-1');
+      expect(response.isPartial, isTrue);
+      expect(response.recipientCount, 3);
+      expect(response.pushFailedCount, 1);
+    });
 
     test(
       'watchAttendedEvents filters by attendee id and sorts descending',
@@ -712,6 +787,21 @@ void main() {
       final value = await container.read(provider.future);
 
       expect(value, [event]);
+    });
+
+    test('watchEventsForClubsProvider delegates to the repository', () async {
+      final first = buildEvent(id: 'first');
+      final second = buildEvent(id: 'second', clubId: 'club-2');
+      await _seedEvent(firestore, first);
+      await _seedEvent(firestore, second);
+
+      final provider = watchEventsForClubsProvider(
+        EventsForClubsQuery(const ['club-2', 'club-1']),
+      );
+      final subscription = container.listen(provider, (_, _) {});
+      addTearDown(subscription.close);
+
+      expect(await container.read(provider.future), [first, second]);
     });
 
     test('watchAttendedEventsProvider delegates to the repository', () async {

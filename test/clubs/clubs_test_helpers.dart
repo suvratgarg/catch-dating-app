@@ -187,6 +187,7 @@ class FakeClubsRepository implements ClubsRepository {
   String? transferredOwnershipUid;
   String? startedConversationClubId;
   String? startedConversationHostUid;
+  String? startedConversationEventId;
   String nextHostConversationMatchId = 'host-inquiry-match-id';
   bool? notificationsEnabled;
   Object? createError;
@@ -308,6 +309,17 @@ class FakeClubsRepository implements ClubsRepository {
   }
 
   @override
+  Stream<List<Club>> watchClubsForMessagingByIds({
+    required List<String> clubIds,
+  }) {
+    watchClubsByIdsCalls.add(List.unmodifiable(clubIds));
+    return Stream.value([
+      for (final id in clubIds)
+        if (clubsById[id] != null) clubsById[id]!,
+    ]);
+  }
+
+  @override
   Future<void> addClubHost({
     required String clubId,
     String? uid,
@@ -340,9 +352,11 @@ class FakeClubsRepository implements ClubsRepository {
   Future<String> startClubHostConversation({
     required String clubId,
     required String hostUid,
+    String? eventId,
   }) async {
     startedConversationClubId = clubId;
     startedConversationHostUid = hostUid;
+    startedConversationEventId = eventId;
     return nextHostConversationMatchId;
   }
 }

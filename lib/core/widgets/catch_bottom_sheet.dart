@@ -5,6 +5,40 @@ import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet_grabber.dart';
 import 'package:flutter/material.dart';
 
+Future<T?> showCatchBottomSheet<T>({
+  required BuildContext context,
+  required WidgetBuilder builder,
+  bool isScrollControlled = true,
+  bool useSafeArea = true,
+  bool useRootNavigator = true,
+  Color? backgroundColor = Colors.transparent,
+  bool isDismissible = true,
+  bool enableDrag = true,
+  RouteSettings? routeSettings,
+  Color? barrierColor,
+  BoxConstraints? constraints,
+  ShapeBorder? shape,
+  Clip? clipBehavior,
+  bool? showDragHandle,
+}) {
+  return showModalBottomSheet<T>(
+    context: context,
+    builder: builder,
+    isScrollControlled: isScrollControlled,
+    useSafeArea: useSafeArea,
+    useRootNavigator: useRootNavigator,
+    backgroundColor: backgroundColor,
+    isDismissible: isDismissible,
+    enableDrag: enableDrag,
+    routeSettings: routeSettings,
+    barrierColor: barrierColor,
+    constraints: constraints,
+    shape: shape,
+    clipBehavior: clipBehavior,
+    showDragHandle: showDragHandle,
+  );
+}
+
 class CatchBottomSheetScaffold extends StatelessWidget {
   const CatchBottomSheetScaffold({
     super.key,

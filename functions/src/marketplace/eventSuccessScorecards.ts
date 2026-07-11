@@ -150,7 +150,13 @@ export async function refreshEventSuccessScorecard(
   const feedback = feedbackSnap.docs.map(
     (doc) => doc.data() as EventSuccessFeedbackDocument
   );
-  const matches = matchesSnap.docs.map((doc) => doc.data() as MatchDocument);
+  // Host inquiries may carry event provenance, but they are support threads,
+  // not attendee-to-attendee connections. Keep legacy dating matches whose
+  // conversationType predates the discriminator while excluding every
+  // clubHostInquiry before the shared scorecard, funnel, and invite-link paths.
+  const matches = matchesSnap.docs
+    .map((doc) => doc.data() as MatchDocument)
+    .filter(isDatingMatch);
   const participations = participationsSnap.docs.map(
     (doc) => doc.data() as EventParticipationDocument
   );
@@ -234,7 +240,9 @@ export function buildEventSuccessScorecard(params: {
     .length;
   const checkedInCount = event.checkedInCount ?? 0;
   const catchAggregates = params.catchAggregates ?? emptyCatchAggregates();
-  const activeMatches = matches.filter((match) => match.status === "active");
+  const activeMatches = matches.filter(
+    (match) => isDatingMatch(match) && match.status === "active"
+  );
   const funnel = params.funnel ?? emptyFunnelMetrics({
     bookedCount: event.bookedCount ?? 0,
     checkedInCount,
@@ -290,8 +298,9 @@ export function buildEventHostFunnelMetrics(params: {
   catchAggregates: EventSuccessCatchAggregates;
   repeatAttendeeCount?: number;
 }): EventHostFunnelMetrics {
-  const activeMatches = params.matches.filter((match) => match.status ===
-    "active");
+  const activeMatches = params.matches.filter(
+    (match) => isDatingMatch(match) && match.status === "active"
+  );
   const chatStartedCount = activeMatches.filter((match) =>
     match.lastMessageAt != null
   ).length;
@@ -696,7 +705,7 @@ async function updateInviteLinkConnectionCounters(params: {
   }
 
   params.matches
-    .filter((match) => match.status === "active")
+    .filter((match) => isDatingMatch(match) && match.status === "active")
     .forEach((match, index) => {
       const matchKey = inviteMetricMatchKey(match, index);
       const participantIds = participantIdsForMatch(match);
@@ -722,6 +731,16 @@ async function updateInviteLinkConnectionCounters(params: {
     }, {merge: true});
   }
   await batch.commit();
+}
+
+/**
+ * Treats pre-discriminator match documents as dating matches for backwards
+ * compatibility while excluding event-scoped organizer support threads.
+ * @param {MatchDocument} match Candidate connection document.
+ * @return {boolean} Whether the document belongs in dating/event-success data.
+ */
+function isDatingMatch(match: MatchDocument): boolean {
+  return match.conversationType == null || match.conversationType === "match";
 }
 
 /**

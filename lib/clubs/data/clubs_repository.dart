@@ -134,7 +134,20 @@ class ClubsRepository {
     ),
   );
 
-  Stream<List<Club>> watchClubsByIds({required List<String> clubIds}) {
+  Stream<List<Club>> watchClubsByIds({required List<String> clubIds}) =>
+      _watchClubsByIds(clubIds: clubIds, discoverableOnly: true);
+
+  /// Resolves conversation identity even when a club is intentionally hidden
+  /// from discovery. Authorization still comes from the match and Firestore
+  /// rules; app visibility must not degrade an existing thread to a fallback.
+  Stream<List<Club>> watchClubsForMessagingByIds({
+    required List<String> clubIds,
+  }) => _watchClubsByIds(clubIds: clubIds, discoverableOnly: false);
+
+  Stream<List<Club>> _watchClubsByIds({
+    required List<String> clubIds,
+    required bool discoverableOnly,
+  }) {
     final uniqueIds = clubIds.toSet().toList()..sort();
     if (uniqueIds.isEmpty) return Stream.value(const []);
 
@@ -157,7 +170,7 @@ class ClubsRepository {
         for (final id in uniqueIds)
           if (byId[id] != null) byId[id]!,
       ];
-      controller.add(_appDiscoverableClubs(clubs));
+      controller.add(discoverableOnly ? _appDiscoverableClubs(clubs) : clubs);
     }
 
     controller = StreamController<List<Club>>(
@@ -373,16 +386,33 @@ class ClubsRepository {
   Future<String> startClubHostConversation({
     required String clubId,
     required String hostUid,
+    String? eventId,
   }) => withBackendErrorContext(
     () async {
-      final result = await _functions
-          .httpsCallable('startClubHostConversation')
-          .call(
+      final callable = _functions.httpsCallable('startClubHostConversation');
+      Future<HttpsCallableResult<dynamic>> call(String? scopedEventId) =>
+          callable.call(
             StartClubHostConversationCallableRequest(
               clubId: clubId,
               hostUid: hostUid,
+              eventId: scopedEventId,
             ).toJson(),
           );
+
+      late HttpsCallableResult<dynamic> result;
+      try {
+        result = await call(eventId);
+      } on FirebaseFunctionsException catch (error) {
+        // Two-phase rollout compatibility: the previous callable rejects the
+        // newly optional eventId as an additional property. Retry only that
+        // exact schema diagnostic as a general inquiry; do not hide any new
+        // backend event/club authorization error.
+        if (eventId == null ||
+            !isLegacyHostConversationEventIdRejection(error)) {
+          rethrow;
+        }
+        result = await call(null);
+      }
       return StartClubHostConversationCallableResponse.fromCallableData(
         result.data,
       ).matchId;
@@ -393,6 +423,15 @@ class ClubsRepository {
       resource: _collectionPath,
     ),
   );
+}
+
+bool isLegacyHostConversationEventIdRejection(Object error) {
+  if (error is! FirebaseFunctionsException ||
+      error.code != 'invalid-argument') {
+    return false;
+  }
+  final message = error.message?.toLowerCase() ?? '';
+  return message.contains('eventid') && message.contains('additional propert');
 }
 
 // keepalive: club repository is a shared Firestore/Functions facade reused by
@@ -443,6 +482,52 @@ Future<Club?> fetchClub(Ref ref, String id) =>
 @riverpod
 Stream<List<Club>> watchClubsByIds(Ref ref, ClubsByIdQuery query) =>
     ref.watch(clubsRepositoryProvider).watchClubsByIds(clubIds: query.clubIds);
+
+@riverpod
+Stream<List<Club>> watchClubsForMessagingByIds(Ref ref, ClubsByIdQuery query) =>
+    ref
+        .watch(clubsRepositoryProvider)
+        .watchClubsForMessagingByIds(clubIds: query.clubIds);
+
+@riverpod
+AsyncValue<List<Club>> hostOperableClubs(Ref ref, String uid) {
+  final hostedAsync = ref.watch(watchClubsHostedByProvider(uid));
+  final ownedAsync = ref.watch(watchClubsOwnedByProvider(uid));
+  if (hostedAsync case AsyncError(:final error, :final stackTrace)) {
+    return AsyncError(error, stackTrace);
+  }
+  if (ownedAsync case AsyncError(:final error, :final stackTrace)) {
+    return AsyncError(error, stackTrace);
+  }
+  final hosted = hostedAsync.asData?.value;
+  final owned = ownedAsync.asData?.value;
+  if (hosted == null || owned == null) return const AsyncLoading();
+  return AsyncData(
+    mergeHostOperableClubs(hosted: hosted, owned: owned, uid: uid),
+  );
+}
+
+List<Club> mergeHostOperableClubs({
+  required Iterable<Club> hosted,
+  required Iterable<Club> owned,
+  required String uid,
+}) {
+  final byId = <String, Club>{};
+  for (final club in hosted) {
+    byId[club.id] = club;
+  }
+  for (final club in owned) {
+    byId[club.id] = club;
+  }
+  final clubs = byId.values.toList()
+    ..sort((a, b) {
+      final aOwned = a.isOwnedBy(uid);
+      final bOwned = b.isOwnedBy(uid);
+      if (aOwned != bOwned) return aOwned ? -1 : 1;
+      return a.name.compareTo(b.name);
+    });
+  return List.unmodifiable(clubs);
+}
 
 class ClubsByIdQuery {
   ClubsByIdQuery._(Iterable<String> clubIds)

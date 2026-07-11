@@ -42,6 +42,9 @@ import {
   AdminGetAccessApplicationDetailsResponse,
   AdminDecideClubClaimPayload,
   AdminDecideClubClaimResponse,
+  AdminGetClubClaimRequestDetailsPayload,
+  AdminGetClubClaimRequestDetailsResponse,
+  AdminListClubClaimRequestsResponse,
   AdminDecideOrganizerEventCandidatePayload,
   AdminDecideOrganizerEventCandidateResponse,
   AdminDecideOrganizerIntakePayload,
@@ -1049,6 +1052,75 @@ export async function decideClubClaim(
     AdminDecideClubClaimPayload,
     AdminDecideClubClaimResponse
   >(functions, "adminDecideClubClaim");
+  const result = await callable(payload);
+  return result.data;
+}
+
+export async function listClubClaimRequests():
+Promise<AdminListClubClaimRequestsResponse> {
+  if (dataMode() === "sample") {
+    await new Promise((resolve) => window.setTimeout(resolve, 180));
+    return {
+      generatedAt: sampleOverview.generatedAt,
+      rows: sampleOverview.queues.clubClaimRequests.map((row, index) => ({
+        requestId: row.targetPath.split("/").at(-1) ?? row.id,
+        targetPath: row.targetPath,
+        clubId: index === 0 ? "afterfly" : "bhag",
+        requesterUid: index === 0 ? "sample-afterfly-owner" : "sample-bhag-manager",
+        requesterName: row.title,
+        requesterRole: index === 0 ? "founder" : "manager",
+        contact: index === 0 ? "hello@afterfly.in" : null,
+        proofCount: index === 0 ? 2 : 1,
+        status: row.status,
+        createdAt: row.createdAt,
+      })),
+    };
+  }
+
+  const callable = httpsCallable<unknown, AdminListClubClaimRequestsResponse>(
+    functions,
+    "adminListClubClaimRequests"
+  );
+  const result = await callable({});
+  return result.data;
+}
+
+export async function getClubClaimRequestDetails(
+  payload: AdminGetClubClaimRequestDetailsPayload
+): Promise<AdminGetClubClaimRequestDetailsResponse> {
+  if (dataMode() === "sample") {
+    await new Promise((resolve) => window.setTimeout(resolve, 140));
+    const list = await listClubClaimRequests();
+    const row = list.rows.find((item) => item.requestId === payload.requestId);
+    if (!row) throw new Error("Organizer claim request not found.");
+    return {
+      request: {
+        ...row,
+        businessEmail: row.contact?.includes("@") ? row.contact : null,
+        businessPhone: row.contact && !row.contact.includes("@") ? row.contact : null,
+        proofUrls: row.clubId === "afterfly" ? [
+          "https://www.instagram.com/afterfly.in/",
+          "https://luma.com/pxgmph3b",
+        ] : ["https://thebhag.in/"],
+        message: "Please verify this claim against the listed public sources.",
+        updatedAt: row.createdAt,
+        requesterProfile: {exists: true, profileComplete: row.clubId === "afterfly"},
+        club: {
+          exists: true,
+          name: row.clubId === "afterfly" ? "AFTER FLY" : "Bhag Club",
+          claimState: "claimPending",
+          ownershipState: "programmatic",
+          ownerUserId: null,
+          canonicalPath: `/organizers/${row.clubId}/`,
+        },
+      },
+    };
+  }
+
+  const callable = httpsCallable<
+    AdminGetClubClaimRequestDetailsPayload,
+    AdminGetClubClaimRequestDetailsResponse
+  >(functions, "adminGetClubClaimRequestDetails");
   const result = await callable(payload);
   return result.data;
 }

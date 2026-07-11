@@ -312,6 +312,33 @@ test("requestClubClaimHandler rejects users who already own a club",
   }
 );
 
+test("requestClubClaimHandler rejects a competing active organizer claim",
+  async () => {
+    const h = harness({
+      "clubs/afterfly-run-club-indore": unclaimedClub({
+        claim: {
+          state: "claimPending",
+          claimHref: "/host/#founding-hosts",
+          lastClaimRequestId: "club_claim_other_requester",
+        },
+      }),
+    });
+
+    await assert.rejects(
+      () => requestClubClaimHandler(
+        callableRequest("owner-2", {
+          clubId: "afterfly-run-club-indore",
+          requesterName: "Second Claimant",
+          requesterRole: "manager",
+          businessEmail: "second@example.com",
+        }),
+        h.deps
+      ),
+      (error) => assertHttpsCode(error, "failed-precondition")
+    );
+  }
+);
+
 test("adminDecideClubClaimHandler approves pending claims",
   async () => {
     const h = harness({
@@ -430,7 +457,60 @@ test("adminDecideClubClaimHandler rejects pending claims", async () => {
     }
   );
   assert.equal(h.firestore.auditLogs().length, 1);
+  assert.equal(
+    h.firestore.get(
+      "notifications/owner-1/items/clubUpdate_club_claim_request_1_rejected"
+    )?.title,
+    "Organizer claim update"
+  );
 });
+
+test("rejecting a stale competing claim does not reset claimed ownership",
+  async () => {
+    const h = harness({
+      "clubClaimRequests/club_claim_request_1": pendingRequest({
+        requesterUid: "owner-2",
+      }),
+      "clubs/afterfly-run-club-indore": unclaimedClub({
+        ownerUserId: "owner-1",
+        hostUserId: "owner-1",
+        ownership: {
+          state: "claimed",
+          ownerUserId: "owner-1",
+          primaryHostUserId: "owner-1",
+          hostUserIds: ["owner-1"],
+        },
+        claim: {
+          state: "claimed",
+          claimHref: null,
+          lastClaimRequestId: "club_claim_request_owner_1",
+        },
+      }),
+    });
+
+    await adminDecideClubClaimHandler(
+      callableRequest("admin-1", {
+        requestId: "club_claim_request_1",
+        decision: "reject",
+        decisionReason: "Superseded by the verified owner.",
+      }, {support: true}),
+      h.deps
+    );
+
+    assert.deepEqual(
+      h.firestore.get("clubs/afterfly-run-club-indore")?.claim,
+      {
+        state: "claimed",
+        claimHref: null,
+        lastClaimRequestId: "club_claim_request_owner_1",
+      }
+    );
+    assert.equal(
+      h.firestore.get("clubClaimRequests/club_claim_request_1")?.status,
+      "rejected"
+    );
+  }
+);
 
 test("adminDecideClubClaimHandler blocks viewer-only admins", async () => {
   const h = harness({

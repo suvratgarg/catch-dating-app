@@ -25,10 +25,10 @@ class DashboardHomeScreen extends StatelessWidget {
           child: CustomScrollView(
             slivers: [
               ...CatchSliverHeader(
-                title: DashboardHeaderContent(
-                  eyebrow: header.eyebrow,
+                title: CatchScreenHeaderTitle.block(
                   title: header.title,
                   actions: actions,
+                  padding: CatchInsets.screenTitleBlockCompact,
                 ),
               ).buildSlivers(context),
               dashboardSliver,

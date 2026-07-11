@@ -23,6 +23,7 @@ import {
   eventPrivateAccessDocumentSchema,
   eventInviteLinkDocumentSchema,
   eventParticipationDocumentSchema,
+  eventBroadcastDocumentSchema,
   eventWaitlistOfferDocumentSchema,
   eventSuccessPlanDocumentSchema,
   eventSuccessFeedbackDocumentSchema,
@@ -65,6 +66,8 @@ import {
   createClubCallableResponseSchema,
   createClubPostCallablePayloadSchema,
   createClubPostCallableResponseSchema,
+  sendEventBroadcastCallablePayloadSchema,
+  sendEventBroadcastCallableResponseSchema,
   updateClubCallablePayloadSchema,
   hostAnalyticsQueryCallablePayloadSchema,
   hostAnalyticsCallableResponseSchema,
@@ -196,6 +199,7 @@ export const validateExternalEventDocument = ajv.compile(externalEventDocumentSc
 export const validateEventPrivateAccessDocument = ajv.compile(eventPrivateAccessDocumentSchema);
 export const validateEventInviteLinkDocument = ajv.compile(eventInviteLinkDocumentSchema);
 export const validateEventParticipationDocument = ajv.compile(eventParticipationDocumentSchema);
+export const validateEventBroadcastDocument = ajv.compile(eventBroadcastDocumentSchema);
 export const validateEventWaitlistOfferDocument = ajv.compile(eventWaitlistOfferDocumentSchema);
 export const validateEventSuccessPlanDocument = ajv.compile(eventSuccessPlanDocumentSchema);
 export const validateEventSuccessFeedbackDocument = ajv.compile(eventSuccessFeedbackDocumentSchema);
@@ -238,6 +242,8 @@ export const validateCreateClubCallablePayload = ajv.compile(createClubCallableP
 export const validateCreateClubCallableResponse = ajv.compile(createClubCallableResponseSchema);
 export const validateCreateClubPostCallablePayload = ajv.compile(createClubPostCallablePayloadSchema);
 export const validateCreateClubPostCallableResponse = ajv.compile(createClubPostCallableResponseSchema);
+export const validateSendEventBroadcastCallablePayload = ajv.compile(sendEventBroadcastCallablePayloadSchema);
+export const validateSendEventBroadcastCallableResponse = ajv.compile(sendEventBroadcastCallableResponseSchema);
 export const validateUpdateClubCallablePayload = ajv.compile(updateClubCallablePayloadSchema);
 export const validateHostAnalyticsQueryCallablePayload = ajv.compile(hostAnalyticsQueryCallablePayloadSchema);
 export const validateHostAnalyticsCallableResponse = ajv.compile(hostAnalyticsCallableResponseSchema);

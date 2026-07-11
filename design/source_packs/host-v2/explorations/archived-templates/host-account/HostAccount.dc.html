@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Host Account" description="Host app — Account tab. The host's professional profile editor, modeled on the consumer edit-profile screen: Your-profile header with sign-out, Edit / Preview tabs, and kicker'd sections of stacked InfoRow rows (caption · value · chevron). Sign-out is a top-right app-bar action; no nested editor screen." -->
+<helmet>
+  <script src="./ds-base.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <style>
+    body { margin: 0; background: #E2E1DC; }
+    .metarow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .havatar { width: 56px; height: 56px; border-radius: 999px; background: var(--ink); color: var(--primary-ink); display: flex; align-items: center; justify-content: center; flex: none; font-family: var(--font-head); font-weight: 700; font-size: 20px; letter-spacing: -0.01em; }
+  </style>
+</helmet>
+
+<div style="min-height: 100vh; display: flex; justify-content: center; padding: 40px 16px; background: #E2E1DC; font-family: var(--font-function); color: var(--ink); box-sizing: border-box">
+  <div data-screen-label="Host Account" style="width: 390px; height: 812px; background: var(--bg); border-radius: 30px; border: 1px solid rgba(22,20,15,0.15); box-shadow: var(--shadow-overlay); overflow: hidden; display: flex; flex-direction: column; box-sizing: border-box">
+
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.StatusBar" hint-size="100%,44px"></x-import>
+
+    <!-- app-bar row: title + sign out top-right -->
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.AppBar" title="Host profile" action-icon="sign-out" action-variant="plain" action-label="Sign out" on-action="{{ noop }}" hint-size="100%,52px" style="display: block"></x-import>
+
+    <!-- Edit / Preview tabs -->
+    <div style="flex: none; padding: 0 20px 8px; border-bottom: 1px solid var(--line)">
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.OptionGroup" options="{{ profileTabs }}" value="{{ tab }}" onChange="{{ setTab }}" variant="label" hint-size="100%,40px" style="display: block"></x-import>
+    </div>
+
+    <div style="flex: 1; min-height: 0; overflow: auto; padding: 18px var(--screen-px) 28px">
+
+      <sc-if value="{{ isEdit }}" hint-placeholder-val="{{ true }}">
+      <!-- Profile -->
+      <section>
+        <div class="t-kicker" style="color: var(--ink2)">Profile</div>
+        <div style="margin-top: 10px">
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.FieldGroup" hint-size="100%,196px" style="display: block">
+            <sc-for list="{{ profile }}" as="e" hint-placeholder-count="3">
+              <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" icon="{{ e.icon }}" label="{{ e.caption }}" value="{{ e.text }}" trailing="chevron" divider="{{ e.divider }}" onClick="{{ noop }}"></x-import>
+            </sc-for>
+          </x-import>
+        </div>
+      </section>
+
+      <!-- Bio -->
+      <section style="margin-top: 8px; border-top: 1px solid var(--line); padding-top: 18px">
+        <div class="t-kicker" style="color: var(--ink2)">Bio</div>
+        <div style="margin-top: 10px">
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.FieldGroup" hint-size="100%,84px" style="display: block">
+            <sc-for list="{{ bio }}" as="e" hint-placeholder-count="1">
+              <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" icon="{{ e.icon }}" label="{{ e.caption }}" value="{{ e.text }}" trailing="chevron" divider="{{ e.divider }}" onClick="{{ noop }}"></x-import>
+            </sc-for>
+          </x-import>
+        </div>
+      </section>
+
+      <!-- Clubs -->
+      <section style="margin-top: 8px; border-top: 1px solid var(--line); padding-top: 18px">
+        <div class="t-kicker" style="color: var(--ink2)">Clubs you host</div>
+        <div style="margin-top: 10px">
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.FieldGroup" hint-size="100%,128px" style="display: block">
+            <sc-for list="{{ clubs }}" as="e" hint-placeholder-count="2">
+              <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" icon="{{ e.icon }}" label="{{ e.caption }}" value="{{ e.text }}" trailing="chevron" divider="{{ e.divider }}" onClick="{{ noop }}"></x-import>
+            </sc-for>
+          </x-import>
+        </div>
+      </section>
+      </sc-if>
+
+      <sc-if value="{{ isPreview }}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; align-items: center; gap: 14px">
+          <div class="havatar">AS</div>
+          <div style="min-width: 0; flex: 1">
+            <div class="metarow">
+              <span class="t-title-l" style="color: var(--ink)">{{ name }}</span>
+              <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Badge" tone="success" icon="seal-check" hint-size="96px,22px">Verified</x-import>
+            </div>
+            <div class="t-body-s" style="color: var(--ink2); margin-top: 3px">{{ roleTitle }}</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 18px">
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.StatStrip" items="{{ stats }}" hint-size="100%,58px" style="display: block"></x-import>
+        </div>
+
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Section" kicker="ABOUT" first="{{ true }}" hint-size="100%,120px">
+          <p style="font-size: 15.5px; line-height: 1.55; color: var(--ink); margin: 0; text-wrap: pretty">{{ bioText }}</p>
+        </x-import>
+
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Section" kicker="CLUBS" hint-size="100%,140px">
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.FieldGroup" hint-size="100%,120px" style="display: block">
+            <sc-for list="{{ clubs }}" as="e" hint-placeholder-count="2">
+              <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" icon="{{ e.icon }}" label="{{ e.caption }}" value="{{ e.text }}" divider="{{ e.divider }}"></x-import>
+            </sc-for>
+          </x-import>
+        </x-import>
+      </sc-if>
+    </div>
+
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.TabDock" items="{{ hostTabs }}" active="account" radius="0 0 30px 30px" hint-size="100%,64px" style="display: block"></x-import>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 390, &quot;height&quot;: 812}}">
+const HOST_TABS = [
+  { id: 'events', icon: 'calendar-blank', label: 'EVENTS' },
+  { id: 'clubs', icon: 'users-three', label: 'CLUBS' },
+  { id: 'inbox', icon: 'chat-circle', label: 'INBOX' },
+  { id: 'account', icon: 'gear', label: 'ACCOUNT' },
+];
+
+class Component extends DCLogic {
+  state = { tab: 'Edit' };
+
+  renderVals() {
+    return {
+      hostTabs: HOST_TABS,
+      noop: () => {},
+      profileTabs: ['Edit', 'Preview'],
+      tab: this.state.tab,
+      setTab: (v) => this.setState({ tab: v }),
+      isEdit: this.state.tab === 'Edit',
+      isPreview: this.state.tab === 'Preview',
+      name: 'Aanya Sharma',
+      roleTitle: 'Lead host \u00b7 Sunday sea-face crew',
+      bioText: 'Five years of dawn runs along the Bandra seafront. I keep the pace easy, the coffee strong, and the introductions natural.',
+      stats: [
+        { value: '37', label: 'EVENTS' },
+        { value: '4.8', label: 'RATING' },
+        { value: '2020', label: 'SINCE' },
+      ],
+      profile: [
+        { icon: 'user', caption: 'Display name', text: 'Aanya Sharma', trailing: 'chevron', divider: false },
+        { icon: 'identification-badge', caption: 'Role title', text: 'Lead host \u00b7 Sunday sea-face crew', trailing: 'chevron', divider: true },
+        { icon: 'seal-check', caption: 'Status', text: 'Active professional profile', trailing: 'none', divider: true },
+      ],
+      bio: [
+        { icon: 'chats-circle', caption: 'About you as a host', text: 'Five years of dawn runs along the Bandra seafront. I keep the pace easy, the coffee strong, and the introductions natural.', trailing: 'chevron', divider: false },
+      ],
+      clubs: [
+        { icon: 'users-three', caption: 'Owner', text: 'Sunday sea-face crew', trailing: 'chevron', divider: false },
+        { icon: 'users-three', caption: 'Host team', text: 'Quizzicals', trailing: 'chevron', divider: true },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -28,6 +28,8 @@ options when specific functions need higher or lower limits.
 | `addClubHost` / `removeClubHost` | `src/clubs/` | Host management surface |
 | `joinClub` / `leaveClub` / `setClubNotificationPreference` | `src/clubs/` | Join/leave a club and manage member notifications |
 | `createClubPost` | `src/clubs/` | Host-only follower update with weekly quota and activity fan-out |
+| `requestClubClaim` / `adminDecideClubClaim` | `src/clubs/clubClaims.ts` | Public organizer claim submission and audited admin decision |
+| `sendEventBroadcast` | `src/events/` | Host-only, event-scoped Activity and preference-gated push broadcast with idempotent delivery receipt |
 | `markEventAttendance` | `src/events/` | Host marks attendance |
 | `selfCheckInAttendance` | `src/events/` | Participant self-check-in with GPS |
 | `generateEventSuccessPods` | `src/eventSuccess/` | Generate event-success pod suggestions |
@@ -46,6 +48,7 @@ options when specific functions need higher or lower limits.
 | `adminAssignSafetyTriageItem` | `src/admin/safetyTriage.ts` | Admin audited safety queue assignment |
 | `adminDecideSafetyTriageItem` | `src/admin/safetyTriage.ts` | Admin audited safety queue reviewed/dismissed status decision |
 | `adminGetAccessApplicationDetails` | `src/admin/accessApplications.ts` | Admin read-only launch access application detail and overlap signals |
+| `adminListClubClaimRequests` / `adminGetClubClaimRequestDetails` | `src/admin/clubClaimReview.ts` | Admin pending organizer claim queue and review-safe evidence detail |
 | `adminListClubDetails` | `src/admin/clubDetails.ts` | Admin canonical `clubs/{id}` organizer directory |
 | `adminGetClubDetails` | `src/admin/clubDetails.ts` | Admin-safe canonical organizer detail snapshot |
 | `adminUpdateClubDetails` | `src/admin/clubDetails.ts` | Admin audited owner-safe organizer field patch |
@@ -154,13 +157,15 @@ each handler. The shared options declare this intent, and the default `npm test`
 suite includes a guard test that fails when an exported callable does not use
 the shared App Check options.
 
-After deploying callable Functions, run `npm run sync:callable-invokers -- \
-<project-id> [...]`. Current callable deployment manifests do not reliably
-propagate `invoker` onto the underlying Cloud Event services, and a missing
-binding shows up as a Cloud Event/GFE HTML 401/403 before Firebase callable
-handling. The sync command grants `allUsers` only the `roles/event.invoker`
-permission on the callable Cloud Event services; it does not bypass Firebase Auth
-or App Check.
+`tool/deploy_firebase_targets.sh` synchronizes callable invokers immediately
+after each successful Functions phase. The sync command discovers live Cloud
+Functions v2 endpoints labeled `deployment-callable=true`, follows pagination,
+and uses each exact `serviceConfig.service`; this preserves intentionally live
+legacy callables without maintaining a second source list. It grants `allUsers`
+only `roles/run.invoker` on those Cloud Run services and preserves existing IAM
+bindings. Firebase Auth and App Check remain enforced by the callable adapter
+and handler. For controlled recovery, run
+`npm run sync:callable-invokers -- <project-id> [...]` directly.
 
 The public `joinWaitlist` endpoint is an HTTPS endpoint for the marketing site,
 not a Firebase callable function. It uses an explicit CORS origin allowlist for

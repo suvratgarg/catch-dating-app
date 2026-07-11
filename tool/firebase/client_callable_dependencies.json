@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "dependencies": [
+    {
+      "id": "host-event-broadcast",
+      "appRole": "host",
+      "environment": "prod",
+      "dartDefine": "ENABLE_HOST_EVENT_BROADCAST",
+      "callable": "sendEventBroadcast",
+      "region": "asia-south1"
+    }
+  ]
+}

@@ -10,6 +10,7 @@ import {createFunctionsRequire, fromRepo} from "../../lib/repo_paths.mjs";
 import {
   applyEventIntakeDashboardPublishPlan,
   buildEventIntakeDashboardPublishPlan,
+  validateEventIntakeDashboardForLivePublish,
 } from "./lib/event_intake_dashboard_publish_core.mjs";
 
 const defaultBridgePath = "admin/src/generated/eventIntakeBridge.json";
@@ -26,8 +27,9 @@ export async function main(argv = process.argv.slice(2)) {
   }
 
   const bridgePath = args.bridge ?? defaultBridgePath;
+  const bridge = readJson(bridgePath);
   const publishPlan = buildEventIntakeDashboardPublishPlan({
-    bridge: readJson(bridgePath),
+    bridge,
     bridgePath,
     generatedAt: args.generated_at ?? null,
   });
@@ -38,9 +40,23 @@ export async function main(argv = process.argv.slice(2)) {
     printSummary(publishPlan.summary);
   }
 
-  if (args.check) {
+  if (args.check && !args.check_live) {
     console.log("\nCheck passed. Event Intake bridge is publishable.");
     return;
+  }
+  if (args.check_live || args.apply) {
+    const errors = validateEventIntakeDashboardForLivePublish(bridge, {
+      asOf: args.as_of ?? new Date().toISOString().slice(0, 10),
+    });
+    if (errors.length > 0) {
+      console.error("\nEvent Intake bridge is not safe for live publishing:");
+      for (const error of errors) console.error(`- ${error}`);
+      process.exit(1);
+    }
+    if (args.check_live) {
+      console.log("\nLive publish check passed.");
+      return;
+    }
   }
 
   if (!args.apply) {
@@ -77,8 +93,8 @@ export async function main(argv = process.argv.slice(2)) {
 
 function parseArgs(argv) {
   return parseCommonArgs(argv, {
-    booleanFlags: ["--check"],
-    valueFlags: ["--bridge", "--generated-at"],
+    booleanFlags: ["--check", "--check-live"],
+    valueFlags: ["--bridge", "--generated-at", "--as-of"],
   });
 }
 
@@ -111,6 +127,7 @@ events, externalEvents/{id}, marketingOpsDashboards/current, or content drafts.
 Options:
   --apply                    Write eventIntakeDashboards/current.
   --check                    Validate and print a read-only summary.
+  --check-live               Enforce live freshness and reject sample data.
   --json                     Print summary as JSON.
   --env <dev|staging|prod>   Resolve project id from .firebaserc.
   --project <id>             Firebase project id.
@@ -120,6 +137,7 @@ Options:
   --confirm-prod             Alias for --allow-prod.
   --bridge <file>            Generated Event Intake bridge JSON.
   --generated-at <iso>       Override dashboard generatedAt timestamp.
+  --as-of <YYYY-MM-DD>       Reference date for --check-live. Defaults today.
   -h, --help                 Show this help.
 `);
 }

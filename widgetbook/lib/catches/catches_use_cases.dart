@@ -19,6 +19,7 @@ import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
+import 'package:catch_dating_app/swipes/presentation/catches_hub_screen_state.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_screen_state.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_view_model.dart';
@@ -29,8 +30,10 @@ import 'package:catch_dating_app/swipes/shared/profile_surface/profile_view.dart
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_view_mapper.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_empty_content.dart';
+import 'package:catch_dating_app/swipes/presentation/swipe_hub_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_queue_controller.dart';
+import 'package:catch_dating_app/swipes/presentation/widgets/attended_event_tile.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/catches_pass_button.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_info_chip.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_reaction_controls.dart';
@@ -40,6 +43,110 @@ import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
+
+@widgetbook.UseCase(
+  name: 'Hub route states',
+  type: SwipeHubScreen,
+  path: '[P1 product surfaces]/Catches',
+)
+Widget catchesHubRouteStates(BuildContext context) {
+  return _CatchesCatalog(
+    title: 'SwipeHubScreen',
+    contractId: 'screen.catches.hub',
+    children: [
+      _StateCard(
+        label: 'uid loading',
+        child: const _DeviceFrame(
+          child: _HubRouteScope(uidValue: AsyncLoading<String?>()),
+        ),
+      ),
+      _StateCard(
+        label: 'auth error',
+        child: _DeviceFrame(
+          child: _HubRouteScope(
+            uidValue: AsyncError<String?>(
+              StateError('Session failed'),
+              StackTrace.empty,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'signed out shell-hidden',
+        child: const _DeviceFrame(
+          child: _HubRouteScope(uidValue: AsyncData<String?>(null)),
+        ),
+      ),
+      _StateCard(
+        label: 'attended events loading',
+        child: const _DeviceFrame(
+          child: _HubRouteScope(eventsValue: AsyncLoading<List<Event>>()),
+        ),
+      ),
+      _StateCard(
+        label: 'attended events error',
+        child: _DeviceFrame(
+          child: _HubRouteScope(
+            eventsValue: AsyncError<List<Event>>(
+              StateError('Events failed'),
+              StackTrace.empty,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'offline event load',
+        child: _DeviceFrame(
+          child: _HubRouteScope(
+            eventsValue: AsyncError<List<Event>>(
+              _offlineException(action: 'load attended events'),
+              StackTrace.empty,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'no active windows',
+        child: _DeviceFrame(
+          child: _HubRouteScope(
+            eventsValue: AsyncData<List<Event>>([
+              CatchesSurfaceFixtures.closedWindowEvent(),
+            ]),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'active catch windows',
+        child: _DeviceFrame(
+          child: _HubRouteScope(
+            eventsValue: AsyncData<List<Event>>([
+              CatchesSurfaceFixtures.openWindowEvent(),
+              CatchesSurfaceFixtures.closingSoonEvent(),
+            ]),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'text scale 2.0',
+        child: const _DeviceFrame(
+          child: _MediaOverride(
+            textScaler: TextScaler.linear(2),
+            child: _HubRouteScope(),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'reduced motion',
+        child: const _DeviceFrame(
+          child: _MediaOverride(
+            disableAnimations: true,
+            child: _HubRouteScope(),
+          ),
+        ),
+      ),
+    ],
+  );
+}
 
 @widgetbook.UseCase(
   name: 'Event deck route states',
@@ -1048,6 +1155,163 @@ Widget catchesProfileReviewSkeletonStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Hub composition',
+  type: CatchesHubContent,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget catchesHubContentStates(BuildContext context) {
+  final ready = _hubReadyState();
+
+  return _CatchesCatalog(
+    title: 'CatchesHubContent',
+    contractId: 'screen.catches.hub sections',
+    children: [
+      _StateCard(
+        label: 'active windows',
+        child: _DeviceFrame(
+          child: CatchesHubContent(
+            state: ready,
+            onOpenCatch: _ignoreCatchesRow,
+            onOpenRecap: _ignoreCatchesRow,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'text scale 2.0',
+        child: _DeviceFrame(
+          child: _MediaOverride(
+            textScaler: const TextScaler.linear(2),
+            child: CatchesHubContent(
+              state: ready,
+              onOpenCatch: _ignoreCatchesRow,
+              onOpenRecap: _ignoreCatchesRow,
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Header states',
+  type: CatchesHubHeader,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget catchesHubHeaderStates(BuildContext context) {
+  return const _CatchesCatalog(
+    title: 'CatchesHubHeader',
+    contractId: 'screen.catches.hub.header',
+    children: [
+      _StateCard(
+        label: 'default',
+        child: _SectionFrame(
+          height: 108,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: CatchesHubHeader(),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Intro card states',
+  type: CatchesIntroCard,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget catchesIntroCardStates(BuildContext context) {
+  final rows = _hubRows();
+
+  return _CatchesCatalog(
+    title: 'CatchesIntroCard',
+    contractId: 'screen.catches.hub.intro',
+    children: [
+      _StateCard(
+        label: 'window open',
+        child: _SectionFrame(
+          height: 360,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: CatchesIntroCard(row: rows.first, onTap: _noopTap),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'closing soon',
+        child: _SectionFrame(
+          height: 360,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: CatchesIntroCard(row: rows.last, onTap: _noopTap),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Tile states',
+  type: AttendedEventTile,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget attendedEventTileStates(BuildContext context) {
+  final rows = _hubRows();
+
+  return _CatchesCatalog(
+    title: 'AttendedEventTile',
+    contractId: 'screen.catches.hub.event_tile',
+    children: [
+      _StateCard(
+        label: 'open and closing soon',
+        child: _SectionFrame(
+          height: 260,
+          child: Padding(
+            padding: CatchInsets.content,
+            child: Column(
+              children: [
+                AttendedEventTile(
+                  row: rows.first,
+                  onOpenCatch: _noopTap,
+                  onOpenRecap: _noopTap,
+                ),
+                gapH12,
+                AttendedEventTile(
+                  row: rows.last,
+                  onOpenCatch: _noopTap,
+                  onOpenRecap: _noopTap,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Empty states',
+  type: CatchesHubEmptyState,
+  path: '[P1 product surfaces]/Catches/Sections',
+)
+Widget catchesHubEmptyStateStates(BuildContext context) {
+  return _CatchesCatalog(
+    title: 'CatchesHubEmptyState',
+    contractId: 'screen.catches.hub.empty',
+    children: [
+      _StateCard(
+        label: 'no active catches',
+        child: _DeviceFrame(child: CatchesHubEmptyState(onFindEvent: _noopTap)),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Deck composition',
   type: CatchesProfileReview,
   path: '[P1 product surfaces]/Catches/Sections',
@@ -1474,6 +1738,35 @@ Widget swipeEmptyStateStates(BuildContext context) {
   );
 }
 
+class _HubRouteScope extends StatelessWidget {
+  const _HubRouteScope({this.uidValue, this.eventsValue});
+
+  final AsyncValue<String?>? uidValue;
+  final AsyncValue<List<Event>>? eventsValue;
+
+  @override
+  Widget build(BuildContext context) {
+    final effectiveUid =
+        uidValue ?? const AsyncData<String?>(CatchesSurfaceFixtures.viewerUid);
+    final uid = effectiveUid.asData?.value;
+
+    return ProviderScope(
+      overrides: [
+        uidProvider.overrideWithValue(effectiveUid),
+        if (uid != null)
+          watchAttendedEventsProvider(uid).overrideWithValue(
+            eventsValue ??
+                AsyncData<List<Event>>([
+                  CatchesSurfaceFixtures.openWindowEvent(),
+                  CatchesSurfaceFixtures.closingSoonEvent(),
+                ]),
+          ),
+      ],
+      child: SwipeHubScreen(now: CatchesSurfaceFixtures.now),
+    );
+  }
+}
+
 class _DeckRouteScope extends StatelessWidget {
   const _DeckRouteScope({
     required this.event,
@@ -1630,6 +1923,20 @@ const _reactionTarget = ProfileReactionTarget(
       'Ask me about the bookshop detour I take after long runs and the breakfast order I defend every Sunday.',
 );
 
+List<CatchesHubEventRow> _hubRows() {
+  return catchesHubRowsFromEvents([
+    CatchesSurfaceFixtures.openWindowEvent(),
+    CatchesSurfaceFixtures.closingSoonEvent(),
+  ], now: CatchesSurfaceFixtures.now);
+}
+
+CatchesHubReady _hubReadyState() {
+  return CatchesHubReady(
+    uid: CatchesSurfaceFixtures.viewerUid,
+    rows: _hubRows(),
+  );
+}
+
 Map<String, PublicProfile> _recapRosterProfiles() {
   return {
     for (final profile in CatchesSurfaceFixtures.candidates)
@@ -1672,6 +1979,8 @@ T _profileSection<T extends ProfileSection>() {
 }
 
 void _noopTap() {}
+
+void _ignoreCatchesRow(CatchesHubEventRow row) {}
 
 void _ignoreString(String value) {}
 

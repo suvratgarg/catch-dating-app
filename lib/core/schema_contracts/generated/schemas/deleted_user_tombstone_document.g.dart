@@ -18,6 +18,8 @@ const schemaDeletedUserTombstoneDocumentSchema = <String, Object?>{
   'required': <Object?>[
     'uid',
     'deletedAt',
+    'status',
+    'updatedAt',
   ],
   'properties': <String, Object?>{
     'uid': <String, Object?>{
@@ -45,6 +47,63 @@ const schemaDeletedUserTombstoneDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'server-only',
+    },
+    'status': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'processing',
+        'completed',
+      ],
+      'x-catch-ownership': 'server-only',
+    },
+    'updatedAt': <String, Object?>{
+      'type': 'object',
+      'description': 'Serialized Firestore Timestamp fixture shape.',
+      'x-firestore-type': 'timestamp',
+      'additionalProperties': false,
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
+      'properties': <String, Object?>{
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
+        '_nanoseconds': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 999999999,
+        },
+      },
+      'x-catch-ownership': 'server-only',
+    },
+    'completedAt': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
       'x-catch-ownership': 'server-only',
     },
     'retainedFor': <String, Object?>{

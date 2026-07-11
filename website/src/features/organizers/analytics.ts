@@ -18,7 +18,6 @@ export function trackOrganizerSearchAppearance(
   listing: HostListing,
   appearanceContext: string
 ) {
-  if (!isPublicApiEnabled(listing)) return;
   if (!hasOrganizerAnalyticsConsent()) return;
   const key = `${listing.id}:${appearanceContext}`;
   if (trackedOrganizerSearchAppearances.has(key)) return;
@@ -35,8 +34,13 @@ export function trackOrganizerAnalytics(
   source?: string,
   eventId?: string | null
 ) {
-  if (!isPublicApiEnabled(listing)) return;
   if (!hasOrganizerAnalyticsConsent()) return;
+  trackMarketingEvent(`organizer_${eventName}`, {
+    club_id: listing.id,
+    event_id: eventId ?? null,
+    source: source ?? null,
+  });
+  if (!isPublicApiEnabled(listing)) return;
   void import("../../firebase")
     .then(({recordOrganizerAnalyticsEvent}) =>
       recordOrganizerAnalyticsEvent({
@@ -50,11 +54,6 @@ export function trackOrganizerAnalytics(
       })
     )
     .catch(() => undefined);
-  trackMarketingEvent(`organizer_${eventName}`, {
-    club_id: listing.id,
-    event_id: eventId ?? null,
-    source: source ?? null,
-  });
 }
 
 function hasOrganizerAnalyticsConsent() {

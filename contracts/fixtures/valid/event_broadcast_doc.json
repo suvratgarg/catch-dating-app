@@ -1,0 +1,48 @@
+{
+  "eventId": "event-1",
+  "clubId": "club-1",
+  "actorUid": "host-1",
+  "audience": "booked",
+  "title": "Sunset Social update",
+  "body": "Meet by the west entrance at 7:45.",
+  "targetUids": [
+    "user-1"
+  ],
+  "status": "completed",
+  "recipientCount": 1,
+  "excludedCount": 0,
+  "activityAvailableCount": 1,
+  "pushAttemptedCount": 1,
+  "pushAcceptedCount": 1,
+  "pushFailedCount": 0,
+  "pushUnknownCount": 0,
+  "pushErrorCodes": [],
+  "deliveries": {
+    "recipient-hash-1": {
+      "activityStatus": "created",
+      "pushStatus": "accepted",
+      "activityNotificationId": "eventUpdated_event-1"
+    }
+  },
+  "leaseOwner": "lease-1",
+  "leaseExpiresAt": {
+    "_seconds": 1783717200,
+    "_nanoseconds": 0
+  },
+  "expiresAt": {
+    "_seconds": 1791493200,
+    "_nanoseconds": 0
+  },
+  "createdAt": {
+    "_seconds": 1783716900,
+    "_nanoseconds": 0
+  },
+  "updatedAt": {
+    "_seconds": 1783716901,
+    "_nanoseconds": 0
+  },
+  "completedAt": {
+    "_seconds": 1783716901,
+    "_nanoseconds": 0
+  }
+}
