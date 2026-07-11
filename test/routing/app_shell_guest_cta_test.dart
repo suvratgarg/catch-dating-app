@@ -1,3 +1,5 @@
+// ignore_for_file: scoped_providers_should_specify_dependencies
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chat_inbox_screen.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
@@ -364,4 +366,3 @@ final class _NoOpAnalyticsReporter implements AnalyticsReporter {
   @override
   Future<void> setUserId(String? userId) async {}
 }
-// ignore_for_file: scoped_providers_should_specify_dependencies
