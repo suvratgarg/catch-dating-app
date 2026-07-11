@@ -299,6 +299,7 @@ jobs:
             -authenticationKeyID "$ASC_KEY_ID" \
             -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
             -hideShellScriptEnvironment \
+            "CODE_SIGN_IDENTITY=Apple Distribution" \
             archive
 
       - name: Verify archived release identity and Maps key

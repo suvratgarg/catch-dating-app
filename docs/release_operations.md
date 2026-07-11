@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 1.9.1
+version: 1.9.2
 updated: 2026-07-12
 owner: recursive_audit_loop
 status: active
@@ -945,6 +945,14 @@ The pre-cutover Consumer dispatch `29161431098` successfully signed and archived
 to JSON. The verifier now extracts `ApplicationProperties` and has a regression
 test for that real plist shape. The failed dispatch is diagnostic evidence, not
 TestFlight upload proof.
+
+The first unified main run `29165188541` proved the credential and build-number
+preflight, then the archive verifier rejected a development-signed Host archive
+before export (`aps-environment=development`, `get-task-allow=true`). The Apple
+flavor generator, checked target contract, and archive command now require
+`Apple Distribution` for every `Release-*` iOS archive; Debug/Profile remain
+development-signed. This keeps a Release build from being mistaken for a
+distribution-signed build.
 
 1. Both GitHub role jobs archive, verify, export, and upload successfully.
 2. Both builds finish processing in App Store Connect.

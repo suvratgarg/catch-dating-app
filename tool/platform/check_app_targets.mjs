@@ -78,7 +78,7 @@ export function parseAppleBuildConfigurations(source) {
   for (const match of source.matchAll(pattern)) {
     const settings = {};
     for (const line of match[1].split(/\r?\n/u)) {
-      const setting = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*);\s*$/u);
+      const setting = line.match(/^\s*"?([A-Za-z0-9_\[\]=*]+)"?\s*=\s*(.*);\s*$/u);
       if (!setting) continue;
       settings[setting[1]] = unquoteBuildSetting(setting[2]);
     }
@@ -142,6 +142,7 @@ export function validateReleaseOwnership({manifest, workflowSource}) {
     ["release branch policy", policy.branchPolicy, "main-only"],
     ["iOS channel", policy.ios?.channel, "testflight"],
     ["iOS upload mode", policy.ios?.uploadMode, "automatic-main"],
+    ["iOS archive signing identity", policy.ios?.archiveSigningIdentity, "Apple Distribution"],
     ["Android channel", policy.android?.channel, "play-internal"],
     ["Android track", policy.android?.track, "qa"],
     ["Android publisher auth", policy.android?.publisherAuth, "github-oidc"],
@@ -186,6 +187,7 @@ export function validateReleaseOwnership({manifest, workflowSource}) {
     ["Android role matrix", /prod-android:[\s\S]*?matrix:[\s\S]*?app_role/u],
     ["mobile credentials environment", /environment:\s*prod-mobile/u],
     ["TestFlight upload", /Upload to TestFlight/u],
+    ["distribution-signed iOS archive", /CODE_SIGN_IDENTITY=Apple Distribution/u],
     ["signed Android identity verification", /verify_android_release_bundle\.mjs/u],
     ["Play internal track", /--track qa/u],
     ["non-committing Play access probe", /probe_google_play_access\.mjs/u],
@@ -494,6 +496,13 @@ function validateAppleTargetConfigurations({
   }
 
   for (const configurationName of Object.values(target.ios.configurations ?? {})) {
+    const configurationExpectedSettings = {...expectedSettings};
+    if (platform === "ios") {
+      configurationExpectedSettings["CODE_SIGN_IDENTITY[sdk=iphoneos*]"] =
+        configurationName.startsWith("Release-")
+          ? "Apple Distribution"
+          : "Apple Development";
+    }
     const matches = configurations.filter(
       (configuration) => configuration.name === configurationName,
     );
@@ -503,7 +512,7 @@ function validateAppleTargetConfigurations({
       );
       continue;
     }
-    for (const [key, expected] of Object.entries(expectedSettings)) {
+    for (const [key, expected] of Object.entries(configurationExpectedSettings)) {
       const actual = matches[0].settings[key];
       if (actual !== expected) {
         findings.push(

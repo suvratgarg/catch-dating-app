@@ -113,6 +113,7 @@ test("Apple build configuration parser keeps target identity bound to its config
       CATCH_APP_TARGET_ID = host-prod;
       FLUTTER_TARGET = "$(SRCROOT)/../lib/main_host_prod.dart";
       PRODUCT_BUNDLE_IDENTIFIER = com.catchdates.host;
+      "CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution";
     };
     name = Release-host-prod;
   `);
@@ -124,6 +125,7 @@ test("Apple build configuration parser keeps target identity bound to its config
         CATCH_APP_TARGET_ID: "host-prod",
         FLUTTER_TARGET: "$(SRCROOT)/../lib/main_host_prod.dart",
         PRODUCT_BUNDLE_IDENTIFIER: "com.catchdates.host",
+        "CODE_SIGN_IDENTITY[sdk=iphoneos*]": "Apple Distribution",
       },
     },
   ]);
@@ -139,7 +141,11 @@ function unifiedReleaseManifest() {
     approvalMode: "none-after-main-merge",
     branchPolicy: "main-only",
     roles: ["consumer", "host"],
-    ios: {channel: "testflight", uploadMode: "automatic-main"},
+    ios: {
+      channel: "testflight",
+      uploadMode: "automatic-main",
+      archiveSigningIdentity: "Apple Distribution",
+    },
     android: {
       channel: "play-internal",
       track: "qa",
@@ -182,6 +188,7 @@ jobs:
         app_role: roles
     steps:
       - name: Upload to TestFlight
+      - run: echo 'CODE_SIGN_IDENTITY=Apple Distribution'
       - run: node tool/platform/verify_app_store_build.mjs
   prod-android:
     environment: prod-mobile
