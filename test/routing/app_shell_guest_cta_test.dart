@@ -1,5 +1,3 @@
-// ignore_for_file: scoped_providers_should_specify_dependencies
-
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chat_inbox_screen.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
@@ -316,20 +314,27 @@ ProviderScope _authenticatedShellProviderScope({
     overrides: [
       if (initialLocation != null)
         initialAppLocationProvider.overrideWith((ref) => initialLocation),
+      // ignore: scoped_providers_should_specify_dependencies
       uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+      // ignore: scoped_providers_should_specify_dependencies
       appShellFcmInitializationProvider(
         'runner-1',
       ).overrideWith((ref) async {}),
+      // ignore: scoped_providers_should_specify_dependencies
       watchMatchesForUserProvider(
         'runner-1',
       ).overrideWith((ref) => Stream.value(const [])),
+      // ignore: scoped_providers_should_specify_dependencies
       watchEventParticipationsForUserProvider(
         'runner-1',
       ).overrideWith((ref) => Stream.value(const [])),
+      // ignore: scoped_providers_should_specify_dependencies
       watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
+      // ignore: scoped_providers_should_specify_dependencies
       appConnectivityProvider.overrideWith(
         (ref) => Stream.value(const [ConnectivityResult.wifi]),
       ),
+      // ignore: scoped_providers_should_specify_dependencies
       appAnalyticsProvider.overrideWithValue(
         AppAnalytics(reporter: _NoOpAnalyticsReporter(), shouldCollect: false),
       ),
