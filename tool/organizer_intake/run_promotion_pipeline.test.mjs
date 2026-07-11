@@ -128,12 +128,13 @@ test("parseArgs guards local decision-answer writes", () => {
   );
 });
 
-test("buildSteps can prepend export and target Firestore claim writes explicitly", () => {
+test("buildSteps verifies Firestore before generating website listings", () => {
   const steps = buildSteps({
     allowEmptyExport: true,
     allowOverwriteExport: true,
     allowProd: false,
     claimSync: "firestore",
+    claimReadinessReceipt: "/tmp/claim-readiness.json",
     confirmProd: true,
     date: "2026-06-17",
     emulator: false,
@@ -203,12 +204,27 @@ test("buildSteps can prepend export and target Firestore claim writes explicitly
     "--allow-empty",
     "--allow-overwrite",
   ]);
-  assert.equal(steps.at(-1).label, "preview claim-target sync against Firestore");
-  assert.deepEqual(steps.at(-1).command.slice(1), [
+  const claimStep = steps.find((step) =>
+    step.label === "verify claim targets against Firestore"
+  );
+  const listingStep = steps.find((step) =>
+    step.label === "generate website organizer listings"
+  );
+  assert.ok(claimStep);
+  assert.ok(listingStep);
+  assert.ok(steps.indexOf(claimStep) < steps.indexOf(listingStep));
+  assert.deepEqual(claimStep.command.slice(1), [
     "tool/organizer_intake/sync_claim_targets_to_firestore.mjs",
     "--env",
     "prod",
     "--write",
     "--confirm-prod",
+    "--receipt",
+    "/tmp/claim-readiness.json",
+  ]);
+  assert.deepEqual(listingStep.command.slice(1), [
+    "website/scripts/generateOrganizerListings.mjs",
+    "--claim-target-readiness-receipt",
+    "/tmp/claim-readiness.json",
   ]);
 });

@@ -1,0 +1,123 @@
+{
+  "$schema": "catch.host-app/v2",
+  "title": "Catch for Organizers — consolidated host-app manifest",
+  "supersedes": "host-coverage-manifest.json (v1 — route→design coverage of the OLD club-shaped IA)",
+  "generated": "2026-06-20",
+  "purpose": "Single source of truth for the NEW host app (the 'Catch for Organizers' redesign). Maps the new lifecycle-shaped IA to the catalogue widgets it is built from, re-homes every surface the old app covered (so nothing is lost), and flags the functional regressions the redesign prototype introduced as stubs. The Host App gallery + coverage report render from this.",
+
+  "thesis": "A host lives in two objects on two cadences: the Organizer (a brand, set-and-forget) and the Event (the whole job, every week + live on the night). The old IA spent two of four tabs on the club; the new IA makes the EVENT LIFECYCLE the spine — create → fill → run → report — and lets the Organizer be the calm brand surface behind it. Source rationale: explorations/host-ia-review/HostIAReview.html.",
+
+  "ia": {
+    "old": {
+      "shell": "HostAppShell · lib/core/presentation/host_app_shell.dart",
+      "tabs": ["Events (club→event launcher)", "Clubs (Edit / Insights / Preview)", "Inbox (generic threads)", "Account (profile + sign-out)"],
+      "note": "Cleaved out of the consumer app; club-shaped. Faithfully rebuilt on-system as templates/host-* (v1 coverage)."
+    },
+    "new": {
+      "tabs": [
+        { "id": "today", "label": "Today", "icon": "house / house-fill", "absorbs": "the old Events ops-home, reborn as a time-aware ops surface", "owns": ["NextUpHero (next/live event in the dark register)", "NeedsYouQueue (cross-event triage: approvals, waitlist, guest Qs, drafts)", "Later-this-week EventLifecycleRows"] },
+        { "id": "events", "label": "Events", "icon": "ticket", "absorbs": "the old Events list + the create entry buried under Clubs", "owns": ["Upcoming / Live / Past SegPill", "New event + Repeat-last create pair", "month-grouped EventLifecycleRows", "→ Manage per event"] },
+        { "id": "inbox", "label": "Inbox", "icon": "chat-circle / -fill", "absorbs": "the old Inbox (shared ChatsListScreen, host-filtered)", "owns": ["event-scoped threads", "Booked vs Prospective SegPill", "BlastComposer (message all booked / waitlist / everyone)"] },
+        { "id": "organizer", "label": "Organizer", "icon": "storefront / -fill", "absorbs": "the old Clubs (Edit/Preview) + Account (profile) — merged into one brand surface", "owns": ["OrganizerHeader (logo, name, verified, formats)", "payouts nudge", "MetricGrid (members/rating/events/upcoming)", "team section", "TrendStrip → Insights", "How-guests-see-you preview", "Event defaults, Settings, Sign-out"] }
+      ],
+      "destinations": [
+        { "id": "manage", "label": "Manage event", "from": "Events row / Today hero / NeedsYou item", "modes": ["Setup", "Guests", "Live", "Report"], "absorbs": "the old Manage (Setup/Live/Report) + the dedicated /attendance route + the Event Success run-of-show console", "owns": ["context bar (when·where·capacity)", "lifecycle-default mode", "RosterBoard (Guests + peek)", "LiveConsole run-of-show + big check-in", "Report metrics + CSV exports", "danger zone"] },
+        { "id": "insights", "label": "Insights", "from": "Organizer → TrendStrip", "absorbs": "the old Clubs › Insights sub-tab (host analytics)", "owns": ["DateRangePicker (presets + custom calendar)", "MetricGrid with ▲▼ deltas", "demand→booking trend chart (inspectable bars)", "by-format split", "top events → Report", "data-quality fixes"] }
+      ]
+    }
+  },
+
+  "rehoming": {
+    "_comment": "Every routed screen + non-routed surface from the v1 coverage manifest, mapped to its home in the NEW IA. status: preserved (same job, new place) · improved (job + UX upgraded) · relocated (moved tab) · at-risk (stubbed in the prototype — see regressions[]) · shared (consumer screen, untouched).",
+    "routes": [
+      { "old": "hostHomeScreen /host (Events tab)", "new": "Today tab + Events tab", "status": "improved", "note": "Ops-home split into a time-aware Today (hero + NeedsYou) and an event-lifecycle Events list." },
+      { "old": "hostClubsScreen /host/clubs (Clubs tab: Edit/Insights/Preview)", "new": "Organizer tab (Edit/Preview) + Insights destination", "status": "relocated", "note": "Brand identity/team/payouts/defaults → Organizer. Analytics → its own Insights destination (no longer a tab-in-a-tab). Preview → 'How guests see you'." },
+      { "old": "hostClubDetailScreen /host/clubs/:id (shared)", "new": "shared ClubDetailScreen", "status": "shared", "note": "Unchanged." },
+      { "old": "hostCreateClubScreen /host/clubs/create-club (4-step wizard)", "new": "Organizer → Create organizer (wizard)", "status": "at-risk", "note": "Reframed club→organizer. Wizard NOT in the redesign prototype. Re-home templates/host-create-club. See R3." },
+      { "old": "hostEditClubScreen /host/clubs/:id/edit", "new": "Organizer → Edit organizer", "status": "at-risk", "note": "Re-home templates/host-edit-club under Organizer. See R3." },
+      { "old": "hostCreateEventScreen /host/clubs/:id/create-event (5-step wizard)", "new": "Events → New event / Repeat last", "status": "at-risk", "note": "Stubbed as a toast in the prototype. Re-home templates/host-create-event; add the Repeat-last prefilled clone path (Flows.html). See R1." },
+      { "old": "hostAppEventDetailScreen (shared)", "new": "shared EventDetailScreen", "status": "shared", "note": "Host read-only event detail. Unchanged." },
+      { "old": "hostAppEventManageScreen .../manage (Setup/Live/Report)", "new": "Manage (Setup/Guests/Live/Report)", "status": "improved", "note": "Adds a Guests mode, a context bar, lifecycle-default mode, and folds the Event Success console into Live run-of-show. Resolves v1 divergence D1." },
+      { "old": "hostAppEditEventScreen .../edit", "new": "Manage → Setup → Edit event details", "status": "at-risk", "note": "Stubbed as a toast. Re-home templates/host-edit-event (locks schedule/policy once booked). See R2." },
+      { "old": "hostAppAttendanceSheet .../attendance", "new": "Manage → Live → Check guests in", "status": "improved", "note": "Promoted to the big check-in affordance during Live. Resolves v1 divergence D4." },
+      { "old": "hostAppEventSuccessScreen .../success (Event Success console)", "new": "Manage → Live (run-of-show) + Report", "status": "improved", "note": "The undesigned-in-v1 console is now the LiveConsole + Report. Resolves v1 divergence D1." },
+      { "old": "hostInboxScreen /host/inbox", "new": "Inbox tab", "status": "improved", "note": "Event-scoped, Booked/Prospective segmented, real BlastComposer." },
+      { "old": "hostChatScreen /host/inbox/:matchId (shared)", "new": "shared ChatScreen", "status": "shared", "note": "Unchanged." },
+      { "old": "hostSettingsScreen /host/settings (HostAccountScreen)", "new": "Organizer tab + Organizer → Settings", "status": "relocated", "note": "Host profile rejoins the brand (Organizer); sign-out demoted to an Organizer row. Resolves v1 divergence D2 framing." },
+      { "old": "hostProfileScreen /host/settings/profile (full-screen editor)", "new": "Organizer → Edit profile", "status": "at-risk", "note": "Was MISSING in v1. Provide as the Organizer profile editor. See R3." }
+    ],
+    "surfaces": [
+      { "old": "Add host (sheet)", "new": "Organizer → Team → Add host", "status": "at-risk", "note": "Re-home templates/host-add-host. See R4." },
+      { "old": "Resume draft (sheet)", "new": "Today → 'Finish your draft' NeedsYou item + Events", "status": "preserved", "note": "Re-home templates/host-draft-picker as the draft entry. See R4." },
+      { "old": "Payouts / Stripe hand-off (sheet)", "new": "Organizer → payouts nudge → hand-off", "status": "at-risk", "note": "Nudge present; sheet stubbed. Re-home templates/host-payouts-handoff. See R4." },
+      { "old": "Remove host / Transfer ownership / Cancel event (dialogs)", "new": "Team mgmt + Manage → Setup → danger zone", "status": "at-risk", "note": "Re-home templates/host-dialogs. See R4." },
+      { "old": "Delete unused event (dialog)", "new": "Manage → Setup → danger zone", "status": "missing", "note": "Was MISSING in v1 (v1 divergence D3). Add to the re-homed dialog set." },
+      { "old": "Create invite link (dialog)", "new": "Manage → Setup → Share private link", "status": "missing", "note": "Was MISSING in v1 (v1 divergence D3). Add." },
+      { "old": "Create-event success (confirm)", "new": "after Events → New event", "status": "preserved", "note": "Re-home templates/host-create-event-success." },
+      { "old": "Auth-required / Loading / Empty-error states", "new": "across the new shell", "status": "missing", "note": "Still undesigned (UX audit 'Missing flows & states'). Tracked, not yet built." }
+    ]
+  },
+
+  "regressions": [
+    { "id": "R1", "severity": "high", "what": "Create-event wizard is a toast", "where": "Events → New event / Repeat last", "fix": "Re-home the existing 5-step templates/host-create-event under Events; add the Repeat-last prefilled clone (prototype + Flows.html spec). Until done, the redesign loses the single most-frequent creative act." },
+    { "id": "R2", "severity": "high", "what": "Edit-event is a toast", "where": "Manage → Setup → Edit event details", "fix": "Re-home templates/host-edit-event (locks schedule/policy once bookings exist)." },
+    { "id": "R3", "severity": "high", "what": "Create/Edit organizer (club) + profile editor absent", "where": "Organizer", "fix": "Re-home templates/host-create-club + host-edit-club as Create/Edit organizer; add the profile editor (old hostProfileScreen, never designed)." },
+    { "id": "R4", "severity": "med", "what": "Team dialogs, payouts hand-off, draft picker stubbed as toasts", "where": "Organizer / Manage", "fix": "Re-home host-add-host, host-dialogs, host-payouts-handoff, host-draft-picker; add Delete-event + Invite-link dialogs (v1 D3)." },
+    { "id": "R5", "severity": "med", "what": "Onboarding / auth / empty / loading / error states unbuilt", "where": "shell", "fix": "Design the once-but-critical entry + degraded paths (UX audit). Not in old coverage either — net-new, tracked." }
+  ],
+
+  "widgets": {
+    "_comment": "The redesign must be composed PURELY of catalogue widgets. This maps each redesign element to either an existing catalogue component (reuse) or a new one to promote (build). Existing: components/<group>/<Name>. New ones get jsx + d.ts + *.card.html in components/hosting or components/dashboard.",
+    "reuse": [
+      { "redesign": "Status bar / app bar / tab dock", "catalogue": "core/StatusBar, core/AppBar, core/TabDock" },
+      { "redesign": "Badges, pills, buttons", "catalogue": "core/Badge, core/Button, core/IconButton, core/Chip" },
+      { "redesign": "Roster (Guests + peek + sheet)", "catalogue": "hosting/RosterBoard (RosterTable + RosterRow), core/Sheet" },
+      { "redesign": "Live run-of-show + check-in", "catalogue": "hosting/LiveConsole (+ hosting/RosterTiles, RotationCard)" },
+      { "redesign": "Empty / all-caught-up states", "catalogue": "core/EmptyState" },
+      { "redesign": "Section rhythm, labels, kickers", "catalogue": "core/Section, core/SectionLabel, core/Kicker, core/SectionStack" },
+      { "redesign": "Wizards (create/edit)", "catalogue": "core/Stepper, core/StepHeader, core/Field, core/FieldGroup, core/TextField, core/OptionCard, core/OptionGroup, core/MapPicker" },
+      { "redesign": "Metric grid (basic)", "catalogue": "core/StatStrip (extend or wrap as MetricGrid)" },
+      { "redesign": "Quick actions", "catalogue": "dashboard/QuickActions" }
+    ],
+    "build": [
+      { "name": "NextUpHero", "group": "dashboard", "why": "Time-aware marquee for the next/live event in the reserved dark register, pigment-glowed, state chip, face-pile, stateful CTA. No catalogue equivalent. (NEW_WIDGETS.md)" },
+      { "name": "NeedsYouQueue", "group": "dashboard", "why": "Cross-event triage list with inline resolve + count chips. No equivalent." },
+      { "name": "EventLifecycleRow", "group": "dashboard", "why": "Event-first list row: pigment spine, date block, lifecycle tag, fill bar, state-aware trailing. (DashboardEventCard is club-nested; this is event-first.)" },
+      { "name": "FacePile", "group": "core", "why": "Overlapping avatar stack +N, light & dark ring variants. Recurs across hero/peek/rows." },
+      { "name": "OrganizerHeader", "group": "hosting", "why": "Merged brand+host identity surface (logo, name, verified, formats). Encodes club→organizer reframe." },
+      { "name": "TrendStrip", "group": "dashboard", "why": "Compact cross-event KPIs over a sparkline; the Organizer→Insights teaser." },
+      { "name": "SegPill", "group": "core", "why": "Segmented pill control (ranges, lifecycle filters, modes). Replaces stacked underline OptionGroups for filters." },
+      { "name": "MetricGrid / StatCard", "group": "dashboard", "why": "2-col metric tiles with value/label/delta + ready/partial/missing states; used on Setup, Report, Organizer, Insights." },
+      { "name": "BlastComposer", "group": "messaging", "why": "Event-scoped broadcast: audience picker + templates + send. (Sheet hosts it.)" },
+      { "name": "DateRangePicker", "group": "core", "why": "Presets + custom dual-month calendar range. Already prototyped (CalendarPrimitive.html); promote it." }
+    ]
+  },
+
+  "divergences_vs_code": [
+    { "id": "D1", "was": "high", "now": "addressed-by-design", "note": "Event Success run-of-show console — now the Manage Live LiveConsole + Report." },
+    { "id": "D2", "was": "med", "now": "addressed-by-design", "note": "Host profile rejoins the brand (Organizer); the separate profile editor is provided." },
+    { "id": "D3", "was": "med", "now": "open", "note": "Delete-unused-event + Create-invite-link dialogs — add to the re-homed dialog set (R4)." },
+    { "id": "D4", "was": "low", "now": "addressed-by-design", "note": "Attendance folded into Manage→Live check-in." },
+    { "id": "D5", "was": "low", "now": "open", "note": "'Unsaved changes' dialog is designed but has no code; drafts auto-save. Keep as proposal or drop." }
+  ],
+
+  "buildplan": [
+    "1. Promote the 10 'build' widgets to the catalogue (jsx + d.ts + *.card.html), reusing core/avatar, tones, Badge, Button.",
+    "2. Rebuild the 4 tabs + Manage + Insights as DC templates composed ONLY of catalogue widgets (templates/hosts-*).",
+    "3. Re-home the existing flow/sheet templates (create/edit event+club, dialogs, payouts, draft, success) under the new IA so no functionality is lost; add the two missing dialogs (D3) + the profile editor.",
+    "4. Rewrite Host App.html as the new gallery (tabs + Manage + Insights + flows + new component cards) and re-point the coverage report at this manifest.",
+    "5. Keep explorations/host-redesign + host-ia-review as the referenced research archive; fold their rationale into the decisions doc."
+  ],
+
+  "research_index": {
+    "_comment": "No net loss — every research artifact is retained and referenced here.",
+    "ia_rationale": "explorations/host-ia-review/HostIAReview.html (thesis, frequency×stakes, competitor scan, before/after re-cut, highest-leverage moves)",
+    "ux_punch_list": "explorations/host-redesign/UX_AUDIT.html (74 improvements tagged altitude×priority — folded into the decisions doc)",
+    "widget_rationale": "explorations/host-redesign/NEW_WIDGETS.md (catalogue candidates + reuse notes)",
+    "prototype_v1": "explorations/host-redesign/CatchForOrganizers.html",
+    "prototype_v2": "explorations/host-redesign/CatchForOrganizers-v2.html (canonical — baked-in fixes + optioned alternatives)",
+    "flows": "explorations/host-redesign/Flows.html (onboarding + create-event wizard)",
+    "calendar_primitive": "explorations/host-redesign/CalendarPrimitive.html (→ DateRangePicker)",
+    "v1_coverage": "host-coverage-manifest.json (route→design coverage of the old IA — retained as the code-spine audit)"
+  }
+}

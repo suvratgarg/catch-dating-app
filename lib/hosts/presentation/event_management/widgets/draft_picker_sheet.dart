@@ -23,10 +23,8 @@ Future<EventDraft?> showDraftPickerSheet({
   required Future<void> Function(EventDraft draft) onDeleteDraft,
 }) {
   final completer = Completer<EventDraft?>();
-  showModalBottomSheet(
+  showCatchBottomSheet(
     context: context,
-    isScrollControlled: true,
-    useSafeArea: true,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(CatchRadius.lg)),
     ),

@@ -36,6 +36,16 @@ import 'package:flutter/material.dart';
 /// ```
 enum CatchSegmentedControlStyle { filled, surface }
 
+/// Vertical density for the segmented-control contract.
+///
+/// [compact] is the design handoff's dense `SegPill` treatment. It keeps the
+/// same selection, border, and elevation semantics while reducing the
+/// control's vertical footprint for operational surfaces.
+enum CatchSegmentedControlSize { compact, regular }
+
+/// Typography treatment for segmented-control labels.
+enum CatchSegmentedControlLabelStyle { standard, mono }
+
 class CatchSegment<T> {
   const CatchSegment({required this.value, this.label, this.icon})
     : assert(
@@ -56,6 +66,8 @@ class CatchSegmentedControl<T> extends StatelessWidget {
     required this.onChanged,
     this.expanded = false,
     this.style = CatchSegmentedControlStyle.filled,
+    this.size = CatchSegmentedControlSize.regular,
+    this.labelStyle = CatchSegmentedControlLabelStyle.standard,
   });
 
   final List<CatchSegment<T>> segments;
@@ -63,6 +75,8 @@ class CatchSegmentedControl<T> extends StatelessWidget {
   final ValueChanged<T> onChanged;
   final bool expanded;
   final CatchSegmentedControlStyle style;
+  final CatchSegmentedControlSize size;
+  final CatchSegmentedControlLabelStyle labelStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -85,6 +99,8 @@ class CatchSegmentedControl<T> extends StatelessWidget {
               selected: segment.value == selected,
               expanded: expanded,
               style: style,
+              size: size,
+              labelStyle: labelStyle,
               onTap: () => onChanged(segment.value),
             ),
         ],
@@ -100,6 +116,8 @@ class CatchSegmentButton<T> extends StatelessWidget {
     required this.selected,
     required this.expanded,
     required this.style,
+    this.size = CatchSegmentedControlSize.regular,
+    this.labelStyle = CatchSegmentedControlLabelStyle.standard,
     required this.onTap,
   });
 
@@ -107,6 +125,8 @@ class CatchSegmentButton<T> extends StatelessWidget {
   final bool selected;
   final bool expanded;
   final CatchSegmentedControlStyle style;
+  final CatchSegmentedControlSize size;
+  final CatchSegmentedControlLabelStyle labelStyle;
   final VoidCallback onTap;
 
   @override
@@ -121,10 +141,20 @@ class CatchSegmentButton<T> extends StatelessWidget {
       CatchSegmentedControlStyle.surface => t.ink,
     };
     final foreground = selected ? activeForeground : t.ink2;
-    final labelStyle = CatchTextStyles.sectionTitle(
-      context,
-      color: foreground,
-    ).copyWith(fontWeight: selected ? FontWeight.w700 : FontWeight.w600);
+    final resolvedLabelStyle = switch (labelStyle) {
+      CatchSegmentedControlLabelStyle.standard => CatchTextStyles.sectionTitle(
+        context,
+        color: foreground,
+      ),
+      CatchSegmentedControlLabelStyle.mono => CatchTextStyles.monoLabel(
+        context,
+        color: foreground,
+      ),
+    }.copyWith(fontWeight: selected ? FontWeight.w700 : FontWeight.w600);
+    final verticalPadding = switch (size) {
+      CatchSegmentedControlSize.compact => CatchSpacing.micro6,
+      CatchSegmentedControlSize.regular => CatchSpacing.s3,
+    };
 
     final content = Row(
       mainAxisSize: expanded ? MainAxisSize.max : MainAxisSize.min,
@@ -140,11 +170,11 @@ class CatchSegmentButton<T> extends StatelessWidget {
                 segment.label!,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: labelStyle,
+                style: resolvedLabelStyle,
               ),
             )
           else
-            Text(segment.label!, maxLines: 1, style: labelStyle),
+            Text(segment.label!, maxLines: 1, style: resolvedLabelStyle),
       ],
     );
 
@@ -161,7 +191,7 @@ class CatchSegmentButton<T> extends StatelessWidget {
             curve: CatchMotion.easeInOutCurve,
             padding: EdgeInsets.symmetric(
               horizontal: expanded ? CatchSpacing.s3 : CatchSpacing.s2,
-              vertical: CatchSpacing.s3,
+              vertical: verticalPadding,
             ),
             decoration: BoxDecoration(
               color: selected ? activeBackground : Colors.transparent,

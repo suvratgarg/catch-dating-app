@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Host Create Event Success" description="Host app — the 'Your event is live' confirmation shown after scheduling an event (invite-only variant includes the code + private link). Faithful to create_event_success_screen.dart (CatchCelebrationScreen). Composes the Celebration component. Tweak flips the invite-only details." -->
+<helmet>
+  <script src="./ds-base.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <style>
+    body { margin: 0; background: #E2E1DC; }
+  </style>
+</helmet>
+
+<div style="min-height: 100vh; display: flex; justify-content: center; padding: 40px 16px; background: #E2E1DC; font-family: var(--font-function); color: var(--ink); box-sizing: border-box">
+  <div data-screen-label="Host Create Event Success" style="width: 390px; height: 812px; background: var(--bg); border-radius: 30px; border: 1px solid rgba(22,20,15,0.15); box-shadow: var(--shadow-overlay); overflow: hidden; display: flex; flex-direction: column; box-sizing: border-box">
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.StatusBar" hint-size="100%,44px"></x-import>
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ScreenBody" hint-size="100%,720px" style="flex: 1; min-height: 0; display: flex; flex-direction: column">
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Celebration" glyph="seal-check" eyebrow="Event created" title="Your event is live." message="{{ message }}" details="{{ details }}" note="Bookings, waitlist, and attendance are tracked from Manage event." primary-label="Manage event" secondary-label="Back to club" hint-size="100%,720px" style="display: block"></x-import>
+    </x-import>
+  </div>
+</div>
+
+<x-import component="TweaksPanel" from="./tweaks-panel.jsx" hint-size="0px,0px">
+  <x-import component="TweakSection" from="./tweaks-panel.jsx" label="Admission" hint-size="0px,0px"></x-import>
+  <x-import component="TweakToggle" from="./tweaks-panel.jsx" label="Invite-only event" value="{{ invite }}" onChange="{{ setInvite }}" hint-size="0px,0px"></x-import>
+</x-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 390, &quot;height&quot;: 812}}">
+const STORE = 'hostCreateEventSuccess.tweaks';
+const BASE_DETAILS = [
+  { icon: 'calendar-blank', label: 'When', value: 'Sun, 22 Jun · 6:30 – 8:00 AM' },
+  { icon: 'map-pin', label: 'Where', value: 'Carter Road jetty, Bandra West' },
+  { icon: 'sneaker-move', label: 'Event', value: '5 km easy social run' },
+  { icon: 'users-three', label: 'Capacity', value: '10 attendees' },
+];
+
+class Component extends DCLogic {
+  state = { invite: this._read() };
+
+  _read() {
+    try { return JSON.parse(localStorage.getItem(STORE) || '{}').invite === true; }
+    catch (e) { return false; }
+  }
+
+  setInvite(v) {
+    this.setState({ invite: v });
+    try { localStorage.setItem(STORE, JSON.stringify({ invite: v })); } catch (e) {}
+    try { window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { invite: v } }, '*'); } catch (e) {}
+  }
+
+  renderVals() {
+    const { invite } = this.state;
+    return {
+      invite,
+      setInvite: (v) => this.setInvite(v),
+      message: invite
+        ? 'Sundowner 5K, Bandra seafront is now listed on Sunday sea-face crew. People can discover it, but only attendees with the invite code or private link can book.'
+        : 'Sundowner 5K, Bandra seafront is now listed on Sunday sea-face crew. Followers can discover it from their home feed.',
+      details: invite
+        ? [...BASE_DETAILS,
+            { icon: 'key', label: 'Invite code', value: 'RUN14-CARTER' },
+            { icon: 'link-simple', label: 'Private link', value: 'catch.app/e/run14?code=RUN14-CARTER' }]
+        : BASE_DETAILS,
+    };
+  }
+}
+</script>
+</body>
+</html>

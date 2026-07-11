@@ -2033,6 +2033,66 @@
         }
       ]
     },
+    "APP-TARGET-IDENTITY-001": {
+      "title": "Installable app identity resolves from one checked target contract",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "app_architecture",
+        "version": "1.4.17"
+      },
+      "applies_to": [
+        "tool/app_targets.json",
+        "lib/main*.dart",
+        "lib/core/app_config.dart",
+        "lib/routing/**",
+        "firebase/**",
+        "tool/firebase/client_callable_dependencies.json",
+        "tool/firebase/check_client_callable_dependencies.mjs",
+        "ios/**",
+        "android/**",
+        ".github/workflows/**",
+        "lib/force_update/**"
+      ],
+      "instruction": "Consumer and Host are separate installable products. Entrypoints, native ids and capabilities, Firebase registrations, links, force-update keys, routine release ownership, and enabled release-critical callable dependencies must match checked target contracts. A production client feature cannot be enabled until its callable export and live Firebase callable/IAM reachability pass the release preflight; temporary release exceptions require a stable debt id and explicit removal proof.",
+      "sunset_when": [
+        "The app-target contract generates every native and release surface without duplicated identity values",
+        "Both products have three consecutive complete release receipts"
+      ],
+      "sunset_signals": [
+        {
+          "type": "tool-exists",
+          "tool": "platform:app-targets"
+        }
+      ],
+      "sunset_review": {
+        "date": "2026-07-10",
+        "decision": "keep",
+        "note": "the target scanner now exists, but native and release identity values remain duplicated across generated and hand-maintained surfaces and neither product has three complete release receipts"
+      },
+      "enforcement": [
+        {
+          "tool": "platform:app-targets",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#installable-app-target-contract"
+        },
+        {
+          "tool": "platform:flutter-target-wrapper",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#installable-app-target-contract"
+        },
+        {
+          "tool": "platform:verify-ios-release-identity",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#installable-app-target-contract"
+        },
+        {
+          "tool": "firebase:client-callable-dependencies",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/release_operations.md#ios-testflight-ownership"
+        }
+      ]
+    },
     "ROUTE-STRING-001": {
       "title": "Navigation outside routing config uses named routes or constants",
       "status": "active",
@@ -2070,6 +2130,6 @@
       ]
     }
   },
-    "version": "2.7.11",
-    "updated": "2026-07-05"
+    "version": "2.7.13",
+    "updated": "2026-07-10"
 }

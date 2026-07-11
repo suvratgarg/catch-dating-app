@@ -567,3 +567,163 @@ final class WatchClubsByIdsFamily extends $Family
   @override
   String toString() => r'watchClubsByIdsProvider';
 }
+
+@ProviderFor(watchClubsForMessagingByIds)
+final watchClubsForMessagingByIdsProvider =
+    WatchClubsForMessagingByIdsFamily._();
+
+final class WatchClubsForMessagingByIdsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Club>>,
+          List<Club>,
+          Stream<List<Club>>
+        >
+    with $FutureModifier<List<Club>>, $StreamProvider<List<Club>> {
+  WatchClubsForMessagingByIdsProvider._({
+    required WatchClubsForMessagingByIdsFamily super.from,
+    required ClubsByIdQuery super.argument,
+  }) : super(
+         retry: null,
+         name: r'watchClubsForMessagingByIdsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$watchClubsForMessagingByIdsHash();
+
+  @override
+  String toString() {
+    return r'watchClubsForMessagingByIdsProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<List<Club>> $createElement($ProviderPointer pointer) =>
+      $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<Club>> create(Ref ref) {
+    final argument = this.argument as ClubsByIdQuery;
+    return watchClubsForMessagingByIds(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WatchClubsForMessagingByIdsProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$watchClubsForMessagingByIdsHash() =>
+    r'8de1837ae2da1fb25346862394152ba39dc21f76';
+
+final class WatchClubsForMessagingByIdsFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<List<Club>>, ClubsByIdQuery> {
+  WatchClubsForMessagingByIdsFamily._()
+    : super(
+        retry: null,
+        name: r'watchClubsForMessagingByIdsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  WatchClubsForMessagingByIdsProvider call(ClubsByIdQuery query) =>
+      WatchClubsForMessagingByIdsProvider._(argument: query, from: this);
+
+  @override
+  String toString() => r'watchClubsForMessagingByIdsProvider';
+}
+
+@ProviderFor(hostOperableClubs)
+final hostOperableClubsProvider = HostOperableClubsFamily._();
+
+final class HostOperableClubsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Club>>,
+          AsyncValue<List<Club>>,
+          AsyncValue<List<Club>>
+        >
+    with $Provider<AsyncValue<List<Club>>> {
+  HostOperableClubsProvider._({
+    required HostOperableClubsFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostOperableClubsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostOperableClubsHash();
+
+  @override
+  String toString() {
+    return r'hostOperableClubsProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $ProviderElement<AsyncValue<List<Club>>> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  AsyncValue<List<Club>> create(Ref ref) {
+    final argument = this.argument as String;
+    return hostOperableClubs(ref, argument);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AsyncValue<List<Club>> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<AsyncValue<List<Club>>>(value),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostOperableClubsProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostOperableClubsHash() => r'e31ea44c4f2b6fdacd1ffc54b1066de13705632e';
+
+final class HostOperableClubsFamily extends $Family
+    with $FunctionalFamilyOverride<AsyncValue<List<Club>>, String> {
+  HostOperableClubsFamily._()
+    : super(
+        retry: null,
+        name: r'hostOperableClubsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  HostOperableClubsProvider call(String uid) =>
+      HostOperableClubsProvider._(argument: uid, from: this);
+
+  @override
+  String toString() => r'hostOperableClubsProvider';
+}

@@ -49,6 +49,12 @@
       "properties": {
         "id": { "type": "string", "pattern": "^[a-z0-9_.-]+$" },
         "routeId": { "type": "string" },
+        "routeIds": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
         "implementationPaths": {
           "type": "array",
           "items": { "type": "string" },

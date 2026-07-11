@@ -32,6 +32,7 @@ Do not edit it by hand.
 | EventPrivateAccessDocument | `firestore/event_private_access.schema.json` | `functions/src/shared/generated/eventPrivateAccessDocument.ts` |
 | EventInviteLinkDocument | `firestore/event_invite_links.schema.json` | `functions/src/shared/generated/eventInviteLinkDocument.ts` |
 | EventParticipationDocument | `firestore/event_participations.schema.json` | `functions/src/shared/generated/eventParticipationDocument.ts` |
+| EventBroadcastDocument | `firestore/event_broadcasts.schema.json` | `functions/src/shared/generated/eventBroadcastDocument.ts` |
 | EventWaitlistOfferDocument | `firestore/event_waitlist_offers.schema.json` | `functions/src/shared/generated/eventWaitlistOfferDocument.ts` |
 | EventSuccessPlanDocument | `firestore/event_success_plans.schema.json` | `functions/src/shared/generated/eventSuccessPlanDocument.ts` |
 | EventSuccessFeedbackDocument | `firestore/event_success_feedback.schema.json` | `functions/src/shared/generated/eventSuccessFeedbackDocument.ts` |
@@ -74,6 +75,8 @@ Do not edit it by hand.
 | CreateClubCallableResponse | `callable_responses/create_club_response.schema.json` | `functions/src/shared/generated/createClubCallableResponse.ts` |
 | CreateClubPostCallablePayload | `callables/create_club_post_payload.schema.json` | `functions/src/shared/generated/createClubPostCallablePayload.ts` |
 | CreateClubPostCallableResponse | `callable_responses/create_club_post_response.schema.json` | `functions/src/shared/generated/createClubPostCallableResponse.ts` |
+| SendEventBroadcastCallablePayload | `callables/send_event_broadcast_payload.schema.json` | `functions/src/shared/generated/sendEventBroadcastCallablePayload.ts` |
+| SendEventBroadcastCallableResponse | `callable_responses/send_event_broadcast_response.schema.json` | `functions/src/shared/generated/sendEventBroadcastCallableResponse.ts` |
 | UpdateClubCallablePayload | `callables/update_club_payload.schema.json` | `functions/src/shared/generated/updateClubCallablePayload.ts` |
 | HostAnalyticsQueryCallablePayload | `callables/host_analytics_query_payload.schema.json` | `functions/src/shared/generated/hostAnalyticsQueryCallablePayload.ts` |
 | HostAnalyticsCallableResponse | `callable_responses/host_analytics_response.schema.json` | `functions/src/shared/generated/hostAnalyticsCallableResponse.ts` |
@@ -186,6 +189,7 @@ Do not edit it by hand.
 | `schemaEventPrivateAccessDocumentSchema` | EventPrivateAccessDocument | `firestore/event_private_access.schema.json` | `lib/core/schema_contracts/generated/schemas/event_private_access_document.g.dart` |
 | `schemaEventInviteLinkDocumentSchema` | EventInviteLinkDocument | `firestore/event_invite_links.schema.json` | `lib/core/schema_contracts/generated/schemas/event_invite_link_document.g.dart` |
 | `schemaEventParticipationDocumentSchema` | EventParticipationDocument | `firestore/event_participations.schema.json` | `lib/core/schema_contracts/generated/schemas/event_participation_document.g.dart` |
+| `schemaEventBroadcastDocumentSchema` | EventBroadcastDocument | `firestore/event_broadcasts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_broadcast_document.g.dart` |
 | `schemaEventWaitlistOfferDocumentSchema` | EventWaitlistOfferDocument | `firestore/event_waitlist_offers.schema.json` | `lib/core/schema_contracts/generated/schemas/event_waitlist_offer_document.g.dart` |
 | `schemaEventSuccessPlanDocumentSchema` | EventSuccessPlanDocument | `firestore/event_success_plans.schema.json` | `lib/core/schema_contracts/generated/schemas/event_success_plan_document.g.dart` |
 | `schemaEventSuccessFeedbackDocumentSchema` | EventSuccessFeedbackDocument | `firestore/event_success_feedback.schema.json` | `lib/core/schema_contracts/generated/schemas/event_success_feedback_document.g.dart` |
@@ -228,6 +232,8 @@ Do not edit it by hand.
 | `schemaCreateClubCallableResponseSchema` | CreateClubCallableResponse | `callable_responses/create_club_response.schema.json` | `lib/core/schema_contracts/generated/schemas/create_club_callable_response.g.dart` |
 | `schemaCreateClubPostCallablePayloadSchema` | CreateClubPostCallablePayload | `callables/create_club_post_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/create_club_post_callable_payload.g.dart` |
 | `schemaCreateClubPostCallableResponseSchema` | CreateClubPostCallableResponse | `callable_responses/create_club_post_response.schema.json` | `lib/core/schema_contracts/generated/schemas/create_club_post_callable_response.g.dart` |
+| `schemaSendEventBroadcastCallablePayloadSchema` | SendEventBroadcastCallablePayload | `callables/send_event_broadcast_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/send_event_broadcast_callable_payload.g.dart` |
+| `schemaSendEventBroadcastCallableResponseSchema` | SendEventBroadcastCallableResponse | `callable_responses/send_event_broadcast_response.schema.json` | `lib/core/schema_contracts/generated/schemas/send_event_broadcast_callable_response.g.dart` |
 | `schemaUpdateClubCallablePayloadSchema` | UpdateClubCallablePayload | `callables/update_club_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/update_club_callable_payload.g.dart` |
 | `schemaHostAnalyticsQueryCallablePayloadSchema` | HostAnalyticsQueryCallablePayload | `callables/host_analytics_query_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/host_analytics_query_callable_payload.g.dart` |
 | `schemaHostAnalyticsCallableResponseSchema` | HostAnalyticsCallableResponse | `callable_responses/host_analytics_response.schema.json` | `lib/core/schema_contracts/generated/schemas/host_analytics_callable_response.g.dart` |
@@ -323,6 +329,7 @@ Do not edit it by hand.
 | UpdateUserProfilePatch | UpdateUserProfileCallablePayload | `patches/update_user_profile.schema.json` | `lib/core/schema_contracts/generated/callables/update_user_profile_patch.g.dart` |
 | CreateClubCallableRequest | CreateClubCallablePayload | `callables/create_club_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_club_callable_request.g.dart` |
 | CreateClubPostCallableRequest | CreateClubPostCallablePayload | `callables/create_club_post_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_club_post_callable_request.g.dart` |
+| SendEventBroadcastCallableRequest | SendEventBroadcastCallablePayload | `callables/send_event_broadcast_payload.schema.json` | `lib/core/schema_contracts/generated/callables/send_event_broadcast_callable_request.g.dart` |
 | HostAnalyticsQueryCallableRequest | HostAnalyticsQueryCallablePayload | `callables/host_analytics_query_payload.schema.json` | `lib/core/schema_contracts/generated/callables/host_analytics_query_callable_request.g.dart` |
 | UserAnalyticsQueryCallableRequest | UserAnalyticsQueryCallablePayload | `callables/user_analytics_query_payload.schema.json` | `lib/core/schema_contracts/generated/callables/user_analytics_query_callable_request.g.dart` |
 | AddClubHostCallableRequest | AddClubHostCallablePayload | `callables/add_club_host_payload.schema.json` | `lib/core/schema_contracts/generated/callables/add_club_host_callable_request.g.dart` |

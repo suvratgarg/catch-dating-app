@@ -30,6 +30,7 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/crea
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_location_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_photo_draft_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_schedule_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_success_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_wizard_state.dart';
@@ -85,13 +86,18 @@ class CreateEventScreen extends ConsumerStatefulWidget {
     this.loadMapTiles = true,
     this.now = _systemNow,
     this.initialDraft,
+    this.initialPrefill,
     this.initialStep = 0,
     this.formAutovalidateMode = AutovalidateMode.disabled,
     this.initialPickedEventPhotos = const <PickedEventPhoto>[],
-  });
+  }) : assert(
+         initialDraft == null || initialPrefill == null,
+         'A create flow cannot restore a draft and apply a repeat prefill.',
+       );
 
   final Club club;
   final EventDraft? initialDraft;
+  final CreateEventPrefill? initialPrefill;
   final int initialStep;
   final AutovalidateMode formAutovalidateMode;
   final List<PickedEventPhoto> initialPickedEventPhotos;
@@ -244,6 +250,13 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       _activeDraftId = initialDraft.id;
       _applyDraftValues(initialDraft);
       _lastSavedDraftSignature = _currentDraftContentSignature;
+    }
+    final initialPrefill = widget.initialPrefill;
+    if (initialPrefill != null) {
+      _applyDraftValues(initialPrefill.values);
+      // A repeat template is not a persisted draft. Do not replace it with the
+      // saved-draft picker or assign it a local draft lifecycle.
+      _checkedDrafts = true;
     }
     if (widget.initialPickedEventPhotos.isNotEmpty) {
       _eventPhotos = CreateEventPhotoDraftState.fromPicked(

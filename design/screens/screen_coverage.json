@@ -1,7 +1,7 @@
 {
   "$schema": "./screen_coverage.schema.json",
   "version": 1,
-  "updated": "2026-06-22",
+  "updated": "2026-07-10",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
   "description": "Design screen coverage policy. Every route from the generated route inventory must be contracted, aliased to a canonical design surface, planned for a future screen contract, or explicitly excluded from baseline design parity.",
   "routes": [
@@ -134,7 +134,7 @@
       "routeId": "swipeHubScreen",
       "status": "contracted",
       "priority": "P1",
-      "reason": "Covered by screen.catches.hub as the primary Catches hub route.",
+      "reason": "Legacy screen.catches.hub contract remains until Home+Catches U1/U2/U4 absorb the hub states; runtime /catches now redirects to Dashboard Home after the Catches tab removal.",
       "screenId": "screen.catches.hub"
     },
     {
@@ -214,10 +214,31 @@
       "screenId": "screen.host.home"
     },
     {
+      "routeId": "hostEventsScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Covered by screen.host.home as the dedicated Events branch of the Host lifecycle shell.",
+      "screenId": "screen.host.home"
+    },
+    {
+      "routeId": "hostOrganizerScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Covered by screen.host.clubs as the dedicated Organizer branch of the Host lifecycle shell.",
+      "screenId": "screen.host.clubs"
+    },
+    {
+      "routeId": "hostInsightsScreen",
+      "status": "contracted",
+      "priority": "P2",
+      "reason": "Covered by screen.host.clubs as the dedicated Organizer Insights utility route.",
+      "screenId": "screen.host.clubs"
+    },
+    {
       "routeId": "hostClubsScreen",
       "status": "contracted",
       "priority": "P1",
-      "reason": "Covered by screen.host.clubs as the Host app club management route.",
+      "reason": "Covered by screen.host.clubs as the legacy Host club-management route; the exact root redirects to Organizer while nested deep links remain stable.",
       "screenId": "screen.host.clubs"
     },
     {

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Host Create Club" description="Host app — Create Club wizard. Four steps (Club basics → Club details → Host defaults → Event success defaults) with the step-flow header and Save-draft / Create-club footer. Faithful to create_club_screen.dart + its step widgets. Interactive: step nav, default activity / admission / cancellation selection, cohort-caps & demand-pricing toggles." -->
+<helmet>
+  <script src="./ds-base.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <style>
+    body { margin: 0; background: #E2E1DC; }
+  </style>
+</helmet>
+
+<div style="min-height: 100vh; display: flex; justify-content: center; padding: 40px 16px; background: #E2E1DC; font-family: var(--font-function); color: var(--ink); box-sizing: border-box">
+  <div data-screen-label="Host Create Club" style="width: 390px; height: 812px; background: var(--bg); border-radius: 30px; border: 1px solid rgba(22,20,15,0.15); box-shadow: var(--shadow-overlay); overflow: hidden; display: flex; flex-direction: column; box-sizing: border-box">
+
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.StatusBar" hint-size="100%,44px"></x-import>
+
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.StepHeader" step="{{ stepNum }}" total="{{ 4 }}" title="{{ title }}" on-back="{{ back }}" hint-size="100%,96px" style="display: block"></x-import>
+
+    <div style="flex: 1; min-height: 0; overflow: auto; padding: 16px var(--screen-px) 24px">
+
+      <!-- ── STEP 0 · CLUB BASICS ── -->
+      <sc-if value="{{ step0 }}" hint-placeholder-val="{{ true }}">
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ClubPhotos" photos="{{ photos }}" count="{{ photoCount }}" on-logo="{{ noop }}" on-add="{{ noop }}" on-remove="{{ noop }}" hint-size="100%,210px" style="display: block"></x-import>
+
+        <div style="height: 20px"></div>
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.FieldGroup" hint-size="100%,174px" style="display: block">
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" icon="users-three" label="Club name" value="{{ vals.clubName }}" onChange="{{ set.clubName }}" hint-size="100%,58px"></x-import>
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" icon="buildings" label="City" value="{{ vals.city }}" trailing="chevron" onClick="{{ noop }}" hint-size="100%,58px"></x-import>
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" icon="map-pin" label="Area / neighbourhood" value="{{ vals.area }}" onChange="{{ set.area }}" hint-size="100%,58px"></x-import>
+        </x-import>
+      </sc-if>
+
+      <!-- ── STEP 1 · CLUB DETAILS ── -->
+      <sc-if value="{{ step1 }}" hint-placeholder-val="{{ false }}">
+        <div class="t-mono-label" style="margin-bottom: 8px">DESCRIPTION</div>
+        <div style="border: 1px solid var(--line2); border-radius: var(--radius-interactive-tile); background: var(--surface); padding: 13px 16px; min-height: 110px">
+          <p class="t-body-l" style="margin: 0; color: var(--ink); line-height: 1.5; text-wrap: pretty">Dawn runs along the Bandra seafront, every Sunday since 2020. Easy pace, longer brunch, and a standing invitation to anyone who shows up.</p>
+        </div>
+
+        <div style="height: 22px"></div>
+        <div class="t-title-s" style="color: var(--ink); margin-bottom: 12px">Contact (optional)</div>
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.FieldGroup" hint-size="100%,174px" style="display: block">
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" icon="instagram-logo" label="Instagram handle" value="{{ vals.insta }}" onChange="{{ set.insta }}" hint-size="100%,58px"></x-import>
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" icon="phone" label="Phone number" leading="+91" value="{{ vals.phone }}" onChange="{{ set.phone }}" hint-size="100%,58px"></x-import>
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" icon="envelope-simple" label="Email" value="{{ vals.email }}" onChange="{{ set.email }}" hint-size="100%,58px"></x-import>
+        </x-import>
+      </sc-if>
+
+      <!-- ── STEP 2 · HOST DEFAULTS ── -->
+      <sc-if value="{{ step2 }}" hint-placeholder-val="{{ false }}">
+        <!-- default event policy -->
+        <div style="border: 1px solid var(--line); border-radius: var(--radius-md); padding: 16px">
+          <div class="t-section-title" style="color: var(--ink)">Default event policy</div>
+          <div class="t-body-s" style="color: var(--ink2); margin-top: 4px; text-wrap: pretty">These defaults prefill new events. Hosts can override them per event before anyone books or joins the waitlist.</div>
+
+          <div style="height: 16px"></div>
+          <div class="t-mono-label" style="margin-bottom: 10px">ADMISSION FORMAT</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px">
+            <sc-for list="{{ admissions }}" as="ad" hint-placeholder-count="3">
+              <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Chip" selected="{{ ad.selected }}" onClick="{{ ad.select }}" hint-size="84px,34px">{{ ad.label }}</x-import>
+            </sc-for>
+          </div>
+          <p class="t-body-s" style="color: var(--ink2); margin: 10px 0 0; text-wrap: pretty">{{ admissionDescription }}</p>
+
+          <sc-if value="{{ admOpen }}" hint-placeholder-val="{{ true }}">
+            <div style="height: 14px"></div>
+            <div style="display: flex; align-items: center; gap: 12px">
+              <div style="flex: 1; min-width: 0">
+                <div class="t-label-l" style="color: var(--ink)">Cohort caps</div>
+                <div class="t-body-s" style="color: var(--ink2); margin-top: 3px; text-wrap: pretty">Optionally prefill straight men and straight women caps for open events.</div>
+              </div>
+              <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Toggle" on="{{ cohortCaps }}" onChange="{{ toggleCohort }}" hint-size="48px,28px"></x-import>
+            </div>
+            <sc-if value="{{ cohortCaps }}" hint-placeholder-val="{{ false }}">
+              <div style="display: flex; gap: 12px; margin-top: 12px">
+                <x-import component-from-global-scope="CatchDesignSystem_3a44f2.FieldGroup" hint-size="100%,58px" style="flex: 1; display: block"><x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" label="Max str. men" value="{{ vals.menCap }}" onChange="{{ set.menCap }}" hint-size="100%,58px"></x-import></x-import>
+                <x-import component-from-global-scope="CatchDesignSystem_3a44f2.FieldGroup" hint-size="100%,58px" style="flex: 1; display: block"><x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" label="Max str. women" value="{{ vals.womenCap }}" onChange="{{ set.womenCap }}" hint-size="100%,58px"></x-import></x-import>
+              </div>
+            </sc-if>
+          </sc-if>
+
+          <sc-if value="{{ admBalanced }}" hint-placeholder-val="{{ false }}">
+            <div style="height: 14px"></div>
+            <div style="display: flex; align-items: center; gap: 12px">
+              <div style="flex: 1; min-width: 0">
+                <div class="t-label-l" style="color: var(--ink)">Demand pricing</div>
+                <div class="t-body-s" style="color: var(--ink2); margin-top: 3px; text-wrap: pretty">Prefill dynamic pricing controls for balanced singles events.</div>
+              </div>
+              <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Toggle" on="{{ demand }}" onChange="{{ toggleDemand }}" hint-size="48px,28px"></x-import>
+            </div>
+            <sc-if value="{{ demand }}" hint-placeholder-val="{{ false }}">
+              <div style="display: flex; gap: 12px; margin-top: 12px">
+                <x-import component-from-global-scope="CatchDesignSystem_3a44f2.FieldGroup" hint-size="100%,58px" style="flex: 1; display: block"><x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" label="Step" leading="₹" value="{{ vals.priceStep }}" onChange="{{ set.priceStep }}" hint-size="100%,58px"></x-import></x-import>
+                <x-import component-from-global-scope="CatchDesignSystem_3a44f2.FieldGroup" hint-size="100%,58px" style="flex: 1; display: block"><x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" label="Max" leading="₹" value="{{ vals.priceMax }}" onChange="{{ set.priceMax }}" hint-size="100%,58px"></x-import></x-import>
+              </div>
+            </sc-if>
+          </sc-if>
+
+          <div style="height: 18px"></div>
+          <div class="t-mono-label" style="margin-bottom: 10px">AGE RANGE</div>
+          <div style="display: flex; gap: 12px">
+            <x-import component-from-global-scope="CatchDesignSystem_3a44f2.FieldGroup" hint-size="100%,58px" style="flex: 1; display: block"><x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" label="Min age" value="{{ vals.minAge }}" onChange="{{ set.minAge }}" hint-size="100%,58px"></x-import></x-import>
+            <x-import component-from-global-scope="CatchDesignSystem_3a44f2.FieldGroup" hint-size="100%,58px" style="flex: 1; display: block"><x-import component-from-global-scope="CatchDesignSystem_3a44f2.Field" label="Max age" value="{{ vals.maxAge }}" onChange="{{ set.maxAge }}" hint-size="100%,58px"></x-import></x-import>
+          </div>
+
+          <div style="height: 18px"></div>
+          <div class="t-mono-label" style="margin-bottom: 10px">CANCELLATION POLICY</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px">
+            <sc-for list="{{ policies }}" as="pol" hint-placeholder-count="3">
+              <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Chip" selected="{{ pol.selected }}" onClick="{{ pol.select }}" hint-size="92px,34px">{{ pol.label }}</x-import>
+            </sc-for>
+          </div>
+          <p class="t-body-s" style="color: var(--ink2); margin: 10px 0 0; text-wrap: pretty">{{ policySummary }}</p>
+        </div>
+
+        <!-- default activity -->
+        <div style="height: 18px"></div>
+        <div style="border: 1px solid var(--line); border-radius: var(--radius-md); padding: 16px">
+          <div class="t-section-title" style="color: var(--ink)">Default activity</div>
+          <div class="t-body-s" style="color: var(--ink2); margin-top: 4px; text-wrap: pretty">New events start from this activity. Hosts can still change the activity and override the event-specific setup.</div>
+          <div style="height: 12px"></div>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px">
+            <sc-for list="{{ activities }}" as="a" hint-placeholder-count="8">
+              <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Chip" selected="{{ a.selected }}" onClick="{{ a.select }}" hint-size="84px,34px">{{ a.label }}</x-import>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ── STEP 3 · EVENT SUCCESS DEFAULTS ── -->
+      <sc-if value="{{ step3 }}" hint-placeholder-val="{{ false }}">
+        <div style="border: 1px solid var(--line); border-radius: var(--radius-md); padding: 16px">
+          <div class="t-section-title" style="color: var(--ink)">Default event success</div>
+          <div class="t-body-s" style="color: var(--ink2); margin-top: 6px; text-wrap: pretty">Apply activity-aware run-of-show defaults automatically when creating new events.</div>
+
+          <div style="height: 14px"></div>
+          <div class="t-mono-label" style="font-size: 9px; color: var(--ink3)">RUN OF SHOW · SOCIAL RUN · 5 STEPS</div>
+          <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 0">
+            <sc-for list="{{ guideSteps }}" as="g" hint-placeholder-count="5">
+              <div style="display: flex; align-items: center; gap: 12px; padding: 11px 0; border-top: 1px solid var(--line)">
+                <span class="t-mono-label" style="font-size: 9px; color: var(--ink3); width: 64px; flex: none">{{ g.stage }}</span>
+                <span class="t-body-m" style="color: var(--ink)">{{ g.title }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+
+    <!-- footer -->
+    <div style="flex: none; display: flex; align-items: center; gap: 12px; padding: 12px 16px 18px; background: var(--bg); border-top: 1px solid var(--line)">
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Button" variant="secondary" icon="floppy-disk" onClick="{{ noop }}" hint-size="130px,49px">Save Draft</x-import>
+      <div style="flex: 1"></div>
+      <sc-if value="{{ isLast }}" hint-placeholder-val="{{ false }}">
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Button" onClick="{{ noop }}" hint-size="140px,49px">Create club</x-import>
+      </sc-if>
+      <sc-if value="{{ notLast }}" hint-placeholder-val="{{ true }}">
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Button" icon="arrow-right" onClick="{{ next }}" hint-size="120px,49px">Next</x-import>
+      </sc-if>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 390, &quot;height&quot;: 812}}">
+const STEP_TITLES = ['Club basics', 'Club details', 'Host defaults', 'Event success defaults'];
+
+const ACTIVITIES = [
+  { id: 'socialRun', label: 'Social run' },
+  { id: 'walking', label: 'Walk' },
+  { id: 'cycling', label: 'Cycling' },
+  { id: 'yoga', label: 'Yoga' },
+  { id: 'padel', label: 'Padel' },
+  { id: 'pubQuiz', label: 'Pub quiz' },
+  { id: 'dinner', label: 'Dinner' },
+  { id: 'openActivity', label: 'Open' },
+];
+
+const ADMISSIONS = [
+  { id: 'open', label: 'OPEN', desc: 'Anyone eligible can book until the event reaches capacity.' },
+  { id: 'invite', label: 'INVITE', desc: 'New invite-only events will ask for an event-specific code.' },
+  { id: 'balanced', label: 'BALANCED', desc: 'Straight men and women are kept within one spot of each other.' },
+];
+const COHORT_DESC = 'Anyone eligible can book until capacity, with optional straight men and straight women caps prefilled.';
+
+const POLICIES = [
+  { id: 'flexible', label: 'FLEXIBLE', summary: 'Full refund up to 24 hours before the event.' },
+  { id: 'standard', label: 'STANDARD', summary: 'Full refund up to 48 hours before; 50% after that.' },
+  { id: 'strict', label: 'STRICT', summary: 'No refund within 7 days of the event.' },
+];
+
+const GUIDE_STEPS = [
+  { stage: 'ARRIVAL', title: 'Arrival & first hello' },
+  { stage: 'OPENING', title: 'Warm-up & pace pods' },
+  { stage: 'ACTIVITY', title: 'The run' },
+  { stage: 'MIXING', title: 'Coffee rotations' },
+  { stage: 'CLOSING', title: 'Wrap & catch' },
+];
+
+const chevron = React.createElement('i', { className: 'ph ph-caret-down', style: { fontSize: 16 } });
+
+class Component extends DCLogic {
+  state = {
+    step: 0,
+    activity: 'socialRun',
+    admission: 'open',
+    cohortCaps: false,
+    demand: false,
+    policy: 'standard',
+    vals: {
+      clubName: 'Sunday sea-face crew', city: 'Mumbai', area: 'Bandra',
+      insta: '@sundayseafacecrew', phone: '98765 43210', email: 'hello@seafacecrew.com',
+      menCap: '6', womenCap: '6', priceStep: '250', priceMax: '1500', minAge: '24', maxAge: '40',
+    },
+  };
+
+  renderVals() {
+    const s = this.state;
+    const adm = ADMISSIONS.find((a) => a.id === s.admission);
+    const pol = POLICIES.find((p) => p.id === s.policy);
+    return {
+      stepNum: s.step + 1,
+      title: STEP_TITLES[s.step],
+      progressFill: React.createElement('div', { style: { height: '100%', background: 'var(--ink)', width: Math.round(((s.step + 1) / 4) * 100) + '%' } }),
+      step0: s.step === 0, step1: s.step === 1, step2: s.step === 2, step3: s.step === 3,
+      isLast: s.step === 3,
+      notLast: s.step !== 3,
+      back: () => this.setState({ step: Math.max(0, s.step - 1) }),
+      next: () => this.setState({ step: Math.min(3, s.step + 1) }),
+      noop: () => {},
+      chevron,
+      vals: s.vals,
+      set: Object.fromEntries(Object.keys(s.vals).map((k) => [k, (v) => this.setState({ vals: { ...this.state.vals, [k]: v } })])),
+      photoCount: '4',
+      photos: [{ cover: true }, { cover: false }, { cover: false }, { cover: false }],
+
+      admissions: ADMISSIONS.map((a) => ({ label: a.label, selected: a.id === s.admission, select: () => this.setState({ admission: a.id }) })),
+      admissionDescription: (s.admission === 'open' && s.cohortCaps) ? COHORT_DESC : adm.desc,
+      admOpen: s.admission === 'open',
+      admBalanced: s.admission === 'balanced',
+      cohortCaps: s.cohortCaps,
+      toggleCohort: () => this.setState({ cohortCaps: !s.cohortCaps }),
+      demand: s.demand,
+      toggleDemand: () => this.setState({ demand: !s.demand }),
+      policies: POLICIES.map((p) => ({ label: p.label, selected: p.id === s.policy, select: () => this.setState({ policy: p.id }) })),
+      policySummary: pol.summary,
+      activities: ACTIVITIES.map((a) => ({ label: a.label, selected: a.id === s.activity, select: () => this.setState({ activity: a.id }) })),
+      guideSteps: GUIDE_STEPS,
+    };
+  }
+}
+</script>
+</body>
+</html>

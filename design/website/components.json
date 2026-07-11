@@ -1454,10 +1454,11 @@
           "default",
           "not-found",
           "pending-claim",
-          "already-claimed"
+          "already-claimed",
+          "claim-unavailable"
         ]
       },
-      "notes": "Claim route story wraps the route in the website Query provider because submission owns a TanStack Query mutation."
+      "notes": "Claim route story wraps the route in the website Query provider because submission owns a TanStack Query mutation. Direct links to listings without a verified claim target render claim-unavailable instead of collecting a packet that cannot be submitted."
     },
     {
       "id": "route_not_found",

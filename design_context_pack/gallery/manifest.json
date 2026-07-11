@@ -2,12 +2,12 @@
   "version": 1,
   "source": "test/ui_captures/catalog/screen_capture_catalog.dart",
   "coverage": {
-    "routes": 48,
-    "captures": 627,
+    "routes": 51,
+    "captures": 632,
     "statusCounts": {
       "excluded": 6,
-      "captured": 37,
-      "alias": 5
+      "captured": 39,
+      "alias": 6
     }
   },
   "profile": {
@@ -1707,7 +1707,7 @@
       "routes": [
         "hostHomeScreen"
       ],
-      "device": "review-tall",
+      "device": "claude-phone-390x812",
       "themes": [
         "light",
         "dark"
@@ -1722,9 +1722,9 @@
     {
       "id": "host_home_events_list",
       "routes": [
-        "hostHomeScreen"
+        "hostEventsScreen"
       ],
-      "device": "review-tall",
+      "device": "claude-phone-390x812",
       "themes": [
         "light",
         "dark"
@@ -1977,9 +1977,9 @@
     {
       "id": "host_clubs_management",
       "routes": [
-        "hostClubsScreen"
+        "hostOrganizerScreen"
       ],
-      "device": "review-tall",
+      "device": "claude-phone-390x812",
       "themes": [
         "light",
         "dark"
@@ -2145,9 +2145,26 @@
       "keepChangeNotes": ""
     },
     {
+      "id": "host_clubs_insights_reference",
+      "routes": [
+        "hostInsightsScreen"
+      ],
+      "device": "claude-phone-390x812",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_clubs_insights_reference.png",
+        "dark": "dark/host_clubs_insights_reference.png"
+      },
+      "whatItIs": "Host Clubs Insights Reference",
+      "keepChangeNotes": ""
+    },
+    {
       "id": "host_clubs_insights_report",
       "routes": [
-        "hostClubsScreen"
+        "hostInsightsScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2164,7 +2181,7 @@
     {
       "id": "host_clubs_insights_loading",
       "routes": [
-        "hostClubsScreen"
+        "hostInsightsScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2181,7 +2198,7 @@
     {
       "id": "host_clubs_insights_error",
       "routes": [
-        "hostClubsScreen"
+        "hostInsightsScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -2198,7 +2215,7 @@
     {
       "id": "host_clubs_insights_offline",
       "routes": [
-        "hostClubsScreen"
+        "hostInsightsScreen"
       ],
       "device": "review-tall",
       "themes": [
@@ -9084,7 +9101,7 @@
       "routes": [
         "hostInboxScreen"
       ],
-      "device": "iphone-17-pro",
+      "device": "claude-phone-390x812",
       "themes": [
         "light",
         "dark"
@@ -9182,7 +9199,7 @@
       "keepChangeNotes": ""
     },
     {
-      "id": "host_inbox_unread_filter",
+      "id": "host_inbox_prospective",
       "routes": [
         "hostInboxScreen"
       ],
@@ -9192,14 +9209,14 @@
         "dark"
       ],
       "files": {
-        "light": "light/host_inbox_unread_filter.png",
-        "dark": "dark/host_inbox_unread_filter.png"
+        "light": "light/host_inbox_prospective.png",
+        "dark": "dark/host_inbox_prospective.png"
       },
-      "whatItIs": "Host Inbox Unread Filter",
+      "whatItIs": "Host Inbox Prospective",
       "keepChangeNotes": ""
     },
     {
-      "id": "matches_host_unread_empty",
+      "id": "host_inbox_general",
       "routes": [
         "hostInboxScreen"
       ],
@@ -9209,10 +9226,27 @@
         "dark"
       ],
       "files": {
-        "light": "light/matches_host_unread_empty.png",
-        "dark": "dark/matches_host_unread_empty.png"
+        "light": "light/host_inbox_general.png",
+        "dark": "dark/host_inbox_general.png"
       },
-      "whatItIs": "Matches Host Unread Empty",
+      "whatItIs": "Host Inbox General",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_inbox_roster_no_threads",
+      "routes": [
+        "hostInboxScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_inbox_roster_no_threads.png",
+        "dark": "dark/host_inbox_roster_no_threads.png"
+      },
+      "whatItIs": "Host Inbox Roster No Threads",
       "keepChangeNotes": ""
     },
     {
@@ -9264,6 +9298,57 @@
         "dark": "dark/host_inbox_new_query.png"
       },
       "whatItIs": "Host Inbox New Query",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_inbox_broadcast_composer",
+      "routes": [
+        "hostInboxScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_inbox_broadcast_composer.png",
+        "dark": "dark/host_inbox_broadcast_composer.png"
+      },
+      "whatItIs": "Host Inbox Broadcast Composer",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_inbox_broadcast_pending",
+      "routes": [
+        "hostInboxScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_inbox_broadcast_pending.png",
+        "dark": "dark/host_inbox_broadcast_pending.png"
+      },
+      "whatItIs": "Host Inbox Broadcast Pending",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_inbox_broadcast_error",
+      "routes": [
+        "hostInboxScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_inbox_broadcast_error.png",
+        "dark": "dark/host_inbox_broadcast_error.png"
+      },
+      "whatItIs": "Host Inbox Broadcast Error",
       "keepChangeNotes": ""
     },
     {

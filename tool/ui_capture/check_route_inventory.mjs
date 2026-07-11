@@ -215,7 +215,8 @@ function extractRouteHelperCalls(source) {
   )) {
     const name = match[1];
     if (ignoredNames.has(name)) continue;
-    if (source[match.index - 1] === ".") continue;
+    const isSpreadCall = source.slice(Math.max(0, match.index - 3), match.index) === "...";
+    if (source[match.index - 1] === "." && !isSpreadCall) continue;
     names.push(name);
   }
   return uniqueInOrder(names);
@@ -492,7 +493,7 @@ function extractRouteEnumEntries(enumBody) {
     .join("\n");
   const matches = [
     ...withoutLineComments.matchAll(
-      /^\s*([A-Za-z][A-Za-z0-9_]*)\s*\(\s*(['"])([^'"]+)\2\s*,?\s*\)\s*,?/gmu
+      /^\s*([A-Za-z][A-Za-z0-9_]*)\s*\(\s*(['"])([^'"]+)\2\s*(?:,\s*AppRouteAudience\.(?:shared|consumer|host)\s*)?,?\s*\)\s*,?/gmu
     ),
   ];
 

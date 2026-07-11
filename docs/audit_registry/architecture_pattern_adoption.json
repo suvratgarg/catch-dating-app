@@ -1,6 +1,6 @@
 {
-  "version": "1.5.27",
-  "updated": "2026-07-03",
+  "version": "1.5.31",
+  "updated": "2026-07-10",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Tracks architecture reference exhibits, prototype files, adopter files, candidate status, and back-propagation obligations so migrations stay aligned with the latest pattern.",
   "patterns": [
@@ -324,6 +324,97 @@
         "node tool/agent/check_agent_readiness.mjs"
       ],
       "notes": "This pattern defines the feature-screen boundary. EventDetailBody and EventLocationMapScreen no longer expose direct Scaffold compatibility; route chrome, bottom navigation, mutation listeners, provider reads, save/share/calendar/back side effects, companion/host/booking display state, and navigation side effects belong to their route screens. EventDetailScreen now delegates host, companion, and booking dock display-state derivation to EventDetailScreenState while EventDetailCta remains the mutation/router edge for booking actions. EventLocationMapRouteScreen, CalendarScreen, SavedEventsScreen, ExploreScreen, and ExploreMapScreen are aligned adopters outside Event Detail and use provider-free state adapters or provider-free body/chrome widgets for their loaded body data. tool/architecture/check_adopted_architecture_boundaries.mjs enforces provider/routing/data/repository-free imports for aligned lib adopters with providerFree set to true. HostEventManageRouteScreen is intentionally tracked as ARCH-SCREEN-001C because its loaded surface is a host workspace with canonical route aliases and lifecycle sections; do not force it through the Event Detail body shape before the host workspace adapter exists. ExploreCityPicker is promoted: ExploreScreen/ExploreChrome own city-list and selected-city provider reads plus typed city callbacks, while the picker renders plain ExploreCityPickerState. ExploreList and ExplorePeekRail remain explicitly tracked under ARCH-SCREEN-001D until they are deleted or migrated to route-owned state/callback seams."
+    },
+    {
+      "id": "ARCH-SCREEN-CHROME-001",
+      "name": "Root screen header chrome",
+      "status": "reference",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-screen-chrome-001-root-screen-header-chrome",
+      "prototypeFiles": [
+        "lib/core/widgets/catch_top_bar.dart",
+        "test/core/catch_top_bar_test.dart",
+        "widgetbook/lib/primitives/core_catalog_use_cases.dart"
+      ],
+      "adopters": [
+        {
+          "path": "lib/core/widgets/catch_top_bar.dart",
+          "role": "reference CatchScreenHeaderTitle and CatchScreenTopBar implementation for root-screen title typography, root app-bar wrapper configuration, search slots, leading slots, and action slots",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-07-screen-header-chrome"
+        },
+        {
+          "path": "lib/dashboard/presentation/dashboard_home_screen.dart",
+          "role": "Home tab sliver title uses CatchScreenHeaderTitle.block with compact root-screen padding and notification action slot",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-07-screen-header-chrome"
+        },
+        {
+          "path": "lib/dashboard/presentation/activity_screen.dart",
+          "role": "Activity root-like route uses CatchScreenTopBar so the title matches main tab screen typography while preserving the Mark all read action slot",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-07-screen-header-chrome"
+        },
+        {
+          "path": "lib/explore/presentation/widgets/explore_header.dart",
+          "role": "Explore browse and no-cover discovery headers use CatchScreenHeaderTitle/CatchScreenTopBar with city picker leading slot and shared expanding search",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-07-screen-header-chrome"
+        },
+        {
+          "path": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
+          "role": "Chats/Host Inbox pinned browse header uses CatchScreenTopBar with root title, subtitle, expanding search, and optional host filter row",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-07-screen-header-chrome"
+        },
+        {
+          "path": "lib/user_profile/presentation/profile_screen.dart",
+          "role": "Profile tab sliver title uses CatchScreenHeaderTitle.block with the settings icon in the action slot before the pinned tab rail",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-07-screen-header-chrome"
+        },
+        {
+          "path": "lib/safety/presentation/settings_screen.dart",
+          "role": "Settings root-like route uses CatchScreenTopBar so it matches Profile and the main tab screen typography",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-07-screen-header-chrome"
+        },
+        {
+          "path": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
+          "role": "Dashboard header review state now mounts CatchScreenHeaderTitle instead of a one-off DashboardHeaderContent wrapper",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-07-screen-header-chrome"
+        },
+        {
+          "path": "widgetbook/lib/profiles/profile_use_cases.dart",
+          "role": "Profile header review states now mount CatchScreenHeaderTitle instead of a one-off ProfileTitle wrapper",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-07-screen-header-chrome"
+        }
+      ],
+      "retiredSymbols": [
+        {
+          "symbol": "DashboardHeaderContent",
+          "path": "lib/dashboard/presentation/widgets/dashboard_sliver_header.dart",
+          "reason": "One-off wrapper duplicated root-screen title typography and action layout now owned by CatchScreenHeaderTitle."
+        },
+        {
+          "symbol": "ProfileTitle",
+          "path": "lib/user_profile/presentation/widgets/profile_sliver_header.dart",
+          "reason": "One-off wrapper duplicated root-screen title typography and action layout now owned by CatchScreenHeaderTitle."
+        }
+      ],
+      "requiredBackPropagation": "When root-screen header typography, padding, action slots, or search composition changes, inspect every adopter above and keep Settings/Activity aligned with the five main tab surfaces. Compact/detail CatchTopBar(title: ...) screens remain outside this pattern unless product promotes them to root-like destinations.",
+      "requiredChecks": [
+        "flutter test test/core/catch_top_bar_test.dart",
+        "flutter test test/explore/explore_widgets_test.dart --plain-name 'Explore header'",
+        "flutter test test/chats/chat_inbox_screen_test.dart",
+        "flutter test test/profile/profile_widgets_test.dart --plain-name 'Profile header'",
+        "flutter analyze --no-fatal-infos lib/core/widgets/catch_top_bar.dart lib/dashboard/presentation/dashboard_home_screen.dart lib/dashboard/presentation/activity_screen.dart lib/explore/presentation/widgets/explore_header.dart lib/chats/presentation/inbox/widgets/chats_sliver_header.dart lib/user_profile/presentation/profile_screen.dart lib/safety/presentation/settings_screen.dart test/core/catch_top_bar_test.dart test/explore/explore_widgets_test.dart test/chats/chat_inbox_screen_test.dart test/profile/profile_widgets_test.dart widgetbook/lib/dashboard/dashboard_use_cases.dart widgetbook/lib/profiles/profile_use_cases.dart",
+        "node tool/architecture/check_app_architecture_exhibits.mjs",
+        "bash tool/widget_cleanup_scan.sh",
+        "node tool/agent/check_agent_readiness.mjs"
+      ],
+      "notes": "This pattern separates root screen voice chrome from compact navigation chrome. CatchScreenHeaderTitle owns Archivo headline typography for root titles plus optional mono eyebrow, subtitle, leading, action, material, and padding slots. CatchScreenTopBar wraps CatchTopBar when a root-like app bar also needs safe-area, action, or expanding-search behavior. Do not recreate feature-local title widgets for Home, Explore, Chats, Profile, Activity, or Settings; pass feature data and actions into the shared header slots."
     },
     {
       "id": "ARCH-UI-STATE-001",
@@ -668,6 +759,26 @@
           "lastReviewedPass": "2026-07-03-profile-chats-state-governance"
         },
         {
+          "path": "lib/hosts/presentation/inbox/host_inbox_view_model.dart",
+          "role": "provider-free Host Inbox scope, event ordering, Booked/Prospective classification, roster-versus-thread count, search, lifecycle, and row-status adapter",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-10-host-inbox-v2-broadcast-01"
+        },
+        {
+          "path": "test/hosts/host_inbox_view_model_test.dart",
+          "role": "HostInboxViewModel Event/General scope, default event, roster/thread separation, search, and participation-status behavior coverage",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-10-host-inbox-v2-broadcast-01"
+        },
+        {
+          "path": "lib/hosts/presentation/host_home_screen_state.dart",
+          "role": "provider-free Host route, selected-club, Today, and Events lifecycle display states including exact lifecycle boundaries, month grouping, repeat availability, and render-ready row data",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-10-host-v2-functional-parity"
+        },
+        {
           "path": "test/chats/chat_inbox_screen_test.dart",
           "role": "ChatsListScreenState, inbox empty/search/unread branches, batched roster lookup, host inbox filtering, and navigation behavior coverage",
           "status": "aligned",
@@ -760,13 +871,6 @@
           "addedPass": "2026-07-03-audit-generalization-scanners"
         },
         {
-          "id": "ARCH-UI-STATE-001-HOSTS-PRESENTATION-HOST-HOME-SCREEN-STATE",
-          "path": "lib/hosts/presentation/host_home_screen_state.dart",
-          "reason": "HostHomeRouteState still imports Riverpod AsyncValue, so it is not provider-free despite earlier audit wording. Split route async snapshots into CatchAsyncState or keep it explicitly non-provider-free until the host home route boundary is migrated.",
-          "detectedBy": "tool/architecture/check_dependency_direction.mjs#untrackedStateAdapter",
-          "addedPass": "2026-07-03-audit-generalization-scanners"
-        },
-        {
           "id": "ARCH-UI-STATE-001-HOSTS-PRESENTATION-HOST-SETTINGS-STATE",
           "path": "lib/hosts/presentation/host_settings_state.dart",
           "reason": "HostSettingsState still imports Riverpod AsyncValue, so it is not provider-free despite earlier audit wording. Replace AsyncValue-facing factories with route-owned snapshots before marking this adapter aligned.",
@@ -848,6 +952,63 @@
         "node tool/agent/check_agent_readiness.mjs"
       ],
       "notes": "This is a narrow display-state reference. CalendarHomeState remains the reference. CatchAsyncState is the provider-free async branch primitive for route-edge translations. EventDetailHostState, EventDetailCompanionState, and EventDetailBookingDockState are aligned small adapters for host-card, companion entry, and booking dock display data; EventDetailCta keeps provider mutations and router side effects at the edge. CatchesEventScreenState is aligned for queue provider-wave mapping, empty/access copy, and active deck display data; SwipeScreen now owns CatchesProfileReviewActionState for write-pending/failure display while the remaining Catches Event work is capture/reference coverage. HostClubDetailScreenState and ClubDetailBodyState are aligned for Club Detail route async branch mapping, live data, initial route fallback, host public-preview mode, next-event selection, contact actions, host-message eligibility, event-route target, review visibility, membership dock state, and retry typing; capture work remains open under the Club Detail screen contract. ExploreFeedSectionState, ExploreCoverStoryState, ExploreChromeState, ExploreEventRowState, ExploreExternalEventRowState, ExploreClubCardState, ExploreMapLauncherState, ExploreCityPickerState, ExploreCityTriggerState, ExploreFilterRailState, ExploreFilterSheetState, ExploreCollapsedMapSummaryState, ExplorePeekRailState, ExploreMapEventTicketState, ExploreScreenBodyState, ExploreDiscoveryEmptyState, and ExploreEventsEmptyState are aligned adopters for mixed-feed planning, cover-story/search-open/event-row/external-row/club-card/map-sheet/filter/chrome display data, route/body branch, city picker availability, map launcher, and empty-state actions. EventSuccessRevealActionState is aligned as a provider-free live reveal action-state adapter after the host route now translates mutation state into plain pending/error snapshots. SelfProfileScreenState and SelfProfileEditTabState are aligned provider-free Profile adopters after the route provider split and photo intent-factory rename. ChatsListScreenState, HostChatScreenState, ChatThreadLookupState, ChatReadMarkerState, and ChatRouteState are aligned provider-free Chats adopters after the route view-model split and batched inbox roster lookups. The main Explore route/feed body migration is tracked under ARCH-SCREEN-001; only the explicitly recorded ARCH-SCREEN-001D provider islands remain. The Chats inbox widget-level route reads are recorded as ARCH-SCREEN-001-CHATS-INBOX-BOUNDARY candidate debt, not as aligned screen-boundary adoption."
+    },
+    {
+      "id": "ARCH-APP-TARGET-001",
+      "name": "Installable app target resolution",
+      "status": "reference",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-app-target-001-installable-app-target-resolution",
+      "prototypeFiles": [
+        "tool/app_targets.json",
+        "tool/platform/resolve_app_target.mjs",
+        "tool/platform/check_app_targets.mjs",
+        "tool/flutter_with_env.sh",
+        "tool/platform/configure_apple_flavors.rb"
+      ],
+      "adopters": [
+        {
+          "path": "android/app/build.gradle.kts",
+          "role": "six explicit role and environment app-target flavors",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-10-first-class-app-targets"
+        },
+        {
+          "path": "ios/Runner.xcodeproj/project.pbxproj",
+          "role": "manifest-generated Apple target configurations with role-specific entitlements",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-10-first-class-app-targets"
+        },
+        {
+          "path": "tool/use_firebase_environment.sh",
+          "role": "manifest-resolved Firebase app activation",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-10-first-class-app-targets"
+        },
+        {
+          "path": "lib/force_update/data/app_version_config_provider.dart",
+          "role": "role-prefixed compatibility and store policy",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-10-first-class-app-targets"
+        }
+      ],
+      "exceptions": [
+        {
+          "id": "APP-TARGET-HOST-TESTFLIGHT-001",
+          "path": ".github/workflows/ios-testflight-release.yml",
+          "reason": "Temporary automatic GitHub Host upload remains until authenticated Xcode Cloud processed-build, tester-group, install, and launch proof exists.",
+          "status": "blocked_external"
+        }
+      ],
+      "requiredBackPropagation": "When target fields or resolver output change, regenerate Apple configuration, inspect Android/Firebase/build wrappers and both CI build paths, then rerun the app-target gate.",
+      "requiredChecks": [
+        "node --test tool/platform/check_app_targets.test.mjs",
+        "node tool/run.mjs check platform:app-targets",
+        "ruby -c tool/platform/configure_apple_flavors.rb",
+        "bash -n tool/flutter_with_env.sh tool/use_firebase_environment.sh tool/validate_firebase_environment.sh",
+        "flutter test test/force_update/app_version_config_provider_test.dart",
+        "node tool/architecture/check_app_architecture_exhibits.mjs"
+      ],
+      "notes": "The target contract is authoritative for product identity. The Flutter package and Apple Runner target may remain shared only while role-specific composition and capabilities are explicit and checked."
     }
   ]
 }

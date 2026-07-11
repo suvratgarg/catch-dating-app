@@ -362,11 +362,8 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
   }
 
   Future<CityOption?> _pickCityForEdit() async {
-    final picked = await showModalBottomSheet<CityOption>(
+    final picked = await showCatchBottomSheet<CityOption>(
       context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      backgroundColor: Colors.transparent,
       builder: (context) {
         final maxHeight = MediaQuery.sizeOf(context).height * 0.6;
         return CatchBottomSheetScaffold(

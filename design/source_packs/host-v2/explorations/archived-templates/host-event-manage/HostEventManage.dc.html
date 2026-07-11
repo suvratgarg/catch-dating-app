@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Host Event Manage" description="The host's event management dashboard — Setup / Live / Report modes over one roster board (filter tiles, search, spec-driven action rows), live guide with run-of-show console + guided rotations, event setup summary, private invite links, and host actions. Tweaks flip approval policy, the full-event state, and whether a live guide was saved." -->
+<helmet>
+  <script src="./ds-base.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <style>
+    body { margin: 0; background: #E2E1DC; }
+  </style>
+</helmet>
+
+<div style="min-height: 100vh; display: flex; justify-content: center; padding: 40px 16px; background: #E2E1DC; font-family: var(--font-function); color: var(--ink); box-sizing: border-box">
+  <div data-screen-label="Host Event Manage" style="width: 390px; background: var(--bg); border-radius: 30px; border: 1px solid rgba(22,20,15,0.15); box-shadow: var(--shadow-overlay); overflow: hidden; display: flex; flex-direction: column">
+
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.StatusBar" hint-size="100%,44px"></x-import>
+
+    <!-- header — back, kicker, event title, mode picker -->
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.AppBar" large="{{ true }}" kicker="HOST MANAGE · RUN #14" title="Sundowner 5K, Bandra seafront" on-back="{{ back }}" hint-size="100%,140px" style="display: block">
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.OptionGroup" options="{{ modeOptions }}" value="{{ mode }}" onChange="{{ setMode }}" hint-size="100%,38px" style="display: block"></x-import>
+    </x-import>
+
+    <!-- full-event flag — hero apron -->
+    <sc-if value="{{ isFull }}" hint-placeholder-val="{{ false }}">
+      <div style="padding: 16px 20px 0">
+        <div style="display: flex; align-items: center; gap: 10px; background: var(--ink); border-radius: var(--radius-md); padding: 12px 14px">
+          <i class="ph ph-lock-simple" style="font-size: 15px; color: var(--primary-ink); flex: none"></i>
+          <span class="t-mono-label" style="font-size: 10px; font-weight: 700; color: var(--primary-ink)">FULL — CAPACITY REACHED</span>
+          <span class="t-mono-label" style="margin-left: auto; font-size: 9px; color: color-mix(in srgb, var(--primary-ink) 70%, transparent)">WAITLIST OPEN</span>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- body — SectionStack owns the gutter; the board re-skins per mode -->
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.SectionStack" hint-size="100%,900px" style="display: block">
+
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Section" kicker="{{ boardKicker }}" count="{{ boardCount }}" first="{{ true }}" hint-size="100%,520px">
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.RosterTiles" items="{{ tiles }}" selected="{{ filter }}" onSelect="{{ setFilter }}" hint-size="100%,58px" style="display: block"></x-import>
+
+        <!-- waitlist movement — slots open and people waiting -->
+        <sc-if value="{{ showBulkOffer }}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; align-items: center; gap: 10px; background: color-mix(in srgb, var(--warning) 8%, var(--surface)); border: 1px solid color-mix(in srgb, var(--warning) 30%, transparent); border-radius: var(--radius-md); padding: 10px 12px">
+            <i class="ph ph-user-plus" style="font-size: 16px; color: var(--warning); flex: none"></i>
+            <div style="flex: 1; min-width: 0">
+              <div style="font-family: var(--font-function); font-size: 13px; font-weight: 600; color: var(--ink)">Waitlist movement</div>
+              <div class="t-mono-label" style="font-size: 8.5px; margin-top: 3px; color: var(--ink2)">{{ bulkOfferDetail }}</div>
+            </div>
+            <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Button" size="sm" variant="secondary" icon="paper-plane-tilt" onClick="{{ offerNext }}" hint-size="110px,33px">Offer next {{ bulkOfferCount }}</x-import>
+          </div>
+        </sc-if>
+
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.SearchField" value="{{ q }}" placeholder="{{ searchPlaceholder }}" onChange="{{ setQ }}" hint-size="100%,40px" style="display: block"></x-import>
+
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.RosterTable" columns="{{ cols }}" show-empty="{{ showEmpty }}" empty-title="{{ emptyTitle }}" empty-message="{{ emptyMessage }}" hint-size="100%,300px" style="display: block">
+          <sc-for list="{{ rows }}" as="row" hint-placeholder-count="5">
+            <x-import component-from-global-scope="CatchDesignSystem_3a44f2.RosterRow" person="{{ row.person }}" img="{{ row.img }}" initials="{{ row.initials }}" meta="{{ row.meta }}" signal="{{ row.signal }}" tone="{{ row.tone }}" action="{{ row.action }}" hint-size="100%,53px" style="display: block"></x-import>
+          </sc-for>
+        </x-import>
+
+        <!-- report extras — totals line + exports -->
+        <sc-if value="{{ modeReport }}" hint-placeholder-val="{{ false }}">
+          <div style="background: var(--raised); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 11px 14px">
+            <span class="t-mono-label" style="font-size: 9px; color: var(--ink2)">{{ reportSummary }}</span>
+          </div>
+          <div style="display: flex; gap: 10px">
+            <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Button" variant="secondary" full="{{ true }}" icon="export" hint-size="50%,49px" style="flex: 1">Ops CSV</x-import>
+            <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Button" full="{{ true }}" icon="export" hint-size="50%,49px" style="flex: 1">Revenue CSV</x-import>
+          </div>
+        </sc-if>
+      </x-import>
+
+      <!-- live guide — run-of-show console + step controls (Event Success plan) -->
+      <sc-if value="{{ modeLive }}" hint-placeholder-val="{{ false }}">
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Section" kicker="LIVE GUIDE" hint-size="100%,560px">
+
+          <sc-if value="{{ guideSaved }}" hint-placeholder-val="{{ true }}">
+            <x-import component-from-global-scope="CatchDesignSystem_3a44f2.LiveConsole" step="{{ stepNumber }}" total="{{ stepTotal }}" stage="{{ stepStage }}" title="{{ stepTitle }}" instruction="{{ stepInstruction }}" attendee-note="{{ stepAttendeeNote }}" next-label="{{ stepNextLabel }}" onPrev="{{ prevStep }}" onNext="{{ nextStep }}" prev-disabled="{{ prevDisabled }}" next-disabled="{{ nextDisabled }}" hint-size="100%,330px" style="display: block">
+
+              <sc-if value="{{ stepShowsCheckIn }}" hint-placeholder-val="{{ false }}">
+                <div style="display: flex; align-items: center; gap: 10px; border: 1px solid var(--line2); border-radius: var(--radius-md); background: var(--surface); padding: 12px 14px">
+                  <i class="ph ph-qr-code" style="font-size: 18px; color: var(--ink); flex: none"></i>
+                  <span style="font-family: var(--font-function); font-size: 13px; line-height: 1.45; color: var(--ink2)">Host check-in QR — use it for new arrivals; fix mistakes on the board above.</span>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ stepShowsPods }}" hint-placeholder-val="{{ false }}">
+                <div style="border: 1px solid var(--line2); border-radius: var(--radius-md); background: var(--surface); padding: 14px">
+                  <div class="t-mono-label" style="font-size: 8.5px; color: var(--ink3)">PACE PODS · 3 PER POD · SPREAD PACE</div>
+                  <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px">
+                    <div style="font-family: var(--font-function); font-size: 13px; color: var(--ink)"><span class="t-mono-label" style="font-size: 9px; font-weight: 700; color: var(--ink2)">POD 1&nbsp;&nbsp;</span>Aanya · Dev · Mira</div>
+                    <div style="font-family: var(--font-function); font-size: 13px; color: var(--ink)"><span class="t-mono-label" style="font-size: 9px; font-weight: 700; color: var(--ink2)">POD 2&nbsp;&nbsp;</span>Rahul · Kabir · Tara</div>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ stepShowsRotations }}" hint-placeholder-val="{{ true }}">
+                <x-import component-from-global-scope="CatchDesignSystem_3a44f2.RotationCard" config="PAIRS · 15 MIN ROUNDS · AVOID REPEATS · 10S REVEAL" rounds="{{ rotationRounds }}" action-label="{{ revealLabel }}" onAction="{{ revealNext }}" action-disabled="{{ revealDone }}" hint-size="100%,250px" style="display: block"></x-import>
+              </sc-if>
+
+            </x-import>
+
+            <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Button" variant="secondary" full="{{ true }}" icon="flag-checkered" hint-size="100%,49px">Mark live guide complete</x-import>
+          </sc-if>
+
+          <sc-if value="{{ guideMissing }}" hint-placeholder-val="{{ false }}">
+            <div style="border: 1px solid var(--line); border-radius: var(--radius-md); padding: 16px 14px; display: flex; gap: 10px; align-items: flex-start">
+              <i class="ph ph-lock-simple" style="font-size: 18px; color: var(--ink3); flex: none; position: relative; top: 1px"></i>
+              <div style="min-width: 0">
+                <div class="t-name" style="color: var(--ink)">Live mode needs saved setup</div>
+                <div class="t-body-s" style="color: var(--ink2); margin-top: 4px; text-wrap: pretty">Save the live guide before the event to enable guided controls. Check-in stays available from the board above.</div>
+              </div>
+            </div>
+          </sc-if>
+
+        </x-import>
+      </sc-if>
+
+      <!-- setup-only sections -->
+      <sc-if value="{{ modeSetup }}" hint-placeholder-val="{{ true }}">
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Section" kicker="EVENT SETUP" hint-size="100%,250px">
+          <div style="border: 1px solid var(--line2); border-radius: var(--radius-md); background: var(--surface); padding: 14px; display: flex; flex-direction: column; gap: 12px">
+            <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ContactRow" icon="users-three" channel="CLUB" value="Sunday sea-face crew" hint-size="100%,38px" style="display: flex"></x-import>
+            <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ContactRow" divider="{{ true }}" icon="map-pin" channel="MEET" value="Carter Road jetty, Bandra West" hint-size="100%,50px" style="display: flex"></x-import>
+            <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ContactRow" divider="{{ true }}" icon="sneaker-move" channel="EVENT" value="5 km easy social run" hint-size="100%,50px" style="display: flex"></x-import>
+            <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ContactRow" divider="{{ true }}" icon="money" channel="PRICE" value="₹499 · capacity 10" hint-size="100%,50px" style="display: flex"></x-import>
+          </div>
+        </x-import>
+
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Section" kicker="PRIVATE ACCESS" hint-size="100%,330px">
+          <div style="border: 1px solid var(--line2); border-radius: var(--radius-md); background: var(--surface); padding: 14px; display: flex; flex-direction: column; gap: 12px">
+            <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ContactRow" icon="key" channel="INVITE CODE" value="RUN14-CARTER" hint-size="100%,38px" style="display: flex"></x-import>
+            <x-import component-from-global-scope="CatchDesignSystem_3a44f2.ContactRow" divider="{{ true }}" icon="link-simple" channel="PRIVATE LINK" value="catch.app/e/run14?code=RUN14-CARTER" hint-size="100%,50px" style="display: flex"></x-import>
+          </div>
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Button" variant="secondary" full="{{ true }}" icon="share-network" hint-size="100%,49px">Share private link</x-import>
+
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 4px">
+            <span class="t-mono-label" style="font-size: 9px; color: var(--ink2)">NAMED INVITE LINKS · 2</span>
+            <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Button" size="sm" variant="secondary" icon="plus" hint-size="92px,33px">New link</x-import>
+          </div>
+          <div style="border: 1px solid var(--line2); border-radius: var(--radius-md); background: var(--surface); padding: 0 14px">
+            <sc-for list="{{ inviteLinks }}" as="link" hint-placeholder-count="2">
+              <div style="display: flex; align-items: center; gap: 10px; padding: 12px 0; border-top: 1px solid var(--line)">
+                <div style="flex: 1; min-width: 0">
+                  <div style="display: flex; align-items: center; gap: 8px">
+                    <span style="font-family: var(--font-function); font-size: 13.5px; font-weight: 600; color: var(--ink)">{{ link.label }}</span>
+                    <sc-if value="{{ link.disabled }}" hint-placeholder-val="{{ false }}">
+                      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Badge" tone="neutral" hint-size="60px,20px">Disabled</x-import>
+                    </sc-if>
+                  </div>
+                  <div class="t-mono-label" style="font-size: 8px; margin-top: 4px; color: var(--ink3)">{{ link.stats }}</div>
+                </div>
+                <x-import component-from-global-scope="CatchDesignSystem_3a44f2.IconButton" icon="copy" size="32" aria-label="Copy link" hint-size="32px,32px"></x-import>
+              </div>
+            </sc-for>
+          </div>
+        </x-import>
+
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Section" kicker="HOST ACTIONS" hint-size="100%,230px">
+          <p style="font-size: 13px; line-height: 1.5; color: var(--ink2); margin: 0; text-wrap: pretty">Cancel removes a published event from schedules but keeps attendee, payment, and history records.</p>
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Button" variant="secondary" full="{{ true }}" icon="pencil-simple" hint-size="100%,49px">Edit event details</x-import>
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Button" variant="secondary" full="{{ true }}" icon="x-circle" hint-size="100%,49px" style="color: var(--danger); border-color: color-mix(in srgb, var(--danger) 35%, transparent)">Cancel published event</x-import>
+          <p style="font-size: 12px; line-height: 1.5; color: var(--ink3); margin: 0; text-wrap: pretty">Delete is unavailable once an event has bookings, waitlist, attendance, payments, or reviews.</p>
+        </x-import>
+      </sc-if>
+
+    </x-import>
+
+  </div>
+</div>
+
+<!-- Tweaks — hidden until the host toggles tweaks mode -->
+<x-import component="TweaksPanel" from="./tweaks-panel.jsx" hint-size="0px,0px">
+  <x-import component="TweakSection" from="./tweaks-panel.jsx" label="Policy" hint-size="0px,0px"></x-import>
+  <x-import component="TweakToggle" from="./tweaks-panel.jsx" label="Manual approval" value="{{ approval }}" onChange="{{ setApproval }}" hint-size="0px,0px"></x-import>
+  <x-import component="TweakSection" from="./tweaks-panel.jsx" label="Content states" hint-size="0px,0px"></x-import>
+  <x-import component="TweakToggle" from="./tweaks-panel.jsx" label="Event full" value="{{ isFull }}" onChange="{{ setFull }}" hint-size="0px,0px"></x-import>
+  <x-import component="TweakToggle" from="./tweaks-panel.jsx" label="Live guide saved" value="{{ guideSaved }}" onChange="{{ setGuideSaved }}" hint-size="0px,0px"></x-import>
+</x-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "approval": true,
+  "full": false,
+  "guideSaved": true
+}/*EDITMODE-END*/;
+
+// Run-of-show — the saved Event Success plan for this run.
+const GUIDE_STEPS = [
+  { stage: 'ARRIVAL', title: 'Arrival & first hello', instruction: 'Greet at the jetty gate; point people to the warm-up circle.', attendee: 'their check-in code and an arrival mission.', control: 'checkIn' },
+  { stage: 'OPENING', title: 'Warm-up & pace pods', instruction: 'Call out pace bands and keep pods at three; swap anyone who looks stranded.', attendee: 'their pod and two icebreakers.', control: 'pods' },
+  { stage: 'ACTIVITY', title: 'The run', instruction: 'Sweep from the back; regroup at the lighthouse before the last stretch.', attendee: 'the route and pace reminders.', control: null },
+  { stage: 'MIXING', title: 'Coffee rotations', instruction: 'Move pairs every 15 minutes; reveal each round once tables settle.', attendee: 'their next partner the moment you reveal the round.', control: 'rotations' },
+  { stage: 'CLOSING', title: 'Wrap & catch', instruction: 'Close with one suggested first message; remind everyone feedback is two taps.', attendee: 'post-event openers and the feedback card.', control: null },
+];
+
+// Pair rotations over the six booked runners — round-robin, no repeats.
+const ROTATION_ROUNDS = [
+  'Aanya + Dev · Mira + Rahul · Kabir + Tara',
+  'Aanya + Mira · Dev + Kabir · Rahul + Tara',
+  'Aanya + Rahul · Dev + Tara · Mira + Kabir',
+];
+
+const TWEAKS_STORE = 'hostEventManage.tweaks';
+
+function readSavedTweaks() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(TWEAKS_STORE) || '{}');
+    const out = {};
+    for (const k of Object.keys(TWEAK_DEFAULTS)) {
+      if (typeof saved[k] === typeof TWEAK_DEFAULTS[k]) out[k] = saved[k];
+    }
+    return out;
+  } catch (e) {
+    return {};
+  }
+}
+
+const PRICE = 499;
+
+const PEOPLE = {
+  aanya:  { person: 'Aanya Sharma',  initials: 'AS', img: '../../assets/sample-portrait.jpg' },
+  dev:    { person: 'Dev Patel',     initials: 'DP' },
+  mira:   { person: "Mira D'Souza",  initials: 'MD' },
+  rahul:  { person: 'Rahul S.',      initials: 'RS' },
+  kabir:  { person: 'Kabir Khanna',  initials: 'KK' },
+  tara:   { person: 'Tara Nair',     initials: 'TN' },
+  ishaan: { person: 'Ishaan Verma',  initials: 'IV' },
+  zoya:   { person: 'Zoya Merchant', initials: 'ZM' },
+  nikhil: { person: 'Nikhil Rao',    initials: 'NR' },
+};
+
+const BOOKED = ['aanya', 'dev', 'mira', 'rahul', 'kabir', 'tara'];
+const WAITLIST = ['ishaan', 'zoya', 'nikhil'];
+const CAPACITY = 10;
+
+class Component extends DCLogic {
+  state = {
+    ...TWEAK_DEFAULTS,
+    ...readSavedTweaks(),
+    mode: 'setup',
+    filter: 'all',
+    q: '',
+    attended: { aanya: true, dev: true },
+    offered: { ishaan: true },
+    approvedIds: [],
+    declinedIds: [],
+    stepIndex: 3,
+    revealed: 1,
+  };
+
+  setTweak(key, val) {
+    this.setState({ [key]: val, filter: 'all' });
+    const next = {};
+    for (const k of Object.keys(TWEAK_DEFAULTS)) next[k] = k === key ? val : this.state[k];
+    try { localStorage.setItem(TWEAKS_STORE, JSON.stringify(next)); } catch (e) {}
+    try { window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { [key]: val } }, '*'); } catch (e) {}
+  }
+
+  match(key) {
+    const q = this.state.q.trim().toLowerCase();
+    if (!q) return true;
+    return PEOPLE[key].person.toLowerCase().includes(q);
+  }
+
+  row(key, extra) {
+    return { key, ...PEOPLE[key], ...extra };
+  }
+
+  renderVals() {
+    const { mode, filter, q, attended, offered, approvedIds, declinedIds, approval, full, guideSaved, stepIndex, revealed } = this.state;
+
+    const booked = [...BOOKED, ...approvedIds];
+    const waitlist = WAITLIST.filter((k) => !approvedIds.includes(k) && !declinedIds.includes(k));
+    const capacity = full ? booked.length : CAPACITY;
+    const total = booked.length + waitlist.length;
+    const slots = Math.max(0, capacity - total);
+    const offerable = waitlist.filter((k) => !offered[k]);
+    const bulkOfferCount = Math.min(offerable.length, slots);
+    const dueIds = booked.filter((k) => !attended[k]);
+    const inIds = booked.filter((k) => attended[k]);
+
+    const toggle = (k) => () => this.setState((s) => ({ attended: { ...s.attended, [k]: !s.attended[k] } }));
+    const offer = (k) => () => this.setState((s) => ({ offered: { ...s.offered, [k]: true } }));
+    const approve = (k) => () => this.setState((s) => ({ approvedIds: [...s.approvedIds, k] }));
+    const decline = (k) => () => this.setState((s) => ({ declinedIds: [...s.declinedIds, k] }));
+
+    const waitSignal = (k) => offered[k]
+      ? { signal: 'Offered', tone: 'gold', meta: 'OFFER SENT' }
+      : approval
+        ? { signal: 'Request', tone: 'warning', meta: 'AWAITING REVIEW' }
+        : { signal: 'Wait', tone: 'warning', meta: 'WAITLISTED' };
+
+    const waitAction = (k) => approval && !offered[k]
+      ? { type: 'decide', onApprove: approve(k), onDecline: decline(k) }
+      : offered[k]
+        ? { type: 'badge', label: 'Offered', tone: 'gold' }
+        : { type: 'button', label: 'Offer', onClick: offer(k) };
+
+    let tiles, cols, rows, boardKicker, searchPlaceholder, emptyTitle, emptyMessage;
+
+    if (mode === 'setup') {
+      boardKicker = 'PARTICIPATION';
+      searchPlaceholder = 'Search people';
+      cols = ['GUEST', 'SIGNAL', 'HOST ACTION'];
+      tiles = [
+        { key: 'all', value: total, label: 'ALL', tone: 'solid' },
+        { key: 'booked', value: booked.length, label: 'BOOKED', tone: 'success' },
+        { key: 'wait', value: waitlist.length, label: approval ? 'REQUESTS' : 'WAITLIST', tone: 'warning' },
+        { key: 'slots', value: slots, label: 'SLOTS', tone: 'neutral' },
+      ];
+      const visible = filter === 'booked' ? booked : filter === 'wait' ? waitlist : filter === 'slots' ? [] : [...waitlist, ...booked];
+      rows = visible.filter((k) => this.match(k)).map((k) =>
+        booked.includes(k)
+          ? this.row(k, { meta: 'APPROVED', signal: 'Booked', tone: 'success', action: { type: 'button', label: 'Profile' } })
+          : this.row(k, { ...waitSignal(k), action: waitAction(k) })
+      );
+      emptyTitle = filter === 'slots' ? 'Open slots are not people' : q ? 'No matches' : 'No participants yet';
+      emptyMessage = filter === 'slots'
+        ? 'Slots show capacity left after booked people. New people appear here once they book or request access.'
+        : q ? 'No people match this search.' : 'Booked and waitlisted people will appear here.';
+    } else if (mode === 'live') {
+      boardKicker = 'CHECK-IN BOARD';
+      searchPlaceholder = 'Search roster';
+      cols = ['GUEST', 'STATUS', 'HOST ACTION'];
+      tiles = [
+        { key: 'all', value: total, label: 'ALL', tone: 'solid' },
+        { key: 'due', value: dueIds.length, label: 'DUE', tone: 'neutral' },
+        { key: 'in', value: inIds.length, label: 'IN', tone: 'success' },
+        { key: 'wait', value: waitlist.length, label: approval ? 'REQUESTS' : 'WAITLIST', tone: 'warning' },
+      ];
+      const visible = filter === 'due' ? dueIds : filter === 'in' ? inIds : filter === 'wait' ? waitlist : [...dueIds, ...inIds, ...waitlist];
+      rows = visible.filter((k) => this.match(k)).map((k) =>
+        waitlist.includes(k)
+          ? this.row(k, { ...waitSignal(k), action: waitAction(k) })
+          : attended[k]
+            ? this.row(k, { meta: 'CHECKED IN · 6:42 PM', signal: 'In', tone: 'success', action: { type: 'button', label: 'Undo', onClick: toggle(k) } })
+            : this.row(k, { meta: 'BOOKED', signal: 'Due', tone: 'neutral', action: { type: 'button', label: 'Check in', primary: true, onClick: toggle(k) } })
+      );
+      emptyTitle = filter === 'due' && booked.length ? 'Everyone visible is checked in' : q ? 'No matches' : 'Roster is empty';
+      emptyMessage = filter === 'due' && booked.length
+        ? 'Switch to In to review arrivals or All to see the full roster.'
+        : q ? 'No live roster rows match this search.' : 'Signed-up participants will appear here when they book.';
+    } else {
+      boardKicker = 'EVENT REPORT';
+      searchPlaceholder = 'Search roster';
+      cols = ['NAME', 'ATTENDANCE', 'PAYMENT'];
+      const noShow = dueIds;
+      tiles = [
+        { key: 'all', value: total, label: 'ALL', tone: 'solid' },
+        { key: 'in', value: inIds.length, label: 'ATTENDED', tone: 'success' },
+        { key: 'noshow', value: noShow.length, label: 'NO-SHOW', tone: 'neutral' },
+        { key: 'wait', value: waitlist.length, label: 'WAITLIST', tone: 'warning' },
+      ];
+      const visible = filter === 'in' ? inIds : filter === 'noshow' ? noShow : filter === 'wait' ? waitlist : [...inIds, ...noShow, ...waitlist];
+      rows = visible.filter((k) => this.match(k)).map((k) =>
+        waitlist.includes(k)
+          ? this.row(k, { meta: offered[k] ? 'OFFER SENT' : 'WAITLISTED', signal: offered[k] ? 'Offered' : 'Wait', tone: offered[k] ? 'gold' : 'warning', action: { type: 'text', value: '—' } })
+          : this.row(k, attended[k]
+              ? { meta: 'BOOKED', signal: 'Attended', tone: 'success', action: { type: 'text', value: '₹' + PRICE } }
+              : { meta: 'BOOKED', signal: 'No-show', tone: 'neutral', action: { type: 'text', value: '₹' + PRICE } })
+      );
+      emptyTitle = q ? 'No matches' : 'No participants yet';
+      emptyMessage = q ? 'No report rows match this search.' : 'Attendance and waitlist history will appear here once people sign up.';
+    }
+
+    const gross = booked.length * PRICE;
+    const step = GUIDE_STEPS[stepIndex];
+    return {
+      mode,
+      modeSetup: mode === 'setup',
+      modeLive: mode === 'live',
+      modeReport: mode === 'report',
+      back: () => {},
+      // live guide
+      guideSaved,
+      guideMissing: !guideSaved,
+      setGuideSaved: (v) => this.setTweak('guideSaved', v),
+      stepNumber: stepIndex + 1,
+      stepTotal: GUIDE_STEPS.length,
+      stepStage: step.stage,
+      stepTitle: step.title,
+      stepInstruction: step.instruction,
+      stepAttendeeNote: step.attendee,
+      stepNextLabel: stepIndex < GUIDE_STEPS.length - 1 ? 'Next: ' + GUIDE_STEPS[stepIndex + 1].title : 'Final step',
+      prevDisabled: stepIndex === 0,
+      nextDisabled: stepIndex === GUIDE_STEPS.length - 1,
+      prevStep: () => this.setState({ stepIndex: Math.max(0, stepIndex - 1) }),
+      nextStep: () => this.setState({ stepIndex: Math.min(GUIDE_STEPS.length - 1, stepIndex + 1) }),
+      stepShowsCheckIn: step.control === 'checkIn',
+      stepShowsPods: step.control === 'pods',
+      stepShowsRotations: step.control === 'rotations',
+      rotationRounds: ROTATION_ROUNDS.map((pairs, i) => ({
+        pairs,
+        state: i < revealed - 1 ? 'done' : i === revealed - 1 ? 'now' : 'hidden',
+      })),
+      revealLabel: revealed < ROTATION_ROUNDS.length ? 'Reveal round ' + (revealed + 1) : 'All rounds revealed',
+      revealDone: revealed >= ROTATION_ROUNDS.length,
+      revealNext: () => this.setState({ revealed: Math.min(ROTATION_ROUNDS.length, revealed + 1) }),
+      modeOptions: [
+        { value: 'setup', label: 'Setup' },
+        { value: 'live', label: 'Live' },
+        { value: 'report', label: 'Report' },
+      ],
+      setMode: (v) => this.setState({ mode: v, filter: 'all', q: '' }),
+      filter,
+      setFilter: (v) => this.setState({ filter: v }),
+      q,
+      setQ: (v) => this.setState({ q: v }),
+      boardKicker,
+      boardCount: String(total),
+      searchPlaceholder,
+      tiles,
+      cols,
+      rows,
+      showEmpty: rows.length === 0,
+      emptyTitle,
+      emptyMessage,
+      showBulkOffer: mode !== 'report' && bulkOfferCount > 0,
+      bulkOfferCount,
+      bulkOfferDetail: (offerable.length - bulkOfferCount) > 0
+        ? (offerable.length - bulkOfferCount) + ' STILL WAITING AFTER THIS OFFER'
+        : 'NEXT ' + bulkOfferCount + ' ON THE WAITLIST',
+      offerNext: () => {
+        const ids = offerable.slice(0, bulkOfferCount);
+        this.setState((s) => ({ offered: { ...s.offered, ...Object.fromEntries(ids.map((k) => [k, true])) } }));
+      },
+      reportSummary: '₹' + gross.toLocaleString('en-IN') + ' GROSS EST · ' + inIds.length + ' ATTENDED · ' + dueIds.length + ' NO-SHOWS · ' + waitlist.length + ' WAITLISTED',
+      inviteLinks: [
+        { label: 'Instagram bio', stats: '48 OPENS · 12 REQUESTS · 9 CONFIRMED · 7 IN · 3 CAUGHT', disabled: false },
+        { label: 'WhatsApp alumni', stats: '21 OPENS · 6 REQUESTS · 5 CONFIRMED · 4 IN · 2 CAUGHT', disabled: true },
+      ],
+      isFull: full,
+      approval,
+      setApproval: (v) => this.setTweak('approval', v),
+      setFull: (v) => this.setTweak('full', v),
+    };
+  }
+}
+</script>
+</body>
+</html>

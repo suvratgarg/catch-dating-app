@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_share_card_footer.dart';
@@ -21,10 +22,8 @@ Future<void> showEventShareCardSheet(
   String? inviteCode,
   String? inviteLinkId,
 }) {
-  return showModalBottomSheet<void>(
+  return showCatchBottomSheet<void>(
     context: context,
-    isScrollControlled: true,
-    useSafeArea: true,
     builder: (_) => CatchShareCardSheet(
       card: EventShareCard(event: event),
       share: share,

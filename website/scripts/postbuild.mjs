@@ -79,6 +79,9 @@ for (const listing of hostListings) {
     canonical: `${baseUrl}${listing.path}`,
     twitterDescription: listing.sourceSummary,
     robots: listing.indexing,
+    lastModified: listing.lastVerifiedAt,
+    bodyHtml: buildListingStaticBody(listing),
+    structuredData: buildListingStructuredData(listing),
   };
   writeRoute(listing.path, listingMeta);
   for (const legacyPath of listing.legacyPaths ?? []) {
@@ -111,7 +114,7 @@ function writeStaticHtml(fileName, meta) {
 }
 
 function applyMeta(html, meta) {
-  return html
+  let output = html
     .replace(/<title>.*?<\/title>/s, `<title>${escapeHtml(meta.title)}</title>`)
     .replace(
       /<meta\s+name="description"\s+content="[^"]*"\s*\/?>/s,
@@ -148,6 +151,111 @@ function applyMeta(html, meta) {
       /\n\s*(<link\s+rel="canonical"\s+href="[^"]*"\s*\/?>)/s,
       `\n${meta.robots ? `    <meta name="robots" content="${escapeHtml(meta.robots)}" />\n` : ""}    $1`
     );
+  if (meta.structuredData) {
+    const json = JSON.stringify(meta.structuredData).replaceAll("<", "\\u003c");
+    output = output.replace(
+      /\n\s*<\/head>/s,
+      `\n    <script type="application/ld+json">${json}</script>\n  </head>`
+    );
+  }
+  if (meta.bodyHtml) {
+    output = output.replace(
+      /<div\s+id="root"\s*><\/div>/s,
+      `<div id="root">${meta.bodyHtml}</div>`
+    );
+  }
+  return output;
+}
+
+function buildListingStaticBody(listing) {
+  const formats = (listing.formats ?? [])
+    .map((format) => `<li>${escapeHtml(String(format))}</li>`)
+    .join("");
+  const facts = (listing.facts ?? [])
+    .map((fact) =>
+      `<div><dt>${escapeHtml(String(fact.label))}</dt>` +
+        `<dd>${escapeHtml(String(fact.value))}</dd></div>`
+    )
+    .join("");
+  const sources = (listing.sources ?? [])
+    .filter((source) => safePublicUrl(source.href))
+    .map((source) =>
+      `<li><a href="${escapeHtml(source.href)}" rel="noopener noreferrer">` +
+        `${escapeHtml(String(source.label))}</a>` +
+        `${source.detail ? ` — ${escapeHtml(String(source.detail))}` : ""}</li>`
+    )
+    .join("");
+
+  return [
+    '<main data-static-organizer-profile="true">',
+    `<header><p>Organizer profile · ${escapeHtml(String(listing.city))}</p>`,
+    `<h1>${escapeHtml(String(listing.name))}</h1>`,
+    `<p>${escapeHtml(String(listing.description))}</p></header>`,
+    formats ? `<section><h2>Formats</h2><ul>${formats}</ul></section>` : "",
+    facts ? `<section><h2>Profile facts</h2><dl>${facts}</dl></section>` : "",
+    sources ? `<section><h2>Public sources</h2><ul>${sources}</ul></section>` : "",
+    `<p>Last verified ${escapeHtml(String(listing.lastVerifiedAt ?? "not recorded"))}.</p>`,
+    "</main>",
+  ].join("");
+}
+
+function buildListingStructuredData(listing) {
+  const canonical = `${baseUrl}${listing.path}`;
+  const sameAs = (listing.sources ?? [])
+    .map((source) => source.href)
+    .filter(safePublicUrl);
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": `${canonical}#organization`,
+        name: listing.name,
+        description: listing.description,
+        url: canonical,
+        sameAs: [...new Set(sameAs)],
+        areaServed: {
+          "@type": "Place",
+          name: [listing.city, listing.region, listing.country]
+            .filter(Boolean)
+            .join(", "),
+        },
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Catch",
+            item: `${baseUrl}/`,
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Organizers",
+            item: `${baseUrl}/organizers/`,
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: listing.name,
+            item: canonical,
+          },
+        ],
+      },
+    ],
+  };
+}
+
+function safePublicUrl(value) {
+  if (typeof value !== "string") return false;
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" || url.protocol === "http:";
+  } catch {
+    return false;
+  }
 }
 
 function escapeHtml(value) {
@@ -160,25 +268,36 @@ function escapeHtml(value) {
 
 function addSitemapEntry(meta) {
   if (isNoindex(meta.robots)) return;
-  sitemapEntries.push(meta.canonical);
+  sitemapEntries.push({
+    canonical: meta.canonical,
+    lastModified: isoDateOrNull(meta.lastModified),
+  });
 }
 
 function isNoindex(robots) {
   return typeof robots === "string" && /\bnoindex\b/i.test(robots);
 }
 
-function writeSitemap(urls) {
-  const uniqueUrls = [...new Set(urls)].sort();
+function writeSitemap(entries) {
+  const uniqueEntries = [...new Map(
+    entries.map((entry) => [entry.canonical, entry])
+  ).values()].sort((a, b) => a.canonical.localeCompare(b.canonical));
   const body = [
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-    ...uniqueUrls.map((url) =>
-      `  <url><loc>${escapeXml(url)}</loc></url>`
+    ...uniqueEntries.map((entry) =>
+      `  <url><loc>${escapeXml(entry.canonical)}</loc>` +
+        `${entry.lastModified ? `<lastmod>${entry.lastModified}</lastmod>` : ""}` +
+        `</url>`
     ),
     '</urlset>',
     '',
   ].join("\n");
   fs.writeFileSync(path.join(distRoot, "sitemap.xml"), body);
+}
+
+function isoDateOrNull(value) {
+  return /^\d{4}-\d{2}-\d{2}$/.test(String(value ?? "")) ? String(value) : null;
 }
 
 function writeRobotsTxt() {

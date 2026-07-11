@@ -954,6 +954,7 @@ void main() {
       addTearDown(tester.view.resetDevicePixelRatio);
       addTearDown(tester.view.resetPhysicalSize);
 
+      final now = DateTime(2026, 5, 13, 8);
       final joinedClubIds = ['club-1'];
       final user = buildUser(name: 'Manan Sethi', displayName: 'Subrath');
       final nextEvent = buildEvent(
@@ -965,6 +966,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
+            dashboardNowProvider.overrideWithValue(now),
             watchAttendedEventsProvider(
               user.uid,
             ).overrideWithValue(const AsyncData<List<Event>>([])),
@@ -991,14 +993,10 @@ void main() {
 
       await _pumpDashboardUi(tester);
 
-      final greetingFinder = find.text(
-        '${dashboardGreeting(DateTime.now())}, Subrath',
-      );
+      final greetingFinder = find.text('${dashboardGreeting(now)}, Subrath');
       expect(greetingFinder, findsOneWidget);
-      expect(
-        find.text('${dashboardGreeting(DateTime.now())}, Manan'),
-        findsNothing,
-      );
+      expect(find.text('${dashboardGreeting(now)}, Manan'), findsNothing);
+      expect(find.text('WEDNESDAY · MUMBAI'), findsNothing);
 
       expect(find.byType(DashboardFullSliverBody), findsOneWidget);
     });

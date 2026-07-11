@@ -7,6 +7,7 @@ void main() {
       final dateTime = DateTime(2025, 4, 23, 6, 30);
 
       expect(AppTimeFormatters.shortMonth(dateTime), 'Apr');
+      expect(AppTimeFormatters.longMonth(dateTime), 'April');
       expect(AppTimeFormatters.shortWeekday(dateTime), 'Wed');
       expect(AppTimeFormatters.longWeekday(dateTime), 'Wednesday');
       expect(AppTimeFormatters.weekdayDayMonth(dateTime), 'Wed 23 Apr');
@@ -31,6 +32,33 @@ void main() {
         'May 31',
       );
       expect(AppTimeFormatters.chatTimestamp(null, now: now), '');
+    });
+
+    test('formats compact Host thread recency labels', () {
+      final now = DateTime(2026, 6, 15, 12);
+
+      expect(
+        AppTimeFormatters.compactRelativeTime(
+          DateTime(2026, 6, 15, 11, 48),
+          now: now,
+        ),
+        '12m',
+      );
+      expect(
+        AppTimeFormatters.compactRelativeTime(
+          DateTime(2026, 6, 15, 9),
+          now: now,
+        ),
+        '3h',
+      );
+      expect(
+        AppTimeFormatters.compactRelativeTime(
+          DateTime(2026, 6, 13, 12),
+          now: now,
+        ),
+        '2d',
+      );
+      expect(AppTimeFormatters.compactRelativeTime(null, now: now), '');
     });
   });
 }

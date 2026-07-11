@@ -12,6 +12,7 @@ on:
       - "package-lock.json"
       - "tool/ci/toolchain.env"
       - "tool/env/check_web_hosting_env.mjs"
+      - "tool/organizer_intake/**"
   push:
     branches: [main]
     paths:
@@ -24,6 +25,7 @@ on:
       - "package-lock.json"
       - "tool/ci/toolchain.env"
       - "tool/env/check_web_hosting_env.mjs"
+      - "tool/organizer_intake/**"
   workflow_dispatch:
 
 concurrency:
@@ -52,6 +54,9 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - run: npm ci
+
+      - name: Check organizer admin review bridge
+        run: node tool/organizer_intake/check_admin_review_bridge.mjs
 
       - name: Build admin website
         run: npm run web:admin:build

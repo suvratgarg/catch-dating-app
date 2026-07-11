@@ -48,7 +48,7 @@ void main() {
   group('route role boundary', () {
     test('host management routes are not available to consumer role', () {
       final hostRoutes = Routes.values.where(
-        (route) => route.path.startsWith('/host'),
+        (route) => route.audience == AppRouteAudience.host,
       );
 
       expect(hostRoutes, isNotEmpty);
@@ -58,6 +58,34 @@ void main() {
           isFalse,
           reason: '${route.name} should stay host-app only.',
         );
+        expect(routeAvailableForAppRole(route, AppRole.host), isTrue);
+      }
+    });
+
+    test('consumer routes are not mounted for the Host app role', () {
+      final consumerRoutes = Routes.values.where(
+        (route) => route.audience == AppRouteAudience.consumer,
+      );
+
+      expect(consumerRoutes, isNotEmpty);
+      for (final route in consumerRoutes) {
+        expect(
+          routeAvailableForAppRole(route, AppRole.host),
+          isFalse,
+          reason: '${route.name} should stay consumer-app only.',
+        );
+        expect(routeAvailableForAppRole(route, AppRole.consumer), isTrue);
+      }
+    });
+
+    test('shared bootstrap and development routes remain role-neutral', () {
+      final sharedRoutes = Routes.values.where(
+        (route) => route.audience == AppRouteAudience.shared,
+      );
+
+      expect(sharedRoutes, isNotEmpty);
+      for (final route in sharedRoutes) {
+        expect(routeAvailableForAppRole(route, AppRole.consumer), isTrue);
         expect(routeAvailableForAppRole(route, AppRole.host), isTrue);
       }
     });
@@ -288,6 +316,18 @@ void main() {
           matchedLocation: Routes.swipeEventScreen.path,
         ),
         '/onboarding?intent=complete-profile&from=%2Fcatches%2Fevent-1%3Ftab%3Drecent',
+      );
+    });
+
+    test('booking-ready users may hit the retired catches hub redirect', () {
+      expect(
+        _redirect(
+          uidAsync: const AsyncData(_testUid),
+          userProfileAsync: AsyncData(_bookingReadyUser()),
+          location: '/catches',
+          matchedLocation: Routes.swipeHubScreen.path,
+        ),
+        null,
       );
     });
 

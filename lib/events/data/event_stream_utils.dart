@@ -115,3 +115,69 @@ Stream<List<Event>> watchEventsByIdStream({
 
   return withBackendErrorStream(() => controller.stream, context: context);
 }
+
+/// Watches events for one or more clubs without requiring one subscription per
+/// club. Firestore `whereIn` limits are handled by the shared chunk helper and
+/// every emission is de-duplicated and ordered by start time.
+Stream<List<Event>> watchEventsForClubIdsStream({
+  required List<String> clubIds,
+  required CollectionReference<Event> eventsRef,
+  required BackendErrorContext context,
+}) {
+  final uniqueClubIds = clubIds.toSet().toList()..sort();
+  if (uniqueClubIds.isEmpty) return Stream.value(const []);
+
+  var eventSubs = <StreamSubscription<QuerySnapshot<Event>>>[];
+  var closed = false;
+  late final StreamController<List<Event>> controller;
+
+  void emitEvents({
+    required Map<int, List<Event>> eventsByChunk,
+    required int chunkCount,
+  }) {
+    if (eventsByChunk.length < chunkCount || controller.isClosed) return;
+    final byId = <String, Event>{};
+    for (final events in eventsByChunk.values) {
+      for (final event in events) {
+        byId[event.id] = event;
+      }
+    }
+    final events = byId.values.toList()
+      ..sort((a, b) => a.startTime.compareTo(b.startTime));
+    controller.add(List.unmodifiable(events));
+  }
+
+  controller = StreamController<List<Event>>(
+    onListen: () {
+      final chunks = chunkedForWhereIn(uniqueClubIds).toList(growable: false);
+      final eventsByChunk = <int, List<Event>>{};
+      for (var index = 0; index < chunks.length; index += 1) {
+        final chunk = chunks[index];
+        final sub = eventsRef
+            .where('clubId', whereIn: chunk)
+            .snapshots()
+            .listen((snapshot) {
+              if (closed) return;
+              eventsByChunk[index] = snapshot.docs
+                  .map((doc) => doc.data())
+                  .toList(growable: false);
+              emitEvents(
+                eventsByChunk: eventsByChunk,
+                chunkCount: chunks.length,
+              );
+            }, onError: controller.addError);
+        eventSubs.add(sub);
+      }
+    },
+    onCancel: () async {
+      closed = true;
+      for (final sub in eventSubs) {
+        await sub.cancel();
+      }
+      eventSubs = [];
+      if (!controller.isClosed) await controller.close();
+    },
+  );
+
+  return withBackendErrorStream(() => controller.stream, context: context);
+}

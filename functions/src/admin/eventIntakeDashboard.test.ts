@@ -1,7 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {CallableRequest} from "firebase-functions/v2/https";
-import {adminGetEventIntakeDashboardHandler} from "./eventIntakeDashboard";
+import {
+  adminGetEventIntakeDashboardHandler,
+  overlayEventIntakeDecisions,
+} from "./eventIntakeDashboard";
 
 type FakeData = Record<string, unknown>;
 
@@ -38,6 +41,34 @@ class FakeCollectionRef {
   doc(docId: string) {
     return new FakeDocRef(this.firestore, `${this.path}/${docId}`);
   }
+
+  limit(count: number) {
+    return new FakeQuery(this.firestore, this.path, count);
+  }
+}
+
+class FakeQuery {
+  constructor(
+    private readonly firestore: FakeFirestore,
+    private readonly path: string,
+    private readonly count: number
+  ) {}
+
+  async get() {
+    const prefix = `${this.path}/`;
+    return {
+      docs: this.firestore.entries()
+        .filter(([path, value]) =>
+          path.startsWith(prefix) &&
+          path.slice(prefix.length).split("/").length === 1 &&
+          value !== undefined
+        )
+        .slice(0, this.count)
+        .map(([, value]) => ({
+          data: () => structuredClone(value as FakeData),
+        })),
+    };
+  }
 }
 
 class FakeFirestore {
@@ -50,6 +81,10 @@ class FakeFirestore {
   get(path: string): FakeData | undefined {
     const data = this.docs[path];
     return data === undefined ? undefined : structuredClone(data);
+  }
+
+  entries() {
+    return Object.entries(this.docs);
   }
 }
 
@@ -138,6 +173,50 @@ test("adminGetEventIntakeDashboardHandler reads event dashboard first",
     });
     assert.equal("contentDrafts" in result.bridge, false);
   });
+
+test("event intake decisions survive dashboard refresh and overlay edits",
+  async () => {
+    const h = harness({
+      "eventIntakeDashboards/current": {bridge: sourceBridge()},
+      "eventIntakeReviewDecisions/event_candidate_candidate-1": {
+        targetType: "event_candidate",
+        targetId: "candidate-1",
+        decision: "approve",
+        decisionStatus: "approved",
+        note: "Official source and venue verified.",
+        edits: {title: "Verified candidate"},
+        reviewedByUid: "admin-1",
+        reviewedAt: "2026-07-11T00:00:00.000Z",
+      },
+    });
+
+    const result = await adminGetEventIntakeDashboardHandler(
+      callableRequest("admin-1", {support: true}),
+      h.deps
+    );
+    const candidates = result.bridge.eventCandidates as FakeData[];
+    assert.equal(candidates[0].title, "Verified candidate");
+    assert.equal(candidates[0].reviewState, "approved");
+    assert.equal((result.bridge.summary as FakeData).approvedCandidates, 1);
+    assert.equal((result.bridge.summary as FakeData).overlaidDecisions, 1);
+  }
+);
+
+test("overlayEventIntakeDecisions preserves source ids across edits", () => {
+  const result = overlayEventIntakeDecisions(sourceBridge(), [{
+    targetType: "source_result",
+    targetId: "source-1",
+    decision: "needs_changes",
+    decisionStatus: "needs_changes",
+    note: "Replace the placeholder source.",
+    edits: {id: "attempted-rewrite", title: "Needs a real source"},
+    reviewedByUid: "admin-1",
+    reviewedAt: "2026-07-11T00:00:00.000Z",
+  }]);
+  const sourceResults = result.sourceResults as FakeData[];
+  assert.equal(sourceResults[0].id, "source-1");
+  assert.equal(sourceResults[0].status, "needs_changes");
+});
 
 test(
   "adminGetEventIntakeDashboardHandler returns empty without event dashboard",

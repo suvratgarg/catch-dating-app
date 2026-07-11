@@ -39,6 +39,12 @@ test("postbuild writes route metadata, robots, and an indexable-only sitemap", (
     /<link rel="canonical" href="https:\/\/example\.test\/organizers\/afterfly\/" \/>/
   );
   assert.match(listingHtml, /<meta name="robots" content="index, follow" \/>/);
+  assert.match(listingHtml, /data-static-organizer-profile="true"/);
+  assert.match(listingHtml, /<h1>AFTER FLY<\/h1>/);
+  assert.match(listingHtml, /<h2>Public sources<\/h2>/);
+  assert.match(listingHtml, /type="application\/ld\+json"/);
+  assert.match(listingHtml, /"@type":"Organization"/);
+  assert.match(listingHtml, /"@type":"BreadcrumbList"/);
 
   const legacyHtml = fs.readFileSync(
     path.join(distRoot, "organizers", "indore", "afterfly-run-club", "index.html"),
@@ -76,6 +82,10 @@ test("postbuild writes route metadata, robots, and an indexable-only sitemap", (
   assert.match(sitemap, /<loc>https:\/\/example\.test\/<\/loc>/);
   assert.match(sitemap, /<loc>https:\/\/example\.test\/host\/<\/loc>/);
   assert.match(sitemap, /<loc>https:\/\/example\.test\/organizers\/afterfly\/<\/loc>/);
+  assert.match(
+    sitemap,
+    /<loc>https:\/\/example\.test\/organizers\/afterfly\/<\/loc><lastmod>2026-06-18<\/lastmod>/
+  );
   assert.doesNotMatch(sitemap, /claim\/<\/loc>/);
   assert.doesNotMatch(sitemap, /404\/<\/loc>/);
   assert.doesNotMatch(sitemap, /organizers\/$/);
@@ -110,20 +120,31 @@ function hostListings() {
     {
       city: "Indore",
       description: "Admin-approved organizer profile.",
+      formats: ["Social runs"],
+      facts: [{label: "Market", value: "Indore"}],
       indexing: "index, follow",
+      lastVerifiedAt: "2026-06-18",
       legacyPaths: ["/organizers/indore/afterfly-run-club/"],
       name: "AFTER FLY",
       path: "/organizers/afterfly/",
       sourceSummary: "Admin-reviewed public source summary.",
+      sources: [{
+        detail: "Reviewed public source.",
+        href: "https://example.test/afterfly",
+        label: "Official website",
+      }],
     },
     {
       city: "Delhi",
       description: "Noindex organizer profile.",
+      formats: [],
+      facts: [],
       indexing: "noindex, follow",
       legacyPaths: [],
       name: "Noindex Sample",
       path: "/organizers/noindex-sample/",
       sourceSummary: "Noindex source summary.",
+      sources: [],
     },
   ];
 }

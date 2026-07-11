@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catch — Host App Decisions & Consolidation</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+  body { margin: 0; background: #E2E1DC; color: var(--ink); font-family: var(--font-function); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 40px; }
+
+  .mast { padding: 60px 0 26px; }
+  .mast .kicker { font-family: var(--font-data); font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink2); }
+  .mast h1 { font-family: var(--font-voice); font-stretch: 78%; font-size: 58px; font-weight: 600; letter-spacing: -0.03em; line-height: 0.98; margin: 14px 0 0; }
+  .mast h1 em { font-style: normal; color: var(--act-social-run-deep); }
+  .mast .lede { max-width: 700px; font-size: 16.5px; line-height: 1.6; color: var(--ink2); margin: 18px 0 0; text-wrap: pretty; }
+  .mast code { font-family: var(--font-data); font-size: 0.84em; background: var(--primary-soft); padding: 1px 6px; border-radius: 5px; }
+
+  nav.toc { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 26px; }
+  nav.toc a { font-family: var(--font-data); font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink2); text-decoration: none; padding: 8px 13px; border-radius: 999px; border: 1px solid var(--line2); background: var(--surface); }
+  nav.toc a:hover { color: var(--ink); border-color: var(--ink2); }
+
+  section { padding: 46px 0 6px; border-top: 1px solid var(--line2); margin-top: 40px; }
+  .sk { font-family: var(--font-data); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: var(--act-social-run-deep); }
+  h2 { font-family: var(--font-voice); font-stretch: 78%; font-size: 30px; font-weight: 600; letter-spacing: -0.025em; margin: 8px 0 0; }
+  .ssub { font-size: 14.5px; color: var(--ink2); margin: 10px 0 0; max-width: 760px; line-height: 1.55; }
+
+  .thesis { background: var(--ink); color: var(--primary-ink); border-radius: 20px; padding: 32px 34px; margin-top: 22px; }
+  .thesis .k { font-family: var(--font-data); font-size: 10.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); }
+  .thesis p { color: #D9D2C7; font-size: 16px; line-height: 1.62; margin: 12px 0 0; }
+  .thesis p b { color: var(--primary-ink); font-weight: 600; }
+
+  /* IA before/after */
+  .ba { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 24px; }
+  .col { border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: var(--surface); }
+  .col.next { background: var(--act-social-run-soft); border-color: color-mix(in srgb, var(--act-social-run-accent) 30%, transparent); }
+  .col .h { padding: 14px 18px; border-bottom: 1px solid var(--line); font-family: var(--font-data); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink2); }
+  .col.next .h { color: var(--act-social-run-deep); border-bottom-color: color-mix(in srgb, var(--act-social-run-accent) 22%, transparent); }
+  .col ul { list-style: none; margin: 0; padding: 6px 0; }
+  .col li { padding: 12px 18px; border-top: 1px solid var(--line); }
+  .col li:first-child { border-top: 0; }
+  .col.next li { border-top-color: color-mix(in srgb, var(--act-social-run-accent) 16%, transparent); }
+  .col li b { font-family: var(--font-head); font-size: 14.5px; font-weight: 700; display: block; }
+  .col li span { font-size: 12.5px; color: var(--ink2); line-height: 1.5; display: block; margin-top: 3px; }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 20px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); overflow: hidden; }
+  thead th { text-align: left; font-family: var(--font-data); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink2); padding: 13px 16px; border-bottom: 1px solid var(--line2); background: var(--raised); }
+  tbody td { padding: 13px 16px; border-bottom: 1px solid var(--line); vertical-align: top; font-size: 13px; line-height: 1.5; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr:hover { background: var(--raised); }
+  td.old { color: var(--ink2); font-family: var(--font-data); font-size: 11.5px; }
+  td.new b { font-weight: 650; color: var(--ink); } td.new { color: var(--ink2); }
+  td.note { color: var(--ink2); font-size: 12.5px; }
+
+  .pill { display: inline-flex; align-items: center; gap: 5px; font-family: var(--font-data); font-size: 9px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 9px; border-radius: 999px; white-space: nowrap; }
+  .st-improved { background: rgba(47,125,85,0.13); color: #2F7D55; }
+  .st-preserved { background: rgba(47,125,85,0.10); color: #2F7D55; }
+  .st-relocated { background: rgba(67,86,168,0.13); color: #3a4d96; }
+  .st-at-risk { background: rgba(185,119,15,0.16); color: #8a5907; }
+  .st-missing { background: rgba(194,38,26,0.10); color: #C2261A; }
+  .st-shared { background: rgba(22,20,15,0.07); color: var(--ink2); }
+
+  .regs { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
+  .rcard { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 20px; border-left: 3px solid var(--ink3); }
+  .rcard.sev-high { border-left-color: #C2261A; } .rcard.sev-med { border-left-color: #B9770F; }
+  .rcard .top { display: flex; align-items: center; gap: 10px; }
+  .rcard .id { font-family: var(--font-data); font-size: 12px; font-weight: 700; }
+  .rcard .sev { font-family: var(--font-data); font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; background: var(--primary-soft); color: var(--ink2); margin-left: auto; }
+  .rcard h3 { font-family: var(--font-function); font-size: 14.5px; font-weight: 700; margin: 12px 0 0; }
+  .rcard .where { font-family: var(--font-data); font-size: 10px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink3); margin-top: 4px; }
+  .rcard .fix { font-size: 12.5px; color: var(--ink2); line-height: 1.55; margin-top: 12px; }
+  .rcard .fix code { font-family: var(--font-data); font-size: 0.9em; color: var(--ink); }
+
+  .wgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
+  .wbox { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 18px 20px; }
+  .wbox .wh { display: flex; align-items: baseline; gap: 8px; }
+  .wbox .wh b { font-family: var(--font-data); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+  .wbox.reuse .wh b { color: #2F7D55; } .wbox.build .wh b { color: var(--act-social-run-deep); }
+  .wbox .wh span { font-size: 11px; color: var(--ink3); font-family: var(--font-data); }
+  .wrow { display: flex; gap: 10px; padding: 10px 0; border-top: 1px solid var(--line); font-size: 12.5px; line-height: 1.45; }
+  .wrow:first-of-type { border-top: 0; margin-top: 8px; }
+  .wrow .nm { font-family: var(--font-head); font-weight: 700; color: var(--ink); flex: none; width: 124px; }
+  .wrow .ds { color: var(--ink2); }
+  .wrow .ds code { font-family: var(--font-data); font-size: 0.92em; color: var(--ink); }
+
+  .research { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+  .ritem { display: flex; gap: 12px; align-items: flex-start; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; text-decoration: none; }
+  .ritem:hover { border-color: var(--ink2); }
+  .ritem i { font-size: 19px; color: var(--act-social-run-deep); flex: none; margin-top: 1px; }
+  .ritem b { font-family: var(--font-head); font-size: 14px; font-weight: 700; color: var(--ink); display: block; }
+  .ritem span { font-size: 12px; color: var(--ink2); display: block; margin-top: 3px; line-height: 1.45; }
+  .ritem .pathx { font-family: var(--font-data); font-size: 10px; color: var(--ink3); margin-top: 5px; display: block; }
+
+  .steps { counter-reset: s; margin: 20px 0 0; display: grid; gap: 2px; }
+  .steps li { list-style: none; display: grid; grid-template-columns: 34px 1fr; gap: 14px; padding: 15px 0; border-top: 1px solid var(--line); align-items: start; }
+  .steps li:first-child { border-top: 0; }
+  .steps li::before { counter-increment: s; content: counter(s, decimal-leading-zero); font-family: var(--font-data); font-size: 13px; font-weight: 700; color: var(--act-social-run-deep); padding-top: 1px; }
+  .steps .d { font-size: 14px; color: var(--ink); line-height: 1.55; }
+  .steps .d code { font-family: var(--font-data); font-size: 0.86em; background: var(--primary-soft); padding: 1px 5px; border-radius: 4px; }
+  .steps .done { color: var(--ink3); }
+  .steps .done::before { color: #2F7D55; content: "\2713"; }
+
+  footer { padding: 48px 0 90px; font-family: var(--font-data); font-size: 12px; color: var(--ink3); line-height: 1.7; border-top: 1px solid var(--line); margin-top: 44px; }
+  footer b { color: var(--ink2); }
+  .err { font-family: var(--font-data); color: #C2261A; padding: 20px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="mast">
+    <div class="kicker">Catch · Host app · Decisions &amp; consolidation</div>
+    <h1>One host app,<br>shaped by the <em>lifecycle</em>.</h1>
+    <p class="lede">The host build was rebuilt twice: once <b>faithfully on-system</b> (the old club-shaped IA, fully route-covered), and once <b>re-cut from first principles</b> (the "Catch for Organizers" redesign). This consolidates them into a single direction — the redesign — and accounts for every surface so <b>nothing is lost</b>. It renders live from <code>host-app-manifest.json</code>.</p>
+    <nav class="toc">
+      <a href="#thesis">The decision</a>
+      <a href="#ia">New IA</a>
+      <a href="#rehome">Re-homing</a>
+      <a href="#regressions">Regressions</a>
+      <a href="#widgets">Catalogue widgets</a>
+      <a href="#plan">Build plan</a>
+      <a href="#research">Research</a>
+    </nav>
+  </header>
+
+  <section id="thesis" style="border-top:0">
+    <div class="sk">01 · The decision</div>
+    <h2>Adopt the lifecycle re-cut as the one host app.</h2>
+    <div class="thesis">
+      <div class="k">Why</div>
+      <p id="thesisText"></p>
+    </div>
+  </section>
+
+  <section id="ia">
+    <div class="sk">02 · Information architecture</div>
+    <h2>Four club-shaped tabs become four lifecycle-shaped ones.</h2>
+    <p class="ssub">Same surface count; every five-star action moves up, and the two overlapping club tabs collapse into one calm Organizer brand. Manage and Insights become first-class destinations behind the tabs.</p>
+    <div class="ba" id="iaBA"></div>
+  </section>
+
+  <section id="rehome">
+    <div class="sk">03 · Re-homing — no net loss</div>
+    <h2>Every old surface has a new home.</h2>
+    <p class="ssub">Each routed screen and modal surface from the old full coverage, mapped into the new IA with a status. <span class="pill st-at-risk">at-risk</span> means the redesign prototype stubbed it as a toast — the functionality must be re-homed, not dropped (see Regressions).</p>
+    <h3 style="font-family:var(--font-data);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink3);margin:24px 0 0">Routed screens</h3>
+    <div id="routesTable"></div>
+    <h3 style="font-family:var(--font-data);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink3);margin:28px 0 0">Sheets · dialogs · states</h3>
+    <div id="surfacesTable"></div>
+  </section>
+
+  <section id="regressions">
+    <div class="sk">04 · Regressions to catch</div>
+    <h2>What the redesign stubbed.</h2>
+    <p class="ssub">The redesign prototype is a beautiful shell, but several high-frequency flows are toasts. These are the functional regressions vs. the on-system coverage — each with the existing template that resolves it.</p>
+    <div class="regs" id="regs"></div>
+  </section>
+
+  <section id="widgets">
+    <div class="sk">05 · Composed purely of catalogue widgets</div>
+    <h2>Reuse what exists; promote what's missing.</h2>
+    <p class="ssub">The new app must be built only from catalogue components. The redesign prototype hand-rolls its widgets inline; this is the map from each element to an existing catalogue component (reuse) or a new one to promote (build).</p>
+    <div class="wgrid" id="widgets"></div>
+  </section>
+
+  <section id="plan">
+    <div class="sk">06 · Build plan</div>
+    <h2>The consolidation, sequenced.</h2>
+    <p class="ssub">Documentation &amp; mapping are done (this doc + the manifest). The widget promotion and template rebuild are the engineering phase.</p>
+    <ol class="steps" id="steps"></ol>
+  </section>
+
+  <section id="research">
+    <div class="sk">07 · Research — retained &amp; referenced</div>
+    <h2>Nothing was thrown away.</h2>
+    <p class="ssub">Every exploration that informed this is kept as the archive and indexed here. The 74-item UX punch list and the IA frequency/competitor analysis live on in their original files.</p>
+    <div class="research" id="research"></div>
+  </section>
+
+  <footer>
+    <div><b>Source of truth ·</b> host-app-manifest.json — edit it, reload this page, every table regenerates.</div>
+    <div><b>Code spine ·</b> host-coverage-manifest.json (v1) remains the route→code audit; this manifest is the v2 design direction.</div>
+  </footer>
+</div>
+
+<script>
+function esc(x){ return (x==null?'':String(x)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function md(x){ return esc(x).replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>'); }
+const STAT = { improved:'st-improved', preserved:'st-preserved', relocated:'st-relocated', 'at-risk':'st-at-risk', missing:'st-missing', shared:'st-shared' };
+function statPill(s){ return `<span class="pill ${STAT[s]||'st-shared'}">${esc(s)}</span>`; }
+
+fetch('host-app-manifest.json').then(r=>r.json()).then(M=>{
+  document.getElementById('thesisText').innerHTML = md(M.thesis);
+
+  // IA before/after
+  const oldTabs = M.ia.old.tabs, newTabs = M.ia.new.tabs, dests = M.ia.new.destinations;
+  document.getElementById('iaBA').innerHTML = `
+    <div class="col"><div class="h">Old — club-shaped × 2</div><ul>
+      ${oldTabs.map(t=>`<li><b>${esc(t.split(' (')[0])}</b><span>${esc((t.match(/\(([^)]+)\)/)||[])[1]||'')}</span></li>`).join('')}
+    </ul></div>
+    <div class="col next"><div class="h">New — lifecycle-shaped</div><ul>
+      ${newTabs.map(t=>`<li><b>${esc(t.label)}</b><span>${esc(t.absorbs)}. Owns: ${esc(t.owns.join(' · '))}</span></li>`).join('')}
+      ${dests.map(d=>`<li><b>${esc(d.label)} <span style="display:inline;font-family:var(--font-data);font-size:9px;color:var(--ink3)">· destination</span></b><span>${esc(d.absorbs)}.</span></li>`).join('')}
+    </ul></div>`;
+
+  // Re-homing tables
+  const rows = M.rehoming.routes.map(r=>`<tr><td class="old">${esc(r.old)}</td><td class="new"><b>${esc(r.new)}</b></td><td>${statPill(r.status)}</td><td class="note">${md(r.note)}</td></tr>`).join('');
+  document.getElementById('routesTable').innerHTML = `<table><thead><tr><th style="width:24%">Old screen</th><th style="width:22%">New home</th><th style="width:90px">Status</th><th>Note</th></tr></thead><tbody>${rows}</tbody></table>`;
+  const srows = M.rehoming.surfaces.map(r=>`<tr><td class="old">${esc(r.old)}</td><td class="new"><b>${esc(r.new)}</b></td><td>${statPill(r.status)}</td><td class="note">${md(r.note)}</td></tr>`).join('');
+  document.getElementById('surfacesTable').innerHTML = `<table><thead><tr><th style="width:24%">Old surface</th><th style="width:22%">New home</th><th style="width:90px">Status</th><th>Note</th></tr></thead><tbody>${srows}</tbody></table>`;
+
+  // Regressions
+  document.getElementById('regs').innerHTML = M.regressions.map(d=>`
+    <div class="rcard sev-${d.severity}">
+      <div class="top"><span class="id">${esc(d.id)}</span><span class="sev">${esc(d.severity)} severity</span></div>
+      <h3>${esc(d.what)}</h3><div class="where">${esc(d.where)}</div>
+      <div class="fix">${md(d.fix)}</div>
+    </div>`).join('');
+
+  // Widgets
+  const reuse = M.widgets.reuse.map(w=>`<div class="wrow"><span class="nm">${esc(w.redesign)}</span><span class="ds">${md('`'+w.catalogue+'`')}</span></div>`).join('');
+  const build = M.widgets.build.map(w=>`<div class="wrow"><span class="nm">${esc(w.name)}</span><span class="ds"><b>${esc(w.group)}/</b> — ${md(w.why)}</span></div>`).join('');
+  document.getElementById('widgets').innerHTML = `
+    <div class="wbox reuse"><div class="wh"><b><i class="ph-bold ph-arrows-merge"></i> Reuse</b><span>${M.widgets.reuse.length} existing</span></div>${reuse}</div>
+    <div class="wbox build"><div class="wh"><b><i class="ph-bold ph-plus-circle"></i> Build</b><span>${M.widgets.build.length} to promote</span></div>${build}</div>`;
+
+  // Build plan (mark steps 1 done since docs+manifest exist)
+  document.getElementById('steps').innerHTML = M.buildplan.map((s,i)=>`<li><span class="d">${md(s.replace(/^\d+\.\s*/,''))}</span></li>`).join('');
+
+  // Research
+  const RI = M.research_index; const icons = { ia_rationale:'compass', ux_punch_list:'list-checks', widget_rationale:'puzzle-piece', prototype_v1:'device-mobile', prototype_v2:'device-mobile-camera', flows:'flow-arrow', calendar_primitive:'calendar-blank', v1_coverage:'table' };
+  document.getElementById('research').innerHTML = Object.keys(RI).filter(k=>k!=='_comment').map(k=>{
+    const v = RI[k]; const path = v.split(' ')[0]; const desc = v.includes('(')? v.slice(v.indexOf('(')+1,v.lastIndexOf(')')) : '';
+    return `<a class="ritem" href="${esc(path)}" target="_blank"><i class="ph ph-${icons[k]||'file'}"></i><div><b>${esc(k.replace(/_/g,' '))}</b><span>${esc(desc)}</span><span class="pathx">${esc(path)}</span></div></a>`;
+  }).join('');
+}).catch(e=>{
+  document.querySelector('.wrap').insertAdjacentHTML('beforeend', `<p class="err">Could not load host-app-manifest.json — ${esc(e.message)}</p>`);
+});
+</script>
+</body>
+</html>

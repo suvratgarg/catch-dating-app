@@ -32,19 +32,20 @@ firebase/<env>/host/macos/GoogleService-Info.plist
 firebase/<env>/host/web/firebase-messaging-sw.js
 ```
 
-`./tool/use_firebase_environment.sh <env> <consumer|host>` copies the selected
-Android config to both `android/app/google-services.json` and
-`android/app/src/<env>/google-services.json`. The latter is required because
-the Android Google Services Gradle plugin reads the flavor source-set file when
-building the `dev`, `staging`, or `prod` flavor.
+`./tool/use_firebase_environment.sh <env> <consumer|host>` resolves the selected
+registration through `tool/app_targets.json` and copies it into the active
+native/web working copies. Android app identity itself is owned by six explicit
+`consumerDev|consumerStaging|consumerProd|hostDev|hostStaging|hostProd`
+flavors; it is no longer selected through a mutable Gradle role property.
 
 Current state:
 
 - `dev` is configured from Firebase project `catchdates-dev`.
 - `staging` is configured from Firebase project `catchdates-staging`.
 - `prod` is configured from the existing Firebase project `catch-dating-app-64e51`.
-- Android product flavors are wired for `dev`, `staging`, and `prod`, with the
-  app role supplied through `ORG_GRADLE_PROJECT_catchAppRole`.
+- Android product flavors are wired as six first-class app targets across role
+  and environment. `tool/flutter_with_env.sh` resolves the exact flavor and
+  entrypoint from `tool/app_targets.json`.
 - Android upload-key SHA-1/SHA-256 fingerprints are registered on the dev,
   staging, and production consumer and host Firebase Android apps. Add Play
   app-signing certificate fingerprints after Play App Signing enrollment.
@@ -181,20 +182,20 @@ Switch the active native/web Firebase config:
 Run Flutter with the matching `APP_ENV` define file:
 
 ```bash
-./tool/flutter_with_env.sh dev run
-./tool/flutter_with_env.sh dev --role host run
+./tool/flutter_with_env.sh dev --platform ios run -d <ios-device-id>
+./tool/flutter_with_env.sh dev --role host --platform android run -d <android-device-id>
 ./tool/run_host_dev_simulator.sh "iPhone 17 Pro"
-./tool/flutter_with_env.sh staging run -d chrome
+./tool/flutter_with_env.sh staging --platform web run -d chrome
 ./tool/flutter_with_env.sh prod build apk
 ```
 
 Android, iOS, and macOS use native flavors. For `build apk`,
 `build appbundle`, `build ipa`, `build ios`, and `build macos`,
-`tool/flutter_with_env.sh` automatically supplies the matching
-`--flavor <env>` argument when one is not already present. Web builds do not get
-a flavor argument.
-For `flutter run`, the wrapper also supplies the matching flavor unless the
-target device is a web target.
+`tool/flutter_with_env.sh` automatically supplies the matching app-target
+flavor or scheme when one is not already present. Web builds do not get a
+flavor argument. `flutter run` must name one device; pass `--platform` before
+`run` for physical Android ids or any id that does not make its platform
+unambiguous.
 
 Explicit Apple examples:
 

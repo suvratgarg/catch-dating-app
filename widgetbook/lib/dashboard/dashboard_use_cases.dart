@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/notifications_list_state.dart';
@@ -16,7 +17,6 @@ import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section
 import 'package:catch_dating_app/dashboard/presentation/widgets/club_posts_home_section.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_empty.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_sliver_header.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/empty_hero_card.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_rail.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/recommend_card.dart';
@@ -25,7 +25,7 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_arrival_action.dart';
 import 'package:catch_dating_app/events/data/event_calendar_links.dart';
-import 'package:catch_dating_app/explore/data/explore_recommendations_repository.dart';
+import 'package:catch_dating_app/explore/domain/explore_event_recommendation.dart';
 import 'package:catch_dating_app/labs/design_fixtures/dashboard_surface_fixtures.dart';
 import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
@@ -496,30 +496,30 @@ Widget dashboardFullSliverBodyReview(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Header content',
-  type: DashboardHeaderContent,
+  type: CatchScreenHeaderTitle,
   path: '[P1 product surfaces]/Dashboard home',
 )
 Widget dashboardHeaderContentReview(BuildContext context) {
   return _DashboardCatalog(
-    title: 'DashboardHeaderContent',
+    title: 'CatchScreenHeaderTitle',
     contractId: 'dashboard.home.header_content',
     children: [
       _StateCard(
         label: 'copy only',
         child: const _DashboardPrimitiveFrame(
-          child: DashboardHeaderContent(
-            eyebrow: 'TODAY · MUMBAI',
+          child: CatchScreenHeaderTitle.block(
             title: 'Good evening, Subrath',
             actions: [],
+            padding: CatchInsets.screenTitleBlockCompact,
           ),
         ),
       ),
       _StateCard(
         label: 'notification action',
         child: _DashboardPrimitiveFrame(
-          child: DashboardHeaderContent(
-            eyebrow: 'THIS WEEK',
+          child: CatchScreenHeaderTitle.block(
             title: 'Three plans ready',
+            padding: CatchInsets.screenTitleBlockCompact,
             actions: [
               DashboardNotificationBellButton(
                 unreadCount: 3,

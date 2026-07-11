@@ -1,0 +1,439 @@
+{
+  "$schema": "catch.app-targets/v1",
+  "schemaVersion": 1,
+  "logicalName": "catch-installable-app-targets",
+  "currentPhase": "release-ownership",
+  "reason": "Catch ships Consumer and Host as independent store products. Their runtime composition, native identity, Firebase registration, capabilities, links, force-update policy, and release ownership must resolve from one checked contract.",
+  "phases": [
+    {
+      "id": "identity-contract",
+      "status": "complete_local",
+      "evidence": [
+        "tool/app_targets.json",
+        "tool/platform/check_app_targets.mjs"
+      ]
+    },
+    {
+      "id": "native-product-targets",
+      "status": "complete_local",
+      "evidence": [
+        "manifest-driven Android app-target flavors",
+        "role-specific Apple entitlements",
+        "Xcode build settings and direct Android builds"
+      ]
+    },
+    {
+      "id": "composition-roots",
+      "status": "complete_local",
+      "evidence": [
+        "six role/environment entrypoints",
+        "native target-to-entrypoint bindings",
+        "release archive composition markers",
+        "role-exclusive route graphs"
+      ]
+    },
+    {
+      "id": "release-ownership",
+      "status": "blocked_external",
+      "evidence": [
+        "APP-TARGET-HOST-TESTFLIGHT-001"
+      ]
+    }
+  ],
+  "roles": {
+    "consumer": {
+      "entrypoint": "lib/main_consumer.dart",
+      "legacyEntrypoints": [
+        "lib/main.dart"
+      ],
+      "shell": "AppShell",
+      "initialRoute": "/",
+      "iosEntitlements": "ios/Runner/RunnerConsumer.entitlements",
+      "androidManifestOverlay": "android/app/src/consumer/AndroidManifest.xml",
+      "deepLinks": {
+        "policy": "public-event-links",
+        "host": "catchdates.com",
+        "paths": [
+          "/clubs/run-clubs/*"
+        ]
+      },
+      "remoteConfigPrefix": "consumer",
+      "storeProduct": {
+        "displayName": "Catch",
+        "appStoreConnectAppId": "6765646860",
+        "testFlightGroup": null
+      }
+    },
+    "host": {
+      "entrypoint": "lib/main_host.dart",
+      "legacyEntrypoints": [],
+      "shell": "HostAppShell",
+      "initialRoute": "/host",
+      "iosEntitlements": "ios/Runner/RunnerHost.entitlements",
+      "androidManifestOverlay": "android/app/src/host/AndroidManifest.xml",
+      "deepLinks": {
+        "policy": "disabled-until-host-url-contract",
+        "host": null,
+        "paths": []
+      },
+      "remoteConfigPrefix": "host",
+      "storeProduct": {
+        "displayName": "Catch Host",
+        "appStoreConnectAppId": "6778927317",
+        "testFlightGroup": null
+      }
+    }
+  },
+  "environments": {
+    "dev": {
+      "firebaseProjectId": "catchdates-dev",
+      "firebaseProjectNumber": "619661127800"
+    },
+    "staging": {
+      "firebaseProjectId": "catchdates-staging",
+      "firebaseProjectNumber": "822303414140"
+    },
+    "prod": {
+      "firebaseProjectId": "catch-dating-app-64e51",
+      "firebaseProjectNumber": "574779808785"
+    }
+  },
+  "targets": [
+    {
+      "id": "consumer-dev",
+      "role": "consumer",
+      "environment": "dev",
+      "displayName": "Catch Dev",
+      "entrypoint": "lib/main_consumer_dev.dart",
+      "firebase": {
+        "projectId": "catchdates-dev",
+        "dartOptionsFile": "lib/firebase_options_dev.dart",
+        "dartOptionsMembers": {
+          "android": "android",
+          "ios": "ios",
+          "macos": "macos",
+          "web": "web"
+        },
+        "android": {
+          "appId": "1:619661127800:android:d90f9bb4d89afbd7077d8d",
+          "configPath": "firebase/dev/android/google-services.json"
+        },
+        "ios": {
+          "appId": "1:619661127800:ios:e9456edea3f2427f077d8d",
+          "configPath": "firebase/dev/ios/GoogleService-Info.plist"
+        },
+        "macos": {
+          "appId": "1:619661127800:ios:e9456edea3f2427f077d8d",
+          "configPath": "firebase/dev/macos/GoogleService-Info.plist"
+        },
+        "web": {
+          "appId": "1:619661127800:web:b0673ad370947b2f077d8d",
+          "configPath": "firebase/dev/web/firebase-messaging-sw.js"
+        }
+      },
+      "ios": {
+        "nativeTarget": "Runner",
+        "scheme": "dev",
+        "configurations": {
+          "debug": "Debug-dev",
+          "profile": "Profile-dev",
+          "release": "Release-dev"
+        },
+        "bundleId": "com.catchdates.app.dev",
+        "iconSet": "AppIcon-dev",
+        "urlScheme": "app-1-619661127800-ios-e9456edea3f2427f077d8d"
+      },
+      "android": {
+        "flavor": "consumerDev",
+        "applicationId": "com.catchdates.app.dev",
+        "iconSourceSet": "consumerDev"
+      }
+    },
+    {
+      "id": "host-dev",
+      "role": "host",
+      "environment": "dev",
+      "displayName": "Catch Host Dev",
+      "entrypoint": "lib/main_host_dev.dart",
+      "firebase": {
+        "projectId": "catchdates-dev",
+        "dartOptionsFile": "lib/firebase_options_dev.dart",
+        "dartOptionsMembers": {
+          "android": "hostAndroid",
+          "ios": "hostIos",
+          "macos": "hostMacos",
+          "web": "hostWeb"
+        },
+        "android": {
+          "appId": "1:619661127800:android:0255790772b062ff077d8d",
+          "configPath": "firebase/dev/host/android/google-services.json"
+        },
+        "ios": {
+          "appId": "1:619661127800:ios:730bbfd6550efac0077d8d",
+          "configPath": "firebase/dev/host/ios/GoogleService-Info.plist"
+        },
+        "macos": {
+          "appId": "1:619661127800:ios:730bbfd6550efac0077d8d",
+          "configPath": "firebase/dev/host/macos/GoogleService-Info.plist"
+        },
+        "web": {
+          "appId": "1:619661127800:web:e347eaab416c5f20077d8d",
+          "configPath": "firebase/dev/host/web/firebase-messaging-sw.js"
+        }
+      },
+      "ios": {
+        "nativeTarget": "Runner",
+        "scheme": "host-dev",
+        "configurations": {
+          "debug": "Debug-host-dev",
+          "profile": "Profile-host-dev",
+          "release": "Release-host-dev"
+        },
+        "bundleId": "com.catchdates.host.dev",
+        "iconSet": "AppIcon-host-dev",
+        "urlScheme": "app-1-619661127800-ios-730bbfd6550efac0077d8d"
+      },
+      "android": {
+        "flavor": "hostDev",
+        "applicationId": "com.catchdates.host.dev",
+        "iconSourceSet": "hostDev"
+      }
+    },
+    {
+      "id": "consumer-staging",
+      "role": "consumer",
+      "environment": "staging",
+      "displayName": "Catch Staging",
+      "entrypoint": "lib/main_consumer_staging.dart",
+      "firebase": {
+        "projectId": "catchdates-staging",
+        "dartOptionsFile": "lib/firebase_options_staging.dart",
+        "dartOptionsMembers": {
+          "android": "android",
+          "ios": "ios",
+          "macos": "macos",
+          "web": "web"
+        },
+        "android": {
+          "appId": "1:822303414140:android:e843ef30968cea960c76f9",
+          "configPath": "firebase/staging/android/google-services.json"
+        },
+        "ios": {
+          "appId": "1:822303414140:ios:6bae8cc0e1781e890c76f9",
+          "configPath": "firebase/staging/ios/GoogleService-Info.plist"
+        },
+        "macos": {
+          "appId": "1:822303414140:ios:6bae8cc0e1781e890c76f9",
+          "configPath": "firebase/staging/macos/GoogleService-Info.plist"
+        },
+        "web": {
+          "appId": "1:822303414140:web:6c5d5c7179dcd8f60c76f9",
+          "configPath": "firebase/staging/web/firebase-messaging-sw.js"
+        }
+      },
+      "ios": {
+        "nativeTarget": "Runner",
+        "scheme": "staging",
+        "configurations": {
+          "debug": "Debug-staging",
+          "profile": "Profile-staging",
+          "release": "Release-staging"
+        },
+        "bundleId": "com.catchdates.app.staging",
+        "iconSet": "AppIcon-staging",
+        "urlScheme": "app-1-822303414140-ios-6bae8cc0e1781e890c76f9"
+      },
+      "android": {
+        "flavor": "consumerStaging",
+        "applicationId": "com.catchdates.app.staging",
+        "iconSourceSet": "consumerStaging"
+      }
+    },
+    {
+      "id": "host-staging",
+      "role": "host",
+      "environment": "staging",
+      "displayName": "Catch Host Staging",
+      "entrypoint": "lib/main_host_staging.dart",
+      "firebase": {
+        "projectId": "catchdates-staging",
+        "dartOptionsFile": "lib/firebase_options_staging.dart",
+        "dartOptionsMembers": {
+          "android": "hostAndroid",
+          "ios": "hostIos",
+          "macos": "hostMacos",
+          "web": "hostWeb"
+        },
+        "android": {
+          "appId": "1:822303414140:android:87fbdade02a935810c76f9",
+          "configPath": "firebase/staging/host/android/google-services.json"
+        },
+        "ios": {
+          "appId": "1:822303414140:ios:1faa9261df8f53970c76f9",
+          "configPath": "firebase/staging/host/ios/GoogleService-Info.plist"
+        },
+        "macos": {
+          "appId": "1:822303414140:ios:1faa9261df8f53970c76f9",
+          "configPath": "firebase/staging/host/macos/GoogleService-Info.plist"
+        },
+        "web": {
+          "appId": "1:822303414140:web:e0b734801d2c06ca0c76f9",
+          "configPath": "firebase/staging/host/web/firebase-messaging-sw.js"
+        }
+      },
+      "ios": {
+        "nativeTarget": "Runner",
+        "scheme": "host-staging",
+        "configurations": {
+          "debug": "Debug-host-staging",
+          "profile": "Profile-host-staging",
+          "release": "Release-host-staging"
+        },
+        "bundleId": "com.catchdates.host.staging",
+        "iconSet": "AppIcon-host-staging",
+        "urlScheme": "app-1-822303414140-ios-1faa9261df8f53970c76f9"
+      },
+      "android": {
+        "flavor": "hostStaging",
+        "applicationId": "com.catchdates.host.staging",
+        "iconSourceSet": "hostStaging"
+      }
+    },
+    {
+      "id": "consumer-prod",
+      "role": "consumer",
+      "environment": "prod",
+      "displayName": "Catch",
+      "entrypoint": "lib/main_consumer_prod.dart",
+      "firebase": {
+        "projectId": "catch-dating-app-64e51",
+        "dartOptionsFile": "lib/firebase_options_prod.dart",
+        "dartOptionsMembers": {
+          "android": "android",
+          "ios": "ios",
+          "macos": "macos",
+          "web": "web"
+        },
+        "android": {
+          "appId": "1:574779808785:android:81edbfa0d4aba7c48ea5b0",
+          "configPath": "firebase/prod/android/google-services.json"
+        },
+        "ios": {
+          "appId": "1:574779808785:ios:49b1ce51418604b78ea5b0",
+          "configPath": "firebase/prod/ios/GoogleService-Info.plist"
+        },
+        "macos": {
+          "appId": "1:574779808785:ios:49b1ce51418604b78ea5b0",
+          "configPath": "firebase/prod/macos/GoogleService-Info.plist"
+        },
+        "web": {
+          "appId": "1:574779808785:web:0c3bd6aa7d98590f8ea5b0",
+          "configPath": "firebase/prod/web/firebase-messaging-sw.js"
+        }
+      },
+      "ios": {
+        "nativeTarget": "Runner",
+        "scheme": "prod",
+        "configurations": {
+          "debug": "Debug-prod",
+          "profile": "Profile-prod",
+          "release": "Release-prod"
+        },
+        "bundleId": "com.catchdates.app",
+        "iconSet": "AppIcon",
+        "urlScheme": "app-1-574779808785-ios-49b1ce51418604b78ea5b0"
+      },
+      "android": {
+        "flavor": "consumerProd",
+        "applicationId": "com.catchdates.app",
+        "iconSourceSet": "main"
+      },
+      "release": {
+        "owner": "xcode-cloud",
+        "xcodeCloudWorkflow": "Catch | Default",
+        "githubMode": "manual-break-glass",
+        "githubWorkflow": ".github/workflows/ios-testflight-release.yml",
+        "appStoreConnectAppId": "6765646860",
+        "testFlightEvidence": "legacy-proof-only"
+      }
+    },
+    {
+      "id": "host-prod",
+      "role": "host",
+      "environment": "prod",
+      "displayName": "Catch Host",
+      "entrypoint": "lib/main_host_prod.dart",
+      "firebase": {
+        "projectId": "catch-dating-app-64e51",
+        "dartOptionsFile": "lib/firebase_options_prod.dart",
+        "dartOptionsMembers": {
+          "android": "hostAndroid",
+          "ios": "hostIos",
+          "macos": "hostMacos",
+          "web": "hostWeb"
+        },
+        "android": {
+          "appId": "1:574779808785:android:0093178ee6681c828ea5b0",
+          "configPath": "firebase/prod/host/android/google-services.json"
+        },
+        "ios": {
+          "appId": "1:574779808785:ios:dafe636b607e071f8ea5b0",
+          "configPath": "firebase/prod/host/ios/GoogleService-Info.plist"
+        },
+        "macos": {
+          "appId": "1:574779808785:ios:dafe636b607e071f8ea5b0",
+          "configPath": "firebase/prod/host/macos/GoogleService-Info.plist"
+        },
+        "web": {
+          "appId": "1:574779808785:web:65a9fe67d7f19ed78ea5b0",
+          "configPath": "firebase/prod/host/web/firebase-messaging-sw.js"
+        }
+      },
+      "ios": {
+        "nativeTarget": "Runner",
+        "scheme": "host-prod",
+        "configurations": {
+          "debug": "Debug-host-prod",
+          "profile": "Profile-host-prod",
+          "release": "Release-host-prod"
+        },
+        "bundleId": "com.catchdates.host",
+        "iconSet": "AppIcon-host-prod",
+        "urlScheme": "app-1-574779808785-ios-dafe636b607e071f8ea5b0"
+      },
+      "android": {
+        "flavor": "hostProd",
+        "applicationId": "com.catchdates.host",
+        "iconSourceSet": "hostProd"
+      },
+      "release": {
+        "owner": "github-actions-temporary",
+        "desiredOwner": "xcode-cloud",
+        "xcodeCloudWorkflow": null,
+        "githubMode": "automatic-main-temporary",
+        "githubWorkflow": ".github/workflows/ios-testflight-release.yml",
+        "appStoreConnectAppId": "6778927317",
+        "testFlightEvidence": "unproven"
+      }
+    }
+  ],
+  "transitionalDebt": [
+    {
+      "id": "APP-TARGET-HOST-TESTFLIGHT-001",
+      "status": "blocked_external",
+      "reason": "Do not disable the temporary GitHub Host upload trigger until an authenticated Xcode Cloud Host build is processed, assigned to the intended TestFlight group, installed, and launched.",
+      "externalPrerequisites": [
+        "select and record the intended Host internal TestFlight group",
+        "create or identify the Host Xcode Cloud workflow",
+        "reserve the 8.* build-number prefix for temporary GitHub uploads only"
+      ],
+      "githubBuildNumberNamespace": "8.<UTC YYYYMMDD><GitHub run>.<attempt>",
+      "removalProof": [
+        "host-prod/Release-host-prod archive",
+        "com.catchdates.host processed build",
+        "tester-group assignment",
+        "installed Host launch"
+      ]
+    }
+  ]
+}

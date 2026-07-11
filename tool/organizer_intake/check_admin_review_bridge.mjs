@@ -1137,10 +1137,13 @@ function checkChannel({root, channel, errors, warnings, fileCache}) {
     errors,
     fileCache,
   });
-  mustContain({
+  mustContainAny({
     root,
     file: sharedFiles.adminController,
-    token: `${channel.adminApiWrapper}(`,
+    tokens: [
+      `${channel.adminApiWrapper}(`,
+      `mutationFn: ${channel.adminApiWrapper}`,
+    ],
     label: `${channel.id}: admin UI action`,
     errors,
     fileCache,
@@ -1289,6 +1292,26 @@ function mustContain({
   if (source.includes(token)) return;
   if (fallbackToken && source.includes(fallbackToken)) return;
   errors.push(`${label}: ${file} does not contain ${token}`);
+}
+
+function mustContainAny({
+  root,
+  file,
+  tokens,
+  label,
+  errors,
+  fileCache,
+}) {
+  const source = readText({root, file, fileCache});
+  if (source === null) {
+    errors.push(`${label}: cannot read ${file}`);
+    return;
+  }
+  if (tokens.some((token) => source.includes(token))) return;
+  errors.push(
+    `${label}: ${file} does not contain any supported action wiring: ` +
+      tokens.join(", ")
+  );
 }
 
 function readText({root, file, fileCache}) {

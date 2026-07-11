@@ -64,8 +64,10 @@ class AppConfig {
   );
 
   static AppRole? _entrypointAppRoleOverride;
+  static AppEnvironment? _entrypointEnvironmentOverride;
 
   static AppEnvironment get environment =>
+      _entrypointEnvironmentOverride ??
       AppEnvironment.fromValue(_rawAppEnvironment);
 
   static AppRole get appRole =>
@@ -77,9 +79,18 @@ class AppConfig {
     _entrypointAppRoleOverride = role;
   }
 
+  static void configureEntrypointEnvironment(AppEnvironment environment) {
+    _entrypointEnvironmentOverride = environment;
+  }
+
   @visibleForTesting
   static void resetEntrypointRoleOverrideForTesting() {
     _entrypointAppRoleOverride = null;
+  }
+
+  @visibleForTesting
+  static void resetEntrypointEnvironmentOverrideForTesting() {
+    _entrypointEnvironmentOverride = null;
   }
 
   @visibleForTesting
@@ -193,6 +204,12 @@ class AppConfig {
   );
 
   static const bool enableClubPosts = bool.fromEnvironment('ENABLE_CLUB_POSTS');
+
+  /// Host event announcements stay dark in production until the callable has
+  /// been deployed and the TestFlight dependency preflight can reach it.
+  static const bool enableHostEventBroadcast = bool.fromEnvironment(
+    'ENABLE_HOST_EVENT_BROADCAST',
+  );
 
   static bool get shouldShowEnvironmentBanner => !environment.isProduction;
 

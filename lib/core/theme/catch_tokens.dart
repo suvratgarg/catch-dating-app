@@ -438,6 +438,13 @@ abstract final class CatchInsets {
     horizontal: CatchSpacing.screenPx,
   );
 
+  /// Dense Host Inbox title row: preserves the page gutter while leaving a
+  /// full 40px lane for the headline and expanding-search action.
+  static const EdgeInsets hostInboxHeader = EdgeInsets.symmetric(
+    horizontal: CatchSpacing.screenPx,
+    vertical: CatchSpacing.s1,
+  );
+
   /// Bottom breathing room for scrollable component bodies whose surrounding
   /// shell already owns horizontal and top padding.
   static const EdgeInsets scrollEnd = EdgeInsets.only(bottom: CatchSpacing.s6);
@@ -932,8 +939,11 @@ abstract final class CatchOpacity {
   /// High-opacity fill for compact overlay pills on image/map surfaces.
   static const double overlayPillFill = 0.93;
 
-  /// High-opacity blur fill for the handoff bottom tab dock.
-  static const double tabDockFill = 0.93;
+  /// High-opacity blur fill for the floating iOS tab bar glass.
+  static const double tabBarGlassFill = 0.93;
+
+  /// Selected tab pill fill inside the bottom tab bar.
+  static const double tabBarPillFill = 0.08;
 
   /// Very light tint for accent-color backgrounds (date pills, soft status
   /// pills).
@@ -1051,7 +1061,6 @@ abstract final class CatchOpacity {
   static const double eventSuccessQrErrorFill = 0.84;
   static const double strideInactiveBar = 0.55;
   static const double emptyHeroArtStroke = 0.25;
-  static const double appShellNavigationBarFill = 0.96;
   static const double suvbotDestructiveFill = 0.24;
   static const double profileInlineUnderlineActive = 0.90;
   static const double profileInlineUnderlineInactive = 0.35;
@@ -1447,6 +1456,7 @@ abstract final class CatchMotion {
   static const Duration micro = Duration(milliseconds: 180);
   static const Duration chatScroll = Duration(milliseconds: 200);
   static const Duration base = Duration(milliseconds: 220);
+  static const Duration standard = base;
   static const Duration pageStep = Duration(milliseconds: 280);
   static const Duration calendarScroll = Duration(milliseconds: 320);
   static const Duration slow = Duration(milliseconds: 420);
@@ -1733,6 +1743,8 @@ abstract final class CatchLayout {
   /// avatar→text gap so the divider can't drift from the row layout.
   static const double chatListDividerInset =
       chatListAvatarExtent + chatListTextGap;
+  static const double hostInboxHeaderHeight = CatchSpacing.s12;
+  static const double hostInboxScopeSelectorHeight = CatchSpacing.s8;
   static const double browseHeaderHeight = 88.0;
   static const double browseHeaderContentHeight = 60.0;
   static const double browseHeaderSearchExtent = 52.0;
@@ -1887,13 +1899,17 @@ abstract final class CatchLayout {
   static const double statusBarTimeFontSize = 14.0;
   static const double statusBarIconSize = 14.0;
   static const double statusBarIconGap = CatchSpacing.micro6;
-  static const double tabDockBlurSigma = 10.0;
-  static const double tabDockHorizontalPadding = CatchSpacing.s3;
-  static const double tabDockTopPadding = CatchSpacing.micro10;
-  static const double tabDockBottomPadding = CatchSpacing.micro18;
-  static const double tabDockItemGap = CatchSpacing.s1;
-  static const double tabDockIconSize = 22.0;
-  static const double tabDockLabelFontSize = 8.5;
+  static const double tabBarExtent = 56.0;
+  static const double tabBarBlurSigma = 10.0;
+  static const double tabBarHorizontalPadding = CatchSpacing.s3;
+  static const double tabBarFloatingContentHorizontalPadding = CatchSpacing.s2;
+  static const double tabBarFloatingHorizontalInset = CatchSpacing.s4;
+  static const double tabBarFloatingBottomInset = CatchSpacing.s3;
+  static const double tabBarCompactItemExtent = 48.0;
+  static const double tabBarPillMinHeight = 42.0;
+  static const double tabBarPillHorizontalPadding = CatchSpacing.s3;
+  static const double tabBarLabelGap = CatchSpacing.s1;
+  static const double tabBarIconSize = 22.0;
   static const double tabRailHeight = 48.0;
   static const double topBarHeight = 56.0;
   static const double topBarLargeHeight = 104.0;

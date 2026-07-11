@@ -34,16 +34,16 @@ enum ExploreScreenBodyKind {
 
 enum ExploreScreenRetryTarget { explore, eventFeed }
 
-const int minimumExploreThisWeekRecommendationCount = 5;
+const int minimumExploreThisWeekRecommendationCount = 2;
 
 class ExploreMapLauncherState {
   const ExploreMapLauncherState({required this.label});
 
-  factory ExploreMapLauncherState.from({required int? eventFeedCount}) {
+  factory ExploreMapLauncherState.from({required int? mappableEventCount}) {
     return ExploreMapLauncherState(
-      label: eventFeedCount == null || eventFeedCount == 0
+      label: mappableEventCount == null || mappableEventCount == 0
           ? 'Map'
-          : 'Map · $eventFeedCount',
+          : 'Map · $mappableEventCount',
     );
   }
 
@@ -117,7 +117,6 @@ class ExploreCityPickerState {
 class ExploreChromeState {
   const ExploreChromeState({
     required this.title,
-    required this.subtitle,
     required this.searchValue,
     required this.searchPlaceholder,
     required this.searchTooltip,
@@ -164,14 +163,12 @@ class ExploreChromeState {
     required this.searchExpanded,
     required this.searchAutofocus,
   }) : title = 'Explore',
-       subtitle = 'Find an event worth showing up for.',
        searchValue = query,
        searchPlaceholder = 'Search events or clubs',
        searchTooltip = 'Search events or clubs',
        searchSemanticLabel = 'Search events or clubs';
 
   final String title;
-  final String subtitle;
   final String searchValue;
   final String searchPlaceholder;
   final String searchTooltip;
@@ -258,7 +255,6 @@ int activeExploreFilterCount(ExploreFilterSelection filters) {
   if (filters.distanceFilter != ExploreDistanceFilter.any) count += 1;
   if (filters.highRatedOnly) count += 1;
   if (filters.joinedOnly) count += 1;
-  if (filters.followingOnly) count += 1;
   if (filters.activityTag != null) count += 1;
   if (filters.area != null) count += 1;
   return count;
@@ -295,9 +291,10 @@ class ExploreCoverStoryState {
 class ExploreFeedSectionState {
   const ExploreFeedSectionState({
     required this.bodyViewModel,
+    required this.totalCount,
     required this.resultCountLabel,
     required this.thisWeekItems,
-    required this.cards,
+    required this.cardGroups,
   });
 
   factory ExploreFeedSectionState.from({
@@ -305,9 +302,10 @@ class ExploreFeedSectionState {
     required List<Club> candidateClubs,
     required Set<String> joinedClubIds,
     required bool showThisWeekList,
+    bool promoteFeaturedItem = true,
     DateTime? now,
   }) {
-    final featured = viewModel.featuredItem;
+    final featured = promoteFeaturedItem ? viewModel.featuredItem : null;
     final bodyItems = viewModel.items
         .where((item) => item != featured)
         .toList(growable: false);
@@ -324,28 +322,52 @@ class ExploreFeedSectionState {
         ? candidateThisWeekItems
         : const <ExploreEventItem>[];
     final thisWeekEventIds = {for (final item in thisWeekItems) item.event.id};
+    final cards = buildExploreMixedFeedCards(
+      viewModel: bodyViewModel,
+      candidateClubs: candidateClubs,
+      joinedClubIds: joinedClubIds,
+      excludeEventIds: thisWeekEventIds,
+    );
 
     return ExploreFeedSectionState(
       bodyViewModel: bodyViewModel,
-      resultCountLabel: _exploreResultCountLine(bodyViewModel),
+      totalCount: viewModel.count,
+      resultCountLabel: _exploreResultCountLine(viewModel),
       thisWeekItems: List.unmodifiable(thisWeekItems),
-      cards: List.unmodifiable(
-        buildExploreMixedFeedCards(
-          viewModel: bodyViewModel,
-          candidateClubs: candidateClubs,
-          joinedClubIds: joinedClubIds,
-          excludeEventIds: thisWeekEventIds,
-        ),
-      ),
+      cardGroups: groupExploreMixedFeedCards(cards, now: now),
     );
   }
 
   final ExploreFeedViewModel bodyViewModel;
+  final int totalCount;
   final String resultCountLabel;
   final List<ExploreEventItem> thisWeekItems;
+  final List<ExploreFeedCardGroup> cardGroups;
+
+  List<ExploreMixedCard> get cards =>
+      List.unmodifiable([for (final group in cardGroups) ...group.cards]);
+
+  bool get isEmpty => totalCount == 0 && cards.isEmpty && thisWeekItems.isEmpty;
+}
+
+class ExploreFeedCardGroup {
+  const ExploreFeedCardGroup({
+    required this.day,
+    required this.label,
+    required this.cards,
+  });
+
+  final DateTime? day;
+  final String? label;
   final List<ExploreMixedCard> cards;
 
-  bool get isEmpty => cards.isEmpty && thisWeekItems.isEmpty;
+  int get timedCardCount => cards
+      .where(
+        (card) =>
+            card is ExploreMixedEventRowCard ||
+            card is ExploreMixedExternalEventRowCard,
+      )
+      .length;
 }
 
 class ExploreEventRowState {
@@ -360,7 +382,7 @@ class ExploreEventRowState {
   factory ExploreEventRowState.from(ExploreEventItem item) {
     return ExploreEventRowState(
       kicker: item.isFollowedClubSignal
-          ? 'FROM A CLUB YOU FOLLOW'
+          ? 'FROM ONE OF YOUR CLUBS'
           : item.club.name,
       supportingLabel: _rowSupportingLabel(item),
       priceLabel: item.priceLabel,
@@ -454,30 +476,44 @@ class ExploreClubCardState {
 
 sealed class ExploreMixedCard {
   const ExploreMixedCard();
+
+  DateTime? get startTime;
 }
 
 class ExploreMixedEventRowCard extends ExploreMixedCard {
   const ExploreMixedEventRowCard(this.item);
 
   final ExploreEventItem item;
+
+  @override
+  DateTime get startTime => item.event.startTime;
 }
 
 class ExploreMixedExternalEventRowCard extends ExploreMixedCard {
   const ExploreMixedExternalEventRowCard(this.item);
 
   final ExploreExternalEventItem item;
+
+  @override
+  DateTime get startTime => item.event.startTime;
 }
 
 class ExploreMixedClubSpotlightCard extends ExploreMixedCard {
   const ExploreMixedClubSpotlightCard(this.club);
 
   final Club club;
+
+  @override
+  DateTime? get startTime => null;
 }
 
 class ExploreMixedClubRowCard extends ExploreMixedCard {
   const ExploreMixedClubRowCard(this.club);
 
   final Club club;
+
+  @override
+  DateTime? get startTime => null;
 }
 
 List<ExploreMixedCard> buildExploreMixedFeedCards({
@@ -492,37 +528,100 @@ List<ExploreMixedCard> buildExploreMixedFeedCards({
   );
   final firstClub = rankedClubs.firstOrNull;
   final secondClub = rankedClubs.skip(1).firstOrNull;
-  final eventRows = viewModel.items
-      .where((item) => !excludeEventIds.contains(item.event.id))
-      .toList(growable: true);
-  final externalRows = viewModel.externalItems.take(8).toList();
-  final cards = <ExploreMixedCard>[];
+  final cards = <ExploreMixedCard>[
+    for (final item in viewModel.items)
+      if (!excludeEventIds.contains(item.event.id))
+        ExploreMixedEventRowCard(item),
+    for (final item in viewModel.externalItems)
+      ExploreMixedExternalEventRowCard(item),
+  ]..sort((a, b) => a.startTime!.compareTo(b.startTime!));
+  final timedCardCount = cards.length;
 
-  if (eventRows.isEmpty) {
-    for (final item in externalRows) {
-      cards.add(ExploreMixedExternalEventRowCard(item));
-    }
+  if (cards.isEmpty) {
     if (firstClub != null) cards.add(ExploreMixedClubSpotlightCard(firstClub));
     if (secondClub != null) cards.add(ExploreMixedClubRowCard(secondClub));
     return cards;
   }
 
-  final leadingCount = eventRows.length >= 2 ? 2 : 1;
-  for (var i = 0; i < leadingCount; i += 1) {
-    cards.add(ExploreMixedEventRowCard(eventRows.removeAt(0)));
+  if (firstClub != null) {
+    cards.insert(
+      math.min(2, cards.length),
+      ExploreMixedClubSpotlightCard(firstClub),
+    );
   }
-  if (firstClub != null) cards.add(ExploreMixedClubSpotlightCard(firstClub));
-
-  for (var i = 0; i < eventRows.length; i += 1) {
-    cards.add(ExploreMixedEventRowCard(eventRows[i]));
-    if (i == 1 && secondClub != null) {
-      cards.add(ExploreMixedClubRowCard(secondClub));
-    }
-  }
-  for (final item in externalRows) {
-    cards.add(ExploreMixedExternalEventRowCard(item));
+  if (secondClub != null && timedCardCount >= 4) {
+    cards.insert(
+      math.min(5, cards.length),
+      ExploreMixedClubRowCard(secondClub),
+    );
   }
   return cards;
+}
+
+List<ExploreFeedCardGroup> groupExploreMixedFeedCards(
+  List<ExploreMixedCard> cards, {
+  DateTime? now,
+}) {
+  if (cards.isEmpty) return const <ExploreFeedCardGroup>[];
+
+  final reference = now ?? DateTime.now();
+  final today = DateUtils.dateOnly(reference);
+  final tomorrow = today.add(const Duration(days: 1));
+  final builders = <_ExploreFeedCardGroupBuilder>[];
+  _ExploreFeedCardGroupBuilder? current;
+
+  for (final card in cards) {
+    final startTime = card.startTime;
+    final day = startTime == null
+        ? current?.day
+        : DateUtils.dateOnly(startTime);
+    if (current == null || current.day != day) {
+      current = _ExploreFeedCardGroupBuilder(
+        day: day,
+        label: day == null
+            ? null
+            : exploreFeedDayLabel(day, today: today, tomorrow: tomorrow),
+      );
+      builders.add(current);
+    }
+    current.cards.add(card);
+  }
+
+  return List.unmodifiable([
+    for (final builder in builders)
+      ExploreFeedCardGroup(
+        day: builder.day,
+        label: builder.label,
+        cards: List.unmodifiable(builder.cards),
+      ),
+  ]);
+}
+
+EventDateRailCardStripPosition exploreMixedEventStripPosition(
+  List<ExploreMixedCard> cards,
+  int index,
+) {
+  if (cards[index] is! ExploreMixedEventRowCard) {
+    return EventDateRailCardStripPosition.single;
+  }
+  final joinsPrevious =
+      index > 0 && cards[index - 1] is ExploreMixedEventRowCard;
+  final joinsNext =
+      index < cards.length - 1 && cards[index + 1] is ExploreMixedEventRowCard;
+  if (joinsPrevious && joinsNext) {
+    return EventDateRailCardStripPosition.middle;
+  }
+  if (joinsPrevious) return EventDateRailCardStripPosition.last;
+  if (joinsNext) return EventDateRailCardStripPosition.first;
+  return EventDateRailCardStripPosition.single;
+}
+
+class _ExploreFeedCardGroupBuilder {
+  _ExploreFeedCardGroupBuilder({required this.day, required this.label});
+
+  final DateTime? day;
+  final String? label;
+  final List<ExploreMixedCard> cards = <ExploreMixedCard>[];
 }
 
 List<Club> rankExploreClubIntermixCandidates(
@@ -723,7 +822,7 @@ class ExploreDiscoveryScreenState {
     required String query,
     required ExploreFilterSelection filters,
     required bool hasSourceClubs,
-    required int? eventFeedCount,
+    required int? mappableEventCount,
     required bool viewModelLoading,
     Object? viewModelError,
     required ExploreViewModel? viewModel,
@@ -739,7 +838,7 @@ class ExploreDiscoveryScreenState {
     );
     return ExploreDiscoveryScreenState(
       mapLauncherState: ExploreMapLauncherState.from(
-        eventFeedCount: eventFeedCount,
+        mappableEventCount: mappableEventCount,
       ),
       emptyState: emptyState,
       bodyState: ExploreScreenBodyState.from(

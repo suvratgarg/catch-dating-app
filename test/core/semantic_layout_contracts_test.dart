@@ -139,4 +139,39 @@ void main() {
 
     expect(gap.height, CatchGaps.section);
   });
+
+  testWidgets('CatchSliverTerminalPadding owns scrollable bottom safe area', (
+    tester,
+  ) async {
+    const terminalPaddingKey = Key('terminal-padding');
+
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: MediaQuery(
+          data: MediaQueryData(
+            size: Size(390, 844),
+            padding: EdgeInsets.only(bottom: 34),
+            viewPadding: EdgeInsets.only(bottom: 34),
+          ),
+          child: SafeArea(
+            bottom: false,
+            child: CustomScrollView(
+              slivers: [
+                CatchSliverTerminalPadding(key: terminalPaddingKey, extra: 10),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final terminalBox = tester.widget<SizedBox>(
+      find.descendant(
+        of: find.byKey(terminalPaddingKey),
+        matching: find.byType(SizedBox),
+      ),
+    );
+
+    expect(terminalBox.height, 44);
+  });
 }

@@ -2,6 +2,23 @@ import 'package:catch_dating_app/core/app_config.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  tearDown(() {
+    AppConfig.resetEntrypointRoleOverrideForTesting();
+    AppConfig.resetEntrypointEnvironmentOverrideForTesting();
+  });
+
+  test(
+    'installable target entrypoints override stale compile-time identity',
+    () {
+      AppConfig.configureEntrypointRole(AppRole.host);
+      AppConfig.configureEntrypointEnvironment(AppEnvironment.prod);
+
+      expect(AppConfig.appRole, AppRole.host);
+      expect(AppConfig.environment, AppEnvironment.prod);
+      expect(AppConfig.appTitle, 'Catch Host');
+    },
+  );
+
   group('AppEnvironment.fromValue', () {
     test('parses supported environments', () {
       expect(AppEnvironment.fromValue('dev'), AppEnvironment.dev);

@@ -729,6 +729,12 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Server-owned event-announcement receipts contain frozen recipient and
+    // per-delivery evidence. V1 exposes only the sanitized callable response.
+    match /eventBroadcasts/{broadcastId} {
+      allow read, write: if false;
+    }
+
     match /eventWaitlistOffers/{offerId} {
       allow read: if isAuthed()
         && resource.data.eventId is string

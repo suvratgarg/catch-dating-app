@@ -57,7 +57,7 @@ Widget appShellNavigationBarState(BuildContext context) {
     title: 'AppShellNavigationBar',
     contractId: 'component.app_shell.navigation_bar',
     child: AppShellNavigationBar(
-      currentIndex: 3,
+      currentIndex: 2,
       unreadCount: 12,
       onDestinationSelected: (_) {},
     ),
@@ -102,7 +102,6 @@ class _ShellRouteScopeState extends State<_ShellRouteScope> {
             : [
                 _branch(Routes.dashboardScreen.path, 'Home'),
                 _branch(Routes.exploreScreen.path, 'Explore'),
-                _branch(Routes.swipeHubScreen.path, 'Catches'),
                 _branch(Routes.matchesListScreen.path, 'Chats'),
                 _branch(Routes.profileScreen.path, 'Profile'),
               ],

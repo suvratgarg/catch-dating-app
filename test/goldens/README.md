@@ -23,6 +23,8 @@ and exact PNG comparison is host-rasterizer sensitive.
 | Golden | What it locks |
 |---|---|
 | `design_system_sheet` | All `CatchTokens` color roles + activity pigments, the full `CatchTextStyles` ramp (serif/sans/mono, weights, italic), and the activity-art duotone + pattern + glyph — light **and** dark. |
+| `adaptive_tab_bar_ios_chrome` | Floating/glass `CatchTabBar` chrome, active-label pill, badge placement, safe-area offset, and light/dark token mapping on iOS. |
+| `adaptive_tab_bar_android_chrome` | Anchored/material `CatchTabBar` chrome, active-label pill, badge placement, safe-area behavior, and light/dark token mapping on Android. |
 
 Add coverage as components stabilize (ticket card, polaroid, profile sections, …).
 

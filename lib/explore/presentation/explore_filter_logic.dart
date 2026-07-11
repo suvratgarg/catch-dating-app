@@ -29,17 +29,12 @@ bool clubMatchesScopeFilters({
   required Club club,
   required ExploreFilterSelection filters,
   required Set<String> joinedClubIds,
-  Set<String>? followedClubIds,
   bool activityHandledByEventFilter = false,
 }) {
-  final effectiveFollowedClubIds = followedClubIds ?? joinedClubIds;
   if (filters.highRatedOnly && club.rating < kExploreHighRatedMinimum) {
     return false;
   }
   if (filters.joinedOnly && !joinedClubIds.contains(club.id)) {
-    return false;
-  }
-  if (filters.followingOnly && !effectiveFollowedClubIds.contains(club.id)) {
     return false;
   }
   final activityTag = filters.activityTag;

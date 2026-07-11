@@ -1,4 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/chats/presentation/chat_conversation_context.dart';
+import 'package:catch_dating_app/chats/presentation/widgets/chat_event_context_copy.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_event_context_header.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -35,6 +37,49 @@ void main() {
     expect(find.text('MATCHED THROUGH CATCH'), findsOneWidget);
     expect(find.text('the same event'), findsOneWidget);
   });
+
+  testWidgets('uses event-question framing for a contacted host', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: Scaffold(
+          body: ChatEventContextHeader(
+            event: _event(activityKind: ActivityKind.dinner),
+            conversationContext: ChatConversationContext.contactedHost,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('EVENT QUESTION'), findsOneWidget);
+    expect(find.text('MATCHED AFTER DINNER'), findsNothing);
+  });
+
+  test(
+    'empty inquiry copy branches on viewer role without dating language',
+    () {
+      final event = _event(activityKind: ActivityKind.dinner);
+
+      expect(
+        chatEmptyThreadMessageFor(
+          event: event,
+          otherName: 'Mira',
+          conversationContext: ChatConversationContext.contactedHost,
+        ),
+        'Ask Mira about Friday Evening Dinner.',
+      );
+      expect(
+        chatEmptyThreadMessageFor(
+          event: event,
+          otherName: 'Aarav',
+          conversationContext: ChatConversationContext.attendeeInquiry,
+        ),
+        'Reply to Aarav about Friday Evening Dinner.',
+      );
+    },
+  );
 }
 
 Event _event({required ActivityKind activityKind}) {

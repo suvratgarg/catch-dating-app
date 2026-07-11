@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/chats/presentation/chat_conversation_context.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_event_context_copy.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -6,8 +7,8 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:flutter/material.dart';
 
 const EdgeInsets _contextHeaderOuterPadding = EdgeInsets.fromLTRB(
@@ -18,9 +19,14 @@ const EdgeInsets _contextHeaderOuterPadding = EdgeInsets.fromLTRB(
 );
 
 class ChatEventContextHeader extends StatelessWidget {
-  const ChatEventContextHeader({super.key, required this.event});
+  const ChatEventContextHeader({
+    super.key,
+    required this.event,
+    this.conversationContext = ChatConversationContext.match,
+  });
 
   final Event? event;
+  final ChatConversationContext conversationContext;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +40,10 @@ class ChatEventContextHeader extends StatelessWidget {
     final date = event == null
         ? null
         : AppTimeFormatters.weekdayDayMonth(event.startTime);
-    final stamp = chatContextStampFor(event);
+    final stamp = chatContextStampFor(
+      event,
+      conversationContext: conversationContext,
+    );
 
     return Padding(
       padding: _contextHeaderOuterPadding,

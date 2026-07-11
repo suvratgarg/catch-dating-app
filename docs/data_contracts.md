@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.1.8
-updated: 2026-07-05
+version: 1.1.9
+updated: 2026-07-10
 owner: recursive_audit_loop
 status: active
 ---
@@ -213,6 +213,28 @@ posts, but direct writes are denied. The callable verifies host authority,
 validates optional linked events against the same club, enforces the rolling
 three-posts-per-seven-days club quota, writes the canonical post, and fans out
 durable `clubUpdate` activity notifications to active followers.
+
+## Event Broadcast Receipts
+
+Host event broadcasts use the operational receipt
+`eventBroadcasts/{broadcastId}`. Only `sendEventBroadcast` creates or advances
+the receipt; account-deletion cleanup may delete a host-authored receipt or
+remove one recipient's identifiers and delivery evidence. Direct client reads
+and writes are denied. The Host client receives only the sanitized callable
+response counts.
+
+The callable verifies current event-host authority and freezes a server-resolved
+audience from `eventParticipations`. Booked means `signedUp` plus `attended`;
+prospective means `waitlisted`. Inquiry threads are never an audience source,
+and the broadcast never creates a match, conversation, or chat message.
+
+Each eligible recipient gets a deterministic `eventUpdated` Activity item.
+Push is preference-gated and attempted at most once: durable Activity creation
+is the retry boundary, so an uncertain retry reports an unknown push outcome
+instead of sending a duplicate. The receipt stores hashed per-recipient
+evidence for repair and aggregate delivery counts, remains server-only, and
+requires the `eventBroadcasts.expiresAt` Firestore TTL policy for 90-day
+retention.
 
 ## Organizer Claim Documents
 

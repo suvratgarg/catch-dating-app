@@ -231,6 +231,23 @@ void main() {
       );
     });
 
+    test('messaging lookup keeps app-hidden club identity', () async {
+      final visible = buildClub(id: 'visible');
+      final hidden = buildClub(
+        id: 'hidden',
+        appVisibility: ClubAppVisibility.hidden,
+      );
+      await _seedClub(firestore, visible);
+      await _seedClub(firestore, hidden);
+
+      await expectLater(
+        repository.watchClubsForMessagingByIds(
+          clubIds: const ['hidden', 'visible'],
+        ),
+        emits([hidden, visible]),
+      );
+    });
+
     test('watchClubsHostedBy filters by host user id', () async {
       final hosted = buildClub(id: 'hosted');
       final coHosted = buildClub(

@@ -13,6 +13,7 @@ abstract final class UserAnalyticsCopy {
   static const emptyTitle = 'Insights are warming up';
   static const emptyBody =
       'You will see trends here after Catch has enough event and profile activity.';
+  static const rangeTitle = 'Range';
   static const trendTitle = 'Trend';
   static const tipsTitle = 'Suggestions';
   static const dataQualityTitle = 'Data coverage';
@@ -20,10 +21,10 @@ abstract final class UserAnalyticsCopy {
   static const missingBadge = 'Missing';
 
   static const rangeLabels = {
-    UserAnalyticsRangePreset.sevenDays: '7D',
-    UserAnalyticsRangePreset.thirtyDays: '30D',
-    UserAnalyticsRangePreset.ninetyDays: '90D',
-    UserAnalyticsRangePreset.month: 'MONTH',
+    UserAnalyticsRangePreset.sevenDays: 'Last 7 days',
+    UserAnalyticsRangePreset.thirtyDays: 'Last 30 days',
+    UserAnalyticsRangePreset.ninetyDays: 'Last 90 days',
+    UserAnalyticsRangePreset.month: 'This month',
   };
 
   static const metricLabels = {
@@ -79,6 +80,9 @@ abstract final class UserAnalyticsCopy {
 
   static String metricLabel(String id, {required String fallback}) =>
       metricLabels[id] ?? fallback;
+
+  static String rangeLabel(UserAnalyticsRangePreset preset) =>
+      rangeLabels[preset] ?? preset.wireValue;
 
   static String? metricCaption(String id, {String? fallback}) =>
       metricCaptions[id] ?? fallback;

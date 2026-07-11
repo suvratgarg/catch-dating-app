@@ -89,10 +89,8 @@ Future<String?> showProfileReactionCommentSheet({
   required BuildContext context,
   required ProfileReactionTarget target,
 }) {
-  return showModalBottomSheet<String>(
+  return showCatchBottomSheet<String>(
     context: context,
-    useSafeArea: true,
-    isScrollControlled: true,
     builder: (_) => ProfileReactionCommentSheet(target: target),
   );
 }

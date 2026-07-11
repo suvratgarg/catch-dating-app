@@ -542,6 +542,52 @@ export interface AdminDecideClubClaimResponse {
   status: "approved" | "rejected";
 }
 
+export interface AdminClubClaimListRow {
+  requestId: string;
+  targetPath: string;
+  clubId: string;
+  requesterUid: string;
+  requesterName: string;
+  requesterRole: string;
+  contact: string | null;
+  proofCount: number;
+  status: string;
+  createdAt: string | null;
+}
+
+export interface AdminListClubClaimRequestsResponse {
+  generatedAt: string;
+  rows: AdminClubClaimListRow[];
+}
+
+export interface AdminGetClubClaimRequestDetailsPayload {
+  requestId: string;
+}
+
+export interface AdminClubClaimRequestDetails extends AdminClubClaimListRow {
+  businessEmail: string | null;
+  businessPhone: string | null;
+  proofUrls: string[];
+  message: string | null;
+  updatedAt: string | null;
+  requesterProfile: {
+    exists: boolean;
+    profileComplete: boolean;
+  };
+  club: {
+    exists: boolean;
+    name: string | null;
+    claimState: string | null;
+    ownershipState: string | null;
+    ownerUserId: string | null;
+    canonicalPath: string | null;
+  };
+}
+
+export interface AdminGetClubClaimRequestDetailsResponse {
+  request: AdminClubClaimRequestDetails;
+}
+
 export interface AdminSetClubIndexStatusPayload {
   clubId: string;
   indexStatus: ClubIndexDecision;

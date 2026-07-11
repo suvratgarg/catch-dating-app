@@ -81,6 +81,8 @@ jobs:
             categories: env platform migrations
           - name: marketing-design
             categories: marketing ui-capture design
+          - name: host-discovery
+            categories: host-discovery
 
     steps:
       - uses: actions/checkout@v6

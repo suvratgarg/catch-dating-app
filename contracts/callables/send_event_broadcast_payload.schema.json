@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/send_event_broadcast_payload.schema.json",
+  "title": "SendEventBroadcastCallablePayload",
+  "description": "Callable payload accepted by sendEventBroadcast.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "eventId",
+    "audience",
+    "body"
+  ],
+  "properties": {
+    "requestId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "audience": {
+      "type": "string",
+      "enum": [
+        "booked",
+        "prospective",
+        "everyone"
+      ]
+    },
+    "body": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    }
+  }
+}

@@ -45,6 +45,7 @@ export {
   deleteEvent,
 } from "./events/mutateEvent";
 export {sendEventReminders} from "./events/sendEventReminders";
+export {sendEventBroadcast} from "./events/sendEventBroadcast";
 export {
   placeDetails,
   placesAutocomplete,
@@ -150,6 +151,10 @@ export {
   adminDecideAccessApplication,
   adminGetAccessApplicationDetails,
 } from "./admin/accessApplications";
+export {
+  adminGetClubClaimRequestDetails,
+  adminListClubClaimRequests,
+} from "./admin/clubClaimReview";
 export {
   adminSetClubIndexStatus,
 } from "./admin/clubIndexing";

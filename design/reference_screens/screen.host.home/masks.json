@@ -5,7 +5,7 @@
   "regions": [
     {
       "id": "status_bar",
-      "stateIds": ["upcoming_events"],
+      "stateIds": ["upcoming_events", "events_list_default"],
       "rect": {
         "x": 0,
         "y": 0,
@@ -38,14 +38,14 @@
     },
     {
       "id": "host_tab_bar",
-      "stateIds": ["upcoming_events"],
+      "stateIds": ["upcoming_events", "events_list_default"],
       "rect": {
         "x": 0,
         "y": 768,
         "width": 390,
         "height": 44
       },
-      "reason": "Host shell tab chrome and safe-area treatment are still advisory while host IA is being reconciled."
+      "reason": "The region is declared for state scoping, but Host full-shell references list host_tab_bar in forceCompareMaskIds so this navigation chrome remains part of the comparison."
     }
   ]
 }

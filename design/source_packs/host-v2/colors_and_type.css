@@ -1,0 +1,271 @@
+/* ============================================================================
+   Catch Design System — colors_and_type.css
+   Source of truth: design_context_pack/design_system/{tokens,typography,activity_palette}.json
+   Identity: editorial restraint + a serif voice + meaningful color.
+   Base UI is paper & ink. Chroma appears ONLY where an activity gives it.
+   ============================================================================ */
+
+/* ---- Fonts -----------------------------------------------------------------
+   Archivo (voice + headline / grotesque, variable wght 100..900 + width 62..125)
+     — the single voice face. Condensed widths carry event/headline surfaces.
+   IBM Plex Mono (data / kickers / numerics)
+   Inter — RETIRED; kept loadable only for type studies. Function/body = system font.
+   The shipped CatchFonts are Archivo + IBM Plex Mono, self-hosted from /fonts.
+---------------------------------------------------------------------------- */
+/* IBM Plex Mono — static weights */
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("fonts/IBMPlexMono-Regular.ttf") format("truetype");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("fonts/IBMPlexMono-Medium.ttf") format("truetype");
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("fonts/IBMPlexMono-SemiBold.ttf") format("truetype");
+  font-weight: 600; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("fonts/IBMPlexMono-Bold.ttf") format("truetype");
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+
+/* Archivo — variable (wght 100..900, wdth 62..125), self-hosted latin subset.
+   THE Catch voice + headline face (adopted 2026-06, replacing the former serif voice).
+   Condensed widths (font-stretch 90..94%) carry event/headline surfaces;
+   normal width carries names, prompts, prose and the wordmark. */
+@font-face {
+  font-family: "Archivo";
+  src: url("fonts/Archivo-Roman-VF.woff2") format("woff2-variations");
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ============================================================================
+   1. COLOR — paper + ink base. Light = browse/forms. Dark = "wow" surfaces.
+   ============================================================================ */
+:root {
+  /* Neutral surfaces — LIGHT (the default browse/forms register) */
+  --bg: #F4F4F1;          /* cooler gallery off-white — NEVER cream */
+  --surface: #FFFFFF;
+  --raised: #FAFAF8;      /* input / raised fills */
+  --overlay: rgba(22,20,15,0.549);
+
+  /* Ink — text */
+  --ink: #16140F;         /* primary text */
+  --ink2: #544F47;        /* secondary text */
+  --ink3: #9C958A;        /* tertiary text */
+
+  /* Hairlines */
+  --line: rgba(22,20,15,0.078);   /* 8%  */
+  --line2: rgba(22,20,15,0.141);  /* 14% */
+
+  /* Action color — ink in light. There is NO brand accent. */
+  --primary: #16140F;
+  --primary-ink: #F4F4F1;       /* text on a primary fill */
+  --primary-soft: #ECEAE4;
+
+  /* Functional semantics (use sparingly — meaning, not decoration) */
+  --success: #2F7D55;
+  --warning: #B9770F;
+  --danger:  #C2261A;
+  --gold:    #C9A24A;
+
+  /* Like / pass. Like defaults to ink (bold). */
+  --like: #16140F;
+  --pass: #9C958A;
+
+  color-scheme: light;
+}
+
+/* Dark "wow" register — apply to a spotlight/hero scope, NOT the global shell. */
+.catch-dark,
+:root.catch-dark {
+  --bg: #0F0E10;
+  --surface: #18171A;
+  --raised: #211F23;
+  --overlay: rgba(0,0,0,0.722);
+
+  --ink: #F4F0E8;
+  --ink2: #BAB2A7;
+  --ink3: #7E776D;
+
+  --line: rgba(244,240,232,0.129);
+  --line2: rgba(244,240,232,0.22);
+
+  --primary: #F4F0E8;
+  --primary-ink: #16140F;
+  --primary-soft: #2A2824;
+
+  --success: #5BC07C;
+  --warning: #E5A655;
+  --danger:  #E5564B;
+  --gold:    #E0B45E;
+
+  --like: #F4F0E8;
+  --pass: #7E776D;
+
+  color-scheme: dark;
+}
+
+/* ============================================================================
+   2. ACTIVITY PALETTE — the only chroma. accent / deep / soft per activity.
+      Apply on an activity scope; map the action color to --activity-accent.
+      Values below are the LIGHT context. Dark variants noted in JSON.
+   ============================================================================ */
+:root {
+  --act-social-run-accent: #D85A3C; --act-social-run-deep: #B33B1F; --act-social-run-soft: #F4E9E7;
+  --act-running-accent:    #C9482E; --act-running-deep:    #97321E; --act-running-soft:    #F3E9E7;
+  --act-walking-accent:    #6E9A5A; --act-walking-deep:    #4F743E; --act-walking-soft:    #ECF0EB;
+  --act-pickleball-accent: #2F9E7A; --act-pickleball-deep: #1D6E54; --act-pickleball-soft: #E8F2EF;
+  --act-padel-accent:      #2E9AA0; --act-padel-deep:      #1C6B6F; --act-padel-soft:      #E8F2F3;
+  --act-tennis-accent:     #4E9A4E; --act-tennis-deep:     #347134; --act-tennis-soft:     #EAF0EA;
+  --act-badminton-accent:  #4F70C8; --act-badminton-deep:  #2E4FA6; --act-badminton-soft:  #E8EBF2;
+  --act-cycling-accent:    #3A6FD0; --act-cycling-deep:    #2251A5; --act-cycling-soft:    #E7EBF3;
+  --act-spin-accent:       #3E55C0; --act-spin-deep:       #2A3C92; --act-spin-soft:       #E8EAF2;
+  --act-yoga-accent:       #8A5FB0; --act-yoga-deep:       #69408D; --act-yoga-soft:       #EDEAF0;
+  --act-strength-accent:   #B0573C; --act-strength-deep:   #823D28; --act-strength-soft:   #F2EBE8;
+  --act-pub-quiz-accent:   #4356A8; --act-pub-quiz-deep:   #2D3C7C; --act-pub-quiz-soft:   #E9EBF1;
+  --act-bar-crawl-accent:  #B14488; --act-bar-crawl-deep:  #852E64; --act-bar-crawl-soft:  #F2E9EE;
+  --act-dinner-accent:     #C44D6A; --act-dinner-deep:     #9F2F4B; --act-dinner-soft:     #F2E8EB;
+  --act-singles-accent:    #D85A6E; --act-singles-deep:    #C72942; --act-singles-soft:    #F3E7E9;
+  --act-open-accent:       #7A7166; --act-open-deep:       #595045; --act-open-soft:       #EEEDEC;
+}
+
+/* ============================================================================
+   3. SPACE / RADIUS / STROKE — 4px base scale; named product radii.
+   ============================================================================ */
+:root {
+  --s0: 0px;  --s1: 4px;  --s2: 8px;  --s3: 12px; --s4: 16px; --s5: 20px;
+  --s6: 24px; --s7: 28px; --s8: 32px; --s9: 36px; --s10: 40px; --s11: 44px;
+  --s12: 48px; --s16: 64px;
+  --micro2: 2px; --micro3: 3px; --micro6: 6px; --micro10: 10px; --micro14: 14px; --micro18: 18px;
+
+  /* Screen gutter — THE app-wide page padding. The scrolling body owns it;
+     full-bleed chrome (status bar, dock, sticky headers) and content
+     components (cards, Celebration, rows) NEVER bake their own horizontal
+     padding. Change the gutter here, in one place. */
+  --screen-px: var(--s5);   /* 20px — horizontal page gutter */
+  --screen-pt: var(--s6);   /* 24px — body top, below the chrome */
+  --screen-pb: var(--s5);   /* 20px — body bottom, above the dock */
+
+  --radius-none: 0px; --radius-xs: 4px; --radius-sm: 8px; --radius-md: 14px; --radius-lg: 20px;
+  --radius-info-tile: 10px; --radius-interactive-tile: 12px;
+  --radius-segmented-inner: 18px; --radius-segmented-outer: 22px;
+  --radius-hero-card: 22px; --radius-profile-hero-bottom: 28px; --radius-profile-photo-bottom: 30px;
+  --radius-attended-tile: 18px;
+  --radius-pill: 999px;
+
+  --stroke-hairline: 1px;
+  --stroke-underline: 1.5px;
+  --stroke-selection: 3px;
+  --stroke-club-seal: 2px;
+}
+
+/* ============================================================================
+   4. ELEVATION — restrained shadows. Hairlines do most of the work.
+   ============================================================================ */
+:root {
+  --shadow-card:
+    0 4px 14px rgba(26,20,16,0.059),
+    0 1px 2px  rgba(26,20,16,0.039);
+  --shadow-raised:
+    0 8px 24px rgba(26,20,16,0.102),
+    0 1px 2px  rgba(26,20,16,0.059);
+  --shadow-overlay:
+    0 16px 40px rgba(26,20,16,0.18),
+    0 4px 8px   rgba(26,20,16,0.078);
+}
+
+/* ============================================================================
+   5. PHOTO GRADE — single warm-desaturated duotone applied at display time.
+      Apply to <img> (or wrap) inside an activity/photo surface. Tunable.
+   ============================================================================ */
+.catch-grade {
+  filter: saturate(0.78) contrast(1.04) brightness(0.97);
+}
+.catch-grade-warm::after {              /* optional warm multiply overlay */
+  content: ""; position: absolute; inset: 0;
+  background: rgba(120,80,50,0.10);
+  mix-blend-mode: multiply; pointer-events: none;
+}
+
+/* ============================================================================
+   6. TYPOGRAPHY — three roles, no competition.
+      Voice/headline = Archivo · Function = the PLATFORM font (SF / Roboto) · Data = IBM Plex Mono
+      Function/body deliberately uses the system default: native rendering,
+      free Dynamic Type behavior, one less font shipped. Brand personality
+      lives in voice (headlines) and data (labels), never in body text.
+   ============================================================================ */
+:root {
+  --font-voice: "Archivo", system-ui, sans-serif;
+  --font-function: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-data: "IBM Plex Mono", ui-monospace, monospace;
+  /* Event/headline surfaces (event titles, date rails, host names). Same Archivo
+     family as the voice — kept as a distinct token for the condensed treatment. */
+  --font-head: var(--font-voice);
+}
+
+/* Base */
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-function);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---- VOICE (Archivo) — titles, names, hero, reading text ---------------- */
+/* The 78% condensed width below is also the brand underpinning: the Catch
+   wordmark/nameplate is this exact cut. See Brand · wordmark and the
+   Type · "Archivo width — 78% system" specimen for the width decision. */
+.t-display   { font-family: var(--font-voice); font-stretch: 78%; font-size: 44px; font-weight: 600; line-height: 0.98; letter-spacing: -0.7px; }
+.t-headline  { font-family: var(--font-voice); font-stretch: 78%; font-size: 32px; font-weight: 600; line-height: 1.04; letter-spacing: -0.35px; }
+.t-headline-s{ font-family: var(--font-voice); font-stretch: 78%; font-size: 26px; font-weight: 600; line-height: 1.10; letter-spacing: -0.16px; }
+.t-title-l   { font-family: var(--font-voice); font-stretch: 78%; font-size: 20px; font-weight: 600; line-height: 1.16; letter-spacing: -0.1px;  }
+.t-profile-answer { font-family: var(--font-voice); font-stretch: 78%; font-size: 18px; font-weight: 600; line-height: 1.28; }
+.t-prose-l   { font-family: var(--font-voice); font-stretch: 78%; font-size: 16px; font-weight: 400; line-height: 1.55; }
+.t-prose-m   { font-family: var(--font-voice); font-stretch: 78%; font-size: 14px; font-weight: 400; line-height: 1.55; }
+/* Event/club names — Archivo, condensed slightly for the poster voice (no italic: Archivo ships roman only) */
+.t-event-display { font-family: var(--font-voice); font-size: 22px; font-weight: 600; font-stretch: 78%; line-height: 1.0; }
+
+/* ---- HEAD (Archivo condensed) — posters: event titles, host/person names --- */
+/* The condensed width IS the event/host treatment. --font-head === voice family. */
+.t-event-title  { font-family: var(--font-head); font-size: 36px; font-weight: 700; font-stretch: 78%; line-height: 1.0;  letter-spacing: -1px; }
+.t-console-title{ font-family: var(--font-head); font-size: 20px; font-weight: 800; font-stretch: 78%; line-height: 1.15; letter-spacing: -0.2px; }
+.t-hint         { font-family: var(--font-head); font-size: 16.5px; font-weight: 600; font-stretch: 78%; line-height: 1.25; letter-spacing: -0.2px; }
+.t-name         { font-family: var(--font-head); font-size: 15px; font-weight: 700; font-stretch: 78%; line-height: 1.2;  letter-spacing: -0.1px; }
+
+/* ---- FUNCTION (system font) — body, controls, dense UI, supporting copy -- */
+.t-section-title { font-family: var(--font-function); font-size: 16px; font-weight: 700; line-height: 1.22; }
+/* Bold system label — one step. `t-title-s` (small titles, chips, row values) and
+   `t-label-l` (tabs, lenses, menu labels) were 14/700 and 13/700; unified to one spec. */
+.t-title-s, .t-label-l { font-family: var(--font-function); font-size: 14px; font-weight: 700; line-height: 1.24; }
+.t-body-lead { font-family: var(--font-function); font-size: 16px; font-weight: 500; line-height: 1.42; color: var(--ink2); }
+.t-body-l    { font-family: var(--font-function); font-size: 16px; font-weight: 400; line-height: 1.5; }
+.t-body-m    { font-family: var(--font-function); font-size: 14px; font-weight: 400; line-height: 1.5; }
+.t-body-s    { font-family: var(--font-function); font-size: 13px; font-weight: 400; line-height: 1.45; color: var(--ink2); }
+.t-field-label { font-family: var(--font-function); font-size: 11.5px; font-weight: 500; line-height: 1.2; color: var(--ink3); }
+.t-button    { font-family: var(--font-function); font-size: 15px; font-weight: 600; line-height: 1.0; }
+.t-chat      { font-family: var(--font-function); font-size: 15px; font-weight: 400; line-height: 1.4; }
+
+/* ---- DATA (IBM Plex Mono) — kickers, labels, time, price, counts --------- */
+/* Render mono labels PRE-UPPERCASED in markup; tracking 0.12–0.18em. */
+.t-kicker    { font-family: var(--font-data); font-size: 11px; font-weight: 700; line-height: 1.15; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink2); font-feature-settings: "tnum" 1; }
+.t-kicker-lg { font-family: var(--font-data); font-size: 12px; font-weight: 700; line-height: 1.10; letter-spacing: 0.18em; text-transform: uppercase; font-feature-settings: "tnum" 1; }
+.t-mono-label{ font-family: var(--font-data); font-size: 11px; font-weight: 600; line-height: 1.15; letter-spacing: 0.13em; text-transform: uppercase; color: var(--ink2); font-feature-settings: "tnum" 1; }
+.t-mono      { font-family: var(--font-data); font-size: 13px; font-weight: 500; line-height: 1.4;  font-feature-settings: "tnum" 1; }
+.t-numeric-l { font-family: var(--font-data); font-size: 16px; font-weight: 700; line-height: 1.2;  font-feature-settings: "tnum" 1; }
+.t-stat-display { font-family: var(--font-data); font-size: 36px; font-weight: 700; line-height: 1.0; font-feature-settings: "tnum" 1; }
+.t-meta      { font-family: var(--font-data); font-size: 10.5px; font-weight: 600; line-height: 1.2; font-feature-settings: "tnum" 1; }
+.t-badge     { font-family: var(--font-data); font-size: 9px;  font-weight: 700; line-height: 1.1; letter-spacing: 0.08em; text-transform: uppercase; font-feature-settings: "tnum" 1; }
+.t-code      { font-family: var(--font-data); font-size: 26px; font-weight: 600; line-height: 1.0; font-feature-settings: "tnum" 1; }
+
+/* ---- Utility keyframes ---------------------------------------------------- */
+@keyframes ds-spin { to { transform: rotate(360deg); } }

@@ -2,7 +2,10 @@ import {type FormEvent, useCallback, useMemo, useState} from "react";
 import {trackMarketingEvent} from "../../analytics";
 import {claimFirebaseConfigured} from "../../firebaseConfig";
 import {hostListings} from "../organizers/data";
-import {isPublicApiEnabled, isUnclaimedListing} from "../organizers/selectors";
+import {
+  isClaimSubmissionEnabledListing,
+  isPublicApiEnabled,
+} from "../organizers/selectors";
 import type {HostListing} from "../organizers/types";
 import type {FormStatus} from "../../shared/forms/types";
 import {emptyClaimRouteState, type ClaimRouteState} from "./claimRouting";
@@ -64,7 +67,7 @@ export function useClaimFlowController(routeState: ClaimRouteState = emptyClaimR
 
   const searchResults = useMemo(() => {
     const normalized = query.trim().toLowerCase();
-    const claimableListings = hostListings.filter(isUnclaimedListing);
+    const claimableListings = hostListings.filter(isClaimSubmissionEnabledListing);
     if (normalized.length <= 1) return claimableListings.slice(0, 5);
     return claimableListings
       .filter((item) =>
@@ -144,9 +147,9 @@ export function useClaimFlowController(routeState: ClaimRouteState = emptyClaimR
 
     setStatus({message: "", tone: ""});
     trackMarketingEvent("claim_flow_submit_attempt", {
-      listing_id: listing.id,
+      club_id: listing.id,
+      claim_role: requesterRole,
       proof_count: parsedProofUrls.length,
-      requester_role: requesterRole,
       verification_method: verificationMethod,
     });
 
@@ -167,15 +170,15 @@ export function useClaimFlowController(routeState: ClaimRouteState = emptyClaimR
       });
       setStep("submitted");
       trackMarketingEvent("claim_flow_submitted", {
-        listing_id: listing.id,
+        club_id: listing.id,
+        claim_role: requesterRole,
         proof_count: parsedProofUrls.length,
-        requester_role: requesterRole,
         request_id: response.requestId,
       });
     } catch (error) {
       setStatus({message: readableError(error), tone: "is-error"});
       trackMarketingEvent("claim_flow_submit_error", {
-        listing_id: listing.id,
+        club_id: listing.id,
       });
     }
   }

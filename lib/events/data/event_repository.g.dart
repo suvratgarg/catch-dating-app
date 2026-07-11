@@ -353,6 +353,82 @@ final class WatchEventsForClubFamily extends $Family
   String toString() => r'watchEventsForClubProvider';
 }
 
+@ProviderFor(watchEventsForClubs)
+final watchEventsForClubsProvider = WatchEventsForClubsFamily._();
+
+final class WatchEventsForClubsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Event>>,
+          List<Event>,
+          Stream<List<Event>>
+        >
+    with $FutureModifier<List<Event>>, $StreamProvider<List<Event>> {
+  WatchEventsForClubsProvider._({
+    required WatchEventsForClubsFamily super.from,
+    required EventsForClubsQuery super.argument,
+  }) : super(
+         retry: null,
+         name: r'watchEventsForClubsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$watchEventsForClubsHash();
+
+  @override
+  String toString() {
+    return r'watchEventsForClubsProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<List<Event>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<Event>> create(Ref ref) {
+    final argument = this.argument as EventsForClubsQuery;
+    return watchEventsForClubs(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WatchEventsForClubsProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$watchEventsForClubsHash() =>
+    r'c739d8f639ebf58ef2c7c89936d18a26a5a104af';
+
+final class WatchEventsForClubsFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<List<Event>>, EventsForClubsQuery> {
+  WatchEventsForClubsFamily._()
+    : super(
+        retry: null,
+        name: r'watchEventsForClubsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  WatchEventsForClubsProvider call(EventsForClubsQuery query) =>
+      WatchEventsForClubsProvider._(argument: query, from: this);
+
+  @override
+  String toString() => r'watchEventsForClubsProvider';
+}
+
 @ProviderFor(watchAttendedEvents)
 final watchAttendedEventsProvider = WatchAttendedEventsFamily._();
 

@@ -44,6 +44,10 @@ test("buildEventSuccessScorecard computes event aggregates", () => {
       match("match-1", "LAST_MESSAGE_AT" as never),
       match("match-2", null),
       match("match-3", "LAST_MESSAGE_AT" as never, {status: "blocked"}),
+      match("host-inquiry", "LAST_MESSAGE_AT" as never, {
+        conversationType: "clubHostInquiry",
+        clubId: "club-1",
+      }),
     ],
     catchAggregates: {
       catchSentCount: 3,
@@ -183,6 +187,10 @@ test("buildEventHostFunnelMetrics computes the operating funnel", () => {
       match("match-1", "LAST_MESSAGE_AT" as never),
       match("match-2", null),
       match("match-3", null, {status: "blocked"}),
+      match("host-inquiry", "LAST_MESSAGE_AT" as never, {
+        conversationType: "clubHostInquiry",
+        clubId: "club-1",
+      }),
     ],
     catchAggregates: {
       catchSentCount: 5,
@@ -416,6 +424,66 @@ test(
   }
 );
 
+test(
+  "refreshEventSuccessScorecard excludes Host inquiries from " +
+    "connection metrics",
+  async () => {
+    const writes: Record<string, unknown> = {};
+    await refreshEventSuccessScorecard("event-1", {
+      firestore: () => fakeFirestore({
+        "events/event-1": {
+          clubId: "club-1",
+          bookedCount: 2,
+          checkedInCount: 2,
+        },
+        "eventParticipations/event-1_user-1": participation(
+          "user-1",
+          "attended",
+          {inviteLinkId: "link-1"}
+        ),
+        "eventParticipations/event-1_user-2": participation(
+          "user-2",
+          "attended"
+        ),
+        "eventInviteLinks/link-1": {
+          eventId: "event-1",
+          clubId: "club-1",
+        },
+        "matches/dating": match("dating", "LAST_MESSAGE_AT" as never, {
+          user1Id: "user-1",
+          user2Id: "user-2",
+          participantIds: ["user-1", "user-2"],
+        }),
+        "matches/host-inquiry": match(
+          "host-inquiry",
+          "LAST_MESSAGE_AT" as never,
+          {
+            user1Id: "user-1",
+            user2Id: "host-1",
+            participantIds: ["user-1", "host-1"],
+            conversationType: "clubHostInquiry",
+            clubId: "club-1",
+          }
+        ),
+      }, writes),
+      serverTimestamp: () => "SERVER_TIMESTAMP" as never,
+    });
+
+    const scorecard = writes["eventSuccessScorecards/event-1"] as Record<
+      string,
+      unknown
+    >;
+    assert.equal(scorecard.mutualMatchCount, 1);
+    assert.equal(scorecard.chatStartedCount, 1);
+    assert.deepEqual(writes["eventInviteLinks/link-1"], {
+      catcherCount: 0,
+      matchCount: 1,
+      chatStartedCount: 1,
+      updatedAt: "SERVER_TIMESTAMP",
+    });
+  }
+);
+
 test("writeEventSafetyReportIfNeeded stores safety review", async () => {
   const writes: Record<string, unknown> = {};
   await writeEventSafetyReportIfNeeded(
@@ -586,6 +654,10 @@ function queryDocs(
         }
         if (filter.operator === "in" && Array.isArray(filter.value)) {
           return filter.value.includes(row[filter.field]);
+        }
+        if (filter.operator === "array-contains") {
+          const values = row[filter.field];
+          return Array.isArray(values) && values.includes(filter.value);
         }
         throw new Error(`Unsupported operator ${filter.operator}`);
       });

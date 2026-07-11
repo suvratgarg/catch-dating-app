@@ -1,7 +1,5 @@
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
@@ -50,37 +48,20 @@ class ExploreBrowseHeaderContent extends StatelessWidget {
     );
 
     if (!chrome.showSearchAction) {
-      return Padding(
-        padding: CatchInsets.screenTitleBlock,
-        child: Row(
-          children: [
-            cityPicker,
-            gapW12,
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(chrome.title, style: CatchTextStyles.headline(context)),
-                  const SizedBox(height: CatchGaps.headerTitleToSubtitle),
-                  Text(
-                    chrome.subtitle,
-                    style: CatchTextStyles.supporting(context),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+      return CatchScreenHeaderTitle.block(
+        leading: cityPicker,
+        title: chrome.title,
+        padding: CatchInsets.screenTitleBlockCompact,
       );
     }
 
-    return CatchTopBar(
+    return CatchScreenTopBar(
       leading: cityPicker,
       title: chrome.title,
-      subtitle: chrome.subtitle,
       backgroundColor: backgroundColor ?? t.bg,
       applySafeArea: false,
+      height: CatchLayout.topBarHeight,
+      contentPadding: CatchInsets.screenControlRow,
       searchEnabled: true,
       searchValue: chrome.searchValue,
       onSearch: onQueryChanged,
@@ -100,6 +81,9 @@ class ExploreDiscoveryCoverHeader extends StatefulWidget {
     required this.cityPickerState,
     required this.onCitySelected,
     this.actions = const <Widget>[],
+    this.heroActions,
+    this.searchRequested,
+    this.onSearchRequestedChanged,
     this.onQueryChanged,
     this.onFeaturedEventSelected,
   });
@@ -109,6 +93,9 @@ class ExploreDiscoveryCoverHeader extends StatefulWidget {
   final ExploreCityPickerState cityPickerState;
   final ValueChanged<CityData>? onCitySelected;
   final List<Widget> actions;
+  final List<Widget>? heroActions;
+  final bool? searchRequested;
+  final ValueChanged<bool>? onSearchRequestedChanged;
   final ValueChanged<String>? onQueryChanged;
   final ValueChanged<ExploreEventItem>? onFeaturedEventSelected;
 
@@ -124,47 +111,24 @@ class _ExploreDiscoveryCoverHeaderState
   @override
   Widget build(BuildContext context) {
     final featuredItem = widget.featuredItem;
+    final searchRequested = widget.searchRequested ?? _searchRequested;
     final chrome = ExploreChromeState.discovery(
       query: widget.query,
-      searchRequested: _searchRequested,
+      searchRequested: searchRequested,
       hasFeaturedItem: featuredItem != null,
     );
     final coverItem = featuredItem;
 
     if (!chrome.showCoverStory || coverItem == null) {
-      final t = CatchTokens.of(context);
-      final topInset = MediaQuery.paddingOf(context).top;
       return ColoredBox(
-        color: t.bg,
-        child: Padding(
-          padding: CatchInsets.pageBody.copyWith(
-            top: topInset + CatchSpacing.s6,
-            bottom: CatchSpacing.s4,
-          ),
-          child: CatchTopBar(
-            leading: ExploreCityPicker(
-              state: widget.cityPickerState,
-              onSelected: widget.onCitySelected,
-            ),
-            title: chrome.title,
-            subtitle: chrome.subtitle,
-            backgroundColor: t.bg,
-            gutter: false,
-            applySafeArea: false,
-            searchEnabled: true,
-            searchExpanded: chrome.searchExpanded,
-            searchValue: chrome.searchValue,
-            searchAutofocus: chrome.searchAutofocus,
-            onSearchExpandedChanged: (expanded) {
-              if (_searchRequested == expanded) return;
-              setState(() => _searchRequested = expanded);
-            },
-            onSearch: widget.onQueryChanged,
-            searchPlaceholder: chrome.searchPlaceholder,
-            searchTooltip: chrome.searchTooltip,
-            searchSemanticLabel: chrome.searchSemanticLabel,
-            actions: widget.actions,
-          ),
+        color: CatchTokens.of(context).bg,
+        child: _ExploreDiscoveryTopBar(
+          chrome: chrome,
+          cityPickerState: widget.cityPickerState,
+          onCitySelected: widget.onCitySelected,
+          onQueryChanged: widget.onQueryChanged,
+          onSearchExpandedChanged: _setSearchRequested,
+          actions: widget.actions,
         ),
       );
     }
@@ -178,8 +142,89 @@ class _ExploreDiscoveryCoverHeaderState
       onCta: () => widget.onFeaturedEventSelected?.call(coverItem),
       data: coverState.timePriceLabel,
       data2: coverState.attendanceLabel,
-      showSearch: true,
-      onSearch: () => setState(() => _searchRequested = true),
+      chrome: _ExploreDiscoveryTopBar(
+        chrome: chrome,
+        cityPickerState: widget.cityPickerState,
+        onCitySelected: widget.onCitySelected,
+        onQueryChanged: widget.onQueryChanged,
+        onSearchExpandedChanged: _setSearchRequested,
+        actions: widget.heroActions ?? widget.actions,
+        backgroundColor: Colors.transparent,
+        onDarkBackdrop: true,
+      ),
+    );
+  }
+
+  void _setSearchRequested(bool expanded) {
+    widget.onSearchRequestedChanged?.call(expanded);
+    if (widget.searchRequested != null) return;
+    if (_searchRequested == expanded) return;
+    setState(() => _searchRequested = expanded);
+  }
+}
+
+class _ExploreDiscoveryTopBar extends StatelessWidget {
+  const _ExploreDiscoveryTopBar({
+    required this.chrome,
+    required this.cityPickerState,
+    required this.onCitySelected,
+    required this.onQueryChanged,
+    required this.onSearchExpandedChanged,
+    required this.actions,
+    this.backgroundColor,
+    this.onDarkBackdrop = false,
+  });
+
+  final ExploreChromeState chrome;
+  final ExploreCityPickerState cityPickerState;
+  final ValueChanged<CityData>? onCitySelected;
+  final ValueChanged<String>? onQueryChanged;
+  final ValueChanged<bool> onSearchExpandedChanged;
+  final List<Widget> actions;
+  final Color? backgroundColor;
+  final bool onDarkBackdrop;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final darkTokens = CatchTokens.dark;
+    final foreground = onDarkBackdrop ? darkTokens.ink : null;
+    final mutedForeground = onDarkBackdrop ? darkTokens.darkMutedInk : null;
+    final transparentControlFill = onDarkBackdrop ? Colors.transparent : null;
+    final transparentControlRule = onDarkBackdrop ? Colors.transparent : null;
+    final topBar = CatchScreenTopBar(
+      leading: ExploreCityPicker(
+        state: cityPickerState,
+        onSelected: onCitySelected,
+        foregroundColor: foreground,
+        backgroundColor: transparentControlFill,
+        borderColor: transparentControlRule,
+      ),
+      title: chrome.title,
+      backgroundColor: backgroundColor ?? t.bg,
+      height: CatchLayout.topBarHeight,
+      contentPadding: CatchInsets.screenControlRow,
+      searchEnabled: true,
+      searchExpanded: chrome.searchExpanded,
+      searchValue: chrome.searchValue,
+      searchAutofocus: chrome.searchAutofocus,
+      onSearchExpandedChanged: onSearchExpandedChanged,
+      onSearch: onQueryChanged,
+      searchPlaceholder: chrome.searchPlaceholder,
+      searchTooltip: chrome.searchTooltip,
+      searchSemanticLabel: chrome.searchSemanticLabel,
+      searchBackgroundColor: transparentControlFill,
+      searchBorderColor: transparentControlRule,
+      searchForegroundColor: foreground,
+      searchMutedForegroundColor: mutedForeground,
+      actions: actions,
+    );
+    if (!onDarkBackdrop) return topBar;
+    return Theme(
+      data: Theme.of(
+        context,
+      ).copyWith(extensions: const <ThemeExtension<dynamic>>[CatchTokens.dark]),
+      child: topBar,
     );
   }
 }

@@ -6,7 +6,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_analytics_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_analytics_kit.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
@@ -17,7 +17,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class UserAnalyticsPanel extends ConsumerStatefulWidget {
-  const UserAnalyticsPanel({super.key});
+  const UserAnalyticsPanel({super.key, this.showSectionTitle = true});
+
+  final bool showSectionTitle;
 
   @override
   ConsumerState<UserAnalyticsPanel> createState() => _UserAnalyticsPanelState();
@@ -32,36 +34,23 @@ class _UserAnalyticsPanelState extends ConsumerState<UserAnalyticsPanel> {
     final reportAsync = ref.watch(userAnalyticsProvider(query));
 
     return CatchSection.divided(
-      title: UserAnalyticsCopy.sectionTitle,
+      title: widget.showSectionTitle ? UserAnalyticsCopy.sectionTitle : null,
+      first: !widget.showSectionTitle,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchOptionGroup<UserAnalyticsRangePreset>(
-            selected: _rangePreset,
-            onChanged: (preset) => setState(() => _rangePreset = preset),
-            variant: CatchOptionGroupVariant.mono,
-            options: [
-              CatchOption(
-                value: UserAnalyticsRangePreset.sevenDays,
-                label: UserAnalyticsCopy
-                    .rangeLabels[UserAnalyticsRangePreset.sevenDays]!,
-              ),
-              CatchOption(
-                value: UserAnalyticsRangePreset.thirtyDays,
-                label: UserAnalyticsCopy
-                    .rangeLabels[UserAnalyticsRangePreset.thirtyDays]!,
-              ),
-              CatchOption(
-                value: UserAnalyticsRangePreset.ninetyDays,
-                label: UserAnalyticsCopy
-                    .rangeLabels[UserAnalyticsRangePreset.ninetyDays]!,
-              ),
-              CatchOption(
-                value: UserAnalyticsRangePreset.month,
-                label: UserAnalyticsCopy
-                    .rangeLabels[UserAnalyticsRangePreset.month]!,
-              ),
-            ],
+          CatchField.select<UserAnalyticsRangePreset>(
+            title: UserAnalyticsCopy.rangeTitle,
+            values: UserAnalyticsRangePreset.values
+                .where((preset) => preset != UserAnalyticsRangePreset.custom)
+                .toList(growable: false),
+            value: _rangePreset,
+            itemLabel: UserAnalyticsCopy.rangeLabel,
+            prefixIcon: Icon(CatchIcons.calendarMonthOutlined),
+            onChanged: (preset) {
+              if (preset == null) return;
+              setState(() => _rangePreset = preset);
+            },
           ),
           gapH16,
           reportAsync.when(

@@ -76,9 +76,9 @@ export function useListingClaimController(listing: HostListing) {
 
     setStatus({message: "", tone: ""});
     trackMarketingEvent("listing_claim_submit_attempt", {
-      listing_id: listing.id,
+      club_id: listing.id,
+      claim_role: requesterRole,
       proof_count: proofUrls.length,
-      requester_role: requesterRole,
     });
 
     try {
@@ -97,9 +97,9 @@ export function useListingClaimController(listing: HostListing) {
         tone: "is-success",
       });
       trackMarketingEvent("listing_claim_submitted", {
-        listing_id: listing.id,
+        club_id: listing.id,
+        claim_role: requesterRole,
         proof_count: proofUrls.length,
-        requester_role: requesterRole,
       });
     } catch (error) {
       setStatus({
@@ -110,7 +110,7 @@ export function useListingClaimController(listing: HostListing) {
         tone: "is-error",
       });
       trackMarketingEvent("listing_claim_submit_error", {
-        listing_id: listing.id,
+        club_id: listing.id,
       });
     }
   }

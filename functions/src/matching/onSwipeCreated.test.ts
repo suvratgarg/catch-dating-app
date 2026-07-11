@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {onSwipeCreatedHandler} from "./onSwipeCreated";
+import {
+  datingMatchIdForPair,
+  onSwipeCreatedHandler,
+} from "./onSwipeCreated";
 import {
   SwipeDocument,
 } from "../shared/generated/firestoreAdminTypes";
@@ -138,6 +141,55 @@ test("onSwipeCreatedHandler appends event ids to an existing match", async (
   });
   assert.deepEqual(refreshed, ["event-3", "event-2"]);
 });
+
+test(
+  "onSwipeCreatedHandler keeps a legacy Host inquiry separate from dating",
+  async () => {
+    const created: Record<string, unknown> = {};
+    const updated: Record<string, unknown> = {};
+    const legacyInquiry = {
+      user1Id: "user-a",
+      user2Id: "user-b",
+      participantIds: ["user-a", "user-b"],
+      eventIds: [],
+      conversationType: "clubHostInquiry",
+      clubId: "club-1",
+      status: "active",
+    };
+
+    await onSwipeCreatedHandler(
+      {
+        swiperId: "user-b",
+        targetId: "user-a",
+        swipeData: swipe("user-b", "user-a", "event-2", "like"),
+      },
+      deps({
+        docs: {
+          "profileDecisions/user-a/outgoing/user-b": swipe(
+            "user-a",
+            "user-b",
+            "event-1",
+            "like"
+          ),
+          "matches/user-a_user-b": legacyInquiry,
+        },
+        created,
+        updated,
+      })
+    );
+
+    const opaqueId = datingMatchIdForPair("user-a", "user-b");
+    const datingMatch = created[`matches/${opaqueId}`] as Record<
+      string,
+      unknown
+    >;
+    assert.equal(datingMatch.conversationType, "match");
+    assert.deepEqual(datingMatch.eventIds, ["event-1", "event-2"]);
+    assert.equal(updated["matches/user-a_user-b"], undefined);
+    assert.equal(legacyInquiry.conversationType, "clubHostInquiry");
+    assert.equal(legacyInquiry.clubId, "club-1");
+  }
+);
 
 test(
   "onSwipeCreatedHandler ignores non-reciprocal and blocked likes",

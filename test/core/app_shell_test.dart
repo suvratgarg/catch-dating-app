@@ -1,15 +1,16 @@
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
-import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
-import 'package:catch_dating_app/core/widgets/catch_tab_dock.dart';
+import 'package:catch_dating_app/core/widgets/catch_tab_bar.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -60,7 +61,7 @@ void main() {
     expect(labelRect.right, lessThanOrEqualTo(boxRect.right));
   });
 
-  testWidgets('iOS navigation bar keeps native tab metrics with large text', (
+  testWidgets('iOS navigation bar uses floating adaptive chrome', (
     tester,
   ) async {
     final previousPlatformOverride = debugDefaultTargetPlatformOverride;
@@ -90,18 +91,69 @@ void main() {
         ),
       );
 
-      final tabBar = tester.widget<CupertinoTabBar>(
-        find.byKey(AppShellKeys.navigationBar),
+      expect(find.byType(CatchTabBar<int>), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('catch_tab_bar.floating_chrome')),
+        findsOneWidget,
       );
-      expect(tabBar.height, 50);
-      expect(tabBar.iconSize, 30);
+      final floatingChrome = tester.widget<ClipRRect>(
+        find.byKey(const ValueKey('catch_tab_bar.floating_chrome')),
+      );
+      expect(
+        floatingChrome.borderRadius,
+        BorderRadius.circular(CatchRadius.pill),
+      );
+      expect(find.byType(CupertinoTabBar), findsNothing);
+      expect(find.text('Home'), findsOneWidget);
+      expect(find.text('Explore'), findsNothing);
+      expect(find.bySemanticsLabel('Catches'), findsNothing);
+      expect(find.bySemanticsLabel(RegExp('Chats')), findsOneWidget);
+      expect(find.bySemanticsLabel('You'), findsOneWidget);
 
-      final labelContext = tester.element(find.text('Home'));
-      expect(MediaQuery.textScalerOf(labelContext).scale(10), 10);
-      expect(tester.getSize(find.text('Home')).height, lessThan(14));
-
-      await tester.tap(find.text('Explore'));
+      await tester.tap(find.bySemanticsLabel('Explore'));
       expect(tappedIndex, 1);
+    } finally {
+      debugDefaultTargetPlatformOverride = previousPlatformOverride;
+    }
+  });
+
+  testWidgets('iOS floating navigation keeps selected end tab close to edge', (
+    tester,
+  ) async {
+    final previousPlatformOverride = debugDefaultTargetPlatformOverride;
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+
+    try {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: const MediaQuery(
+            data: MediaQueryData(
+              size: Size(393, 852),
+              padding: EdgeInsets.only(bottom: 34),
+              viewPadding: EdgeInsets.only(bottom: 34),
+            ),
+            child: Scaffold(
+              body: SizedBox.expand(),
+              bottomNavigationBar: AppShellNavigationBar(
+                currentIndex: 3,
+                unreadCount: 0,
+                onDestinationSelected: _noopTabSelection,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final chromeRect = tester.getRect(
+        find.byKey(const ValueKey('catch_tab_bar.floating_chrome')),
+      );
+      final selectedRect = tester.getRect(find.bySemanticsLabel('You'));
+
+      expect(
+        chromeRect.right - selectedRect.right,
+        closeTo(CatchLayout.tabBarFloatingContentHorizontalPadding, 0.5),
+      );
     } finally {
       debugDefaultTargetPlatformOverride = previousPlatformOverride;
     }
@@ -120,18 +172,18 @@ void main() {
             unreadCount: 4,
             items: [
               AppShellNavigationItem(
-                label: 'Events',
-                materialIcon: CatchIcons.calendarMonthOutlined,
-                materialSelectedIcon: CatchIcons.calendarMonthOutlined,
-                cupertinoIcon: CupertinoIcons.calendar,
-                cupertinoSelectedIcon: CupertinoIcons.calendar,
+                label: 'Today',
+                materialIcon: CatchIcons.tabHome,
+                materialSelectedIcon: CatchIcons.tabHomeFilled,
+                cupertinoIcon: CatchIcons.tabHome,
+                cupertinoSelectedIcon: CatchIcons.tabHomeFilled,
               ),
               AppShellNavigationItem(
-                label: 'Clubs',
-                materialIcon: CatchIcons.groupsOutlined,
-                materialSelectedIcon: CatchIcons.groupsRounded,
-                cupertinoIcon: CupertinoIcons.person_2,
-                cupertinoSelectedIcon: CupertinoIcons.person_2_fill,
+                label: 'Events',
+                materialIcon: CatchIcons.tabEvents,
+                materialSelectedIcon: CatchIcons.tabEventsFilled,
+                cupertinoIcon: CatchIcons.tabEvents,
+                cupertinoSelectedIcon: CatchIcons.tabEventsFilled,
               ),
               AppShellNavigationItem(
                 label: 'Inbox',
@@ -142,11 +194,11 @@ void main() {
                 showsUnreadBadge: true,
               ),
               AppShellNavigationItem(
-                label: 'Account',
-                materialIcon: CatchIcons.settingsOutlined,
-                materialSelectedIcon: CatchIcons.settingsOutlined,
-                cupertinoIcon: CupertinoIcons.gear,
-                cupertinoSelectedIcon: CupertinoIcons.gear,
+                label: 'Organizer',
+                materialIcon: CatchIcons.tabOrganizer,
+                materialSelectedIcon: CatchIcons.tabOrganizerFilled,
+                cupertinoIcon: CatchIcons.tabOrganizer,
+                cupertinoSelectedIcon: CatchIcons.tabOrganizerFilled,
               ),
             ],
             onDestinationSelected: (index) => tappedIndex = index,
@@ -155,17 +207,63 @@ void main() {
       ),
     );
 
-    expect(find.byType(CatchTabDock<int>), findsOneWidget);
+    expect(find.byType(CatchTabBar<int>), findsOneWidget);
     expect(find.byType(NavigationBar), findsNothing);
     expect(find.text('HOME'), findsNothing);
-    expect(find.text('EVENTS'), findsOneWidget);
-    expect(find.text('CLUBS'), findsOneWidget);
-    expect(find.text('INBOX'), findsOneWidget);
-    expect(find.text('ACCOUNT'), findsOneWidget);
+    expect(find.text('Today'), findsNothing);
+    expect(find.text('Events'), findsNothing);
+    expect(find.text('Inbox'), findsOneWidget);
+    expect(find.text('Organizer'), findsNothing);
     expect(find.text('4'), findsOneWidget);
 
-    await tester.tap(find.text('ACCOUNT'));
+    await tester.tap(find.bySemanticsLabel('Organizer'));
     expect(tappedIndex, 3);
+  });
+
+  testWidgets('navigation bar selection fires haptic feedback', (tester) async {
+    final calls = <MethodCall>[];
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      (call) async {
+        calls.add(call);
+        return null;
+      },
+    );
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        null,
+      ),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: Scaffold(
+          body: const SizedBox.expand(),
+          bottomNavigationBar: AppShellNavigationBar(
+            currentIndex: 0,
+            unreadCount: 0,
+            onDestinationSelected: (_) {},
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.bySemanticsLabel('Explore'));
+
+    expect(
+      calls,
+      contains(
+        isA<MethodCall>()
+            .having((call) => call.method, 'method', 'HapticFeedback.vibrate')
+            .having(
+              (call) => call.arguments,
+              'arguments',
+              'HapticFeedbackType.selectionClick',
+            ),
+      ),
+    );
   });
 
   test('app notice controller dedupes notices by key', () {
@@ -258,3 +356,5 @@ void main() {
     expect(find.text('New match'), findsNothing);
   });
 }
+
+void _noopTabSelection(int _) {}

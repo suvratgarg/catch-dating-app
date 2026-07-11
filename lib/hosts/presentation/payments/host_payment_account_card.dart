@@ -66,9 +66,8 @@ class HostPaymentAccountCard extends StatelessWidget {
     final country = account?.country ?? derivedCountry;
     final currency = account?.defaultCurrency ?? derivedCurrency;
 
-    await showModalBottomSheet<void>(
+    await showCatchBottomSheet<void>(
       context: context,
-      isScrollControlled: true,
       backgroundColor: t.bg,
       barrierColor: t.overlay,
       shape: const RoundedRectangleBorder(

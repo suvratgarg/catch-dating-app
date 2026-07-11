@@ -2,77 +2,34 @@
 # frozen_string_literal: true
 
 require 'fileutils'
+require 'json'
 require 'xcodeproj'
 
 REPO_ROOT = File.expand_path('../..', __dir__)
-
-CONSUMER_FLAVORS = {
-  'dev' => {
-    bundle_id: 'com.catchdates.app.dev',
-    app_name: 'Catch Dev',
-    firebase_env: 'dev',
-    firebase_role: 'consumer',
-    firebase_role_path: '',
-    app_icon: 'AppIcon-dev',
-    ios_url_scheme: 'app-1-619661127800-ios-e9456edea3f2427f077d8d',
-    maps_key_suffix: 'DEV'
-  },
-  'staging' => {
-    bundle_id: 'com.catchdates.app.staging',
-    app_name: 'Catch Staging',
-    firebase_env: 'staging',
-    firebase_role: 'consumer',
-    firebase_role_path: '',
-    app_icon: 'AppIcon-staging',
-    ios_url_scheme: 'app-1-822303414140-ios-6bae8cc0e1781e890c76f9',
-    maps_key_suffix: 'STAGING'
-  },
-  'prod' => {
-    bundle_id: 'com.catchdates.app',
-    app_name: 'Catch',
-    firebase_env: 'prod',
-    firebase_role: 'consumer',
-    firebase_role_path: '',
-    app_icon: 'AppIcon',
-    ios_url_scheme: 'app-1-574779808785-ios-49b1ce51418604b78ea5b0',
-    maps_key_suffix: 'PROD'
-  }
-}.freeze
-
-HOST_FLAVORS = {
-  'host-dev' => {
-    bundle_id: 'com.catchdates.host.dev',
-    app_name: 'Catch Host Dev',
-    firebase_env: 'dev',
-    firebase_role: 'host',
-    firebase_role_path: 'host/',
-    app_icon: 'AppIcon-host-dev',
-    ios_url_scheme: 'app-1-619661127800-ios-730bbfd6550efac0077d8d',
-    maps_key_suffix: 'DEV'
-  },
-  'host-staging' => {
-    bundle_id: 'com.catchdates.host.staging',
-    app_name: 'Catch Host Staging',
-    firebase_env: 'staging',
-    firebase_role: 'host',
-    firebase_role_path: 'host/',
-    app_icon: 'AppIcon-host-staging',
-    ios_url_scheme: 'app-1-822303414140-ios-1faa9261df8f53970c76f9',
-    maps_key_suffix: 'STAGING'
-  },
-  'host-prod' => {
-    bundle_id: 'com.catchdates.host',
-    app_name: 'Catch Host',
-    firebase_env: 'prod',
-    firebase_role: 'host',
-    firebase_role_path: 'host/',
-    app_icon: 'AppIcon-host-prod',
-    ios_url_scheme: 'app-1-574779808785-ios-dafe636b607e071f8ea5b0',
-    maps_key_suffix: 'PROD'
-  }
-}.freeze
-
-FLAVORS = CONSUMER_FLAVORS.merge(HOST_FLAVORS).freeze
+APP_TARGETS_PATH = File.join(REPO_ROOT, 'tool', 'app_targets.json')
+APP_TARGETS = JSON.parse(File.read(APP_TARGETS_PATH)).freeze
+FLAVORS = APP_TARGETS.fetch('targets').to_h do |target|
+  role = target.fetch('role')
+  environment = target.fetch('environment')
+  ios = target.fetch('ios')
+  role_config = APP_TARGETS.fetch('roles').fetch(role)
+  [
+    ios.fetch('scheme'),
+    {
+      target_id: target.fetch('id'),
+      flutter_target: target.fetch('entrypoint'),
+      bundle_id: ios.fetch('bundleId'),
+      app_name: target.fetch('displayName'),
+      firebase_env: environment,
+      firebase_role: role,
+      firebase_role_path: role == 'host' ? 'host/' : '',
+      app_icon: ios.fetch('iconSet'),
+      ios_url_scheme: ios.fetch('urlScheme'),
+      entitlements: role_config.fetch('iosEntitlements').sub(%r{\Aios/}, ''),
+      maps_key_suffix: environment.upcase
+    }.freeze
+  ]
+end.freeze
 
 BUILD_MODES = {
   'Debug' => :debug,
@@ -208,9 +165,14 @@ def configure_ios
           'PRODUCT_NAME' => settings[:app_name],
           'APP_DISPLAY_NAME' => settings[:app_name],
           'ASSETCATALOG_COMPILER_APPICON_NAME' => settings[:app_icon],
+          'CODE_SIGN_ENTITLEMENTS' => settings[:entitlements],
+          'CATCH_APP_TARGET_ID' => settings[:target_id],
+          'FLUTTER_TARGET' => "$(SRCROOT)/../#{settings[:flutter_target]}",
+          'FLAVOR' => flavor,
           'FIREBASE_ENV' => settings[:firebase_env],
           'FIREBASE_ROLE' => settings[:firebase_role],
-          'FIREBASE_ROLE_PATH' => settings[:firebase_role_path]
+          'FIREBASE_ROLE_PATH' => settings[:firebase_role_path],
+          'FIREBASE_IOS_URL_SCHEME' => settings[:ios_url_scheme]
         },
         template_name: mode
       )
@@ -275,6 +237,9 @@ def configure_macos
           'PRODUCT_BUNDLE_IDENTIFIER' => settings[:bundle_id],
           'PRODUCT_NAME' => settings[:app_name],
           'ASSETCATALOG_COMPILER_APPICON_NAME' => settings[:app_icon],
+          'CATCH_APP_TARGET_ID' => settings[:target_id],
+          'FLUTTER_TARGET' => "$(SRCROOT)/../#{settings[:flutter_target]}",
+          'FLAVOR' => flavor,
           'FIREBASE_ENV' => settings[:firebase_env],
           'FIREBASE_ROLE' => settings[:firebase_role],
           'FIREBASE_ROLE_PATH' => settings[:firebase_role_path]

@@ -33,6 +33,7 @@ class CatchCoverStory extends StatelessWidget {
     this.onLocation,
     this.showSearch = false,
     this.onSearch,
+    this.chrome,
     this.radius = 0,
   });
 
@@ -52,6 +53,7 @@ class CatchCoverStory extends StatelessWidget {
   final VoidCallback? onLocation;
   final bool showSearch;
   final VoidCallback? onSearch;
+  final Widget? chrome;
   final double radius;
 
   @override
@@ -63,7 +65,10 @@ class CatchCoverStory extends StatelessWidget {
         : ActivityPalette.resolve(context, activityKind!);
     final accent = activity?.accent ?? d.primary;
     final deep = activity?.deep ?? d.primary;
-    final hasChrome = (location != null && location!.isNotEmpty) || showSearch;
+    final hasChrome =
+        chrome != null ||
+        (location != null && location!.isNotEmpty) ||
+        showSearch;
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(radius),
@@ -109,7 +114,10 @@ class CatchCoverStory extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (hasChrome) CoverStoryChrome(paper: paper, story: this),
+                if (chrome != null)
+                  chrome!
+                else if (hasChrome)
+                  CoverStoryChrome(paper: paper, story: this),
                 Padding(
                   padding: CatchInsets.pageBody.copyWith(
                     top: CatchSpacing.s11,

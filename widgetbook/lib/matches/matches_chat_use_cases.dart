@@ -196,16 +196,16 @@ Widget matchesListConsumerRouteStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Host inbox states',
+  name: 'Legacy shared Host list states',
   type: ChatsListScreen,
-  path: '[P1 product surfaces]/Matches and chat',
+  path: '[P2 supporting surfaces]/Matches and chat',
 )
 Widget matchesListHostInboxStates(BuildContext context) {
   return _AppRoleBoundary(
     role: AppRole.host,
     child: _MatchesCatalog(
-      title: 'ChatsListScreen host inbox',
-      contractId: 'screen.host.inbox + screen.matches.list',
+      title: 'Legacy ChatsListScreen Host branch',
+      contractId: 'component.messaging.legacy_host_list',
       children: [
         _StateCard(
           label: 'uid loading',
@@ -403,16 +403,16 @@ Widget matchesListHostInboxStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Sheet states',
+  name: 'Legacy review sheet',
   type: HostBroadcastComposerSheet,
-  path: '[P1 product surfaces]/Matches and chat/Host inbox',
+  path: '[P2 supporting surfaces]/Matches and chat',
 )
 Widget hostBroadcastComposerSheetStates(BuildContext context) {
   return _AppRoleBoundary(
     role: AppRole.host,
     child: _MatchesCatalog(
-      title: 'HostBroadcastComposerSheet',
-      contractId: 'sheet.host.broadcast_composer',
+      title: 'Legacy Host broadcast review sheet',
+      contractId: 'component.messaging.legacy_broadcast_review',
       children: const [
         _StateCard(
           label: 'template review surface',
@@ -686,7 +686,11 @@ Widget hostInboxBroadcastCardStates(BuildContext context) {
             height: 132,
             child: Padding(
               padding: CatchInsets.content,
-              child: HostInboxBroadcastCard(threadCount: 8),
+              child: HostInboxBroadcastCard(
+                audienceCount: 8,
+                audienceLabel: 'attendee',
+                subtitle: 'Reminders, the meeting point, changes',
+              ),
             ),
           ),
         ),
@@ -2033,7 +2037,10 @@ class _HostUnreadOnlyInbox extends StatelessWidget {
           slivers: [
             ...CatchSliverHeader(
               title: const SizedBox.shrink(),
-              bottomHeight: chatsBrowseHeaderHeight(hasHostFilter: true),
+              bottomHeight: chatsBrowseHeaderHeight(
+                hasHostFilter: true,
+                hasHeaderSubtitle: true,
+              ),
               bottom: ChatsBrowseHeader(
                 showSearchAction: true,
                 searchValue: '',

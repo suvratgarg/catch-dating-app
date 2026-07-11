@@ -1,0 +1,500 @@
+{
+  "$schema": "catch.design-source-pack/v1",
+  "id": "host-v2",
+  "importedAt": "2026-07-10",
+  "upstream": {
+    "label": "Catch Design System (1)",
+    "kind": "local-handoff"
+  },
+  "scope": {
+    "product": "host",
+    "description": "Pinned Host redesign decisions, route coverage, templates, shared Host reference templates, and fixtures."
+  },
+  "entrypoints": [
+    "Host App Decisions.html",
+    "host-app-manifest.json",
+    "Host App.html"
+  ],
+  "files": [
+    {
+      "path": "_ds_bundle.js",
+      "sha256": "32185676a22d3e25741d3450cb0d80ab48ec02dfd0368f7afd89a8eb5ae0e5de"
+    },
+    {
+      "path": "APPS.md",
+      "sha256": "c7a1000cab27ff6b3d033e16202d85b705315719bde23026d558c753e892498e"
+    },
+    {
+      "path": "assets/activity-icons.md",
+      "sha256": "4b037fb16daa8f741ab2aa6d8bb853c81f01ed2be41e629f54df3a3f7f1d2d7a"
+    },
+    {
+      "path": "assets/sample-portrait.jpg",
+      "sha256": "8371696c52d38941d7f61f92e4629ba9897d6645c36c9e912bf23b077608787f"
+    },
+    {
+      "path": "colors_and_type.css",
+      "sha256": "c63456a4a328c8e128397518c667ce1bef62f0f5542465302c23649326f4a4ed"
+    },
+    {
+      "path": "COMPOSITION.md",
+      "sha256": "5e6c0a2ee44d349f2cd809e7bdfc96ae9368a5b39ae2afeba33842bfe90fa8fb"
+    },
+    {
+      "path": "explorations/archived-templates/host-account/.thumbnail",
+      "sha256": "978b770e50b9032d41813f8c8cee661a16177d16d3b621289215d86c8ce7a7cb"
+    },
+    {
+      "path": "explorations/archived-templates/host-account/ds-base.js",
+      "sha256": "43b511e044fc96d947070ada60e0aa9df8a0d4a1b174eb454558dcbba1017808"
+    },
+    {
+      "path": "explorations/archived-templates/host-account/HostAccount.dc.html",
+      "sha256": "b4f6f9a569160331967bc2298a5bfc5dae117d74dea3fd9f6145cbc05074b1a0"
+    },
+    {
+      "path": "explorations/archived-templates/host-account/support.js",
+      "sha256": "505f94e08eeccbc87acc6fcc6a47dd9f51fcd74a8d28ab58eb7eb784f7b92efe"
+    },
+    {
+      "path": "explorations/archived-templates/host-clubs/.thumbnail",
+      "sha256": "1b49ae7ce2b9b035143153a5475cfad71422f6c3c9f25257ac128e7c60406b19"
+    },
+    {
+      "path": "explorations/archived-templates/host-clubs/ds-base.js",
+      "sha256": "43b511e044fc96d947070ada60e0aa9df8a0d4a1b174eb454558dcbba1017808"
+    },
+    {
+      "path": "explorations/archived-templates/host-clubs/HostClubs.dc.html",
+      "sha256": "e9b2a377ce60eddee938ad78edc236b2b300892ff99b9e0a89e09e972ccb9319"
+    },
+    {
+      "path": "explorations/archived-templates/host-clubs/support.js",
+      "sha256": "505f94e08eeccbc87acc6fcc6a47dd9f51fcd74a8d28ab58eb7eb784f7b92efe"
+    },
+    {
+      "path": "explorations/archived-templates/host-clubs/tweaks-panel.jsx",
+      "sha256": "6591467622edc7b2425def3fcf6447556fa698a1d10090583ebb9e782da064b5"
+    },
+    {
+      "path": "explorations/archived-templates/host-event-manage/.thumbnail",
+      "sha256": "70e46fdf80ca8f0eb5086095c1c444272d2619f745c54c0af687b1ecc9473d10"
+    },
+    {
+      "path": "explorations/archived-templates/host-event-manage/ds-base.js",
+      "sha256": "7c2d6e9a16a9f2294db509f690802904f3db65e609de381e00dfda227211a720"
+    },
+    {
+      "path": "explorations/archived-templates/host-event-manage/HostEventManage.dc.html",
+      "sha256": "e0892ee49d5e546b560cc63c9c29b390c8ee1f0dcd80ebb858218bbc8c297ab2"
+    },
+    {
+      "path": "explorations/archived-templates/host-event-manage/support.js",
+      "sha256": "3ad816ffc85526eec04afac6527ce5fbdcd4d31c602b1de969243aaaa26699ed"
+    },
+    {
+      "path": "explorations/archived-templates/host-event-manage/tweaks-panel.jsx",
+      "sha256": "6591467622edc7b2425def3fcf6447556fa698a1d10090583ebb9e782da064b5"
+    },
+    {
+      "path": "explorations/archived-templates/host-events/.thumbnail",
+      "sha256": "f8162f2070af43971839e44e729e2ac5605cb3bc9c1a2fc16e840ce0716721ff"
+    },
+    {
+      "path": "explorations/archived-templates/host-events/ds-base.js",
+      "sha256": "43b511e044fc96d947070ada60e0aa9df8a0d4a1b174eb454558dcbba1017808"
+    },
+    {
+      "path": "explorations/archived-templates/host-events/HostEvents.dc.html",
+      "sha256": "cc97044873737531834552faac81719fe96db21d4e3d75e8505da3a9e87a7ba1"
+    },
+    {
+      "path": "explorations/archived-templates/host-events/support.js",
+      "sha256": "3ad816ffc85526eec04afac6527ce5fbdcd4d31c602b1de969243aaaa26699ed"
+    },
+    {
+      "path": "explorations/archived-templates/host-events/tweaks-panel.jsx",
+      "sha256": "6591467622edc7b2425def3fcf6447556fa698a1d10090583ebb9e782da064b5"
+    },
+    {
+      "path": "explorations/archived-templates/host-inbox/.thumbnail",
+      "sha256": "9cf4aa6496e4063cddf5bf351442f8fc21b29dafbfb886295ef9bb3d4758912f"
+    },
+    {
+      "path": "explorations/archived-templates/host-inbox/ds-base.js",
+      "sha256": "43b511e044fc96d947070ada60e0aa9df8a0d4a1b174eb454558dcbba1017808"
+    },
+    {
+      "path": "explorations/archived-templates/host-inbox/HostInbox.dc.html",
+      "sha256": "c18832e8d2dc1afdda1385a81b2d53930d637f8e0fba6baa823e0144820a967c"
+    },
+    {
+      "path": "explorations/archived-templates/host-inbox/support.js",
+      "sha256": "3ad816ffc85526eec04afac6527ce5fbdcd4d31c602b1de969243aaaa26699ed"
+    },
+    {
+      "path": "explorations/host-ia-review/HostIAReview.html",
+      "sha256": "f60490c0a9a69588af9222dcf6ee6e243897249aeb4e021a0322cd3bc3235dfe"
+    },
+    {
+      "path": "explorations/host-redesign/_CONSOLIDATED.md",
+      "sha256": "316c99760a0872c6430c7d164f23cbdc6c543e9372fe4f6d9a62a061d9a47b5d"
+    },
+    {
+      "path": "explorations/host-redesign/CalendarPrimitive.html",
+      "sha256": "edb6337685e2e40168d62d9e123bf620015b4a0b9fd2cac6f32c703710055d36"
+    },
+    {
+      "path": "explorations/host-redesign/CatchForOrganizers-v2.html",
+      "sha256": "01433cc31ff39698c642e58b134108d67ababd61c4d4f346d82728afea92d52c"
+    },
+    {
+      "path": "explorations/host-redesign/CatchForOrganizers.html",
+      "sha256": "cad8fd9cf7950cbe799945611d07abe56ecad4045b43394577c2ae81aeef06a9"
+    },
+    {
+      "path": "explorations/host-redesign/Flows.html",
+      "sha256": "54a01838c160a2da1ffdfabd18177bb8c4c8261cb1a202c5c3391026f2fd2076"
+    },
+    {
+      "path": "explorations/host-redesign/NEW_WIDGETS.md",
+      "sha256": "6ab03cf06ec5b688bc19017aa8089b72f214b7ca0e644037dcf32242213b3424"
+    },
+    {
+      "path": "explorations/host-redesign/UX_AUDIT.html",
+      "sha256": "ed98b6f74d1bc591144d462794d6772dff23d6bb033e3a0cdb67647e4135c17b"
+    },
+    {
+      "path": "explorations/image-slot.js",
+      "sha256": "9309434cb09c357def2c583652d335eb7dedfb5295c9ad66e7d4e75a796dc5f3"
+    },
+    {
+      "path": "Host App Coverage.html",
+      "sha256": "7c7e680a396c1a7661e69046197c0304361d921a0f90ebad5a1fdf647370c9b0"
+    },
+    {
+      "path": "Host App Decisions.html",
+      "sha256": "3adf9a8f243211798e1ad77ae78d5bc8ac00ca024f530cf4769edf76c079bafd"
+    },
+    {
+      "path": "Host App.html",
+      "sha256": "8800251f89120b05d6dfe5b0b19d22b574a48c3f9e3fec1434fed76b5fc6eb73"
+    },
+    {
+      "path": "host-account/.thumbnail",
+      "sha256": "978b770e50b9032d41813f8c8cee661a16177d16d3b621289215d86c8ce7a7cb"
+    },
+    {
+      "path": "host-account/ds-base.js",
+      "sha256": "43b511e044fc96d947070ada60e0aa9df8a0d4a1b174eb454558dcbba1017808"
+    },
+    {
+      "path": "host-account/HostAccount.dc.html",
+      "sha256": "b4f6f9a569160331967bc2298a5bfc5dae117d74dea3fd9f6145cbc05074b1a0"
+    },
+    {
+      "path": "host-account/support.js",
+      "sha256": "505f94e08eeccbc87acc6fcc6a47dd9f51fcd74a8d28ab58eb7eb784f7b92efe"
+    },
+    {
+      "path": "host-app-manifest.json",
+      "sha256": "14293a46ee9c1542e1d73aa034a83dbb61276c74f6c3a5c5670b862ba66732cf"
+    },
+    {
+      "path": "host-coverage-manifest.json",
+      "sha256": "3402d77d0c91d1e9a63af180fb1b08691896a7c7b48ea755c6b66acd2cddd590"
+    },
+    {
+      "path": "image-slot.js",
+      "sha256": "9309434cb09c357def2c583652d335eb7dedfb5295c9ad66e7d4e75a796dc5f3"
+    },
+    {
+      "path": "templates/catch-club-detail/.thumbnail",
+      "sha256": "4395cb6c0f80cb88fde1697dc76838480e59ce8ea382d6b4ec1e78016516fa8d"
+    },
+    {
+      "path": "templates/catch-club-detail/ClubDetailV2.dc.html",
+      "sha256": "4438d4620690852306c11e647b3e78f8cb18a2e51ec311ea7d97865eb37350f5"
+    },
+    {
+      "path": "templates/catch-club-detail/ds-base.js",
+      "sha256": "a966d020f88e999ec28ba6b34816960bf62b1725e23aa95dd443593fd6d1b906"
+    },
+    {
+      "path": "templates/catch-club-detail/support.js",
+      "sha256": "3ad816ffc85526eec04afac6527ce5fbdcd4d31c602b1de969243aaaa26699ed"
+    },
+    {
+      "path": "templates/catch-club-detail/tweaks-panel.jsx",
+      "sha256": "6591467622edc7b2425def3fcf6447556fa698a1d10090583ebb9e782da064b5"
+    },
+    {
+      "path": "templates/catch-messaging/.thumbnail",
+      "sha256": "491e80fcd415f4762ca829bd48552434e699d2ee1e931796fe4d24ba6282aa1b"
+    },
+    {
+      "path": "templates/catch-messaging/ds-base.js",
+      "sha256": "a1546261e15955527699238a255f0a1ec6518e5f82304f7c6fe0da4cdaf36e5f"
+    },
+    {
+      "path": "templates/catch-messaging/Messaging.dc.html",
+      "sha256": "9efc62ad1dc3457e1a34a3f49de4d3558aeafb87f06e121e4c565394fa219fd7"
+    },
+    {
+      "path": "templates/catch-messaging/support.js",
+      "sha256": "3ad816ffc85526eec04afac6527ce5fbdcd4d31c602b1de969243aaaa26699ed"
+    },
+    {
+      "path": "templates/hosts-add-host/.thumbnail",
+      "sha256": "57560e61799c17fdfdfdde1c9bc3d32e4999da359e563f428df85ff945aadb43"
+    },
+    {
+      "path": "templates/hosts-add-host/ds-base.js",
+      "sha256": "a1546261e15955527699238a255f0a1ec6518e5f82304f7c6fe0da4cdaf36e5f"
+    },
+    {
+      "path": "templates/hosts-add-host/HostAddHost.dc.html",
+      "sha256": "fc00e058864ac3cd522ecbba8d3e15aa79bc87d0502c0780d340767a4d3f4ac4"
+    },
+    {
+      "path": "templates/hosts-add-host/support.js",
+      "sha256": "3ad816ffc85526eec04afac6527ce5fbdcd4d31c602b1de969243aaaa26699ed"
+    },
+    {
+      "path": "templates/hosts-create-club/.thumbnail",
+      "sha256": "0ec8c29719a9a65012733d9dd0818598e59fbf9263478f39e8b802af5d2e3d06"
+    },
+    {
+      "path": "templates/hosts-create-club/ds-base.js",
+      "sha256": "a1546261e15955527699238a255f0a1ec6518e5f82304f7c6fe0da4cdaf36e5f"
+    },
+    {
+      "path": "templates/hosts-create-club/HostCreateClub.dc.html",
+      "sha256": "d52db9768c75ff703219af3497b80bfc12801f739bccacc12b9634788e4f8920"
+    },
+    {
+      "path": "templates/hosts-create-club/support.js",
+      "sha256": "3ad816ffc85526eec04afac6527ce5fbdcd4d31c602b1de969243aaaa26699ed"
+    },
+    {
+      "path": "templates/hosts-create-event-success/.thumbnail",
+      "sha256": "8d4c12d1cbc5f37dadc915f53dae2644ec4366c6a6d3cd2a466195b2910ff90b"
+    },
+    {
+      "path": "templates/hosts-create-event-success/ds-base.js",
+      "sha256": "a1546261e15955527699238a255f0a1ec6518e5f82304f7c6fe0da4cdaf36e5f"
+    },
+    {
+      "path": "templates/hosts-create-event-success/HostCreateEventSuccess.dc.html",
+      "sha256": "ac13501d5a2adcaba9ebe84af75ae3831a0b19e69b1bc1b4c7c5d7878d31b708"
+    },
+    {
+      "path": "templates/hosts-create-event-success/support.js",
+      "sha256": "3ad816ffc85526eec04afac6527ce5fbdcd4d31c602b1de969243aaaa26699ed"
+    },
+    {
+      "path": "templates/hosts-create-event-success/tweaks-panel.jsx",
+      "sha256": "6591467622edc7b2425def3fcf6447556fa698a1d10090583ebb9e782da064b5"
+    },
+    {
+      "path": "templates/hosts-create-event/.thumbnail",
+      "sha256": "e7631c3e863711503a7dbce6ff8a2f28a8460149bd5f17d9efa2fd019c4a1a57"
+    },
+    {
+      "path": "templates/hosts-create-event/ds-base.js",
+      "sha256": "a1546261e15955527699238a255f0a1ec6518e5f82304f7c6fe0da4cdaf36e5f"
+    },
+    {
+      "path": "templates/hosts-create-event/HostCreateEvent.dc.html",
+      "sha256": "b3ce99ed0ecb2390271764adfe93887880c839f84fa78a11ab5dba40863f1351"
+    },
+    {
+      "path": "templates/hosts-create-event/support.js",
+      "sha256": "3ad816ffc85526eec04afac6527ce5fbdcd4d31c602b1de969243aaaa26699ed"
+    },
+    {
+      "path": "templates/hosts-dialogs/.thumbnail",
+      "sha256": "7a7d92ac3bb18305c0998e45c10e94584c66188a04bf913a66d4cb0bd9eb6925"
+    },
+    {
+      "path": "templates/hosts-dialogs/ds-base.js",
+      "sha256": "a1546261e15955527699238a255f0a1ec6518e5f82304f7c6fe0da4cdaf36e5f"
+    },
+    {
+      "path": "templates/hosts-dialogs/HostDialogs.dc.html",
+      "sha256": "9c7ce786b0f9d92af51f23fcc530a8f39658092598f155a559d5a7f4f72429e4"
+    },
+    {
+      "path": "templates/hosts-dialogs/support.js",
+      "sha256": "3ad816ffc85526eec04afac6527ce5fbdcd4d31c602b1de969243aaaa26699ed"
+    },
+    {
+      "path": "templates/hosts-dialogs/tweaks-panel.jsx",
+      "sha256": "6591467622edc7b2425def3fcf6447556fa698a1d10090583ebb9e782da064b5"
+    },
+    {
+      "path": "templates/hosts-draft-picker/.thumbnail",
+      "sha256": "4314c4b4d28d111542d9326c53799883fa0671dd52e453c4fdcf8a71aba628a6"
+    },
+    {
+      "path": "templates/hosts-draft-picker/ds-base.js",
+      "sha256": "a1546261e15955527699238a255f0a1ec6518e5f82304f7c6fe0da4cdaf36e5f"
+    },
+    {
+      "path": "templates/hosts-draft-picker/HostDraftPicker.dc.html",
+      "sha256": "5ffafe8616f5f5d504905f192e53ed77b59d6caf2ff26810c6d50eed318c57a5"
+    },
+    {
+      "path": "templates/hosts-draft-picker/support.js",
+      "sha256": "3ad816ffc85526eec04afac6527ce5fbdcd4d31c602b1de969243aaaa26699ed"
+    },
+    {
+      "path": "templates/hosts-edit-club/.thumbnail",
+      "sha256": "ccde6698125cef80ea0b91f48bf938f585dbc2e4a73138aef9779966d565e5e8"
+    },
+    {
+      "path": "templates/hosts-edit-club/ds-base.js",
+      "sha256": "a1546261e15955527699238a255f0a1ec6518e5f82304f7c6fe0da4cdaf36e5f"
+    },
+    {
+      "path": "templates/hosts-edit-club/HostEditClub.dc.html",
+      "sha256": "af93223c607361297ed48f7205a4a2ac9d3d88054ed4d3e3cefb1d4a869612b6"
+    },
+    {
+      "path": "templates/hosts-edit-club/support.js",
+      "sha256": "3ad816ffc85526eec04afac6527ce5fbdcd4d31c602b1de969243aaaa26699ed"
+    },
+    {
+      "path": "templates/hosts-edit-event/.thumbnail",
+      "sha256": "002d9628cb1055eaaa74687b425931ff637c16d31b33930283e3d7572a694a4b"
+    },
+    {
+      "path": "templates/hosts-edit-event/ds-base.js",
+      "sha256": "a1546261e15955527699238a255f0a1ec6518e5f82304f7c6fe0da4cdaf36e5f"
+    },
+    {
+      "path": "templates/hosts-edit-event/HostEditEvent.dc.html",
+      "sha256": "869a631124edfa0721a47908a2e1bc4a23261dbe9516102b4f3ac412a8d9c27e"
+    },
+    {
+      "path": "templates/hosts-edit-event/support.js",
+      "sha256": "3ad816ffc85526eec04afac6527ce5fbdcd4d31c602b1de969243aaaa26699ed"
+    },
+    {
+      "path": "templates/hosts-edit-event/tweaks-panel.jsx",
+      "sha256": "6591467622edc7b2425def3fcf6447556fa698a1d10090583ebb9e782da064b5"
+    },
+    {
+      "path": "templates/hosts-events/.thumbnail",
+      "sha256": "d0c229dcfc3b6eaa6c3bba02ac7241135f102343000e6229fb0a0902f3712570"
+    },
+    {
+      "path": "templates/hosts-events/ds-base.js",
+      "sha256": "a1546261e15955527699238a255f0a1ec6518e5f82304f7c6fe0da4cdaf36e5f"
+    },
+    {
+      "path": "templates/hosts-events/Events.dc.html",
+      "sha256": "6c2bf8691c8603dc3c71062487c51f88a6853c3ef93b74dd4cfdc656ad9c2325"
+    },
+    {
+      "path": "templates/hosts-events/support.js",
+      "sha256": "3ad816ffc85526eec04afac6527ce5fbdcd4d31c602b1de969243aaaa26699ed"
+    },
+    {
+      "path": "templates/hosts-inbox/.thumbnail",
+      "sha256": "2a62c178c749d579f9d884853f0af79dd09ce91193e26cb1950631c8822dc5ff"
+    },
+    {
+      "path": "templates/hosts-inbox/ds-base.js",
+      "sha256": "a1546261e15955527699238a255f0a1ec6518e5f82304f7c6fe0da4cdaf36e5f"
+    },
+    {
+      "path": "templates/hosts-inbox/Inbox.dc.html",
+      "sha256": "7ac0e7f09ac388e7713dd79674a61b88a2143112db0695e6c82f08f93d7d41e8"
+    },
+    {
+      "path": "templates/hosts-inbox/support.js",
+      "sha256": "3ad816ffc85526eec04afac6527ce5fbdcd4d31c602b1de969243aaaa26699ed"
+    },
+    {
+      "path": "templates/hosts-insights/.thumbnail",
+      "sha256": "d65000953e8ba72d8523ae852e23c1e143d9c72b2c934dfb38b8afedff6071b4"
+    },
+    {
+      "path": "templates/hosts-insights/ds-base.js",
+      "sha256": "a1546261e15955527699238a255f0a1ec6518e5f82304f7c6fe0da4cdaf36e5f"
+    },
+    {
+      "path": "templates/hosts-insights/Insights.dc.html",
+      "sha256": "1168d92c7dfc01bf824318d648b496cf90c6d4ce7b7e6f07c9aa0703df98517a"
+    },
+    {
+      "path": "templates/hosts-insights/support.js",
+      "sha256": "3ad816ffc85526eec04afac6527ce5fbdcd4d31c602b1de969243aaaa26699ed"
+    },
+    {
+      "path": "templates/hosts-manage/.thumbnail",
+      "sha256": "615c51e6b98547ad2160da3ed868899b7e72dc9074b786532bbfb6e1d4d0d603"
+    },
+    {
+      "path": "templates/hosts-manage/ds-base.js",
+      "sha256": "a1546261e15955527699238a255f0a1ec6518e5f82304f7c6fe0da4cdaf36e5f"
+    },
+    {
+      "path": "templates/hosts-manage/Manage.dc.html",
+      "sha256": "b694fb2515a696733ac627cc3f855bc96461443ef5a536473c0bd157e3bca1ba"
+    },
+    {
+      "path": "templates/hosts-manage/support.js",
+      "sha256": "3ad816ffc85526eec04afac6527ce5fbdcd4d31c602b1de969243aaaa26699ed"
+    },
+    {
+      "path": "templates/hosts-organizer/.thumbnail",
+      "sha256": "31e5c564aeba77b0ce68a7fdd8cb94b0fd9b4c92f4a1f6e8890c0c4e5431bd48"
+    },
+    {
+      "path": "templates/hosts-organizer/ds-base.js",
+      "sha256": "a1546261e15955527699238a255f0a1ec6518e5f82304f7c6fe0da4cdaf36e5f"
+    },
+    {
+      "path": "templates/hosts-organizer/Organizer.dc.html",
+      "sha256": "0be99934278aa816beefe84f5e82809af4e26346e944294708f025e4718da0a8"
+    },
+    {
+      "path": "templates/hosts-organizer/support.js",
+      "sha256": "3ad816ffc85526eec04afac6527ce5fbdcd4d31c602b1de969243aaaa26699ed"
+    },
+    {
+      "path": "templates/hosts-payouts-handoff/.thumbnail",
+      "sha256": "985928b37c20b30f52f0b35870d07430011d5364664afaa141f519670751730a"
+    },
+    {
+      "path": "templates/hosts-payouts-handoff/ds-base.js",
+      "sha256": "a1546261e15955527699238a255f0a1ec6518e5f82304f7c6fe0da4cdaf36e5f"
+    },
+    {
+      "path": "templates/hosts-payouts-handoff/HostPayoutsHandoff.dc.html",
+      "sha256": "7b7f4c05845de4e43d0fa293e807ddd3349fa83d1dbc84c193b463922e923889"
+    },
+    {
+      "path": "templates/hosts-payouts-handoff/support.js",
+      "sha256": "3ad816ffc85526eec04afac6527ce5fbdcd4d31c602b1de969243aaaa26699ed"
+    },
+    {
+      "path": "templates/hosts-today/.thumbnail",
+      "sha256": "81ae3d6293387d74199894392cb5ebe871ff47c92dd7e09c72525018091c9320"
+    },
+    {
+      "path": "templates/hosts-today/ds-base.js",
+      "sha256": "a1546261e15955527699238a255f0a1ec6518e5f82304f7c6fe0da4cdaf36e5f"
+    },
+    {
+      "path": "templates/hosts-today/support.js",
+      "sha256": "3ad816ffc85526eec04afac6527ce5fbdcd4d31c602b1de969243aaaa26699ed"
+    },
+    {
+      "path": "templates/hosts-today/Today.dc.html",
+      "sha256": "78a437895a79cc4c63f47a0a8643c627c95a145afa8b4385178a02634b53efcf"
+    }
+  ]
+}

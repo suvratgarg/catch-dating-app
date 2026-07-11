@@ -1,40 +1,10 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
-class ProfileTitle extends StatelessWidget {
-  const ProfileTitle({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Material(
-      color: t.bg,
-      child: Padding(
-        padding: CatchInsets.screenTitleBlock,
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                'Your profile',
-                style: CatchTextStyles.headline(context),
-              ),
-            ),
-            const SizedBox(width: CatchSpacing.s2),
-            const ProfileSettingsButton(),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 class ProfileTabBar extends StatelessWidget {
   const ProfileTabBar({super.key, required this.controller});

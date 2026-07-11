@@ -1,7 +1,7 @@
 ---
 doc_id: claude_widgetbook_inventory
-version: 0.1.11
-updated: 2026-06-23
+version: 0.1.12
+updated: 2026-07-07
 owner: product_design_parity
 status: active
 ---
@@ -480,7 +480,7 @@ Navigation:
 - `CatchSliverHeader`
 - `CatchStepHeader`
 - `CatchStepProgress`
-- `CatchTabDock`
+- `CatchTabBar`
 - `CatchTopBarMenuAction`
 - `CatchTopBarTabBar`
 
@@ -651,7 +651,7 @@ state-by-state review before we call it aligned.
 | `StatusBar` | `CatchStatusBar` | direct prefix |
 | `StepHeader` | `CatchStepHeader` | direct prefix |
 | `Stepper` | `CatchNumberStepper` | alias |
-| `TabDock` | `CatchTabDock` | direct prefix |
+| `TabDock` | `CatchTabBar` | renamed adaptive primitive |
 | `TextField` | `CatchField` | direct prefix |
 | `Toggle` | `CatchToggle` | direct prefix |
 

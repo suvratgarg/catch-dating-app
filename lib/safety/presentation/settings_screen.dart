@@ -182,7 +182,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         SettingsController.unblockUserMutation,
       ],
       child: Scaffold(
-        appBar: const CatchTopBar(title: 'Settings'),
+        appBar: const CatchScreenTopBar(title: 'Settings'),
         body: CatchScreenBody(
           pt: CatchSpacing.s2,
           pb: CatchSpacing.s7,

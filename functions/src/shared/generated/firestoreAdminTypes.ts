@@ -1282,6 +1282,49 @@ export interface EventParticipationDocument {
 }
 
 /**
+ * Server-owned delivery receipt for an organizer event broadcast stored at eventBroadcasts/{broadcastId}.
+ */
+export interface EventBroadcastDocument {
+  eventId: string;
+  clubId: string;
+  actorUid: string;
+  audience: "booked" | "prospective" | "everyone";
+  title: string;
+  body: string;
+  /**
+   * @maxItems 500
+   */
+  targetUids: string[];
+  status: "processing" | "completed" | "partial" | "failed";
+  recipientCount: number;
+  excludedCount: number;
+  activityAvailableCount: number;
+  pushAttemptedCount: number;
+  pushAcceptedCount: number;
+  pushFailedCount: number;
+  pushUnknownCount: number;
+  /**
+   * @maxItems 20
+   */
+  pushErrorCodes: string[];
+  deliveries: {
+    [k: string]: {
+      activityStatus: "created" | "existing" | "failed";
+      pushStatus: "ineligible" | "accepted" | "failed" | "unknown";
+      activityNotificationId: string;
+      excluded?: boolean;
+      errorCode?: string;
+    };
+  };
+  leaseOwner: string;
+  leaseExpiresAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  completedAt?: FirebaseFirestore.Timestamp | null;
+}
+
+/**
  * Server-owned waitlist offer stored at eventWaitlistOffers/{eventId_uid}. Offers reserve a waitlist slot until accepted, declined, expired, or cancelled.
  */
 export interface EventWaitlistOfferDocument {
@@ -1969,6 +2012,9 @@ export interface ModerationFlagDocument {
 export interface DeletedUserTombstoneDocument {
   uid: string;
   deletedAt: FirebaseFirestore.Timestamp;
+  status: "processing" | "completed";
+  updatedAt: FirebaseFirestore.Timestamp;
+  completedAt?: FirebaseFirestore.Timestamp | null;
   retainedFor?: string[];
 }
 

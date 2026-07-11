@@ -1,9 +1,9 @@
 ---
 doc_id: adaptive_tab_bar_spec
-version: 1.0.0
-updated: 2026-07-06
+version: 1.0.2
+updated: 2026-07-08
 owner: design_parity_review
-status: ready-for-implementation
+status: implemented
 depends_on: home_catches_unification_spec
 ---
 
@@ -139,13 +139,16 @@ production bar on a young shader package.
   adaptivity moves INSIDE `CatchTabBar`, keyed off `prefersCupertinoControls`
   for chrome only).
 - iOS float means the bar no longer occupies layout space at the bottom the
-  way an anchored bar does: the scaffold body must extend behind it and
-  screens must add bottom padding equal to the bar's floated height + inset
-  so content isn't obscured. Provide a `CatchTabBar.reservedBottomInset(context)`
-  helper (or a `MediaQuery` bottom-padding injection at the shell) so screen
-  bodies get the right inset WITHOUT each screen hardcoding it — this is the
-  "compartmentalize correctly" seam. Android anchored bar keeps today's
-  layout behavior (no body overlap).
+  way an anchored bar does. The shell injects the reserved floating inset for
+  tab-root overlays through `AppShellActiveTab`; tab-root affordances use
+  `AppShellActiveTab.bottomOverlayClearanceOf(context, minimum: ...)` rather
+  than recomputing tab-bar metrics in feature code. Branch child routes that
+  own CTAs, composers, or route-level bottom docks are promoted to the root
+  navigator with `parentNavigatorKey: _rootNavigatorKey`, so the floating tab
+  bar is not present on those screens at all. Bottom sheets use
+  `showCatchBottomSheet`, which presents on the root navigator by default and
+  therefore sits above shell chrome. Android anchored bar keeps today's layout
+  behavior (no body overlap).
 - Verify every `StatefulShellBranch` index site after Catches is removed
   (this spec assumes `home_catches_unification_spec` U3 already dropped that
   branch — sequence after it).
@@ -153,8 +156,8 @@ production bar on a young shader package.
 ## Accessibility
 
 - Semantics: EVERY tab exposes its label + selected state even when the
-  label is visually hidden (unselected). Reuse the `Semantics(button,
-  selected, label)` already in `CatchTabDockButton`.
+  label is visually hidden (unselected). Keep the
+  `Semantics(button, selected, label)` contract in `CatchTabBarButton`.
 - Text scaling: the selected pill must grow with Dynamic Type without
   clipping the label or overflowing the row; validate at 1.0/1.5/2.0. If a
   long label at large scale would overflow with 4 pills' worth of room,
@@ -187,11 +190,31 @@ finish to the tab consolidation.
 
 ## Completion checklist (goal mode)
 
-- [ ] `CatchTabBar` built: selected-label-reveal behavior + adaptive chrome
-- [ ] iOS chrome (floating, restrained frosted glass, Cupertino motion/haptics)
-- [ ] Android chrome (anchored M3, ripple, hairline/elevation)
-- [ ] `AppShellNavigationBar` rewired; `CatchTabDock` + CupertinoTabBar branch retired; orphan tokens deleted
-- [ ] body bottom-inset seam so screens clear the floated iOS bar
-- [ ] a11y: semantics for all tabs, text-scale 1.0/1.5/2.0, reduced motion
-- [ ] tests + widgetbook states + appshots; catalog/doc_versions/passes stamps
-- [ ] full analyze clean; readiness 100/100; scanners green
+### 2026-07-07 implementation status
+
+Landed the shared `CatchTabBar` primitive, rewired `AppShellNavigationBar`,
+retired `CatchTabDock` and the shell-level `CupertinoTabBar` branch, refreshed
+component contracts, Widgetbook states, widget registries, and design context
+pack outputs. The consumer shell still renders five destinations because
+`docs/plans/home_catches_unification_spec.md` U3 has not landed; removing the
+Catches item before that route/branch migration would shift StatefulShell
+indices and make Profile unreachable. `CatchTabBar` supports the four-tab
+shape and Widgetbook covers it. The live consumer set is now Home, Explore,
+Chats, You: the Catches branch was removed from the shell, `/catches` redirects
+home, and `/catches/:eventId` stays intact under the Home branch for deep
+links. Chrome proof now lives in `test/goldens/tab_bar_test.dart`, with paired
+light/dark baselines for the iOS floating glass bar and Android anchored bar.
+The standalone Catches hub widgets/captures remain as Home+Catches U1/U2/U4
+absorption debt, not as a tab-bar blocker.
+
+- [x] `CatchTabBar` built: selected-label-reveal behavior + adaptive chrome
+- [x] iOS chrome (floating, restrained frosted glass, Cupertino motion/haptics)
+- [x] Android chrome (anchored M3, ripple, hairline/elevation)
+- [x] `AppShellNavigationBar` rewired; `CatchTabDock` + CupertinoTabBar branch retired; orphan tokens deleted
+- [x] body bottom-inset seam so screens clear the floated iOS bar
+- [x] route/sheet chrome policy so child screens and drawers render above the shell
+- [x] a11y: semantics for all tabs, text-scale 1.0/1.5/2.0, reduced motion
+- [x] live four-tab consumer set — U3 nav-shell mechanics landed; Catches hub absorption remains in `home_catches_unification_spec.md`
+- [x] appshot/golden for both chromes — `test/goldens/tab_bar_test.dart`
+- [x] tests + widgetbook states + catalog/doc_versions/passes stamps
+- [x] full analyzer passes with `--no-fatal-infos`; readiness 100/100; scanners green

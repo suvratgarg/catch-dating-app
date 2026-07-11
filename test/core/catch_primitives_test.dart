@@ -49,6 +49,7 @@ import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_otp_code_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
+import 'package:catch_dating_app/core/widgets/catch_row_press_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_scrim.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -60,7 +61,7 @@ import 'package:catch_dating_app/core/widgets/catch_status_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_tab_dock.dart';
+import 'package:catch_dating_app/core/widgets/catch_tab_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
@@ -1064,6 +1065,42 @@ void main() {
     expect(tapped, isTrue);
   });
 
+  testWidgets('CatchSegmentedControl exposes compact mono SegPill density', (
+    tester,
+  ) async {
+    var selected = 'booked';
+
+    await tester.pumpWidget(
+      _wrap(
+        StatefulBuilder(
+          builder: (context, setState) => SizedBox(
+            width: 350,
+            child: CatchSegmentedControl<String>(
+              selected: selected,
+              expanded: true,
+              style: CatchSegmentedControlStyle.surface,
+              size: CatchSegmentedControlSize.compact,
+              labelStyle: CatchSegmentedControlLabelStyle.mono,
+              onChanged: (value) => setState(() => selected = value),
+              segments: const [
+                CatchSegment(value: 'booked', label: 'BOOKED · 2'),
+                CatchSegment(value: 'prospective', label: 'PROSPECTIVE · 2'),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(
+      tester.getSize(find.byType(CatchSegmentedControl<String>)).height,
+      lessThan(40),
+    );
+    await tester.tap(find.text('PROSPECTIVE · 2'));
+    await tester.pump();
+    expect(selected, 'prospective');
+  });
+
   testWidgets('CatchOptionGroup composes public option items', (tester) async {
     var selected = 'all';
 
@@ -1659,20 +1696,20 @@ void main() {
     expect(find.byType(CatchJourneyStepNode), findsNWidgets(2));
   });
 
-  testWidgets('CatchTabDock composes public button and icon renderers', (
+  testWidgets('CatchTabBar reveals only the selected label and badges icons', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
-        CatchTabDock<String>(
+        CatchTabBar<String>(
           active: 'chats',
           items: const [
-            CatchTabDockItem(
+            CatchTabBarItem(
               id: 'home',
               icon: Icons.home_outlined,
               label: 'Home',
             ),
-            CatchTabDockItem(
+            CatchTabBarItem(
               id: 'chats',
               icon: Icons.chat_bubble_outline,
               activeIcon: Icons.chat_bubble,
@@ -1685,8 +1722,10 @@ void main() {
       ),
     );
 
-    expect(find.byType(CatchTabDockButton<String>), findsNWidgets(2));
-    expect(find.byType(CatchTabDockIcon), findsNWidgets(2));
+    expect(find.byType(CatchTabBarButton<String>), findsNWidgets(2));
+    expect(find.byType(CatchTabBarIcon), findsNWidgets(2));
+    expect(find.text('Home'), findsNothing);
+    expect(find.text('Chats'), findsOneWidget);
     expect(find.text('99+'), findsOneWidget);
   });
 
@@ -2035,12 +2074,34 @@ void main() {
     );
 
     expect(find.bySemanticsLabel('Catch'), findsOneWidget);
+    final logo = tester.widget<Image>(_startupLogoFinder);
+    expect(
+      (logo.image as AssetImage).assetName,
+      CatchStartupLoadingScreen.lightIconAsset,
+    );
     expect(find.byType(CatchLoadingIndicator), findsNothing);
 
     await tester.pump(CatchMotion.startupIndicatorDelay);
     await tester.pump(CatchMotion.fast);
 
     expect(find.byType(CatchLoadingIndicator), findsOneWidget);
+  });
+
+  testWidgets('CatchStartupLoadingScreen uses dark splash mark in dark mode', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.dark,
+        home: const CatchStartupLoadingScreen(),
+      ),
+    );
+
+    final logo = tester.widget<Image>(_startupLogoFinder);
+    expect(
+      (logo.image as AssetImage).assetName,
+      CatchStartupLoadingScreen.darkIconAsset,
+    );
   });
 
   testWidgets('CatchStatusBar renders handoff light and surface states', (
@@ -2872,6 +2933,75 @@ void main() {
     await tester.pump();
 
     expect(tapped, isTrue);
+  });
+
+  testWidgets('CatchField tappable rows own full-width tokenized ink', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        SizedBox(
+          width: 360,
+          child: CatchSection.fieldRows(
+            first: true,
+            title: 'Today',
+            children: [
+              CatchField.nav(
+                icon: CatchIcons.notificationsNoneRounded,
+                title: 'Event starts tomorrow',
+                body: 'Sundowner 5K meets at Carter Road Jetty.',
+                action: const Text('2H'),
+                showChevron: false,
+                onTap: () {},
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    final fieldRect = tester.getRect(find.byType(CatchField));
+    final pressFinder = find.descendant(
+      of: find.byType(CatchField),
+      matching: find.byType(CatchRowPressSurface),
+    );
+    final pressRect = tester.getRect(pressFinder);
+
+    expect(pressRect.left, fieldRect.left);
+    expect(pressRect.right, fieldRect.right);
+
+    final iconRect = tester.getRect(
+      find.byIcon(CatchIcons.notificationsNoneRounded),
+    );
+    final titleLeft = tester.getTopLeft(find.text('Event starts tomorrow')).dx;
+    expect(iconRect.left, fieldRect.left);
+    expect(titleLeft - fieldRect.left, CatchFieldRow.textLaneInset);
+
+    final gesture = await tester.startGesture(
+      Offset(pressRect.right - 4, pressRect.center.dy),
+    );
+    await tester.pump();
+
+    final overlayFinder = find.descendant(
+      of: pressFinder,
+      matching: find.byKey(CatchRowPressSurface.overlayKey),
+    );
+    final overlayRect = tester.getRect(overlayFinder);
+    final overlay = tester.widget<ColoredBox>(overlayFinder);
+    expect(overlayRect.left, pressRect.left);
+    expect(overlayRect.right, pressRect.right);
+    expect(
+      overlay.color,
+      CatchTokens.editorialLight.ink.withValues(
+        alpha: CatchOpacity.controlOverlayPressed,
+      ),
+    );
+
+    await gesture.up();
+    await tester.pump();
+
+    final releasedOverlay = tester.widget<ColoredBox>(overlayFinder);
+    expect(releasedOverlay.color, Colors.transparent);
   });
 
   testWidgets('CatchField renders label, helper text, changes, and errors', (
@@ -3883,6 +4013,12 @@ void main() {
     expect(selected, other);
     expect(find.byType(CatchMenu<Object?>), findsNothing);
   });
+}
+
+Finder get _startupLogoFinder {
+  return find.byWidgetPredicate(
+    (widget) => widget is Image && widget.semanticLabel == 'Catch',
+  );
 }
 
 Widget _wrap(Widget child, {ThemeData? theme}) {

@@ -102,8 +102,9 @@ sealed class ChatsListDisplayState {
     required String query,
     required HostInboxFilter? hostFilter,
   }) {
+    final searchedValue = source.filterByQuery(query);
     final visibleValue = _visibleViewModelFor(
-      source: source,
+      source: searchedValue,
       hostFilter: hostFilter,
     );
     if (visibleValue.isEmpty || uid == null) {
@@ -111,6 +112,7 @@ sealed class ChatsListDisplayState {
         kind: _emptyKindFor(
           query: query,
           source: source,
+          searched: searchedValue,
           visible: visibleValue,
           hostFilter: hostFilter,
         ),
@@ -138,18 +140,19 @@ sealed class ChatsListDisplayState {
   static ChatsListEmptyKind _emptyKindFor({
     required String query,
     required ChatsListViewModel source,
+    required ChatsListViewModel searched,
     required ChatsListViewModel visible,
     required HostInboxFilter? hostFilter,
   }) {
     if (query.isNotEmpty &&
-        source.visibleThreadCount == 0 &&
+        searched.visibleThreadCount == 0 &&
         source.totalThreadCount > 0) {
       return hostFilter == null
           ? ChatsListEmptyKind.noSearchResults
           : ChatsListEmptyKind.noHostSearchResults;
     }
     if (hostFilter == HostInboxFilter.unread &&
-        source.visibleThreadCount > 0 &&
+        searched.visibleThreadCount > 0 &&
         visible.isEmpty) {
       return ChatsListEmptyKind.noUnreadQueries;
     }

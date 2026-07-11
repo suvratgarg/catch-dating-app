@@ -3,15 +3,16 @@
   "generatedBy": "tool/ui_capture/check_route_inventory.mjs",
   "source": {
     "path": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "a6844697e0511ef90bc52f14a884eb539c97f3b430ab1678ec80f6afd3b3ffe4",
-    "routeContractSha256": "e0aa935fc83b6ecc9157babb122a6e69e5b8c6910544022c93baf294d9c36e7d",
-    "goRouteCount": 48,
-    "shellBranchCount": 9,
-    "enumRouteCount": 48,
-    "referencedRouteCount": 48,
-    "runtimeRouteCount": 48,
-    "routeHelperCount": 1,
+    "normalizedFileSha256": "9d6be0def6fab11df9eb05e271a1cb0c3dc5109c4fb17376ee3d863deb7202a5",
+    "routeContractSha256": "6d1572e66e7693a61f422840e7bea33cd9c71e60d3f03a34288f2cbc9dac2216",
+    "goRouteCount": 51,
+    "shellBranchCount": 8,
+    "enumRouteCount": 51,
+    "referencedRouteCount": 51,
+    "runtimeRouteCount": 51,
+    "routeHelperCount": 2,
     "routeHelpers": [
+      "_hostUtilityRoutes",
       "_hostShellRoute"
     ]
   },
@@ -272,8 +273,8 @@
       "requiresFixture": true,
       "gated": false,
       "runtimePath": "/catches/:eventId",
-      "runtimeParentId": "swipeHubScreen",
-      "runtimePathExpression": "':eventId'",
+      "runtimeParentId": "dashboardScreen",
+      "runtimePathExpression": "'catches/:eventId'",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -286,8 +287,8 @@
       "requiresFixture": true,
       "gated": false,
       "runtimePath": "/catches/:eventId/recap",
-      "runtimeParentId": "swipeHubScreen",
-      "runtimePathExpression": "':eventId/recap'",
+      "runtimeParentId": "dashboardScreen",
+      "runtimePathExpression": "'catches/:eventId/recap'",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -400,6 +401,44 @@
       "runtimePath": "/host",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostHomeScreen.path",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostEventsScreen",
+      "path": "/host/events",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "runtimePath": "/host/events",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostEventsScreen.path",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostOrganizerScreen",
+      "path": "/host/organizer",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "runtimePath": "/host/organizer",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostOrganizerScreen.path",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostInsightsScreen",
+      "path": "/host/organizer/:clubId/insights",
+      "pathParameters": [
+        "clubId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/organizer/:clubId/insights",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostInsightsScreen.path",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -676,8 +715,11 @@
     "hostCreateClubScreen",
     "hostCreateEventScreen",
     "hostEditClubScreen",
+    "hostEventsScreen",
     "hostHomeScreen",
     "hostInboxScreen",
+    "hostInsightsScreen",
+    "hostOrganizerScreen",
     "hostProfileScreen",
     "hostSettingsScreen",
     "loadingScreen",

@@ -1,0 +1,12 @@
+{
+  "broadcastId": "eventBroadcast_123",
+  "status": "completed",
+  "recipientCount": 12,
+  "excludedCount": 1,
+  "activityAvailableCount": 12,
+  "pushAttemptedCount": 10,
+  "pushAcceptedCount": 9,
+  "pushFailedCount": 1,
+  "pushUnknownCount": 0,
+  "idempotentReplay": false
+}

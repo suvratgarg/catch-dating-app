@@ -15,10 +15,15 @@ class ClubHostContactController extends _$ClubHostContactController {
   Future<String> startConversation({
     required String clubId,
     required String hostUid,
+    String? eventId,
   }) async {
     requireSignedInUid(ref, action: 'message a club host');
     return ref
         .read(clubsRepositoryProvider)
-        .startClubHostConversation(clubId: clubId, hostUid: hostUid);
+        .startClubHostConversation(
+          clubId: clubId,
+          hostUid: hostUid,
+          eventId: eventId,
+        );
   }
 }

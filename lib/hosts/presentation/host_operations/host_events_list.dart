@@ -5,28 +5,49 @@ class HostEventsClubCard extends ConsumerWidget {
     super.key,
     required this.club,
     required this.currentUid,
+    required this.clubs,
+    required this.showClubPicker,
+    required this.selectedFilter,
+    required this.onSwitchClubIndex,
+    required this.onFilterChanged,
     required this.onCreateEvent,
+    required this.onRepeatEvent,
     required this.onManageEvent,
+    required this.now,
   });
 
   final Club club;
   final String currentUid;
+  final List<Club> clubs;
+  final bool showClubPicker;
+  final HostEventsLifecycleFilter selectedFilter;
+  final ValueChanged<int> onSwitchClubIndex;
+  final ValueChanged<HostEventsLifecycleFilter> onFilterChanged;
   final HostHomeCreateEventCallback onCreateEvent;
+  final HostHomeRepeatEventCallback onRepeatEvent;
   final HostHomeManageEventCallback onManageEvent;
+  final DateTime now;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final eventsAsync = ref.watch(watchEventsForClubProvider(club.id));
-    final eventsState = buildHostHomeEventsSectionState(eventsAsync);
-    final owner = club.isOwnedBy(currentUid);
+    final workspaceState = buildHostEventsWorkspaceState(
+      eventsAsync,
+      now: now,
+      selectedFilter: selectedFilter,
+    );
 
     return HostEventsClubSection(
       club: club,
-      roleLabel: owner ? 'Owner' : 'Host team',
-      owner: owner,
-      eventsState: eventsState,
+      currentUid: currentUid,
+      clubs: clubs,
+      showClubPicker: showClubPicker,
+      state: workspaceState,
+      onSwitchClubIndex: onSwitchClubIndex,
+      onFilterChanged: onFilterChanged,
       onRetryEvents: () => ref.invalidate(watchEventsForClubProvider(club.id)),
       onCreateEvent: onCreateEvent,
+      onRepeatEvent: onRepeatEvent,
       onManageEvent: onManageEvent,
     );
   }
@@ -36,111 +57,298 @@ class HostEventsClubSection extends StatelessWidget {
   const HostEventsClubSection({
     super.key,
     required this.club,
-    required this.roleLabel,
-    required this.owner,
-    required this.eventsState,
+    required this.currentUid,
+    required this.clubs,
+    required this.showClubPicker,
+    required this.state,
+    required this.onSwitchClubIndex,
+    required this.onFilterChanged,
     required this.onCreateEvent,
+    required this.onRepeatEvent,
     required this.onManageEvent,
     this.onRetryEvents,
   });
 
   final Club club;
-  final String roleLabel;
-  final bool owner;
-  final HostHomeEventsSectionState eventsState;
+  final String currentUid;
+  final List<Club> clubs;
+  final bool showClubPicker;
+  final HostEventsWorkspaceState state;
+  final ValueChanged<int> onSwitchClubIndex;
+  final ValueChanged<HostEventsLifecycleFilter> onFilterChanged;
   final VoidCallback? onRetryEvents;
   final HostHomeCreateEventCallback onCreateEvent;
+  final HostHomeRepeatEventCallback onRepeatEvent;
   final HostHomeManageEventCallback onManageEvent;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final repeatSource = state.repeatSource;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        HostMetaRow(club: club, roleLabel: roleLabel, owner: owner),
-        gapH24,
-        CatchSection.plain(
-          title: 'Upcoming',
-          titleColor: t.ink3,
-          bodyGap: CatchSpacing.s2,
-          child: switch (eventsState.status) {
-            HostHomeEventsStatus.loading => const CatchSkeletonRows(
-              leading: CatchSkeletonRowLeading.mediaTile,
-              count: 2,
-              divided: true,
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                'Events',
+                style: CatchTextStyles.headline(context, color: t.ink),
+              ),
             ),
-            HostHomeEventsStatus.error => CatchInlineErrorState.fromError(
-              eventsState.error!,
-              context: AppErrorContext.event,
-              onRetry: onRetryEvents,
-            ),
-            HostHomeEventsStatus.empty => HostEventRows(
-              club: club,
-              rows: eventsState.rows,
-              emptyTextColor: t.ink2,
-              onCreateEvent: onCreateEvent,
-              onManageEvent: onManageEvent,
-            ),
-            HostHomeEventsStatus.populated => HostEventRows(
-              club: club,
-              rows: eventsState.rows,
-              emptyTextColor: t.ink2,
-              onCreateEvent: onCreateEvent,
-              onManageEvent: onManageEvent,
-            ),
-          },
+            if (showClubPicker)
+              HostTodayClubPill(
+                club: club,
+                currentUid: currentUid,
+                clubs: clubs,
+                showClubPicker: true,
+                onSwitchClubIndex: onSwitchClubIndex,
+              ),
+          ],
         ),
+        gapH16,
+        Row(
+          children: [
+            Expanded(
+              child: CatchButton(
+                label: 'New event',
+                icon: Icon(CatchIcons.addRounded, size: CatchIcon.sm),
+                onPressed: () => onCreateEvent(club),
+              ),
+            ),
+            gapW10,
+            Expanded(
+              child: CatchButton(
+                label: state.repeatLabel,
+                variant: CatchButtonVariant.secondary,
+                icon: Icon(CatchIcons.refresh, size: CatchIcon.sm),
+                onPressed: repeatSource == null
+                    ? null
+                    : () => onRepeatEvent(club, repeatSource),
+              ),
+            ),
+          ],
+        ),
+        gapH16,
+        CatchSegmentedControl<HostEventsLifecycleFilter>(
+          expanded: true,
+          style: CatchSegmentedControlStyle.surface,
+          selected: state.selectedFilter,
+          onChanged: onFilterChanged,
+          segments: [
+            for (final filter in HostEventsLifecycleFilter.values)
+              CatchSegment(value: filter, label: filter.label),
+          ],
+        ),
+        gapH14,
+        switch (state.status) {
+          HostEventsWorkspaceStatus.loading => const CatchSkeletonRows(
+            leading: CatchSkeletonRowLeading.mediaTile,
+            count: 4,
+          ),
+          HostEventsWorkspaceStatus.error => CatchInlineErrorState.fromError(
+            state.error!,
+            context: AppErrorContext.event,
+            onRetry: onRetryEvents,
+          ),
+          HostEventsWorkspaceStatus.empty => Padding(
+            padding: const EdgeInsets.only(top: CatchSpacing.s8),
+            child: CatchEmptyState(
+              icon: CatchIcons.eventBusy,
+              title: state.emptyTitle,
+              message: state.emptyBody,
+              action: state.selectedFilter == HostEventsLifecycleFilter.upcoming
+                  ? CatchButton(
+                      label: 'New event',
+                      size: CatchButtonSize.sm,
+                      onPressed: () => onCreateEvent(club),
+                    )
+                  : null,
+            ),
+          ),
+          HostEventsWorkspaceStatus.populated => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (final section in state.sections) ...[
+                Padding(
+                  padding: const EdgeInsets.only(
+                    top: CatchSpacing.s1,
+                    bottom: CatchSpacing.micro10,
+                  ),
+                  child: Text(
+                    section.label.toUpperCase(),
+                    style: CatchTextStyles.monoLabel(context, color: t.ink3),
+                  ),
+                ),
+                for (final row in section.rows) ...[
+                  HostEventLifecycleRow(
+                    data: row,
+                    onPressed: () => onManageEvent(club, row.event),
+                  ),
+                  gapH10,
+                ],
+              ],
+            ],
+          ),
+        },
       ],
     );
   }
 }
 
-class HostEventRows extends StatelessWidget {
-  const HostEventRows({
+class HostEventLifecycleRow extends StatelessWidget {
+  const HostEventLifecycleRow({
     super.key,
-    required this.club,
-    required this.rows,
-    required this.emptyTextColor,
-    required this.onCreateEvent,
-    required this.onManageEvent,
+    required this.data,
+    required this.onPressed,
   });
 
-  final Club club;
-  final HostHomeEventRowsState rows;
-  final Color emptyTextColor;
-  final HostHomeCreateEventCallback onCreateEvent;
-  final HostHomeManageEventCallback onManageEvent;
+  final HostEventLifecycleRowData data;
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        for (final row in rows.rows)
-          CatchField.nav(
-            title: row.title,
-            valueText: row.timeRangeLabel,
-            icon: CatchIcons.calendarTodayOutlined,
-            divider: row.divider,
-            onTap: () => onManageEvent(club, row.event),
+    final t = CatchTokens.of(context);
+    final activity = ActivityPalette.resolve(context, data.event.activityKind);
+
+    return CatchSurface(
+      borderColor: t.line,
+      radius: CatchRadius.md,
+      clipBehavior: Clip.antiAlias,
+      onTap: onPressed,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 76),
+        child: IntrinsicHeight(
+          child: Row(
+            children: [
+              SizedBox(
+                width: CatchSpacing.s1,
+                child: ColoredBox(color: activity.accent),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  CatchSpacing.s3,
+                  CatchSpacing.s3,
+                  CatchSpacing.micro14,
+                  CatchSpacing.s3,
+                ),
+                child: HostEventLifecycleDateBlock(
+                  data: data,
+                  accent: activity.accent,
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: CatchSpacing.s3,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        data.event.title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: CatchTextStyles.name(context, color: t.ink),
+                      ),
+                      gapH4,
+                      Text(
+                        data.metaLabel,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: CatchTextStyles.monoLabelS(
+                          context,
+                          color: t.ink3,
+                        ),
+                      ),
+                      if (!data.isPast) ...[
+                        gapH8,
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(CatchRadius.pill),
+                          child: SizedBox(
+                            height: CatchSpacing.s1,
+                            child: Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                ColoredBox(color: t.line2),
+                                FractionallySizedBox(
+                                  alignment: Alignment.centerLeft,
+                                  widthFactor: data.fillRatio,
+                                  child: ColoredBox(color: activity.accent),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: CatchSpacing.s3,
+                ),
+                child: Icon(
+                  CatchIcons.chevronRightRounded,
+                  color: t.ink3,
+                  size: CatchIcon.sm,
+                ),
+              ),
+            ],
           ),
-        CatchField.nav(
-          title: 'Add event',
-          icon: CatchIcons.addRounded,
-          divider: !rows.isEmpty,
-          onTap: () => onCreateEvent(club),
         ),
-        if (rows.isEmpty)
-          Padding(
-            padding: const EdgeInsets.only(top: CatchSpacing.s2),
-            child: Text(
-              'No active events yet.',
-              style: CatchTextStyles.supporting(context, color: emptyTextColor),
+      ),
+    );
+  }
+}
+
+class HostEventLifecycleDateBlock extends StatelessWidget {
+  const HostEventLifecycleDateBlock({
+    super.key,
+    required this.data,
+    required this.accent,
+  });
+
+  final HostEventLifecycleRowData data;
+  final Color accent;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return SizedBox(
+      width: CatchSpacing.s12,
+      child: data.isLive || data.isToday
+          ? Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(CatchIcons.eventLive, color: accent, size: CatchIcon.sm),
+                gapH3,
+                Text(
+                  data.isLive ? 'LIVE' : 'TODAY',
+                  style: CatchTextStyles.monoLabelS(context, color: t.ink3),
+                ),
+              ],
+            )
+          : Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  data.dateLabel,
+                  style: CatchTextStyles.titleL(
+                    context,
+                    color: data.isPast ? t.ink3 : t.ink,
+                  ),
+                ),
+                gapH3,
+                Text(
+                  data.monthLabel,
+                  style: CatchTextStyles.monoLabelS(context, color: t.ink3),
+                ),
+              ],
             ),
-          ),
-      ],
     );
   }
 }

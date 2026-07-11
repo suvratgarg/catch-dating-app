@@ -11,9 +11,8 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_count_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
-import 'package:catch_dating_app/core/widgets/catch_tab_dock.dart';
+import 'package:catch_dating_app/core/widgets/catch_tab_bar.dart';
 import 'package:catch_dating_app/event_success/event_success_companion_launcher.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
@@ -29,9 +28,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 // Tab indices — kept in sync with branch order in go_router.dart
 //   0  Home      (DashboardScreen)
 //   1  Explore   (ExploreScreen)
-//   2  Catches   (SwipeHubScreen)
-//   3  Chats     (MatchesListScreen)
-//   4  Profile   (ProfileScreen)
+//   2  Chats     (MatchesListScreen)
+//   3  Profile   (ProfileScreen)
 
 part 'app_shell.g.dart';
 
@@ -125,19 +123,46 @@ class AppShell extends ConsumerWidget {
       }
     });
 
-    return Scaffold(
-      body: CatchNoticeHost(
-        persistentNotices: [if (isOffline) const CatchNoticeData.offline()],
-        child: AppShellActiveTab(
-          index: navigationShell.currentIndex,
-          child: navigationShell,
-        ),
+    final authenticatedTabBarFloats =
+        isAuthenticated && CatchTabBar.floatsFor(context);
+    final authenticatedBottomOverlayInset = authenticatedTabBarFloats
+        ? CatchTabBar.reservedBottomInset(context)
+        : 0.0;
+    final authenticatedNavigationBar = isAuthenticated
+        ? appShellNavigationBar(
+            navigationShell: navigationShell,
+            unreadCount: unreadCount,
+          )
+        : null;
+    final body = CatchNoticeHost(
+      persistentNotices: [if (isOffline) const CatchNoticeData.offline()],
+      child: AppShellActiveTab(
+        index: navigationShell.currentIndex,
+        bottomOverlayInset: authenticatedBottomOverlayInset,
+        child: navigationShell,
       ),
-      bottomNavigationBar: isAuthenticated
-          ? appShellNavigationBar(
-              navigationShell: navigationShell,
-              unreadCount: unreadCount,
+    );
+
+    return Scaffold(
+      key: AppShellKeys.scaffold,
+      extendBody: authenticatedTabBarFloats,
+      body: authenticatedTabBarFloats
+          ? Stack(
+              children: [
+                Positioned.fill(child: body),
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: authenticatedNavigationBar!,
+                ),
+              ],
             )
+          : body,
+      bottomNavigationBar: authenticatedTabBarFloats
+          ? null
+          : isAuthenticated
+          ? authenticatedNavigationBar
           : showGuestAuthCta
           ? const GuestAuthCtaBar()
           : null,
@@ -222,58 +247,25 @@ class AppShellNavigationBar extends StatelessWidget {
     final selectedIndex = currentIndex;
     final destinations = items ?? _consumerNavigationItems();
 
-    if (prefersCupertinoControls()) {
-      final t = CatchTokens.of(context);
-      return MediaQuery.withNoTextScaling(
-        child: CupertinoTabBar(
-          key: AppShellKeys.navigationBar,
-          currentIndex: selectedIndex,
-          onTap: onDestinationSelected,
-          activeColor: t.primary,
-          inactiveColor: t.ink3,
-          backgroundColor: t.surface.withValues(
-            alpha: CatchOpacity.appShellNavigationBarFill,
-          ),
-          border: Border(top: BorderSide(color: t.line)),
-          items: [
-            for (final item in destinations)
-              BottomNavigationBarItem(
-                icon: _navigationIcon(
-                  item.cupertinoIcon,
-                  unreadCount: item.showsUnreadBadge ? unreadCount : 0,
-                ),
-                activeIcon: _navigationIcon(
-                  item.cupertinoSelectedIcon,
-                  unreadCount: item.showsUnreadBadge ? unreadCount : 0,
-                ),
-                label: item.label,
-              ),
-          ],
-        ),
-      );
-    }
-
-    return CatchTabDock<int>(
+    return CatchTabBar<int>(
       key: AppShellKeys.navigationBar,
       active: selectedIndex,
       onChanged: onDestinationSelected,
       items: [
-        for (final (index, item) in destinations.indexed)
-          CatchTabDockItem(
-            id: index,
-            icon: item.materialIcon,
-            activeIcon: item.materialSelectedIcon,
+        for (final (fallbackIndex, item) in destinations.indexed)
+          CatchTabBarItem(
+            id: item.branchIndex ?? fallbackIndex,
+            icon: prefersCupertinoControls()
+                ? item.cupertinoIcon
+                : item.materialIcon,
+            activeIcon: prefersCupertinoControls()
+                ? item.cupertinoSelectedIcon
+                : item.materialSelectedIcon,
             label: item.label,
             badgeCount: item.showsUnreadBadge ? unreadCount : 0,
           ),
       ],
     );
-  }
-
-  Widget _navigationIcon(IconData icon, {required int unreadCount}) {
-    final child = Icon(icon);
-    if (unreadCount <= 0) return child;
-    return CatchCountBadge(count: unreadCount, child: child);
   }
 }
 
@@ -284,10 +276,12 @@ class AppShellNavigationItem {
     required this.materialSelectedIcon,
     required this.cupertinoIcon,
     required this.cupertinoSelectedIcon,
+    this.branchIndex,
     this.showsUnreadBadge = false,
   });
 
   final String label;
+  final int? branchIndex;
   final IconData materialIcon;
   final IconData materialSelectedIcon;
   final IconData cupertinoIcon;
@@ -298,6 +292,7 @@ class AppShellNavigationItem {
 List<AppShellNavigationItem> _consumerNavigationItems() => [
   AppShellNavigationItem(
     label: 'Home',
+    branchIndex: appShellHomeTabIndex,
     materialIcon: CatchIcons.tabHome,
     materialSelectedIcon: CatchIcons.tabHomeFilled,
     cupertinoIcon: CupertinoIcons.house,
@@ -305,20 +300,15 @@ List<AppShellNavigationItem> _consumerNavigationItems() => [
   ),
   AppShellNavigationItem(
     label: 'Explore',
+    branchIndex: appShellClubsTabIndex,
     materialIcon: CatchIcons.tabExplore,
     materialSelectedIcon: CatchIcons.tabExploreFilled,
     cupertinoIcon: CupertinoIcons.person_2,
     cupertinoSelectedIcon: CupertinoIcons.person_2_fill,
   ),
   AppShellNavigationItem(
-    label: 'Catches',
-    materialIcon: CatchIcons.tabCatches,
-    materialSelectedIcon: CatchIcons.tabCatchesFilled,
-    cupertinoIcon: CupertinoIcons.heart,
-    cupertinoSelectedIcon: CupertinoIcons.heart_fill,
-  ),
-  AppShellNavigationItem(
     label: 'Chats',
+    branchIndex: appShellChatsTabIndex,
     materialIcon: CatchIcons.tabChats,
     materialSelectedIcon: CatchIcons.tabChatsFilled,
     cupertinoIcon: CupertinoIcons.chat_bubble_2,
@@ -327,6 +317,7 @@ List<AppShellNavigationItem> _consumerNavigationItems() => [
   ),
   AppShellNavigationItem(
     label: 'You',
+    branchIndex: appShellProfileTabIndex,
     materialIcon: CatchIcons.tabYou,
     materialSelectedIcon: CatchIcons.tabYouFilled,
     cupertinoIcon: CupertinoIcons.person,

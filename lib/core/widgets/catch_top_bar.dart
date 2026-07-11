@@ -18,6 +18,224 @@ export 'package:catch_dating_app/core/widgets/catch_icon_action.dart';
 
 enum CatchTopBarLeading { auto, back, close, none }
 
+/// Root-screen title stack shared by the main tabs and root-like app bars.
+class CatchScreenHeaderTitle extends StatelessWidget {
+  const CatchScreenHeaderTitle({
+    super.key,
+    required this.title,
+    this.eyebrow,
+    this.subtitle,
+    this.leading,
+    this.actions = const <Widget>[],
+    this.padding,
+    this.material = false,
+    this.backgroundColor,
+  });
+
+  const CatchScreenHeaderTitle.block({
+    super.key,
+    required this.title,
+    this.eyebrow,
+    this.subtitle,
+    this.leading,
+    this.actions = const <Widget>[],
+    this.padding = CatchInsets.screenTitleBlock,
+    this.backgroundColor,
+  }) : material = true;
+
+  final String title;
+  final String? eyebrow;
+  final String? subtitle;
+  final Widget? leading;
+  final List<Widget> actions;
+  final EdgeInsetsGeometry? padding;
+  final bool material;
+  final Color? backgroundColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final hasEyebrow = eyebrow != null && eyebrow!.isNotEmpty;
+    final hasSubtitle = subtitle != null && subtitle!.isNotEmpty;
+
+    Widget child = Row(
+      children: [
+        if (leading != null) ...[leading!, gapW12],
+        Expanded(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (hasEyebrow) ...[
+                Text(
+                  eyebrow!,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: CatchTextStyles.kicker(context, color: t.ink3),
+                ),
+                gapH2,
+              ],
+              Text(
+                title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: CatchTextStyles.headline(context, color: t.ink),
+              ),
+              if (hasSubtitle) ...[
+                const SizedBox(height: CatchGaps.headerTitleToSubtitle),
+                Text(
+                  subtitle!,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                ),
+              ],
+            ],
+          ),
+        ),
+        if (actions.isNotEmpty) ...[
+          gapW12,
+          Row(mainAxisSize: MainAxisSize.min, children: actions),
+        ],
+      ],
+    );
+
+    final resolvedPadding = padding;
+    if (resolvedPadding != null) {
+      child = Padding(padding: resolvedPadding, child: child);
+    }
+
+    final resolvedBackground = backgroundColor ?? t.bg;
+    if (material) {
+      return Material(color: resolvedBackground, child: child);
+    }
+    if (backgroundColor != null) {
+      return ColoredBox(color: resolvedBackground, child: child);
+    }
+    return child;
+  }
+}
+
+/// App-bar wrapper for root screens that should use the tab-screen title voice.
+class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
+  const CatchScreenTopBar({
+    super.key,
+    required this.title,
+    this.eyebrow,
+    this.subtitle,
+    this.leading,
+    this.leadingType = CatchTopBarLeading.auto,
+    this.actions = const <Widget>[],
+    this.backgroundColor,
+    this.surface = false,
+    this.border = false,
+    this.divider,
+    this.gutter = false,
+    this.applySafeArea = true,
+    this.contentPadding = CatchInsets.screenTitleBlock,
+    this.height = CatchLayout.browseHeaderHeight,
+    this.bottom,
+    this.trailing,
+    this.searchValue,
+    this.searchEnabled,
+    this.searchExpanded,
+    this.onSearchExpandedChanged,
+    this.onSearch,
+    this.searchPlaceholder = 'Search',
+    this.searchAutofocus = false,
+    this.searchTextInputAction = TextInputAction.done,
+    this.onSearchSubmitted,
+    this.onSearchFocusChanged,
+    this.searchTooltip = 'Search',
+    this.searchSemanticLabel,
+    this.searchCollapsedExtent = CatchIconButton.navSize,
+    this.searchBackgroundColor,
+    this.searchBorderColor,
+    this.searchForegroundColor,
+    this.searchMutedForegroundColor,
+  });
+
+  final String title;
+  final String? eyebrow;
+  final String? subtitle;
+  final Widget? leading;
+  final CatchTopBarLeading leadingType;
+  final List<Widget> actions;
+  final Color? backgroundColor;
+  final bool surface;
+  final bool border;
+  final bool? divider;
+  final bool gutter;
+  final bool applySafeArea;
+  final EdgeInsetsGeometry? contentPadding;
+  final double height;
+  final PreferredSizeWidget? bottom;
+  final Widget? trailing;
+  final String? searchValue;
+  final bool? searchEnabled;
+  final bool? searchExpanded;
+  final ValueChanged<bool>? onSearchExpandedChanged;
+  final ValueChanged<String>? onSearch;
+  final String searchPlaceholder;
+  final bool searchAutofocus;
+  final TextInputAction searchTextInputAction;
+  final ValueChanged<String>? onSearchSubmitted;
+  final ValueChanged<bool>? onSearchFocusChanged;
+  final String searchTooltip;
+  final String? searchSemanticLabel;
+  final double searchCollapsedExtent;
+  final Color? searchBackgroundColor;
+  final Color? searchBorderColor;
+  final Color? searchForegroundColor;
+  final Color? searchMutedForegroundColor;
+
+  @override
+  Size get preferredSize =>
+      Size.fromHeight(height + (bottom?.preferredSize.height ?? 0));
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchTopBar(
+      titleWidget: CatchScreenHeaderTitle(
+        title: title,
+        eyebrow: eyebrow,
+        subtitle: subtitle,
+      ),
+      large: false,
+      leading: leading,
+      leadingType: leadingType,
+      actions: actions,
+      backgroundColor: backgroundColor,
+      surface: surface,
+      border: border,
+      divider: divider,
+      gutter: gutter,
+      applySafeArea: applySafeArea,
+      contentPadding: contentPadding,
+      height: height,
+      bottom: bottom,
+      trailing: trailing,
+      searchValue: searchValue,
+      searchEnabled: searchEnabled,
+      searchExpanded: searchExpanded,
+      onSearchExpandedChanged: onSearchExpandedChanged,
+      onSearch: onSearch,
+      searchPlaceholder: searchPlaceholder,
+      searchAutofocus: searchAutofocus,
+      searchTextInputAction: searchTextInputAction,
+      onSearchSubmitted: onSearchSubmitted,
+      onSearchFocusChanged: onSearchFocusChanged,
+      searchTooltip: searchTooltip,
+      searchSemanticLabel: searchSemanticLabel,
+      searchCollapsedExtent: searchCollapsedExtent,
+      searchBackgroundColor: searchBackgroundColor,
+      searchBorderColor: searchBorderColor,
+      searchForegroundColor: searchForegroundColor,
+      searchMutedForegroundColor: searchMutedForegroundColor,
+    );
+  }
+}
+
 /// Canonical Catch app-bar primitive.
 ///
 /// Mirrors the design handoff's `AppBar`: compact or large title chrome,
@@ -64,6 +282,10 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
     this.searchTooltip = 'Search',
     this.searchSemanticLabel,
     this.searchCollapsedExtent = CatchIconButton.navSize,
+    this.searchBackgroundColor,
+    this.searchBorderColor,
+    this.searchForegroundColor,
+    this.searchMutedForegroundColor,
   }) : identityName = null,
        identityPhotoUrl = null,
        onIdentityTap = null;
@@ -110,7 +332,11 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
        onSearchFocusChanged = null,
        searchTooltip = 'Search',
        searchSemanticLabel = null,
-       searchCollapsedExtent = CatchIconButton.navSize;
+       searchCollapsedExtent = CatchIconButton.navSize,
+       searchBackgroundColor = null,
+       searchBorderColor = null,
+       searchForegroundColor = null,
+       searchMutedForegroundColor = null;
 
   final String? title;
   final String? subtitle;
@@ -153,6 +379,10 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
   final String searchTooltip;
   final String? searchSemanticLabel;
   final double searchCollapsedExtent;
+  final Color? searchBackgroundColor;
+  final Color? searchBorderColor;
+  final Color? searchForegroundColor;
+  final Color? searchMutedForegroundColor;
 
   @override
   Size get preferredSize => Size.fromHeight(
@@ -362,6 +592,10 @@ class _CatchTopBarState extends State<CatchTopBar> {
       onCloseSearch: () => _setSearchOpen(false),
       tooltip: widget.searchTooltip,
       collapsedExtent: widget.searchCollapsedExtent,
+      backgroundColor: widget.searchBackgroundColor,
+      borderColor: widget.searchBorderColor,
+      foregroundColor: widget.searchForegroundColor,
+      mutedForegroundColor: widget.searchMutedForegroundColor,
     );
   }
 

@@ -1,7 +1,7 @@
 ---
 doc_id: home_live_layer_product_spec
-version: 1.0.1
-updated: 2026-07-05
+version: 1.0.2
+updated: 2026-07-10
 owner: product (approved direction 2026-07-05)
 status: implemented-behind-flag
 ---
@@ -31,7 +31,7 @@ doctrine and should be cited in reviews the same way.
 | State | Trigger | Modules (in order) |
 |---|---|---|
 | Idle | no upcoming/booked events, no open window | next-step hero CTA (find an event) + unseen organizer posts (Phase 2) |
-| Booked | ≥1 upcoming participation | focus rail (logistics: directions, calendar add, invite), organizer posts from booked/followed clubs |
+| Booked | ≥1 upcoming participation | focus rail (logistics: directions, calendar add, invite), organizer posts from booked/joined clubs |
 | Event day | today's event | companion/check-in card takes the hero slot (focus rail already does this — preserve) |
 | Window open | active catch window | catch-window card ABOVE everything, countdown visible |
 
@@ -71,12 +71,13 @@ entry points:
   `Routes.savedEventsScreen`) — saved is browse-state and belongs to
   Explore. Routes/deep links unchanged.
 
-### 1A.3 Remove the followed-clubs rail `[codex]`
+### 1A.3 Remove the club-membership rail `[codex]`
 
 Delete `_buildFollowedClubsRail` + `FollowedClubsRailSkeleton` from
 `dashboard_full.dart`. `ClubAvatarRail` itself stays (Explore's joined
-rail uses it). Follows become feed signal in Phase 1B — do not ship 1A.3
-without 1B.2 in the same release (follows must never be signal-less).
+rail uses it). Active club membership remains visible in Explore's joined rail,
+recommendations, and truthful row context; a separate follow graph is not
+implied by this migration.
 
 ### 1A.4 Catch-window priority ordering `[codex]`
 
@@ -116,23 +117,25 @@ with the repo's deprecated-alias convention if referenced widely).
 Placement: after the first feed cluster, before the club directory.
 Loading/error states follow the feed's existing skeleton grammar (G2).
 
-### 1B.2 Follows tune the feed `[codex]`
+### 1B.2 Joined membership tunes Explore context `[codex]`
 
-- `ExploreFeedViewModel` gains followed-club awareness: guarantee that
-  followed clubs' upcoming events appear within the first feed page when
-  they exist (target: at least 2 slots of the first 10 items, without
-  duplicating events already ranked there organically).
-- Boosted items render with the kicker `FROM A CLUB YOU FOLLOW` on
-  `EventDateRailCard` (the `kicker` param exists).
-- The Explore filter sheet's CLUBS section gains a `Following` toggle
-  (peer of 'Joined clubs') filtering the feed to followed clubs.
-- Source of truth for follow state: the same provider the dashboard's
-  `followedClubIds` flows from today (locate via
-  `dashboardHomeScreenStateProvider`'s composition; expose a reusable
-  provider rather than re-deriving).
+The first implementation incorrectly treated active `clubMemberships` as a
+distinct follow graph. Corrected 2026-07-10:
 
-Acceptance: a user following a club with an upcoming event always sees it
-on the first Explore page; the lens filters correctly; no duplicate cards.
+- Explore keeps chronological day ordering; it does not fake a followed-club
+  first-page boost from membership ids.
+- Membership-derived event context renders `FROM ONE OF YOUR CLUBS`.
+- The CLUBS filter exposes `Joined clubs` only. The duplicate `Following` lens
+  and its unreachable filter state were removed.
+- Joined clubs still drive the personal rail, membership-aware availability,
+  and the current recommendation query. The legacy provider/recommendation
+  names containing `followed` remain cross-feature naming debt, not evidence of
+  a separate user action.
+
+Acceptance: membership-backed UI is truthful and non-duplicative. A real
+follow graph, its join/leave/notification/privacy semantics, and whether it may
+reorder the chronological feed are owner decisions tracked by
+`EXPLORE-PRODUCT-DECISIONS-2026-07-10`.
 
 ## Phase 2 — Organizer posts (full-stack, behind a flag)
 
@@ -216,5 +219,5 @@ Standard repo workflow per AGENTS.md. Per phase: focused widget tests
 notification rendering 2), analyzer, `bash tool/widget_cleanup_scan.sh`,
 gutter/section scanners on touched screens, data-contract check (Phase 2),
 `node tool/agent/check_agent_readiness.mjs`, widget catalog + TESTS.md +
-passes.jsonl updates. Phase order is 1A+1B together (one release: follows
-must gain feed signal the same release the rail dies), then 2.
+passes.jsonl updates. Phase order is 1A+1B together (one release: club
+membership remains legible in Explore when its Home rail is removed), then 2.

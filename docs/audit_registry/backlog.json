@@ -1,6 +1,6 @@
 {
-  "version": "2.7.150",
-  "updated": "2026-07-03",
+  "version": "2.7.157",
+  "updated": "2026-07-11",
   "owner": "recursive_audit_loop",
   "read_policy": "Use this file for active backlog, next actions, scanner counts, stable debt ids, uid-loading conflation follow-up, React component-governance follow-up including class-name boundary enforcement and exported website feature component registry coverage, admin feature export boundary, the retired website legacy site barrel/import boundary, UI label spans, empty-state variants, page shells, claim-flow route/root/auth-row shells, website Host Page route, Host Application flow, Host feature section, waitlist form shells, marketing section, marketing info-card, marketing loop-list, marketing consent banner, featured organizer card, app-download CTA group, organizer listing, organizer listing hero, organizer listing event section including event-action cards, organizer search section, organizer search result shells, PublicSearchBar ownership, public event-card shells, admin editor section/form shells, admin layout span classes, admin eyebrow labels, admin card/stat layout shells, admin loading icon shells, admin toolbar shells/modifiers, admin marketing studio shell/tabs, admin marketing post-board shells, admin marketing composer flow shells, admin marketing picker list/row shells, admin marketing feature-shot grid/card shells, admin marketing brand-contract shells, admin marketing help/compliance text/list shells, admin marketing event-library grid/card/link shells, admin marketing media-library grid/card shells, admin marketing new-post grid/card shells, admin marketing guide shells, admin marketing stacked-section shells, admin marketing app-media shells, admin marketing field shells, admin marketing layout shells, admin diff list shells, admin publishing utility primitives, admin event supply shells, admin selected table rows, admin marketing tag rows, admin marketing query lists, admin marketing slide editor/list shells, admin marketing recommendation list/item shells, admin marketing audit list/row shells, admin feature-drop feature editor/list shells, admin feature-drop controls/preview shells, admin marketing preview/export shells, admin marketing carousel preview shells, admin marketing image editor shells, admin guardrail lists, admin intake source lists, admin intake gate lists, admin intake decision/footer shells, admin intake workspace shells, admin organizer intake curation shells, admin overview queue shells, admin roadmap lists, and documentation hygiene follow-up. Historical detail lives in passes.jsonl/files.jsonl; do not recreate long markdown trackers for closed work.",
   "scanner_snapshot": {
@@ -45,6 +45,118 @@
   },
   "pending": [
     {
+      "id": "EVENT-INTAKE-LIVE-SOURCE-001",
+      "title": "Replace the stale sample Event Intake bridge before live publish",
+      "status": "active",
+      "owner": "marketing_ops",
+      "area": "admin,events,intake,marketing,supply",
+      "priority": "high",
+      "summary": "Event Intake decisions now persist across dashboard refreshes and live apply is fail-closed. The checked-in bridge still covers the week ending 2026-06-29 and contains one example.com placeholder result plus four sample candidates, so it is intentionally rejected for live publishing as of 2026-07-11.",
+      "acceptance": [
+        "regenerate the Event Intake bridge from reviewed, source-backed results for the active operating week",
+        "remove placeholder URLs, placeholder-result flags, and sample candidate labels",
+        "node tool/marketing/event_guide/publish_event_intake_dashboard.mjs --check-live --as-of YYYY-MM-DD passes before any --apply"
+      ],
+      "paths": [
+        "admin/src/generated/eventIntakeBridge.json",
+        "functions/src/admin/eventIntakeDashboard.ts",
+        "tool/marketing/event_guide/publish_event_intake_dashboard.mjs",
+        "tool/marketing/event_guide/lib/event_intake_dashboard_publish_core.mjs"
+      ],
+      "source": "2026-07-11-organizer-supply-claim-hardening"
+    },
+    {
+      "id": "HOST-V2-INBOX-PARITY-001",
+      "title": "Complete live production proof for event-scoped Host Inbox broadcast",
+      "status": "active",
+      "owner": "agent",
+      "area": "host,inbox,product,data,design-parity",
+      "priority": "high",
+      "summary": "Product semantics, local implementation, and visual parity are resolved. HostInboxScreen is an event-scoped Host-owned workspace with explicit General inquiries, Booked/Prospective thread views, roster-backed audience counts, personal contacted-host threads, and an authorized sendEventBroadcast callable that creates Activity plus preference-gated push without chat fan-out. The fresh 2026-07-11 strict full-shell comparison is within both pinned thresholds at 7.34% mismatch and 7.62 meanDelta after the compact event-scope and mono SegPill pass. Production sending remains dark until the live callable/IAM preflight succeeds; the retired All/Unread result remains invalid.",
+      "acceptance": [
+        "production sendEventBroadcast callable and public invoker pass the target-specific live preflight before ENABLE_HOST_EVENT_BROADCAST is enabled in prod",
+        "strict host_inbox_queries comparison meets both pinned thresholds; fresh 2026-07-11 evidence is 7.34% mismatch and 7.62 meanDelta",
+        "delivery evidence confirms Activity durability, preference-gated push, and no match/message fan-out"
+      ],
+      "paths": [
+        "functions/src/events/sendEventBroadcast.ts",
+        "lib/hosts/presentation/inbox/host_inbox_screen.dart",
+        "lib/hosts/presentation/inbox/host_inbox_view_model.dart",
+        "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart",
+        "tool/firebase/client_callable_dependencies.json",
+        "test/ui_captures/catalog/screen_capture_catalog.dart",
+        "design/reference_screens/manifest.json",
+        "test/hosts/host_inbox_screen_test.dart"
+      ],
+      "source": "2026-07-10-first-class-app-targets-host-shell"
+    },
+    {
+      "id": "HOST-V2-TODAY-FUNCTIONAL-PARITY-001",
+      "title": "Back Host Today action cards with real workflows",
+      "status": "active",
+      "owner": "agent",
+      "area": "host,today,design-parity",
+      "priority": "medium",
+      "summary": "Host Today now renders a minute-refreshing countdown, event-identified cross-event waitlist work routed to the exact event Guests section, lifecycle-aware live run-of-show routing, and real later-event lifecycle rows. The unconditional setup task, synthetic review count, fake attendee stack, misleading manual-approval cards, and task truncation were removed. Pending approval, waitlist-offer, draft, and guest-inquiry task providers remain uncomposed, so the improved 28.48% mismatch / 37.31 meanDelta result is bounded by a tightened regression ceiling rather than treated as parity.",
+      "acceptance": [
+        "each rendered action is derived from live event/request state and reaches a working mutation or management destination",
+        "no design-only action is presented as shipped behavior",
+        "host_home_dashboard meets the canonical advisory thresholds without regressionThresholds"
+      ],
+      "paths": [
+        "lib/hosts/presentation/host_home_screen_state.dart",
+        "lib/hosts/presentation/host_home_view_model.dart",
+        "lib/hosts/presentation/host_operations/host_today.dart",
+        "lib/hosts/presentation/host_operations/host_operations_home_screen.dart",
+        "design/reference_screens/manifest.json",
+        "test/hosts/host_operations_screen_test.dart"
+      ],
+      "source": "2026-07-10-first-class-app-targets-host-shell"
+    },
+    {
+      "id": "HOST-V2-INSIGHTS-REFERENCE-001",
+      "title": "Register and compare the Host Insights reference",
+      "status": "active",
+      "owner": "agent",
+      "area": "host,insights,design-parity",
+      "priority": "medium",
+      "summary": "The dedicated Host Insights route now resolves the exact operated club, renders source-aligned back/title/range chrome without the legacy Clubs rail, preserves owner/co-host capability, exposes a range sheet and real demand/bookings trend, and has a routed 390x812 production capture. The pinned source still lacks a repo-owned reference PNG and focused comparison because the 2026-07-10 headless-Chrome export attempt was denied by the Codex execution-credit limit; do not claim pixel closure yet.",
+      "acceptance": [
+        "export hosts-insights/Insights.dc.html to a repo-owned reference PNG",
+        "register a full-shell hostInsightsScreen reference with masks and a production capture",
+        "add the focused comparison to the Host shell regression gate"
+      ],
+      "paths": [
+        "lib/hosts/presentation/host_operations/host_insights_screen.dart",
+        "lib/hosts/presentation/host_operations/host_analytics.dart",
+        "design/source_packs/host-v2/templates/hosts-insights/Insights.dc.html",
+        "design/reference_screens/manifest.json",
+        "test/ui_captures/catalog/screen_capture_catalog.dart"
+      ],
+      "source": "2026-07-10-first-class-app-targets-host-shell"
+    },
+    {
+      "id": "HOST-V2-INSIGHTS-FUNCTIONAL-001",
+      "title": "Add the missing Host Insights business dimensions and actions",
+      "status": "active",
+      "owner": "agent",
+      "area": "host,insights,analytics,backend",
+      "priority": "medium",
+      "summary": "The dedicated Insights route now has exact organizer resolution, real range/granularity queries, every backend trend bucket, dual demand/bookings bars, and Top events routing to Manage Report. The current analytics response still has no structured previous-period delta/direction, by-format breakdown, or authorized data-quality remediation operation, so visual reference closure must not be treated as full product closure.",
+      "acceptance": [
+        "analytics response exposes structured previous-period deltas without parsing captions",
+        "backend and UI expose a privacy-safe by-format breakdown",
+        "each rendered data-quality action has an authorized operation with pending, success, partial, and error evidence"
+      ],
+      "paths": [
+        "functions/src/analytics/hostAnalytics.ts",
+        "contracts/callables/host_analytics_response.schema.json",
+        "lib/hosts/data/host_analytics_repository.dart",
+        "lib/hosts/presentation/host_operations/host_analytics.dart"
+      ],
+      "source": "2026-07-10-host-v2-functional-review"
+    },
+    {
       "id": "WEB-UI-COMPONENT-GOVERNANCE-001",
       "title": "Expand React UI governance beyond native interactive primitives",
       "status": "active",
@@ -63,6 +175,23 @@
         "docs/marketing_website_architecture.md"
       ],
       "source": "2026-07-01-react-surface-ui-primitive-governance"
+    },
+    {
+      "id": "EXPLORE-PRODUCT-DECISIONS-2026-07-10",
+      "title": "Resolve Explore v2 product and viewer-graph decisions",
+      "status": "owner-blocked",
+      "owner": "user",
+      "area": "explore,product-design,privacy,data",
+      "priority": "high",
+      "summary": "Owner review is required before the Explore v2 draft becomes a contract for these choices: ship Cross Paths with a person-recommendation provider and privacy policy or retire it; keep full events visible or hide them behind reveal; choose best-ranked or imminence-biased cover selection; define whether viewer-graph ranking may reorder the chronological day feed; and declare the Explore template a representative fixture or literal layout specification. Friends/mutuals-going, a saved/for-you lane, and an editorial nothing-tonight cover remain candidates. A real club-follow graph also needs explicit semantics for non-member follows, join/leave transitions, notifications, and privacy before Following can return as a filter or ranking signal.",
+      "paths": [
+        "design/screens/catch.screens.json",
+        "docs/design_parity/state_matrix.json",
+        "docs/design_parity/comprehensive_todo.md",
+        "lib/clubs/data/club_membership_repository.dart",
+        "lib/explore/**"
+      ],
+      "source": "explore-spec-v2-2026-07-08"
     },
     {
       "id": "MATCH-CHAT-OWNER-QA-001",
@@ -84,6 +213,19 @@
   ],
   "next_up": [],
   "completed": [
+    {
+      "id": "HOST-V2-EVENTS-PARITY-001-DONE",
+      "title": "Implement the Host v2 Events lifecycle workspace",
+      "completed": "2026-07-10",
+      "rules": [
+        "ARCH-UI-STATE-001",
+        "DESIGN-PRIMITIVES-001",
+        "WIDGET-CATALOG-001",
+        "WIDGET-TEST-001"
+      ],
+      "summary": "Closed with a provider-free HostEventsWorkspaceState and lifecycle UI over the existing club event stream: New, exact-policy-gated non-persisted Repeat, minute-refreshed Upcoming/Live/Past filtering, exact boundary classification, cancelled exclusion, month/year groups, activity spines, live/today date blocks, bounded fill progress, filter-specific empty/error/loading states, and route-safe Manage navigation. Repeat clears the date, copies only form-representable policy shapes, and never assumes EventDraft identity. Verified by focused analyzer, focused Events/create tests, routed 390x812 capture, and the canonical strict comparison at 15.24% mismatch / 15.20 meanDelta with no regressionThresholds.",
+      "source": "2026-07-10-host-v2-functional-parity"
+    },
     {
       "id": "UID-LOADING-CONFLATION-2026-07-02-DONE",
       "title": "Separate signed-in uid resolution from downstream loading states",

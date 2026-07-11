@@ -92,7 +92,7 @@
     },
     "publicApi": {
       "state": "disabled",
-      "reason": "Firestore claim target sync still needs create action for clubs/afterfly.",
+      "reason": "Claiming is not available for this organizer yet.",
       "claimTargetSyncStatus": "write_needed"
     },
     "lastVerifiedAt": "2026-06-18",
@@ -197,7 +197,7 @@
     },
     "publicApi": {
       "state": "disabled",
-      "reason": "Firestore claim target sync still needs create action for clubs/bhag.",
+      "reason": "Claiming is not available for this organizer yet.",
       "claimTargetSyncStatus": "write_needed"
     },
     "lastVerifiedAt": "2026-06-18",

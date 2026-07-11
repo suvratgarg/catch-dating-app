@@ -14,5 +14,17 @@ export interface DeletedUserTombstoneDocument {
     _seconds: number;
     _nanoseconds: number;
   };
+  status: "processing" | "completed";
+  /**
+   * Serialized Firestore Timestamp fixture shape.
+   */
+  updatedAt: {
+    _seconds: number;
+    _nanoseconds: number;
+  };
+  completedAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  } | null;
   retainedFor?: string[];
 }

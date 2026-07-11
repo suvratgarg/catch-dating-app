@@ -233,7 +233,7 @@ void main() {
   });
 
   test(
-    'collapseMatchesByOtherUser groups host inquiries by club and attendee',
+    'collapseMatchesByOtherUser scopes host inquiries by club attendee and event',
     () {
       final collapsed = collapseMatchesByOtherUser([
         _buildMatch(
@@ -258,6 +258,17 @@ void main() {
           clubId: 'club-a',
         ),
         _buildMatch(
+          id: 'club-a-event-2-newest',
+          eventIds: const ['event-a-2'],
+          createdAt: DateTime(2025, 1, 4, 7),
+          lastMessageAt: DateTime(2025, 1, 4, 8),
+          lastMessagePreview: 'Newest event A2 message',
+          lastMessageSenderId: 'runner-2',
+          unreadCounts: const {'runner-1': 2},
+          conversationType: MatchConversationType.clubHostInquiry,
+          clubId: 'club-a',
+        ),
+        _buildMatch(
           id: 'club-b',
           eventIds: const ['event-b-1'],
           createdAt: DateTime(2025, 1, 3, 7),
@@ -270,14 +281,49 @@ void main() {
       ], 'runner-1');
 
       expect(collapsed.map((match) => match.id).toSet(), {
-        'club-a-newer',
+        'club-a-older',
+        'club-a-event-2-newest',
         'club-b',
       });
-      final clubA = collapsed.singleWhere(
-        (match) => match.id == 'club-a-newer',
+      final clubAEvent2 = collapsed.singleWhere(
+        (match) => match.id == 'club-a-event-2-newest',
       );
-      expect(clubA.eventIds, const ['event-a-1', 'event-a-2']);
-      expect(clubA.unreadCounts['runner-1'], 1);
+      expect(clubAEvent2.eventIds, const ['event-a-2']);
+      expect(clubAEvent2.unreadCounts['runner-1'], 1);
+    },
+  );
+
+  test(
+    'collapseMatchesByOtherUser keeps general and sentinel-like event ids distinct',
+    () {
+      final collapsed = collapseMatchesByOtherUser([
+        _buildMatch(
+          id: 'general-inquiry',
+          createdAt: DateTime(2025, 1, 1),
+          conversationType: MatchConversationType.clubHostInquiry,
+          clubId: 'club:general',
+        ),
+        _buildMatch(
+          id: 'event-named-general',
+          eventIds: const ['general'],
+          createdAt: DateTime(2025, 1, 2),
+          conversationType: MatchConversationType.clubHostInquiry,
+          clubId: 'club:general',
+        ),
+        _buildMatch(
+          id: 'delimiter-event',
+          eventIds: const ['event:with:colons'],
+          createdAt: DateTime(2025, 1, 3),
+          conversationType: MatchConversationType.clubHostInquiry,
+          clubId: 'club:general',
+        ),
+      ], 'runner-1');
+
+      expect(collapsed.map((match) => match.id).toSet(), {
+        'general-inquiry',
+        'event-named-general',
+        'delimiter-event',
+      });
     },
   );
 

@@ -148,7 +148,6 @@ void main() {
       final state = container.read(dashboardHomeScreenStateProvider);
       expect(state.status, DashboardHomeScreenStatus.full);
       expect(state.notificationUid, user.uid);
-      expect(state.header.eyebrow, 'WEDNESDAY · MUMBAI');
       expect(
         dashboardHomeLiveStateFor(state, now: DateTime(2026, 5, 13, 8)),
         DashboardHomeLiveState.idle,
@@ -190,7 +189,6 @@ void main() {
       final state = container.read(dashboardHomeScreenStateProvider);
       expect(state.status, DashboardHomeScreenStatus.full);
       expect(state.header.title, 'Morning, Runner');
-      expect(state.header.eyebrow, 'WEDNESDAY · MUMBAI');
       expect(state.followedClubIds, ['club-a']);
       expect(state.viewModel?.nextEvent?.id, event.id);
     });

@@ -144,7 +144,7 @@ void main() {
           ).overrideWith((ref) => Stream.value([activeRun])),
         ],
         child: AppShellActiveTab(
-          index: appShellCatchesTabIndex,
+          index: appShellHomeTabIndex,
           child: MaterialApp(
             theme: AppTheme.dark,
             home: SwipeHubScreen(now: now),

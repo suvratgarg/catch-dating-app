@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
+import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -56,6 +58,22 @@ void main() {
       final objects = [
         for (final phrase in phrases) '${phrase['object'] as String}.',
       ];
+      final runtimePhrases = welcomePhraseBank;
+
+      expect(strings['landingIndex'], welcomeLandingIndex);
+      expect(runtimePhrases, hasLength(phrases.length));
+      for (final entry in phrases.indexed) {
+        final source = entry.$2;
+        final runtime = runtimePhrases[entry.$1];
+        final sourceActivity = _welcomeActivityKind(
+          source['activity'] as String,
+        );
+        final sourcePigment = _colorFromHex(source['pigment'] as String);
+
+        expect(runtime.object, source['object']);
+        expect(runtime.activityKind, sourceActivity);
+        expect(ActivityPalette.pigments[runtime.activityKind], sourcePigment);
+      }
 
       await tester.pumpWidget(
         const Directionality(
@@ -73,7 +91,6 @@ void main() {
           .map((widget) => widget.text.toPlainText())
           .toList();
 
-      expect(strings['landingIndex'], 11);
       expect(objects.last, 'someone real.');
       expect(rendered, [...objects, ...objects]);
     });
@@ -1281,6 +1298,25 @@ File _welcomeStringsSource() {
   );
   if (handoff.existsSync()) return handoff;
   return File('test/fixtures/splash_welcome_strings.json');
+}
+
+ActivityKind _welcomeActivityKind(String activity) => switch (activity) {
+  'social-run' => ActivityKind.socialRun,
+  'dinner' => ActivityKind.dinner,
+  'pub-quiz' => ActivityKind.pubQuiz,
+  'padel' => ActivityKind.padel,
+  'running' => ActivityKind.running,
+  'strength' => ActivityKind.strengthTraining,
+  'bar-crawl' => ActivityKind.barCrawl,
+  'yoga' => ActivityKind.yoga,
+  'cycling' => ActivityKind.cycling,
+  'singles' => ActivityKind.singlesMixer,
+  _ => throw StateError('Unknown welcome activity slug: $activity'),
+};
+
+Color _colorFromHex(String hex) {
+  final value = hex.replaceFirst('#', '');
+  return Color(int.parse('FF$value', radix: 16));
 }
 
 final class _AnalyticsEventCall {

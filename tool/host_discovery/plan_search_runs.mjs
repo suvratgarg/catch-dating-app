@@ -7,7 +7,8 @@ import {fileURLToPath} from "node:url";
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const discoveryRoot = scriptDir;
 const repoRoot = path.resolve(discoveryRoot, "..", "..");
-const checkMode = process.argv.includes("--check");
+const flags = parseFlags(process.argv.slice(2));
+const checkMode = flags.check || flags.checkCurrent;
 
 const matrixPath = path.join(discoveryRoot, "search_matrix.json");
 const categoriesPath = path.join(discoveryRoot, "target_categories.json");
@@ -28,7 +29,9 @@ const existingRuns = loadExistingRuns();
 const errors = [];
 const planned = [];
 const skipped = [];
-const asOf = process.env.HOST_DISCOVERY_AS_OF ?? matrix.updatedAt;
+const asOf = flags.asOf ?? process.env.HOST_DISCOVERY_AS_OF ??
+  (flags.checkCurrent ? utcDate(new Date()) : matrix.updatedAt);
+assertIsoDate(asOf, "search plan as-of date");
 
 for (const generic of matrix.genericSearches ?? []) {
   const template = templatesById.get(generic.queryTemplateId);
@@ -137,7 +140,20 @@ if (checkMode) {
     process.exit(1);
   }
   const current = fs.readFileSync(outputPath, "utf8");
-  if (current !== rendered) {
+  const matches = flags.checkCurrent ?
+    operationallyEquivalent(JSON.parse(current), output) :
+    current === rendered;
+  if (!matches) {
+    if (flags.checkCurrent) {
+      console.error(
+        `Operational search plan classifications are stale for ${asOf}: ` +
+          relative(outputPath)
+      );
+      console.error(
+        `Run: node tool/host_discovery/plan_search_runs.mjs --as-of ${asOf}`
+      );
+      process.exit(1);
+    }
     console.error(`Generated search plan is stale: ${relative(outputPath)}`);
     console.error("Run: node tool/host_discovery/plan_search_runs.mjs");
     process.exit(1);
@@ -252,6 +268,44 @@ function isFresh(searchedAt) {
   if (Number.isNaN(searched) || Number.isNaN(current)) return false;
   const ageDays = Math.floor((current - searched) / 86_400_000);
   return ageDays >= 0 && ageDays <= matrix.freshForDays;
+}
+
+function operationallyEquivalent(current, next) {
+  const comparable = (plan) => ({
+    plannedCount: plan.plannedCount,
+    skippedFreshCount: plan.skippedFreshCount,
+    planned: plan.planned,
+    skippedFresh: plan.skippedFresh,
+  });
+  return stableStringify(comparable(current)) ===
+    stableStringify(comparable(next));
+}
+
+function parseFlags(argv) {
+  const parsed = {asOf: null, check: false, checkCurrent: false};
+  for (let index = 0; index < argv.length; index += 1) {
+    const arg = argv[index];
+    if (arg === "--check") parsed.check = true;
+    else if (arg === "--check-current") parsed.checkCurrent = true;
+    else if (arg === "--as-of") parsed.asOf = argv[++index] ?? null;
+    else {
+      console.error(`Unknown argument: ${arg}`);
+      process.exit(64);
+    }
+  }
+  return parsed;
+}
+
+function assertIsoDate(value, label) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value) ||
+      Number.isNaN(Date.parse(`${value}T00:00:00Z`))) {
+    console.error(`${label} must use YYYY-MM-DD, got ${value ?? "missing"}.`);
+    process.exit(64);
+  }
+}
+
+function utcDate(date) {
+  return date.toISOString().slice(0, 10);
 }
 
 function readJson(file) {

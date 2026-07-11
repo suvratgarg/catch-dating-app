@@ -84,6 +84,14 @@ organizer collection grows.
 Organizer public-page previews use `VITE_ADMIN_PUBLIC_SITE_ORIGIN` plus
 `clubs/{id}.publicPage.canonicalPath`; if the env var is omitted, the admin
 console falls back to `https://catchdates.com`.
+The same Organizers workspace lists pending organizer claims through
+`adminListClubClaimRequests`, loads bounded requester/profile/club evidence
+through `adminGetClubClaimRequestDetails`, and sends approve/reject decisions
+through `adminDecideClubClaim`. Approval stays disabled when the requester
+profile is incomplete or the claim target is missing, and every decision
+requires an operator note. The backend rejects competing active claims and
+stale decisions; rejected applicants receive a deterministic activity
+notification.
 For older organizer documents, dry-run the admin search projection repair
 before applying it:
 
@@ -269,6 +277,14 @@ generated bridge:
 node tool/marketing/event_guide/publish_event_intake_dashboard.mjs --env dev
 node tool/marketing/event_guide/publish_event_intake_dashboard.mjs --env dev --apply
 ```
+
+Event Intake review decisions are overlaid onto each refreshed dashboard read,
+so operator status and field edits no longer disappear when the source bridge
+is republished. `--apply` also enforces live-data readiness: stale week bounds,
+placeholder domains/results, and sample candidate labels fail before Firestore
+initialization. Use `--check-live --as-of YYYY-MM-DD` to run that guard without
+writing. Event Intake remains a review surface; the separate external-event
+pipeline still owns identity, location, dedupe, and import-policy gates.
 
 Live mode calls `adminGetMarketingOpsDashboard`,
 `adminRecordMarketingReviewDecision`, and `adminCreateMarketingContentDraft`.

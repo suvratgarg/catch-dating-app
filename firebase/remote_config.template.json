@@ -40,7 +40,91 @@
       "defaultValue": {
         "value": ""
       },
-      "description": "App Store URL used by the force-update screen once the listing is public."
+      "description": "Legacy Consumer App Store URL retained while role-prefixed parameters are rolled out."
+    },
+    "consumer_min_version": {
+      "defaultValue": {
+        "value": "1.0.1"
+      },
+      "description": "Oldest Consumer marketing version allowed to continue."
+    },
+    "consumer_min_build_android": {
+      "defaultValue": {
+        "value": "0"
+      },
+      "description": "Oldest Consumer Android versionCode allowed to continue."
+    },
+    "consumer_min_build_ios": {
+      "defaultValue": {
+        "value": "0"
+      },
+      "description": "Oldest Consumer iOS CFBundleVersion allowed to continue."
+    },
+    "consumer_min_build_web": {
+      "defaultValue": {
+        "value": "0"
+      },
+      "description": "Oldest Consumer web build allowed to continue."
+    },
+    "consumer_min_build_macos": {
+      "defaultValue": {
+        "value": "0"
+      },
+      "description": "Oldest Consumer macOS CFBundleVersion allowed to continue."
+    },
+    "consumer_store_url_android": {
+      "defaultValue": {
+        "value": ""
+      },
+      "description": "Consumer Play Store URL used once the listing is public."
+    },
+    "consumer_store_url_ios": {
+      "defaultValue": {
+        "value": ""
+      },
+      "description": "Consumer App Store URL used once the listing is public."
+    },
+    "host_min_version": {
+      "defaultValue": {
+        "value": "0.0.0"
+      },
+      "description": "Oldest Host marketing version allowed to continue."
+    },
+    "host_min_build_android": {
+      "defaultValue": {
+        "value": "0"
+      },
+      "description": "Oldest Host Android versionCode allowed to continue."
+    },
+    "host_min_build_ios": {
+      "defaultValue": {
+        "value": "0"
+      },
+      "description": "Oldest Host iOS CFBundleVersion allowed to continue."
+    },
+    "host_min_build_web": {
+      "defaultValue": {
+        "value": "0"
+      },
+      "description": "Oldest Host web build allowed to continue."
+    },
+    "host_min_build_macos": {
+      "defaultValue": {
+        "value": "0"
+      },
+      "description": "Oldest Host macOS CFBundleVersion allowed to continue."
+    },
+    "host_store_url_android": {
+      "defaultValue": {
+        "value": ""
+      },
+      "description": "Host Play Store URL used once the listing is public."
+    },
+    "host_store_url_ios": {
+      "defaultValue": {
+        "value": ""
+      },
+      "description": "Host App Store URL used once the listing is public."
     },
     "enable_launch_access_gate": {
       "defaultValue": {

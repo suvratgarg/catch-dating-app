@@ -1,21 +1,29 @@
+import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
 import 'package:flutter/material.dart';
 
 typedef ChatThreadSelectedCallback = void Function(ChatThreadPreview preview);
+typedef ChatPreviewTextBuilder = String Function(ChatThreadPreview preview);
+typedef ChatTimestampTextBuilder = String Function(ChatThreadPreview preview);
 
 class ChatConversationsList extends StatelessWidget {
   const ChatConversationsList({
     super.key,
     required this.matches,
     required this.onThreadSelected,
+    this.previewTextFor,
+    this.timestampTextFor,
+    this.now,
   });
 
   final List<ChatThreadPreview> matches;
   final ChatThreadSelectedCallback onThreadSelected;
+  final ChatPreviewTextBuilder? previewTextFor;
+  final ChatTimestampTextBuilder? timestampTextFor;
+  final DateTime? now;
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +38,10 @@ class ChatConversationsList extends StatelessWidget {
             data: CatchPersonRowData(
               name: preview.displayName,
               imageUrl: preview.photoUrl,
-              lastMessage: preview.previewText,
-              timestamp: AppTimeFormatters.chatTimestamp(preview.timestamp),
+              lastMessage: previewTextFor?.call(preview) ?? preview.previewText,
+              timestamp:
+                  timestampTextFor?.call(preview) ??
+                  AppTimeFormatters.chatTimestamp(preview.timestamp, now: now),
               unreadCount: unreadCount,
               isFresh: unreadCount > 0 || isNew,
               showFreshDot: unreadCount == 0 && isNew,

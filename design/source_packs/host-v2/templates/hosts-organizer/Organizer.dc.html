@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Host App — Organizer" description="The durable brand surface — OrganizerHeader (logo, verified, formats), a payouts-not-set-up Callout nudge, a MetricGrid of brand stats, the team, a TrendStrip into Insights, and manage rows. Merges the old Clubs (Edit/Preview) + Account (profile) tabs into one. Composed purely of catalogue widgets." -->
+<helmet>
+  <script src="./ds-base.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <style>
+    body { margin: 0; background: #E2E1DC; }
+    .sechead { display: flex; align-items: baseline; gap: 8px; margin: 24px 0 12px; }
+    .sechead a { color: var(--ink2); text-decoration: none; cursor: pointer; }
+    .teamcard { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 4px 14px; }
+    .teamrow { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-top: 1px solid var(--line); }
+    .teamrow:first-child { border-top: 0; }
+    .teamrow .pn { flex: 1; min-width: 0; }
+  </style>
+</helmet>
+
+<div style="min-height: 100vh; display: flex; justify-content: center; padding: 40px 16px; background: #E2E1DC; font-family: var(--font-function); color: var(--ink); box-sizing: border-box">
+  <div data-screen-label="Host Organizer" style="position: relative; width: 390px; height: 812px; background: var(--bg); border-radius: 30px; border: 1px solid rgba(22,20,15,0.15); box-shadow: var(--shadow-overlay); overflow: hidden; display: flex; flex-direction: column; box-sizing: border-box">
+
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.StatusBar" hint-size="100%,44px"></x-import>
+
+    <div style="flex: 1; min-height: 0; overflow: auto; padding: 18px 20px 24px">
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.OrganizerHeader"
+        name="Bandra Social" initials="BS" accent="var(--act-padel-deep)" verified="{{ true }}"
+        meta="BANDRA · MUMBAI · SINCE 2020" formats="{{ formats }}" hint-size="100%,150px" style="display: block"></x-import>
+
+      <div style="margin-top: 14px">
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Callout" tone="warning" icon="warning-circle" title="Connect payouts to get paid" hint-size="100%,96px" style="display: block">
+          Paid events can’t collect until Stripe is set up.
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Button" size="sm" onClick="{{ noop }}" style="margin-top: 10px" hint-size="120px,40px">Set up payouts</x-import>
+        </x-import>
+      </div>
+
+      <div style="margin-top: 16px">
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.MetricGrid" hint-size="100%,200px" style="display: block">
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.StatCard" value="124" label="Members" hint-size="100%,90px"></x-import>
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.StatCard" value="4.8" label="Rating · 41 reviews" hint-size="100%,90px"></x-import>
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.StatCard" value="37" label="Events hosted" hint-size="100%,90px"></x-import>
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.StatCard" value="4" label="Upcoming" hint-size="100%,90px"></x-import>
+        </x-import>
+      </div>
+
+      <div style="margin-top: 12px">
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.InfoRow" icon="eye" label="How guests see you" value="Public page" trailing="chevron" onClick="{{ noop }}" hint-size="100%,56px" style="display: block"></x-import>
+      </div>
+
+      <div class="sechead"><span class="t-mono-label" style="flex: 1; color: var(--ink2)">Team · 2</span><a class="t-mono-label" onClick="{{ noop }}">Manage</a></div>
+      <div class="teamcard">
+        <div class="teamrow">
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.PersonAvatar" displayName="Aanya Sharma" photo="{{ portrait }}" size="{{ avSize }}" hint-size="42px,42px"></x-import>
+          <div class="pn"><b class="t-name" style="font-size: 15px; display: block">Aanya Sharma</b><span class="t-body-s" style="color: var(--ink2)">You · Lead host · profile public</span></div>
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.Badge" tone="solid" hint-size="70px,22px">Owner</x-import>
+        </div>
+        <div class="teamrow">
+          <x-import component-from-global-scope="CatchDesignSystem_3a44f2.PersonAvatar" displayName="Dev Patel" size="{{ avSize }}" hint-size="42px,42px"></x-import>
+          <div class="pn"><b class="t-name" style="font-size: 15px; display: block">Dev Patel</b><span class="t-body-s" style="color: var(--ink2)">Host · scorekeeper</span></div>
+          <i class="ph ph-caret-right" style="color: var(--ink3)"></i>
+        </div>
+      </div>
+
+      <div class="sechead"><span class="t-mono-label" style="flex: 1; color: var(--ink2)">Trends · last 12 weeks</span><a class="t-mono-label" onClick="{{ openInsights }}">See insights</a></div>
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.TrendStrip" kpis="{{ kpis }}" bars="{{ bars }}" onClick="{{ openInsights }}" hint-size="100%,160px" style="display: block"></x-import>
+
+      <div class="sechead"><span class="t-mono-label" style="flex: 1; color: var(--ink2)">Manage</span></div>
+      <x-import component-from-global-scope="CatchDesignSystem_3a44f2.InfoGroup" hint-size="100%,170px" style="display: block">
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.InfoRow" icon="bank" label="Payouts" value="Not set up" trailing="chevron" onClick="{{ noop }}"></x-import>
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.InfoRow" icon="sliders-horizontal" label="Event defaults" value="Prefill new events" trailing="chevron" divider="{{ true }}" onClick="{{ noop }}"></x-import>
+        <x-import component-from-global-scope="CatchDesignSystem_3a44f2.InfoRow" icon="gear" label="Settings" trailing="chevron" divider="{{ true }}" onClick="{{ noop }}"></x-import>
+      </x-import>
+    </div>
+
+    <x-import component-from-global-scope="CatchDesignSystem_3a44f2.TabDock" items="{{ hostTabs }}" active="organizer" radius="0 0 30px 30px" hint-size="100%,64px" style="display: block"></x-import>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const HOST_TABS = [
+  { id: 'today', icon: 'house', label: 'TODAY' },
+  { id: 'events', icon: 'ticket', label: 'EVENTS' },
+  { id: 'inbox', icon: 'chat-circle', label: 'INBOX' },
+  { id: 'organizer', icon: 'storefront', label: 'ORGANIZER' },
+];
+
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      noop: () => {},
+      avSize: 42,
+      openInsights: () => {},
+      portrait: '../../assets/sample-portrait.jpg',
+      formats: ['Social run', 'Pub quiz', 'Supper club', 'Padel'],
+      kpis: [
+        { value: '312', label: 'Bookings', delta: '18%', up: true },
+        { value: '78%', label: 'Fill rate', delta: '6%', up: true },
+        { value: '64%', label: 'Repeat', delta: '3%', up: false },
+      ],
+      bars: [58, 66, 74, 82, 70, 94, 76, 88, 70, 94],
+      hostTabs: HOST_TABS,
+    };
+  }
+}
+</script>
+</body>
+</html>

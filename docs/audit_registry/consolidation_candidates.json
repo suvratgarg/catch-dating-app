@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-05T03:13:48.576984+00:00",
+  "generated_at": "2026-07-10T10:51:53.603666+00:00",
   "total_candidates": 1,
   "candidates": [
     {
@@ -11,7 +11,7 @@
       "sites": [
         {
           "file": "lib/swipes/shared/profile_surface/catch_profile_view.dart",
-          "line": 210,
+          "line": 209,
           "signature": "class ProfilePhoto extends StatelessWidget {",
           "body_hash": "b4a62e0adb852bed"
         },

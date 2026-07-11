@@ -132,10 +132,8 @@ Future<void> _openCustomQuestionnaireSheet(
   required EventSuccessQuestionnaireConfig initial,
   required ValueChanged<EventSuccessQuestionnaireConfig> onChanged,
 }) {
-  return showModalBottomSheet<void>(
+  return showCatchBottomSheet<void>(
     context: context,
-    isScrollControlled: true,
-    useSafeArea: true,
     builder: (sheetContext) =>
         CustomQuestionnaireSheet(initialValue: initial, onChanged: onChanged),
   );

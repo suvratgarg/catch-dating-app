@@ -7,7 +7,12 @@ import 'package:flutter/material.dart';
 class CatchStartupLoadingScreen extends StatefulWidget {
   const CatchStartupLoadingScreen({super.key});
 
-  static const iconAsset = 'assets/branding/catch_icon.png';
+  static const lightIconAsset = 'assets/branding/catch_splash_mark_light.png';
+  static const darkIconAsset = 'assets/branding/catch_splash_mark_dark.png';
+
+  static String iconAssetForBrightness(Brightness brightness) {
+    return brightness == Brightness.dark ? darkIconAsset : lightIconAsset;
+  }
 
   @override
   State<CatchStartupLoadingScreen> createState() =>
@@ -38,6 +43,9 @@ class _CatchStartupLoadingScreenState extends State<CatchStartupLoadingScreen> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final iconAsset = CatchStartupLoadingScreen.iconAssetForBrightness(
+      Theme.of(context).brightness,
+    );
 
     return Scaffold(
       backgroundColor: t.bg,
@@ -47,7 +55,7 @@ class _CatchStartupLoadingScreenState extends State<CatchStartupLoadingScreen> {
           children: [
             Center(
               child: Image.asset(
-                CatchStartupLoadingScreen.iconAsset,
+                iconAsset,
                 width: CatchLayout.startupLogoExtent,
                 height: CatchLayout.startupLogoExtent,
                 semanticLabel: 'Catch',

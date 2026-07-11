@@ -104,6 +104,10 @@
           "destination": "/host/index.html"
         },
         {
+          "source": "/claim/**",
+          "destination": "/claim/index.html"
+        },
+        {
           "source": "**",
           "destination": "/index.html"
         }

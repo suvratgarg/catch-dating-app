@@ -7,6 +7,23 @@ part 'app_version_config.freezed.dart';
 /// When no remote values exist (or the fetch fails), these defaults keep all
 /// force-update gates disabled so users are never blocked accidentally.
 const kAppVersionConfigDefaults = <String, dynamic>{
+  'consumer_min_version': '0.0.0',
+  'consumer_min_build_android': 0,
+  'consumer_min_build_ios': 0,
+  'consumer_min_build_web': 0,
+  'consumer_min_build_macos': 0,
+  'consumer_store_url_android': '',
+  'consumer_store_url_ios': '',
+  'host_min_version': '0.0.0',
+  'host_min_build_android': 0,
+  'host_min_build_ios': 0,
+  'host_min_build_web': 0,
+  'host_min_build_macos': 0,
+  'host_store_url_android': '',
+  'host_store_url_ios': '',
+  // Legacy Consumer-only keys. Keep these during the Remote Config migration
+  // so an already-raised Consumer gate remains effective until the prefixed
+  // parameters are published. Host never falls back to these values.
   'min_version': '0.0.0',
   'min_build_android': 0,
   'min_build_ios': 0,
