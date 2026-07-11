@@ -922,7 +922,13 @@ bool _catchAfterMutationRun(List<String> lines, int lineIndex) {
     lineIndex,
     before: 30,
     after: 0,
-    needles: const ['Mutation.run(', '.run(ref', 'Mutation.run (', '.run(\n'],
+    needles: const [
+      'Mutation.run(',
+      '.run(ref',
+      'Mutation.run (',
+      '.run(\n',
+      'sendMutation',
+    ],
   );
 }
 
