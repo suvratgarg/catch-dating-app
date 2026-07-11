@@ -173,13 +173,19 @@ export function buildReleaseIdentityReceipt({
 }
 
 export function readPlistFile(plistPath) {
+  const source = fs.readFileSync(plistPath, "utf8");
+  try {
+    return JSON.parse(source);
+  } catch {
+    // Real archive plists continue through the native plist converter.
+  }
   const result = spawnSync(
     "/usr/bin/plutil",
     ["-convert", "json", "-o", "-", plistPath],
     {encoding: "utf8"},
   );
   if (result.error?.code === "ENOENT") {
-    return JSON.parse(fs.readFileSync(plistPath, "utf8"));
+    throw new Error(`Could not read plist ${plistPath}: plutil is unavailable`);
   }
   if (result.status !== 0) {
     throw new Error(
@@ -191,11 +197,7 @@ export function readPlistFile(plistPath) {
       ).trim()}`,
     );
   }
-  try {
-    return JSON.parse(result.stdout);
-  } catch {
-    return JSON.parse(fs.readFileSync(plistPath, "utf8"));
-  }
+  return JSON.parse(result.stdout);
 }
 
 export function readSignedEntitlements(appPath) {
