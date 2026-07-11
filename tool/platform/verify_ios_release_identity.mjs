@@ -185,7 +185,7 @@ export function readPlistFile(plistPath) {
     {encoding: "utf8"},
   );
   if (result.error?.code === "ENOENT") {
-    throw new Error(`Could not read plist ${plistPath}: plutil is unavailable`);
+    return parseXmlPlistDictionary(source);
   }
   if (result.status !== 0) {
     throw new Error(
@@ -198,6 +198,29 @@ export function readPlistFile(plistPath) {
     );
   }
   return JSON.parse(result.stdout);
+}
+
+function parseXmlPlistDictionary(source) {
+  const values = {};
+  const entries = source.matchAll(
+    /<key>([^<]+)<\/key>\s*(?:<string>([^<]*)<\/string>|<(true|false)\s*\/>|<array>([\s\S]*?)<\/array>)/gu,
+  );
+  for (const match of entries) {
+    const [, key, stringValue, booleanValue, arrayValue] = match;
+    if (stringValue != null) {
+      values[key] = stringValue;
+    } else if (booleanValue != null) {
+      values[key] = booleanValue === "true";
+    } else {
+      values[key] = [...arrayValue.matchAll(/<string>([^<]*)<\/string>/gu)].map(
+        (item) => item[1],
+      );
+    }
+  }
+  if (Object.keys(values).length === 0) {
+    throw new Error("Could not parse XML plist dictionary without plutil");
+  }
+  return values;
 }
 
 export function readSignedEntitlements(appPath) {
