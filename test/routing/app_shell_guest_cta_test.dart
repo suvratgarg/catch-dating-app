@@ -304,41 +304,46 @@ Future<void> _pumpProductionRouter(
   await tester.pump();
 }
 
-ProviderScope _authenticatedShellProviderScope({
+Widget _authenticatedShellProviderScope({
   required Widget child,
   String? initialLocation,
 }) {
   final user = buildSocialReadyUser(name: 'Runner One');
 
-  return ProviderScope(
-    overrides: [
-      if (initialLocation != null)
-        initialAppLocationProvider.overrideWith((ref) => initialLocation),
-      // ignore: scoped_providers_should_specify_dependencies
-      uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-      // ignore: scoped_providers_should_specify_dependencies
-      appShellFcmInitializationProvider(
-        'runner-1',
-      ).overrideWith((ref) async {}),
-      // ignore: scoped_providers_should_specify_dependencies
-      watchMatchesForUserProvider(
-        'runner-1',
-      ).overrideWith((ref) => Stream.value(const [])),
-      // ignore: scoped_providers_should_specify_dependencies
-      watchEventParticipationsForUserProvider(
-        'runner-1',
-      ).overrideWith((ref) => Stream.value(const [])),
-      // ignore: scoped_providers_should_specify_dependencies
-      watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
-      // ignore: scoped_providers_should_specify_dependencies
-      appConnectivityProvider.overrideWith(
-        (ref) => Stream.value(const [ConnectivityResult.wifi]),
-      ),
-      // ignore: scoped_providers_should_specify_dependencies
-      appAnalyticsProvider.overrideWithValue(
-        AppAnalytics(reporter: _NoOpAnalyticsReporter(), shouldCollect: false),
-      ),
-    ],
+  return UncontrolledProviderScope(
+    container: ProviderContainer(
+      overrides: [
+        if (initialLocation != null)
+          initialAppLocationProvider.overrideWith((ref) => initialLocation),
+        // ignore: scoped_providers_should_specify_dependencies
+        uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+        // ignore: scoped_providers_should_specify_dependencies
+        appShellFcmInitializationProvider(
+          'runner-1',
+        ).overrideWith((ref) async {}),
+        // ignore: scoped_providers_should_specify_dependencies
+        watchMatchesForUserProvider(
+          'runner-1',
+        ).overrideWith((ref) => Stream.value(const [])),
+        // ignore: scoped_providers_should_specify_dependencies
+        watchEventParticipationsForUserProvider(
+          'runner-1',
+        ).overrideWith((ref) => Stream.value(const [])),
+        // ignore: scoped_providers_should_specify_dependencies
+        watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
+        // ignore: scoped_providers_should_specify_dependencies
+        appConnectivityProvider.overrideWith(
+          (ref) => Stream.value(const [ConnectivityResult.wifi]),
+        ),
+        // ignore: scoped_providers_should_specify_dependencies
+        appAnalyticsProvider.overrideWithValue(
+          AppAnalytics(
+            reporter: _NoOpAnalyticsReporter(),
+            shouldCollect: false,
+          ),
+        ),
+      ],
+    ),
     child: child,
   );
 }
