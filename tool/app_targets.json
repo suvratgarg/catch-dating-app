@@ -63,7 +63,8 @@
     ],
     "ios": {
       "channel": "testflight",
-      "uploadMode": "automatic-main"
+      "uploadMode": "automatic-main",
+      "archiveSigningIdentity": "Apple Distribution"
     },
     "android": {
       "channel": "play-internal",

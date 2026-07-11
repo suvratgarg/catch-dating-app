@@ -277,7 +277,7 @@
         "docs/release_operations.md",
         "tool/app_targets.json"
       ],
-      "notes": "The gate rejects aggregate Android builds, wrapper flavor/entrypoint overrides, Apple configuration/Firebase drift, date-bearing iOS archive plist regressions, non-monotonic Apple builds, Android AAB signer/compiled-role/Firebase/Maps/debug/package/version drift, and split Consumer/Host release ownership. Xcode Cloud retirement resolves each app-scoped API workflow by its exact name (`Default`); product-prefixed CI status contexts such as `Catch | Default` and `Runner | Default` are not API workflow names. GitHub Actions is canonical; APP-TARGET-IOS-GITHUB-CUTOVER-001 and APP-TARGET-ANDROID-PLAY-001 keep external store proof honest."
+      "notes": "The gate rejects aggregate Android builds, wrapper flavor/entrypoint overrides, Apple configuration/Firebase drift, date-bearing iOS archive plist regressions, non-monotonic Apple builds, development-signed Release iOS archives, Android AAB signer/compiled-role/Firebase/Maps/debug/package/version drift, and split Consumer/Host release ownership. Every Release-* iOS target and the archive command must resolve Apple Distribution; Debug/Profile remain Apple Development. Xcode Cloud retirement resolves each app-scoped API workflow by its exact name (`Default`); product-prefixed CI status contexts such as `Catch | Default` and `Runner | Default` are not API workflow names. GitHub Actions is canonical; APP-TARGET-IOS-GITHUB-CUTOVER-001 and APP-TARGET-ANDROID-PLAY-001 keep external store proof honest."
     },
     {
       "id": "REG-HOST-V2-DESIGN-001",

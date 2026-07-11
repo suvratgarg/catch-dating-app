@@ -119,6 +119,10 @@ def app_attest_environment(mode)
   mode == 'Debug' ? 'development' : 'production'
 end
 
+def ios_code_sign_identity(mode)
+  mode == 'Release' ? 'Apple Distribution' : 'Apple Development'
+end
+
 def remove_static_firebase_resource(target)
   target.resources_build_phase.files.each do |build_file|
     next unless build_file.file_ref&.display_name == 'GoogleService-Info.plist'
@@ -166,6 +170,7 @@ def configure_ios
           'APP_DISPLAY_NAME' => settings[:app_name],
           'ASSETCATALOG_COMPILER_APPICON_NAME' => settings[:app_icon],
           'CODE_SIGN_ENTITLEMENTS' => settings[:entitlements],
+          'CODE_SIGN_IDENTITY[sdk=iphoneos*]' => ios_code_sign_identity(mode),
           'CATCH_APP_TARGET_ID' => settings[:target_id],
           'FLUTTER_TARGET' => "$(SRCROOT)/../#{settings[:flutter_target]}",
           'FLAVOR' => flavor,
