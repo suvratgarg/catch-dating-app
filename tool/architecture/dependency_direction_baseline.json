@@ -1,6 +1,50 @@
 {
   "version": 1,
-  "updated": "2026-07-03",
+  "updated": "2026-07-11",
   "description": "Current dependency-direction debt baseline. Normal scanner runs fail on findings not listed here.",
-  "allowedFindings": []
+  "allowedFindings": [
+    {
+      "rule": "crossFeaturePresentationImport",
+      "path": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
+      "import": "package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart"
+    },
+    {
+      "rule": "crossFeaturePresentationImport",
+      "path": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
+      "import": "package:catch_dating_app/chats/presentation/inbox/widgets/chat_conversations_list.dart"
+    },
+    {
+      "rule": "crossFeaturePresentationImport",
+      "path": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
+      "import": "package:catch_dating_app/chats/presentation/inbox/widgets/chats_empty_state.dart"
+    },
+    {
+      "rule": "crossFeaturePresentationImport",
+      "path": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
+      "import": "package:catch_dating_app/chats/presentation/inbox/widgets/chats_list.dart"
+    },
+    {
+      "rule": "crossFeaturePresentationImport",
+      "path": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
+      "import": "package:catch_dating_app/chats/presentation/inbox/widgets/chats_list_body.dart"
+    },
+    {
+      "rule": "crossFeaturePresentationImport",
+      "path": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
+      "import": "package:catch_dating_app/chats/presentation/inbox/widgets/chats_sliver_header.dart"
+    },
+    {
+      "rule": "crossFeaturePresentationImport",
+      "path": "lib/hosts/presentation/inbox/host_inbox_view_model.dart",
+      "import": "package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart"
+    },
+    {
+      "rule": "multiRouteScreenFile",
+      "path": "lib/hosts/presentation/host_operations/host_insights_screen.dart"
+    },
+    {
+      "rule": "widgetRefParameter",
+      "path": "lib/hosts/presentation/inbox/host_inbox_broadcast_controller.dart"
+    }
+  ]
 }

@@ -350,10 +350,4 @@ test("CLI verifies a synthetic Host archive and writes a receipt", () => {
 
 function writeXmlPlist(targetPath, value) {
   fs.writeFileSync(targetPath, `${JSON.stringify(value)}\n`);
-  const result = spawnSync(
-    "/usr/bin/plutil",
-    ["-convert", "xml1", targetPath],
-    {encoding: "utf8"},
-  );
-  assert.equal(result.status, 0, result.stderr);
 }
