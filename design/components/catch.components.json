@@ -8054,6 +8054,94 @@
       }
     },
     {
+      "id": "catch.row_press_surface",
+      "name": "CatchRowPressSurface",
+      "status": "active",
+      "kind": "primitive",
+      "summary": "Full-width hover, focus, pressed, tap, and semantic interaction layer for list and field rows.",
+      "dart": {
+        "symbol": "CatchRowPressSurface",
+        "file": "lib/core/widgets/catch_row_press_surface.dart",
+        "constructors": [
+          "CatchRowPressSurface"
+        ]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/RowPressSurface",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "RowPressSurface",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "child",
+            "type": "widget",
+            "required": true,
+            "dartType": "Widget"
+          },
+          {
+            "name": "onTap",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback"
+          },
+          {
+            "name": "semanticButton",
+            "type": "bool",
+            "required": false,
+            "default": true,
+            "dartType": "bool"
+          },
+          {
+            "name": "expandToMaxWidth",
+            "type": "bool",
+            "required": false,
+            "default": true,
+            "dartType": "bool"
+          }
+        ],
+        "states": [
+          "field-row",
+          "chat-row"
+        ],
+        "slots": [
+          "child"
+        ],
+        "tokens": [],
+        "dartRoles": [],
+        "goldens": [],
+        "members": []
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "The child owns content layout and padding; this primitive owns only the full-row interaction layer."
+        ]
+      },
+      "governance": {
+        "role": "atom",
+        "canonicalFamily": "catch.row_press_surface",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "slot-layout",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "tokens-and-primitives",
+        "reviewPolicy": "contract-page-canonical"
+      }
+    },
+    {
       "id": "catch.person_row",
       "name": "CatchPersonRow",
       "status": "active",

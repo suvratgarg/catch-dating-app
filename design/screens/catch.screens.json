@@ -2837,8 +2837,8 @@
               "DashboardHeader"
             ],
             "flutter": {
-              "file": "lib/dashboard/presentation/widgets/dashboard_sliver_header.dart",
-              "symbol": "DashboardHeaderContent"
+              "file": "lib/dashboard/presentation/dashboard_home_screen.dart",
+              "symbol": "DashboardHomeScreen"
             },
             "currentOwner": "DashboardScreen and DashboardFull",
             "targetOwner": "registered Dashboard Home header section with view data and action slots",
@@ -7073,7 +7073,7 @@
             ],
             "flutter": {
               "file": "lib/user_profile/presentation/widgets/profile_sliver_header.dart",
-              "symbol": "ProfileTitle"
+              "symbol": "ProfileTabBar"
             },
             "currentOwner": "ProfileScreen",
             "targetOwner": "provider-free self-profile header section",
@@ -13557,7 +13557,7 @@
         "mutationOwners": [
           {
             "file": "lib/hosts/presentation/inbox/host_inbox_broadcast_controller.dart",
-            "symbol": "HostInboxBroadcastController.sendMutation"
+            "symbol": "sendMutation"
           }
         ],
         "notes": "HostInboxScreen is a Host-owned event operations surface. HostInboxViewModel selects a live or nearest-upcoming event, keeps General explicit, scopes personal inquiry threads by event, classifies Booked and Prospective rows, and derives broadcast counts from eventParticipations rather than conversation count. HostInboxBroadcastController owns the authorized callable mutation; broadcasts create Activity plus preference-gated push and never create chat fan-out."

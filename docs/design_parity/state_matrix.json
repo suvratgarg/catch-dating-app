@@ -1691,7 +1691,6 @@
             "lib/dashboard/presentation/dashboard_full_view_model.dart",
             "lib/dashboard/presentation/widgets/dashboard_empty.dart",
             "lib/dashboard/presentation/widgets/dashboard_full.dart",
-            "lib/dashboard/presentation/widgets/dashboard_sliver_header.dart",
             "lib/dashboard/presentation/widgets/event_focus_rail.dart",
             "lib/dashboard/presentation/widgets/empty_hero_card.dart",
             "lib/dashboard/presentation/widgets/club_posts_home_section.dart"

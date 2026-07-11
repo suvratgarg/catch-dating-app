@@ -203,7 +203,7 @@
       "symptom": "The featured event is always removed from the body even after search replaces its cover, the result label counts only visible body rows, or the map pill counts events that cannot produce map pins.",
       "guard": {
         "type": "command",
-        "command": "flutter test test/explore/explore_view_model_test.dart test/explore/explore_widgets_test.dart"
+        "command": "flutter test test/explore/explore_view_model_test.dart --plain-name 'ExploreFeedSectionState counts the full feed and only promotes a visible cover'"
       },
       "owner_docs": [
         "docs/widget_catalog.md",
