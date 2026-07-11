@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.4.19
-updated: 2026-07-10
+version: 1.4.21
+updated: 2026-07-11
 owner: recursive_audit_loop
 status: active
 ---
@@ -1323,7 +1323,10 @@ tool/app_targets.json
 Current native policy:
 
 - Android uses six explicit app-target flavors rather than an environment
-  flavor plus a mutable global role property.
+  flavor plus a mutable global role property. Release manifests embed checked
+  target/role and Firebase app/project markers; the signed-AAB gate compares
+  those markers, Maps key, debug policy, package/version, and upload
+  certificate against the target contract.
 - Apple may continue using one `Runner` native target while each scheme has an
   explicit bundle id, Firebase role, icon, and role-specific entitlements. A
   second Xcode target becomes required if capabilities or build phases can no
@@ -1334,9 +1337,14 @@ Current native policy:
 - Force-update minimum builds and store URLs are role-prefixed. Consumer may
   temporarily fall back to the legacy unprefixed remote values during rollout;
   Host never does.
-- Xcode Cloud is the intended routine iOS uploader. Any temporary automatic
-  GitHub Host upload must have a stable transitional debt entry with the exact
-  external TestFlight proof required before removal.
+- GitHub Actions is the routine mobile release owner for both roles. One
+  approval-free merge-driven workflow fans out by role: iOS archives upload to
+  TestFlight and Android produces signed AABs for Play internal testing. Its
+  credentials live in the main-only `prod-mobile` environment, not the shared
+  backend/data `prod` environment. Xcode Cloud is a
+  legacy cutover surface only; Play upload remains gated by
+  `APP-TARGET-ANDROID-PLAY-001` until console enrollment and publisher access
+  are proven.
 
 Run `node tool/run.mjs check platform:app-targets` whenever app identity,
 native configuration, Firebase registration, links, force-update policy, or

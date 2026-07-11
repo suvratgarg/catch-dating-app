@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 1.7.15
+version: 1.9.0
 updated: 2026-07-11
 owner: recursive_audit_loop
 status: active
@@ -51,7 +51,7 @@ The current workflows are:
 | `.github/workflows/data-validation.yml` | Read-only Firestore data validation, nightly and manual. |
 | `.github/workflows/admin-website.yml` | Validates and deploys the production Firebase Hosting `admin` target after matching changes land on `main`. |
 | `.github/workflows/release-readiness.yml` | Manual staging/prod release gate. |
-| `.github/workflows/ios-testflight-release.yml` | Manual prod iOS archive/export gate, plus automatic Host TestFlight upload after app-relevant changes land on `main`. Consumer TestFlight stays Xcode Cloud-first. |
+| `.github/workflows/mobile-internal-release.yml` | Canonical Consumer/Host mobile release matrix: signed iOS uploads to TestFlight and signed Android AABs with guarded Play internal upload. |
 | `.github/workflows/observability-evidence.yml` | Manual Crashlytics and Analytics evidence capture. |
 
 ## Git Branch Hygiene
@@ -80,12 +80,22 @@ published.
 
 Firebase deploy and data-validation workflows use GitHub OIDC rather than
 long-lived service-account JSON secrets. Use GitHub Environments named `dev`,
-`staging`, `prod-hosting`, and `prod`. `prod-hosting` is approval-free and is
-limited to the automatic marketing and admin Firebase Hosting workflows.
-Require manual reviewers for `prod`, which owns backend production deploys,
-production data operations, and signed mobile release credentials.
+`staging`, `prod-hosting`, `prod-mobile`, and `prod`. `prod-hosting` is
+approval-free and limited to the automatic marketing and admin Firebase
+Hosting workflows. `prod-mobile` is approval-free and `main`-only; it contains
+only mobile signing, Maps, App Store Connect, and Play-publisher credentials.
+The mobile workflow has a matching fail-closed ref guard plus one global
+release concurrency group. Keep required reviewers on shared `prod`, which owns
+backend production deploys and production data operations. This gives all four
+user-facing products merge-driven deployment without broadening approval-free
+access to backend/data authority.
 
-Each GitHub Environment must define these variables:
+During cutover, reviewer-protected `prod` may still hold duplicate mobile
+secrets as rollback material. The mobile workflow does not read them. Delete
+those duplicates only after both GitHub iOS lanes process and both signed
+Android lanes pass from `prod-mobile`.
+
+Each Firebase deployment environment must define these variables:
 
 - `GCP_WORKLOAD_IDENTITY_PROVIDER`
 - `GCP_SERVICE_ACCOUNT_EMAIL`
@@ -202,8 +212,8 @@ flavors:
 - `GOOGLE_MAPS_IOS_API_KEY_STAGING`
 - `GOOGLE_MAPS_IOS_API_KEY_PROD`
 
-The manual `iOS TestFlight Release` workflow also needs these repository or
-`prod` environment secrets:
+The environment-scoped `Mobile Internal Release` workflow needs these
+`prod-mobile` environment secrets for iOS:
 
 - `APP_STORE_CONNECT_API_KEY_ID`
 - `APP_STORE_CONNECT_API_ISSUER_ID`
@@ -215,6 +225,35 @@ downloaded `AuthKey_<key-id>.p8` file. Keep the raw `.p8` out of git; it is
 ignored by `.gitignore` and should live only in secure local storage and GitHub
 Actions secrets.
 
+Android release jobs require these `prod-mobile` environment secrets:
+
+- `ANDROID_UPLOAD_KEYSTORE_BASE64`
+- `ANDROID_UPLOAD_STORE_PASSWORD`
+- `ANDROID_UPLOAD_KEY_ALIAS`
+- `ANDROID_UPLOAD_KEY_PASSWORD`
+- `GOOGLE_MAPS_ANDROID_API_KEY_PROD`
+
+Play publishing uses the existing GitHub OIDC provider plus the environment
+variables `GCP_WORKLOAD_IDENTITY_PROVIDER`,
+`GOOGLE_PLAY_SERVICE_ACCOUNT_EMAIL`, and `GOOGLE_PLAY_UPLOAD_ENABLED`. Keep
+`GOOGLE_PLAY_UPLOAD_ENABLED=false` until both Play app records, Play App
+Signing, internal tester lists, and app-scoped publisher permissions are
+verified. Do not add a long-lived Google Play JSON key.
+
+As of 2026-07-11, `androidpublisher.googleapis.com` is enabled and
+`github-actions-play-publisher@catch-dating-app-64e51.iam.gserviceaccount.com`
+exists with zero project roles. Its only IAM binding is
+`roles/iam.workloadIdentityUser` for the exact GitHub OIDC subject
+`repo:suvratgarg/catch-dating-app:environment:prod-mobile`. Play Console must
+still invite that identity separately, scoped to the two app records and only
+read-app plus testing-track release permissions.
+
+After those grants exist, dispatch `Mobile Internal Release` from `main` with
+`app_role=both`, `platform=android`, `probe_play_access=true`, uploads disabled,
+and a reason. Each matrix lane creates an edit, reads `qa`, and deletes the edit
+without uploading or committing. Set `GOOGLE_PLAY_UPLOAD_ENABLED=true` only
+after both probes pass.
+
 ## CD Policy
 
 Firebase CD is intentionally asymmetric by environment:
@@ -222,17 +261,17 @@ Firebase CD is intentionally asymmetric by environment:
 - `dev` deploys automatically from `main` after the required CI/build workflows
   for that exact commit pass.
 - `staging` deploys only through the manual `Firebase Deploy` workflow.
-- `prod` deploys only through the manual `Firebase Deploy` workflow and should
-  require GitHub Environment reviewer approval.
+- `prod` backend deploys only through the manual `Firebase Deploy` workflow and
+  retains required-reviewer approval.
 
 The automatic dev deploy is a backend deploy, not a store release. It deploys
 Functions, Firestore indexes, Firestore rules, and Storage rules in the safe
-order. Mobile app binaries, Play internal testing, Hosting, and observability
-evidence remain separate release steps unless explicitly added to the selected
-manual deploy targets. Host iOS is the exception: app-relevant pushes to `main`
-run `.github/workflows/ios-testflight-release.yml` with `app_role=host` and
-upload the exported IPA to TestFlight, because Host Xcode Cloud distribution is
-not currently safe to rely on.
+order. Mobile binaries remain separate from backend deployment. App-relevant
+pushes to `main` start `.github/workflows/mobile-internal-release.yml` for both
+roles. The approval-free, main-only `prod-mobile` environment supplies the
+matrix credentials; iOS uploads to
+TestFlight, while Android builds and verifies signed AABs and uploads to Play's
+`qa` internal track only after `GOOGLE_PLAY_UPLOAD_ENABLED=true`.
 
 Marketing and admin Hosting deploys require explicit Vite Firebase/App Check
 environment variables. Firebase Hosting predeploy runs
@@ -243,7 +282,9 @@ mode, or missing App Check.
 Both Hosting workflows use the approval-free `prod-hosting` GitHub Environment
 and deploy automatically after their validation job succeeds on a matching
 `main` push. Keep only Hosting/OIDC variables in that environment; App Store
-Connect secrets and backend production authority remain in protected `prod`.
+Connect and mobile signing secrets are owned by `prod-mobile`; backend
+production authority remains in reviewer-protected `prod`. Temporary mobile
+rollback duplicates in `prod` follow the cutover cleanup above.
 
 The production admin Hosting target has its own `Admin Website` workflow. It
 validates `npm run web:admin:build`, checks live prod Vite Firebase/App Check
@@ -278,9 +319,10 @@ functions in non-interactive CI.
 Current setup/build/signing/distribution verdict: there is no known local
 build, Firebase, Firestore, Gradle, Xcode, Apple signing, Developer ID,
 notarization, App Check, or trust-chain blocker remaining in the current
-workspace. Host app store distribution still needs external product-release
-evidence: intended-group selection, desired Xcode Cloud ownership for
-`com.catchdates.host`, and Host TestFlight processing/install/launch proof.
+workspace. Mobile store distribution still needs external product-release
+evidence: current TestFlight group assignment/install proof for both roles and
+Play enrollment, processing, tester, signing-fingerprint, install, and launch
+proof.
 
 Verified setup state:
 
@@ -302,9 +344,9 @@ Verified setup state:
   remain enabled on the Developer portal record.
 - Direct macOS distribution is Developer ID signed, timestamped, notarized,
   stapled, and Gatekeeper accepted.
-- Consumer TestFlight upload/install/launch and iOS Maps behavior are confirmed
-  through App Store Connect/Xcode Cloud evidence. Host TestFlight still needs a
-  processed build, intended-group assignment, install, and launch proof.
+- Consumer TestFlight upload/install/launch and iOS Maps behavior have legacy
+  Xcode Cloud proof. GitHub Actions is now the canonical owner for both roles;
+  each role still needs current processed-build and tester-group evidence.
 
 Still outside this setup verdict:
 
@@ -504,7 +546,7 @@ Host event broadcasts use an intentionally stricter backend-first rollout:
    callable JSON rejection rather than 404, redirect, HTML/GFE, IAM denial, or
    5xx.
 3. Only after that proof, set the production flag true in a later client merge.
-   The Host TestFlight workflow runs the manifest-driven live dependency check
+   The Host job in `Mobile Internal Release` runs the manifest-driven live dependency check
    before Flutter/Xcode work and refuses to archive if the callable is not
    reachable.
 
@@ -830,23 +872,35 @@ prod release smoke. After the dashboard rows appear, run the manual
 `Observability Evidence` workflow and record the app build, Crashlytics proof,
 Analytics proof, and GA4 BigQuery export status.
 
-## iOS TestFlight Ownership
+## Mobile Internal Release Ownership
 
-Decision updated 2026-07-10: release ownership is target-specific and declared
-in `tool/app_targets.json`.
+Decision updated 2026-07-11: GitHub Actions is the canonical internal mobile
+release owner for both Consumer and Host. `tool/app_targets.json` declares one
+workflow and two platform channels:
 
-- Consumer production remains Xcode Cloud-owned. A GitHub Consumer upload is
-  manual break-glass only and requires `break_glass_reason`.
-- Host production is temporarily GitHub Actions-owned. App-relevant merges to
-  `main` automatically archive and upload `host-prod` because authenticated
-  Host Xcode Cloud distribution has not been proven. The desired owner is Xcode
-  Cloud; `APP-TARGET-HOST-TESTFLIGHT-001` prevents premature cutover.
+- iOS: Consumer and Host upload independently to TestFlight.
+- Android: Consumer and Host build signed AABs; Play upload targets the `qa`
+  internal-testing track only when the Play readiness flag is enabled.
+
+App-relevant `main` pushes create role matrices on separate runners under the
+approval-free `prod-mobile` environment. A workflow-level non-cancelling concurrency
+group prevents overlapping store edits, and both the workflow and environment
+reject any ref other than `refs/heads/main`. Manual dispatch can select one role/platform,
+build without uploading, or explicitly upload with a recorded reason. Public
+App Store or Play production promotion is never automatic in this workflow.
 
 The GitHub workflow resolves scheme, configuration, bundle id, and entrypoint
 from the six-target manifest, then runs both platform gates before archiving:
 
 ```sh
-node tool/run.mjs check platform:app-targets platform:verify-ios-release-identity
+node tool/run.mjs check \
+  platform:app-targets \
+  platform:mobile-build-number \
+  platform:verify-ios-release-identity \
+  platform:verify-app-store-build \
+  platform:verify-ios-processing-receipts \
+  platform:verify-android-release-identity \
+  platform:probe-google-play-access
 ```
 
 It also checks `tool/firebase/client_callable_dependencies.json` immediately
@@ -864,34 +918,40 @@ Associated Domains. Host intentionally has neither; both roles require their
 Push/App Attest contract. The workflow separately validates the built prod Maps
 key and writes JSON identity receipts with the IPA artifact.
 
-Temporary GitHub releases use the reserved `8.*` build-number namespace so a
-Host GitHub upload cannot collide with an Xcode Cloud build during cutover.
+Before archive, the workflow checks the proposed Apple build against the latest
+200 App Store Connect builds for that app. Canonical GitHub iOS releases use an
+18-digit `<UTC YYYYMMDD><8-digit GitHub run><2-digit attempt>` number, which is
+above the legacy date/build namespace and monotonic under the serialized
+workflow. After upload, the job waits for the exact build to reach App Store
+Connect `VALID` and persists a processing receipt.
 
-## Host TestFlight Status
+Android uses `100000 + workflow run number * 100 + attempt`; two reserved retry
+digits prevent adjacent-run collisions. The verifier uses checksum-pinned
+bundletool `1.18.3`, verifies JAR integrity and the checked upload-certificate
+SHA-256, and reads compiled package, target/role, Firebase app/project, Maps,
+debuggable, version-name, and version-code identity before any Play edit.
 
-The Host app now has checked local/native composition, Firebase identity,
-distinct launcher icons, an Apple Developer App ID, an App Store Connect app
-record, and an automatic manifest-resolved GitHub archive/upload path for
-`com.catchdates.host`. TestFlight processing, group assignment, install, and
-launch are not proven from this repository. Before removing the temporary path
-or starting external Host beta distribution:
+## TestFlight Status
 
-1. Select and record the intended internal Host TestFlight group.
-2. Create or identify the Host Xcode Cloud workflow for `host-prod` /
-   `Release-host-prod`. Do not infer that the Consumer workflow owns Host.
-   Set `CATCH_APP_ROLE=host` only if the selected scheme is not exposed through
-   `CI_XCODE_SCHEME`.
-3. Add the required Xcode Cloud secret `GOOGLE_MAPS_IOS_API_KEY_PROD`.
-4. Confirm provisioning, Maps key injection, Push, App Attest, the Host Firebase
-   plist, and `main_host_prod.dart` composition in the exported Host IPA. Confirm
-   HealthKit and Associated Domains are absent.
-5. Process one Host build, assign it to the intended group, then verify install,
-   launch, App Check,
-   maps rendering, phone auth, push registration, and host event-management
-   entrypoints.
-6. Record Play internal-testing proof separately after Play Console enrollment;
-   Play app-signing certificate fingerprints still need to be added to Firebase
-   before Android release evidence is complete.
+Both roles have checked local/native composition, Firebase identity, distinct
+store identity, App Store Connect records, and manifest-resolved GitHub
+archive/upload paths. The workflow now proves both upload and App Store
+processing, but not TestFlight group assignment, install, or launch. Close
+`APP-TARGET-IOS-GITHUB-CUTOVER-001` only after:
+
+The pre-cutover Consumer dispatch `29161431098` successfully signed and archived
+`com.catchdates.app`, then stopped before export because Xcode's archive
+`Info.plist` contains a root `CreationDate` that cannot be converted wholesale
+to JSON. The verifier now extracts `ApplicationProperties` and has a regression
+test for that real plist shape. The failed dispatch is diagnostic evidence, not
+TestFlight upload proof.
+
+1. Both GitHub role jobs archive, verify, export, and upload successfully.
+2. Both builds finish processing in App Store Connect.
+3. `Catch | Default` and `Runner | Default` are disabled in Xcode Cloud.
+4. Intended internal TestFlight groups are recorded and assigned.
+5. Consumer and Host installs launch with App Check, Maps, phone auth, push, and
+   their role-specific entrypoints.
 
 Current host icon status: host builds use generated `AppIcon-host-dev`,
 `AppIcon-host-staging`, and `AppIcon-host-prod` catalogs on iOS/macOS, plus
@@ -899,12 +959,19 @@ Android `hostDev`, `hostStaging`, and `hostProd` launcher resources. Regenerate
 them with `dart run tool/branding/generate_native_brand_assets.dart` after
 native brand-token or base-icon changes.
 
-## Xcode Cloud Start Conditions
+## Legacy Xcode Cloud State
 
 The old 12 a.m. scheduled Consumer Xcode Cloud build was retired live in App
-Store Connect on 2026-05-21. The Consumer `Default` workflow now starts from
-branch changes on `main`, has auto-cancel enabled, and uses custom file/folder
-rules so docs-only commits do not produce a new TestFlight build.
+Store Connect on 2026-05-21. The later Consumer `Catch | Default` and Host
+`Runner | Default` workflows are legacy cutover surfaces. They must be disabled
+after GitHub upload proof so the same commit cannot produce duplicate builds.
+The manual `retire_xcode_cloud` input is a separate, retire-only operation. It
+requires exact processed Consumer and Host GitHub build numbers, re-verifies
+both as `VALID`, downloads the matching processing receipts from the declared
+`Mobile Internal Release` run, rejects non-canonical or cross-run evidence,
+resolves both named Xcode Cloud workflows read-only before any
+mutation, verifies each PATCH response, and rolls back workflows changed by
+that operation if the second mutation fails.
 
 Current App Store Connect file/folder rules:
 
@@ -917,11 +984,12 @@ Current App Store Connect file/folder rules:
 - Any file from `/tool`
 - Any file from `/firebase/prod`
 
-These rules live in App Store Connect, not in repository YAML. Re-check the
-Xcode Cloud workflow after adding a new release-critical root path.
+These historical rules live in App Store Connect, not repository YAML. They are
+retained only for audit traceability; do not reactivate them as routine upload
+triggers.
 
-If a backend-only change intentionally requires a compatible app binary, start
-the Xcode Cloud workflow manually after the backend deploy is promoted.
+If a backend-only change intentionally requires a compatible app binary,
+dispatch `Mobile Internal Release` after the backend deploy is promoted.
 
 GitHub Actions iOS jobs and Xcode Cloud must all write
 `ios/Flutter/GoogleMapsKeys.xcconfig` through
@@ -930,13 +998,11 @@ GitHub Actions iOS jobs and Xcode Cloud must all write
 validation in that shared helper instead of duplicating secret preflight logic
 in each CI surface.
 
-## Xcode Cloud iOS Builds
+## Legacy Xcode Cloud Build Scripts
 
-Xcode Cloud is a second iOS build path, separate from the GitHub Actions
-`iOS TestFlight Release` workflow. The consumer workflow builds the `prod`
-flavor with `Release-prod`; the host workflow should build `host-prod` with
-`Release-host-prod`. Xcode Cloud can distribute either app to TestFlight
-directly from App Store Connect once each app record and workflow is configured.
+The checked Xcode Cloud scripts remain as rollback and audit support while
+`APP-TARGET-IOS-GITHUB-CUTOVER-001` is active. They are not the routine release
+owner.
 
 Two CI scripts drive it:
 
@@ -962,28 +1028,26 @@ build if the key is missing or malformed. Without the key the archived
 `GoogleMapsApiKey` is empty, `GMSServices.provideAPIKey` is skipped in
 `AppDelegate`, and every map screen crashes at runtime.
 
-Keep Xcode Cloud and the GitHub Actions archive workflow consistent: both must
-inject and verify the environment-specific Maps key.
+If a legacy Xcode Cloud build is deliberately re-enabled for recovery, it must
+inject and verify the environment-specific Maps key. The GitHub candidate-floor
+check will reject any later build number that is not above the resulting build.
 
-## Future GitHub-Only Migration
+## GitHub-Only Migration Status
 
-TODO: migrate TestFlight upload from Xcode Cloud to GitHub Actions only if we
-want one repo-owned mobile release pipeline.
+The repo migration is implemented: one Actions workflow owns both roles, both
+iOS uploads, both signed Android bundles, and guarded Play internal uploads.
 
-The temporary automatic Host upload is not that decision: it is a guarded
-fallback under `APP-TARGET-HOST-TESTFLIGHT-001`, while the declared desired Host
-owner remains Xcode Cloud.
+Cutover is not externally complete until `APP-TARGET-IOS-GITHUB-CUTOVER-001`
+and `APP-TARGET-ANDROID-PLAY-001` have their remote processing and tester proof.
 
-Migration checklist:
+Cutover checklist:
 
-1. Add a change-aware GitHub release trigger, usually a protected
-   `release/ios-testflight` branch or signed release tag.
-2. Make the GitHub workflow perform the actual TestFlight upload by default for
-   that trigger, not through the break-glass input.
-3. Prove one full GitHub upload/install/launch/Maps cycle from TestFlight.
-4. Disable Xcode Cloud TestFlight distribution and remove any Xcode Cloud
-   schedule/start condition that can upload builds.
-5. Update this document to mark GitHub Actions as canonical.
+1. Prove Consumer and Host GitHub uploads and App Store processing.
+2. Disable both legacy Xcode Cloud workflows.
+3. Record TestFlight group assignment plus install/launch proof.
+4. Complete Play enrollment and publisher access, then enable the Play flag.
+5. Record both Play internal processing/install/launch proofs and signing
+   fingerprints.
 
 The repository can verify that the GitHub `prod` environment has the required
 App Store Connect secret names and that the local/Xcode Cloud scripts fail
@@ -1001,8 +1065,9 @@ Already confirmed outside repository checks for Consumer:
 
 These still require human confirmation outside repository checks:
 
-- Host TestFlight processing, intended-group assignment, install, and launch.
-- Play internal testing evidence.
+- Current Consumer and Host TestFlight processing, intended-group assignment,
+  install, and launch through the GitHub-owned pipeline.
+- Consumer and Host Play internal-testing evidence.
 - Crashlytics visibility and symbolication evidence.
 - Analytics DebugView event evidence.
 - Store metadata, screenshots, privacy forms, support URL, privacy policy, and

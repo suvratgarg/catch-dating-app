@@ -2087,9 +2087,14 @@
           "docAnchor": "docs/app_architecture.md#installable-app-target-contract"
         },
         {
+          "tool": "platform:verify-android-release-identity",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#installable-app-target-contract"
+        },
+        {
           "tool": "firebase:client-callable-dependencies",
           "stage": "scanner-gate",
-          "docAnchor": "docs/release_operations.md#ios-testflight-ownership"
+          "docAnchor": "docs/release_operations.md#mobile-internal-release-ownership"
         }
       ]
     },

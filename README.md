@@ -31,6 +31,22 @@ Current docs:
    See [`firebase/README.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/firebase/README.md) for the full multi-environment workflow.
 4. If you want Android release signing, copy `android/key.properties.example` to `android/key.properties` and fill in your real keystore values. Release APK/App Bundle builds fail fast until this file points at a real upload keystore.
 
+## Mobile internal releases
+
+`.github/workflows/mobile-internal-release.yml` is the canonical merge-driven
+internal release path for both Consumer and Host:
+
+- iOS archives each role independently, uploads to TestFlight, and waits for
+  App Store Connect processing.
+- Android builds and verifies the signed role/Firebase/Maps/certificate identity
+  of each AAB; Play upload is limited
+  to the `qa` internal-testing track and stays disabled until Play enrollment
+  and publisher access are proven.
+
+The six product/environment identities come from `tool/app_targets.json`; do
+not reproduce bundle ids, package names, flavors, schemes, or release ownership
+inside ad hoc scripts.
+
 ## Secret safety
 
 - `.env` and `.env.*` are ignored.
@@ -240,7 +256,7 @@ environment, so switch first:
 - Push notifications are wired in-repo for Android and iOS.
   Android has six explicit role/environment flavors: `consumerDev`, `consumerStaging`, `consumerProd`, `hostDev`, `hostStaging`, and `hostProd`.
   iOS/macOS now have matching consumer `dev`, `staging`, and `prod` schemes/build configurations plus host `host-dev`, `host-staging`, and `host-prod` schemes. Host iOS bundle IDs use `com.catchdates.host.dev`, `com.catchdates.host.staging`, and `com.catchdates.host`.
-  Host builds use generated host-specific launcher icons (`AppIcon-host-*` on Apple platforms and `host*` Android launcher resources). GitHub Consumer uploads are manual break-glass; app-relevant `main` pushes temporarily archive and upload Host automatically until authenticated Host Xcode Cloud distribution proof exists.
+  Host builds use generated host-specific launcher icons (`AppIcon-host-*` on Apple platforms and `host*` Android launcher resources). App-relevant `main` pushes use the same approval-free GitHub role matrix for Consumer and Host; iOS targets TestFlight and Android targets signed AAB/Play-internal readiness.
   App Check is registered and enforced for consumer and host Android, iOS/macOS, and web apps in all three Firebase environments.
   macOS push is intentionally disabled; direct Developer ID distribution is
   validated, but phone auth runtime behavior on macOS is intentionally deferred.

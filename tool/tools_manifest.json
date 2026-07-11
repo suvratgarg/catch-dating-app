@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-07-10",
+  "updated": "2026-07-11",
   "tools": [
     {
       "id": "tool:runner",
@@ -1587,9 +1587,23 @@
         "path": "tool/platform/check_app_targets.test.mjs",
         "contains": [
           "validateManifestShape rejects a duplicate role/environment target",
-          "release ownership rejects automatic Host upload without external-proof debt"
+          "release ownership rejects split or incomplete workflow ownership"
         ]
       }
+    },
+    {
+      "id": "platform:mobile-build-number",
+      "category": "platform",
+      "path": "tool/platform/compute_mobile_build_number.mjs",
+      "command": "node tool/platform/compute_mobile_build_number.mjs --help",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Computes serialized, monotonic GitHub release build numbers with bounded retry namespaces for Apple and Google Play.",
+      "checks": [
+        "node --check tool/platform/compute_mobile_build_number.mjs",
+        "node --test tool/platform/compute_mobile_build_number.test.mjs"
+      ],
+      "role": "generator"
     },
     {
       "id": "platform:verify-ios-release-identity",
@@ -1616,6 +1630,124 @@
           "rejects Host Firebase and OAuth URL identity drift"
         ]
       }
+    },
+    {
+      "id": "platform:verify-android-release-identity",
+      "category": "platform",
+      "path": "tool/platform/verify_android_release_bundle.mjs",
+      "command": "node tool/platform/verify_android_release_bundle.mjs --help",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Uses pinned bundletool plus signer-certificate inspection to verify a signed Android App Bundle's role, target, Firebase, Maps, debug, package, version, and upload-certificate identity, then emits a release receipt.",
+      "checks": [
+        "node --check tool/platform/verify_android_release_bundle.mjs",
+        "node --test tool/platform/verify_android_release_bundle.test.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "APP-TARGET-IDENTITY-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/platform/verify_android_release_bundle.test.mjs",
+        "contains": [
+          "rejects wrong role identity and unsigned bundles",
+          "rejects Play-invalid version codes",
+          "rejects signer, Maps, Firebase, and debug drift"
+        ]
+      }
+    },
+    {
+      "id": "platform:verify-app-store-build",
+      "category": "platform",
+      "path": "tool/platform/verify_app_store_build.mjs",
+      "command": "node tool/platform/verify_app_store_build.mjs --help",
+      "safety": "remote-readonly",
+      "status": "active",
+      "description": "Checks a candidate Apple build number against App Store Connect and waits for an exact uploaded build to reach VALID processing state.",
+      "checks": [
+        "node --check tool/platform/verify_app_store_build.mjs",
+        "node --test tool/platform/verify_app_store_build.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/platform/verify_app_store_build.test.mjs",
+        "contains": [
+          "candidate preflight rejects a non-monotonic build",
+          "processed-build wait fails closed on invalid processing"
+        ]
+      }
+    },
+    {
+      "id": "platform:verify-ios-processing-receipts",
+      "category": "platform",
+      "path": "tool/platform/verify_ios_processing_receipts.mjs",
+      "command": "node tool/platform/verify_ios_processing_receipts.mjs --help",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Verifies that Consumer and Host VALID App Store processing receipts came from the declared Mobile Internal Release run before Xcode Cloud retirement.",
+      "checks": [
+        "node --check tool/platform/verify_ios_processing_receipts.mjs",
+        "node --test tool/platform/verify_ios_processing_receipts.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/platform/verify_ios_processing_receipts.test.mjs",
+        "contains": [
+          "rejects a processed build not proven by the declared GitHub run"
+        ]
+      }
+    },
+    {
+      "id": "platform:probe-google-play-access",
+      "category": "platform",
+      "path": "tool/platform/probe_google_play_access.mjs",
+      "command": "node tool/platform/probe_google_play_access.mjs --help",
+      "safety": "remote-write-ephemeral-apply-guarded",
+      "status": "active",
+      "description": "Authenticates to one Play app, creates an uncommitted edit, reads the qa track, and deletes the edit without uploading or committing a release.",
+      "checks": [
+        "node --check tool/platform/probe_google_play_access.mjs",
+        "node --test tool/platform/probe_google_play_access.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/platform/probe_google_play_access.test.mjs",
+        "contains": [
+          "Play probe deletes its edit when qa access is denied"
+        ]
+      }
+    },
+    {
+      "id": "platform:upload-google-play-bundle",
+      "category": "platform",
+      "path": "tool/platform/upload_google_play_bundle.mjs",
+      "command": "node tool/platform/upload_google_play_bundle.mjs --help",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Uploads one verified Android App Bundle to Google Play's qa internal-testing track through the official Publisher API; production-track publishing is forbidden.",
+      "checks": [
+        "node --check tool/platform/upload_google_play_bundle.mjs",
+        "node --test tool/platform/upload_google_play_bundle.test.mjs"
+      ],
+      "role": "generator"
+    },
+    {
+      "id": "platform:xcode-cloud-workflow-state",
+      "category": "platform",
+      "path": "tool/platform/set_xcode_cloud_workflow_state.mjs",
+      "command": "node tool/platform/set_xcode_cloud_workflow_state.mjs --help",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Reads or explicitly enables/disables a named Xcode Cloud workflow through the App Store Connect API with production mutation guards.",
+      "checks": [
+        "node --check tool/platform/set_xcode_cloud_workflow_state.mjs",
+        "node --test tool/platform/set_xcode_cloud_workflow_state.test.mjs"
+      ],
+      "role": "generator"
     },
     {
       "id": "platform:apple-flavors",

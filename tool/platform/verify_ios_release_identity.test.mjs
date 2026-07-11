@@ -10,6 +10,7 @@ import {fileURLToPath} from "node:url";
 import {
   collectReleaseIdentityFindings,
   parseFlutterBuildXcconfig,
+  readArchiveInfoPlist,
   resolveReleaseTarget,
 } from "./verify_ios_release_identity.mjs";
 
@@ -112,6 +113,47 @@ test("reads the expected Flutter marketing version and build", () => {
     {version: "1.2.3", build: "202607101"},
   );
 });
+
+test(
+  "reads archive identity when the root plist contains an Xcode creation date",
+  {skip: process.platform !== "darwin"},
+  () => {
+    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-ios-archive-plist-"));
+    try {
+      const plistPath = path.join(tempRoot, "Info.plist");
+      fs.writeFileSync(
+        plistPath,
+        `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>ApplicationProperties</key>
+  <dict>
+    <key>CFBundleIdentifier</key>
+    <string>com.catchdates.app</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.2.3</string>
+    <key>CFBundleVersion</key>
+    <string>202607101</string>
+  </dict>
+  <key>CreationDate</key>
+  <date>2026-07-11T17:28:59Z</date>
+</dict>
+</plist>
+`,
+      );
+      assert.deepEqual(readArchiveInfoPlist(plistPath), {
+        ApplicationProperties: {
+          CFBundleIdentifier: "com.catchdates.app",
+          CFBundleShortVersionString: "1.2.3",
+          CFBundleVersion: "202607101",
+        },
+      });
+    } finally {
+      fs.rmSync(tempRoot, {recursive: true, force: true});
+    }
+  },
+);
 
 test("accepts a matching Consumer archive identity", () => {
   assert.deepEqual(

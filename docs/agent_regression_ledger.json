@@ -270,14 +270,14 @@
       "symptom": "A role builds with the wrong entrypoint, bundle/application id, Firebase registration, icon, capability, deep-link association, force-update policy, or routine release owner because target identity was duplicated across scripts and native configuration.",
       "guard": {
         "type": "command",
-        "command": "node tool/run.mjs check platform:app-targets platform:verify-ios-release-identity"
+        "command": "node tool/run.mjs check platform:app-targets platform:verify-ios-release-identity platform:verify-android-release-identity"
       },
       "owner_docs": [
         "docs/app_architecture.md",
         "docs/release_operations.md",
         "tool/app_targets.json"
       ],
-      "notes": "The gate rejects aggregate Android builds, wrapper flavor/entrypoint overrides, Apple configuration/Firebase drift, and archive identity drift. The Host TestFlight auto-upload exception remains explicit as APP-TARGET-HOST-TESTFLIGHT-001 until authenticated processing, group assignment, install, and launch proof exists."
+      "notes": "The gate rejects aggregate Android builds, wrapper flavor/entrypoint overrides, Apple configuration/Firebase drift, date-bearing iOS archive plist regressions, non-monotonic Apple builds, Android AAB signer/compiled-role/Firebase/Maps/debug/package/version drift, and split Consumer/Host release ownership. GitHub Actions is canonical; APP-TARGET-IOS-GITHUB-CUTOVER-001 and APP-TARGET-ANDROID-PLAY-001 keep external store proof honest."
     },
     {
       "id": "REG-HOST-V2-DESIGN-001",

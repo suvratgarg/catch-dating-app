@@ -1,6 +1,6 @@
 {
-  "version": "1.5.31",
-  "updated": "2026-07-10",
+  "version": "1.5.33",
+  "updated": "2026-07-11",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Tracks architecture reference exhibits, prototype files, adopter files, candidate status, and back-propagation obligations so migrations stay aligned with the latest pattern.",
   "patterns": [
@@ -963,7 +963,12 @@
         "tool/platform/resolve_app_target.mjs",
         "tool/platform/check_app_targets.mjs",
         "tool/flutter_with_env.sh",
-        "tool/platform/configure_apple_flavors.rb"
+        "tool/platform/configure_apple_flavors.rb",
+        "tool/platform/compute_mobile_build_number.mjs",
+        "tool/platform/verify_ios_release_identity.mjs",
+        "tool/platform/verify_android_release_bundle.mjs",
+        "tool/platform/verify_app_store_build.mjs",
+        "tool/platform/verify_ios_processing_receipts.mjs"
       ],
       "adopters": [
         {
@@ -989,20 +994,50 @@
           "role": "role-prefixed compatibility and store policy",
           "status": "aligned",
           "lastReviewedPass": "2026-07-10-first-class-app-targets"
+        },
+        {
+          "path": ".github/workflows/mobile-internal-release.yml",
+          "role": "approval-free Consumer and Host matrix for TestFlight and Play internal artifacts",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-11-unified-mobile-release"
+        },
+        {
+          "path": "tool/platform/verify_android_release_bundle.mjs",
+          "role": "signed Android bundle certificate, compiled role, Firebase, Maps, debug, package, and version receipt gate",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-11-unified-mobile-release"
+        },
+        {
+          "path": "tool/platform/verify_app_store_build.mjs",
+          "role": "Apple build-floor preflight and exact processing receipt gate",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-11-unified-mobile-release"
+        },
+        {
+          "path": "tool/platform/verify_ios_processing_receipts.mjs",
+          "role": "cross-run TestFlight receipt provenance gate before legacy owner retirement",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-11-unified-mobile-release"
         }
       ],
       "exceptions": [
         {
-          "id": "APP-TARGET-HOST-TESTFLIGHT-001",
-          "path": ".github/workflows/ios-testflight-release.yml",
-          "reason": "Temporary automatic GitHub Host upload remains until authenticated Xcode Cloud processed-build, tester-group, install, and launch proof exists.",
+          "id": "APP-TARGET-IOS-GITHUB-CUTOVER-001",
+          "path": ".github/workflows/mobile-internal-release.yml",
+          "reason": "GitHub is canonical for both iOS roles, but processed-build, tester-group, install, and legacy Xcode Cloud shutdown proof remains external.",
+          "status": "blocked_external"
+        },
+        {
+          "id": "APP-TARGET-ANDROID-PLAY-001",
+          "path": ".github/workflows/mobile-internal-release.yml",
+          "reason": "Both signed AAB lanes are implemented, but Play records, app signing, publisher authorization, tester configuration, and install proof remain external.",
           "status": "blocked_external"
         }
       ],
       "requiredBackPropagation": "When target fields or resolver output change, regenerate Apple configuration, inspect Android/Firebase/build wrappers and both CI build paths, then rerun the app-target gate.",
       "requiredChecks": [
         "node --test tool/platform/check_app_targets.test.mjs",
-        "node tool/run.mjs check platform:app-targets",
+        "node tool/run.mjs check platform:app-targets platform:mobile-build-number platform:verify-ios-release-identity platform:verify-app-store-build platform:verify-ios-processing-receipts platform:verify-android-release-identity platform:probe-google-play-access",
         "ruby -c tool/platform/configure_apple_flavors.rb",
         "bash -n tool/flutter_with_env.sh tool/use_firebase_environment.sh tool/validate_firebase_environment.sh",
         "flutter test test/force_update/app_version_config_provider_test.dart",
