@@ -178,9 +178,17 @@ export function readPlistFile(plistPath) {
     ["-convert", "json", "-o", "-", plistPath],
     {encoding: "utf8"},
   );
+  if (result.error?.code === "ENOENT") {
+    return JSON.parse(fs.readFileSync(plistPath, "utf8"));
+  }
   if (result.status !== 0) {
     throw new Error(
-      `Could not read plist ${plistPath}: ${(result.stderr || result.stdout).trim()}`,
+      `Could not read plist ${plistPath}: ${(
+        result.stderr ||
+        result.stdout ||
+        result.error?.message ||
+        "unknown plutil failure"
+      ).trim()}`,
     );
   }
   return JSON.parse(result.stdout);
