@@ -388,7 +388,7 @@
         "githubWorkflow": ".github/workflows/mobile-internal-release.yml",
         "appStoreConnectAppId": "6765646860",
         "googlePlayPackageName": "com.catchdates.app",
-        "legacyXcodeCloudWorkflow": "Catch | Default",
+        "legacyXcodeCloudWorkflow": "Default",
         "testFlightEvidence": "github-cutover-pending",
         "playInternalEvidence": "gcp-publisher-ready-play-console-blocked"
       }
@@ -448,7 +448,7 @@
         "githubWorkflow": ".github/workflows/mobile-internal-release.yml",
         "appStoreConnectAppId": "6778927317",
         "googlePlayPackageName": "com.catchdates.host",
-        "legacyXcodeCloudWorkflow": "Runner | Default",
+        "legacyXcodeCloudWorkflow": "Default",
         "testFlightEvidence": "github-cutover-pending",
         "playInternalEvidence": "gcp-publisher-ready-play-console-blocked"
       }
@@ -462,7 +462,7 @@
       "externalPrerequisites": [
         "process a GitHub-uploaded Consumer TestFlight build",
         "process a GitHub-uploaded Host TestFlight build",
-        "disable Catch | Default and Runner | Default in Xcode Cloud",
+        "disable the app-scoped Consumer and Host workflows whose exact App Store Connect API name is Default",
         "select and record the intended Consumer and Host internal TestFlight groups"
       ],
       "githubBuildNumberNamespace": "<UTC YYYYMMDD><8-digit GitHub run><2-digit attempt>",

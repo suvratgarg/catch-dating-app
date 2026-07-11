@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 1.9.0
-updated: 2026-07-11
+version: 1.9.1
+updated: 2026-07-12
 owner: recursive_audit_loop
 status: active
 ---
@@ -948,7 +948,10 @@ TestFlight upload proof.
 
 1. Both GitHub role jobs archive, verify, export, and upload successfully.
 2. Both builds finish processing in App Store Connect.
-3. `Catch | Default` and `Runner | Default` are disabled in Xcode Cloud.
+3. The Consumer and Host app-scoped workflows whose exact App Store Connect API
+   name is `Default` are disabled in Xcode Cloud. GitHub/App Store status
+   surfaces may prefix those workflows as `Catch | Default` and
+   `Runner | Default`; those display contexts are not API workflow names.
 4. Intended internal TestFlight groups are recorded and assigned.
 5. Consumer and Host installs launch with App Check, Maps, phone auth, push, and
    their role-specific entrypoints.
@@ -962,8 +965,10 @@ native brand-token or base-icon changes.
 ## Legacy Xcode Cloud State
 
 The old 12 a.m. scheduled Consumer Xcode Cloud build was retired live in App
-Store Connect on 2026-05-21. The later Consumer `Catch | Default` and Host
-`Runner | Default` workflows are legacy cutover surfaces. They must be disabled
+Store Connect on 2026-05-21. The later Consumer and Host app-scoped `Default`
+workflows are legacy cutover surfaces. They may appear in status contexts as
+`Catch | Default` and `Runner | Default`, but the App Store Connect API returns
+the exact workflow name `Default` for each distinct app. They must be disabled
 after GitHub upload proof so the same commit cannot produce duplicate builds.
 The manual `retire_xcode_cloud` input is a separate, retire-only operation. It
 requires exact processed Consumer and Host GitHub build numbers, re-verifies
